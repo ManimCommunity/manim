@@ -134,6 +134,15 @@ class SingleStringTexMobject(SVGMobject):
 
 
 class TexMobject(SingleStringTexMobject):
+    """
+    `manimlib.mobject.svg.tex_mobject.TexMobject`
+    TexMobject
+    ==========
+    Writes to a LaTeX file in math mode
+    (equivalent to `\\textrm{}` or `$$` in LaTeX).\n
+    Follows normal LaTeX syntax.
+    """
+
     CONFIG = {
         "arg_separator": " ",
         "substrings_to_isolate": [],
@@ -141,6 +150,15 @@ class TexMobject(SingleStringTexMobject):
     }
 
     def __init__(self, *tex_strings, **kwargs):
+        """
+        CONFIG Parameters:
+        ------------------
+        arg_separator\n
+        substrings_to_isolate\n
+        tex_to_color_map\n
+        excluded_strings\n
+        """
+
         digest_config(self, kwargs)
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
