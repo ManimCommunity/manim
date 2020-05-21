@@ -1,5 +1,6 @@
 import os
 import hashlib
+from urllib import parse, request
 
 from manimlib.constants import TEX_TEXT_TO_REPLACE
 from manimlib.constants import TEX_USE_CTEX
@@ -89,4 +90,24 @@ def dvi_to_svg(dvi_file, regen_if_exists=False):
             os.devnull
         ]
         os.system(" ".join(commands))
+    return result
+
+
+def tex_to_svg_file_online(expression, istex):
+    result = os.path.join(
+        consts.ONLINE_TEX_DIR,
+        tex_hash(expression, "")
+    ) + ".svg"
+    if not os.path.exists(result):
+        print("Writing \"%s\" to %s (using online render)" % (
+            "".join(expression), result
+        ))
+        if not istex:
+            expression = "\\text{" + expression +"}"
+        url = "https://www.zhihu.com/equation?tex=" + parse.quote(expression)
+        response = request.urlopen(url)
+        svg_file = response.read()
+        svg_file = svg_file.decode("utf-8")
+        with open(result, "w", encoding="utf-8") as outfile:
+            outfile.write(svg_file)
     return result

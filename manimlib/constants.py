@@ -6,6 +6,7 @@ VIDEO_DIR = ""
 VIDEO_OUTPUT_DIR = ""
 TEX_DIR = ""
 TEXT_DIR = ""
+ONLINE_TEX_DIR = ""
 
 
 def initialize_directories(config):
@@ -14,6 +15,7 @@ def initialize_directories(config):
     global VIDEO_OUTPUT_DIR
     global TEX_DIR
     global TEXT_DIR
+    global ONLINE_TEX_DIR
 
     video_path_specified = config["video_dir"] or config["video_output_dir"]
 
@@ -39,6 +41,7 @@ def initialize_directories(config):
             )
 
     TEX_DIR = config["tex_dir"] or os.path.join(MEDIA_DIR, "Tex")
+    ONLINE_TEX_DIR = os.path.join(MEDIA_DIR, "TexOnline")
     TEXT_DIR = os.path.join(MEDIA_DIR, "texts")
     if not video_path_specified:
         VIDEO_DIR = os.path.join(MEDIA_DIR, "videos")
@@ -48,7 +51,7 @@ def initialize_directories(config):
     else:
         VIDEO_DIR = config["video_dir"]
 
-    for folder in [VIDEO_DIR, VIDEO_OUTPUT_DIR, TEX_DIR, TEXT_DIR]:
+    for folder in [VIDEO_DIR, VIDEO_OUTPUT_DIR, TEX_DIR, TEXT_DIR, ONLINE_TEX_DIR]:
         if folder != "" and not os.path.exists(folder):
             os.makedirs(folder)
 
