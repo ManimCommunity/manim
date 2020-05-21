@@ -54,7 +54,6 @@ class SingleStringTexMobject(SVGMobject):
                 self.prepare_for_online_render(tex_string),
                 istex = istex
             )
-        print(file_name)
         SVGMobject.__init__(self, file_name=file_name, **kwargs)
         if self.height is None:
             self.scale(TEX_MOB_SCALE_FACTOR)

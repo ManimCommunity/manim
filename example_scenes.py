@@ -15,17 +15,6 @@ from manimlib.imports import *
 # for a 1920x1080 video)
 
 
-class TestOnlineTeX(Scene):
-    def construct(self):
-        text = TexMobject("\\sum^n_{i=1}i^2", online=True).set_color(WHITE)
-        text = TextMobject("Test文字", online=True)
-        self.add(text)
-        # for i, j in enumerate(text[0]):
-        #     tex_id = Text(str(i), font="Consolas").scale(0.6).set_color(PURPLE)
-        #     tex_id.move_to(j)
-        #     self.add(tex_id)
-
-
 class OpeningManimExample(Scene):
     def construct(self):
         title = TextMobject("This is some \\LaTeX")
