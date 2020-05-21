@@ -34,7 +34,7 @@ class SingleStringTexMobject(SVGMobject):
         "height": None,
         "organize_left_to_right": False,
         "alignment": "",
-        "web_site": "https://www.zhihu.com/equation?tex=",
+        "web_site": "https://latex.codecogs.com/svg.latex?",
     }
 
     def __init__(self, tex_string, online=False, **kwargs):
@@ -47,27 +47,21 @@ class SingleStringTexMobject(SVGMobject):
                 self.template_tex_file_body
             )
         else:
-            if self.template_tex_file_body == TEMPLATE_TEX_FILE_BODY:
-                istex = True
-            else:
-                istex = False
+            if self.template_tex_file_body == TEMPLATE_TEXT_FILE_BODY:
+                lines = tex_string.split("\\\\")
+                tex_string = ""
+                for line in lines[:-1]:
+                    tex_string = tex_string + "\\text{" + line + "}\\\\"
+                tex_string = tex_string + "\\text{" + lines[-1] + "}"
             file_name = tex_to_svg_file_online(
-                self.prepare_for_online_render(tex_string),
-                istex = istex,
+                self.get_modified_expression(tex_string),
                 web_site = self.web_site
             )
         SVGMobject.__init__(self, file_name=file_name, **kwargs)
         if self.height is None:
             self.scale(TEX_MOB_SCALE_FACTOR)
-        if online:
-            self.scale(0.01)
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
-    
-    def prepare_for_online_render(self, tex_string):
-        result = tex_string.strip()
-        result = self.modify_special_strings(result)
-        return result
 
     def get_modified_expression(self, tex_string):
         result = self.alignment + " " + tex_string

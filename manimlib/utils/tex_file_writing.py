@@ -1,6 +1,6 @@
 import os
 import hashlib
-from urllib import parse, request
+from urllib import parse, request, error
 
 from manimlib.constants import TEX_TEXT_TO_REPLACE
 from manimlib.constants import TEX_USE_CTEX
@@ -93,7 +93,7 @@ def dvi_to_svg(dvi_file, regen_if_exists=False):
     return result
 
 
-def tex_to_svg_file_online(expression, istex, web_site):
+def tex_to_svg_file_online(expression, web_site):
     result = os.path.join(
         consts.ONLINE_TEX_DIR,
         tex_hash(expression, "")
@@ -102,12 +102,13 @@ def tex_to_svg_file_online(expression, istex, web_site):
         print("Writing \"%s\" to %s (using online render)" % (
             "".join(expression), result
         ))
-        if not istex:
-            expression = "\\text{" + expression +"}"
         url = web_site + parse.quote(expression)
-        response = request.urlopen(url)
-        svg_file = response.read()
-        svg_file = svg_file.decode("utf-8")
-        with open(result, "w", encoding="utf-8") as outfile:
-            outfile.write(svg_file)
+        try:
+            response = request.urlopen(url)
+            svg_file = response.read()
+            svg_file = svg_file.decode("utf-8")
+            with open(result, "w", encoding="utf-8") as outfile:
+                outfile.write(svg_file)
+        except error.URLError:
+            raise Exception("No internet connectivity. Aborting latex download.")
     return result
