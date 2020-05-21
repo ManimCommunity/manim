@@ -93,7 +93,7 @@ def dvi_to_svg(dvi_file, regen_if_exists=False):
     return result
 
 
-def tex_to_svg_file_online(expression, istex):
+def tex_to_svg_file_online(expression, istex, web_site):
     result = os.path.join(
         consts.ONLINE_TEX_DIR,
         tex_hash(expression, "")
@@ -104,7 +104,7 @@ def tex_to_svg_file_online(expression, istex):
         ))
         if not istex:
             expression = "\\text{" + expression +"}"
-        url = "https://www.zhihu.com/equation?tex=" + parse.quote(expression)
+        url = web_site + parse.quote(expression)
         response = request.urlopen(url)
         svg_file = response.read()
         svg_file = svg_file.decode("utf-8")

@@ -34,6 +34,7 @@ class SingleStringTexMobject(SVGMobject):
         "height": None,
         "organize_left_to_right": False,
         "alignment": "",
+        "web_site": "https://www.zhihu.com/equation?tex=",
     }
 
     def __init__(self, tex_string, online=False, **kwargs):
@@ -52,7 +53,8 @@ class SingleStringTexMobject(SVGMobject):
                 istex = False
             file_name = tex_to_svg_file_online(
                 self.prepare_for_online_render(tex_string),
-                istex = istex
+                istex = istex,
+                web_site = self.web_site
             )
         SVGMobject.__init__(self, file_name=file_name, **kwargs)
         if self.height is None:
