@@ -33,11 +33,25 @@ class Camera(object):
 
     Some important CONFIG values and local variables to note are:
 
-    self.background_image : str, optional
-        The path to an image that should be the background image.
-        If not set, the background is filled with `self.background_color`
+    Attributes
+    ----------
+        background_image : :class:`str`, optional
+            The path to an image that should be the background image.
+            If not set, the background is filled with `self.background_color`
     
-    self.pixel_height
+        pixel_height : :class:`int`
+        pixel_width : :class:`int`
+        frame_rate : :class:`int`
+        frame_height : :class:`int`
+        frame_width : :class:`int`
+        background_color : :class:`int`
+        background_opacity : :class:`int`
+        max_allowable_norm : :class:`int`
+        image_mode : :class:`str`
+        n_channels: :class:`int`
+        pixel_array_dtype: :class:`str`
+        z_buff_func : Callable[[:class:`~.Mobject`], float]
+        cairo_line_width_multiple : :class:`float`
     """
     CONFIG = {
         "background_image": None,
@@ -68,9 +82,9 @@ class Camera(object):
 
         Parameters
         ----------
-        background : optional
+        background : Any, optional
             What self.background should be, by default None as will be set later.
-        **kwargs
+        kwargs
             Any local variables to be set.
         """
         digest_config(self, kwargs, locals())
@@ -89,13 +103,13 @@ class Camera(object):
 
     def reset_pixel_shape(self, new_height, new_width):
         """This method resets the height and width
-        of a single pixel to the passed new_heigh and new_width.
+        of a single pixel to the passed new_height and new_width.
 
         Parameters
-        ----------
-        new_height : int, float
+        ------
+        new_height : Union[:class:`int`, :class:`float`]
             The new height of the entire scene in pixels
-        new_width : int, float
+        new_width : Union[:class:`int`, :class:`float`]
             The new width of the entire scene in pixels
         """
         self.pixel_width = new_width
@@ -110,7 +124,7 @@ class Camera(object):
 
         Returns
         -------
-        int
+        :class:`int`
             The height of the scene in pixels.
         """
         return self.pixel_height
@@ -121,7 +135,7 @@ class Camera(object):
 
         Returns
         -------
-        int
+        :class:`int`
             The width of the scene in pixels.
         """
         return self.pixel_width
@@ -132,7 +146,7 @@ class Camera(object):
 
         Returns
         -------
-        float
+        :class:`float`
             The frame height
         """
         return self.frame_height
@@ -143,7 +157,7 @@ class Camera(object):
 
         Returns
         -------
-        float
+        :class:`float`
             The frame width
         """
         return self.frame_width
@@ -154,7 +168,7 @@ class Camera(object):
 
         Returns
         -------
-        np.array
+        :class:`array`
             The array of x,y,z coordinates.
         """
         return self.frame_center
@@ -164,7 +178,7 @@ class Camera(object):
 
         Parameters
         ----------
-        frame_height : int, float
+        frame_height : Union[:class:`int`, :class:`float`]
             The frame_height in MUnits.
         """
         self.frame_height = frame_height
@@ -174,7 +188,7 @@ class Camera(object):
 
         Parameters
         ----------
-        frame_width : int, float
+        frame_width : Union[:class:`int`, :class:`float`]
             The frame_width in MUnits.
         """
         self.frame_width = frame_width
@@ -185,7 +199,7 @@ class Camera(object):
 
         Parameters
         ----------
-        frame_center : np.array
+        frame_center : :class:`array`
             The center of the frame.
         """
         self.frame_center = frame_center
@@ -199,7 +213,7 @@ class Camera(object):
 
         Parameters
         ----------
-        fixed_dimension : int
+        fixed_dimension : :class:`int`
             If 0, height is scaled with respect to width
             else, width is scaled with respect to height.
         """
@@ -247,12 +261,12 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.array, list, tuple, optional
+        pixel_array : Union[:class:`array`, :class:`list`, :class:`tuple`], optional
             The pixel array from which to get an image, by default None
 
         Returns
         -------
-        PIL.Image
+        :class:`PIL.Image`
             The PIL image of the array.
         """
         if pixel_array is None:
@@ -268,7 +282,7 @@ class Camera(object):
 
         Returns
         -------
-        np.array
+        :class:`array`
             The array of RGB values of each pixel.
         """
         return self.pixel_array
@@ -279,14 +293,14 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.array, list, tuple
+        pixel_array : Union[:class:`array`, :class:`list`, :class:`tuple`]
             Pixel array to convert.
-        convert_from_floats : bool, optional
+        convert_from_floats : :class:`bool`, optional
             Whether or not to convert float values to ints, by default False
 
         Returns
         -------
-        np.array
+        :class:`array`
             The new, converted pixel array.
         """
         retval = np.array(pixel_array)
@@ -303,9 +317,9 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.array, list, tuple
+        pixel_array : Union[:class:`array`, :class:`list`, :class:`tuple`]
             The pixel array to convert and then set as the camera's pixel array.
-        convert_from_floats : bool, optional
+        convert_from_floats : :class:`bool`, optional
             Whether or not to convert float values to proper RGB values, by default False
         """
         converted_array = self.convert_pixel_array(
@@ -322,9 +336,9 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.array, list, tuple
+        pixel_array : Union[:class:`array`, :class:`list`, :class:`tuple`]
             The pixel array to set the background to.
-        convert_from_floats : bool, optional
+        convert_from_floats : :class:`bool`, optional
             Whether or not to convert floats values to proper RGB valid ones, by default False
         """
         self.background = self.convert_pixel_array(
@@ -339,12 +353,12 @@ class Camera(object):
 
         Parameters
         ----------
-        coords_to_colors_func : function
-            The function whose input is an (x,y) pair of coordinats and
-            whose return values must be the colors for that point
+        coords_to_colors_func : Callable[[Tuple[:class:`float`, :class:`float`]], :class:`str`] 
+            The function whose input is an (x,y) pair of coordinates and
+            whose return value must be the color for that point
         Returns
         -------
-        np.array
+        :class:`array`
             The pixel array which can then be passed to set_background.
         """
 
@@ -367,7 +381,7 @@ class Camera(object):
 
         Parameters
         ----------
-        coords_to_colors_func : function
+        coords_to_colors_func : :class:`function`
             The function whose input is an (x,y) pair of coordinats and
             whose return values must be the colors for that point
         """
@@ -380,7 +394,7 @@ class Camera(object):
 
         Returns
         -------
-        Camera
+        :class:`Camera`
             The camera object after setting the pixel array.
         """""
         self.set_pixel_array(self.background)
@@ -398,15 +412,15 @@ class Camera(object):
 
         Parameters
         ----------
-        mobjects : Mobject
+        mobjects : :class:`~.Mobject`
             The Mobjects currently in the Scene
-        only_those_with_points : bool, optional
+        only_those_with_points : :class:`bool`, optional
             Whether or not to only do this for
             those mobjects that have points. By default False
 
         Returns
         -------
-        list
+        :class:`list`
             list of the mobjects and family members.
         """
         if only_those_with_points:
@@ -426,16 +440,16 @@ class Camera(object):
 
         Parameters
         ----------
-        mobjects : Mobject
+        mobjects : :class:`~.Mobject`
             The Mobjects
-        include_submobjects : bool, optional
+        include_submobjects : :class:`bool`, optional
             Whether or not to include the submobjects of mobjects, by default True
-        excluded_mobjects : list, optional
+        excluded_mobjects : :class:`list`, optional
             Any mobjects to exclude, by default None
 
         Returns
         -------
-        list
+        :class:`list`
             list of mobjects
         """
         if include_submobjects:
@@ -455,12 +469,12 @@ class Camera(object):
 
         Parameters
         ----------
-        mobject : Mobject
+        mobject : :class:`~.Mobject`
             The mobject for which the checking needs to be done.
 
         Returns
         -------
-        bool
+        :class:`bool`
             True if in frame, False otherwise.
         """
         fc = self.get_frame_center()
@@ -515,12 +529,12 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The pixel array to check.
 
         Returns
         -------
-        Cairo.Context.Context
+        :class:`Cairo.Context.Context`
             The cached cairo context.
         """
         return self.pixel_array_to_cairo_context.get(
@@ -532,9 +546,9 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The pixel array to cache
-        ctx : Cairo.Context.Context
+        ctx : :class:`Cairo.Context.Context`
             The context to cache it into.
         """
         self.pixel_array_to_cairo_context[id(pixel_array)] = ctx
@@ -547,12 +561,12 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The Pixel array to get the cairo context of.
 
         Returns
         -------
-        cairo.Context
+        :class:`cairo.Context`
             The cairo context of the pixel array.
         """
         cached_ctx = self.get_cached_cairo_context(pixel_array)
@@ -584,9 +598,9 @@ class Camera(object):
 
         Parameters
         ----------
-        vmobjects : list
+        vmobjects : :class:`list`
             list of VMobjects to display
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The pixel array
         """
         if len(vmobjects) == 0:
@@ -607,9 +621,9 @@ class Camera(object):
 
         Parameters
         ----------
-        vmobjects : list
+        vmobjects : :class:`list`
             list of the VMobjects
-        pixel_array : np.ndarray
+        pixel_array : :class:`numpy.ndarray`
             The Pixel array to add the VMobjects to.
         """
         ctx = self.get_cairo_context(pixel_array)
@@ -621,14 +635,14 @@ class Camera(object):
 
         Parameters
         ----------
-        vmobject : VMobject
+        vmobject : :class:`~.VMobject`
             The Vectorized Mobject to display
-        ctx : cairo.Context
+        ctx : :class:`cairo.Context`
             The cairo context to use.
 
         Returns
         -------
-        Camera
+        :class:`Camera`
             The camera object
         """
         self.set_cairo_context_path(ctx, vmobject)
@@ -642,14 +656,14 @@ class Camera(object):
 
         Parameters
         ----------
-        ctx : cairo.Context
+        ctx : :class:`cairo.Context`
             The cairo context
-        vmobject : VMobject
+        vmobject : :class:`~.VMobject`
             The VMobject
 
         Returns
         -------
-        Camera
+        :class:`Camera`
             Camera object after setting cairo_context_path
         """
         points = self.transform_points_pre_display(
@@ -678,16 +692,16 @@ class Camera(object):
 
         Parameters
         ----------
-        ctx : cairo.Context
+        ctx : :class:`cairo.Context`
             The cairo context
-        rgbas : np.ndarray
+        rgbas : :class:`numpy.ndarray`
             The RGBA array with which to color the context.
-        vmobject : VMobject
+        vmobject : :class:`~.VMobject`
             The VMobject with which to set the color.
 
         Returns
         -------
-        Camera
+        :class:`Camera`
             The camera object
         """
         if len(rgbas) == 1:
@@ -718,14 +732,14 @@ class Camera(object):
 
         Parameters
         ----------
-        ctx : cairo.Context
+        ctx : :class:`cairo.Context`
             The cairo context
-        vmobject : VMobject
+        vmobject : :class:`~.VMobject`
             The VMobject
 
         Returns
         -------
-        Camera
+        :class:`Camera`
             The camera object.
         """
         self.set_cairo_context_color(
@@ -739,17 +753,17 @@ class Camera(object):
 
         Parameters
         ----------
-        ctx : cairo.Context
+        ctx : :class:`cairo.Context`
             The cairo context
-        vmobject : VMobject
+        vmobject : :class:`~.VMobject`
             The VMobject
-        background : bool, optional
+        background : :class:`bool`, optional
             Whether or not to consider the background when applying this
             stroke width, by default False
 
         Returns
         -------
-        Camera
+        :class:`Camera`
             The camera object with the stroke applied.
         """
         width = vmobject.get_stroke_width(background)
@@ -775,15 +789,15 @@ class Camera(object):
 
         Parameters
         ----------
-        vmobject : VMobject
+        vmobject : :class:`~.VMobject`
             The VMobject
-        background : bool, optional
+        background : :class:`bool`, optional
             Whether or not to consider the background when getting the stroke
             RGBAs, by default False
 
         Returns
         -------
-        np.ndarray
+        :class:`numpy.ndarray`
             The RGBA array of the stroke.
         """
         return vmobject.get_stroke_rgbas(background)
@@ -793,12 +807,12 @@ class Camera(object):
 
         Parameters
         ----------
-        vmobject : VMobject
+        vmobject : :class:`~.VMobject`
             The VMobject
 
         Returns
         -------
-        np.array
+        :class:`array`
             The RGBA Array of the fill of the VMobject
         """
         return vmobject.get_fill_rgbas()
@@ -809,7 +823,7 @@ class Camera(object):
 
         Returns
         -------
-        BackGroundColoredVMobjectDisplayer
+        :class:`BackGroundColoredVMobjectDisplayer`
             Object that displays VMobjects that have the same color
             as the background.
         """
@@ -824,14 +838,14 @@ class Camera(object):
 
         Parameters
         ----------
-        cvmobjects : list
+        cvmobjects : :class:`list`
             List of Colored VMobjects
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The pixel array.
 
         Returns
         -------
-        Camera
+        :class:`Camera`
             The camera object.
         """
         displayer = self.get_background_colored_vmobject_displayer()
@@ -849,9 +863,9 @@ class Camera(object):
 
         Parameters
         ----------
-        pmobjects : list
+        pmobjects : :class:`list`
             List of PMobjects
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The pixel array to modify.
         """
         for pmobject in pmobjects:
@@ -868,15 +882,15 @@ class Camera(object):
         TODO: Write a description for the rgbas argument.
         Parameters
         ----------
-        pmobject : PMobject
+        pmobject : :class:`PMobject`
             Point Cloud Mobject
-        points : list
+        points : :class:`list`
             The points to display in the point cloud mobject
-        rgbas : np.array
+        rgbas : :class:`array`
 
-        thickness : int, float
+        thickness : Union[:class:`int`, :class:`float`]
             The thickness of each point of the PMobject
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The pixel array to modify.
         """
         if len(points) == 0:
@@ -915,9 +929,9 @@ class Camera(object):
 
         Parameters
         ----------
-        image_mobjects : list
+        image_mobjects : :class:`list`
             list of ImageMobjects
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The pixel array to modify.
         """
         for image_mobject in image_mobjects:
@@ -928,9 +942,9 @@ class Camera(object):
 
         Parameters
         ----------
-        image_mobject : ImageMobject
+        image_mobject : :class:`~.ImageMobject`
             The imageMobject to display
-        pixel_array : np.ndarray
+        pixel_array : :class:`numpy.ndarray`
             The Pixel array to put the imagemobject in.
         """
         corner_coords = self.points_to_pixel_coords(
@@ -987,9 +1001,9 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The original pixel array to modify.
-        new_array : np.array
+        new_array : :class:`array`
             The new pixel array to overlay.
         """
         self.overlay_PIL_image(
@@ -1002,9 +1016,9 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_array : np.ndarray
+        pixel_array : :class:`numpy.ndarray`
             The Pixel array
-        image : PIL.Image
+        image : :class:`PIL.Image`
             The Image to overlay.
         """
         pixel_array[:, :] = np.array(
@@ -1021,12 +1035,12 @@ class Camera(object):
 
         Parameters
         ----------
-        points : np.array
+        points : :class:`array`
             The points to adjust
 
         Returns
         -------
-        np.array
+        :class:`array`
             The adjusted points.
         """
         if not np.any(points > self.max_allowable_norm):
@@ -1082,12 +1096,12 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_coords : np.array
+        pixel_coords : :class:`array`
             The pixel coords to check.
 
         Returns
         -------
-        np.array
+        :class:`array`
             The pixel coords on screen.
         """
         return reduce(op.and_, [
@@ -1102,11 +1116,11 @@ class Camera(object):
 
         Parameters
         ----------
-        thickness : int, float
+        thickness : Union[:class:`int`, :class:`float`]
 
         Returns
         -------
-        float
+        :class:`float`
 
         """
         # TODO: This seems...unsystematic
@@ -1126,11 +1140,11 @@ class Camera(object):
 
         Parameters
         ----------
-        thickness : int, float
+        thickness : Union[:class:`int`, :class:`float`]
 
         Returns
         -------
-        np.array
+        :class:`array`
 
         """
         thickness = int(thickness)
@@ -1143,14 +1157,14 @@ class Camera(object):
 
         Parameters
         ----------
-        pixel_coords : np.array
+        pixel_coords : :class:`array`
             Pixel coordinates
-        thickness : int, float
+        thickness : Union[:class:`int`, :class:`float`]
             Thickness
 
         Returns
         -------
-        np.array
+        :class:`array`
             Array of thickened pixel coords.
         """
         nudges = self.get_thickening_nudges(thickness)
@@ -1167,7 +1181,7 @@ class Camera(object):
 
         Returns
         -------
-        np.ndarray
+        :class:`numpy.ndarray`
             The array of cartesian coordinates.
         """
         # These are in x, y order, to help me keep things straight
@@ -1210,7 +1224,7 @@ class BackgroundColoredVMobjectDisplayer(object):
         """
         Parameters
         ----------
-        camera : Camera
+        camera : :class:`Camera`
             Camera object to use.
         """
         self.camera = camera
@@ -1230,18 +1244,18 @@ class BackgroundColoredVMobjectDisplayer(object):
 
         Parameters
         ----------
-        background_array : np.array
+        background_array : :class:`array`
             The pixel
-        new_width : int, float
+        new_width : Union[:class:`int`, :class:`float`]
             The new width of the background
-        new_height : int, float
+        new_height : Union[:class:`int`, :class:`float`]
             The new height of the background
-        mode : str, optional
+        mode : :class:`str`, optional
             The PIL image mode, by default "RGBA"
 
         Returns
         -------
-        np.array
+        :class:`array`
             The numpy pixel array of the resized background.
         """
         image = Image.fromarray(background_array)
@@ -1254,14 +1268,14 @@ class BackgroundColoredVMobjectDisplayer(object):
 
         Parameters
         ----------
-        background_array : np.array
+        background_array : :class:`array`
             The prospective pixel array.
-        pixel_array : np.array
+        pixel_array : :class:`array`
             The pixel array whose width and height should be matched.
 
         Returns
         -------
-        np.array
+        :class:`array`
             The resized background array.
         """
         height, width = pixel_array.shape[:2]
@@ -1273,12 +1287,12 @@ class BackgroundColoredVMobjectDisplayer(object):
 
         Parameters
         ----------
-        file_name : str
+        file_name : :class:`str`
             The file_name of the background image.
 
         Returns
         -------
-        np.ndarray
+        :class:`numpy.ndarray`
             The pixel array of the file whose file name is `file_name`
         """
         if file_name in self.file_name_to_pixel_array_map:
@@ -1301,12 +1315,12 @@ class BackgroundColoredVMobjectDisplayer(object):
 
         Parameters
         ----------
-        *cvmobjects : VMobject
+        *cvmobjects : :class:`~.VMobject`
             The VMobjects
 
         Returns
         -------
-        np.array
+        :class:`array`
             The pixel array with the `cvmobjects` displayed.
         """
         batch_image_file_pairs = batch_by_property(
