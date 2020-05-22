@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..utils.config_ops import digest_config
 
 # Currently, this is only used by both Scene and Mobject.

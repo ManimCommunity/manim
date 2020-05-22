@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
 from ..utils.iterables import list_update

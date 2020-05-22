@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.config_ops import digest_config

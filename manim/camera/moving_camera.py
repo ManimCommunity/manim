@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..camera.camera import Camera
 from ..constants import FRAME_HEIGHT
 from ..constants import FRAME_WIDTH

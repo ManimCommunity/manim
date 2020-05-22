@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate

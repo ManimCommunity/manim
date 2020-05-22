@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..constants import BLACK
 from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup

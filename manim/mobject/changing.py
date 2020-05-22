@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.vectorized_mobject import VGroup

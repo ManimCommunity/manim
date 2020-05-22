@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from manim.imports import *
 
 # This file is intended to test any new feature added. 

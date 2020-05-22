@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tqdm import tqdm as show_progress
 import cv2
 

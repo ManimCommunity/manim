@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..constants import *
 from ..mobject.geometry import Rectangle
 from ..utils.config_ops import digest_config

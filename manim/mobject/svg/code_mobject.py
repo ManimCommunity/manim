@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import html
 from ...constants import *
 from ...container.container import Container

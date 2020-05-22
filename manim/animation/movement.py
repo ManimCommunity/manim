@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 

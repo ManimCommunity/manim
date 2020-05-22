@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..constants import *
 from ..mobject.geometry import Square
 from ..mobject.types.vectorized_mobject import VGroup

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..animation.transform import ApplyMethod
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES

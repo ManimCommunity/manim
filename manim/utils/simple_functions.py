@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from functools import reduce
 import inspect
 import numpy as np

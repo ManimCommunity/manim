@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 from ..utils.file_ops import seek_full_path_from_defaults
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from functools import reduce
 import copy
 import itertools as it

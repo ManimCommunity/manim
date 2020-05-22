@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 I won't pretend like this is best practice, by in creating animations for a video,
 it can be very nice to simply have all of the Mobjects, Animations, Scenes, etc.

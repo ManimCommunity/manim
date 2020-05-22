@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import operator as op
 
 from ..animation.animation import Animation

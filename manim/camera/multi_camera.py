@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..camera.moving_camera import MovingCamera
 from ..utils.iterables import list_difference_update
 

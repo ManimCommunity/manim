@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from manim.imports import *
 
 NEW_BLUE = "#68a8e1"

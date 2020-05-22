@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import inspect
 import random
 import warnings

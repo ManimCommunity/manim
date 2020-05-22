@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import itertools as it
 
 from ..animation.creation import Write, DrawBorderThenFill, ShowCreation

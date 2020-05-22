@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import inspect
 import itertools as it
 import os

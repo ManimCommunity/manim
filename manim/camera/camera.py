@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from functools import reduce
 import itertools as it
 import operator as op

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import itertools as it
 import numpy as np
 

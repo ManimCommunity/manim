@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from ..animation.transform import Transform
 from ..constants import *
 from ..mobject.mobject import Mobject
