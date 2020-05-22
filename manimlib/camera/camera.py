@@ -882,7 +882,7 @@ class Camera(object):
         TODO: Write a description for the rgbas argument.
         Parameters
         ----------
-        pmobject : :class:`PMobject`
+        pmobject : :class:`~.PMobject`
             Point Cloud Mobject
         points : :class:`list`
             The points to display in the point cloud mobject
