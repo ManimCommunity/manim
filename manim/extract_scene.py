@@ -11,7 +11,7 @@ from .scene.scene import Scene
 from .utils.sounds import play_error_sound
 from .utils.sounds import play_finish_sound
 from . import constants
-from .logger import logger
+from .logging import logger
 
 
 def open_file_if_needed(file_writer, **config):

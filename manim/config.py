@@ -6,7 +6,7 @@ import types
 
 from . import constants
 from . import dirs
-from .logger import logger
+from .logging import logger
 
 def parse_cli():
     try:

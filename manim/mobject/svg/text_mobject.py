@@ -7,7 +7,7 @@ import cairo
 from ...constants import *
 from ... import dirs
 from ...container.container import Container
-from ...logger import logger
+from ...logging import logger
 from ...mobject.geometry import Dot, Rectangle
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup

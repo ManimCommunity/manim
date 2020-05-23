@@ -5,7 +5,7 @@ from PIL import Image
 import random
 
 from ..constants import *
-from ..logger import logger
+from ..logging import logger
 from ..animation.composition import AnimationGroup
 from ..animation.indication import ShowPassingFlash
 from ..mobject.geometry import Vector

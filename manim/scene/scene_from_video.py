@@ -2,7 +2,7 @@ from rich.progress import track
 import cv2
 
 from ..scene.scene import Scene
-from ..logger import logger
+from ..logging import logger
 
 
 # TODO, is this depricated?

@@ -10,7 +10,7 @@ import cairo
 import numpy as np
 
 from ..constants import *
-from ..logger import logger
+from ..logging import logger
 from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.mobject import Mobject
 from ..mobject.types.point_cloud_mobject import PMobject

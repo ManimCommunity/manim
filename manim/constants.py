@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from .logger import logger
+from .logging import logger
 
 NOT_SETTING_FONT_MSG='''
 You haven't set font.

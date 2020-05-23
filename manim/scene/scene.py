@@ -11,7 +11,7 @@ from ..animation.transform import MoveToTarget, ApplyMethod
 from ..camera.camera import Camera
 from ..constants import *
 from ..container.container import Container
-from ..logger import logger
+from ..logging import GlobalProgress, logger
 from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.iterables import list_update
@@ -901,7 +901,7 @@ class Scene(Container):
         run_time = self.get_run_time(animations)
         frame_length = 1 / self.camera.frame_rate
         description = self.get_animation_description(animations)
-        with Progress() as progress:
+        with GlobalProgress() as progress:
             render_task = progress.add_task(description, total=run_time)
             for t in np.arange(0, run_time, frame_length):
                 dt = t - last_t
@@ -1032,7 +1032,7 @@ class Scene(Container):
             last_t = 0
             frame_length = 1 / self.camera.frame_rate
             description = self.get_wait_description(stop_condition)
-            with Progress() as progress:
+            with GlobalProgress() as progress:
                 wait_task = progress.add_task(description, total=duration)
                 for t in np.arange(0, duration, frame_length):
                     dt = t - last_t

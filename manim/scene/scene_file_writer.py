@@ -13,7 +13,7 @@ from ..constants import STREAMING_IP
 from ..constants import STREAMING_PORT
 from ..constants import STREAMING_PROTOCOL
 from .. import dirs
-from ..logger import logger
+from ..logging import logger
 from ..utils.config_ops import digest_config
 from ..utils.file_ops import guarantee_existence
 from ..utils.file_ops import add_extension_if_not_present
