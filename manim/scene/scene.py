@@ -11,7 +11,7 @@ from ..animation.transform import MoveToTarget, ApplyMethod
 from ..camera.camera import Camera
 from ..constants import *
 from ..container.container import Container
-from ..logging import GlobalProgress, logger
+from ..logging import ElapsedOutOfTotalColumn, GlobalProgress, logger
 from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.iterables import list_update
@@ -686,7 +686,7 @@ class Scene(Container):
             "[progress.description]{task.description}",
             BarColumn(),
             "[progress.percentage]{task.completed}/{task.total}",
-            TimeRemainingColumn(),
+            ElapsedOutOfTotalColumn(),
         )
 
     def get_animation_description(self, animations):

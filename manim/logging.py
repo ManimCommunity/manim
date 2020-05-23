@@ -1,6 +1,9 @@
 import logging
 from rich.logging import RichHandler
-from rich.progress import Progress
+from rich.progress import Progress, ProgressColumn
+from rich.text import Text
+from datetime import timedelta
+
 
 global_progress = None
 
@@ -19,6 +22,7 @@ class GlobalProgress(Progress):
         super().__exit__(exc_type, exc_val, exc_tb)
         global_progress = None
 
+
 class GlobalProgressRichHandler(RichHandler):
     """
     A RichHandler which checks a global variable for a GlobalProgress and logs
@@ -35,6 +39,28 @@ class GlobalProgressRichHandler(RichHandler):
                 console.print(live_render)
         else:
             super().emit(record)
+
+
+class ElapsedOutOfTotalColumn(ProgressColumn):
+    """Renders elapsed time out of the estimated total runtime."""
+
+    # Only refresh twice a second to prevent jitter
+    max_refresh = 0.5
+
+    def render(self, task: "Task"):
+        """Show elapsed time out of estimated total runtime."""
+        elapsed = task.elapsed
+        elapsed_str = str(timedelta(seconds=int(elapsed))) \
+            if elapsed is not None \
+            else "-:--:--"
+
+        remaining = task.time_remaining
+        total_str = str(timedelta(seconds=int(elapsed + remaining))) \
+            if not any(attr is None for attr in [elapsed, remaining]) \
+            else "-:--:--"
+
+        return Text(f"{elapsed_str}/{total_str}", style="progress.remaining")
+
 
 logging.basicConfig(
     level="NOTSET",
