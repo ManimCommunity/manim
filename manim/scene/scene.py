@@ -3,7 +3,7 @@ import random
 import warnings
 import platform
 
-from tqdm import tqdm as ProgressDisplay
+from rich.progress import Progress
 import numpy as np
 
 from ..animation.animation import Animation
@@ -52,6 +52,7 @@ class Scene(Container):
         "start_at_animation_number": None,
         "end_at_animation_number": None,
         "leave_progress_bars": False,
+        "max_description_width": 40,
     }
 
     def __init__(self, **kwargs):
@@ -652,45 +653,6 @@ class Scene(Container):
                 return mobjects[i:]
         return []
 
-    def get_time_progression(self, run_time, n_iterations=None, override_skip_animations=False):
-        """
-        You will hardly use this when making your own animations.
-        This method is for Manim's internal use.
-
-        Returns a CommandLine ProgressBar whose fill_time
-        is dependent on the run_time of an animation,
-        the iterations to perform in that animation
-        and a bool saying whether or not to consider
-        the skipped animations.
-
-        Parameters
-        ----------
-        run_time: float
-            The run_time of the animation.
-
-        n_iterations: int, optional
-            The number of iterations in the animation.
-
-        override_skip_animations: bool, optional
-            Whether or not to show skipped animations in the progress bar.
-
-        Returns
-        ------
-        ProgressDisplay
-            The CommandLine Progress Bar.
-        """
-        if self.skip_animations and not override_skip_animations:
-            times = [run_time]
-        else:
-            step = 1 / self.camera.frame_rate
-            times = np.arange(0, run_time, step)
-        time_progression = ProgressDisplay(
-            times, total=n_iterations,
-            leave=self.leave_progress_bars,
-            ascii=False if platform.system() != 'Windows' else True
-        )
-        return time_progression
-
     def get_run_time(self, animations):
         """
         Gets the total run time for a list of animations.
@@ -709,34 +671,69 @@ class Scene(Container):
 
         return np.max([animation.run_time for animation in animations])
 
-    def get_animation_time_progression(self, animations):
+    def get_animation_description(self, animations):
         """
-        You will hardly use this when making your own animations.
-        This method is for Manim's internal use.
-
-        Uses get_time_progression to obtaina
-        CommandLine ProgressBar whose fill_time is
-        dependent on the qualities of the passed Animation,
+        Gets the progress bar description for a list of animations.
 
         Parameters
         ----------
-        animations : list of Animation
-            The list of animations to get
-            the time progression for.
+        animations: list of Animation
+            A list of the animations whose description will be returned.
 
         Returns
-        ------
-        ProgressDisplay
-            The CommandLine Progress Bar.
+        -------
+        str
+            The progress bar description of the animations in the list.
         """
-        run_time = self.get_run_time(animations)
-        time_progression = self.get_time_progression(run_time)
-        time_progression.set_description("".join([
-            "Animation {}: ".format(self.num_plays),
-            str(animations[0]),
-            (", etc." if len(animations) > 1 else ""),
-        ]))
-        return time_progression
+
+        description = f"Animation {self.num_plays}: {animations[0]}"
+        if len(animations) > 1:
+            description += ", etc."
+        return self.get_short_description(description)
+
+    def get_wait_description(self, stop_condition):
+        """
+        Gets the progress bar description for a wait.
+
+        Parameters
+        ----------
+        stop_condition: Union[function, NoneType]
+            The condition under which the wait will stop or None if the wait
+            is based on time.
+
+        Returns
+        -------
+        str
+            The progress bar description of the wait.
+        """
+
+        if stop_condition is not None:
+            description = "Waiting for {}".format(stop_condition.__name__)
+        else:
+            description = "Waiting {}".format(self.num_plays)
+        return self.get_short_description(description)
+
+    def get_short_description(self, description):
+        """
+        Shortens a description to a maximum length of
+        self.max_description_width if necessary and pads it with ... if it was
+        shortened.
+
+        Parameters
+        ----------
+        description: str
+            The description to be shortened.
+
+        Returns
+        -------
+        str
+            The shortened description.
+        """
+
+        if len(description) > self.max_description_width:
+            return f"{description[:self.max_description_width - 3]}..."
+        else:
+            return description
 
     def compile_play_args_to_animation_list(self, *args, **kwargs):
         """
@@ -900,16 +897,24 @@ class Scene(Container):
         self.update_frame(excluded_mobjects=moving_mobjects)
         static_image = self.get_frame()
         last_t = 0
-        for t in self.get_animation_time_progression(animations):
-            dt = t - last_t
-            last_t = t
-            for animation in animations:
-                animation.update_mobjects(dt)
-                alpha = t / animation.run_time
-                animation.interpolate(alpha)
-            self.update_mobjects(dt)
-            self.update_frame(moving_mobjects, static_image)
-            self.add_frames(self.get_frame())
+
+        run_time = self.get_run_time(animations)
+        frame_length = 1 / self.camera.frame_rate
+        description = self.get_animation_description(animations)
+        with Progress() as progress:
+            render_task = progress.add_task(description, total=run_time)
+            for t in np.arange(0, run_time, frame_length):
+                dt = t - last_t
+                last_t = t
+                for animation in animations:
+                    animation.update_mobjects(dt)
+                    alpha = t / animation.run_time
+                    animation.interpolate(alpha)
+                self.update_mobjects(dt)
+                self.update_frame(moving_mobjects, static_image)
+                self.add_frames(self.get_frame())
+                progress.update(render_task, advance=frame_length)
+            progress.update(render_task, completed=run_time)
 
     def finish_animations(self, animations):
         """
@@ -1001,41 +1006,6 @@ class Scene(Container):
             return self.mobjects_from_last_animation
         return []
 
-    def get_wait_time_progression(self, duration, stop_condition):
-        """
-        This method is used internally to obtain the CommandLine
-        Progressbar for when self.wait() is called in a scene.
-
-        Parameters
-        ----------
-        duration: int or float
-            duration of wait time
-
-        stop_condition : function
-            The function which determines whether to continue waiting.
-
-        Returns
-        -------
-        ProgressBar
-            The CommandLine ProgressBar of the wait time
-
-        """
-        if stop_condition is not None:
-            time_progression = self.get_time_progression(
-                duration,
-                n_iterations=-1,  # So it doesn't show % progress
-                override_skip_animations=True
-            )
-            time_progression.set_description(
-                "Waiting for {}".format(stop_condition.__name__)
-            )
-        else:
-            time_progression = self.get_time_progression(duration)
-            time_progression.set_description(
-                "Waiting {}".format(self.num_plays)
-            )
-        return time_progression
-
     @handle_play_like_call
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         """
@@ -1057,19 +1027,23 @@ class Scene(Container):
         """
         self.update_mobjects(dt=0)  # Any problems with this?
         if self.should_update_mobjects():
-            time_progression = self.get_wait_time_progression(duration, stop_condition)
             # TODO, be smart about setting a static image
             # the same way Scene.play does
             last_t = 0
-            for t in time_progression:
-                dt = t - last_t
-                last_t = t
-                self.update_mobjects(dt)
-                self.update_frame()
-                self.add_frames(self.get_frame())
-                if stop_condition is not None and stop_condition():
-                    time_progression.close()
-                    break
+            frame_length = 1 / self.camera.frame_rate
+            description = self.get_wait_description(stop_condition)
+            with Progress() as progress:
+                wait_task = progress.add_task(description, total=duration)
+                for t in np.arange(0, duration, frame_length):
+                    dt = t - last_t
+                    last_t = t
+                    self.update_mobjects(dt)
+                    self.update_frame()
+                    self.add_frames(self.get_frame())
+                    progress.update(wait_task, advance=frame_length)
+                    if stop_condition is not None and stop_condition():
+                        break
+                progress.update(wait_task, completed=duration)
         elif self.skip_animations:
             # Do nothing
             return self

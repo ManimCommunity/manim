@@ -1,4 +1,4 @@
-from tqdm import tqdm as show_progress
+from rich.progress import track
 import cv2
 
 from ..scene.scene import Scene
@@ -26,7 +26,7 @@ class SceneFromVideo(Scene):
 
         frame_count = end_frame - start_frame
         logger.info("Reading in " + file_name + "...")
-        for count in show_progress(list(range(start_frame, end_frame + 1))):
+        for count in track(list(range(start_frame, end_frame + 1))):
             returned, frame = cap.read()
             if not returned:
                 break
