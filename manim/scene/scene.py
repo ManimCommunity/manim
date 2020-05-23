@@ -3,7 +3,7 @@ import random
 import warnings
 import platform
 
-from rich.progress import Progress
+from rich.progress import BarColumn, TimeRemainingColumn
 import numpy as np
 
 from ..animation.animation import Animation
@@ -671,6 +671,24 @@ class Scene(Container):
 
         return np.max([animation.run_time for animation in animations])
 
+    def formatted_progress(self):
+        """
+        Returns a GlobalProgress formatted to display the number of elapsed
+        frames.
+
+        Returns
+        ------
+        GlobalProgress
+            The formatted GlobalProgress.
+        """
+
+        return GlobalProgress(
+            "[progress.description]{task.description}",
+            BarColumn(),
+            "[progress.percentage]{task.completed}/{task.total}",
+            TimeRemainingColumn(),
+        )
+
     def get_animation_description(self, animations):
         """
         Gets the progress bar description for a list of animations.
@@ -898,12 +916,17 @@ class Scene(Container):
         static_image = self.get_frame()
         last_t = 0
 
-        run_time = self.get_run_time(animations)
-        frame_length = 1 / self.camera.frame_rate
-        description = self.get_animation_description(animations)
-        with GlobalProgress() as progress:
-            render_task = progress.add_task(description, total=run_time)
-            for t in np.arange(0, run_time, frame_length):
+        times = np.arange(
+            0,
+            self.get_run_time(animations),
+            1 / self.camera.frame_rate,
+        )
+        with self.formatted_progress() as progress:
+            render_task = progress.add_task(
+                self.get_animation_description(animations),
+                total=times.size,
+            )
+            for t in times:
                 dt = t - last_t
                 last_t = t
                 for animation in animations:
@@ -913,8 +936,7 @@ class Scene(Container):
                 self.update_mobjects(dt)
                 self.update_frame(moving_mobjects, static_image)
                 self.add_frames(self.get_frame())
-                progress.update(render_task, advance=frame_length)
-            progress.update(render_task, completed=run_time)
+                progress.update(render_task, advance=1)
 
     def finish_animations(self, animations):
         """
@@ -1030,20 +1052,22 @@ class Scene(Container):
             # TODO, be smart about setting a static image
             # the same way Scene.play does
             last_t = 0
-            frame_length = 1 / self.camera.frame_rate
-            description = self.get_wait_description(stop_condition)
-            with GlobalProgress() as progress:
-                wait_task = progress.add_task(description, total=duration)
-                for t in np.arange(0, duration, frame_length):
+
+            times = np.arange(0, duration, 1 / self.camera.frame_rate)
+            with self.formatted_progress() as progress:
+                wait_task = progress.add_task(
+                    self.get_wait_description(stop_condition),
+                    total=times.size,
+                )
+                for t in times:
                     dt = t - last_t
                     last_t = t
                     self.update_mobjects(dt)
                     self.update_frame()
                     self.add_frames(self.get_frame())
-                    progress.update(wait_task, advance=frame_length)
+                    progress.update(wait_task, advance=1)
                     if stop_condition is not None and stop_condition():
                         break
-                progress.update(wait_task, completed=duration)
         elif self.skip_animations:
             # Do nothing
             return self
