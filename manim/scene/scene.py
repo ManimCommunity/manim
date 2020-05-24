@@ -659,14 +659,13 @@ class Scene(Container):
 
         Parameters
         ----------
-        animations: list of Animation
-            A list of the animations whose total
-            run_time is to be calculated.
+        animations: List[:class:`~.Animation`]
+            A list of the animations whose total runtime will be calculated.
 
         Returns
         ------
-        float
-            The total run_time of all of the animations in the list.
+        :class:`float`
+            The total runtime of all of the animations in the list.
         """
 
         return np.max([animation.run_time for animation in animations])
@@ -678,7 +677,7 @@ class Scene(Container):
 
         Returns
         ------
-        GlobalProgress
+        :class:`GlobalProgress`
             The formatted GlobalProgress.
         """
 
@@ -739,12 +738,12 @@ class Scene(Container):
 
         Parameters
         ----------
-        description: str
+        description: :class:`str`
             The description to be shortened.
 
         Returns
         -------
-        str
+        :class:`str`
             The shortened description.
         """
 

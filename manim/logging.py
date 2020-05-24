@@ -53,12 +53,10 @@ class GlobalProgressRichHandler(RichHandler):
 
 class ElapsedOutOfTotalColumn(ProgressColumn):
     """Renders elapsed time out of the estimated total runtime."""
-
     # Only refresh twice a second to prevent jitter
     max_refresh = 0.5
 
     def render(self, task: "Task"):
-        """Show elapsed time out of estimated total runtime."""
         elapsed = task.elapsed
         elapsed_str = str(timedelta(seconds=int(elapsed))) \
             if elapsed is not None \
