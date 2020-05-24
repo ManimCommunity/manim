@@ -30,13 +30,23 @@ class GlobalProgressRichHandler(RichHandler):
     """
     def emit(self, record):
         if global_progress is not None:
+            # Save this RichHandler's original Console and use the one from the
+            # GlobalProgress.
             console = global_progress.console
+            self.saved_console = self.console
+            self.console = console
+
+            # Log without breaking the GlobalProgress output.
             live_render = global_progress._live_render
-            if console.is_terminal:
-                console.print(live_render.position_cursor())
-            super().emit(record)
-            if console.is_terminal:
-                console.print(live_render)
+            with console:
+                if console.is_terminal:
+                    console.print(live_render.position_cursor())
+                super().emit(record)
+                if console.is_terminal:
+                    console.print(live_render)
+
+            # Restore the original Console.
+            self.console = self.saved_console
         else:
             super().emit(record)
 
