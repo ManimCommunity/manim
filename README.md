@@ -195,6 +195,7 @@ depending on whether you want to use HTTPS or SSH. Finally, run the
 following:
 
 ```sh
+python3 cleanup.py # OPTIONAL: Remove files not relevant to your animations
 python3 -m pip install -r requirements.txt
 ```
 
