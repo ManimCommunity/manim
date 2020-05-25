@@ -110,30 +110,6 @@ class Succession(AnimationGroup):
         "lag_ratio": 1,
     }
 
-    def begin(self):
-        assert(len(self.animations) > 0)
-        self.init_run_time()
-        self.active_animation = self.animations[0]
-        self.active_animation.begin()
-
-    def finish(self):
-        self.active_animation.finish()
-
-    def update_mobjects(self, dt):
-        self.active_animation.update_mobjects(dt)
-
-    def interpolate(self, alpha):
-        index, subalpha = integer_interpolate(
-            0, len(self.animations), alpha
-        )
-        animation = self.animations[index]
-        if animation is not self.active_animation:
-            self.active_animation.finish()
-            animation.begin()
-            self.active_animation = animation
-        animation.interpolate(subalpha)
-
-
 class LaggedStart(AnimationGroup):
     CONFIG = {
         "lag_ratio": DEFAULT_LAGGED_START_LAG_RATIO,
