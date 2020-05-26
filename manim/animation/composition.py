@@ -29,6 +29,7 @@ class AnimationGroup(Animation):
     def __init__(self, *animations, **kwargs):
         digest_config(self, kwargs)
         self.animations = animations
+        from pprint import pprint
         if self.group is None:
             self.group = Group(*remove_list_redundancies(
                 [anim.mobject for anim in animations]
