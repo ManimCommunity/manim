@@ -107,7 +107,7 @@ class AnimationGroup(Animation):
 
 class Succession(AnimationGroup):
     """
-    Play plays several animations in a row. 
+    Play several animations in a row. 
     """
     CONFIG = {
         "lag_ratio": 1,
