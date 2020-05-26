@@ -25,6 +25,14 @@ class ShowPartial(Animation):
     def get_bounds(self, alpha):
         raise Exception("Not Implemented")
 
+class Show(ShowPartial): 
+    """
+    Show a Mobject without animation. 
+    """
+    def get_bounds(self, alpha):
+        if alpha >0 : 
+            alpha =1  
+        return (0, alpha)
 
 class ShowCreation(ShowPartial):
     CONFIG = {
