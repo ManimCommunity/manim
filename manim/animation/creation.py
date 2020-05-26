@@ -1,6 +1,8 @@
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.svg.text_mobject import Text
+from ..mobject.svg.tex_mobject import TextMobject
 from ..mobject.mobject import Group
 from ..utils.bezier import integer_interpolate
 from ..utils.config_ops import digest_config
@@ -133,7 +135,7 @@ class Write(DrawBorderThenFill):
 class ShowIncreasingSubsets(Animation):
     CONFIG = {
         "suspend_mobject_updating": False,
-        "int_func": np.floor,
+        "int_func": np.floor,     
     }
 
     def __init__(self, group, **kwargs):
@@ -160,6 +162,7 @@ class ShowSubsets(Show):
     def __init__(self, group, **kwargs):
         self.all_submobs = list(group.submobjects)
         super().__init__(group, **kwargs)
+    
 class AddTextLetterByLetter(ShowIncreasingSubsets):
     """
         Add a Text Object letter by letter on the scene. Use time_per_char to change frequency of appearance of the letters. 
@@ -194,23 +197,21 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
             self.mobject.submobjects = self.all_submobs[index - 1]
 
 
-# TODO, this is broken...
 class AddTextWordByWord(Succession):
+    """
+    Add a text object word by word. 
+    """
     CONFIG = {
         # If given a value for run_time, it will
         # override the time_per_char
         "run_time": None,
-        "time_per_char": 0.06,
+        "time_per_char": 0.1,
     }
 
-    def __init__(self, text_mobject, **kwargs):
+    def __init__(self, text, **kwargs):
+        assert(type(text) == Text)
         digest_config(self, kwargs)
-        tpc = self.time_per_char
-        anims = it.chain(*[
-            [
-                ShowIncreasingSubsets(word, run_time=tpc * len(word)),
-                Animation(word, run_time=0.005 * len(word)**1.5),
-            ]
-            for word in text_mobject
-        ])
+
+        anims = [ShowSubsets(Group(*word), run_time = self.time_per_char * len(word)) for word in text.get_submobjects_words() ]
+        
         super().__init__(*anims, **kwargs)
