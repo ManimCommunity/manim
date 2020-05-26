@@ -148,6 +148,18 @@ class ShowIncreasingSubsets(Animation):
     def update_submobject_list(self, index):
         self.mobject.submobjects = self.all_submobs[:index]
 
+class ShowSubsets(Show): 
+    """
+    Show a Subset without animation.
+    """
+    CONFIG = {
+        "suspend_mobject_updating": False,
+        "int_func": np.floor,
+        "run_time": None
+    }
+    def __init__(self, group, **kwargs):
+        self.all_submobs = list(group.submobjects)
+        super().__init__(group, **kwargs)
 class AddTextLetterByLetter(ShowIncreasingSubsets):
     """
         Add a Text Object letter by letter on the scene. Use time_per_char to change frequency of appearance of the letters. 
