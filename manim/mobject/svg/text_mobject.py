@@ -322,6 +322,19 @@ class Text(SVGMobject):
 
         return file_name
 
+    def get_submobjects_words(self): 
+        submobjects_words, submobjects_words_temp = [], []
+        for char, char_sub in zip(self.text, self.submobjects) : 
+            if char == ' ': 
+                submobjects_words_temp.append(char_sub)
+                submobjects_words.append(submobjects_words_temp)
+                submobjects_words_temp = []
+                continue
+            submobjects_words_temp.append(char_sub)
+        submobjects_words.append(submobjects_words_temp)
+        
+        return submobjects_words
+
 class TextWithFixHeight(Text):
     def __init__(self, text, **kwargs):
         Text.__init__(self, text, **kwargs)
