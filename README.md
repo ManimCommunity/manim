@@ -1,6 +1,6 @@
 ![logo](logo/cropped.png)
 
-[![Build Status](https://travis-ci.org/3b1b/manim.svg?branch=master)](https://travis-ci.org/3b1b/manim)
+[![Build Status](https://travis-ci.com/ManimCommunity/manim.svg?branch=master)](https://travis-ci.com/ManimCommunity/manim)
 [![Documentation](https://img.shields.io/badge/docs-EulerTour-blue.svg)](https://www.eulertour.com/docs)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
 [![Manim Subreddit](https://img.shields.io/reddit/subreddit-subscribers/manim.svg?color=ff4301&label=reddit)](https://www.reddit.com/r/manim/)
@@ -56,8 +56,18 @@ Before installing `manim-community`, there are some additional dependencies that
 > win_amd64 corresponds to 64-bit machines, win32 corresponds to 32-bit machines
 
 3. Open up your command prompt by hitting the Win key and typing `cmd`
+
 4. Enter the directory where you install cairo by typing `cd C:\path\to\cairo` with the path being where you downloaded the `.whl` file
+
 5. Finally, run `pip3 install (cairo-file).whl`, where the file the appropriate name of the `.whl` file.
+
+6. Alternatively, Running the command below installs pycairo. This needs to be an elevated command prompt like Powershell.
+
+   ```powershell
+   (Invoke-WebRequest -Uri https://raw.githubusercontent.com/ManimCommunity/manim/master/scripts/pycairoinstall.py -UseBasicParsing).Content | py -3
+   ```
+
+   
 
 #### FFmpeg Installation
 1. To install `ffmpeg` and add it to your PATH, install [Chocolatey](https://chocolatey.org/) and run `choco install ffmpeg`
@@ -78,7 +88,7 @@ Before installing `manim-community`, there are some additional dependencies that
 
 #### LaTeX Installation
 1. Download the MiKTex installer from its [Download Page](https://miktex.org/download)
-2. You can check you did it right by running `refreshenv` to update your environment variable and running `latex` 
+2. You can check you did it right by running `refreshenv` to update your environment variable and running `latex`
 
 <img style="width: 20vw;" src="./readme-assets/windows_miktex.png" />
 <br><br>
@@ -108,7 +118,7 @@ Before installing `manim-community`, there are some additional dependencies that
 sudo apt install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa
 ```
 > Note: this installation may take up a lot of space. The developers are working on providing a simpler, lighter LaTeX package for you to install
-2. You can check you did it right by running `latex` 
+2. You can check you did it right by running `latex`
 
 #### Additional Installation Steps
 - You must install additional codecs to play MP4 files:
@@ -151,7 +161,22 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 #### LaTeX Installation
 1. Refer to the section on Brew installation to see how to install `brew`
 2. Run `brew cask install mactex`
-2. You can check you did it right by running `latex` 
+3. You can check you did it right by running `latex`
+
+> Note that MacTeX will require at least 4.5GB of hard disk space and bandwidth.
+>
+> This is due to the fact that it installs every LaTeX addon package offered by [CTAN](https://ctan.org/). Only a few of these packages are required by Manim.
+>
+> If you would like a smaller LaTeX install which only contains the packages needed by Manim alone, consider installing BasicTeX and suitable packages with the instructions below. This will require about 1.5 GB of space and bandwidth.
+
+If you have installed MacTeX and are comfortable with it, do not install BasicTeX.
+
+1. Refer to the section on Brew installation to see how to install `brew`
+2. Run `brew cask install basictex`
+3. Ensure that the TeXLiveManager tool `tlmgr` works, by running `tlmgr --version` in the terminal.
+4. Run `sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super`
+4. Ensure that LaTeX works by running `latex` in the Terminal.
+
 
 ### Installing Manim-Community itself
 
@@ -170,7 +195,7 @@ executing either
 git clone git@github.com:ManimCommunity/manim.git
 ```
 
-or 
+or
 
 ```sh
 git clone https://github.com/ManimCommunity/manim.git
@@ -180,23 +205,30 @@ depending on whether you want to use HTTPS or SSH. Finally, run the
 following:
 
 ```sh
-
 python3 -m pip install -r requirements.txt
 ```
 
 ## Usage
 
 To run your first example Scene, you can run the following commands:
-For users:
-1. Download the `example_scenes.py` file from [GitHub](https://github.com/ManimCommunity/manim/blob/master/example_scenes.py)
+
+### For users:
+
+1. Download the `example_scenes/basic.py` file from [GitHub](https://github.com/ManimCommunity/manim/blob/master/example_scenes/basic.py)
 2. Run the following command:
 ```sh
-manim example_scenes.py SquareToCircle -pl
+manim example_scenes/basic.py SquareToCircle -pl
 ```
-1. Run the following command:
-For developers:
+
+### For developers:
+
+- Run the following command to install manim:
 ```sh
-python3 manim.py example_scenes.py SquareToCircle -pl
+pip install -e .
+```
+- Then run the following command below:
+```sh
+manim example_scenes/basic.py SquareToCircle -pl
 ```
 
 ![](./readme-assets/command.png)
