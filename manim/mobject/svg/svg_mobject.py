@@ -257,6 +257,7 @@ class SVGMobject(VMobject):
 
         prefix = "scale("
         suffix = ")"
+        transform = element.getAttribute('transform')
         if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix):-len(suffix)]
             scale_values = string_to_numbers(transform)
@@ -269,6 +270,7 @@ class SVGMobject(VMobject):
 
         prefix = "translate("
         suffix = ")"
+        transform = element.getAttribute('transform')
         if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix):-len(suffix)]
             x, y = string_to_numbers(transform)
@@ -277,6 +279,7 @@ class SVGMobject(VMobject):
         # See https://en.wikipedia.org/wiki/Shear_mapping#Definition
         prefix = "skewX("
         suffix = ")"
+        transform = element.getAttribute('transform')
         if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix):-len(suffix)]
             angle = string_to_numbers(transform)[0]
@@ -289,6 +292,7 @@ class SVGMobject(VMobject):
         # See https://en.wikipedia.org/wiki/Shear_mapping#Definition
         prefix = "skewY("
         suffix = ")"
+        transform = element.getAttribute('transform')
         if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix):-len(suffix)]
             angle = string_to_numbers(transform)[0]
