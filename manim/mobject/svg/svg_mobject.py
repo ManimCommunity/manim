@@ -172,10 +172,11 @@ class SVGMobject(VMobject):
         stroke_color = rect_element.getAttribute("stroke")
         stroke_width = rect_element.getAttribute("stroke-width")
         corner_radius = rect_element.getAttribute("rx")
+        opacity = 0.0
 
         # input preprocessing
         if fill_color in ["", "none", "#FFF", "#FFFFFF"] or Color(fill_color) == Color(WHITE):
-            opacity = 0
+            opacity = 0.0
             fill_color = BLACK  # shdn't be necessary but avoids error msgs
         if fill_color in ["#000", "#000000"]:
             fill_color = WHITE
@@ -193,6 +194,8 @@ class SVGMobject(VMobject):
         corner_radius = float(corner_radius)
 
         if corner_radius == 0:
+            print(self)
+            print(f"Opacity: {opacity}")
             mob = Rectangle(
                 width=self.attribute_to_float(
                     rect_element.getAttribute("width")
@@ -282,6 +285,29 @@ class SVGMobject(VMobject):
             mobject.shift(x * RIGHT + y * DOWN)
         except:
             pass
+
+        prefix = "skewX("
+        suffix = ")"
+        if transform.startswith(prefix) and transform.endswith(suffix):
+            transform = transform[len(prefix):-len(suffix)]
+            angle = string_to_numbers(transform)[0]
+            mX = -1 / np.tan((90 - angle) * DEGREES)
+            matrix = np.array([1, mX, 0, 1]).reshape((2, 2))
+            for mob in mobject.family_members_with_points():
+                for point in mob.points:
+                    point[:2] = np.dot(matrix, point[:2])
+
+        prefix = "skewY("
+        suffix = ")"
+        if transform.startswith(prefix) and transform.endswith(suffix):
+            transform = transform[len(prefix):-len(suffix)]
+            angle = string_to_numbers(transform)[0]
+            mY = -1 / np.tan((90 - angle) * DEGREES)
+            matrix = np.array([1, 0, mY, 1]).reshape((2, 2))
+            for mob in mobject.family_members_with_points():
+                for point in mob.points:
+                    point[:2] = np.dot(matrix, point[:2])
+
         # TODO, ...
 
     def flatten(self, input_list):
@@ -348,7 +374,7 @@ class VMobjectFromSVGPathstring(VMobject):
         for command, coord_string in pairs:
             self.handle_command(command, coord_string)
         # people treat y-coordinate differently
-        self.rotate(np.pi, RIGHT, about_point=ORIGIN)
+        #self.rotate(np.pi, RIGHT, about_point=ORIGIN)
 
     def handle_command(self, command, coord_string):
         isLower = command.islower()
