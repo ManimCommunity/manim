@@ -238,11 +238,9 @@ class SVGMobject(VMobject):
 
         transform = element.getAttribute('transform')
 
-        try:  # transform matrix
-            prefix = "matrix("
-            suffix = ")"
-            if not transform.startswith(prefix) or not transform.endswith(suffix):
-                raise Exception()
+        prefix = "matrix("
+        suffix = ")"
+        if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix):-len(suffix)]
             transform = string_to_numbers(transform)
             transform = np.array(transform).reshape([3, 2])
@@ -256,14 +254,10 @@ class SVGMobject(VMobject):
             for mob in mobject.family_members_with_points():
                 mob.points = np.dot(mob.points, matrix)
             mobject.shift(x * RIGHT + y * UP)
-        except:
-            pass
 
-        try:  # transform scale
-            prefix = "scale("
-            suffix = ")"
-            if not transform.startswith(prefix) or not transform.endswith(suffix):
-                raise Exception()
+        prefix = "scale("
+        suffix = ")"
+        if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix):-len(suffix)]
             scale_values = string_to_numbers(transform)
             if len(scale_values) == 2:
@@ -272,20 +266,15 @@ class SVGMobject(VMobject):
             elif len(scale_values) == 1:
                 scale = scale_values[0]
                 mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
-        except:
-            pass
 
-        try:  # transform translate
-            prefix = "translate("
-            suffix = ")"
-            if not transform.startswith(prefix) or not transform.endswith(suffix):
-                raise Exception()
+        prefix = "translate("
+        suffix = ")"
+        if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix):-len(suffix)]
             x, y = string_to_numbers(transform)
             mobject.shift(x * RIGHT + y * DOWN)
-        except:
-            pass
 
+        # See https://en.wikipedia.org/wiki/Shear_mapping#Definition
         prefix = "skewX("
         suffix = ")"
         if transform.startswith(prefix) and transform.endswith(suffix):
@@ -297,6 +286,7 @@ class SVGMobject(VMobject):
                 for point in mob.points:
                     point[:2] = np.dot(matrix, point[:2])
 
+        # See https://en.wikipedia.org/wiki/Shear_mapping#Definition
         prefix = "skewY("
         suffix = ")"
         if transform.startswith(prefix) and transform.endswith(suffix):
