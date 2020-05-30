@@ -171,13 +171,9 @@ class Mobject(Container):
                 return True
         return False
 
-    def get_updaters(self):
-        return self.updaters
-
     def get_family_updaters(self):
         return list(it.chain(*[
-            sm.get_updaters()
-            for sm in self.get_family()
+            sm.updaters for sm in self.get_family()
         ]))
 
     def add_updater(self, update_function, index=None, call_updater=True):
@@ -203,7 +199,7 @@ class Mobject(Container):
 
     def match_updaters(self, mobject):
         self.clear_updaters()
-        for updater in mobject.get_updaters():
+        for updater in mobject.updaters:
             self.add_updater(updater)
         return self
 
