@@ -59,8 +59,11 @@ class VMobject(Mobject):
         # varying zoom levels?
         "tolerance_for_point_equality": 1e-6,
         "n_points_per_cubic_curve": 4,
-        "GroupClass": VGroup,
     }
+
+    def __init__(self, *args, **kwargs):
+        super(VMobject, self).__init__(*args, **kwargs)
+        self.GroupClass = VGroup
 
     # Colors
     def init_colors(self):

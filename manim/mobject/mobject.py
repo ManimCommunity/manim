@@ -34,7 +34,6 @@ class Mobject(Container):
         "name": None,
         "dim": 3,
         "target": None,
-        "GroupClass": Group,
     }
 
     def __init__(self, **kwargs):
@@ -48,6 +47,7 @@ class Mobject(Container):
         self.reset_points()
         self.generate_points()
         self.init_colors()
+        self.GroupClass = Group
 
     def __str__(self):
         return str(self.name)
