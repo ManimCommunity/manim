@@ -378,7 +378,7 @@ class VMobject(Mobject):
             offset = np.dot(bases, direction)
             return (c - offset, c + offset)
 
-    def color_using_background_image(self, background_image_file: str):
+    def color_using_background_image(self, background_image_file: str) -> "VMobject":
         self.background_image_file = background_image_file
         self.set_color(WHITE)
         for submob in self.submobjects:
@@ -388,11 +388,11 @@ class VMobject(Mobject):
     def get_background_image_file(self) -> str:
         return self.background_image_file
 
-    def match_background_image_file(self, vmobject):
+    def match_background_image_file(self, vmobject: "VMobject") -> "VMobject":
         self.color_using_background_image(vmobject.get_background_image_file())
         return self
 
-    def set_shade_in_3d(self, value: bool = True, z_index_as_group: bool = False):
+    def set_shade_in_3d(self, value: bool = True, z_index_as_group: bool = False) -> "VMobject":
         for submob in self.get_family():
             submob.shade_in_3d = value
             if z_index_as_group:
@@ -400,15 +400,15 @@ class VMobject(Mobject):
         return self
 
     # Points
-    def set_points(self, points: Sequence[Vector]):
+    def set_points(self, points: Sequence[Vector]) -> "VMobject":
         self.points = np.array(points)
         return self
 
-    def get_points(self) -> Sequence[Vector]:
+    def get_points(self) -> np.ndarray:
         return np.array(self.points)
 
     def set_anchors_and_handles(self, anchors1: Sequence[Vector], handles1: Sequence[Vector],
-                                handles2: Sequence[Vector], anchors2: Sequence[Vector]):
+                                handles2: Sequence[Vector], anchors2: Sequence[Vector]) -> "VMobject":
         assert(len(anchors1) == len(handles1) == len(handles2) == len(anchors2))
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
@@ -428,17 +428,17 @@ class VMobject(Mobject):
         self.points = np.append(self.points, new_points, axis=0)
         return self
 
-    def start_new_path(self, point: Vector):
+    def start_new_path(self, point: Vector) -> "VMobject":
         # TODO, make sure that len(self.points) % 4 == 0?
         self.append_points([point])
         return self
 
     def add_cubic_bezier_curve(self, anchor1: Vector, handle1: Vector,
-                               handle2: Vector, anchor2: Vector):
+                               handle2: Vector, anchor2: Vector) -> None:
         # TODO, check the len(self.points) % 4 == 0?
         self.append_points([anchor1, handle1, handle2, anchor2])
 
-    def add_cubic_bezier_curve_to(self, handle1: Vector, handle2: Vector, anchor: Vector):
+    def add_cubic_bezier_curve_to(self, handle1: Vector, handle2: Vector, anchor: Vector) -> None:
         """
         Add cubic bezier curve to the path.
         """
@@ -449,7 +449,7 @@ class VMobject(Mobject):
         else:
             self.append_points([self.get_last_point()] + new_points)
 
-    def add_line_to(self, point: Vector):
+    def add_line_to(self, point: Vector) -> "VMobject":
         nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(*[
             interpolate(self.get_last_point(), point, a)
@@ -457,7 +457,7 @@ class VMobject(Mobject):
         ])
         return self
 
-    def add_smooth_curve_to(self, *points: Iterable[Vector]):
+    def add_smooth_curve_to(self, *points: Vector) -> "VMobject":
         """
         If two points are passed in, the first is interpreted
         as a handle, the second as an anchor
@@ -506,7 +506,7 @@ class VMobject(Mobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[Vector]):
+    def set_points_as_corners(self, points: Sequence[Vector]) -> "VMobject":
         nppcc = self.n_points_per_cubic_curve
         points = np.array(points)
         self.set_anchors_and_handles(*[
@@ -515,12 +515,12 @@ class VMobject(Mobject):
         ])
         return self
 
-    def set_points_smoothly(self, points: Iterable[Vector]):
+    def set_points_smoothly(self, points: Sequence[Vector]) -> "VMobject":
         self.set_points_as_corners(points)
         self.make_smooth()
         return self
 
-    def change_anchor_mode(self, mode: str):
+    def change_anchor_mode(self, mode: str) -> "VMobject":
         assert(mode in ["jagged", "smooth"])
         nppcc = self.n_points_per_cubic_curve
         for submob in self.family_members_with_points():
@@ -545,18 +545,18 @@ class VMobject(Mobject):
                 submob.append_points(new_subpath)
         return self
 
-    def make_smooth(self):
+    def make_smooth(self) -> "VMobject":
         return self.change_anchor_mode("smooth")
 
-    def make_jagged(self):
+    def make_jagged(self) -> "VMobject":
         return self.change_anchor_mode("jagged")
 
-    def add_subpath(self, points: Iterable[Vector]):
+    def add_subpath(self, points: Sequence[Vector]) -> "VMobject":
         assert(len(points) % 4 == 0)
         self.points = np.append(self.points, points, axis=0)
         return self
 
-    def append_vectorized_mobject(self, vectorized_mobject):
+    def append_vectorized_mobject(self, vectorized_mobject: "VMobject") -> None:
         new_points = list(vectorized_mobject.points)
 
         if self.has_new_path_started():
@@ -565,7 +565,7 @@ class VMobject(Mobject):
             self.points = self.points[:-1]
         self.append_points(new_points)
 
-    def apply_function(self, function):
+    def apply_function(self, function) -> "VMobject":
         factor = self.pre_function_handle_to_anchor_scale_factor
         self.scale_handle_to_anchor_distances(factor)
         Mobject.apply_function(self, function)
@@ -574,7 +574,7 @@ class VMobject(Mobject):
             self.make_smooth()
         return self
 
-    def scale_handle_to_anchor_distances(self, factor: float):
+    def scale_handle_to_anchor_distances(self, factor: float) -> "VMobject":
         """
         If the distance between a given handle point H and its associated
         anchor point A is d, then it changes H to be a distances factor*d
@@ -618,10 +618,10 @@ class VMobject(Mobject):
         return True
 
     # Information about line
-    def get_cubic_bezier_tuples_from_points(self, points: Iterable[Vector]) -> (Iterable[Vector], Iterable[Vector], Iterable[Vector], Iterable[Vector]):
+    def get_cubic_bezier_tuples_from_points(self, points: Sequence[Vector]) -> (List[Vector], List[Vector], List[Vector], List[Vector]):
         return np.array(list(self.gen_cubic_bezier_tuples_from_points(points)))
 
-    def gen_cubic_bezier_tuples_from_points(self, points: Iterable[Vector]) -> (Iterable[Vector], Iterable[Vector], Iterable[Vector], Iterable[Vector]):
+    def gen_cubic_bezier_tuples_from_points(self, points: Sequence[Vector]) -> (List[Vector], List[Vector], List[Vector], List[Vector]):
         """
         Get a generator for the cubic bezier tuples of this object.
 
@@ -640,7 +640,7 @@ class VMobject(Mobject):
             self.get_points()
         )
 
-    def _gen_subpaths_from_points(self, points, filter_func):
+    def _gen_subpaths_from_points(self, points: Sequence[Vector], filter_func):
         nppcc = self.n_points_per_cubic_curve
         split_indices = filter(filter_func, range(nppcc, len(points), nppcc))
         split_indices = [0] + list(split_indices) + [len(points)]
@@ -650,7 +650,7 @@ class VMobject(Mobject):
             if (i2 - i1) >= nppcc
         )
 
-    def get_subpaths_from_points(self, points):
+    def get_subpaths_from_points(self, points: Sequence[Vector]):
         return list(
             self._gen_subpaths_from_points(
                 points,
@@ -659,7 +659,7 @@ class VMobject(Mobject):
                 ))
         )
 
-    def gen_subpaths_from_points_2d(self, points):
+    def gen_subpaths_from_points_2d(self, points: Sequence[Vector]):
         return self._gen_subpaths_from_points(
                 points,
                 lambda n: not self.consider_points_equals_2d(
