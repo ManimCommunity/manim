@@ -59,10 +59,8 @@ class VMobject(Mobject):
         # varying zoom levels?
         "tolerance_for_point_equality": 1e-6,
         "n_points_per_cubic_curve": 4,
+        "GroupClass": VGroup,
     }
-
-    def get_group_class(self):
-        return VGroup
 
     # Colors
     def init_colors(self):

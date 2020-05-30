@@ -34,6 +34,7 @@ class Mobject(Container):
         "name": None,
         "dim": 3,
         "target": None,
+        "GroupClass": Group,
     }
 
     def __init__(self, **kwargs):
@@ -908,8 +909,7 @@ class Mobject(Container):
     def __getitem__(self, value):
         self_list = self.split()
         if isinstance(value, slice):
-            GroupClass = self.get_group_class()
-            return GroupClass(*self_list.__getitem__(value))
+            return self.GroupClass(*self_list.__getitem__(value))
         return self_list.__getitem__(value)
 
     def __iter__(self):
@@ -917,9 +917,6 @@ class Mobject(Container):
 
     def __len__(self):
         return len(self.split())
-
-    def get_group_class(self):
-        return Group
 
     def split(self):
         result = [self] if len(self.points) > 0 else []
