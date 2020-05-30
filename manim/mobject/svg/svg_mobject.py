@@ -1,7 +1,8 @@
 import itertools as it
 import re
-import string
 import warnings
+import string
+from typing import *
 
 from xml.dom import minidom
 
@@ -38,7 +39,7 @@ class SVGMobject(VMobject):
         # "fill_color" : LIGHT_GREY,
     }
 
-    def __init__(self, file_name=None, **kwargs):
+    def __init__(self, file_name: str = None, **kwargs):
         digest_config(self, kwargs)
         self.file_name = file_name or self.file_name
         self.ensure_valid_file()
@@ -72,7 +73,7 @@ class SVGMobject(VMobject):
                 self.add(*mobjects[0].submobjects)
         doc.unlink()
 
-    def get_mobjects_from(self, element):
+    def get_mobjects_from(self, element: minidom.Element) -> List[Mobject]:
         result = []
         if not isinstance(element, minidom.Element):
             return result
@@ -113,15 +114,15 @@ class SVGMobject(VMobject):
 
         return result
 
-    def g_to_mobjects(self, g_element):
+    def g_to_mobjects(self, g_element: minidom.Element) -> List[VMobject]:
         mob = VGroup(*self.get_mobjects_from(g_element))
         self.handle_transforms(g_element, mob)
         return mob.submobjects
 
-    def path_string_to_mobject(self, path_string):
+    def path_string_to_mobject(self, path_string: str):
         return VMobjectFromSVGPathstring(path_string)
 
-    def use_to_mobjects(self, use_element):
+    def use_to_mobjects(self, use_element: minidom.Element) -> List[Mobject]:
         # Remove initial "#" character
         ref = use_element.getAttribute("xlink:href")[1:]
         if ref not in self.ref_to_element:
@@ -131,7 +132,7 @@ class SVGMobject(VMobject):
             self.ref_to_element[ref]
         )
 
-    def attribute_to_float(self, attr: string, default: float = 0.0) -> float:
+    def attribute_to_float(self, attr: str, default: float = 0.0) -> float:
         # TODO: Support url(#gradient), where gradient is the id of the element to reference
         if attr in [None, "", "none"]:
             return float(default)
@@ -163,7 +164,7 @@ class SVGMobject(VMobject):
         attribute_to_color(svg_element.getAttribute("color"))
     """
     @staticmethod
-    def attribute_to_color(attr: string) -> Color:
+    def attribute_to_color(attr: str) -> Color:
         if attr in [None, "", "none"]:
             # TODO: Make this transparent (opacity = 0)
             return Color(BLACK)
@@ -212,7 +213,7 @@ class SVGMobject(VMobject):
 
         return Color(attr)
 
-    def polygon_to_mobject(self, polygon_element):
+    def polygon_to_mobject(self, polygon_element: minidom.Element):
         # TODO, This seems hacky...
         path_string = polygon_element.getAttribute("points")
         for digit in string.digits:
@@ -220,7 +221,7 @@ class SVGMobject(VMobject):
         path_string = "M" + path_string
         return self.path_string_to_mobject(path_string)
 
-    def circle_to_mobject(self, circle_element):
+    def circle_to_mobject(self, circle_element: minidom.Element) -> Circle:
         x, y, r = [
             self.attribute_to_float(
                 circle_element.getAttribute(key)
@@ -231,7 +232,8 @@ class SVGMobject(VMobject):
         ]
         return Circle(radius=r).shift(x * RIGHT + y * DOWN)
 
-    def ellipse_to_mobject(self, circle_element):
+    # TODO: This should return an Ellipse
+    def ellipse_to_mobject(self, circle_element: minidom.Element) -> Circle:
         x, y, rx, ry = [
             self.attribute_to_float(
                 circle_element.getAttribute(key)
@@ -242,7 +244,7 @@ class SVGMobject(VMobject):
         ]
         return Circle().scale(rx * RIGHT + ry * UP).shift(x * RIGHT + y * DOWN)
 
-    def rect_to_mobject(self, rect_element) -> Rectangle:
+    def rect_to_mobject(self, rect_element: minidom.Element) -> Rectangle:
         fill_color: Color = self.attribute_to_color(rect_element.getAttribute("fill"))
         stroke_color: Color = self.attribute_to_color(rect_element.getAttribute("stroke"))
         stroke_width: float = self.attribute_to_float(rect_element.getAttribute("stroke-width"))
@@ -281,7 +283,7 @@ class SVGMobject(VMobject):
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
         return mob
 
-    def line_to_mobject(self, line_element):
+    def line_to_mobject(self, line_element: minidom.Element) -> Line:
         x1, y1, x2, y2, stroke_width = [
             self.attribute_to_float(
                 line_element.getAttribute(key)
@@ -296,7 +298,7 @@ class SVGMobject(VMobject):
             stroke_width=stroke_width
         )
 
-    def text_to_mobject(self, text_element):
+    def text_to_mobject(self, text_element: minidom.Element) -> Text:
         from .text_mobject import Text
         text = text_element.childNodes[0].data
         if text is None:
@@ -308,7 +310,7 @@ class SVGMobject(VMobject):
 
         return Text(text=text, font=font)
 
-    def handle_transforms(self, element, mobject):
+    def handle_transforms(self, element: minidom.Element, mobject: Mobject):
         x, y = 0, 0
         try:
             x = self.attribute_to_float(element.getAttribute('x'))
@@ -395,7 +397,7 @@ class SVGMobject(VMobject):
                 output_list.append(i)
         return output_list
 
-    def get_all_childNodes_have_id(self, element):
+    def get_all_childNodes_have_id(self, element: minidom.Element):
         all_childNodes_have_id = []
         if not isinstance(element, minidom.Element):
             return
@@ -405,7 +407,7 @@ class SVGMobject(VMobject):
             all_childNodes_have_id.append(self.get_all_childNodes_have_id(e))
         return self.flatten([e for e in all_childNodes_have_id if e])
 
-    def update_ref_to_element(self, defs):
+    def update_ref_to_element(self, defs: minidom.Element):
         new_refs = dict([(e.getAttribute('id'), e) for e in self.get_all_childNodes_have_id(defs)])
         self.ref_to_element.update(new_refs)
 
@@ -423,7 +425,7 @@ class VMobjectFromSVGPathstring(VMobject):
         digest_locals(self)
         VMobject.__init__(self, **kwargs)
 
-    def get_path_commands(self):
+    def get_path_commands(self) -> List[str]:
         result = [
             "M",  # moveto
             "L",  # lineto
@@ -452,7 +454,7 @@ class VMobjectFromSVGPathstring(VMobject):
         # people treat y-coordinate differently
         # self.rotate(np.pi, RIGHT, about_point=ORIGIN)
 
-    def handle_command(self, command, coord_string):
+    def handle_command(self, command: str, coord_string: str):
         isLower = command.islower()
         command = command.upper()
         # new_points are the points that will be added to the curr_points
@@ -520,7 +522,7 @@ class VMobjectFromSVGPathstring(VMobject):
                     new_points[i:i + 3] += new_points[i - 1]
                 self.add_cubic_bezier_curve_to(*new_points[i:i + 3])
 
-    def string_to_points(self, coord_string):
+    def string_to_points(self, coord_string: string):
         numbers = string_to_numbers(coord_string)
         if len(numbers) % 2 == 1:
             numbers.append(0)
@@ -529,5 +531,5 @@ class VMobjectFromSVGPathstring(VMobject):
         result[:, :2] = np.array(numbers).reshape((num_points, 2))
         return result
 
-    def get_original_path_string(self):
+    def get_original_path_string(self) -> str:
         return self.path_string
