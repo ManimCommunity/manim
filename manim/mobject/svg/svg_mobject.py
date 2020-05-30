@@ -5,12 +5,11 @@ import warnings
 
 from xml.dom import minidom
 
+from ...logger import logger
 from ...constants import *
-from ...mobject.geometry import Circle
-from ...mobject.geometry import Rectangle
-from ...mobject.geometry import RoundedRectangle
-from ...mobject.types.vectorized_mobject import VGroup
-from ...mobject.types.vectorized_mobject import VMobject
+from ..geometry import *
+from ..types.vectorized_mobject import VGroup
+from ..types.vectorized_mobject import VMobject
 from ...utils.color import *
 from ...utils.config_ops import digest_config
 from ...utils.config_ops import digest_locals
@@ -100,9 +99,13 @@ class SVGMobject(VMobject):
             result.append(self.ellipse_to_mobject(element))
         elif element.tagName in ['polygon', 'polyline']:
             result.append(self.polygon_to_mobject(element))
+        elif element.tagName == 'line':
+            result.append(self.line_to_mobject(element))
+        elif element.tagName == 'text':
+            result.append(self.text_to_mobject(element))
         else:
+            logger.warn(f"Unknown element type: <{element.tagName}>")
             pass  # TODO
-            # warnings.warn("Unknown element type: " + element.tagName)
         result = [m for m in result if m is not None]
         self.handle_transforms(element, VGroup(*result))
         if len(result) > 1 and not self.unpack_groups:
@@ -128,12 +131,86 @@ class SVGMobject(VMobject):
             self.ref_to_element[ref]
         )
 
-    def attribute_to_float(self, attr):
+    def attribute_to_float(self, attr: string, default: float = 0.0) -> float:
+        # TODO: Support url(#gradient), where gradient is the id of the element to reference
+        if attr in [None, "", "none"]:
+            return float(default)
+
         stripped_attr = "".join([
             char for char in attr
             if char in string.digits + "." + "-"
         ])
         return float(stripped_attr)
+
+    """Converts a CSS color attribute value to a valid Color.
+    If it is a named CSS color, and there is a matching color in COLOR_MAP,
+    then the color defined in COLOR_MAP is applied. Note that this is likely
+    to not have the same exact value as the SVG normally would.
+    
+    Parameters
+    ----------
+    attr : :class:`string`
+        The value of the SVG 'color' attribute to convert
+        
+    Returns
+    ----------
+    :class:`Color`
+        The converted color
+        
+    Examples
+    ----------
+    Normal usage::
+        attribute_to_color(svg_element.getAttribute("color"))
+    """
+    @staticmethod
+    def attribute_to_color(attr: string) -> Color:
+        if attr in [None, "", "none"]:
+            # TODO: Make this transparent (opacity = 0)
+            return Color(BLACK)
+
+        if COLOR_MAP.keys().__contains__(attr):
+            return COLOR_MAP.get(attr)
+
+        # This effectively converts CSS named colors (and some special cases)
+        # to Manim named colors
+        if attr == "blue":
+            return Color(BLUE_C)
+        elif attr == "teal":
+            return Color(TEAL_C)
+        elif attr == "green":
+            return Color(GREEN_C)
+        elif attr == "yellow":
+            return Color(YELLOW_C)
+        elif attr == "gold":
+            return Color(GOLD_C)
+        elif attr == "red":
+            return Color(RED_C)
+        elif attr == "maroon":
+            return Color(MAROON_C)
+        elif attr == "purple":
+            return Color(PURPLE_C)
+        elif attr in ["white", "#FFF"]:
+            return Color(WHITE)
+        elif attr in ["black", "#000"]:
+            return Color(BLACK)
+        elif attr in ["lightgrey", "lightgray"]:
+            return Color(LIGHT_GREY)
+        elif attr in ["grey", "gray"]:
+            return Color(GREY)
+        elif attr in ["darkgrey", "darkgray"]:
+            return Color(DARK_GREY)
+        elif attr in ["dimgrey", "dimgray"]:
+            return Color(DARKER_GREY)
+        elif attr == "pink":
+            return Color(PINK)
+        elif attr == "lightpink":
+            return Color(LIGHT_PINK)
+        elif attr == "lime":  # these two colors are exactly identical
+            return Color(GREEN_SCREEN)
+        elif attr == "orange":
+            return Color(ORANGE)
+
+        return Color(attr)
 
     def polygon_to_mobject(self, polygon_element):
         # TODO, This seems hacky...
@@ -142,8 +219,6 @@ class SVGMobject(VMobject):
             path_string = path_string.replace(" " + digit, " L" + digit)
         path_string = "M" + path_string
         return self.path_string_to_mobject(path_string)
-
-    # <circle class="st1" cx="143.8" cy="268" r="22.6"/>
 
     def circle_to_mobject(self, circle_element):
         x, y, r = [
@@ -167,35 +242,15 @@ class SVGMobject(VMobject):
         ]
         return Circle().scale(rx * RIGHT + ry * UP).shift(x * RIGHT + y * DOWN)
 
-    def rect_to_mobject(self, rect_element):
-        fill_color = rect_element.getAttribute("fill")
-        stroke_color = rect_element.getAttribute("stroke")
-        stroke_width = rect_element.getAttribute("stroke-width")
-        corner_radius = rect_element.getAttribute("rx")
-        opacity = 0.0
+    def rect_to_mobject(self, rect_element) -> Rectangle:
+        fill_color: Color = self.attribute_to_color(rect_element.getAttribute("fill"))
+        stroke_color: Color = self.attribute_to_color(rect_element.getAttribute("stroke"))
+        stroke_width: float = self.attribute_to_float(rect_element.getAttribute("stroke-width"))
+        corner_radius: float = self.attribute_to_float(rect_element.getAttribute("rx"))
+        # TODO: Apply opacity to all parsed objects, instead of for each individual SVG type
+        opacity: float = self.attribute_to_float(rect_element.getAttribute("opacity"), 1.0)
 
-        # input preprocessing
-        if fill_color in ["", "none", "#FFF", "#FFFFFF"] or Color(fill_color) == Color(WHITE):
-            opacity = 0.0
-            fill_color = BLACK  # shdn't be necessary but avoids error msgs
-        if fill_color in ["#000", "#000000"]:
-            fill_color = WHITE
-        if stroke_color in ["", "none", "#FFF", "#FFFFFF"] or Color(stroke_color) == Color(WHITE):
-            stroke_width = 0
-            stroke_color = BLACK
-        if stroke_color in ["#000", "#000000"]:
-            stroke_color = WHITE
-        if stroke_width in ["", "none", "0"]:
-            stroke_width = 0
-
-        if corner_radius in ["", "0", "none"]:
-            corner_radius = 0
-
-        corner_radius = float(corner_radius)
-
-        if corner_radius == 0:
-            print(self)
-            print(f"Opacity: {opacity}")
+        if corner_radius == 0.0:
             mob = Rectangle(
                 width=self.attribute_to_float(
                     rect_element.getAttribute("width")
@@ -225,6 +280,33 @@ class SVGMobject(VMobject):
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
         return mob
+
+    def line_to_mobject(self, line_element):
+        x1, y1, x2, y2, stroke_width = [
+            self.attribute_to_float(
+                line_element.getAttribute(key)
+            )
+            if line_element.hasAttribute(key)
+            else 0.0
+            for key in ("x1", "y1", "x2", "y2", "stroke_width")
+        ]
+        return Line(
+            start=[x1, y1, 0],
+            end=[x2, y2, 0],
+            stroke_width=stroke_width
+        )
+
+    def text_to_mobject(self, text_element):
+        from .text_mobject import Text
+        text = text_element.childNodes[0].data
+        if text is None:
+            text = ""
+
+        font = ""
+        if text_element.hasAttribute("font-family"):
+            font = text_element.getAttribute("font-family").replace("'", "")
+
+        return Text(text=text, font=font)
 
     def handle_transforms(self, element, mobject):
         x, y = 0, 0
@@ -368,7 +450,7 @@ class VMobjectFromSVGPathstring(VMobject):
         for command, coord_string in pairs:
             self.handle_command(command, coord_string)
         # people treat y-coordinate differently
-        #self.rotate(np.pi, RIGHT, about_point=ORIGIN)
+        # self.rotate(np.pi, RIGHT, about_point=ORIGIN)
 
     def handle_command(self, command, coord_string):
         isLower = command.islower()
@@ -436,7 +518,7 @@ class VMobjectFromSVGPathstring(VMobject):
                 if isLower:
                     new_points[i:i + 3] -= points[-1]
                     new_points[i:i + 3] += new_points[i - 1]
-                self.add_cubic_bezier_curve_to(*new_points[i:i+3])
+                self.add_cubic_bezier_curve_to(*new_points[i:i + 3])
 
     def string_to_points(self, coord_string):
         numbers = string_to_numbers(coord_string)
