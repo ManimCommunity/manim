@@ -26,6 +26,7 @@ setup(
         "pydub",
         "pygments",
         "pyreadline; sys_platform == 'win32'",
-        "rich"
+        "rich",
+        "cssutils"
     ],
 )

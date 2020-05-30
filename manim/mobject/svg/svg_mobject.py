@@ -6,6 +6,9 @@ from typing import *
 
 from xml.dom import minidom
 
+import cssutils
+from cssutils.css import CSSStyleDeclaration, Property
+
 from ...logger import logger
 from ...constants import *
 from ..geometry import *
@@ -143,28 +146,29 @@ class SVGMobject(VMobject):
         ])
         return float(stripped_attr)
 
-    """Converts a CSS color attribute value to a valid Color.
-    If it is a named CSS color, and there is a matching color in COLOR_MAP,
-    then the color defined in COLOR_MAP is applied. Note that this is likely
-    to not have the same exact value as the SVG normally would.
-    
-    Parameters
-    ----------
-    attr : :class:`string`
-        The value of the SVG 'color' attribute to convert
-        
-    Returns
-    ----------
-    :class:`Color`
-        The converted color
-        
-    Examples
-    ----------
-    Normal usage::
-        attribute_to_color(svg_element.getAttribute("color"))
-    """
     @staticmethod
     def attribute_to_color(attr: str) -> Color:
+        """Converts a CSS color attribute value to a valid Color.
+        If it is a named CSS color, and there is a matching color in COLOR_MAP,
+        then the color defined in COLOR_MAP is applied. Note that this is likely
+        to not have the same exact value as the SVG normally would.
+
+        Parameters
+        ----------
+        attr : :class:`string`
+            The value of the SVG 'color' attribute to convert
+
+        Returns
+        ----------
+        :class:`Color`
+            The converted color
+
+        Examples
+        ----------
+        Normal usage::
+            attribute_to_color(svg_element.getAttribute("color"))
+        """
+
         if attr in [None, "", "none"]:
             # TODO: Make this transparent (opacity = 0)
             return Color(BLACK)
@@ -213,6 +217,14 @@ class SVGMobject(VMobject):
 
         return Color(attr)
 
+    @staticmethod
+    def css_style_to_style(attr: str):
+        cssstyle: CSSStyleDeclaration = cssutils.parseStyle(attr)
+        for item in cssstyle.seq:
+            prop: Property = item.value
+            print(f"{prop.name} = {prop.value}")
+
+
     def polygon_to_mobject(self, polygon_element: minidom.Element):
         # TODO, This seems hacky...
         path_string = polygon_element.getAttribute("points")
@@ -245,21 +257,34 @@ class SVGMobject(VMobject):
         return Circle().scale(rx * RIGHT + ry * UP).shift(x * RIGHT + y * DOWN)
 
     def rect_to_mobject(self, rect_element: minidom.Element) -> Rectangle:
-        fill_color: Color = self.attribute_to_color(rect_element.getAttribute("fill"))
-        stroke_color: Color = self.attribute_to_color(rect_element.getAttribute("stroke"))
-        stroke_width: float = self.attribute_to_float(rect_element.getAttribute("stroke-width"))
-        corner_radius: float = self.attribute_to_float(rect_element.getAttribute("rx"))
+        fill_color: Color = self.attribute_to_color(
+            rect_element.getAttribute("fill")
+        )
+        stroke_color: Color = self.attribute_to_color(
+            rect_element.getAttribute("stroke")
+        )
+        stroke_width: float = self.attribute_to_float(
+            rect_element.getAttribute("stroke-width")
+        )
+        corner_radius: float = self.attribute_to_float(
+            rect_element.getAttribute("rx")
+        )
         # TODO: Apply opacity to all parsed objects, instead of for each individual SVG type
-        opacity: float = self.attribute_to_float(rect_element.getAttribute("opacity"), 1.0)
+        opacity: float = self.attribute_to_float(
+            rect_element.getAttribute("opacity"), 1.0
+        )
+        width: float = self.attribute_to_float(
+            rect_element.getAttribute("width")
+        )
+        height: float = self.attribute_to_float(
+            rect_element.getAttribute("height")
+        )
+        style: Dict[str, Any] = self.css_style_to_style(rect_element.getAttribute("style"))
 
         if corner_radius == 0.0:
             mob = Rectangle(
-                width=self.attribute_to_float(
-                    rect_element.getAttribute("width")
-                ),
-                height=self.attribute_to_float(
-                    rect_element.getAttribute("height")
-                ),
+                width=width,
+                height=height,
                 stroke_width=stroke_width,
                 stroke_color=stroke_color,
                 fill_color=fill_color,
@@ -267,12 +292,8 @@ class SVGMobject(VMobject):
             )
         else:
             mob = RoundedRectangle(
-                width=self.attribute_to_float(
-                    rect_element.getAttribute("width")
-                ),
-                height=self.attribute_to_float(
-                    rect_element.getAttribute("height")
-                ),
+                width=width,
+                height=height,
                 stroke_width=stroke_width,
                 stroke_color=stroke_color,
                 fill_color=fill_color,
@@ -298,7 +319,7 @@ class SVGMobject(VMobject):
             stroke_width=stroke_width
         )
 
-    def text_to_mobject(self, text_element: minidom.Element) -> Text:
+    def text_to_mobject(self, text_element: minidom.Element):
         from .text_mobject import Text
         text = text_element.childNodes[0].data
         if text is None:
@@ -306,7 +327,7 @@ class SVGMobject(VMobject):
 
         font = ""
         if text_element.hasAttribute("font-family"):
-            font = text_element.getAttribute("font-family").replace("'", "")
+            font = text_element.getAttribute("font-family").split(",")[0].replace("'", "")
 
         return Text(text=text, font=font)
 
