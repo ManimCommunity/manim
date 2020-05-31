@@ -359,7 +359,7 @@ class VMobject(Mobject):
             self.set_fill(self.get_fill_color(), family=family)
         return self
 
-    def get_sheen_direction(self) -> Vector:
+    def get_sheen_direction(self) -> List[float]:
         return np.array(self.sheen_direction)
 
     def get_sheen_factor(self) -> float:
@@ -493,7 +493,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve  # 4
         return len(self.points) % nppcc == 1
 
-    def get_last_point(self) -> Vector:
+    def get_last_point(self) -> List[float]:
         return self.points[-1]
 
     def is_closed(self) -> bool:
@@ -682,13 +682,13 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return len(self.points) // nppcc
 
-    def point_from_proportion(self, alpha: float) -> List[Vector]:
+    def point_from_proportion(self, alpha: float) -> List[List[float]]:
         num_cubics = self.get_num_curves()
         n, residue = integer_interpolate(0, num_cubics, alpha)
         curve = self.get_nth_curve_function(n)
         return curve(residue)
 
-    def get_anchors_and_handles(self) -> List[List[Vector]]:
+    def get_anchors_and_handles(self) -> List[List[List[float]]]:
         """
         returns anchors1, handles1, handles2, anchors2,
         where (anchors1[i], handles1[i], handles2[i], anchors2[i])
@@ -701,10 +701,10 @@ class VMobject(Mobject):
             for i in range(nppcc)
         ]
 
-    def get_start_anchors(self) -> List[Vector]:
+    def get_start_anchors(self) -> List[List[float]]:
         return self.points[0::self.n_points_per_cubic_curve]
 
-    def get_end_anchors(self) -> List[Vector]:
+    def get_end_anchors(self) -> List[List[float]]:
         nppcc = self.n_points_per_cubic_curve
         return self.points[nppcc - 1::nppcc]
 
@@ -841,7 +841,7 @@ class VMobject(Mobject):
                 setattr(self, attr, new_a1)
         return self
 
-    def get_point_mobject(self, center: Vector = None) -> Vector:
+    def get_point_mobject(self, center: Vector = None) -> VectorizedPoint:
         if center is None:
             center = self.get_center()
         point = VectorizedPoint(center)
