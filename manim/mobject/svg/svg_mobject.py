@@ -235,12 +235,12 @@ class SVGMobject(VMobject):
             The value of the SVG 'style' attribute to convert
 
         Returns
-        ----------
+        -------
         :class:`~.VMobject`
             The VMobject with the converted style applied
 
         Examples
-        ----------
+        --------
         Normal usage::
             apply_css_style(vmobject, svg_element.getAttribute("style"))
         """
@@ -604,7 +604,7 @@ class VMobjectFromSVGPathstring(VMobject):
                     new_points[i:i + 3] += new_points[i - 1]
                 self.add_cubic_bezier_curve_to(*new_points[i:i + 3])
 
-    def string_to_points(self, coord_string: string):
+    def string_to_points(self, coord_string: str):
         numbers = string_to_numbers(coord_string)
         if len(numbers) % 2 == 1:
             numbers.append(0)
