@@ -3,11 +3,13 @@ import re
 import warnings
 import string
 from typing import *
+import typing
 
 from xml.dom import minidom
 
-import cssutils
-from cssutils.css import CSSStyleDeclaration, Property
+if typing.TYPE_CHECKING:
+    import cssutils
+    from cssutils.css import CSSStyleDeclaration, Property
 
 from ...logger import logger
 from ...constants import *
@@ -135,7 +137,8 @@ class SVGMobject(VMobject):
             self.ref_to_element[ref]
         )
 
-    def attribute_to_float(self, attr: str, default: float = 0.0) -> float:
+    @staticmethod
+    def attribute_to_float(attr: str, default: float = 0.0) -> float:
         # TODO: Support url(#gradient), where gradient is the id of the element to reference
         if attr in [None, "", "none"]:
             return float(default)
@@ -218,12 +221,70 @@ class SVGMobject(VMobject):
         return Color(attr)
 
     @staticmethod
-    def css_style_to_style(attr: str):
+    def apply_css_style(vmobject: VMobject, attr: str) -> VMobject:
+        """Converts inline CSS styles and applies it to the provided :class:`~.VMobject`.
+        If the property name is recognized (e.g. 'fill: red'), then it is mapped to its
+        corresponding :class:`~.VMobject` style property (e.g. 'fill_color').
+        Unrecognized CSS properties (e.g. 'stroke-miterlimit: 1') are ignored.
+
+        Parameters
+        ----------
+        vmobject : :class:`~.VMobject`
+            The VMobject to apply the style to
+        attr : :class:`string`
+            The value of the SVG 'style' attribute to convert
+
+        Returns
+        ----------
+        :class:`~.VMobject`
+            The VMobject with the converted style applied
+
+        Examples
+        ----------
+        Normal usage::
+            apply_css_style(vmobject, svg_element.getAttribute("style"))
+        """
+
+        # TODO: For whatever reason, nothing done in this function is rendered.
+
+        # Import is here so that cssutils is only required if parsing SVGs
+        import cssutils
+        from cssutils.css import CSSStyleDeclaration, Property
+
         cssstyle: CSSStyleDeclaration = cssutils.parseStyle(attr)
         for item in cssstyle.seq:
             prop: Property = item.value
-            print(f"{prop.name} = {prop.value}")
+            #print(f"{prop.name} = {prop.value}")
 
+            # Convert known CSS properties to their VMobject equivalents
+            if prop.name == "fill":
+                new_value = SVGMobject.attribute_to_color(prop.value)
+                vmobject.set_fill(new_value)
+            elif prop.name == "fill-opacity":
+                new_value = SVGMobject.attribute_to_float(prop.value, 1.0)
+                vmobject.set_fill(opacity=new_value)
+            elif prop.name == "stroke":
+                new_value = SVGMobject.attribute_to_color(prop.value)
+                vmobject.set_stroke(new_value)
+            elif prop.name == "stroke-opacity":
+                new_value = SVGMobject.attribute_to_float(prop.value)
+                vmobject.set_stroke(opacity=new_value)
+            elif prop.name == "border-color":
+                new_value = SVGMobject.attribute_to_color(prop.value)
+                vmobject.set_background_stroke(color=new_value)
+            elif prop.name == "border-width":
+                new_value = SVGMobject.attribute_to_float(prop.value)
+                vmobject.set_background_stroke(width=new_value)
+            elif prop.name == "border-opacity":
+                new_value = SVGMobject.attribute_to_float(prop.value)
+                vmobject.set_background_stroke(opacity=new_value)
+            elif prop.name == "background-image":
+                if prop.value.startswith("url(") and prop.value.endswith(")"):
+                    new_name = prop.value[4:-1]
+                    new_value = "background-image-file"
+                    #vmobject.se(color=new_value, background=True)
+
+        return vmobject
 
     def polygon_to_mobject(self, polygon_element: minidom.Element):
         # TODO, This seems hacky...
@@ -279,7 +340,6 @@ class SVGMobject(VMobject):
         height: float = self.attribute_to_float(
             rect_element.getAttribute("height")
         )
-        style: Dict[str, Any] = self.css_style_to_style(rect_element.getAttribute("style"))
 
         if corner_radius == 0.0:
             mob = Rectangle(
@@ -302,6 +362,7 @@ class SVGMobject(VMobject):
             )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
+        self.apply_css_style(mob, rect_element.getAttribute("style"))
         return mob
 
     def line_to_mobject(self, line_element: minidom.Element) -> Line:
