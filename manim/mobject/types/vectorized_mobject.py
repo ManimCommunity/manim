@@ -1,6 +1,6 @@
 import itertools as it
 import sys
-from typing import Iterable, Dict, Any, Sequence, Union, Type, List
+from typing import Iterable, Dict, Any, Sequence, Union, Type, List, Tuple
 
 from colour import Color
 from numpy.core.multiarray import ndarray
