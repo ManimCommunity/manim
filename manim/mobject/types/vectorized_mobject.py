@@ -1,5 +1,6 @@
 import itertools as it
 import sys
+import typing
 from typing import Iterable, Dict, Any, Sequence, Union, Type, List, Tuple
 
 from colour import Color
