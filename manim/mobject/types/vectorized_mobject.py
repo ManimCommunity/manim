@@ -842,7 +842,7 @@ class VMobject(Mobject):
                 setattr(self, attr, new_a1)
         return self
 
-    def get_point_mobject(self, center: Vector = None) -> VectorizedPoint:
+    def get_point_mobject(self, center: Vector = None) -> "VectorizedPoint":
         if center is None:
             center = self.get_center()
         point = VectorizedPoint(center)
