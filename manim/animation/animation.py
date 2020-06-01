@@ -37,7 +37,7 @@ class Animation(object):
         - If 1, it is applied to each successively.
         - If 0 < lag_ratio < 1, it's applied to each with lagged start times.
     """
-    mobject: Mobject = attr.ib(type=Mobject, validator=lambda x: isinstance(x, Mobject))
+    mobject: Mobject = attr.ib(validator=lambda x: isinstance(x, Mobject))
     run_time: float = DEFAULT_ANIMATION_RUN_TIME
     rate_func: typing.Union[typing.Callable[[float, float], float], typing.Callable[[float], float]] \
         = smooth
