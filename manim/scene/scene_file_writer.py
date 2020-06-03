@@ -68,26 +68,18 @@ class SceneFileWriter(object):
         """
         module_directory = self.output_directory or self.get_default_module_directory()
         scene_name = self.file_name or self.get_default_scene_name()
-        #print("1")
-        #print(dirs.MEDIA_DIR)
-        if self.save_last_frame or self.save_pngs:
-            if dirs.MEDIA_DIR != "":
-                image_dir = guarantee_existence(os.path.join(
-                    dirs.MEDIA_DIR,
-                    "images",
-                    module_directory,
-                ))
+        if self.save_last_frame:
+            image_dir = guarantee_existence(os.path.join(
+                dirs.VIDEO_DIR
+            ))
             self.image_file_path = os.path.join(
                 image_dir,
                 add_extension_if_not_present(scene_name, ".png")
             )
         if self.write_to_movie:
-            if dirs.VIDEO_DIR != "":
-                movie_dir = guarantee_existence(os.path.join(
-                    dirs.VIDEO_DIR,
-                    module_directory,
-                    self.get_resolution_directory(),
-                ))
+            movie_dir = guarantee_existence(os.path.join(
+                dirs.VIDEO_DIR
+            ))
             self.movie_file_path = os.path.join(
                 movie_dir,
                 add_extension_if_not_present(
