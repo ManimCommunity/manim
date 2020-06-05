@@ -10,7 +10,7 @@ from ..utils.simple_functions import clip_in_place
 from ..utils.space_ops import normalize
 
 
-def color_to_rgb(color: Color):
+def color_to_rgb(color: Color) -> np.ndarray:
     if isinstance(color, str):
         return hex_to_rgb(color)
     elif isinstance(color, Color):
@@ -19,7 +19,7 @@ def color_to_rgb(color: Color):
         raise Exception("Invalid color type")
 
 
-def color_to_rgba(color: Color, alpha: float = 1):
+def color_to_rgba(color: Color, alpha: float = 1) -> np.ndarray:
     return np.array([*color_to_rgb(color), alpha])
 
 

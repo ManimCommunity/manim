@@ -1,6 +1,7 @@
 import itertools as it
 import sys
-from typing import Iterable, Dict, Any, Sequence, Union, Type, List
+import typing
+from typing import Iterable, Dict, Any, Sequence, Union, Optional, Type, List, Tuple
 
 from colour import Color
 from numpy.core.multiarray import ndarray
@@ -288,13 +289,13 @@ class VMobject(Mobject):
         """
         return self.get_fill_opacities()[0]
 
-    def get_fill_colors(self) -> Sequence[Color]:
+    def get_fill_colors(self) -> List[Color]:
         return [
             Color(rgb=rgba[:3])
             for rgba in self.get_fill_rgbas()
         ]
 
-    def get_fill_opacities(self) -> Sequence[float]:
+    def get_fill_opacities(self) -> List[float]:
         return self.get_fill_rgbas()[:, 3]
 
     # TODO: Make sure that rgbas is in fact a list of floats and not ints
@@ -327,7 +328,7 @@ class VMobject(Mobject):
             for rgba in self.get_stroke_rgbas(background)
         ]
 
-    def get_stroke_opacities(self, background: bool = False) -> Sequence[float]:
+    def get_stroke_opacities(self, background: bool = False) -> List[float]:
         return self.get_stroke_rgbas(background)[:, 3]
 
     def get_color(self) -> Color:
@@ -359,13 +360,13 @@ class VMobject(Mobject):
             self.set_fill(self.get_fill_color(), family=family)
         return self
 
-    def get_sheen_direction(self) -> Vector:
+    def get_sheen_direction(self) -> List[float]:
         return np.array(self.sheen_direction)
 
     def get_sheen_factor(self) -> float:
         return self.sheen_factor
 
-    def get_gradient_start_and_end_points(self) -> (float, float):
+    def get_gradient_start_and_end_points(self) -> Tuple[float, float]:
         if self.shade_in_3d:
             return get_3d_vmob_gradient_start_and_end_points(self)
         else:
@@ -493,7 +494,7 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve  # 4
         return len(self.points) % nppcc == 1
 
-    def get_last_point(self) -> Vector:
+    def get_last_point(self) -> List[float]:
         return self.points[-1]
 
     def is_closed(self) -> bool:
@@ -501,7 +502,8 @@ class VMobject(Mobject):
             self.points[0], self.points[-1]
         )
 
-    def add_points_as_corners(self, points: Iterable[Vector]) -> Iterable[Vector]:
+    IV = typing.TypeVar("IV", bound=Iterable[Vector])
+    def add_points_as_corners(self, points: IV) -> IV:
         for point in points:
             self.add_line_to(point)
         return points
@@ -618,10 +620,10 @@ class VMobject(Mobject):
         return True
 
     # Information about line
-    def get_cubic_bezier_tuples_from_points(self, points: Sequence[Vector]) -> (List[Vector], List[Vector], List[Vector], List[Vector]):
+    def get_cubic_bezier_tuples_from_points(self, points: Sequence[Vector]) -> Tuple[List[Vector], List[Vector], List[Vector], List[Vector]]:
         return np.array(list(self.gen_cubic_bezier_tuples_from_points(points)))
 
-    def gen_cubic_bezier_tuples_from_points(self, points: Sequence[Vector]) -> (List[Vector], List[Vector], List[Vector], List[Vector]):
+    def gen_cubic_bezier_tuples_from_points(self, points: Sequence[Vector]) -> Tuple[List[Vector], List[Vector], List[Vector], List[Vector]]:
         """
         Get a generator for the cubic bezier tuples of this object.
 
@@ -635,7 +637,7 @@ class VMobject(Mobject):
             for i in range(0, len(points), nppcc)
         )
 
-    def get_cubic_bezier_tuples(self) -> (Iterable[Vector], Iterable[Vector], Iterable[Vector], Iterable[Vector]):
+    def get_cubic_bezier_tuples(self) -> Tuple[List[Vector], List[Vector], List[Vector], List[Vector]]:
         return self.get_cubic_bezier_tuples_from_points(
             self.get_points()
         )
@@ -669,7 +671,7 @@ class VMobject(Mobject):
     def get_subpaths(self):
         return self.get_subpaths_from_points(self.get_points())
 
-    def get_nth_curve_points(self, n: int) -> Sequence[Vector]:
+    def get_nth_curve_points(self, n: int) -> List[Vector]:
         assert(n < self.get_num_curves())
         nppcc = self.n_points_per_cubic_curve
         return self.points[nppcc * n:nppcc * (n + 1)]
@@ -681,13 +683,13 @@ class VMobject(Mobject):
         nppcc = self.n_points_per_cubic_curve
         return len(self.points) // nppcc
 
-    def point_from_proportion(self, alpha: float) -> Sequence[Vector]:
+    def point_from_proportion(self, alpha: float) -> List[List[float]]:
         num_cubics = self.get_num_curves()
         n, residue = integer_interpolate(0, num_cubics, alpha)
         curve = self.get_nth_curve_function(n)
         return curve(residue)
 
-    def get_anchors_and_handles(self) -> Sequence[Sequence[Vector]]:
+    def get_anchors_and_handles(self) -> List[List[List[float]]]:
         """
         returns anchors1, handles1, handles2, anchors2,
         where (anchors1[i], handles1[i], handles2[i], anchors2[i])
@@ -700,10 +702,10 @@ class VMobject(Mobject):
             for i in range(nppcc)
         ]
 
-    def get_start_anchors(self) -> Sequence[Vector]:
+    def get_start_anchors(self) -> List[List[float]]:
         return self.points[0::self.n_points_per_cubic_curve]
 
-    def get_end_anchors(self) -> Sequence[Vector]:
+    def get_end_anchors(self) -> List[List[float]]:
         nppcc = self.n_points_per_cubic_curve
         return self.points[nppcc - 1::nppcc]
 
@@ -733,7 +735,7 @@ class VMobject(Mobject):
         return np.sum(norms)
 
     # Alignment
-    def align_points(self, vmobject: "VMobject") -> Union["VMobject", None]:
+    def align_points(self, vmobject: "VMobject") -> Optional["VMobject"]:
         self.align_rgbas(vmobject)
         if self.get_num_points() == vmobject.get_num_points():
             return
@@ -840,7 +842,7 @@ class VMobject(Mobject):
                 setattr(self, attr, new_a1)
         return self
 
-    def get_point_mobject(self, center: Vector = None) -> Vector:
+    def get_point_mobject(self, center: Vector = None) -> "VectorizedPoint":
         if center is None:
             center = self.get_center()
         point = VectorizedPoint(center)
