@@ -14,18 +14,16 @@ setup(
         ]
     },
     install_requires=[
-        "argparse",
         "colour",
         "numpy",
         "Pillow",
         "progressbar",
         "scipy",
         "tqdm",
-        "opencv-python",
         "pycairo",
         "pydub",
         "pygments",
         "pyreadline; sys_platform == 'win32'",
-        "rich"
+        "rich",
     ],
 )

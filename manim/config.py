@@ -4,11 +4,12 @@ import os
 import sys
 import types
 
+from .utils.tex import *
 from . import constants
 from . import dirs
 from .logger import logger
 
-__all__ = ["parse_cli", "get_configuration", "initialize_directories"]
+__all__ = ["parse_cli", "get_configuration", "initialize_directories","register_tex_template","initialize_tex"]
 
 
 def parse_cli():
@@ -16,7 +17,7 @@ def parse_cli():
         parser = argparse.ArgumentParser()
         parser.add_argument(
             "file",
-            help="path to file holding the python code for the scene",
+            help="Path to file holding the python code for the scene",
         )
         parser.add_argument(
             "scene_names",
@@ -96,14 +97,14 @@ def parse_cli():
         parser.add_argument(
             "-o", "--file_name",
             help="Specify the name of the output file, if"
-                 "it should be different from the scene class name",
+                 " it should be different from the scene class name",
         )
         parser.add_argument(
             "-n", "--start_at_animation_number",
             help="Start rendering not from the first animation, but"
-                 "from another, specified by its index.  If you pass"
-                 "in two comma separated values, e.g. \"3,6\", it will end"
-                 "the rendering at the second value",
+                 " from another, specified by its index.  If you pass"
+                 " in two comma separated values, e.g. \"3,6\", it will end"
+                 " the rendering at the second value",
         )
         parser.add_argument(
             "-r", "--resolution",
@@ -125,22 +126,27 @@ def parse_cli():
         )
         parser.add_argument(
             "--media_dir",
-            help="directory to write media",
+            help="Directory to write media",
         )
         video_group = parser.add_mutually_exclusive_group()
         video_group.add_argument(
             "--video_dir",
-            help="directory to write file tree for video",
+            help="Directory to write file tree for video",
         )
         parser.add_argument(
             "--tex_dir",
-            help="directory to write tex",
+            help="Directory to write tex",
         )
         parser.add_argument(
             "--text_dir",
-            help="directory to write text",
+            help="Directory to write text",
+        )
+        parser.add_argument(
+            "--tex_template",
+            help="Specify a custom TeX template file",
         )
         return parser.parse_args()
+
     except argparse.ArgumentError as err:
         logger.error(str(err))
         sys.exit(2)
@@ -176,6 +182,7 @@ def get_configuration(args):
         "video_dir": args.video_dir,
         "tex_dir": args.tex_dir,
         "text_dir": args.text_dir,
+        "tex_template": args.tex_template,
     }
 
     # Camera configuration
@@ -281,3 +288,39 @@ def initialize_directories(config):
     dirs.VIDEO_DIR = dir_config["video_dir"]
     dirs.TEX_DIR = dir_config["tex_dir"]
     dirs.TEXT_DIR = dir_config["text_dir"]
+
+def register_tex_template(tpl):
+    """Register the given LaTeX template for later use.
+
+    Parameters
+    ----------
+    tpl : :class:`~.TexTemplate`
+        The LaTeX template to register.
+    """
+    constants.TEX_TEMPLATE = tpl
+
+def initialize_tex(config):
+    """Safely create a LaTeX template object from a file.
+    If file is not readable, the default template file is used.
+
+    Parameters
+    ----------
+    filename : :class:`str`
+        The name of the file with the LaTeX template.
+    """
+    filename=""
+    if config["tex_template"]:
+        filename = os.path.expanduser(config["tex_template"])
+    if filename and not os.access(filename, os.R_OK):
+        # custom template not available, fallback to default
+        logger.warning(
+            f"Custom TeX template {filename} not found or not readable. "
+            "Falling back to the default template."
+        )
+        filename = ""
+    if filename:
+        # still having a filename -> use the file
+        constants.TEX_TEMPLATE = TexTemplateFromFile(filename=filename)
+    else:
+        # use the default template
+        constants.TEX_TEMPLATE = TexTemplate()
