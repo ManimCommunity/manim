@@ -5,6 +5,9 @@ import operator as op
 import os
 import random
 import sys
+from typing import Any, Union, Optional, List, Callable, TYPE_CHECKING
+
+import attr
 
 from colour import Color
 import numpy as np
@@ -22,12 +25,21 @@ from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix
 
+if TYPE_CHECKING:
+    from ..camera.camera import Camera
+
 
 # TODO: Explain array_attrs
 
+@attr.s(auto_attribs=True, slots=True, str=False)
 class Mobject(Container):
     """
     Mathematical Object
+    ___________________
+
+    The class most objects that are displayed on screen are subclasses of.
+
+
     """
     CONFIG = {
         "color": WHITE,
@@ -36,14 +48,17 @@ class Mobject(Container):
         "target": None,
     }
 
-    def __init__(self, **kwargs):
-        Container.__init__(self, **kwargs)
-        self.submobjects = []
-        self.color = Color(self.color)
+    name: Optional[str]
+    target: Optional[Any]
+    color: Union[str, Color] = WHITE
+    dim: int = 3
+    submobjects: List[Mobject] = []
+    updaters: List = []
+    updating_suspended: bool = False
+
+    def __attrs_post_init__(self):
         if self.name is None:
             self.name = self.__class__.__name__
-        self.updaters = []
-        self.updating_suspended = False
         self.reset_points()
         self.generate_points()
         self.init_colors()
@@ -51,7 +66,10 @@ class Mobject(Container):
     def __str__(self):
         return str(self.name)
 
-    def reset_points(self):
+    def reset_points(self) -> None:
+        """
+        Purges all existing points associated with the :class:`~.Mobject`
+        """
         self.points = np.zeros((0, self.dim))
 
     def init_colors(self):
@@ -63,23 +81,63 @@ class Mobject(Container):
         pass
 
     def add(self, *mobjects):
+        """Adds new mobjects as submobjects.
+
+        Order matters here. Also, if duplicate submobjects are found, the
+        latter occurance is disregarded.
+
+        Parameters
+        ----------
+        mobjects:
+            The mobjects intended to be added as submobjects.
+
+        Returns
+        -------
+        self
+
+        """
         if self in mobjects:
             raise Exception("Mobject cannot contain self")
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
     def add_to_back(self, *mobjects):
+        """
+        Adds mobjects to self.submobjects with a minimum z-order.
+        Disregards any previous occurrence of mobjects.
+         
+        Parameters
+        ----------
+        mobjects:
+            Mobjects which are to be added to the list of submobjects.
+
+        Returns
+        -------
+
+        """
         self.remove(*mobjects)
         self.submobjects = list(mobjects) + self.submobjects
         return self
 
     def remove(self, *mobjects):
+        """
+        Checks if the specified mobjects are in the parent mobject's list
+        of submobjects, and removes them if true.
+
+        Parameters
+        ----------
+        mobjects:
+            Mobjects (i.e. submobjects) to be removed.
+        """
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
         return self
 
     def get_array_attrs(self):
+        """
+        Returns the names of the attributes associated with this mobject.
+        """
         return ["points"]
 
     def digest_mobject_attrs(self):
@@ -91,21 +149,59 @@ class Mobject(Container):
         self.submobjects = list_update(self.submobjects, mobject_attrs)
         return self
 
-    def apply_over_attr_arrays(self, func):
-        for attr in self.get_array_attrs():
-            setattr(self, attr, func(getattr(self, attr)))
+    def apply_over_attr_arrays(self, func: Callable[[*Any], Any]):
+        """
+        Applies function on all attributes.
+         
+        Parameters
+        ----------
+        func:
+            The function to be applied.
+
+        """
+        for mob_attr in self.get_array_attrs():
+            setattr(self, mob_attr, func(getattr(self, mob_attr)))
         return self
 
     # Displaying
 
-    def get_image(self, camera=None):
+    def get_image(self, camera: Optional[Camera] = None):
+        """WARNING: INTERNALLY USED METHOD. USE AT YOUR OWN DISCRETION.
+        
+        Gets the image of the mobject by capturing it with the
+        given camera and returning the output its
+        get_image method.
+
+        See Also
+        --------
+        :meth:`~.Camera.get_image`
+
+        Parameters
+        ----------
+        camera
+            The camera from which to get the image of the mobject.
+
+        Returns
+        -------
+        camera.get_image()
+            A `PIL.Image` object
+        """
         if camera is None:
             from ..camera.camera import Camera
             camera = Camera()
         camera.capture_mobject(self)
         return camera.get_image()
 
-    def show(self, camera=None):
+    def show(self, camera: Optional[Camera] = None):
+        """
+        Shows the created `PIL.Image` of the mobject on screen.
+
+        Parameters
+        ----------
+        camera
+            The camera to be used to capture and display the image.
+
+        """
         self.get_image(camera=camera).show()
 
     def save_image(self, name=None):
@@ -114,6 +210,18 @@ class Mobject(Container):
         )
 
     def copy(self):
+        """
+        Returns a shallow copy of the mobject.
+
+        See Also
+        --------
+        :module:`copy`
+
+        Returns
+        -------
+        A :func:`copy.copy` of the mobject.
+
+        """
         # TODO, either justify reason for shallow copy, or
         # remove this redundancy everywhere
         # return self.deepcopy()
@@ -125,14 +233,20 @@ class Mobject(Container):
         ]
         copy_mobject.updaters = list(self.updaters)
         family = self.get_family()
-        for attr, value in list(self.__dict__.items()):
+        for mob_attr, value in list(self.__dict__.items()):
             if isinstance(value, Mobject) and value in family and value is not self:
-                setattr(copy_mobject, attr, value.copy())
+                setattr(copy_mobject, mob_attr, value.copy())
             if isinstance(value, np.ndarray):
-                setattr(copy_mobject, attr, np.array(value))
+                setattr(copy_mobject, mob_attr, np.array(value))
         return copy_mobject
 
     def deepcopy(self):
+        """
+
+        Returns
+        -------
+        A :func:`copy.deepcopy` of the mobject.
+        """
         return copy.deepcopy(self)
 
     def generate_target(self, use_deepcopy=False):
@@ -268,6 +382,7 @@ class Mobject(Container):
         def func(points):
             points[:, dim] *= factor
             return points
+
         self.apply_points_function_about_point(func, **kwargs)
         return self
 
@@ -312,6 +427,7 @@ class Mobject(Container):
                 xy_complex.imag,
                 z
             ]
+
         return self.apply_function(R3_func)
 
     def wag(self, direction=RIGHT, axis=DOWN, wag_factor=1.0):
@@ -319,7 +435,7 @@ class Mobject(Container):
             alphas = np.dot(mob.points, np.transpose(axis))
             alphas -= min(alphas)
             alphas /= max(alphas)
-            alphas = alphas**wag_factor
+            alphas = alphas ** wag_factor
             mob.points += np.dot(
                 alphas.reshape((len(alphas), 1)),
                 np.array(direction).reshape((1, mob.dim))
@@ -337,11 +453,13 @@ class Mobject(Container):
         """
         This can make transition animations nicer
         """
+
         def repeat_array(array):
             return reduce(
                 lambda a1, a2: np.append(a1, a2, axis=0),
                 [array] * count
             )
+
         for mob in self.family_members_with_points():
             mob.apply_over_attr_arrays(repeat_array)
         return self
@@ -1115,8 +1233,7 @@ class Mobject(Container):
     # Errors
     def throw_error_if_no_points(self):
         if self.has_no_points():
-            message = "Cannot call Mobject.{} " +\
-                      "for a Mobject with no points"
+            message = "Cannot call Mobject.{} for a Mobject with no points"
             caller_name = sys._getframe(1).f_code.co_name
             raise Exception(message.format(caller_name))
 
