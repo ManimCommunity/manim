@@ -10,7 +10,7 @@ setup(
     entry_points={
         "console_scripts": [
             "manim=manim.__main__:main",
-            "manimcm=manim.__main__:main",
+            "manimce=manim.__main__:main",
         ]
     },
     install_requires=[
