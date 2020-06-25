@@ -15,6 +15,7 @@ from ..logger import logger
 from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.iterables import list_update
+from ..utils.hashing import get_hash_from_play_call
 
 
 class Scene(Container):
@@ -52,15 +53,15 @@ class Scene(Container):
         "start_at_animation_number": None,
         "end_at_animation_number": None,
         "leave_progress_bars": False,
-    }
-
+        "enable_caching": True,
+    } 
     def __init__(self, **kwargs):
         Container.__init__(self, **kwargs)
         self.camera = self.camera_class(**self.camera_config)
         self.file_writer = SceneFileWriter(
             self, **self.file_writer_config,
         )
-
+        self.play_hashes_list = []
         self.mobjects = []
         # TODO, remove need for foreground mobjects
         self.foreground_mobjects = []
@@ -381,6 +382,17 @@ class Scene(Container):
         ))
         return self
 
+    def add_mobjects_from_animations(self, animations): 
+
+        curr_mobjects = self.get_mobject_family_members()
+        for animation in animations:
+            # Anything animated that's not already in the
+            # scene gets added to the scene
+            mob = animation.mobject
+            if mob not in curr_mobjects:
+                self.add(mob)
+                curr_mobjects += mob.get_family()
+        
     def remove(self, *mobjects):
         """
         Removes mobjects in the passed list of mobjects
@@ -832,6 +844,24 @@ class Scene(Container):
                 self.skip_animations = True
                 raise EndSceneEarlyException()
 
+    def handle_caching(func): 
+        def wrapper(self, *args, **kwargs): 
+            animations = self.compile_play_args_to_animation_list(
+                *args, **kwargs
+                )
+            # We have to add all the mobjects, because we can have hash-collisions if not.
+            self.add_mobjects_from_animations(animations)
+            mobjects_on_scene = self.get_mobjects() 
+            hash_play = get_hash_from_play_call(animations, mobjects_on_scene)
+            self.play_hashes_list.append(hash_play)
+            if self.enable_caching and self.file_writer.is_already_cached(hash_play): 
+                logger.info(f'Animation {self.num_plays} : Using cached data (hash : {hash_play}')
+                self.skip_animations = True
+            else: 
+                self.revert_to_original_skipping_status()
+            func(self, *args, **kwargs)
+        return wrapper
+
     def handle_play_like_call(func):
         """
         This method is used internally to wrap the
@@ -873,16 +903,9 @@ class Scene(Container):
             List of involved animations.
 
         """
-        curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
             # Begin animation
             animation.begin()
-            # Anything animated that's not already in the
-            # scene gets added to the scene
-            mob = animation.mobject
-            if mob not in curr_mobjects:
-                self.add(mob)
-                curr_mobjects += mob.get_family()
 
     def progress_through_animations(self, animations):
         """
@@ -933,6 +956,7 @@ class Scene(Container):
         else:
             self.update_mobjects(0)
 
+    @handle_caching
     @handle_play_like_call
     def play(self, *args, **kwargs):
         """
@@ -1035,7 +1059,8 @@ class Scene(Container):
                 "Waiting {}".format(self.num_plays)
             )
         return time_progression
-
+        
+    @handle_caching
     @handle_play_like_call
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         """

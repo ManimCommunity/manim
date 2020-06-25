@@ -193,10 +193,17 @@ class SceneFileWriter(object):
         str
             The path of the next partial movie.
         """
+        # result = os.path.join(
+        #     self.partial_movie_directory,
+        #     "{:05}{}".format(
+        #         self.scene.num_plays,
+        #         self.movie_file_extension,
+        #     )
+        # )
         result = os.path.join(
             self.partial_movie_directory,
-            "{:05}{}".format(
-                self.scene.num_plays,
+            "{}{}".format(
+                self.scene.play_hashes_list[self.scene.num_plays],
                 self.movie_file_extension,
             )
         )
@@ -439,6 +446,15 @@ class SceneFileWriter(object):
             self.temp_partial_movie_file_path,
             self.partial_movie_file_path,
         )
+        logger.debug(f"Animation {self.scene.num_plays} : Partial movie file written in {self.partial_movie_file_path}")
+    
+    def cancel_animation(self): 
+        pass 
+    def is_already_cached(self, hash_play): 
+        #SI le fichier caché existe, alors oui
+        #Sinon, nique ta mère et fais un rendu de ton fichier enculé
+        path = os.path.join(self.partial_movie_directory, "{}{}".format(hash_play, self.movie_file_extension))
+        return os.path.exists(path)
 
     def combine_movie_files(self):
         """
@@ -453,35 +469,38 @@ class SceneFileWriter(object):
         # cuts at all the places you might want.  But for viewing
         # the scene as a whole, one of course wants to see it as a
         # single piece.
-        kwargs = {
-            "remove_non_integer_files": True,
-            "extension": self.movie_file_extension,
-        }
-        if self.scene.start_at_animation_number is not None:
-            kwargs["min_index"] = self.scene.start_at_animation_number
-        if self.scene.end_at_animation_number is not None:
-            kwargs["max_index"] = self.scene.end_at_animation_number
-        else:
-            kwargs["remove_indices_greater_than"] = self.scene.num_plays - 1
-        partial_movie_files = get_sorted_integer_files(
-            self.partial_movie_directory,
-            **kwargs
-        )
+
+        # kwargs = {
+        #     "remove_non_integer_files": False, #TODO remove this shit/or change it
+        #     "extension": self.movie_file_extension,
+        # }
+        # if self.scene.start_at_animation_number is not None:
+        #     kwargs["min_index"] = self.scene.start_at_animation_number #TODO remove this shit
+        # if self.scene.end_at_animation_number is not None:
+        #     kwargs["max_index"] = self.scene.end_at_animation_number
+        # else:
+        #     kwargs["remove_indices_greater_than"] = self.scene.num_plays - 1
+        # partial_movie_files = get_sorted_integer_files( #TODO REMOVE THIS BAG OF SHIT 
+        #     self.partial_movie_directory,
+        #     **kwargs
+        # )
+
+        partial_movie_files = [os.path.join(self.partial_movie_directory, "{}{}".format(hash_play, self.movie_file_extension)) for hash_play in self.scene.play_hashes_list]
         if len(partial_movie_files) == 0:
             logger.error("No animations in this scene")
             return
-
         # Write a file partial_file_list.txt containing all
-        # partial movie files
+        # partial movie files. This is used for FFMPEG.
         file_list = os.path.join(
             self.partial_movie_directory,
             "partial_movie_file_list.txt"
         )
         with open(file_list, 'w') as fp:
+            fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in partial_movie_files:
                 if os.name == 'nt':
                     pf_path = pf_path.replace('\\', '/')
-                fp.write("file \'file:{}\'\n".format(pf_path))
+                fp.write("file \'file:{}'\n".format(pf_path))
 
         movie_file_path = self.get_movie_file_path()
         commands = [
