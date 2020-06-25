@@ -193,13 +193,6 @@ class SceneFileWriter(object):
         str
             The path of the next partial movie.
         """
-        # result = os.path.join(
-        #     self.partial_movie_directory,
-        #     "{:05}{}".format(
-        #         self.scene.num_plays,
-        #         self.movie_file_extension,
-        #     )
-        # )
         result = os.path.join(
             self.partial_movie_directory,
             "{}{}".format(
@@ -448,8 +441,6 @@ class SceneFileWriter(object):
         )
         logger.debug(f"Animation {self.scene.num_plays} : Partial movie file written in {self.partial_movie_file_path}")
     
-    def cancel_animation(self): 
-        pass 
     def is_already_cached(self, hash_play): 
         #SI le fichier caché existe, alors oui
         #Sinon, nique ta mère et fais un rendu de ton fichier enculé
@@ -490,7 +481,7 @@ class SceneFileWriter(object):
             logger.error("No animations in this scene")
             return
         # Write a file partial_file_list.txt containing all
-        # partial movie files. This is used for FFMPEG.
+        # partial movie files. This is used by FFMPEG.
         file_list = os.path.join(
             self.partial_movie_directory,
             "partial_movie_file_list.txt"
