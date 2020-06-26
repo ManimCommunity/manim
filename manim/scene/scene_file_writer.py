@@ -441,10 +441,20 @@ class SceneFileWriter(object):
         )
         logger.debug(f"Animation {self.scene.num_plays} : Partial movie file written in {self.partial_movie_file_path}")
     
-    def is_already_cached(self, hash_play): 
-        #SI le fichier caché existe, alors oui
-        #Sinon, nique ta mère et fais un rendu de ton fichier enculé
-        path = os.path.join(self.partial_movie_directory, "{}{}".format(hash_play, self.movie_file_extension))
+    def is_already_cached(self, hash_invokation): 
+        """Will check if a file named with `hash_play` exists.
+
+        Parameters
+        ----------
+        hash_play : :class:`str`
+            The hash corresponding to an invokation to either `scene.play` or `scene.wait`.
+
+        Returns
+        -------
+        `bool`
+            Wether the file exists.
+        """
+        path = os.path.join(self.partial_movie_directory, "{}{}".format(hash_invokation, self.movie_file_extension))
         return os.path.exists(path)
 
     def combine_movie_files(self):
@@ -462,16 +472,16 @@ class SceneFileWriter(object):
         # single piece.
 
         # kwargs = {
-        #     "remove_non_integer_files": False, #TODO remove this shit/or change it
+        #     "remove_non_integer_files": False,
         #     "extension": self.movie_file_extension,
         # }
         # if self.scene.start_at_animation_number is not None:
-        #     kwargs["min_index"] = self.scene.start_at_animation_number #TODO remove this shit
+        #     kwargs["min_index"] = self.scene.start_at_animation_number 
         # if self.scene.end_at_animation_number is not None:
         #     kwargs["max_index"] = self.scene.end_at_animation_number
         # else:
         #     kwargs["remove_indices_greater_than"] = self.scene.num_plays - 1
-        # partial_movie_files = get_sorted_integer_files( #TODO REMOVE THIS BAG OF SHIT 
+        # partial_movie_files = get_sorted_integer_files( 
         #     self.partial_movie_directory,
         #     **kwargs
         # )

@@ -844,11 +844,22 @@ class Scene(Container):
                 raise EndSceneEarlyException()
 
     def handle_caching_play(func): 
+        """
+        This method is used internally to wrap the passed function into a function that will compute the hash of the play invokation, 
+        and will act accordingly : either skip the animation because already cached, either nothing and let the play invokation be processed normally.
+
+        Parameters
+        ----------
+        *args : 
+            Animation or mobject with mobject method and params
+
+        **kwargs : 
+            named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
+        """
         def wrapper(self, *args, **kwargs): 
             animations = self.compile_play_args_to_animation_list(
                 *args, **kwargs
                 )
-            # We have to add all the mobjects, because we can have hash-collisions if not.
             self.add_mobjects_from_animations(animations)
             mobjects_on_scene = self.get_mobjects()
             hash_play = get_hash_from_play_call(animations, mobjects_on_scene)
@@ -862,6 +873,18 @@ class Scene(Container):
         return wrapper
 
     def handle_caching_wait(func): 
+        """
+        This method is used internally to wrap the passed function into a function that will compute the hash of the wait invokation, 
+        and will act accordingly : either skip the animation because already cached or nothing and let the play invokation be processed normally
+
+        Parameters
+        ----------
+        *args : 
+            Animation or mobject with mobject method and params
+
+        **kwargs : 
+            named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
+        """
         def wrapper(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
             hash_wait = get_hash_from_wait_call(duration, stop_condition, self.get_mobjects())
             self.play_hashes_list .append(hash_wait)
