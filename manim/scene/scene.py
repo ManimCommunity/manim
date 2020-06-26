@@ -15,7 +15,7 @@ from ..logger import logger
 from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.iterables import list_update
-from ..utils.hashing import get_hash_from_play_call
+from ..utils.hashing import get_hash_from_play_call, get_hash_from_wait_call
 
 
 class Scene(Container):
@@ -801,7 +801,6 @@ class Scene(Container):
             state["last_method"] = state["curr_method"]
             state["curr_method"] = None
             state["method_args"] = []
-
         for arg in args:
             if isinstance(arg, Animation):
                 compile_method(state)
@@ -844,22 +843,34 @@ class Scene(Container):
                 self.skip_animations = True
                 raise EndSceneEarlyException()
 
-    def handle_caching(func): 
+    def handle_caching_play(func): 
         def wrapper(self, *args, **kwargs): 
             animations = self.compile_play_args_to_animation_list(
                 *args, **kwargs
                 )
             # We have to add all the mobjects, because we can have hash-collisions if not.
             self.add_mobjects_from_animations(animations)
-            mobjects_on_scene = self.get_mobjects() 
+            mobjects_on_scene = self.get_mobjects()
             hash_play = get_hash_from_play_call(animations, mobjects_on_scene)
             self.play_hashes_list.append(hash_play)
             if self.enable_caching and self.file_writer.is_already_cached(hash_play): 
-                logger.info(f'Animation {self.num_plays} : Using cached data (hash : {hash_play}')
+                logger.info(f'Animation {self.num_plays} : Using cached data (hash : {hash_play})')
                 self.skip_animations = True
             else: 
                 self.revert_to_original_skipping_status()
             func(self, *args, **kwargs)
+        return wrapper
+
+    def handle_caching_wait(func): 
+        def wrapper(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
+            hash_wait = get_hash_from_wait_call(duration, stop_condition, self.get_mobjects())
+            self.play_hashes_list .append(hash_wait)
+            if self.enable_caching and self.file_writer.is_already_cached(hash_wait): 
+                logger.info(f'Wait {self.num_plays} : Using cached data (hash : {hash_wait})')
+                self.skip_animations = True
+            else : 
+                self.revert_to_original_skipping_status()
+            func(self, duration, stop_condition)
         return wrapper
 
     def handle_play_like_call(func):
@@ -956,7 +967,7 @@ class Scene(Container):
         else:
             self.update_mobjects(0)
 
-    @handle_caching
+    @handle_caching_play
     @handle_play_like_call
     def play(self, *args, **kwargs):
         """
@@ -1060,7 +1071,7 @@ class Scene(Container):
             )
         return time_progression
         
-    @handle_caching
+    @handle_caching_wait
     @handle_play_like_call
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         """
