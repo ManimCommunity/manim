@@ -18,6 +18,7 @@ from ..utils.config_ops import digest_config
 from ..utils.file_ops import guarantee_existence
 from ..utils.file_ops import add_extension_if_not_present
 from ..utils.file_ops import get_sorted_integer_files
+from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
 
 
@@ -68,8 +69,8 @@ class SceneFileWriter(object):
         """
         module_directory = self.output_directory or self.get_default_module_directory()
         scene_name = self.file_name or self.get_default_scene_name()
-        #print("1")
-        #print(dirs.MEDIA_DIR)
+        # print("1")
+        # print(dirs.MEDIA_DIR)
         if self.save_last_frame or self.save_pngs:
             if dirs.MEDIA_DIR != "":
                 image_dir = guarantee_existence(os.path.join(
@@ -146,7 +147,7 @@ class SceneFileWriter(object):
             that immediately contains the video file will be
             480p15.
             The file structure should look something like:
-            
+
             MEDIA_DIR
                 |--Tex
                 |--texts
@@ -172,7 +173,7 @@ class SceneFileWriter(object):
         written to.
         It is usually named "images", but can be changed by changing
         "image_file_path".
-        
+
         Returns
         -------
         str
@@ -232,16 +233,16 @@ class SceneFileWriter(object):
         """
         This method adds an audio segment from an 
         AudioSegment type object and suitable parameters.
-        
+
         Parameters
         ----------
         new_segment : AudioSegment
             The audio segment to add
-        
+
         time : int, float, optional
             the timestamp at which the
             sound should be added.
-        
+
         gain_to_background : optional
             The gain of the segment from the background.
         """
@@ -276,7 +277,7 @@ class SceneFileWriter(object):
         ----------
         sound_file : str
             The path to the sound file.
-        
+
         time : float or int, optional
             The timestamp at which the audio should be added.
 
@@ -380,6 +381,8 @@ class SceneFileWriter(object):
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
             self.combine_movie_files()
+            # TODO add an option to disable clea_cache. Possible when #98 is merged ! 
+            self.clean_cache()
         if self.save_last_frame:
             self.scene.update_frame(ignore_skipping=True)
             self.save_final_image(self.scene.get_image())
@@ -391,7 +394,8 @@ class SceneFileWriter(object):
         buffer.
         """
         file_path = self.get_next_partial_movie_path()
-        temp_file_path = os.path.splitext(file_path)[0] + '_temp' + self.movie_file_extension
+        temp_file_path = os.path.splitext(
+            file_path)[0] + '_temp' + self.movie_file_extension
 
         self.partial_movie_file_path = file_path
         self.temp_partial_movie_file_path = temp_file_path
@@ -439,9 +443,10 @@ class SceneFileWriter(object):
             self.temp_partial_movie_file_path,
             self.partial_movie_file_path,
         )
-        logger.debug(f"Animation {self.scene.num_plays} : Partial movie file written in {self.partial_movie_file_path}")
-    
-    def is_already_cached(self, hash_invokation): 
+        logger.debug(
+            f"Animation {self.scene.num_plays} : Partial movie file written in {self.partial_movie_file_path}")
+
+    def is_already_cached(self, hash_invokation):
         """Will check if a file named with `hash_invokation` exists.
 
         Parameters
@@ -454,7 +459,8 @@ class SceneFileWriter(object):
         `bool`
             Wether the file exists.
         """
-        path = os.path.join(self.partial_movie_directory, "{}{}".format(hash_invokation, self.movie_file_extension))
+        path = os.path.join(self.partial_movie_directory, "{}{}".format(
+            hash_invokation, self.movie_file_extension))
         return os.path.exists(path)
 
     def combine_movie_files(self):
@@ -476,17 +482,18 @@ class SceneFileWriter(object):
         #     "extension": self.movie_file_extension,
         # }
         # if self.scene.start_at_animation_number is not None:
-        #     kwargs["min_index"] = self.scene.start_at_animation_number 
+        #     kwargs["min_index"] = self.scene.start_at_animation_number
         # if self.scene.end_at_animation_number is not None:
         #     kwargs["max_index"] = self.scene.end_at_animation_number
         # else:
         #     kwargs["remove_indices_greater_than"] = self.scene.num_plays - 1
-        # partial_movie_files = get_sorted_integer_files( 
+        # partial_movie_files = get_sorted_integer_files(
         #     self.partial_movie_directory,
         #     **kwargs
         # )
 
-        partial_movie_files = [os.path.join(self.partial_movie_directory, "{}{}".format(hash_play, self.movie_file_extension)) for hash_play in self.scene.play_hashes_list]
+        partial_movie_files = [os.path.join(self.partial_movie_directory, "{}{}".format(
+            hash_play, self.movie_file_extension)) for hash_play in self.scene.play_hashes_list]
         if len(partial_movie_files) == 0:
             logger.error("No animations in this scene")
             return
@@ -515,8 +522,8 @@ class SceneFileWriter(object):
 
         if self.write_to_movie:
             commands += [
-            '-c', 'copy',
-            movie_file_path
+                '-c', 'copy',
+                movie_file_path
             ]
 
         if self.save_as_gif:
@@ -561,6 +568,20 @@ class SceneFileWriter(object):
             os.remove(sound_file_path)
 
         self.print_file_ready_message(movie_file_path)
+        for file_path in partial_movie_files:
+            # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
+            modify_atime(file_path)
+
+    def clean_cache(self):
+        """Will clean the cache by removing the partial_move used by manim the longest ago."""
+        cached_partial_movies = [os.path.join(self.partial_movie_directory, file_name) for file_name in os.listdir(
+            self.partial_movie_directory) if file_name != "partial_movie_file_list.txt"]
+        max_file_cached = 7  # TODO put this in CONFIG when #98 is merged
+        if len(cached_partial_movies) > max_file_cached:
+            oldest_file_path = min(cached_partial_movies, key=os.path.getatime)
+            logger.info(
+                f"Partial movie directory is full. (> {max_file_cached} files). Manim removed the file used by manim the longest ago. ({os.path.basename(oldest_file_path)}).")
+            os.remove(oldest_file_path)
 
     def print_file_ready_message(self, file_path):
         """

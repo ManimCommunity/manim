@@ -1,6 +1,6 @@
 import os
 import numpy as np
-
+import time
 
 def add_extension_if_not_present(file_name, extension):
     # This could conceivably be smarter about handling existing differing extensions
@@ -57,3 +57,13 @@ def get_sorted_integer_files(directory,
             os.remove(full_path)
     indexed_files.sort(key=lambda p: p[0])
     return list(map(lambda p: os.path.join(directory, p[1]), indexed_files))
+
+def modify_atime(file_path): 
+    """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default. 
+
+    Paramaters
+    ----------
+    file_path : :class:`str`
+        The path of the file. 
+    """
+    os.utime(file_path, times=(time.time(),os.path.getmtime(file_path)))
