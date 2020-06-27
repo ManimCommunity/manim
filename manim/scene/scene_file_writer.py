@@ -442,11 +442,11 @@ class SceneFileWriter(object):
         logger.debug(f"Animation {self.scene.num_plays} : Partial movie file written in {self.partial_movie_file_path}")
     
     def is_already_cached(self, hash_invokation): 
-        """Will check if a file named with `hash_play` exists.
+        """Will check if a file named with `hash_invokation` exists.
 
         Parameters
         ----------
-        hash_play : :class:`str`
+        hash_invokation : :class:`str`
             The hash corresponding to an invokation to either `scene.play` or `scene.wait`.
 
         Returns
