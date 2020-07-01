@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "manimce"
-version = "2020"
-description = "Animation engine for explanatory math videos. Unoffical."
+name = "manim"
+version = "0.2.0"
+description = "Animation engine for explanatory math videos."
 authors = ["3b1b <grant@3blue1brown.com>"]
 license="MIT"
 readme="README.md"
@@ -22,7 +22,6 @@ exclude = ["scripts/","logo/","readme-assets/"]
 packages = [
     { include = "manim" },
 ]
-
 
 [tool.poetry.dependencies]
 python = "^3.6"
