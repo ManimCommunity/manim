@@ -110,7 +110,7 @@ def _parse_file_writer_config(config_parser, args):
     # in batches, depending on their type: booleans and strings
     for boolean_opt in ['preview', 'show_file_in_finder', 'quiet', 'sound',
                         'leave_progress_bars', 'write_to_movie', 'save_last_frame',
-                        'save_pngs', 'save_as_gif', 'write_all']:
+                        'save_pngs', 'save_as_gif', 'write_all', 'disable_caching']:
         attr = getattr(args, boolean_opt)
         config[boolean_opt] = (default.getboolean(boolean_opt)
                                if attr is None else attr)
@@ -129,7 +129,7 @@ def _parse_file_writer_config(config_parser, args):
     # both CLI and the cfg file, so read the config dict directly
     if config['save_last_frame']:
         config['write_to_movie'] = False
-
+    
     # Handle the -t (--transparent) flag.  This flag determines which
     # section to use from the .cfg file.
     section = config_parser['transparent'] if args.transparent else default
@@ -158,7 +158,8 @@ def _parse_file_writer_config(config_parser, args):
         for opt in ['write_to_movie', 'save_last_frame', 'save_pngs',
                     'save_as_gif', 'write_all']:
             config[opt] = config_parser['dry_run'].getboolean(opt)
-
+    if not config['write_to_movie'] : 
+        config['disable_caching'] = True
     # Read in the streaming section -- all values are strings
     config['streaming'] = {opt: config_parser['streaming'][opt]
                            for opt in ['live_stream_name', 'twitch_stream_key',
@@ -262,6 +263,12 @@ def _parse_cli(arg_list, input=True):
         const=True,
         help="Save the video as gif",
     )
+    parser.add_argument(
+        "--disable_caching",
+        action="store_const",
+        const=True,
+        help="Disable caching (will create a partial movie file anyway",
+    )
 
     # The default value of the following is set in manim.cfg
     parser.add_argument(
@@ -306,7 +313,6 @@ def _parse_cli(arg_list, input=True):
         action="store_true",
         help="Do a dry run (render scenes but generate no output files)",
     )
-
     # The following overrides PNG_MODE, MOVIE_FILE_EXTENSION, and
     # BACKGROUND_OPACITY
     parser.add_argument(
