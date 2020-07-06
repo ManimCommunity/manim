@@ -477,8 +477,8 @@ class SceneFileWriter(object):
 
         if self.write_to_movie:
             commands += [
-            '-c', 'copy',
-            movie_file_path
+                '-c', 'copy',
+                movie_file_path
             ]
 
         if self.save_as_gif:

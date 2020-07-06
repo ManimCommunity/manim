@@ -205,13 +205,14 @@ class Scene(Container):
         """
         self.camera.reset()
 
-    def capture_mobjects_in_camera(self, mobjects, **kwargs): #TODO Add more detail to docstring.
+    # TODO Add more detail to docstring.
+    def capture_mobjects_in_camera(self, mobjects, **kwargs):
         """
         This method is used internally.
         """
         self.camera.capture_mobjects(mobjects, **kwargs)
 
-    def update_frame( #TODO Description in Docstring
+    def update_frame(  # TODO Description in Docstring
             self,
             mobjects=None,
             background=None,
@@ -848,6 +849,7 @@ class Scene(Container):
             The play() like function that can now write
             to the video file stream.
         """
+
         def wrapper(self, *args, **kwargs):
             self.update_skipping_status()
             allow_write = not file_writer_config['skip_animations']
@@ -1053,7 +1055,8 @@ class Scene(Container):
         """
         self.update_mobjects(dt=0)  # Any problems with this?
         if self.should_update_mobjects():
-            time_progression = self.get_wait_time_progression(duration, stop_condition)
+            time_progression = self.get_wait_time_progression(
+                duration, stop_condition)
             # TODO, be smart about setting a static image
             # the same way Scene.play does
             last_t = 0

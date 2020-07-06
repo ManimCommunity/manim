@@ -136,7 +136,8 @@ def get_module(file_name):
     else:
         if os.path.exists(file_name):
             module_name = re.sub(r"\..+$", "", file_name.replace(os.sep, "."))
-            spec = importlib.util.spec_from_file_location(module_name, file_name)
+            spec = importlib.util.spec_from_file_location(
+                module_name, file_name)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             return module

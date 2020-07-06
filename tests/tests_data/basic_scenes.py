@@ -2,6 +2,7 @@ from manim import *
 
 # This module is used in the CLI tests in tests_CLi.py.
 
+
 class SquareToCircle(Scene):
     def construct(self):
         circle = Circle()
@@ -13,6 +14,7 @@ class SquareToCircle(Scene):
         self.play(ShowCreation(square))
         self.play(Transform(square, circle))
         self.play(FadeOut(square))
+
 
 class WriteStuff(Scene):
     def construct(self):

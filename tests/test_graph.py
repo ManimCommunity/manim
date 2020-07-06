@@ -11,7 +11,7 @@ class PlotFunctions(GraphScene):
         "graph_origin": ORIGIN,
         "function_color": RED,
         "axes_color": GREEN,
-        "x_labeled_nums": range(-10,12,2),
+        "x_labeled_nums": range(-10, 12, 2),
     }
 
     def construct(self):
@@ -21,5 +21,7 @@ class PlotFunctions(GraphScene):
 
         self.play(Animation(f))
 
+
 def test_scenes():
-    utils_test_scenes(get_scenes_to_test(__name__), "graph", caching_needed=True)
+    utils_test_scenes(get_scenes_to_test(__name__),
+                      "graph", caching_needed=True)

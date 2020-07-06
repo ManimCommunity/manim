@@ -26,6 +26,7 @@ from ..utils.simple_functions import fdiv
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 
+
 class Camera(object):
     """
     Base Camera class.
@@ -294,7 +295,8 @@ class Camera(object):
         retval = np.array(pixel_array)
         if convert_from_floats:
             retval = np.apply_along_axis(
-                lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
+                lambda f: (
+                    f * self.rgb_max_val).astype(self.pixel_array_dtype),
                 2,
                 retval
             )
@@ -350,14 +352,16 @@ class Camera(object):
             The pixel array which can then be passed to set_background.
         """
 
-        logger.info("Starting set_background; for reference, the current time is ", time.strftime("%H:%M:%S"))
+        logger.info("Starting set_background; for reference, the current time is ",
+                    time.strftime("%H:%M:%S"))
         coords = self.get_coords_of_all_pixels()
         new_background = np.apply_along_axis(
             coords_to_colors_func,
             2,
             coords
         )
-        logger.info("Ending set_background; for reference, the current time is ", time.strftime("%H:%M:%S"))
+        logger.info("Ending set_background; for reference, the current time is ",
+                    time.strftime("%H:%M:%S"))
 
         return self.convert_pixel_array(new_background, convert_from_floats=True)
 
@@ -477,10 +481,12 @@ class Camera(object):
             mobject.get_top()[1] < fc[1] - fh,
         ])
 
-    def capture_mobject(self, mobject, **kwargs): #TODO Write better docstrings for this method.
+    # TODO Write better docstrings for this method.
+    def capture_mobject(self, mobject, **kwargs):
         return self.capture_mobjects([mobject], **kwargs)
 
-    def capture_mobjects(self, mobjects, **kwargs): #TODO Write better docstrings for this method.
+    # TODO Write better docstrings for this method.
+    def capture_mobjects(self, mobjects, **kwargs):
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
 
         # Organize this list into batches of the same type, and
@@ -601,9 +607,11 @@ class Camera(object):
         )
         for batch, file_name in batch_file_pairs:
             if file_name:
-                self.display_multiple_background_colored_vmobject(batch, pixel_array)
+                self.display_multiple_background_colored_vmobject(
+                    batch, pixel_array)
             else:
-                self.display_multiple_non_background_colored_vmobjects(batch, pixel_array)
+                self.display_multiple_non_background_colored_vmobjects(
+                    batch, pixel_array)
 
     def display_multiple_non_background_colored_vmobjects(self, vmobjects, pixel_array):
         """Displays multiple VMobjects in the cairo context, as long as they don't have
@@ -1047,8 +1055,9 @@ class Camera(object):
         points[violator_indices] = rescaled
         return points
 
-    def transform_points_pre_display(self, mobject, points): #TODO: Write more detailed docstrings for this method.
-        #NOTE: There seems to be an unused argument `mobject`.
+    # TODO: Write more detailed docstrings for this method.
+    def transform_points_pre_display(self, mobject, points):
+        # NOTE: There seems to be an unused argument `mobject`.
 
         # Subclasses (like ThreeDCamera) may want to
         # adjust points futher before they're shown
@@ -1058,7 +1067,8 @@ class Camera(object):
             points = np.zeros((1, 3))
         return points
 
-    def points_to_pixel_coords(self, mobject, points): #TODO: Write more detailed docstrings for this method.
+    # TODO: Write more detailed docstrings for this method.
+    def points_to_pixel_coords(self, mobject, points):
         points = self.transform_points_pre_display(
             mobject, points
         )
@@ -1209,6 +1219,8 @@ class Camera(object):
 
 # NOTE: The methods of the following class have not been mentioned outside of their definitons.
 # Their DocStrings are not as detailed as preferred.
+
+
 class BackgroundColoredVMobjectDisplayer(object):
     def __init__(self, camera):
         """

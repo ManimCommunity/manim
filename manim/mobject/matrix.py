@@ -78,7 +78,7 @@ class Matrix(VMobject):
         self.organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*mob_matrix.flatten())
         self.add(self.elements)
-        self.add_brackets(self.left_bracket,self.right_bracket)
+        self.add_brackets(self.left_bracket, self.right_bracket)
         self.center()
         self.mob_matrix = mob_matrix
         if self.add_background_rectangles_to_entries:
@@ -102,7 +102,7 @@ class Matrix(VMobject):
                 )
         return self
 
-    def add_brackets(self, left = "\\big[", right = "\\big]"):
+    def add_brackets(self, left="\\big[", right="\\big]"):
         bracket_pair = TexMobject(left, right)
         bracket_pair.scale(2)
         bracket_pair.stretch_to_fit_height(
@@ -129,7 +129,7 @@ class Matrix(VMobject):
 
     def get_rows(self):
         """Return rows of the matrix as VGroups
-        
+
         Returns
         --------
         List[:class:`~.VGroup`]
@@ -142,12 +142,12 @@ class Matrix(VMobject):
 
     def set_row_colors(self, *colors):
         """Set individual colors for each row of the matrix
-        
+
         Parameters
         ----------
         colors : :class:`str`
             The list of colors; each color specified corresponds to a row.
-        
+
         Returns
         -------
         :class:`Matrix`

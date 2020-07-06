@@ -338,12 +338,14 @@ class VectorScene(Scene):
         self.add(label)
         return label
 
-    def position_x_coordinate(self, x_coord, x_line, vector): #TODO Write DocStrings for this.
+    # TODO Write DocStrings for this.
+    def position_x_coordinate(self, x_coord, x_line, vector):
         x_coord.next_to(x_line, -np.sign(vector[1]) * UP)
         x_coord.set_color(X_COLOR)
         return x_coord
 
-    def position_y_coordinate(self, y_coord, y_line, vector): #TODO Write DocStrings for this.
+    # TODO Write DocStrings for this.
+    def position_y_coordinate(self, y_coord, y_line, vector):
         y_coord.next_to(y_line, np.sign(vector[0]) * RIGHT)
         y_coord.set_color(Y_COLOR)
         return y_coord

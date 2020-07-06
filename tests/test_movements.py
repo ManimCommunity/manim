@@ -16,6 +16,7 @@ class HomotopyTest(Scene):
 class PhaseFlowTest(Scene):
     def construct(self):
         square = Square()
+
         def func(t):
             return t*0.5*UP
         self.play(PhaseFlow(func, square))

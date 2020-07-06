@@ -399,9 +399,11 @@ if _from_command_line():
         if os.path.exists(args.config_file):
             config_files.append(args.config_file)
         else:
-            raise FileNotFoundError(f"Config file {args.config_file} doesn't exist")
+            raise FileNotFoundError(
+                f"Config file {args.config_file} doesn't exist")
     else:
-        script_directory_file_config = os.path.join(os.path.dirname(args.file), 'manim.cfg')
+        script_directory_file_config = os.path.join(
+            os.path.dirname(args.file), 'manim.cfg')
         if os.path.exists(script_directory_file_config):
             config_files.append(script_directory_file_config)
 

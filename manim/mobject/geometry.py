@@ -54,7 +54,7 @@ class TipableVMobject(VMobject):
             "stroke_width": 0,
         }
     }
-    
+
     # Adding, Creating, Modifying tips
 
     def add_tip(self, tip_length=None, at_start=False):
@@ -141,7 +141,6 @@ class TipableVMobject(VMobject):
     def has_start_tip(self):
         return hasattr(self, "start_tip") and self.start_tip in self
 
-
     # Getters
 
     def pop_tips(self):
@@ -214,7 +213,7 @@ class Arc(TipableVMobject):
     def __init__(self, start_angle=0, angle=TAU / 4, **kwargs):
         self.start_angle = start_angle
         self.angle = angle
-        self._failed_to_get_center=False
+        self._failed_to_get_center = False
         VMobject.__init__(self, **kwargs)
 
     def generate_points(self):
@@ -247,7 +246,7 @@ class Arc(TipableVMobject):
             anchors[1:],
         )
 
-    def get_arc_center(self,warning=True):
+    def get_arc_center(self, warning=True):
         """
         Looks at the normals to the first two
         anchors, and finds their intersection points
@@ -268,7 +267,7 @@ class Arc(TipableVMobject):
         except Exception:
             if warning:
                 warnings.warn("Can't find Arc center, using ORIGIN instead")
-            self._failed_to_get_center=True
+            self._failed_to_get_center = True
             return np.array(ORIGIN)
 
     def move_arc_center_to(self, point):
@@ -285,20 +284,21 @@ class ArcBetweenPoints(Arc):
     """
     Inherits from Arc and additionally takes 2 points between which the arc is spanned.
     """
+
     def __init__(self, start, end, angle=TAU / 4, radius=None, **kwargs):
         if radius is not None:
-            self.radius=radius
+            self.radius = radius
             if radius < 0:
-                sign=-2
-                radius*=(-1)
+                sign = -2
+                radius *= (-1)
             else:
-                sign=2
-            halfdist=np.linalg.norm(np.array(start) - np.array(end)) / 2
+                sign = 2
+            halfdist = np.linalg.norm(np.array(start) - np.array(end)) / 2
             if radius < halfdist:
                 raise ValueError("""ArcBetweenPoints called with a radius that is
                             smaller than half the distance between the points.""")
-            arc_height=radius - math.sqrt(radius ** 2 - halfdist ** 2)
-            angle=math.acos((radius - arc_height) / radius)*sign
+            arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
+            angle = math.acos((radius - arc_height) / radius)*sign
 
         Arc.__init__(
             self,
@@ -308,13 +308,14 @@ class ArcBetweenPoints(Arc):
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
-        
+
         if radius is None:
-            center=self.get_arc_center(warning=False)
+            center = self.get_arc_center(warning=False)
             if not self._failed_to_get_center:
-                self.radius=np.linalg.norm(np.array(start) - np.array(center))
+                self.radius = np.linalg.norm(
+                    np.array(start) - np.array(center))
             else:
-                self.radius=math.inf
+                self.radius = math.inf
 
 
 class CurvedArrow(ArcBetweenPoints):

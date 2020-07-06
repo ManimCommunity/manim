@@ -32,6 +32,7 @@ def test_basicScene(python_version):
         path_output, "videos", "basic_scenes", "480p15", "SquareToCircle.mp4")), err
     rmtree(path_output)
 
+
 @pytest.mark.skip_end_to_end
 def test_WriteStuff(python_version):
     """This is mainly intended to test the caching process of the tex objects"""

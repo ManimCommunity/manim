@@ -11,6 +11,7 @@ class Container(object):
     """
     Base class for Scenes and Mobjects. Generic container.
     """
+
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
 

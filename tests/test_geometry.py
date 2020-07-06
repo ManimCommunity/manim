@@ -5,7 +5,8 @@ from testing_utils import utils_test_scenes, get_scenes_to_test
 
 class CoordinatesTest(Scene):
     def construct(self):
-        dots = [Dot(np.array([x, y, 0])) for x in range(-7, 8) for y in range(-4, 5)]
+        dots = [Dot(np.array([x, y, 0]))
+                for x in range(-7, 8) for y in range(-4, 5)]
         self.play(Animation(VGroup(*dots)))
 
 

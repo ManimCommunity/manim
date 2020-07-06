@@ -103,7 +103,8 @@ class Text(SVGMobject):
         context = cairo.Context(surface)
         context.set_font_size(size)
         context.move_to(START_X, START_Y)
-        context.select_font_face(self.font, self.str2slant(self.slant), self.str2weight(self.weight))
+        context.select_font_face(self.font, self.str2slant(
+            self.slant), self.str2weight(self.weight))
         context.move_to(START_X, START_Y)
         context.show_text("_")
         surface.finish()
@@ -129,8 +130,8 @@ class Text(SVGMobject):
         first_visible_char_index = i
         if first_visible_char_index != 0:
             space = Rectangle(width=space_width * front_spaces_count, height=max_height, fill_opacity=0,
-                                  stroke_opacity=0,
-                                  stroke_width=0)
+                              stroke_opacity=0,
+                              stroke_width=0)
             text_width = self.get_width()
             space.move_to(np.array([-text_width / 2, max_height / 2, 0]))
             self.next_to(space, direction=RIGHT, buff=0)
@@ -147,13 +148,13 @@ class Text(SVGMobject):
         last_visible_char_index = i
         if last_visible_char_index != self.text.__len__() - 1:
             space = Rectangle(width=space_width * last_spaces_count, height=max_height, fill_opacity=0,
-                                  stroke_opacity=0,
-                                  stroke_width=0)
+                              stroke_opacity=0,
+                              stroke_width=0)
             text_width = self.get_width()
             space.move_to(np.array([-text_width / 2, max_height / 2, 0]))
             self.next_to(space, direction=LEFT, buff=0)
             self.submobjects.append(space)
-        self.move_to(np.array([0,0,0]))
+        self.move_to(np.array([0, 0, 0]))
 
     def apply_space_chars(self):
         char_index = 0
@@ -322,6 +323,7 @@ class Text(SVGMobject):
 
         return file_name
 
+
 class TextWithFixHeight(Text):
     def __init__(self, text, **kwargs):
         Text.__init__(self, text, **kwargs)
@@ -330,6 +332,7 @@ class TextWithFixHeight(Text):
                               stroke_opacity=0,
                               stroke_width=0)
         self.submobjects.append(rectangle)
+
 
 class Paragraph(VGroup):
     CONFIG = {
@@ -344,15 +347,19 @@ class Paragraph(VGroup):
         self.lines.append([])
         for line_no in range(self.lines_list.__len__()):
             if "\n" in self.lines_list[line_no]:
-                self.lines_list[line_no:line_no + 1] = self.lines_list[line_no].split("\n")
+                self.lines_list[line_no:line_no +
+                                1] = self.lines_list[line_no].split("\n")
         for line_no in range(self.lines_list.__len__()):
-            self.lines[0].append(TextWithFixHeight(self.lines_list[line_no], **config))
+            self.lines[0].append(TextWithFixHeight(
+                self.lines_list[line_no], **config))
         self.char_height = TextWithFixHeight("(", **config).get_height()
         self.lines.append([])
-        self.lines[1].extend([self.alignment for _ in range(self.lines_list.__len__())])
+        self.lines[1].extend(
+            [self.alignment for _ in range(self.lines_list.__len__())])
         self.lines[0][0].move_to(np.array([0, 0, 0]))
         self.align_lines()
-        VGroup.__init__(self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config)
+        VGroup.__init__(self, *[self.lines[0][i]
+                                for i in range(self.lines[0].__len__())], **config)
         self.move_to(np.array([0, 0, 0]))
 
     def set_all_lines_alignment(self, alignment):

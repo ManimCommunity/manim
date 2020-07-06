@@ -232,7 +232,8 @@ class ApplyFunction(Transform):
     def create_target(self):
         target = self.function(self.mobject.copy())
         if not isinstance(target, Mobject):
-            raise Exception("Functions passed to ApplyFunction must return object of type Mobject")
+            raise Exception(
+                "Functions passed to ApplyFunction must return object of type Mobject")
         return target
 
 

@@ -403,7 +403,8 @@ class VMobject(Mobject):
         return np.array(self.points)
 
     def set_anchors_and_handles(self, anchors1, handles1, handles2, anchors2):
-        assert(len(anchors1) == len(handles1) == len(handles2) == len(anchors2))
+        assert(len(anchors1) == len(handles1) ==
+               len(handles2) == len(anchors2))
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
         self.points = np.zeros((total_len, self.dim))
@@ -654,10 +655,10 @@ class VMobject(Mobject):
 
     def gen_subpaths_from_points_2d(self, points):
         return self._gen_subpaths_from_points(
-                points,
-                lambda n: not self.consider_points_equals_2d(
-                    points[n - 1], points[n]
-                ))
+            points,
+            lambda n: not self.consider_points_equals_2d(
+                points[n - 1], points[n]
+            ))
 
     def get_subpaths(self):
         return self.get_subpaths_from_points(self.get_points())

@@ -70,7 +70,8 @@ class ThreeDCamera(Camera):
             self.gamma_tracker,
         ]
 
-    def modified_rgbas(self, vmobject, rgbas): # TODO: Write DocStrings for this method.
+    # TODO: Write DocStrings for this method.
+    def modified_rgbas(self, vmobject, rgbas):
         if not self.should_apply_shading:
             return rgbas
         if vmobject.shade_in_3d and (vmobject.get_num_points() > 0):
@@ -94,17 +95,19 @@ class ThreeDCamera(Camera):
             return shaded_rgbas
         return rgbas
 
-    def get_stroke_rgbas(self, vmobject, background=False): #NOTE : DocStrings From parent
+    # NOTE : DocStrings From parent
+    def get_stroke_rgbas(self, vmobject, background=False):
         return self.modified_rgbas(
             vmobject, vmobject.get_stroke_rgbas(background)
         )
 
-    def get_fill_rgbas(self, vmobject): #NOTE : DocStrings From parent
+    def get_fill_rgbas(self, vmobject):  # NOTE : DocStrings From parent
         return self.modified_rgbas(
             vmobject, vmobject.get_fill_rgbas()
         )
 
-    def get_mobjects_to_display(self, *args, **kwargs): #NOTE : DocStrings From parent
+    # NOTE : DocStrings From parent
+    def get_mobjects_to_display(self, *args, **kwargs):
         mobjects = Camera.get_mobjects_to_display(
             self, *args, **kwargs
         )
@@ -313,7 +316,8 @@ class ThreeDCamera(Camera):
         """
         return self.project_points(point.reshape((1, 3)))[0, :]
 
-    def transform_points_pre_display(self, mobject, points): #TODO: Write Docstrings for this Method.
+    # TODO: Write Docstrings for this Method.
+    def transform_points_pre_display(self, mobject, points):
         points = super().transform_points_pre_display(mobject, points)
         fixed_orientation = mobject in self.fixed_orientation_mobjects
         fixed_in_frame = mobject in self.fixed_in_frame_mobjects

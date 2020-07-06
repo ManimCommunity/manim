@@ -41,6 +41,7 @@ class MoveToTargetTest(Scene):
 class ApplyPointwiseFunctionTest(Scene):
     def construct(self):
         square = Square()
+
         def func(p):
             return np.array([1.0, 1.0, 0.0])
         self.play(
@@ -80,6 +81,7 @@ class ApplyFunctionTest(Scene):
     def construct(self):
         square = Square()
         self.add(square)
+
         def apply_function(mob):
             mob.scale(2)
             mob.to_corner(UR)

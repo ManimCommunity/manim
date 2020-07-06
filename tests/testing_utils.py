@@ -34,7 +34,8 @@ class SceneTester:
     def __init__(self, scene_object, module_tested, caching_needed=False):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
-        self.path_tests_medias_cache = os.path.join('tests_cache', module_tested)
+        self.path_tests_medias_cache = os.path.join(
+            'tests_cache', module_tested)
         self.path_tests_data = os.path.join('tests_data', module_tested)
 
         if caching_needed:
@@ -61,7 +62,6 @@ class SceneTester:
         frame_data_path = os.path.join(
             self.path_tests_data, "{}.npy".format(str(self.scene)))
         return np.load(frame_data_path)
-
 
     def test(self):
         """Compare pre-rendered frame to the frame rendered during the test."""

@@ -74,7 +74,8 @@ class FadeInFromDown(FadeInFrom):
 
     def __init__(self, mobject, **kwargs):
         super().__init__(mobject, direction=DOWN, **kwargs)
-        logger.warning("FadeInFromDown is deprecated and will eventually disappear. Please use FadeInFrom(<mobject>, direction=DOWN, <other_args>) instead.")
+        logger.warning(
+            "FadeInFromDown is deprecated and will eventually disappear. Please use FadeInFrom(<mobject>, direction=DOWN, <other_args>) instead.")
 
 
 class FadeOutAndShift(FadeOut):
@@ -104,7 +105,8 @@ class FadeOutAndShiftDown(FadeOutAndShift):
 
     def __init__(self, mobject, **kwargs):
         super().__init__(mobject, direction=DOWN, **kwargs)
-        logger.warning("FadeOutAndShiftDown is deprecated and will eventually disappear. Please use FadeOutAndShift(<mobject>, direction=DOWN, <other_args>) instead.")
+        logger.warning(
+            "FadeOutAndShiftDown is deprecated and will eventually disappear. Please use FadeOutAndShift(<mobject>, direction=DOWN, <other_args>) instead.")
 
 
 class FadeInFromPoint(FadeIn):

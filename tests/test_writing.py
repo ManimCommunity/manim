@@ -2,12 +2,12 @@ from manim import *
 from testing_utils import utils_test_scenes, get_scenes_to_test
 
 
-#NOTE : All of these tests use cached data (in /test_cache)
+# NOTE : All of these tests use cached data (in /test_cache)
 # Cache functionality is tested within test_CLI.
 
 class TextTest(Scene):
     def construct(self):
-        t = Text('testing', font = "Arial")
+        t = Text('testing', font="Arial")
         self.play(Animation(t))
 
 
@@ -20,7 +20,7 @@ class TextMobjectTest(Scene):
 
 class TexMobjectTest(Scene):
     def construct(self):
-        #IMPORTANT NOTE : This won't test the abitilty of manim to write/cache latex.
+        # IMPORTANT NOTE : This won't test the abitilty of manim to write/cache latex.
         # i.e It will pass even if latex is not installed.
         # This is due to the fact that the latex used here has been cached (see test_cache directory)
         constants.TEX_TEMPLATE = TexTemplate()
@@ -31,6 +31,6 @@ class TexMobjectTest(Scene):
         self.play(Animation(t))
 
 
-
 def test_scenes():
-    utils_test_scenes(get_scenes_to_test(__name__), "writing", caching_needed=True)
+    utils_test_scenes(get_scenes_to_test(__name__),
+                      "writing", caching_needed=True)
