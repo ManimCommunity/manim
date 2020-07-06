@@ -8,11 +8,8 @@ from time import sleep
 import datetime
 from PIL import Image
 
-from ..constants import FFMPEG_BIN
-from ..constants import STREAMING_IP
-from ..constants import STREAMING_PORT
-from ..constants import STREAMING_PROTOCOL
-from .. import dirs
+from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
+from ..config import file_writer_config
 from ..logger import logger
 from ..utils.config_ops import digest_config
 from ..utils.file_ops import guarantee_existence
@@ -38,19 +35,6 @@ class SceneFileWriter(object):
         "movie_file_extension" (str=".mp4")
             The file-type extension of the outputted video.
     """
-    CONFIG = {
-        "write_to_movie": False,
-        "save_pngs": False,
-        "png_mode": "RGBA",
-        "save_last_frame": False,
-        "movie_file_extension": ".mp4",
-        "gif_file_extension": ".gif",
-        # Previous output_file_name
-        # TODO, address this in extract_scene et. al.
-        "file_name": None,
-        "input_file_path": "",  # ??
-        "output_directory": None,
-    }
 
     def __init__(self, scene, **kwargs):
         digest_config(self, kwargs)
@@ -67,14 +51,12 @@ class SceneFileWriter(object):
         files will be written to and read from (within MEDIA_DIR).
         If they don't already exist, they will be created.
         """
-        module_directory = self.output_directory or self.get_default_module_directory()
-        scene_name = self.file_name or self.get_default_scene_name()
-        # print("1")
-        # print(dirs.MEDIA_DIR)
-        if self.save_last_frame or self.save_pngs:
-            if dirs.MEDIA_DIR != "":
+        module_directory = self.get_default_module_directory()
+        scene_name = self.get_default_scene_name()
+        if file_writer_config['save_last_frame'] or file_writer_config['save_pngs']:
+            if file_writer_config['media_dir'] != "":
                 image_dir = guarantee_existence(os.path.join(
-                    dirs.MEDIA_DIR,
+                    file_writer_config['media_dir'],
                     "images",
                     module_directory,
                 ))
@@ -82,23 +64,24 @@ class SceneFileWriter(object):
                 image_dir,
                 add_extension_if_not_present(scene_name, ".png")
             )
-        if self.write_to_movie:
-            if dirs.VIDEO_DIR != "":
+
+        if file_writer_config['write_to_movie']:
+            if file_writer_config['video_dir']:
                 movie_dir = guarantee_existence(os.path.join(
-                    dirs.VIDEO_DIR,
+                    file_writer_config['video_dir'],
                     module_directory,
                     self.get_resolution_directory(),
                 ))
             self.movie_file_path = os.path.join(
                 movie_dir,
                 add_extension_if_not_present(
-                    scene_name, self.movie_file_extension
+                    scene_name, file_writer_config['movie_file_extension']
                 )
             )
             self.gif_file_path = os.path.join(
                 movie_dir,
                 add_extension_if_not_present(
-                    scene_name, self.gif_file_extension
+                    scene_name, GIF_FILE_EXTENSION
                 )
             )
             self.partial_movie_directory = guarantee_existence(os.path.join(
@@ -117,26 +100,24 @@ class SceneFileWriter(object):
         str
             The name of the directory.
         """
-        filename = os.path.basename(self.input_file_path)
+        filename = os.path.basename(file_writer_config['input_file'])
         root, _ = os.path.splitext(filename)
         return root
 
     def get_default_scene_name(self):
         """
         This method returns the default scene name
-        which is the value of "file_name", if it exists and
+        which is the value of "output_file", if it exists and
         the actual name of the class that inherited from
-        Scene in your animation script, if "file_name" is None.
+        Scene in your animation script, if "output_file" is None.
 
         Returns
         -------
         str
             The default scene name.
         """
-        if self.file_name is None:
-            return self.scene.__class__.__name__
-        else:
-            return self.file_name
+        fn = file_writer_config['output_file']
+        return (fn if fn else self.scene.__class__.__name__)
 
     def get_resolution_directory(self):
         """
@@ -184,7 +165,7 @@ class SceneFileWriter(object):
     def get_next_partial_movie_path(self):
         """
         Manim renders each play-like call in a short partial
-        video file. All such files are then concatenated with 
+        video file. All such files are then concatenated with
         the help of FFMPEG.
 
         This method returns the path of the next partial movie.
@@ -198,7 +179,7 @@ class SceneFileWriter(object):
             self.partial_movie_directory,
             "{}{}".format(
                 self.scene.play_hashes_list[self.scene.num_plays],
-                self.movie_file_extension,
+                file_writer_config['movie_file_extension'],
             )
         )
         return result
@@ -231,7 +212,7 @@ class SceneFileWriter(object):
                           time=None,
                           gain_to_background=None):
         """
-        This method adds an audio segment from an 
+        This method adds an audio segment from an
         AudioSegment type object and suitable parameters.
 
         Parameters
@@ -306,7 +287,7 @@ class SceneFileWriter(object):
         allow_write : bool, optional
             Whether or not to write to a video file.
         """
-        if self.write_to_movie and allow_write:
+        if file_writer_config['write_to_movie'] and allow_write:
             self.open_movie_pipe()
 
     def end_animation(self, allow_write=False):
@@ -319,7 +300,7 @@ class SceneFileWriter(object):
         allow_write : bool, optional
             Whether or not to write to a video file.
         """
-        if self.write_to_movie and allow_write:
+        if file_writer_config['write_to_movie'] and allow_write:
             self.close_movie_pipe()
 
     def write_frame(self, frame):
@@ -332,9 +313,9 @@ class SceneFileWriter(object):
         frame : np.array
             Pixel array of the frame.
         """
-        if self.write_to_movie:
+        if file_writer_config['write_to_movie']:
             self.writing_process.stdin.write(frame.tostring())
-        if self.save_pngs:
+        if file_writer_config['save_pngs']:
             path, extension = os.path.splitext(self.image_file_path)
             Image.fromarray(frame).save(f'{path}{self.frame_count}{extension}')
             self.frame_count += 1
@@ -377,13 +358,12 @@ class SceneFileWriter(object):
         If save_last_frame is True, saves the last
         frame in the default image directory.
         """
-        if self.write_to_movie:
+        if file_writer_config['write_to_movie']:
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
             self.combine_movie_files()
-            # TODO add an option to disable clea_cache. Possible when #98 is merged ! 
             self.clean_cache()
-        if self.save_last_frame:
+        if file_writer_config['save_last_frame']:
             self.scene.update_frame(ignore_skipping=True)
             self.save_final_image(self.scene.get_image())
 
@@ -394,9 +374,9 @@ class SceneFileWriter(object):
         buffer.
         """
         file_path = self.get_next_partial_movie_path()
-        temp_file_path = os.path.splitext(
-            file_path)[0] + '_temp' + self.movie_file_extension
-
+        temp_file_path = (os.path.splitext(file_path)[0]
+                          + '_temp'
+                          + file_writer_config['movie_file_extension'])
         self.partial_movie_file_path = file_path
         self.temp_partial_movie_file_path = temp_file_path
 
@@ -417,7 +397,7 @@ class SceneFileWriter(object):
         ]
         # TODO, the test for a transparent background should not be based on
         # the file extension.
-        if self.movie_file_extension == ".mov":
+        if file_writer_config['movie_file_extension'] == ".mov":
             # This is if the background of the exported
             # video should be transparent.
             command += [
@@ -493,7 +473,7 @@ class SceneFileWriter(object):
         # )
 
         partial_movie_files = [os.path.join(self.partial_movie_directory, "{}{}".format(
-            hash_play, self.movie_file_extension)) for hash_play in self.scene.play_hashes_list]
+            hash_play, file_writer_config['movie_file_extension'])) for hash_play in self.scene.play_hashes_list] # A OPTIMISER ! Là on recuperer deux fois la list des partial movies files, alors qu'on pourrait utiliser genre get_next_partial_movie_path jsp
         if len(partial_movie_files) == 0:
             logger.error("No animations in this scene")
             return
@@ -538,7 +518,7 @@ class SceneFileWriter(object):
 
         if self.includes_sound:
             sound_file_path = movie_file_path.replace(
-                self.movie_file_extension, ".wav"
+                file_writer_config['movie_file_extension'], ".wav"
             )
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
@@ -548,7 +528,7 @@ class SceneFileWriter(object):
             )
             temp_file_path = movie_file_path.replace(".", "_temp.")
             commands = [
-                "ffmpeg",
+                FFMPEG_BIN,
                 "-i", movie_file_path,
                 "-i", sound_file_path,
                 '-y',  # overwrite output file if it exists
