@@ -10,7 +10,7 @@ from PIL import Image
 
 from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
 from ..config import file_writer_config
-from ..logger import logger
+from ..logger import logger,console
 from ..utils.config_ops import digest_config
 from ..utils.file_ops import guarantee_existence
 from ..utils.file_ops import add_extension_if_not_present
@@ -529,3 +529,8 @@ class SceneFileWriter(object):
         Prints the "File Ready" message to STDOUT.
         """
         logger.info("\nFile ready at {}\n".format(file_path))
+        if file_writer_config["log_to_file"]:
+            log_file_path=os.path.join(
+                file_writer_config["log_dir"],f"{self.get_default_scene_name()}.log")
+            with open(log_file_path,"w") as logfile:
+                logfile.write(console.export_text())

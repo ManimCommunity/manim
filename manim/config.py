@@ -110,12 +110,12 @@ def _parse_file_writer_config(config_parser, args):
     # in batches, depending on their type: booleans and strings
     for boolean_opt in ['preview', 'show_file_in_finder', 'quiet', 'sound',
                         'leave_progress_bars', 'write_to_movie', 'save_last_frame',
-                        'save_pngs', 'save_as_gif', 'write_all']:
+                        'save_pngs', 'save_as_gif', 'write_all','log_to_file']:
         attr = getattr(args, boolean_opt)
         config[boolean_opt] = (default.getboolean(boolean_opt)
                                if attr is None else attr)
     # for str_opt in ['media_dir', 'video_dir', 'tex_dir', 'text_dir']:
-    for str_opt in ['media_dir']:
+    for str_opt in ['media_dir',"log_dir"]:
         attr = getattr(args, str_opt)
         config[str_opt] = (default[str_opt] if attr is None else attr)
     dir_names = {'video_dir': 'videos',
@@ -262,6 +262,11 @@ def _parse_cli(arg_list, input=True):
         const=True,
         help="Save the video as gif",
     )
+    parser.add_argument(
+        "--log_to_file",
+        action="store_const",
+        const=True,
+        help="Log terminal output to file.")
 
     # The default value of the following is set in manim.cfg
     parser.add_argument(
@@ -275,6 +280,10 @@ def _parse_cli(arg_list, input=True):
     parser.add_argument(
         "--media_dir",
         help="directory to write media",
+    )
+    parser.add_argument(
+        "--log_dir",
+        help="directory to write log files to",
     )
     # video_group = parser.add_mutually_exclusive_group()
     # video_group.add_argument(
@@ -365,9 +374,13 @@ def _parse_cli(arg_list, input=True):
 def _init_dirs(config):
     # Make sure all folders exist
     for folder in [config["media_dir"], config["video_dir"],
-                   config["tex_dir"], config["text_dir"]]:
+                   config["tex_dir"], config["text_dir"],config["log_dir"]]:
         if not os.path.exists(folder):
-            os.makedirs(folder)
+            # If log_to_file is False, ignore log_dir
+            if folder is config["log_dir"] and (not config["log_to_file"]):
+                pass
+            else:
+                os.makedirs(folder)
 
 
 def _from_command_line():
