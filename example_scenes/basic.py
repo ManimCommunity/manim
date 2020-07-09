@@ -134,3 +134,38 @@ class UpdatersExample(Scene):
         self.wait()
 
 # See old_projects folder for many, many more
+class VDictTest(Scene):
+    def construct(self):
+        square = Square().set_color(RED)
+        circle = Circle().set_color(YELLOW).next_to(square, UP)
+
+        # create dict from list of tuples each having key-mobject pair
+        pairs = [('s', square), ('c', circle)]
+        my_dict = VDict(*pairs, show_keys=True)
+
+        # display it just like a VGroup
+        self.play(
+            ShowCreation(my_dict)
+            )
+        self.wait()
+
+        print(my_dict.get_all_submobjects())
+
+        text = TextMobject("Some text").set_color(GREEN)
+        my_dict.add(('t', text)) #add like a VGroup
+        self.wait()
+        
+        print(my_dict.get_all_submobjects())
+
+        my_dict['t'].set_color(PURPLE) # access submobjects like a python dict
+        self.play(my_dict['t'].scale, 3)
+        self.wait()
+
+        my_dict.remove('t') # remove submojects by key
+        self.wait()
+
+        self.play(Uncreate(my_dict['s']))
+        self.wait()
+
+        self.play(FadeOut(my_dict['c']))
+        self.wait()
