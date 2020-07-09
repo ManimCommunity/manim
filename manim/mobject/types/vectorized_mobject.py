@@ -906,6 +906,44 @@ class VGroup(VMobject):
         VMobject.__init__(self, **kwargs)
         self.add(*vmobjects)
 
+class VDict(VMobject):
+    ''' 
+    A VGroup-like class, also offering submobject access by
+    key, like a python dict
+    '''
+    def __init__(self, *pairs, **kwargs):
+        if not all([isinstance(m[1], VMobject) for m in pairs ]):
+            raise Exception("All submobjects must be of type VMobject")
+        VMobject.__init__(self, **kwargs)
+        self.submob_dict = {}
+        self.add(*pairs)
+
+    def add(self, *pairs):
+        '''Adds the key-value pairs to self.submob_dict
+            and the value to the 'submobjects' list of Mobject,
+            (which is responsible for actual on-screen display)
+        '''
+        for pair in pairs:
+            key = pair[0]
+            value = pair[1]
+            self.submob_dict[key] = value
+            super().add(value)
+        return self
+
+    def remove(self, key):
+        if key not in self.submob_dict:
+            raise Exception("The given key '%s' is not present in the Dict" %str(key))
+        super().remove(self.submob_dict[key])
+        del self.submob_dict[key]
+        return self
+
+    # overriding the [] operator for getting submobject by key
+    def __getitem__(self, key):
+        return self.submob_dict[key]
+
+    def get_all_submobjects(self):
+        return (self.submob_dict).values()
+
 
 class VectorizedPoint(VMobject):
     CONFIG = {
