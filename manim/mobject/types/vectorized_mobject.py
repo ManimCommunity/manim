@@ -932,7 +932,7 @@ class VDict(VMobject):
 
     def remove(self, key):
         if key not in self.submob_dict:
-            raise Exception("The given key '%s' is not present in the Dict" %str(key))
+            raise Exception("The given key '%s' is not present in the VDict" %str(key))
         super().remove(self.submob_dict[key])
         del self.submob_dict[key]
         return self
