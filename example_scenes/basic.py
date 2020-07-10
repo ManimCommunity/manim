@@ -151,18 +151,23 @@ class VDictTest(Scene):
         print(my_dict.get_all_submobjects())
 
         text = TextMobject("Some text").set_color(GREEN).next_to(square, DOWN)
-        my_dict.add(('t', text))                        #add like a VGroup
+
+        #add like a VGroup
+        my_dict.add(('t', text))                        
         self.wait()
         
         rect = Rectangle().next_to(text, DOWN)
-        my_dict['r'] = rect                             # can also do key assignment like a python dict
+        # can also do key assignment like a python dict
+        my_dict['r'] = rect                             
         print(my_dict.get_all_submobjects())
 
-        my_dict['t'].set_color(PURPLE)                  # access submobjects like a python dict
+        # access submobjects like a python dict
+        my_dict['t'].set_color(PURPLE)                  
         self.play(my_dict['t'].scale, 3)
         self.wait()
 
-        my_dict.remove('t')                             # remove submojects by key
+        # remove submojects by key
+        my_dict.remove('t')                             
         self.wait()
 
         self.play(Uncreate(my_dict['s']))
@@ -171,7 +176,12 @@ class VDictTest(Scene):
         self.play(FadeOut(my_dict['c']))
         self.wait()
 
-        self.play(FadeOutAndShiftDown(my_dict['r']))
+        self.play(FadeOutAndShift(my_dict['r'], DOWN))
         self.wait()
+
+        # iterate through all submobjects currently associated with my_dict
+        for submob in my_dict.get_all_submobjects():
+            self.play(ShowCreation(submob))
+            self.wait()
 
 # See old_projects folder for many, many more
