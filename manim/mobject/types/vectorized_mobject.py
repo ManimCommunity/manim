@@ -956,7 +956,7 @@ class VDict(VMobject):
             
             Parameters
             ---------
-            *pairs : :class:`iterable`
+            pairs : Tuple[Hashable, :class:`~.VMobject`]
                 Each pair is a :class:`tuple` wherein the first 
                 element is the key for the mobject and the second
                 element is the actual mobject
