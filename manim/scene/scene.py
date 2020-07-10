@@ -2,6 +2,7 @@ import inspect
 import random
 import warnings
 import platform
+import copy 
 
 from tqdm import tqdm as ProgressDisplay
 import numpy as np
@@ -858,7 +859,7 @@ class Scene(Container):
                 )
             self.add_mobjects_from_animations(animations)
             mobjects_on_scene = self.get_mobjects()
-            hash_play = get_hash_from_play_call(animations, mobjects_on_scene)
+            hash_play = get_hash_from_play_call(self.__dict__['camera'], animations, mobjects_on_scene)
             self.play_hashes_list.append(hash_play)
             if not file_writer_config['disable_caching'] and self.file_writer.is_already_cached(hash_play):
                 logger.info(f'Animation {self.num_plays} : Using cached data (hash : {hash_play})')
@@ -882,7 +883,7 @@ class Scene(Container):
             named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
         """
         def wrapper(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-            hash_wait = get_hash_from_wait_call(duration, stop_condition, self.get_mobjects())
+            hash_wait = get_hash_from_wait_call(self.__dict__['camera'], duration, stop_condition, self.get_mobjects())
             self.play_hashes_list .append(hash_wait)
             if not file_writer_config['disable_caching'] and self.file_writer.is_already_cached(hash_wait):
                 logger.info(f'Wait {self.num_plays} : Using cached data (hash : {hash_wait})')
