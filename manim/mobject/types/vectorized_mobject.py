@@ -963,7 +963,7 @@ class VDict(VMobject):
 
             Returns
             -------
-            self : :class:`VDict`
+            :class:`VDict`
                 Returns the :class:`VDict` object on which this method was called
 
             Examples
