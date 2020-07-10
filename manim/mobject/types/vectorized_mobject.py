@@ -932,7 +932,6 @@ class VDict(VMobject):
             :class:`VDict`. When displayed, the key is towards
             the left of the mobject.
             Defaults to False
-    **kwargs : Keyword arguments
     submob_dict : :class:`dict`:
             Is the actual python dictionary that is used to bind
             the keys to the mobjects
