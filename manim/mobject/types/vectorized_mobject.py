@@ -921,7 +921,8 @@ class VDict(VMobject):
             the mobject. This might be useful when debugging,
             especially when there are a lot of mobjects in the
             :class:`VDict`. Defaults to False
-    **kwargs : Keyword arguments
+    kwargs : Any
+            Other arguments to be passed to `Mobject` or the CONFIG.
 
     Attributes
     ----------
