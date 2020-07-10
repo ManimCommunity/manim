@@ -996,7 +996,7 @@ class VDict(VMobject):
 
             Parameters
             ----------
-            key : 
+            key : Hashable
                 The key of the submoject to be removed
 
             Returns
