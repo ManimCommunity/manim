@@ -925,10 +925,6 @@ class VDict(VMobject):
 
     Attributes
     ----------
-    *pairs : :class:`iterable`
-            Each pair is a :class:`tuple` wherein the first 
-            element is the key for the mobject and the second
-            element is the actual mobject
     show_keys : :class:`bool`, optional
             Whether to also display the key associated with 
             the mobject. This might be useful when debugging,
