@@ -952,6 +952,9 @@ class VDict(VMobject):
     def __getitem__(self, key):
         return self.submob_dict[key]
 
+    def __setitem__(self, key, value):
+        self.add((key, value))
+
     def get_all_submobjects(self):
         return (self.submob_dict).values()
 
