@@ -1026,7 +1026,7 @@ class VDict(VMobject):
             
             Returns
             -------
-            submob : :class:`VMobject`
+            :class:`VMobject`
                 The submobject corresponding to the key `key`
 
             Examples
