@@ -1068,7 +1068,7 @@ class VDict(VMobject):
         
             Returns
             -------
-            submobjects : :class:`dict_values`
+            :class:`dict_values`
                 All the submobjects associated with the :class:`VDict` object
 
             Examples
