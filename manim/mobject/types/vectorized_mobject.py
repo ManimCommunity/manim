@@ -925,7 +925,7 @@ class VDict(VMobject):
 
     Attributes
     ----------
-    show_keys : :class:`bool`, optional
+    show_keys : :class:`bool`
             Whether to also display the key associated with 
             the mobject. This might be useful when debugging,
             especially when there are a lot of mobjects in the
