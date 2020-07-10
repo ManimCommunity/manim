@@ -958,7 +958,7 @@ class VDict(VMobject):
             Also, it internally adds the value to the `submobjects` :class:`list`
             of :class:`~.Mobject`, which is responsible for actual on-screen display
             
-            Paramters
+            Parameters
             ---------
             *pairs : :class:`iterable`
                 Each pair is a :class:`tuple` wherein the first 
