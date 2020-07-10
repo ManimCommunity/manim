@@ -133,7 +133,6 @@ class UpdatersExample(Scene):
         )
         self.wait()
 
-# See old_projects folder for many, many more
 class VDictTest(Scene):
     def construct(self):
         square = Square().set_color(RED)
@@ -151,7 +150,7 @@ class VDictTest(Scene):
 
         print(my_dict.get_all_submobjects())
 
-        text = TextMobject("Some text").set_color(GREEN)
+        text = TextMobject("Some text").set_color(GREEN).next_to(square, DOWN)
         my_dict.add(('t', text)) #add like a VGroup
         self.wait()
         
@@ -169,3 +168,5 @@ class VDictTest(Scene):
 
         self.play(FadeOut(my_dict['c']))
         self.wait()
+
+# See old_projects folder for many, many more

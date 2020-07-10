@@ -911,12 +911,15 @@ class VDict(VMobject):
     A VGroup-like class, also offering submobject access by
     key, like a python dict
     '''
-    def __init__(self, *pairs, **kwargs):
+
+    def __init__(self, *pairs, show_keys=False, **kwargs):
         if not all([isinstance(m[1], VMobject) for m in pairs ]):
             raise Exception("All submobjects must be of type VMobject")
         VMobject.__init__(self, **kwargs)
+        self.show_keys = show_keys
         self.submob_dict = {}
         self.add(*pairs)
+        
 
     def add(self, *pairs):
         '''Adds the key-value pairs to self.submob_dict
@@ -926,7 +929,15 @@ class VDict(VMobject):
         for pair in pairs:
             key = pair[0]
             value = pair[1]
-            self.submob_dict[key] = value
+            
+            mob = value
+            if self.show_keys:
+                from ...mobject.svg.tex_mobject import TextMobject
+                # This import is here and not at the top to avoid circular import
+                key_text = TextMobject(str(key)).next_to(value, LEFT)
+                mob.add(key_text)
+            
+            self.submob_dict[key] = mob
             super().add(value)
         return self
 
