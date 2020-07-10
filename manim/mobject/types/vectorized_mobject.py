@@ -1063,6 +1063,8 @@ class VDict(VMobject):
                 my_dict['sq'] = square_obj
         
         '''
+        if key in self.submob_dict:
+            self.remove(key)
         self.add((key, value))
 
     def get_all_submobjects(self):

@@ -166,6 +166,10 @@ class VDictTest(Scene):
         self.play(my_dict['t'].scale, 3)
         self.wait()
 
+        # also supports python dict styled reassignment
+        my_dict['t'] = TextMobject("Some other text").set_color(BLUE)
+        self.wait()
+
         # remove submojects by key
         my_dict.remove('t')                             
         self.wait()
