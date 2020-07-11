@@ -1007,7 +1007,7 @@ class VDict(VMobject):
             Examples
             --------
             Normal usage::
-            my_dict.remove('square')
+                my_dict.remove('square')
 
         '''
         if key not in self.submob_dict:
