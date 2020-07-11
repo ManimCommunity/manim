@@ -1021,7 +1021,7 @@ class VDict(VMobject):
         
             Parameters
             ----------
-            key : any suitable type of a python `dict`
+            key : Hashable
                 The key of the submoject to be accessed
             
             Returns
