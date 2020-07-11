@@ -940,7 +940,7 @@ class VDict(VMobject):
     '''
 
     def __init__(self, *pairs, show_keys=False, **kwargs):
-        if not all([isinstance(m[1], VMobject) for m in pairs ]):
+        if not all(isinstance(m[1], VMobject) for m in pairs):
             raise Exception("All submobjects must be of type VMobject")
         VMobject.__init__(self, **kwargs)
         self.show_keys = show_keys
