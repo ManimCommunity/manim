@@ -1078,7 +1078,7 @@ class VDict(VMobject):
                     self.play(ShowCreation(submob))
 
         '''
-        submobjects = (self.submob_dict).values()
+        submobjects = self.submob_dict.values()
         return submobjects
 
 
