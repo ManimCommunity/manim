@@ -1,14 +1,18 @@
 import re
+import os
 import copy
 import hashlib
 import cairo
-import manimlib.constants as consts
-from manimlib.constants import *
-from manimlib.container.container import Container
-from manimlib.mobject.geometry import Dot
-from manimlib.mobject.svg.svg_mobject import SVGMobject
-from manimlib.mobject.types.vectorized_mobject import VGroup
-from manimlib.utils.config_ops import digest_config
+
+from ...constants import *
+from ...config import config
+from ...container.container import Container
+from ...logger import logger
+from ...mobject.geometry import Dot, Rectangle
+from ...mobject.svg.svg_mobject import SVGMobject
+from ...mobject.types.vectorized_mobject import VGroup
+from ...utils.config_ops import digest_config
+
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 
@@ -343,7 +347,7 @@ class TextWithBackground(Text):
 
         if self.font == '':
             if NOT_SETTING_FONT_MSG != '':
-                print(NOT_SETTING_FONT_MSG)
+                logger.warning(NOT_SETTING_FONT_MSG)
 
         dir_name = consts.TEXT_DIR
         hash_name = self.text2hash()
