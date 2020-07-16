@@ -158,12 +158,24 @@ def _parse_file_writer_config(config_parser, args):
                     'save_as_gif', 'write_all']:
             fw_config[opt] = config_parser['dry_run'].getboolean(opt)
 
-
+    # Read in the streaming section -- all values are strings
+    fw_config['streaming'] = {opt: config_parser['streaming'][opt]
+                              for opt in ['live_stream_name', 'twitch_stream_key',
+                                          'streaming_protocol', 'streaming_ip',
+                                          'streaming_protocol', 'streaming_client',
+                                          'streaming_port', 'streaming_port',
+                                          'streaming_console_banner']}
 
     # For internal use (no CLI flag)
     fw_config['skip_animations'] = any([fw_config['save_last_frame'],
                                         fw_config['from_animation_number']])
 
+
+    if args.custom_folders:
+        for opt in ['media_dir', 'video_dir', 'tex_dir',
+                    'text_dir', 'output_file']:
+            fw_config[opt] = config_parser['custom_folders'].get(opt)
+            print(fw_config)
     return fw_config
 
 
@@ -351,6 +363,12 @@ def _parse_cli(arg_list, input=True):
     parser.add_argument(
         "--config_file",
         help="Specify the configuration file",
+    )
+
+    parser.add_argument(
+        "--custom_folders",
+        action="store_true",
+        help="Defines the output folder structure",
     )
 
     return parser.parse_args(arg_list)
