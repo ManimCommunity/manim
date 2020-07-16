@@ -34,7 +34,6 @@ def _parse_config(config_parser, args):
     else:
         section = config_parser['CLI']
     config = {opt: section.getint(opt) for opt in config_parser[flag]}
-
     # The -r, --resolution flag overrides the *_quality flags
     if args.resolution is not None:
         if "," in args.resolution:
@@ -159,13 +158,7 @@ def _parse_file_writer_config(config_parser, args):
                     'save_as_gif', 'write_all']:
             fw_config[opt] = config_parser['dry_run'].getboolean(opt)
 
-    # Read in the streaming section -- all values are strings
-    fw_config['streaming'] = {opt: config_parser['streaming'][opt]
-                              for opt in ['live_stream_name', 'twitch_stream_key',
-                                          'streaming_protocol', 'streaming_ip',
-                                          'streaming_protocol', 'streaming_client',
-                                          'streaming_port', 'streaming_port',
-                                          'streaming_console_banner']}
+
 
     # For internal use (no CLI flag)
     fw_config['skip_animations'] = any([fw_config['save_last_frame'],
@@ -418,6 +411,8 @@ logger.info(f'Read configuration files: {successfully_read_files}')
 
 # this is for internal use when writing output files
 file_writer_config = _parse_file_writer_config(config_parser, args)
+for k, v in file_writer_config.items():
+    print (k, '-->', v)
 
 # this is for the user
 config = _parse_config(config_parser, args)
