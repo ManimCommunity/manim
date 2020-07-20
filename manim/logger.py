@@ -40,9 +40,9 @@ config_items = _run_config()
 config_parser, successfully_read_files = config_items[1], config_items[-1]
 try:
     customTheme = parse_theme(successfully_read_files)
-    console = Console(theme=customTheme)
+    console = Console(theme=customTheme,record=True)
 except KeyError:
-    console = Console()
+    console = Console(record=True)
     printf(
         "[logging.level.warning]No cfg file found, creating one in "
         + successfully_read_files[0]
