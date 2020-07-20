@@ -529,8 +529,13 @@ class SceneFileWriter(object):
         Prints the "File Ready" message to STDOUT.
         """
         logger.info("\nFile ready at {}\n".format(file_path))
+
         if file_writer_config["log_to_file"]:
+            self.write_log()
+
+    def write_log(self):
             log_file_path=os.path.join(
                 file_writer_config["log_dir"],f"{self.get_default_scene_name()}.log")
             with open(log_file_path,"w") as logfile:
                 logfile.write(console.export_text())
+            logger.info("Log written to {}\n".format(log_file_path))
