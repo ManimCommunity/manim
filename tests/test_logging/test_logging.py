@@ -31,5 +31,4 @@ def test_logging_to_file(python_version):
             logs=re.sub(r"(\d{2}:\d{2}:\d{2})|(\.?/.+) +","",logfile.read())
     with open(os.path.join(os.path.dirname(__file__), "expected.log")) as ideal:
         expected=ideal.read()
-    assert logs==expected, logs
-    rmtree(path_output)
+    assert logs==expected, err

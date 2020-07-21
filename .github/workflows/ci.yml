@@ -67,3 +67,7 @@ jobs:
 
       - name: Run tests
         run: pytest
+      - name : If errored, print log
+        if : ${{ failure() }}
+        run : |
+          Get-Content -Path .\tests_cache\media_temp\logs\SquareToCircle.log
