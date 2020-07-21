@@ -26,7 +26,7 @@ def test_logging_to_file(python_version):
     assert os.path.exists(log_file_path), err
     with open (log_file_path) as logfile:
         if os.sep =="\\":
-            logs=re.sub(r"(\d{2}:\d{2}:\d{2})|(\.?\\.+) +","",logfile.read())
+            logs=re.sub(r"(\d{2}:\d{2}:\d{2})|([A-Z]:\\.*) +","",logfile.read())
         else:
             logs=re.sub(r"(\d{2}:\d{2}:\d{2})|(\.?/.+) +","",logfile.read())
     with open(os.path.join(os.path.dirname(__file__), "expected.log")) as ideal:
