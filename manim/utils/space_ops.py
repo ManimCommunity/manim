@@ -237,3 +237,19 @@ def get_winding_number(points):
         d_angle = ((d_angle + PI) % TAU) - PI
         total_angle += d_angle
     return total_angle / TAU
+
+
+def shoelace(x_y, absoluteValue=False, orientation=True):
+    x = x_y[:, 0]
+    y = x_y[:, 1]
+    result = 0.5 * np.array(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+    if absoluteValue:
+        return abs(result)
+    else:
+        if orientation:
+            if result > 0:
+                return "CW"
+            else:
+                return "CCW"
+        else:
+            return result

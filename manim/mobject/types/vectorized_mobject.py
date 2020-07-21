@@ -18,6 +18,7 @@ from ...utils.iterables import tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector
 from ...utils.space_ops import get_norm
+from ...utils.space_ops import shoelace
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -897,6 +898,24 @@ class VMobject(Mobject):
         vmob = self.copy()
         vmob.pointwise_become_partial(self, a, b)
         return vmob
+
+    def get_orientation(self):
+        return shoelace(self.get_start_anchors(), False, True)
+
+    def reverse_orientation(self):
+        reversed_points = self.get_points()[::-1]
+        self.clear_points()
+        self.append_points(reversed_points)
+        return self
+
+    def force_orientation(self, target_orientation):
+        if not (target_orientation == "CW" or target_orientation == "CCW"):
+            raise ValueError('Invalid input for force_orientation | Use "CW" or "CCW"')
+        if not (self.get_orientation() == target_orientation):
+            # Since we already assured the input is CW or CCW,
+            # and the orientations don't match, we just reverse
+            self.reverse_orientation()
+            return self
 
 
 class VGroup(VMobject):
