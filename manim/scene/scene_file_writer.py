@@ -536,9 +536,10 @@ class SceneFileWriter(object):
             os.remove(sound_file_path)
 
         self.print_file_ready_message(movie_file_path)
-        for file_path in partial_movie_files:
-            # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
-            modify_atime(file_path)
+        if file_writer_config["write_to_movie"] : 
+            for file_path in partial_movie_files:
+                # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
+                modify_atime(file_path)
 
     def clean_cache(self):
         """Will clean the cache by removing the partial_move used by manim the longest ago."""
