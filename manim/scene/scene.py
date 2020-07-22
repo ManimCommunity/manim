@@ -858,13 +858,16 @@ class Scene(Container):
                 *args, **kwargs
                 )
             self.add_mobjects_from_animations(animations)
-            mobjects_on_scene = self.get_mobjects()
-            hash_play = get_hash_from_play_call(self.__dict__['camera'], animations, mobjects_on_scene)
-            self.play_hashes_list.append(hash_play)
-            if not file_writer_config['disable_caching'] and self.file_writer.is_already_cached(hash_play):
-                logger.info(f'Animation {self.num_plays} : Using cached data (hash : {hash_play})')
-                file_writer_config['skip_animations'] = True
+            if not file_writer_config['disable_caching']:
+                mobjects_on_scene = self.get_mobjects()
+                hash_play = get_hash_from_play_call(self.__dict__['camera'], animations, mobjects_on_scene)
+                self.play_hashes_list.append(hash_play)
+                if self.file_writer.is_already_cached(hash_play):
+                    logger.info(f'Animation {self.num_plays} : Using cached data (hash : {hash_play})')
+                    file_writer_config['skip_animations'] = True
             else: 
+                hash_play = "uncached_{:05}".format(self.num_plays)
+                self.play_hashes_list.append(hash_play)
                 self.revert_to_original_skipping_status()
             func(self, *args, **kwargs)
         return wrapper
