@@ -27,11 +27,11 @@ def test_logging_to_file(python_version):
     log_file_path=os.path.join(path_output, "logs", "SquareToCircle.log")
     assert exitcode == 0, err
     assert os.path.exists(log_file_path), err
-    if sys.platform.startswith("win32") or sys.platform.startswith("win32"):
+    if sys.platform.startswith("win32") or sys.platform.startswith("cygwin"):
         enc="Windows-1252"
     else:
         enc="utf-8"
     with open(log_file_path,encoding=enc) as logfile:
-        logs=logfile.read()
+        logs=logfile.read().split()
     logs=[e for e in logs if not any(x in e for x in ["\\","/",".mp4","[","]"])]
     assert logs==expected, err
