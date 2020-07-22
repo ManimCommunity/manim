@@ -33,5 +33,5 @@ def test_logging_to_file(python_version):
         enc="utf-8"
     with open(log_file_path,encoding=enc) as logfile:
         logs=logfile.read()
-    logs=[e for e in log if not any(x in e for x in ["\\","/",".mp4","[","]"])]
+    logs=[e for e in logs if not any(x in e for x in ["\\","/",".mp4","[","]"])]
     assert logs==expected, err
