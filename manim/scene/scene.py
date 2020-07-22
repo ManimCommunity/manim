@@ -886,12 +886,15 @@ class Scene(Container):
             named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
         """
         def wrapper(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-            hash_wait = get_hash_from_wait_call(self.__dict__['camera'], duration, stop_condition, self.get_mobjects())
-            self.play_hashes_list .append(hash_wait)
-            if not file_writer_config['disable_caching'] and self.file_writer.is_already_cached(hash_wait):
-                logger.info(f'Wait {self.num_plays} : Using cached data (hash : {hash_wait})')
-                file_writer_config['skip_animations'] = True
+            if not file_writer_config['disable_caching']:
+                hash_wait = get_hash_from_wait_call(self.__dict__['camera'], duration, stop_condition, self.get_mobjects())
+                self.play_hashes_list .append(hash_wait)
+                if self.file_writer.is_already_cached(hash_wait):
+                    logger.info(f'Wait {self.num_plays} : Using cached data (hash : {hash_wait})')
+                    file_writer_config['skip_animations'] = True
             else : 
+                hash_play = "uncached_{:05}".format(self.num_plays)
+                self.play_hashes_list.append(hash_play)
                 self.revert_to_original_skipping_status()
             func(self, duration, stop_condition)
         return wrapper
