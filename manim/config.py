@@ -171,6 +171,7 @@ def _parse_file_writer_config(config_parser, args):
     # For internal use (no CLI flag)
     config['skip_animations'] = any([config['save_last_frame'],
                                      config['from_animation_number']])
+    config['max_file_cached'] = default.getint('max_file_cached')
 
     return config
 

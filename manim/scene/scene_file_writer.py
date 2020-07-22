@@ -559,11 +559,11 @@ class SceneFileWriter(object):
         """Will clean the cache by removing the partial_move used by manim the longest ago."""
         cached_partial_movies = [os.path.join(self.partial_movie_directory, file_name) for file_name in os.listdir(
             self.partial_movie_directory) if file_name != "partial_movie_file_list.txt"]
-        max_file_cached = 7  # TODO put this in CONFIG when #98 is merged
-        if len(cached_partial_movies) > max_file_cached:
+        if len(cached_partial_movies) > file_writer_config['max_file_cached']:
             oldest_file_path = min(cached_partial_movies, key=os.path.getatime)
             logger.info(
-                f"Partial movie directory is full. (> {max_file_cached} files). Manim removed the file used by manim the longest ago. ({os.path.basename(oldest_file_path)}).")
+                f"Partial movie directory is full. (> {file_writer_config['max_file_cached']} files). Manim removed the file used by manim the longest ago. ({os.path.basename(oldest_file_path)})."
+                + "You can change this behaviour by changing max_file_cached in config.")
             os.remove(oldest_file_path)
 
     def flush_cache_directory(self): 
