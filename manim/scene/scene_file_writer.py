@@ -14,7 +14,6 @@ from ..logger import logger
 from ..utils.config_ops import digest_config
 from ..utils.file_ops import guarantee_existence
 from ..utils.file_ops import add_extension_if_not_present
-from ..utils.file_ops import get_sorted_integer_files
 from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
 
@@ -460,20 +459,6 @@ class SceneFileWriter(object):
         # the scene as a whole, one of course wants to see it as a
         # single piece.
 
-        # kwargs = {
-        #     "remove_non_integer_files": False,
-        #     "extension": self.movie_file_extension,
-        # }
-        # if self.scene.start_at_animation_number is not None:
-        #     kwargs["min_index"] = self.scene.start_at_animation_number
-        # if self.scene.end_at_animation_number is not None:
-        #     kwargs["max_index"] = self.scene.end_at_animation_number
-        # else:
-        #     kwargs["remove_indices_greater_than"] = self.scene.num_plays - 1
-        # partial_movie_files = get_sorted_integer_files(
-        #     self.partial_movie_directory,
-        #     **kwargs
-        # )
 
         partial_movie_files = [os.path.join(self.partial_movie_directory, "{}{}".format(
             hash_play, file_writer_config['movie_file_extension'])) for hash_play in self.scene.play_hashes_list] # A OPTIMISER ! Là on recuperer deux fois la list des partial movies files, alors qu'on pourrait utiliser genre get_next_partial_movie_path jsp
