@@ -435,7 +435,7 @@ class SceneFileWriter(object):
         Parameters
         ----------
         hash_invokation : :class:`str`
-            The hash corresponding to an invokation to either `scene.play` or `scene.wait`.
+            The hash corresponding to an invocation to either `scene.play` or `scene.wait`.
 
         Returns
         -------

@@ -842,8 +842,8 @@ class Scene(Container):
 
     def handle_caching_play(func): 
         """
-        This method is used internally to wrap the passed function into a function that will compute the hash of the play invokation, 
-        and will act accordingly : either skip the animation because already cached, either nothing and let the play invokation be processed normally.
+        This method is used internally to wrap the passed function into a function that will compute the hash of the play invocation, 
+        and will act accordingly : either skip the animation because already cached, either nothing and let the play invocation be processed normally.
 
         Parameters
         ----------
@@ -874,8 +874,8 @@ class Scene(Container):
 
     def handle_caching_wait(func): 
         """
-        This method is used internally to wrap the passed function into a function that will compute the hash of the wait invokation, 
-        and will act accordingly : either skip the animation because already cached or nothing and let the play invokation be processed normally
+        This method is used internally to wrap the passed function into a function that will compute the hash of the wait invocation, 
+        and will act accordingly : either skip the animation because already cached or nothing and let the play invocation be processed normally
 
         Parameters
         ----------
