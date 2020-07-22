@@ -55,4 +55,3 @@ def test_dash_as_name(python_version):
     assert os.path.exists(os.path.join(
         path_output, "videos", "-", "480p15", "DashAsNameTest.mp4")), err
     rmtree(path_output)
-
