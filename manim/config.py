@@ -1,20 +1,19 @@
 """
 config.py
 ---------
-
 Process the manim.cfg file and the command line arguments into a single
 config object.
-
 """
-
 import os
 import sys
-import argparse
-import configparser
+
 import colour
-from .utils.tex import TexTemplateFromFile, TexTemplate
-from .logger import logger
+
 from . import constants
+from .utils.config_utils import _run_config, _init_dirs, _from_command_line
+
+from .logger import logger
+from .utils.tex import TexTemplate, TexTemplateFromFile
 
 __all__ = ["file_writer_config", "config", "camera_config"]
 
@@ -22,17 +21,17 @@ __all__ = ["file_writer_config", "config", "camera_config"]
 def _parse_config(config_parser, args):
     """Parse config files and CLI arguments into a single dictionary."""
     # By default, use the CLI section of the digested .cfg files
-    default = config_parser['CLI']
+    default = config_parser["CLI"]
 
     # Handle the *_quality flags.  These determine the section to read
     # and are stored in 'camera_config'.  Note the highest resolution
     # passed as argument will be used.
-    for flag in ['fourk_quality', 'high_quality', 'medium_quality', 'low_quality']:
+    for flag in ["fourk_quality", "high_quality", "medium_quality", "low_quality"]:
         if getattr(args, flag):
             section = config_parser[flag]
             break
     else:
-        section = config_parser['CLI']
+        section = config_parser["CLI"]
     config = {opt: section.getint(opt) for opt in config_parser[flag]}
 
     # The -r, --resolution flag overrides the *_quality flags
@@ -42,42 +41,39 @@ def _parse_config(config_parser, args):
             height, width = int(height_str), int(width_str)
         else:
             height, width = int(args.resolution), int(16 * height / 9)
-        config['camera_config'].update({'pixel_height': height,
-                                        'pixel_width': width})
+        config["camera_config"].update({"pixel_height": height, "pixel_width": width})
 
     # Handle the -c (--color) flag
     if args.color is not None:
         try:
             background_color = colour.Color(args.color)
         except AttributeError as err:
-            logger.warning('Please use a valid color.')
+            logger.warning("Please use a valid color.")
             logger.error(err)
             sys.exit(2)
     else:
-        background_color = colour.Color(default['background_color'])
-    config['background_color'] = background_color
+        background_color = colour.Color(default["background_color"])
+    config["background_color"] = background_color
 
     # Set the rest of the frame properties
-    config['frame_height'] = 8.0
-    config['frame_width'] = (config['frame_height']
-                             * config['pixel_width']
-                             / config['pixel_height'])
-    config['frame_y_radius'] = config['frame_height'] / 2
-    config['frame_x_radius'] = config['frame_width'] / 2
-    config['top'] = config['frame_y_radius'] * constants.UP
-    config['bottom'] = config['frame_y_radius'] * constants.DOWN
-    config['left_side'] = config['frame_x_radius'] * constants.LEFT
-    config['right_side'] = config['frame_x_radius'] * constants.RIGHT
+    config["frame_height"] = 8.0
+    config["frame_width"] = (
+        config["frame_height"] * config["pixel_width"] / config["pixel_height"]
+    )
+    config["frame_y_radius"] = config["frame_height"] / 2
+    config["frame_x_radius"] = config["frame_width"] / 2
+    config["top"] = config["frame_y_radius"] * constants.UP
+    config["bottom"] = config["frame_y_radius"] * constants.DOWN
+    config["left_side"] = config["frame_x_radius"] * constants.LEFT
+    config["right_side"] = config["frame_x_radius"] * constants.RIGHT
 
     # Handle the --tex_template flag.  Note we accept None if the flag is absent
-    filename = (os.path.expanduser(args.tex_template)
-                if args.tex_template is not None
-                else None)
+    tex_fn = os.path.expanduser(args.tex_template) if args.tex_template else None
 
-    if filename is not None and not os.access(filename, os.R_OK):
+    if tex_fn is not None and not os.access(tex_fn, os.R_OK):
         # custom template not available, fallback to default
         logger.warning(
-            f"Custom TeX template {filename} not found or not readable. "
+            f"Custom TeX template {tex_fn} not found or not readable. "
             "Falling back to the default template."
         )
         filename = None
@@ -397,42 +393,20 @@ def _from_command_line():
     from_python_m = sys.argv[0] == '-m'
 
     return from_cli_command or from_python_m
+        tex_fn = None
+    config["tex_template_file"] = tex_fn
+    config["tex_template"] = (
+        TexTemplateFromFile(filename=tex_fn)
+        if tex_fn is not None
+        else TexTemplate()
+    )
+
+    return config
 
 
-# Config files to be parsed, in ascending priority
-library_wide = os.path.join(os.path.dirname(__file__), 'default.cfg')
-config_files = [
-    library_wide,
-    os.path.expanduser('~/.manim.cfg'),
-]
-
+args, config_parser, file_writer_config, successfully_read_files = _run_config()
 if _from_command_line():
-    args = _parse_cli(sys.argv[1:])
-    if args.config_file is not None:
-        if os.path.exists(args.config_file):
-            config_files.append(args.config_file)
-        else:
-            raise FileNotFoundError(f"Config file {args.config_file} doesn't exist")
-    else:
-        script_directory_file_config = os.path.join(os.path.dirname(args.file), 'manim.cfg')
-        if os.path.exists(script_directory_file_config):
-            config_files.append(script_directory_file_config)
-
-else:
-    # In this case, we still need an empty args object.
-    args = _parse_cli([], input=False)
-    # Need to populate the options left out
-    args.file, args.scene_names, args.output_file = '', '', ''
-
-config_parser = configparser.ConfigParser()
-successfully_read_files = config_parser.read(config_files)
-logger.info(f'Read configuration files: {successfully_read_files}')
-
-# this is for internal use when writing output files
-file_writer_config = _parse_file_writer_config(config_parser, args)
-
-# this is for the user
+    logger.info(f"Read configuration files: {os.path.abspath(successfully_read_files[-1])}")
+    _init_dirs(file_writer_config)
 config = _parse_config(config_parser, args)
 camera_config = config
-
-_init_dirs(file_writer_config)
