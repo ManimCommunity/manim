@@ -81,10 +81,11 @@ def get_camera_dict_for_hashing(camera_object):
     `dict`
         Camera.__dict__ but cleaned.
     """
-    camera_object_dict = copy.deepcopy(camera_object.__dict__)
+    camera_object_dict = copy.copy(camera_object.__dict__)
     # We have to clean a little bit camera_dict, as pixel_array and background are two very big numpy array.
     # They are not essential to caching process.
-    for to_clean in ['background', 'pixel_array']:
+    # We also have to remove pixel_array_to_cairo_context as it conntains uses memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
+    for to_clean in ['background', 'pixel_array', 'pixel_array_to_cairo_context']:
         camera_object_dict.pop(to_clean, None)
     return camera_object_dict
 
