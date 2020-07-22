@@ -110,7 +110,7 @@ def _parse_file_writer_config(config_parser, args):
     # in batches, depending on their type: booleans and strings
     for boolean_opt in ['preview', 'show_file_in_finder', 'quiet', 'sound',
                         'leave_progress_bars', 'write_to_movie', 'save_last_frame',
-                        'save_pngs', 'save_as_gif', 'write_all', 'disable_caching']:
+                        'save_pngs', 'save_as_gif', 'write_all', 'disable_caching', 'flush_cache']:
         attr = getattr(args, boolean_opt)
         config[boolean_opt] = (default.getboolean(boolean_opt)
                                if attr is None else attr)
@@ -267,7 +267,13 @@ def _parse_cli(arg_list, input=True):
         "--disable_caching",
         action="store_const",
         const=True,
-        help="Disable caching (will create a partial movie file anyway",
+        help="Disable caching (will create a partial movie file anyway)",
+    )
+    parser.add_argument(
+        "--flush_cache",
+        action="store_const",
+        const=True,
+        help="Remove all partial-movie-files cached.",       
     )
 
     # The default value of the following is set in manim.cfg

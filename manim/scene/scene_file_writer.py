@@ -362,7 +362,10 @@ class SceneFileWriter(object):
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
             self.combine_movie_files()
-            self.clean_cache()
+            if file_writer_config['flush_cache']:
+                self.flush_cache_directory()
+            else : 
+                self.clean_cache()
         if file_writer_config['save_last_frame']:
             self.scene.update_frame(ignore_skipping=True)
             self.save_final_image(self.scene.get_image())
@@ -562,6 +565,14 @@ class SceneFileWriter(object):
             logger.info(
                 f"Partial movie directory is full. (> {max_file_cached} files). Manim removed the file used by manim the longest ago. ({os.path.basename(oldest_file_path)}).")
             os.remove(oldest_file_path)
+
+    def flush_cache_directory(self): 
+        """Delete all the partial movie files cached"""
+        cached_partial_movies = [os.path.join(self.partial_movie_directory, file_name) for file_name in os.listdir(
+            self.partial_movie_directory) if file_name != "partial_movie_file_list.txt"]
+        for f in cached_partial_movies: 
+            os.remove(f)
+        logger.info(f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in {self.partial_movie_directory}.")
 
     def print_file_ready_message(self, file_path):
         """
