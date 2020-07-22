@@ -50,7 +50,7 @@ def _parse_file_writer_config(config_parser, args):
         "write_all",
         "disable_caching", 
         "flush_cache"]:
-    ]:
+
         attr = getattr(args, boolean_opt)
         fw_config[boolean_opt] = (
             default.getboolean(boolean_opt) if attr is None else attr
@@ -219,6 +219,12 @@ def _parse_cli(arg_list, input=True):
         action="store_const",
         const=True,
         help="Save the video as gif",
+    )
+    parser.add_argument(
+        "--disable_caching",
+        action="store_const",
+        const=True,
+        help="Disable caching (will generate partial-movie-files anyway).",       
     )
     parser.add_argument(
         "--flush_cache",
