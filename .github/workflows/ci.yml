@@ -67,7 +67,11 @@ jobs:
 
       - name: Run tests
         run: pytest
-      - name : If errored, print log
-        if : ${{ failure() }}
-        run : |
-          Get-Content -Path .\tests_cache\media_temp\logs\SquareToCircle.log
+
+      - name: Print Windows log
+        if: runner.os == 'Windows' && ${{ failure() }}
+        run: Get-Content -Path .\tests_cache\media_temp\logs\SquareToCircle.log
+
+      - name: Print Windows log
+        if: (runner.os == 'macOS' || runner.os == 'Linux') && ${{ failure() }}
+        run: echo ./tests_cache/media_temp/logs/SquareToCircle.log
