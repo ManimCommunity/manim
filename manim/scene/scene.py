@@ -853,7 +853,8 @@ class Scene(Container):
         **kwargs : 
             named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
         """
-        def wrapper(self, *args, **kwargs): 
+        def wrapper(self, *args, **kwargs):
+            self.revert_to_original_skipping_status()
             animations = self.compile_play_args_to_animation_list(
                 *args, **kwargs
                 )
@@ -886,15 +887,16 @@ class Scene(Container):
             named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
         """
         def wrapper(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
+            self.revert_to_original_skipping_status()
             if not file_writer_config['disable_caching']:
                 hash_wait = get_hash_from_wait_call(self.__dict__['camera'], duration, stop_condition, self.get_mobjects())
-                self.play_hashes_list .append(hash_wait)
+                self.play_hashes_list.append(hash_wait)
                 if self.file_writer.is_already_cached(hash_wait):
                     logger.info(f'Wait {self.num_plays} : Using cached data (hash : {hash_wait})')
                     file_writer_config['skip_animations'] = True
             else : 
-                hash_play = "uncached_{:05}".format(self.num_plays)
-                self.play_hashes_list.append(hash_play)
+                hash_wait = "uncached_{:05}".format(self.num_plays)
+                self.play_hashes_list.append(hash_wait)
                 self.revert_to_original_skipping_status()
             func(self, duration, stop_condition)
         return wrapper
@@ -1171,8 +1173,8 @@ class Scene(Container):
         Scene
             The Scene, with skipping turned on.
         """
-        self.original_skipping_status = self.SKIP_ANIMATIONS
-        self.SKIP_ANIMATIONS = True
+        self.original_skipping_status = file_writer_config['skip_animations']
+        file_writer_config['skip_animations'] = True
         return self
 
     def revert_to_original_skipping_status(self):
@@ -1187,7 +1189,7 @@ class Scene(Container):
             The Scene, with the original skipping status.
         """
         if hasattr(self, "original_skipping_status"):
-            self.SKIP_ANIMATIONS = self.original_skipping_status
+            file_writer_config['skip_animations'] = self.original_skipping_status
         return self
 
     def add_frames(self, *frames):
@@ -1222,7 +1224,7 @@ class Scene(Container):
         gain :
 
         """
-        if self.SKIP_ANIMATIONS:
+        if file_writer_config['skip_animations']:
             return
         time = self.get_time() + time_offset
         self.file_writer.add_sound(sound_file, time, gain, **kwargs)
