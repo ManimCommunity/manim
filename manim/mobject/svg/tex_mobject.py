@@ -31,6 +31,7 @@ class SingleStringTexMobject(SVGMobject):
         "organize_left_to_right": False,
         "alignment": "",
         "type": "tex",
+        "template": config['tex_template'],
     }
 
     def __init__(self, tex_string, **kwargs):
@@ -39,7 +40,8 @@ class SingleStringTexMobject(SVGMobject):
         self.tex_string = tex_string
         file_name = tex_to_svg_file(
             self.get_modified_expression(tex_string),
-            self.type
+            self.type,
+            tex_template=self.template
         )
         SVGMobject.__init__(self, file_name=file_name, **kwargs)
         if self.height is None:
