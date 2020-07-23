@@ -869,7 +869,6 @@ class Scene(Container):
             else: 
                 hash_play = "uncached_{:05}".format(self.num_plays)
                 self.play_hashes_list.append(hash_play)
-                self.revert_to_original_skipping_status()
             func(self, *args, **kwargs)
         return wrapper
 
@@ -897,7 +896,6 @@ class Scene(Container):
             else : 
                 hash_wait = "uncached_{:05}".format(self.num_plays)
                 self.play_hashes_list.append(hash_wait)
-                self.revert_to_original_skipping_status()
             func(self, duration, stop_condition)
         return wrapper
 
