@@ -7,6 +7,7 @@ from ...animation.growing import GrowFromCenter
 from ...mobject.svg.tex_mobject import TexMobject
 from ...mobject.svg.tex_mobject import TextMobject
 from ...mobject.types.vectorized_mobject import VMobject
+from ...mobject.geometry import Line
 from ...utils.config_ops import digest_config
 from ...utils.space_ops import get_norm
 
@@ -137,3 +138,8 @@ class BraceText(BraceLabel):
     CONFIG = {
         "label_constructor": TextMobject
     }
+
+
+class BraceBetweeenPoints(Brace):
+    def __init__(self,point_1,point_2,**kwargs):
+        Brace.__init__(self,Line(point_1,point_2),**kwargs)
