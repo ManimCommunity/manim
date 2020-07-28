@@ -363,7 +363,7 @@ class SceneFileWriter(object):
             self.combine_movie_files()
             if file_writer_config['flush_cache']:
                 self.flush_cache_directory()
-            else : 
+            else:
                 self.clean_cache()
         if file_writer_config['save_last_frame']:
             self.scene.update_frame(ignore_skipping=True)
@@ -438,8 +438,8 @@ class SceneFileWriter(object):
 
         Returns
         -------
-        `bool`
-            Wether the file exists.
+        :class:`bool`
+            Whether the file exists.
         """
         path = os.path.join(self.partial_movie_directory, "{}{}".format(
             hash_invokation, self.movie_file_extension))
@@ -548,12 +548,12 @@ class SceneFileWriter(object):
         if len(cached_partial_movies) > file_writer_config['max_file_cached']:
             oldest_file_path = min(cached_partial_movies, key=os.path.getatime)
             logger.info(
-                f"Partial movie directory is full. (> {file_writer_config['max_file_cached']} files). Manim removed the file used by manim the longest ago. ({os.path.basename(oldest_file_path)})."
+                f"The partial movie directory is full (> {file_writer_config['max_file_cached']} files). Therefore, manim has removed the file used by it the longest ago ({os.path.basename(oldest_file_path)})."
                 + "You can change this behaviour by changing max_file_cached in config.")
             os.remove(oldest_file_path)
 
     def flush_cache_directory(self): 
-        """Delete all the partial movie files cached"""
+        """Delete all the cached partial movie files"""
         cached_partial_movies = [os.path.join(self.partial_movie_directory, file_name) for file_name in os.listdir(
             self.partial_movie_directory) if file_name != "partial_movie_file_list.txt"]
         for f in cached_partial_movies: 
