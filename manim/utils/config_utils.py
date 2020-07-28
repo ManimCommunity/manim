@@ -102,7 +102,7 @@ def _parse_file_writer_config(config_parser, args):
             "write_all",
         ]:
             fw_config[opt] = config_parser["dry_run"].getboolean(opt)
-    if not fw_config['write_to_movie'] : 
+    if not fw_config['write_to_movie']:
         fw_config['disable_caching'] = True
     # Read in the streaming section -- all values are strings
     fw_config["streaming"] = {
@@ -230,7 +230,7 @@ def _parse_cli(arg_list, input=True):
         "--flush_cache",
         action="store_const",
         const=True,
-        help="Remove all partial-movie-files cached.",       
+        help="Remove all cached partial-movie-files.",       
     )
     # The default value of the following is set in manim.cfg
     parser.add_argument(

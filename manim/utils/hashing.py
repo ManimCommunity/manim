@@ -48,12 +48,12 @@ class CustomEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
         except TypeError:
             # This is used when the user enters an unknown type in CONFIG. Rather than throwing an error, we transform
-            # it into a string "Unsupported type for hashing" so it won't affect the hash.
+            # it into a string "Unsupported type for hashing" so that it won't affect the hash.
             return "Unsupported type for hashing"
 
 
 def get_json(object):
-    """Recursively serialize object to JSON. Use CustomEncoder class above.
+    """Recursively serialize `object` to JSON using the :class:`CustomEncoder` class.
 
     Paramaters
     ----------
@@ -62,52 +62,52 @@ def get_json(object):
 
     Returns
     -------
-    `str` 
-        the object flattened
+    :class:`str` 
+        The flattened object
     """
     return json.dumps(object, cls=CustomEncoder)
 
 
 def get_camera_dict_for_hashing(camera_object):
-    """Remove some keys from cameraobject.__dict__ that are useless for the caching functionnality and very heavy. 
+    """Remove some keys from `camera_object.__dict__` that are very heavy and useless for the caching functionality.
 
     Parameters
     ----------
-    object_camera : :class:``~.Camera`
+    camera_object : :class:`~.Camera`
         The camera object used in the scene
 
     Returns
     -------
-    `dict`
-        Camera.__dict__ but cleaned.
+    :class:`dict`
+        `Camera.__dict__` but cleaned.
     """
     camera_object_dict = copy.copy(camera_object.__dict__)
-    # We have to clean a little bit camera_dict, as pixel_array and background are two very big numpy array.
+    # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays.
     # They are not essential to caching process.
-    # We also have to remove pixel_array_to_cairo_context as it conntains uses memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
+    # We also have to remove pixel_array_to_cairo_context as it contains used memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
     for to_clean in ['background', 'pixel_array', 'pixel_array_to_cairo_context']:
         camera_object_dict.pop(to_clean, None)
     return camera_object_dict
 
 
 def get_hash_from_play_call(camera_object, animations_list, current_mobjects_list):
-    """Take the list of animations and a list of mobjects and output their hash. Is meant to be used for `scene.play` function.
+    """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 
     Parameters
     -----------
-    object_camera : :class:``~.Camera`
-        The camera object used in the scene
+    camera_object : :class:`~.Camera`
+        The camera object used in the scene.
 
     animations_list : :class:`list`
-        The list of animations 
+        The list of animations.
 
     current_mobjects_list : :class:`list`
         The list of mobjects.
 
     Returns
     -------
-    `str` 
-        concatenation of the hash of object_camera, animations_list and current_mobjects_list separated by '_'.
+    :class:`str` 
+        A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`.
     """
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [get_json(x) for x in sorted(
@@ -122,7 +122,7 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
 
 
 def get_hash_from_wait_call(camera_object, wait_time, stop_condition_function, current_mobjects_list):
-    """Take a wait time, a boolean function as stop_condition and a list of mobjects output their hash. Is meant to be used for `scene.wait` function.
+    """Take a wait time, a boolean function as a stop condition and a list of mobjects, and then output their individual hashes. This is meant to be used for `scene.wait` function.
 
     Parameters
     -----------
@@ -134,8 +134,8 @@ def get_hash_from_wait_call(camera_object, wait_time, stop_condition_function, c
 
     Returns
     -------
-    `str` 
-        concatenation of the hash of animations_list and current_mobjects_list separated by '_'.
+    :class:`str`
+        A concatenation of the respective hashes of `animations_list and `current_mobjects_list`, separated by `_`.
     """
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     current_mobjects_list_json = [get_json(x) for x in sorted(
