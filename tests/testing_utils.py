@@ -44,6 +44,8 @@ class SceneTester:
                 self.path_tests_medias_cache, scene_object.__name__, 'Tex')
 
         file_writer_config['skip_animations'] = True
+        file_writer_config['disable_caching'] = True
+        file_writer_config["write_to_movie"] = False
         config['pixel_height'] = 480
         config['pixel_width'] = 854
         config['frame_rate'] = 15
