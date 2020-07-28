@@ -114,10 +114,10 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
         animations_list, key=lambda obj: str(obj))]
     current_mobjects_list_json = [get_json(x) for x in sorted(
         current_mobjects_list, key=lambda obj: str(obj))]
-    hash_camera = zlib.crc32(repr(camera_json).encode())
-    hash_animations = zlib.crc32(repr(animations_list_json).encode())
-    hash_current_mobjects = zlib.crc32(
-        repr(current_mobjects_list_json).encode())
+    hash_camera, hash_animations, hash_current_mobjects = [
+        zlib.crc32(repr(json_val).encode())
+        for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
+    ]
     return "{}_{}_{}".format(hash_camera, hash_animations, hash_current_mobjects)
 
 
