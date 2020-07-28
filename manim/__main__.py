@@ -8,8 +8,7 @@ import traceback
 import importlib.util
 import types
 
-from .config import file_writer_config,args
-from .utils import cfg_subcmds
+from .config import file_writer_config
 from .scene.scene import Scene
 from .utils.sounds import play_error_sound
 from .utils.sounds import play_finish_sound
@@ -128,7 +127,7 @@ def get_module(file_name):
         logger.info("Enter the animation's code & end with an EOF (CTRL+D on Linux/Unix, CTRL+Z on Windows):")
         code = sys.stdin.read()
         if not code.startswith("from manim import"):
-            logger.warning("Didn't find an import statement for Manim. Importing automatically...")
+            logger.warn("Didn't find an import statement for Manim. Importing automatically...")
             code="from manim import *\n"+code
         logger.info("Rendering animation from typed code...")
         try:
@@ -151,38 +150,23 @@ def get_module(file_name):
 
 
 def main():
-    if hasattr(args,"subcommands"):
-        if "cfg" in args.subcommands:
-            if args.cfg_subcommand is not None:
-                subcommand=args.cfg_subcommand
-                if subcommand == "write":
-                    cfg_subcmds.write(args.level,args.open)
-                elif subcommand == "show":
-                    cfg_subcmds.show()
-                elif subcommand == "export":
-                    cfg_subcmds.export(args.dir)
-            else:
-                logger.error("No argument provided; Exiting...")
-
-
-    else:
-        module = get_module(file_writer_config["input_file"])
-        all_scene_classes = get_scene_classes_from_module(module)
-        scene_classes_to_render = get_scenes_to_render(all_scene_classes)
-        sound_on = file_writer_config["sound"]
-        for SceneClass in scene_classes_to_render:
-            try:
-                # By invoking, this renders the full scene
-                scene = SceneClass()
-                open_file_if_needed(scene.file_writer)
-                if sound_on:
-                    play_finish_sound()
-            except Exception:
-                print("\n\n")
-                traceback.print_exc()
-                print("\n\n")
-                if sound_on:
-                    play_error_sound()
+    module = get_module(file_writer_config["input_file"])
+    all_scene_classes = get_scene_classes_from_module(module)
+    scene_classes_to_render = get_scenes_to_render(all_scene_classes)
+    sound_on = file_writer_config["sound"]
+    for SceneClass in scene_classes_to_render:
+        try:
+            # By invoking, this renders the full scene
+            scene = SceneClass()
+            open_file_if_needed(scene.file_writer)
+            if sound_on:
+                play_finish_sound()
+        except Exception:
+            print("\n\n")
+            traceback.print_exc()
+            print("\n\n")
+            if sound_on:
+                play_error_sound()
 
 
 if __name__ == "__main__":

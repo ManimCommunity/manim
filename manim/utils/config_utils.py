@@ -16,9 +16,9 @@ import colour
 from .. import constants
 from .tex import TexTemplate, TexTemplateFromFile
 
-__all__ = ["_run_config", "_paths_config_file", "_from_command_line", "finalized_configs_dict"]
+__all__ = ["_run_config", "_paths_config_file", "_from_command_line"]
 
-min_argvs = 3 if "-m" in sys.argv[0] else 2
+
 def _parse_file_writer_config(config_parser, args):
     """Parse config files and CLI arguments into a single dictionary."""
     # By default, use the CLI section of the digested .cfg files
@@ -28,13 +28,10 @@ def _parse_file_writer_config(config_parser, args):
     fw_config = {}
 
     # Handle input files and scenes.  Note these cannot be set from
-    # the .cfg files, only from CLI arguments.
-    # If a subcommand is given, manim will not render a video and
-    # thus these specific input/output files are not needed.
-    if not(hasattr(args,"subcommands")):
-        fw_config["input_file"] = args.file
-        fw_config["scene_names"] = args.scene_names if args.scene_names is not None else []
-        fw_config["output_file"] = args.output_file
+    # the .cfg files, only from CLI arguments
+    fw_config["input_file"] = args.file
+    fw_config["scene_names"] = args.scene_names if args.scene_names is not None else []
+    fw_config["output_file"] = args.output_file
 
     # Handle all options that are directly overridden by CLI
     # arguments.  Note ConfigParser options are all strings and each
@@ -137,49 +134,22 @@ def _parse_cli(arg_list, input=True):
         epilog="Made with <3 by the manim community devs",
     )
     if input:
-        # If the only command is `manim`, we want both subcommands like `cfg`
-        # and mandatory positional arguments like `file` to show up in the help section.
-        if len(sys.argv) == min_argvs-1 or _subcommands_exist():
-            subparsers = parser.add_subparsers(dest="subcommands")
-            cfg_related = subparsers.add_parser('cfg')
-            cfg_subparsers = cfg_related.add_subparsers(dest="cfg_subcommand")
-
-            cfg_write_parser = cfg_subparsers.add_parser('write')
-            cfg_write_parser.add_argument(
-                "--level",
-                choices=["user", "cwd"],
-                default=None,
-                help="Specify if this config is for user or just the working directory."
-                )
-            cfg_write_parser.add_argument(
-                "--open",
-                action="store_const",
-                const=True,
-                default = False
-            )
-            cfg_subparsers.add_parser('show')
-
-            cfg_export_parser = cfg_subparsers.add_parser("export")
-            cfg_export_parser.add_argument("--dir",default=os.getcwd())
-
-        if (len(sys.argv) == min_argvs-1 or
-            not _subcommands_exist(ignore = ["--help","-h"])):
-            parser.add_argument(
-                "file", help="path to file holding the python code for the scene",
-            )
-            parser.add_argument(
-                "scene_names",
-                nargs="*",
-                help="Name of the Scene class you want to see",
-                default=[""],
-            )
-            parser.add_argument(
-                "-o",
-                "--output_file",
-                help="Specify the name of the output file, if "
-                "it should be different from the scene class name",
-                default="",
-            )
+        parser.add_argument(
+            "file", help="path to file holding the python code for the scene",
+        )
+        parser.add_argument(
+            "scene_names",
+            nargs="*",
+            help="Name of the Scene class you want to see",
+            default=[""],
+        )
+        parser.add_argument(
+            "-o",
+            "--output_file",
+            help="Specify the name of the output file, if "
+            "it should be different from the scene class name",
+            default="",
+        )
 
     # The following use (action='store_const', const=True) instead of
     # the built-in (action='store_true').  This is because the latter
@@ -357,14 +327,8 @@ def _parse_cli(arg_list, input=True):
     parser.add_argument(
         "--config_file", help="Specify the configuration file",
     )
-    parsed=parser.parse_args(arg_list)
-    if hasattr(parsed,"subcommands"):
-        setattr(parsed, "cfg_subcommand",
-            cfg_related.parse_args(
-                sys.argv[min_argvs -(0 if min_argvs == 2 else 1):]
-                ).cfg_subcommand)
 
-    return parsed
+    return parser.parse_args(arg_list)
 
 
 def _init_dirs(config):
@@ -377,6 +341,7 @@ def _init_dirs(config):
     ]:
         if not os.path.exists(folder):
             os.makedirs(folder)
+
 
 def _from_command_line():
     """Determine if manim was called from the command line."""
@@ -393,11 +358,6 @@ def _from_command_line():
 
     return from_cli_command or from_python_m
 
-def _from_dunder_main():
-    dunder_main_path = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-        "__main__.py")
-    return sys.argv[0]==dunder_main_path
 
 def _paths_config_file():
     library_wide = os.path.abspath(
@@ -425,24 +385,19 @@ def _paths_config_file():
 def _run_config():
     # Config files to be parsed, in ascending priority
     config_files = _paths_config_file()
-    if _from_command_line()  or _from_dunder_main():
+    if _from_command_line():
         args = _parse_cli(sys.argv[1:])
-        if not hasattr(args,"subcommands"):
-            if args.config_file is not None:
-                if os.path.exists(args.config_file):
-                    config_files.append(args.config_file)
-                else:
-                    raise FileNotFoundError(f"Config file {args.config_file} doesn't exist")
+        if args.config_file is not None:
+            if os.path.exists(args.config_file):
+                config_files.append(args.config_file)
             else:
-                script_directory_file_config = os.path.join(
-                    os.path.dirname(args.file), "manim.cfg"
-                )
-                if os.path.exists(script_directory_file_config):
-                    config_files.append(script_directory_file_config)
+                raise FileNotFoundError(f"Config file {args.config_file} doesn't exist")
         else:
-            working_directory_file_config = os.path.join(os.getcwd(),"manim.cfg")
-            if os.path.exists(working_directory_file_config):
-                config_files.append(working_directory_file_config)
+            script_directory_file_config = os.path.join(
+                os.path.dirname(args.file), "manim.cfg"
+            )
+            if os.path.exists(script_directory_file_config):
+                config_files.append(script_directory_file_config)
 
     else:
         # In this case, we still need an empty args object.
@@ -456,15 +411,3 @@ def _run_config():
     # this is for internal use when writing output files
     file_writer_config = _parse_file_writer_config(config_parser, args)
     return args, config_parser, file_writer_config, successfully_read_files
-
-def finalized_configs_dict():
-    config=_run_config()[1]
-    return {section: dict(config[section]) for section in config.sections()}
-
-def _subcommands_exist(ignore = []):
-    NON_ANIM_UTILS = ["cfg","--help","-h"]
-    NON_ANIM_UTILS = [util for util in NON_ANIM_UTILS if util not in ignore]
-
-    not_only_manim = len(sys.argv) > min_argvs-1
-    sub_command_exists = any(a == item for a in sys.argv for item in NON_ANIM_UTILS)
-    return not_only_manim and sub_command_exists
