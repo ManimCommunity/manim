@@ -124,7 +124,7 @@ def _parse_file_writer_config(config_parser, args):
     fw_config["skip_animations"] = any(
         [fw_config["save_last_frame"], fw_config["from_animation_number"]]
     )
-    fw_config['max_file_cached'] = default.getint('max_file_cached')
+    fw_config['max_files_cached'] = default.getint('max_files_cached')
     return fw_config
 
 
