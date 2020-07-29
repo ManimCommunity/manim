@@ -16,10 +16,16 @@ def capture(command,instream=None):
 
 
 def test_logging_to_file(python_version):
-    """Test logging Terminal output to a log file."""
+    """Test logging Terminal output to a log file.
+    `rich` formats it's output based on the size of the terminal it is outputting to.
+    As such, since there is no way to obtain the terminal size of the testing device
+    before running the test, this test employs a workaround where instead of the exact
+    text of the log (which can differ in whitespace and truncation) only the constant
+    parts, such as keywords, are compared.
+    """
     path_basic_scene = os.path.join("tests", "tests_data", "basic_scenes.py")
-    expected=['INFO', 'Read', 'configuration', 'files:', 'config.py:92', 'INFO',
-        'scene_file_writer.py:531', 'File', 'ready', 'at']
+    expected=['INFO', 'Read', 'configuration', 'files:', 'config.py:', 'INFO',
+        'scene_file_writer.py:', 'File', 'ready', 'at']
     path_output = os.path.join("tests_cache", "media_temp")
     command = [python_version, "-m", "manim", path_basic_scene,
                "SquareToCircle", "-l", "--log_to_file", "--log_dir",os.path.join(path_output,"logs"), "--media_dir", path_output]
@@ -34,4 +40,5 @@ def test_logging_to_file(python_version):
     with open(log_file_path,encoding=enc) as logfile:
         logs=logfile.read().split()
     logs=[e for e in logs if not any(x in e for x in ["\\","/",".mp4","[","]"])]
+    logs=[re.sub('[0-9]', '', i) for i in logs]
     assert logs==expected, err
