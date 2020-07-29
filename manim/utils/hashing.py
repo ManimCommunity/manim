@@ -41,7 +41,14 @@ class CustomEncoder(json.JSONEncoder):
         elif isinstance(obj, np.ndarray):
             return list(obj)
         elif hasattr(obj, "__dict__"):
-            return getattr(obj, '__dict__')
+            temp = getattr(obj, '__dict__')
+            # As dict keys must be of the type (str, int, float, bool), we have to clean them. 
+            # To do that, if one is not of the good type we turn it into its hash using the same 
+            # method as all the objects here. 
+            def key_to_hash(key): 
+                if not isinstance(key, (str, int, float, bool)) and key is not None :
+                    return zlib.crc32(json.dumps(key, cls=self).encode())
+            return {key_to_hash(k) : i for k,i in temp.items()}
         elif isinstance(obj, np.uint8):
             return int(obj)
         try:
@@ -109,14 +116,14 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
     :class:`str` 
         A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`.
     """
-    camera_json = get_json(get_camera_dict_for_hashing(camera_object))
+    # camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [get_json(x) for x in sorted(
         animations_list, key=lambda obj: str(obj))]
     current_mobjects_list_json = [get_json(x) for x in sorted(
         current_mobjects_list, key=lambda obj: str(obj))]
     hash_camera, hash_animations, hash_current_mobjects = [
         zlib.crc32(repr(json_val).encode())
-        for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
+        for json_val in [['to_delete'], animations_list_json, current_mobjects_list_json]
     ]
     return "{}_{}_{}".format(hash_camera, hash_animations, hash_current_mobjects)
 
