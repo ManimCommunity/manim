@@ -48,6 +48,7 @@ class CustomEncoder(json.JSONEncoder):
             def key_to_hash(key): 
                 if not isinstance(key, (str, int, float, bool)) and key is not None :
                     return zlib.crc32(json.dumps(key, cls=self).encode())
+                return key
             return {key_to_hash(k) : i for k,i in temp.items()}
         elif isinstance(obj, np.uint8):
             return int(obj)
