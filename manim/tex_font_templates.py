@@ -374,6 +374,8 @@ TEX_FONT_CONFIGS = {
             \renewcommand\familydefault{fau} % emerald package
             \usepackage[defaultmathsizes,eulergreek]{mathastext}
             """,
+        "compiler": "pdflatex",
+        "output": ".pdf"
         },
     "ecfjdtx": {
         "description": "ECF JD (with TX fonts)",
@@ -459,8 +461,8 @@ TEX_FONT_CONFIGS = {
             \setmainfont[Mapping=tex-text]{Chalkduster}
             \usepackage[defaultmathsizes]{mathastext}
             """,
-        "compiler": "lualatex",
-        "output": ".pdf"
+        "compiler": "xelatex",
+        "output": ".xdv"
         },
     # # "applechancery": {
     # #     "description": "Apple Chancery",
