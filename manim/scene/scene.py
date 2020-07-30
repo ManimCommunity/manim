@@ -75,6 +75,9 @@ class Scene(Container):
         except EndSceneEarlyException:
             pass
         self.tear_down()
+        # We have to reset these settings in case of multiple renders.
+        file_writer_config['skip_animations'] = False
+        self.original_skipping_status = file_writer_config['skip_animations']
         self.file_writer.finish()
         self.print_end_message()
 
