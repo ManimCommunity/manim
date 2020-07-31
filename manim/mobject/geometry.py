@@ -279,8 +279,10 @@ class ArcBetweenPoints(Arc):
                 sign = 2
             halfdist = np.linalg.norm(np.array(start) - np.array(end)) / 2
             if radius < halfdist:
-                raise ValueError("ArcBetweenPoints called with a radius that is "
-                                 "smaller than half the distance between the points.")
+                raise ValueError(
+                    "ArcBetweenPoints called with a radius that is "
+                    "smaller than half the distance between the points."
+                )
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
@@ -764,11 +766,14 @@ class ArcPolygon(VMobject):
     make the arcs invisible (for example with "stroke_width": 0).
     ArcPolygon.arcs can be used get values from these subarcs.
     """
+
     def __init__(self, *arcs, **kwargs):
-        if not all([isinstance(m, Arc) or
-                    isinstance(m, ArcBetweenPoints) for m in arcs]):
-            raise ValueError("All ArcPolygon submobjects must be of"
-                             "type Arc/ArcBetweenPoints")
+        if not all(
+            [isinstance(m, Arc) or isinstance(m, ArcBetweenPoints) for m in arcs]
+        ):
+            raise ValueError(
+                "All ArcPolygon submobjects must be of" "type Arc/ArcBetweenPoints"
+            )
         VMobject.__init__(self, **kwargs)
         # Adding the arcs like this makes arcpolygon double as a group
         self.add(*arcs)
@@ -922,20 +927,21 @@ class Tiling(VMobject):
            range(-1,1),
            range(-1,1))
     """
+
     def __init__(self, tile_prototype, x_offset, y_offset, x_range, y_range, **kwargs):
         VMobject.__init__(self, **kwargs)
         # Add one more to the ranges, so that a range(-1,1,1)
         # also gives us 3 tiles, [-1,0,1] as opposed to 2 [-1,0]
-        self.x_range=range(x_range.start,x_range.stop+x_range.step,x_range.step)
-        self.y_range=range(y_range.start,y_range.stop+y_range.step,y_range.step)
-        self.x_offset=x_offset
-        self.y_offset=y_offset
-        
+        self.x_range = range(x_range.start, x_range.stop + x_range.step, x_range.step)
+        self.y_range = range(y_range.start, y_range.stop + y_range.step, y_range.step)
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+
         # We need the tiles array for a VGroup, which in turn we need
         # to draw the tiling and adjust it.
         # Trying to draw the tiling directly will not properly work.
-        self.tile_prototype=tile_prototype
-        self.tile_dictionary={}
+        self.tile_prototype = tile_prototype
+        self.tile_dictionary = {}
         self.tile_init_loop()
 
     def tile_init_loop(self):
@@ -945,53 +951,57 @@ class Tiling(VMobject):
         Calls apply_transforms to apply passed methods.
         """
         for x in self.x_range:
-            self.tile_dictionary[x]={}
+            self.tile_dictionary[x] = {}
             for y in self.y_range:
                 if callable(self.tile_prototype):
-                    tile=self.tile_prototype(x,y).deepcopy()
+                    tile = self.tile_prototype(x, y).deepcopy()
                 else:
-                    tile=self.tile_prototype.deepcopy()
-                self.apply_transforms(x,y,tile)
+                    tile = self.tile_prototype.deepcopy()
+                self.apply_transforms(x, y, tile)
                 self.add(tile)
-                self.tile_dictionary[x][y]=tile
+                self.tile_dictionary[x][y] = tile
         # TODO: Once the config overhaul is far enough:
         # Implement a way to apply kwargs to all tiles.
         # The reason for this is that if multiple tilings
         # are instantiated from one prototype, having a different basic
         # tile setup is rather complicated now (set_fill etc).
 
-    def apply_transforms(self,x,y,tile):
+    def apply_transforms(self, x, y, tile):
         """
         Calls transform_tile once per dimension to position tiles.
         Written like this to allow easy extending by Honeycomb.
         """
-        self.transform_tile(x,self.x_offset,tile)
-        self.transform_tile(y,self.y_offset,tile)
+        self.transform_tile(x, self.x_offset, tile)
+        self.transform_tile(y, self.y_offset, tile)
 
-    def transform_tile(self,position,offset,tile):
+    def transform_tile(self, position, offset, tile):
         """
         This method computes and applies the offsets for the tiles,
         in the given dimension.
         multiplies inputs, which requires arrays to be numpy arrays.
         """
         # The number of different offsets the current axis has
-        offsets_nr=len(offset)
+        offsets_nr = len(offset)
         for i in range(offsets_nr):
-            for j in range(int(len(offset[i])/2)):
-                if position<0:
+            for j in range(int(len(offset[i]) / 2)):
+                if position < 0:
                     # Magnitude is calculated as the length of a range.
                     # The range starts at 0, adjusting for the number
                     # of different offset functions, stops at the target
                     # position, and uses the amount of different
                     # offset functions as the step.
-                    magnitude=len(range(-i,position,-offsets_nr))*-1
-                    offset[-1-i][0+j*2](tile,magnitude*np.array(offset[-1-i][1+j*2]))
+                    magnitude = len(range(-i, position, -offsets_nr)) * -1
+                    offset[-1 - i][0 + j * 2](
+                        tile, magnitude * np.array(offset[-1 - i][1 + j * 2])
+                    )
                 else:
-                    magnitude=len(range(i,position,offsets_nr))
-                    offset[i][0+j*2](tile,magnitude*np.array(offset[i][1+j*2]))
-        
+                    magnitude = len(range(i, position, offsets_nr))
+                    offset[i][0 + j * 2](
+                        tile, magnitude * np.array(offset[i][1 + j * 2])
+                    )
 
-class Graph():
+
+class Graph:
     """
     This class is for visual representation of graphs for graph theory.
     (Not graphs of functions. Same term but entirely different things.)
@@ -1038,34 +1048,45 @@ class Graph():
     
     Use Graph.vertices/Graph.edges for drawing.
     """
-    def __init__(self, graph, vertex_type=Circle, vertex_config={},
-                 edge_type=ArcBetweenPoints, edge_config={}, **kwargs):
-        if not all(isinstance(n,int) for n in graph.keys()):
+
+    def __init__(
+        self,
+        graph,
+        vertex_type=Circle,
+        vertex_config={},
+        edge_type=ArcBetweenPoints,
+        edge_config={},
+        **kwargs
+    ):
+        if not all(isinstance(n, int) for n in graph.keys()):
             raise ValueError("All keys for the Graph dictionary have to be of type int")
-        if not all(all(isinstance(m,int) or isinstance(m,list)
-                       for m in n[1])
-                   for n in graph.values()):
-            raise ValueError("Invalid Edge definition in Graph class. Use int or "
-                             "[int,dict].")
-        
+        if not all(
+            all(isinstance(m, int) or isinstance(m, list) for m in n[1])
+            for n in graph.values()
+        ):
+            raise ValueError(
+                "Invalid Edge definition in Graph class. Use int or " "[int,dict]."
+            )
+
         self.vertices = VGroup()
         self.edges = VGroup()
 
         # Loops over all key/value pairs of the graph dict.
         for vertex, attributes in graph.items():
-            self.vertices.add(vertex_type(**{**vertex_config,
-                              **attributes[2]}).shift(attributes[0]))
+            self.vertices.add(
+                vertex_type(**{**vertex_config, **attributes[2]}).shift(attributes[0])
+            )
             for edge_definition in attributes[1]:
                 if isinstance(edge_definition, int):
-                    vertex_number=edge_definition
-                    edge_kwargs={}
+                    vertex_number = edge_definition
+                    edge_kwargs = {}
                 elif isinstance(edge_definition, list):
-                    vertex_number=edge_definition[0]
-                    edge_kwargs=edge_definition[1]
+                    vertex_number = edge_definition[0]
+                    edge_kwargs = edge_definition[1]
                 if vertex < vertex_number:
-                    edge = edge_type(attributes[0],
-                                     graph[vertex_number][0],
-                                     **{"angle": 0,
-                                        **edge_config,
-                                        **edge_kwargs})
+                    edge = edge_type(
+                        attributes[0],
+                        graph[vertex_number][0],
+                        **{"angle": 0, **edge_config, **edge_kwargs},
+                    )
                     self.edges.add(edge)

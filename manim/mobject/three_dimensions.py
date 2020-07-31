@@ -169,28 +169,38 @@ class Honeycomb(Tiling):
               range(-1,1),
               range(-1,1))
     """
-    def __init__(self, tile_prototype, x_offset, y_offset, z_offset,
-                 x_range, y_range, z_range, **kwargs):
-        self.z_range=range(z_range.start,z_range.stop+z_range.step,z_range.step)
-        self.z_offset=z_offset
+
+    def __init__(
+        self,
+        tile_prototype,
+        x_offset,
+        y_offset,
+        z_offset,
+        x_range,
+        y_range,
+        z_range,
+        **kwargs
+    ):
+        self.z_range = range(z_range.start, z_range.stop + z_range.step, z_range.step)
+        self.z_offset = z_offset
         super().__init__(tile_prototype, x_offset, y_offset, x_range, y_range, **kwargs)
-        self.cell_dictionary=self.tile_dictionary
+        self.cell_dictionary = self.tile_dictionary
 
     def tile_init_loop(self):
         for x in self.x_range:
-            self.tile_dictionary[x]={}
-            self.tile_dictionary[x]={}
+            self.tile_dictionary[x] = {}
+            self.tile_dictionary[x] = {}
             for y in self.y_range:
-                self.tile_dictionary[x][y]={}
+                self.tile_dictionary[x][y] = {}
                 for z in self.z_range:
                     if callable(self.tile_prototype):
-                        tile=self.tile_prototype(x,y,z).deepcopy()
+                        tile = self.tile_prototype(x, y, z).deepcopy()
                     else:
-                        tile=self.tile_prototype.deepcopy()
-                    self.apply_transforms(x,y,z,tile)
+                        tile = self.tile_prototype.deepcopy()
+                    self.apply_transforms(x, y, z, tile)
                     self.add(tile)
-                    self.tile_dictionary[x][y][z]=tile
+                    self.tile_dictionary[x][y][z] = tile
 
-    def apply_transforms(self,x,y,z,tile):
-        super().apply_transforms(x,y,tile)
-        self.transform_tile(z,self.z_offset,tile)
+    def apply_transforms(self, x, y, z, tile):
+        super().apply_transforms(x, y, tile)
+        self.transform_tile(z, self.z_offset, tile)

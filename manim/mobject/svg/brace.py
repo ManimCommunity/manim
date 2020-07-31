@@ -136,5 +136,5 @@ class BraceText(BraceLabel):
 
 
 class BraceBetweeenPoints(Brace):
-    def __init__(self,point_1,point_2,**kwargs):
-        Brace.__init__(self,Line(point_1,point_2),**kwargs)
+    def __init__(self, point_1, point_2, **kwargs):
+        Brace.__init__(self, Line(point_1, point_2), **kwargs)

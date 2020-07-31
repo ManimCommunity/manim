@@ -852,6 +852,7 @@ class VMobject(Mobject):
     reverse_direction or force_direction. This can also be used to make
     operations on objects that are dependent on direction much easier.
     """
+
     def get_direction(self):
         """
         Uses shoelace in space_ops.py to calculate the direction.

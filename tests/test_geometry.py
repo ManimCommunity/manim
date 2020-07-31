@@ -108,52 +108,72 @@ class RoundedRectangleTest(Scene):
 class ArcPolygonTest(Scene):
     def construct(self):
         r3 = np.sqrt(3)
-        arc_config = {"stroke_width":3,"stroke_color":RED,
-                      "fill_opacity":0.5,"color": GREEN}
-        pol_config = {"stroke_width":10,"stroke_color":BLUE,
-                      "fill_opacity":1,"color": PURPLE}
-        arc0=ArcBetweenPoints(np.array([-1,0,0]),
-                              np.array([1,0,0]),radius=2,**arc_config)
-        arc1=ArcBetweenPoints(np.array([1,0,0]),
-                              np.array([0,r3,0]),radius=2,**arc_config)
-        arc2=ArcBetweenPoints(np.array([0,r3,0]),
-                              np.array([-1,0,0]),radius=2,**arc_config)
-        a=ArcPolygon(arc0,arc1,arc2,**pol_config)
+        arc_config = {
+            "stroke_width": 3,
+            "stroke_color": RED,
+            "fill_opacity": 0.5,
+            "color": GREEN,
+        }
+        pol_config = {
+            "stroke_width": 10,
+            "stroke_color": BLUE,
+            "fill_opacity": 1,
+            "color": PURPLE,
+        }
+        arc0 = ArcBetweenPoints(
+            np.array([-1, 0, 0]), np.array([1, 0, 0]), radius=2, **arc_config
+        )
+        arc1 = ArcBetweenPoints(
+            np.array([1, 0, 0]), np.array([0, r3, 0]), radius=2, **arc_config
+        )
+        arc2 = ArcBetweenPoints(
+            np.array([0, r3, 0]), np.array([-1, 0, 0]), radius=2, **arc_config
+        )
+        a = ArcPolygon(arc0, arc1, arc2, **pol_config)
         self.play(Animation(a))
 
 
 class TilingTest(Scene):
     def construct(self):
-        a=Tiling(Square(),
-                    [[Mobject.shift,[2.1,0,0]]],
-                    [[Mobject.shift,[0,2.1,0]]],
-                    range(-1,1),
-                    range(-1,1))
+        a = Tiling(
+            Square(),
+            [[Mobject.shift, [2.1, 0, 0]]],
+            [[Mobject.shift, [0, 2.1, 0]]],
+            range(-1, 1),
+            range(-1, 1),
+        )
         self.play(Animation(a))
 
-        
+
 class HoneycombTest(ThreeDScene):
     def construct(self):
-        a=Honeycomb(Cube(),
-                    [[Mobject.shift,[2.1,0,0]]],
-                    [[Mobject.shift,[0,2.1,0]]],
-                    [[Mobject.shift,[0,0,2.1]]],
-                    range(-1,1),
-                    range(-1,1),
-                    range(-1,1))
+        a = Honeycomb(
+            Cube(),
+            [[Mobject.shift, [2.1, 0, 0]]],
+            [[Mobject.shift, [0, 2.1, 0]]],
+            [[Mobject.shift, [0, 0, 2.1]]],
+            range(-1, 1),
+            range(-1, 1),
+            range(-1, 1),
+        )
         self.play(Animation(a))
 
 
 class GraphTest(Scene):
     def construct(self):
-        g = {0: [[0,0,0], [[1,{"angle": 2}], [2,{"color": WHITE}]], {"color": BLUE}],
-             1: [[1,0,0], [0, 2], {"color": GRAY}],
-             2: [[0,1,0], [0, 1], {"color": PINK}]}
-        K3 = Graph(g,vertex_config={"radius": 0.2,"fill_opacity": 1},
-                   edge_config={"stroke_width": 5,"color": RED})
+        g = {
+            0: [[0, 0, 0], [[1, {"angle": 2}], [2, {"color": WHITE}]], {"color": BLUE}],
+            1: [[1, 0, 0], [0, 2], {"color": GRAY}],
+            2: [[0, 1, 0], [0, 1], {"color": PINK}],
+        }
+        K3 = Graph(
+            g,
+            vertex_config={"radius": 0.2, "fill_opacity": 1},
+            edge_config={"stroke_width": 5, "color": RED},
+        )
         K3v = K3.vertices
         K3e = K3.edges
-        self.play(Animation(K3e),Animation(K3v))
+        self.play(Animation(K3e), Animation(K3v))
 
 
 def test_scenes():
