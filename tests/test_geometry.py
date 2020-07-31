@@ -120,15 +120,9 @@ class ArcPolygonTest(Scene):
             "fill_opacity": 1,
             "color": PURPLE,
         }
-        arc0 = ArcBetweenPoints(
-            np.array([-1, 0, 0]), np.array([1, 0, 0]), radius=2, **arc_config
-        )
-        arc1 = ArcBetweenPoints(
-            np.array([1, 0, 0]), np.array([0, r3, 0]), radius=2, **arc_config
-        )
-        arc2 = ArcBetweenPoints(
-            np.array([0, r3, 0]), np.array([-1, 0, 0]), radius=2, **arc_config
-        )
+        arc0 = ArcBetweenPoints([-1, 0, 0], [1, 0, 0], radius=2, **arc_config)
+        arc1 = ArcBetweenPoints([1, 0, 0], [0, r3, 0], radius=2, **arc_config)
+        arc2 = ArcBetweenPoints([0, r3, 0], [-1, 0, 0], radius=2, **arc_config)
         a = ArcPolygon(arc0, arc1, arc2, **pol_config)
         self.play(Animation(a))
 
@@ -166,7 +160,7 @@ class GraphTest(Scene):
             1: [[1, 0, 0], [0, 2], {"color": GRAY}],
             2: [[0, 1, 0], [0, 1], {"color": PINK}],
         }
-        K3 = Graph(
+        K3 = EdgeVertexGraph(
             g,
             vertex_config={"radius": 0.2, "fill_opacity": 1},
             edge_config={"stroke_width": 5, "color": RED},

@@ -1001,7 +1001,7 @@ class Tiling(VMobject):
                     )
 
 
-class Graph:
+class EdgeVertexGraph:
     """
     This class is for visual representation of graphs for graph theory.
     (Not graphs of functions. Same term but entirely different things.)
@@ -1028,8 +1028,8 @@ class Graph:
     edges are. For clarity it's possible to have an edge defined in both
     directions, but it'll be drawn once, from lower to higher number.
     For example if vertex 2 is connected to vertex 0, that's ignored.
-    The config dictionary is used to initialize a Circle as the vertex.
-    It will override values passed as vertex_config to the Graph.
+    The config dictionary is used while initializing the vertex and
+    will override values passed via vertex_config.
 
     Examples
     --------
@@ -1037,16 +1037,15 @@ class Graph:
     g = {0: [[0,0,0], [1, 2], {"color": BLUE}],
          1: [[1,0,0], [0, 2], {"color": GRAY}],
          2: [[0,1,0], [0, 1], {"color": PINK}]}
-    Graph(g,vertex_config={"radius": 0.2,"fill_opacity": 1},
-          edge_config={"stroke_width": 5,"color": RED})
+    EdgeVertexGraph(g,vertex_config={"radius": 0.2,"fill_opacity": 1},
+                    edge_config={"stroke_width": 5,"color": RED})
 
-    An edge usually instantiated as an ArcBetweenPoints, and optionally
-    individual config dictionaries can also be passed to them.
+    Individual config dictionaries can also be passed to edges.
     Example:
     g = {0: [[0,0,0], [[1,{"angle": 2}], [2,{"color": WHITE}]]...
 
     
-    Use Graph.vertices/Graph.edges for drawing.
+    Use EdgeVertexGraph.vertices/EdgeVertexGraph.edges for drawing.
     """
 
     def __init__(
@@ -1059,13 +1058,13 @@ class Graph:
         **kwargs
     ):
         if not all(isinstance(n, int) for n in graph.keys()):
-            raise ValueError("All keys for the Graph dictionary have to be of type int")
+            raise ValueError("All keys for the graph dictionary have to be of type int")
         if not all(
             all(isinstance(m, int) or isinstance(m, list) for m in n[1])
             for n in graph.values()
         ):
             raise ValueError(
-                "Invalid Edge definition in Graph class. Use int or " "[int,dict]."
+                "Invalid Edge definition for EdgeVertexGraph. Use int or [int,dict]."
             )
 
         self.vertices = VGroup()
