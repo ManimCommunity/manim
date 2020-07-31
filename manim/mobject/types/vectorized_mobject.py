@@ -899,22 +899,48 @@ class VMobject(Mobject):
         vmob.pointwise_become_partial(self, a, b)
         return vmob
 
-    def get_orientation(self):
+    """
+    The next 3 methods are for getting or changing the direction of
+    points in 2D. The direction can either be "CCW", counterclockwise,
+    or "CW", clockwise. The default is counterclockwise. This also
+    determines how the objects are drawn which can by changed by
+    reverse_direction or force_direction. This can also be used to make
+    operations on objects that are dependent on direction much easier.
+    """
+    def get_direction(self):
+        """
+        Uses shoelace in space_ops.py to calculate the direction.
+
+        Returns
+        ------
+        str ("CW" or "CCW")
+        """
         return shoelace(self.get_start_anchors(), False, True)
 
-    def reverse_orientation(self):
+    def reverse_direction(self):
+        """
+        Reverts the point orientation, by inverting the point order.
+        """
         reversed_points = self.get_points()[::-1]
         self.clear_points()
         self.append_points(reversed_points)
         return self
 
-    def force_orientation(self, target_orientation):
-        if not (target_orientation == "CW" or target_orientation == "CCW"):
-            raise ValueError('Invalid input for force_orientation | Use "CW" or "CCW"')
-        if not (self.get_orientation() == target_orientation):
+    def force_direction(self, target_direction):
+        """
+        Makes sure that points are either directed clockwise or
+        counterclockwise.
+
+        Parameters
+        ----------
+        target_direction : str ("CW" or "CCW")
+        """
+        if not (target_direction == "CW" or target_direction == "CCW"):
+            raise ValueError('Invalid input for force_direction | Use "CW" or "CCW"')
+        if not (self.get_direction() == target_direction):
             # Since we already assured the input is CW or CCW,
-            # and the orientations don't match, we just reverse
-            self.reverse_orientation()
+            # and the directions don't match, we just reverse
+            self.reverse_direction()
             return self
 
 

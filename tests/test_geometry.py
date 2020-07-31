@@ -132,6 +132,18 @@ class TilingTest(Scene):
                     range(-1,1))
         self.play(Animation(a))
 
+        
+class HoneycombTest(ThreeDScene):
+    def construct(self):
+        a=Honeycomb(Cube(),
+                    [[Mobject.shift,[2.1,0,0]]],
+                    [[Mobject.shift,[0,2.1,0]]],
+                    [[Mobject.shift,[0,0,2.1]]],
+                    range(-1,1),
+                    range(-1,1),
+                    range(-1,1))
+        self.play(Animation(a))
+
 
 class GraphTest(Scene):
     def construct(self):

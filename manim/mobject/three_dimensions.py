@@ -1,5 +1,6 @@
 from ..constants import *
 from ..mobject.geometry import Square
+from ..mobject.geometry import Tiling
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.iterables import tuplify
@@ -154,3 +155,60 @@ class Prism(Cube):
         Cube.generate_points(self)
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
+
+
+class Honeycomb(Tiling):
+    """
+    Inherits from Tiling and works effectively the same, just adding
+    the third dimension.
+    To achieve this __init__ and apply_transforms are extended,
+    while tile_init_loop is overridden.
+    Since it's a 3D honeycomb also allows for tile_dictionary to be
+    alternatively called as cell_dictionary.
+    See Tiling for more details.
+
+    Parameters
+    ----------
+    tile_prototype : Mobject or function(x,y,z) that returns a Mobject
+    x_offset : nested list of Mobject methods and values
+    y_offset : nested list of Mobject methods and values
+    z_offset : nested list of Mobject methods and values
+    x_range : range
+    y_range : range
+    z_range : range
+    
+    Example
+    -------
+    Honeycomb(Cube(),
+              [[Mobject.shift,[2.1,0,0]]],
+              [[Mobject.shift,[0,2.1,0]]],
+              [[Mobject.shift,[0,0,2.1]]],
+              range(-1,1),
+              range(-1,1),
+              range(-1,1))
+    """
+    def __init__(self, tile_prototype, x_offset, y_offset, z_offset,
+                 x_range, y_range, z_range, **kwargs):
+        self.z_range=range(z_range.start,z_range.stop+z_range.step,z_range.step)
+        self.z_offset=z_offset
+        super().__init__(tile_prototype, x_offset, y_offset, x_range, y_range, **kwargs)
+        self.cell_dictionary=self.tile_dictionary
+
+    def tile_init_loop(self):
+        for x in self.x_range:
+            self.tile_dictionary[x]={}
+            self.tile_dictionary[x]={}
+            for y in self.y_range:
+                self.tile_dictionary[x][y]={}
+                for z in self.z_range:
+                    if callable(self.tile_prototype):
+                        tile=self.tile_prototype(x,y,z).deepcopy()
+                    else:
+                        tile=self.tile_prototype.deepcopy()
+                    self.apply_transforms(x,y,z,tile)
+                    self.add(tile)
+                    self.tile_dictionary[x][y][z]=tile
+
+    def apply_transforms(self,x,y,z,tile):
+        super().apply_transforms(x,y,tile)
+        self.transform_tile(z,self.z_offset,tile)

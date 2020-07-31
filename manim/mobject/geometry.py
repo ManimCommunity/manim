@@ -807,9 +807,17 @@ class ArcPolygon(VMobject):
     """
     The ArcPolygon is what it says, a polygon, but made from arcs.
     More versatile than the standard Polygon.
-    Accepts both Arc and ArcBetweenPoints and is instantiated like this:
+
+    Parameters
+    ----------
+    *arcs : Arc or ArcBetweenPoints
+    
+    Example
+    -------
     ArcPolygon(arc0,arc1,arc2,arcN,**kwargs)
-    For proper appearance the arcs should be seamlessly connected:
+
+    
+    For proper appearance the arcs should seamlessly connect:
     [a,b][b,c][c,a]
     If they don't, the gaps will be filled in with straight lines.
 
@@ -822,8 +830,8 @@ class ArcPolygon(VMobject):
     def __init__(self, *arcs, **kwargs):
         if not all([isinstance(m, Arc) or
                     isinstance(m, ArcBetweenPoints) for m in arcs]):
-            raise Exception("All ArcPolygon submobjects must be of"
-                            "type Arc/ArcBetweenPoints")
+            raise ValueError("All ArcPolygon submobjects must be of"
+                             "type Arc/ArcBetweenPoints")
         VMobject.__init__(self, **kwargs)
         # Adding the arcs like this makes arcpolygon double as a group
         self.add(*arcs)
@@ -836,9 +844,7 @@ class ArcPolygon(VMobject):
             len_ratio = line.get_length() / arc1.get_arc_length()
             if math.isnan(len_ratio) or math.isinf(len_ratio):
                 continue
-            line.insert_n_curves(
-                int(arc1.get_num_curves() * len_ratio)
-            )
+            line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
             self.append_points(line.get_points())
 
 
@@ -924,29 +930,56 @@ class Tiling(VMobject):
     rotated the correct way, as well as having a vertex setup that
     allows proper transformations.
     
-    It's instantiated like this:
-    Tiling(tile_prototype, xOffset, yOffset, xRange, yRange, **kwargs)
-    The tile prototype can be any Mobject, a VGroup or a function.
-    The function format is function(x,y), returning a Mobject/VGroup.
+    Parameters
+    ----------
+    tile_prototype : Mobject or function(x,y) that returns a Mobject
+    x_offset : nested list of Mobject methods and values
+    y_offset : nested list of Mobject methods and values
+    x_range : range
+    y_range : range
+    
+    
+    The tile prototype can be any Mobject (also groups) or a function.
+    The function format is function(x,y), returning a Mobject.
     Using groups or functions allows the tiling to contain multiple
     different tiles or to simplify the following offset functions.
     
     Next are two nested lists that determine how the tiles are arranged.
     The functions are typically Mobject.shift and Mobject.rotate.
     Each list has to contain sublists with Function/Value pairs.
-    Example for a simple shift along the X-Axis:
-    [[Mobject.shift,[1,0,0]]]
+    More on this in the Examples section.
+
+    Last are two ranges: If both ranges are range(-1,1,1),
+    that would result in a square grid of 9 tiles.
+
+    A Tiling can be directly drawn like a VGroup.
+    Tiling.tile_dictionary[x][y] can be used to access individual tiles,
+    to color them for example.
     
-    Every move within the tiling applies a full sublist.
+    Examples
+    --------
+    The nested lists determining arrangement need more explanation.
+    Example for a shift along the X-Axis, 1 in the positive direction:
+    [[Mobject.shift,[1,0,0]]]
+
+    The origin tile at [x0,y0] won't be moved, but the tile at [x1,y0]
+    will be moved to [1,0,0]. Likewise the tile at [x4,y0] will be moved
+    to [4,0,0]
+    
+    Every step within the tiling applies a full sublist.
     Example for a shift with simultaneous rotation:
     [[Mobject.shift,[1,0,0],Mobject.rotate,np.pi]]
+
+    This would move the tile at [x1,y0] to [1,0,0] and rotates it 180°.
     
     When multiple sublists are passed, they are applied alternating.
     Example for alternating shifting and rotating:
     [[Mobject.shift,[1,0,0]],[Mobject.rotate,np.pi]]
 
-    Last are two ranges: If both ranges are range(-1,1,1),
-    that would result in a grid of 9 tiles.
+    This would move the tile at [x1,y0] to [1,0,0], but wouldn't rotate
+    it yet. The tile at [x2,y0] would still be moved to [1,0,0] and also
+    rotated by 180°. The tile at [x3,y0] would be moved to [2,0,0] and
+    still rotated by 180°.
 
     Full example:
     Tiling(Square(),
@@ -954,41 +987,59 @@ class Tiling(VMobject):
            [[Mobject.shift,[0,2.1,0]]],
            range(-1,1),
            range(-1,1))
-
-    A Tiling can be directly drawn like a VGroup.
-    Tiling.tile_dictionary[x][y] can be used to access individual tiles,
-    to color them for example.
     """
-    def __init__(self, tile_prototype, xOffset, yOffset, xRange, yRange, **kwargs):
+    def __init__(self, tile_prototype, x_offset, y_offset, x_range, y_range, **kwargs):
         VMobject.__init__(self, **kwargs)
-        # First we add one more to the range,
-        # so that a -1,1 step 1 range also gives us 3 tiles,
-        # [-1,0,1] as opposed to 2 [-1,0]
-        self.xRange=range(xRange.start,xRange.stop+xRange.step,xRange.step)
-        self.yRange=range(yRange.start,yRange.stop+yRange.step,yRange.step)
-
+        # Add one more to the ranges, so that a range(-1,1,1)
+        # also gives us 3 tiles, [-1,0,1] as opposed to 2 [-1,0]
+        self.x_range=range(x_range.start,x_range.stop+x_range.step,x_range.step)
+        self.y_range=range(y_range.start,y_range.stop+y_range.step,y_range.step)
+        self.x_offset=x_offset
+        self.y_offset=y_offset
+        
         # We need the tiles array for a VGroup, which in turn we need
         # to draw the tiling and adjust it.
         # Trying to draw the tiling directly will not properly work.
+        self.tile_prototype=tile_prototype
         self.tile_dictionary={}
-        self.kwargs = kwargs
-        for x in self.xRange:
+        self.tile_init_loop()
+
+    def tile_init_loop(self):
+        """
+        Loops through the ranges, creates the tiles by copying the
+        prototype, adds them to self and sorts them into the dictionary.
+        Calls apply_transforms to apply passed methods.
+        """
+        for x in self.x_range:
             self.tile_dictionary[x]={}
-            for y in self.yRange:
-                if callable(tile_prototype):
-                    tile=tile_prototype(x,y).deepcopy()
+            for y in self.y_range:
+                if callable(self.tile_prototype):
+                    tile=self.tile_prototype(x,y).deepcopy()
                 else:
-                    tile=tile_prototype.deepcopy()
-                self.transform_tile(x,xOffset,tile)
-                self.transform_tile(y,yOffset,tile)
+                    tile=self.tile_prototype.deepcopy()
+                self.apply_transforms(x,y,tile)
                 self.add(tile)
                 self.tile_dictionary[x][y]=tile
-                # TODO: Once the config overhaul is far enough:
-                # Implement a way to apply kwargs/some dict to all tiles
+        # TODO: Once the config overhaul is far enough:
+        # Implement a way to apply kwargs to all tiles.
+        # The reason for this is that if multiple tilings
+        # are instantiated from one prototype, having a different basic
+        # tile setup is rather complicated now (set_fill etc).
 
-    # This method computes and applies the offsets for the tiles.
-    # Also multiplies inputs, which requires arrays to be numpy arrays.
+    def apply_transforms(self,x,y,tile):
+        """
+        Calls transform_tile once per dimension to position tiles.
+        Written like this to allow easy extending by Honeycomb.
+        """
+        self.transform_tile(x,self.x_offset,tile)
+        self.transform_tile(y,self.y_offset,tile)
+
     def transform_tile(self,position,offset,tile):
+        """
+        This method computes and applies the offsets for the tiles,
+        in the given dimension.
+        multiplies inputs, which requires arrays to be numpy arrays.
+        """
         # The number of different offsets the current axis has
         offsets_nr=len(offset)
         for i in range(offsets_nr):
@@ -1004,17 +1055,25 @@ class Tiling(VMobject):
                 else:
                     magnitude=len(range(i,position,offsets_nr))
                     offset[i][0+j*2](tile,magnitude*np.array(offset[i][1+j*2]))
-
+        
 
 class Graph():
     """
     This class is for visual representation of graphs for graph theory.
     (Not graphs of functions. Same term but entirely different things.)
 
-    It's instantiated with a dictionary that represents the graph,
-    a configuration dictionary for vertex appearance, and one for edges.
-    The configuration dictionaries are optional.
-    Graph(graph_dictionary, vertex_config=vc, edge_config=ec)
+    It's instantiated with a dictionary that represents the graph, and
+    optionally which types of Mobject to use as vertices/edges and
+    dicts for their standard attributes.
+    
+    Parameters
+    ----------
+    graph : dict
+    vertex_type : MobjectClass, optional (default: Circle)
+    vertex_config : dict, optional
+    edge_type : MobjectClass, optional (default: ArcBetweenPoints)
+    edge_config : dict, optional
+
     
     The keys for the graph have to be of type int in ascending order,
     with each number denoting a vertex.
@@ -1026,8 +1085,10 @@ class Graph():
     directions, but it'll be drawn once, from lower to higher number.
     For example if vertex 2 is connected to vertex 0, that's ignored.
     The config dictionary is used to initialize a Circle as the vertex.
-    (Or an Annulus if annulus=True is passed to this class.)
     It will override values passed as vertex_config to the Graph.
+
+    Examples
+    --------
     Full example:
     g = {0: [[0,0,0], [1, 2], {"color": BLUE}],
          1: [[1,0,0], [0, 2], {"color": GRAY}],
@@ -1035,14 +1096,16 @@ class Graph():
     Graph(g,vertex_config={"radius": 0.2,"fill_opacity": 1},
           edge_config={"stroke_width": 5,"color": RED})
 
-    An edge is instantiated as an ArcBetweenPoints, and optionally
+    An edge usually instantiated as an ArcBetweenPoints, and optionally
     individual config dictionaries can also be passed to them.
     Example:
     g = {0: [[0,0,0], [[1,{"angle": 2}], [2,{"color": WHITE}]]...
+
     
-    Use Graph.vertices/Graph.edges/Graph.annuli for drawing.
+    Use Graph.vertices/Graph.edges for drawing.
     """
-    def __init__(self, graph, vertex_config={}, edge_config={}, **kwargs):
+    def __init__(self, graph, vertex_type=Circle, vertex_config={},
+                 edge_type=ArcBetweenPoints, edge_config={}, **kwargs):
         if not all(isinstance(n,int) for n in graph.keys()):
             raise ValueError("All keys for the Graph dictionary have to be of type int")
         if not all(all(isinstance(m,int) or isinstance(m,list)
@@ -1051,26 +1114,13 @@ class Graph():
             raise ValueError("Invalid Edge definition in Graph class. Use int or "
                              "[int,dict].")
         
-        self.graph = graph
-        self.vertex_config = vertex_config
-        self.edge_config = edge_config
-        if kwargs.get('annulus', False):
-            self.annulus = True 
-        else:
-            self.annulus = False
-        self.make_graph()
-
-    def make_graph(self):
         self.vertices = VGroup()
         self.edges = VGroup()
-        self.annuli = VGroup()
-        for vertex, attributes in self.graph.items():
-            if self.annulus:
-                self.annuli.add(Annulus(**{**self.vertex_config,
-                                           **attributes[2]}).shift(attributes[0]))
-            else:
-                self.vertices.add(Circle(**{**self.vertex_config,
-                                            **attributes[2]}).shift(attributes[0]))
+
+        # Loops over all key/value pairs of the graph dict.
+        for vertex, attributes in graph.items():
+            self.vertices.add(vertex_type(**{**vertex_config,
+                              **attributes[2]}).shift(attributes[0]))
             for edge_definition in attributes[1]:
                 if isinstance(edge_definition, int):
                     vertex_number=edge_definition
@@ -1079,9 +1129,9 @@ class Graph():
                     vertex_number=edge_definition[0]
                     edge_kwargs=edge_definition[1]
                 if vertex < vertex_number:
-                    edge = ArcBetweenPoints(attributes[0],
-                                            self.graph[vertex_number][0],
-                                            **{"angle": 0,
-                                               **self.edge_config,
-                                               **edge_kwargs})
+                    edge = edge_type(attributes[0],
+                                     graph[vertex_number][0],
+                                     **{"angle": 0,
+                                        **edge_config,
+                                        **edge_kwargs})
                     self.edges.add(edge)
