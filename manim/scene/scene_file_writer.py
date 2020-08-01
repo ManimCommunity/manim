@@ -461,7 +461,7 @@ class SceneFileWriter(object):
 
 
         partial_movie_files = [os.path.join(self.partial_movie_directory, "{}{}".format(
-            hash_play, file_writer_config['movie_file_extension'])) for hash_play in self.scene.play_hashes_list] # A OPTIMISER ! Là on recuperer deux fois la list des partial movies files, alors qu'on pourrait utiliser genre get_next_partial_movie_path jsp
+            hash_play, file_writer_config['movie_file_extension'])) for hash_play in self.scene.play_hashes_list] 
         if len(partial_movie_files) == 0:
             logger.error("No animations in this scene")
             return
