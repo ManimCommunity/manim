@@ -157,7 +157,7 @@ def get_hash_from_wait_call(camera_object, wait_time, stop_condition_function, c
     wait_time : :class:`float`
         The time to wait
 
-    stop_condition_function : :class:`func`
+    stop_condition_function : Callable[[...], bool]
         Boolean function used as a stop_condition in `wait`.
 
     Returns

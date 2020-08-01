@@ -850,11 +850,8 @@ class Scene(Container):
 
         Parameters
         ----------
-        *args : 
-            Animation or mobject with mobject method and params
-
-        **kwargs : 
-            named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
+        func : :class:`Callable[[...], None]`    
+            The play like function that has to be written to the video file stream. Take the same parameters as `scene.play`.
         """
         def wrapper(self, *args, **kwargs):
             self.revert_to_original_skipping_status()
@@ -882,11 +879,8 @@ class Scene(Container):
 
         Parameters
         ----------
-        *args : 
-            Animation or mobject with mobject method and params
-
-        **kwargs : 
-            named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
+        func : :class:`Callable[[...], None]`    
+            The wait like function that has to be written to the video file stream. Take the same parameters as `scene.wait`.
         """
         def wrapper(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
             self.revert_to_original_skipping_status()
