@@ -4,7 +4,7 @@ import time
 
 def add_extension_if_not_present(file_name, extension):
     # This could conceivably be smarter about handling existing differing extensions
-    if(file_name[-len(extension):] != extension):
+    if file_name[-len(extension) :] != extension:
         return file_name + extension
     else:
         return file_name

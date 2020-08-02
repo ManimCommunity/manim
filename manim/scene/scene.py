@@ -45,6 +45,7 @@ class Scene(Container):
         time: time elapsed since initialisation of scene.
         random_seed: The seed with which all random operations are done.
     """
+
     CONFIG = {
         "camera_class": Camera,
         "skip_animations": False,
@@ -64,7 +65,7 @@ class Scene(Container):
         self.foreground_mobjects = []
         self.num_plays = 0
         self.time = 0
-        self.original_skipping_status = file_writer_config['skip_animations']
+        self.original_skipping_status = file_writer_config["skip_animations"]
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
@@ -210,19 +211,22 @@ class Scene(Container):
         """
         self.camera.reset()
 
-    def capture_mobjects_in_camera(self, mobjects, **kwargs): #TODO Add more detail to docstring.
+    def capture_mobjects_in_camera(
+        self, mobjects, **kwargs
+    ):  # TODO Add more detail to docstring.
         """
         This method is used internally.
         """
         self.camera.capture_mobjects(mobjects, **kwargs)
 
-    def update_frame( #TODO Description in Docstring
-            self,
-            mobjects=None,
-            background=None,
-            include_submobjects=True,
-            ignore_skipping=True,
-            **kwargs):
+    def update_frame(  # TODO Description in Docstring
+        self,
+        mobjects=None,
+        background=None,
+        include_submobjects=True,
+        ignore_skipping=True,
+        **kwargs,
+    ):
         """
         Parameters:
         -----------
@@ -239,13 +243,10 @@ class Scene(Container):
         **kwargs
 
         """
-        if file_writer_config['skip_animations'] and not ignore_skipping:
+        if file_writer_config["skip_animations"] and not ignore_skipping:
             return
         if mobjects is None:
-            mobjects = list_update(
-                self.mobjects,
-                self.foreground_mobjects,
-            )
+            mobjects = list_update(self.mobjects, self.foreground_mobjects,)
         if background is not None:
             self.set_camera_pixel_array(background)
         else:
@@ -258,6 +259,7 @@ class Scene(Container):
         self.update_frame()
         self.set_camera(Camera(self.get_frame()))
         self.clear()
+
     ###
 
     def update_mobjects(self, dt):
@@ -281,10 +283,9 @@ class Scene(Container):
         -------
             bool
         """
-        return self.always_update_mobjects or any([
-            mob.has_time_based_updater()
-            for mob in self.get_mobject_family_members()
-        ])
+        return self.always_update_mobjects or any(
+            [mob.has_time_based_updater() for mob in self.get_mobject_family_members()]
+        )
 
     ###
 
@@ -328,11 +329,9 @@ class Scene(Container):
         families = [m.get_family() for m in mobjects]
 
         def is_top_level(mobject):
-            num_families = sum([
-                (mobject in family)
-                for family in families
-            ])
+            num_families = sum([(mobject in family) for family in families])
             return num_families == 1
+
         return list(filter(is_top_level, mobjects))
 
     def get_mobject_family_members(self):
@@ -376,10 +375,7 @@ class Scene(Container):
         e.g. to add all mobjects defined up to a point,
         call self.add_mobjects_among(locals().values())
         """
-        self.add(*filter(
-            lambda m: isinstance(m, Mobject),
-            values
-        ))
+        self.add(*filter(lambda m: isinstance(m, Mobject), values))
         return self
 
     def add_mobjects_from_animations(self, animations): 
@@ -408,9 +404,9 @@ class Scene(Container):
             self.restructure_mobjects(mobjects, list_name, False)
         return self
 
-    def restructure_mobjects(self, to_remove,
-                             mobject_list_name="mobjects",
-                             extract_families=True):
+    def restructure_mobjects(
+        self, to_remove, mobject_list_name="mobjects", extract_families=True
+    ):
         """
         tl:wr
             If your scene has a Group(), and you removed a mobject from the Group,
@@ -476,6 +472,7 @@ class Scene(Container):
                     add_safe_mobjects_from_list(mob.submobjects, intersect)
                 else:
                     new_mobjects.append(mob)
+
         add_safe_mobjects_from_list(mobjects, set(to_remove))
         return new_mobjects
 
@@ -495,10 +492,7 @@ class Scene(Container):
         Scene
             The Scene, with the foreground mobjects added.
         """
-        self.foreground_mobjects = list_update(
-            self.foreground_mobjects,
-            mobjects
-        )
+        self.foreground_mobjects = list_update(self.foreground_mobjects, mobjects)
         self.add(*mobjects)
         return self
 
@@ -658,13 +652,15 @@ class Scene(Container):
             update_possibilities = [
                 mob in animation_mobjects,
                 len(mob.get_family_updaters()) > 0,
-                mob in self.foreground_mobjects
+                mob in self.foreground_mobjects,
             ]
             if any(update_possibilities):
                 return mobjects[i:]
         return []
 
-    def get_time_progression(self, run_time, n_iterations=None, override_skip_animations=False):
+    def get_time_progression(
+        self, run_time, n_iterations=None, override_skip_animations=False
+    ):
         """
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
@@ -691,15 +687,16 @@ class Scene(Container):
         ProgressDisplay
             The CommandLine Progress Bar.
         """
-        if file_writer_config['skip_animations'] and not override_skip_animations:
+        if file_writer_config["skip_animations"] and not override_skip_animations:
             times = [run_time]
         else:
             step = 1 / self.camera.frame_rate
             times = np.arange(0, run_time, step)
         time_progression = ProgressDisplay(
-            times, total=n_iterations,
-            leave=file_writer_config['leave_progress_bars'],
-            ascii=True if platform.system() == 'Windows' else None
+            times,
+            total=n_iterations,
+            leave=file_writer_config["leave_progress_bars"],
+            ascii=True if platform.system() == "Windows" else None,
         )
         return time_progression
 
@@ -743,11 +740,15 @@ class Scene(Container):
         """
         run_time = self.get_run_time(animations)
         time_progression = self.get_time_progression(run_time)
-        time_progression.set_description("".join([
-            "Animation {}: ".format(self.num_plays),
-            str(animations[0]),
-            (", etc." if len(animations) > 1 else ""),
-        ]))
+        time_progression.set_description(
+            "".join(
+                [
+                    "Animation {}: ".format(self.num_plays),
+                    str(animations[0]),
+                    (", etc." if len(animations) > 1 else ""),
+                ]
+            )
+        )
         return time_progression
 
     def compile_play_args_to_animation_list(self, *args, **kwargs):
@@ -788,14 +789,14 @@ class Scene(Container):
             else:
                 mobject.generate_target()
             #
-            if len(state["method_args"]) > 0 and isinstance(state["method_args"][-1], dict):
+            if len(state["method_args"]) > 0 and isinstance(
+                state["method_args"][-1], dict
+            ):
                 method_kwargs = state["method_args"].pop()
             else:
                 method_kwargs = {}
             state["curr_method"].__func__(
-                mobject.target,
-                *state["method_args"],
-                **method_kwargs
+                mobject.target, *state["method_args"], **method_kwargs
             )
             animations.append(MoveToTarget(mobject))
             state["last_method"] = state["curr_method"]
@@ -811,10 +812,12 @@ class Scene(Container):
             elif state["curr_method"] is not None:
                 state["method_args"].append(arg)
             elif isinstance(arg, Mobject):
-                raise Exception("""
+                raise Exception(
+                    """
                     I think you may have invoked a method
                     you meant to pass in as a Scene.play argument
-                """)
+                """
+                )
             else:
                 raise Exception("Invalid play arguments")
         compile_method(state)
@@ -835,12 +838,12 @@ class Scene(Container):
         raises an EndSceneEarlyException if they don't correspond.
         """
 
-        if file_writer_config['from_animation_number']:
-            if self.num_plays == file_writer_config['from_animation_number']:
-                file_writer_config['skip_animations'] = False
-        if file_writer_config['upto_animation_number']:
-            if self.num_plays >= file_writer_config['upto_animation_number']:
-                file_writer_config['skip_animations'] = True
+        if file_writer_config["from_animation_number"]:
+            if self.num_plays == file_writer_config["from_animation_number"]:
+                file_writer_config["skip_animations"] = False
+        if file_writer_config["upto_animation_number"]:
+            if self.num_plays >= file_writer_config["upto_animation_number"]:
+                file_writer_config["skip_animations"] = True
                 raise EndSceneEarlyException()
 
     def handle_caching_play(func): 
@@ -916,13 +919,15 @@ class Scene(Container):
             The play() like function that can now write
             to the video file stream.
         """
+
         def wrapper(self, *args, **kwargs):
             self.update_skipping_status()
-            allow_write = not file_writer_config['skip_animations']
+            allow_write = not file_writer_config["skip_animations"]
             self.file_writer.begin_animation(allow_write)
             func(self, *args, **kwargs)
             self.file_writer.end_animation(allow_write)
             self.num_plays += 1
+
         return wrapper
 
     def begin_animations(self, animations):
@@ -981,10 +986,8 @@ class Scene(Container):
         for animation in animations:
             animation.finish()
             animation.clean_up_from_scene(self)
-        self.mobjects_from_last_animation = [
-            anim.mobject for anim in animations
-        ]
-        if file_writer_config['skip_animations']:
+        self.mobjects_from_last_animation = [anim.mobject for anim in animations]
+        if file_writer_config["skip_animations"]:
             # TODO, run this call in for each animation?
             self.update_mobjects(self.get_run_time(animations))
         else:
@@ -1006,9 +1009,7 @@ class Scene(Container):
         if len(args) == 0:
             warnings.warn("Called Scene.play with no animations")
             return
-        animations = self.compile_play_args_to_animation_list(
-            *args, **kwargs
-        )
+        animations = self.compile_play_args_to_animation_list(*args, **kwargs)
         self.begin_animations(animations)
         self.progress_through_animations(animations)
         self.finish_animations(animations)
@@ -1082,16 +1083,14 @@ class Scene(Container):
             time_progression = self.get_time_progression(
                 duration,
                 n_iterations=-1,  # So it doesn't show % progress
-                override_skip_animations=True
+                override_skip_animations=True,
             )
             time_progression.set_description(
                 "Waiting for {}".format(stop_condition.__name__)
             )
         else:
             time_progression = self.get_time_progression(duration)
-            time_progression.set_description(
-                "Waiting {}".format(self.num_plays)
-            )
+            time_progression.set_description("Waiting {}".format(self.num_plays))
         return time_progression
         
     @handle_caching_wait
@@ -1129,7 +1128,7 @@ class Scene(Container):
                 if stop_condition is not None and stop_condition():
                     time_progression.close()
                     break
-        elif file_writer_config['skip_animations']:
+        elif file_writer_config["skip_animations"]:
             # Do nothing
             return self
         else:
@@ -1198,7 +1197,7 @@ class Scene(Container):
         """
         dt = 1 / self.camera.frame_rate
         self.increment_time(len(frames) * dt)
-        if file_writer_config['skip_animations']:
+        if file_writer_config["skip_animations"]:
             return
         for frame in frames:
             self.file_writer.write_frame(frame)
