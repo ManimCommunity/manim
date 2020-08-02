@@ -459,8 +459,6 @@ class SceneFileWriter(object):
         # cuts at all the places you might want.  But for viewing
         # the scene as a whole, one of course wants to see it as a
         # single piece.
-
-
         partial_movie_files = [os.path.join(self.partial_movie_directory, "{}{}".format(
             hash_play, file_writer_config['movie_file_extension'])) for hash_play in self.scene.play_hashes_list] 
         if len(partial_movie_files) == 0:
@@ -477,7 +475,6 @@ class SceneFileWriter(object):
                 if os.name == 'nt':
                     pf_path = pf_path.replace('\\', '/')
                 fp.write("file \'file:{}'\n".format(pf_path))
-
         movie_file_path = self.get_movie_file_path()
         commands = [
             FFMPEG_BIN,

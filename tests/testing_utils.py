@@ -51,7 +51,6 @@ class SceneTester:
         config['pixel_height'] = 480
         config['pixel_width'] = 854
         config['frame_rate'] = 15
-
         # By invoking this, the scene is rendered.
         self.scene = scene_object()
 
