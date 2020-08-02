@@ -40,17 +40,19 @@ class SceneTester:
         self.path_tests_data = os.path.join("tests", "tests_data", module_tested)
 
         if caching_needed:
-            file_writer_config['text_dir'] = os.path.join(
-                self.path_tests_medias_cache, scene_object.__name__, 'Text')
-            file_writer_config['tex_dir'] = os.path.join(
-                self.path_tests_medias_cache, scene_object.__name__, 'Tex')
+            file_writer_config["text_dir"] = os.path.join(
+                self.path_tests_medias_cache, scene_object.__name__, "Text"
+            )
+            file_writer_config["tex_dir"] = os.path.join(
+                self.path_tests_medias_cache, scene_object.__name__, "Tex"
+            )
 
-        file_writer_config['skip_animations'] = True
-        file_writer_config['disable_caching'] = True
+        file_writer_config["skip_animations"] = True
+        file_writer_config["disable_caching"] = True
         file_writer_config["write_to_movie"] = False
-        config['pixel_height'] = 480
-        config['pixel_width'] = 854
-        config['frame_rate'] = 15
+        config["pixel_height"] = 480
+        config["pixel_width"] = 854
+        config["frame_rate"] = 15
         # By invoking this, the scene is rendered.
         self.scene = scene_object()
 

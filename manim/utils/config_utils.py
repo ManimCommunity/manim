@@ -48,8 +48,9 @@ def _parse_file_writer_config(config_parser, args):
         "save_pngs",
         "save_as_gif",
         "write_all",
-        "disable_caching", 
-        "flush_cache"]:
+        "disable_caching",
+        "flush_cache",
+    ]:
 
         attr = getattr(args, boolean_opt)
         fw_config[boolean_opt] = (
@@ -102,8 +103,8 @@ def _parse_file_writer_config(config_parser, args):
             "write_all",
         ]:
             fw_config[opt] = config_parser["dry_run"].getboolean(opt)
-    if not fw_config['write_to_movie']:
-        fw_config['disable_caching'] = True
+    if not fw_config["write_to_movie"]:
+        fw_config["disable_caching"] = True
     # Read in the streaming section -- all values are strings
     fw_config["streaming"] = {
         opt: config_parser["streaming"][opt]
@@ -124,9 +125,9 @@ def _parse_file_writer_config(config_parser, args):
     fw_config["skip_animations"] = any(
         [fw_config["save_last_frame"], fw_config["from_animation_number"]]
     )
-    fw_config['max_files_cached'] = default.getint('max_files_cached')
-    if fw_config['max_files_cached'] == -1:
-        fw_config['max_files_cached'] = float('inf')
+    fw_config["max_files_cached"] = default.getint("max_files_cached")
+    if fw_config["max_files_cached"] == -1:
+        fw_config["max_files_cached"] = float("inf")
     return fw_config
 
 
@@ -226,13 +227,13 @@ def _parse_cli(arg_list, input=True):
         "--disable_caching",
         action="store_const",
         const=True,
-        help="Disable caching (will generate partial-movie-files anyway).",       
+        help="Disable caching (will generate partial-movie-files anyway).",
     )
     parser.add_argument(
         "--flush_cache",
         action="store_const",
         const=True,
-        help="Remove all cached partial-movie-files.",       
+        help="Remove all cached partial-movie-files.",
     )
     # The default value of the following is set in manim.cfg
     parser.add_argument(

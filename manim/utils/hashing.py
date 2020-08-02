@@ -36,12 +36,11 @@ class CustomEncoder(json.JSONEncoder):
                 # NOTE : All module types objects are removed, because otherwise it throws ValueError: Circular reference detected if not. TODO
                 if isinstance(x[i], ModuleType):
                     del x[i]
-            return {'code': inspect.getsource(obj),
-                    'nonlocals': x}
+            return {"code": inspect.getsource(obj), "nonlocals": x}
         elif isinstance(obj, np.ndarray):
             return list(obj)
         elif hasattr(obj, "__dict__"):
-            temp = getattr(obj, '__dict__')
+            temp = getattr(obj, "__dict__")
             return self._encode_dict(temp)
         elif isinstance(obj, np.uint8):
             return int(obj)
@@ -67,11 +66,13 @@ class CustomEncoder(json.JSONEncoder):
         `any`
             The object cleaned following the processus above.
         """
+
         def key_to_hash(key):
             if not isinstance(key, (str, int, float, bool)) and key is not None:
                 # print('called')
                 return zlib.crc32(json.dumps(key, cls=CustomEncoder).encode())
             return key
+
         if isinstance(obj, dict):
             return {key_to_hash(k): self._encode_dict(v) for k, v in obj.items()}
         return obj
@@ -113,7 +114,7 @@ def get_camera_dict_for_hashing(camera_object):
     # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays.
     # They are not essential to caching process.
     # We also have to remove pixel_array_to_cairo_context as it contains used memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
-    for to_clean in ['background', 'pixel_array', 'pixel_array_to_cairo_context']:
+    for to_clean in ["background", "pixel_array", "pixel_array_to_cairo_context"]:
         camera_object_dict.pop(to_clean, None)
     return camera_object_dict
 
@@ -138,10 +139,12 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
         A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`.
     """
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
-    animations_list_json = [get_json(x) for x in sorted(
-        animations_list, key=lambda obj: str(obj))]
-    current_mobjects_list_json = [get_json(x) for x in sorted(
-        current_mobjects_list, key=lambda obj: str(obj))]
+    animations_list_json = [
+        get_json(x) for x in sorted(animations_list, key=lambda obj: str(obj))
+    ]
+    current_mobjects_list_json = [
+        get_json(x) for x in sorted(current_mobjects_list, key=lambda obj: str(obj))
+    ]
     hash_camera, hash_animations, hash_current_mobjects = [
         zlib.crc32(repr(json_val).encode())
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
@@ -149,7 +152,9 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
     return "{}_{}_{}".format(hash_camera, hash_animations, hash_current_mobjects)
 
 
-def get_hash_from_wait_call(camera_object, wait_time, stop_condition_function, current_mobjects_list):
+def get_hash_from_wait_call(
+    camera_object, wait_time, stop_condition_function, current_mobjects_list
+):
     """Take a wait time, a boolean function as a stop condition and a list of mobjects, and then output their individual hashes. This is meant to be used for `scene.wait` function.
 
     Parameters
@@ -166,13 +171,20 @@ def get_hash_from_wait_call(camera_object, wait_time, stop_condition_function, c
         A concatenation of the respective hashes of `animations_list and `current_mobjects_list`, separated by `_`.
     """
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
-    current_mobjects_list_json = [get_json(x) for x in sorted(
-        current_mobjects_list, key=lambda obj: str(obj))]
-    hash_current_mobjects = zlib.crc32(
-        repr(current_mobjects_list_json).encode())
+    current_mobjects_list_json = [
+        get_json(x) for x in sorted(current_mobjects_list, key=lambda obj: str(obj))
+    ]
+    hash_current_mobjects = zlib.crc32(repr(current_mobjects_list_json).encode())
     hash_camera = zlib.crc32(repr(camera_json).encode())
     if stop_condition_function != None:
         hash_function = zlib.crc32(get_json(stop_condition_function).encode())
-        return "{}_{}{}_{}".format(hash_camera, str(wait_time).replace('.', '-'), hash_function, hash_current_mobjects)
+        return "{}_{}{}_{}".format(
+            hash_camera,
+            str(wait_time).replace(".", "-"),
+            hash_function,
+            hash_current_mobjects,
+        )
     else:
-        return "{}_{}_{}".format(hash_camera, str(wait_time).replace('.', '-'), hash_current_mobjects)
+        return "{}_{}_{}".format(
+            hash_camera, str(wait_time).replace(".", "-"), hash_current_mobjects
+        )

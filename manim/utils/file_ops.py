@@ -2,6 +2,7 @@ import os
 import numpy as np
 import time
 
+
 def add_extension_if_not_present(file_name, extension):
     # This could conceivably be smarter about handling existing differing extensions
     if file_name[-len(extension) :] != extension:
@@ -28,7 +29,7 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
     raise IOError("File {} not Found".format(file_name))
 
 
-def modify_atime(file_path): 
+def modify_atime(file_path):
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default. 
 
     Paramaters
@@ -36,4 +37,4 @@ def modify_atime(file_path):
     file_path : :class:`str`
         The path of the file. 
     """
-    os.utime(file_path, times=(time.time(),os.path.getmtime(file_path)))
+    os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
