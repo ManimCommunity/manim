@@ -5,7 +5,7 @@ import hashlib
 import cairo
 
 from ...constants import *
-from ...config import config
+from ...config import config, file_writer_config
 from ...container.container import Container
 from ...logger import logger
 from ...mobject.geometry import Dot, Rectangle
@@ -29,7 +29,8 @@ def remove_invisible_chars(mobject):
     if mobject[0].__class__ == VGroup:
         for i in range(mobject.__len__()):
             mobject_without_dots.add(VGroup())
-            mobject_without_dots[i].add(*[k for k in mobject[i] if k.__class__ != Dot])
+            mobject_without_dots[i].add(
+                *[k for k in mobject[i] if k.__class__ != Dot])
     else:
         mobject_without_dots.add(*[k for k in mobject if k.__class__ != Dot])
     if iscode:
@@ -61,7 +62,7 @@ for example self.play(Transform(remove_invisible_chars(text.chars[0:4]), remove_
 class Text(SVGMobject):
     CONFIG = {
         # Mobject
-        'color': consts.WHITE,
+        'color': WHITE,
         'height': None,
         'width': None,
         'fill_opacity': 1,
@@ -127,6 +128,7 @@ class Text(SVGMobject):
         if self.height is None and self.width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
+    '''
     def get_extra_space_perc(self):
         size = self.size * 10
         dir_name = consts.TEXT_DIR
@@ -134,7 +136,8 @@ class Text(SVGMobject):
         surface = cairo.SVGSurface(file_name, 600, 400)
         context = cairo.Context(surface)
         context.set_font_size(size)
-        context.select_font_face(self.font, self.str2slant(self.slant), self.str2weight(self.weight))
+        context.select_font_face(self.font, self.str2slant(
+            self.slant), self.str2weight(self.weight))
         _, text_yb, _, text_h, _, _ = context.text_extents(self.text)
         char_extents = [context.text_extents(c) for c in self.text]
         max_top_space = max([ce[1] - text_yb for ce in char_extents])
@@ -144,6 +147,7 @@ class Text(SVGMobject):
     def get_extra_space_ushift(self):
         ts, bs = self.get_extra_space_perc()
         return 0.5 * (ts - bs)
+    '''
 
     def gen_chars(self):
         chars = VGroup()
@@ -152,9 +156,11 @@ class Text(SVGMobject):
             if self.text[char_index] == " " or self.text[char_index] == "\t" or self.text[char_index] == "\n":
                 space = Dot(redius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
-                    space.move_to(self.submobjects[submobjects_char_index].get_center())
+                    space.move_to(
+                        self.submobjects[submobjects_char_index].get_center())
                 else:
-                    space.move_to(self.submobjects[submobjects_char_index - 1].get_center())
+                    space.move_to(
+                        self.submobjects[submobjects_char_index - 1].get_center())
                 chars.add(space)
             else:
                 chars.add(self.submobjects[submobjects_char_index])
@@ -287,7 +293,7 @@ class Text(SVGMobject):
             if NOT_SETTING_FONT_MSG != '':
                 print(NOT_SETTING_FONT_MSG)
 
-        dir_name = consts.TEXT_DIR
+        dir_name = file_writer_config["text_dir"]
         hash_name = self.text2hash()
         file_name = os.path.join(dir_name, hash_name) + '.svg'
         if os.path.exists(file_name):
@@ -311,13 +317,15 @@ class Text(SVGMobject):
             if setting.line_num != last_line_num:
                 offset_x = 0
                 last_line_num = setting.line_num
-            context.move_to(START_X + offset_x, START_Y + line_spacing * setting.line_num)
+            context.move_to(START_X + offset_x, START_Y +
+                            line_spacing * setting.line_num)
             context.show_text(text)
             offset_x += context.text_extents(text)[4]
         surface.finish()
         return file_name
 
 
+# Following class is just a Little implementation of upcomming feautures. Ignore it for now.
 class TextWithBackground(Text):
     CONFIG = {
         "background_color": BLACK,
@@ -440,10 +448,13 @@ class Paragraph(VGroup):
             self.lines[0].append(chars_lines_text_list[line_no])
         self.lines_initial_positions = []
         for line_no in range(self.lines[0].__len__()):
-            self.lines_initial_positions.append(self.lines[0][line_no].get_center())
+            self.lines_initial_positions.append(
+                self.lines[0][line_no].get_center())
         self.lines.append([])
-        self.lines[1].extend([self.alignment for _ in range(chars_lines_text_list.__len__())])
-        VGroup.__init__(self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config)
+        self.lines[1].extend(
+            [self.alignment for _ in range(chars_lines_text_list.__len__())])
+        VGroup.__init__(self, *[self.lines[0][i]
+                                for i in range(self.lines[0].__len__())], **config)
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
             self.set_all_lines_alignments(self.alignment)
@@ -470,18 +481,21 @@ class Paragraph(VGroup):
     def set_all_lines_to_initial_positions(self):
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
-            self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
+            self[line_no].move_to(self.get_center() +
+                                  self.lines_initial_positions[line_no])
         return self
 
     def set_line_to_initial_position(self, line_no):
         self.lines[1][line_no] = None
-        self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
+        self[line_no].move_to(self.get_center() +
+                              self.lines_initial_positions[line_no])
         return self
 
     def change_alignment_for_a_line(self, alignment, line_no):
         self.lines[1][line_no] = alignment
         if self.lines[1][line_no] == "center":
-            self[line_no].move_to(np.array([self.get_center()[0], self[line_no].get_center()[1], 0]))
+            self[line_no].move_to(
+                np.array([self.get_center()[0], self[line_no].get_center()[1], 0]))
         elif self.lines[1][line_no] == "right":
             self[line_no].move_to(
                 np.array([self.get_right()[0] - self[line_no].get_width() / 2, self[line_no].get_center()[1], 0]))
