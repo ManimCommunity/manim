@@ -14,7 +14,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments.styles import get_all_styles
 
-'''
+"""
 Code.styles_list static variable is containing list of names of all styles
 Code is VGroup() with three things
     Code[0] is Code.background_mobject is a VGroup()
@@ -34,7 +34,7 @@ Code.code[][] Code.code.chars[][] or Code[2].chars[][] will create problems when
 so, before using Transform() remove invisible characters by using remove_invisible_chars()
 for example self.play(Transform(remove_invisible_chars(Code.code.chars[0:2]), remove_invisible_chars(Code.code.chars[3][0:3])))
 or remove_invisible_chars(Code.code) or remove_invisible_chars(Code)
-'''
+"""
 
 
 class Code(VGroup):
@@ -405,7 +405,7 @@ def hilite_me(code, language, style, insert_line_no, divstyles, file_path):
         Some html css styles.
     file_path : :class:`str`
         Path of code file.
-       """
+    """
     style = style or 'colorful'
     defstyles = 'overflow:auto;width:auto;'
 
