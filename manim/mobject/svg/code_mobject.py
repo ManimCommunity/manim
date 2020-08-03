@@ -1,7 +1,8 @@
 import html
+import os
 from ...constants import *
 from ...container.container import Container
-from ...mobject.geometry import RoundedRectangle
+from ...mobject.geometry import RoundedRectangle, Dot
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
 from ...mobject.types.vectorized_mobject import VGroup
@@ -14,22 +15,22 @@ from pygments.formatters.html import HtmlFormatter
 from pygments.styles import get_all_styles
 
 '''
-Code.styles_list static variable is containing list of names of all styles 
+Code.styles_list static variable is containing list of names of all styles
 Code is VGroup() with three things
     Code[0] is Code.background_mobject is a VGroup()
-        VGroup() of SurroundingRectangle() if background == "rectangle" 
-        VGroup() of RoundedRectangle() and Dot() for three buttons if background == "window" 
-    Code[1] is Code.line_numbers Which is a Paragraph() object, this mean you can use 
-                Code.line_numbers[0] or Code.line_numbers.chars[0] or Code[1].chars[0] to access first line number 
+        VGroup() of SurroundingRectangle() if background == "rectangle"
+        VGroup() of RoundedRectangle() and Dot() for three buttons if background == "window"
+    Code[1] is Code.line_numbers Which is a Paragraph() object, this mean you can use
+                Code.line_numbers[0] or Code.line_numbers.chars[0] or Code[1].chars[0] to access first line number
     Code[2] is Code.code
-        Which is a Paragraph() with color highlighted, this mean you can use 
-            Code.code[1] or Code.code.chars[1] or Code[2].chars[1] 
+        Which is a Paragraph() with color highlighted, this mean you can use
+            Code.code[1] or Code.code.chars[1] or Code[2].chars[1]
                 line number 1
             Code.code[1][0] or Code.code.chars[1][0] or Code[2].chars[1][0]
                 first character of line number 1
             Code.code[1][0:5] Code.code.chars[1][0:5] or Code[2].chars[1][0:5]
                 first five characters of line number 1
-Code.code[][] Code.code.chars[][] or Code[2].chars[][] will create problems when using Transform() because of invisible characters 
+Code.code[][] Code.code.chars[][] or Code[2].chars[][] will create problems when using Transform() because of invisible characters
 so, before using Transform() remove invisible characters by using remove_invisible_chars()
 for example self.play(Transform(remove_invisible_chars(Code.code.chars[0:2]), remove_invisible_chars(Code.code.chars[3][0:3])))
 or remove_invisible_chars(Code.code) or remove_invisible_chars(Code)
@@ -38,7 +39,7 @@ or remove_invisible_chars(Code.code) or remove_invisible_chars(Code)
 
 class Code(VGroup):
     """Class Code is used to display code with color highlighted.
-    
+
     Parameters
     ----------
     file_name : :class:`str`
@@ -52,7 +53,7 @@ class Code(VGroup):
     font : :class:`str`, optional
          The name of the text font to be used. Defaults to `"Monospac821 BT"`.
     stroke_width : class:`float`, optional
-        Stroke width for text. 0 is recommended, and the default. 
+        Stroke width for text. 0 is recommended, and the default.
     margin: class :`float`, optional
         Inner margin of text from the background. Defaults to 0.3.
     indentation_chars : :class:`str`, optional
@@ -77,7 +78,7 @@ class Code(VGroup):
         Specifies the programming language the given code was written in. If `None` (the default), the language will be automatically detected. For the list of possible options, visit https://pygments.org/docs/lexers/ and look for 'aliases or short names'.
     generate_html_file : :class:`bool`, optional
         Defines whether to generate highlighted html code to the folder `assets/codes/generated_html_files`. Defaults to `False`.
-        
+
     Attributes
     ----------
     background_mobject : :class:`~.VGroup`
@@ -130,7 +131,8 @@ class Code(VGroup):
         self.code = self.gen_colored_lines()
         if self.insert_line_no:
             self.line_numbers = self.gen_line_numbers()
-            self.line_numbers.next_to(self.code, direction=LEFT, buff=self.line_no_buff)
+            self.line_numbers.next_to(
+                self.code, direction=LEFT, buff=self.line_no_buff)
 
         if self.background == "rectangle":
             if self.insert_line_no:
@@ -173,9 +175,11 @@ class Code(VGroup):
             self.background_mobject.shift(UP * x)
 
         if self.insert_line_no:
-            VGroup.__init__(self, self.background_mobject, self.line_numbers, self.code, **kwargs)
+            VGroup.__init__(self, self.background_mobject,
+                            self.line_numbers, self.code, **kwargs)
         else:
-            VGroup.__init__(self, self.background_mobject, Dot(fill_opacity=0, stroke_opacity=0), self.code, **kwargs)
+            VGroup.__init__(self, self.background_mobject, Dot(
+                fill_opacity=0, stroke_opacity=0), self.code, **kwargs)
 
         self.move_to(np.array([0, 0, 0]))
 
@@ -185,16 +189,24 @@ class Code(VGroup):
 
         if self.file_name is None:
             raise Exception("Must specify file for Code")
-        possible_paths = [
-            os.path.join(os.path.join("assets", "codes"), self.file_name),
-            self.file_name,
-        ]
-        for path in possible_paths:
-            if os.path.exists(path):
-                self.file_path = path
-                return
-        raise IOError("No file matching %s in codes directory" %
+        if self.file_name:
+            self.file_path = self.file_name
+            return
+        raise IOError("File %s not found. Please specify a correct file path." %
                       self.file_name)
+
+        # if self.file_name is None:
+        #     raise Exception("Must specify file for Code")
+        # possible_paths = [
+        #     os.path.join(os.path.join("assets", "codes"), self.file_name),
+        #     self.file_name,
+        # ]
+        # for path in possible_paths:
+        #     if os.path.exists(path):
+        #         self.file_path = path
+        #         return
+        # raise IOError("File %s not found. Please specify a correct file path" %
+        #               self.file_name)
 
     def gen_line_numbers(self):
         """Function to generate line_numbers.
@@ -249,8 +261,10 @@ class Code(VGroup):
                                      self.file_path)
 
         if self.generate_html_file:
-            os.makedirs(os.path.join("assets", "codes", "generated_html_files"), exist_ok=True)
-            file = open(os.path.join("assets", "codes", "generated_html_files", self.file_name + ".html"), "w")
+            os.makedirs(os.path.join("assets", "codes",
+                                     "generated_html_files"), exist_ok=True)
+            file = open(os.path.join("assets", "codes",
+                                     "generated_html_files", self.file_name + ".html"), "w")
             file.write(self.html_string)
             file.close()
 
@@ -273,8 +287,10 @@ class Code(VGroup):
         for i in range(3, -1, -1):
             self.html_string = self.html_string.replace("</" + " " * i, "</")
         for i in range(10, -1, -1):
-            self.html_string = self.html_string.replace("</span>" + " " * i, " " * i + "</span>")
-        self.html_string = self.html_string.replace("background-color:", "background:")
+            self.html_string = self.html_string.replace(
+                "</span>" + " " * i, " " * i + "</span>")
+        self.html_string = self.html_string.replace(
+            "background-color:", "background:")
 
         if self.insert_line_no:
             start_point = self.html_string.find("</td><td><pre")
@@ -300,13 +316,15 @@ class Code(VGroup):
             if lines[line_index].startswith(self.indentation_chars):
                 start_point = lines[line_index].find("<")
                 starting_string = lines[line_index][:start_point]
-                indentation_chars_count = lines[line_index][:start_point].count(self.indentation_chars)
+                indentation_chars_count = lines[line_index][:start_point].count(
+                    self.indentation_chars)
                 if starting_string.__len__() != indentation_chars_count * self.indentation_chars.__len__():
                     lines[line_index] = "\t" * indentation_chars_count + starting_string[starting_string.rfind(
                         self.indentation_chars) + self.indentation_chars.__len__():] + \
-                                        lines[line_index][start_point:]
+                        lines[line_index][start_point:]
                 else:
-                    lines[line_index] = "\t" * indentation_chars_count + lines[line_index][start_point:]
+                    lines[line_index] = "\t" * indentation_chars_count + \
+                        lines[line_index][start_point:]
 
             indentation_chars_count = 0
             while lines[line_index][indentation_chars_count] == '\t':
@@ -322,7 +340,8 @@ class Code(VGroup):
                     color = self.default_color
                 else:
                     starti = words[word_index][color_index:].find("#")
-                    color = words[word_index][color_index + starti:color_index + starti + 7]
+                    color = words[word_index][color_index +
+                                              starti:color_index + starti + 7]
 
                 start_point = words[word_index].find(">")
                 end_point = words[word_index].find("</span>")
@@ -353,13 +372,16 @@ class Code(VGroup):
                 if words[i][k] == "\t" and starti == -1:
                     continue
                 else:
-                    if starti == -1: starti = k
+                    if starti == -1:
+                        starti = k
                     temp = temp + words[i][k]
             if temp != "":
                 if i != words.__len__() - 1:
-                    temp = '<span style="color:' + self.default_color + '">' + words[i][starti:j] + "</span>"
+                    temp = '<span style="color:' + self.default_color + \
+                        '">' + words[i][starti:j] + "</span>"
                 else:
-                    temp = '<span style="color:' + self.default_color + '">' + words[i][starti:j]
+                    temp = '<span style="color:' + \
+                        self.default_color + '">' + words[i][starti:j]
                 temp = temp + words[i][j:]
                 words[i] = temp
             if words[i] != "":
@@ -412,7 +434,8 @@ def insert_line_numbers(html):
         html string of highlighted code.
     """
     match = re.search('(<pre[^>]*>)(.*)(</pre>)', html, re.DOTALL)
-    if not match: return html
+    if not match:
+        return html
 
     pre_open = match.group(1)
     pre = match.group(2)
@@ -422,5 +445,6 @@ def insert_line_numbers(html):
     numbers = range(1, pre.count('\n') + 1)
     format = '%' + str(len(str(numbers[-1]))) + 'i'
     lines = '\n'.join(format % i for i in numbers)
-    html = html.replace(pre_open, '<table><tr><td>' + pre_open + lines + '</pre></td><td>' + pre_open)
+    html = html.replace(pre_open, '<table><tr><td>' +
+                        pre_open + lines + '</pre></td><td>' + pre_open)
     return html
