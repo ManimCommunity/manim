@@ -17,11 +17,9 @@ def capture(command,instream=None):
 
 def test_logging_to_file(python_version):
     """Test logging Terminal output to a log file.
-    `rich` formats it's output based on the size of the terminal it is outputting to.
-    As such, since there is no way to obtain the terminal size of the testing device
-    before running the test, this test employs a workaround where instead of the exact
-    text of the log (which can differ in whitespace and truncation) only the constant
-    parts, such as keywords, are compared.
+    As some data will differ with each log (the timestamps, file paths, line nums etc)
+    a regex substitution has been employed to replace the strings that may change with
+    whitespace.
     """
     path_basic_scene = os.path.join("tests", "tests_data", "basic_scenes.py")
     expected=['INFO', 'Read', 'configuration', 'files:', 'config.py:', 'INFO',
@@ -38,7 +36,10 @@ def test_logging_to_file(python_version):
     else:
         enc="utf-8"
     with open(log_file_path,encoding=enc) as logfile:
-        logs=logfile.read().split()
-    logs=[e for e in logs if not any(x in e for x in ["\\","/",".mp4","[","]"])]
-    logs=[re.sub('[0-9]', '', i) for i in logs]
-    assert logs==expected, err
+        logs=logfile.read()
+    pattern = r"\[(.*)]|:([1-9]*)|([A-Z]?:?[\/\\].*cfg)|([A-Z]?:?[\/\\].*mp4)"
+
+    logs = re.sub(pattern,lambda m: " "*len((m.group(0))),logs)
+    with open(os.path.join(os.path.dirname(__file__),"expected.txt"),"r") as expectedfile:
+        expected = re.sub(pattern,lambda m: " "*len((m.group(0))),expectedfile.read())
+    assert logs == expected,logs
