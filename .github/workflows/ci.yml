@@ -1,0 +1,91 @@
+name: CI
+on:
+  push:
+      branches:
+        - master
+  pull_request:
+      branches:
+        - master
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install black
+        run: pip install black
+
+      - name: Check manim formatting
+        run: black --check --diff manim
+
+      - name: Check tests formatting
+        run: black --check --diff tests
+
+      - name: Check examples formatting
+        run: black --check --diff example_scenes
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: [3.6, 3.7, 3.8]
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install -y ffmpeg
+          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+
+      - name: Install system dependencies (MacOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install openssl readline ffmpeg sox pyenv pyenv-virtualenv
+          brew cask install basictex
+          eval "$(/usr/libexec/path_helper -s)"
+          sudo tlmgr update --self
+          sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
+          echo "::set-env name=PATH::$PATH"
+
+      - name: Install system dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Try {Invoke-WebRequest https://yihui.org/gh/tinytex/tools/install-windows.bat -O install_tinytex.bat}
+          Catch {Invoke-WebRequest https://raw.githubusercontent.com/yihui/tinytex/master/tools/install-windows.bat -O install_tinytex.bat}
+          Start-Process install_tinytex.bat -NoNewWindow -Wait
+          $env:Path += ";" + $env:APPDATA + "\TinyTeX\bin\win32"
+          tlmgr install standalone preview doublestroke ms setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english
+          choco install --no-progress ffmpeg
+          choco install --no-progress sox.portable
+          echo "::set-env name=Path::$env:Path"
+
+      - name: Install Pycairo (Non-Windows)
+        if: runner.os == 'macOS' || runner.os == 'Linux'
+        run: pip install pycairo
+
+      - name: Install Pycairo (Windows)
+        if: runner.os == 'Windows'
+        run: python ./scripts/pycairoinstall.py
+
+      - name: Install manim
+        run: pip install . pytest
+
+      - name: Run tests
+        run: pytest
