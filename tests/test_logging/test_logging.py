@@ -21,18 +21,6 @@ def test_logging_to_file(python_version):
     whitespace.
     """
     path_basic_scene = os.path.join("tests", "tests_data", "basic_scenes.py")
-    expected = [
-        "INFO",
-        "Read",
-        "configuration",
-        "files:",
-        "config.py:",
-        "INFO",
-        "scene_file_writer.py:",
-        "File",
-        "ready",
-        "at",
-    ]
     path_output = os.path.join("tests_cache", "media_temp")
     command = [
         python_version,
@@ -57,7 +45,7 @@ def test_logging_to_file(python_version):
         enc = "utf-8"
     with open(log_file_path, encoding=enc) as logfile:
         logs = logfile.read()
-    pattern = r"\[(.*)]|:([1-9]*)|([A-Z]?:?[\/\\].*cfg)|([A-Z]?:?[\/\\].*mp4)"
+    pattern = r"([0-9])|([A-Z]?:?[\/\\].*cfg)|([A-Z]?:?[\/\\].*mp4)"
 
     logs = re.sub(pattern, lambda m: " " * len((m.group(0))), logs)
     with open(
