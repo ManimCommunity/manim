@@ -45,7 +45,7 @@ def test_logging_to_file(python_version):
         enc = "utf-8"
     with open(log_file_path, encoding=enc) as logfile:
         logs = logfile.read()
-    pattern = r"([0-9])|(\['[A-Z]?:?[\/\\].*cfg'])|([A-Z]?:?[\/\\].*mp4)"
+    pattern = r"(\[?\d+:?]?)|(\['[A-Z]?:?[\/\\].*cfg'])|([A-Z]?:?[\/\\].*mp4)"
 
     logs = re.sub(pattern, lambda m: " " * len((m.group(0))), logs)
     with open(
