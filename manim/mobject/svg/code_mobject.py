@@ -102,20 +102,20 @@ class Code(VGroup):
         "tab_width": 3,
         "line_spacing": 0.3,
         "scale_factor": 0.5,
-        "font": 'Monospac821 BT',
-        'stroke_width': 0,
-        'margin': 0.3,
-        'indentation_chars': "    ",
+        "font": "Monospac821 BT",
+        "stroke_width": 0,
+        "margin": 0.3,
+        "indentation_chars": "    ",
         "background": "rectangle",  # or window
         "background_stroke_width": 1,
         "background_stroke_color": WHITE,
         "corner_radius": 0.2,
-        'insert_line_no': True,
-        'line_no_from': 1,
+        "insert_line_no": True,
+        "line_no_from": 1,
         "line_no_buff": 0.4,
-        'style': 'vim',
-        'language': None,
-        'generate_html_file': False
+        "style": "vim",
+        "language": None,
+        "generate_html_file": False,
     }
 
     def __init__(self, file_name=None, **kwargs):
@@ -125,7 +125,7 @@ class Code(VGroup):
         self.style = self.style.lower()
         self.gen_html_string()
         strati = self.html_string.find("background:")
-        self.background_color = self.html_string[strati + 12:strati + 19]
+        self.background_color = self.html_string[strati + 12: strati + 19]
         self.gen_code_json()
 
         self.code = self.gen_colored_lines()
@@ -133,18 +133,20 @@ class Code(VGroup):
             self.line_numbers = self.gen_line_numbers()
             self.line_numbers.next_to(
                 self.code, direction=LEFT, buff=self.line_no_buff)
-
         if self.background == "rectangle":
             if self.insert_line_no:
                 forground = VGroup(self.code, self.line_numbers)
             else:
                 forground = self.code
-            rect = SurroundingRectangle(forground, buff=self.margin,
-                                        color=self.background_color,
-                                        fill_color=self.background_color,
-                                        stroke_width=self.background_stroke_width,
-                                        stroke_color=self.background_stroke_color,
-                                        fill_opacity=1, )
+            rect = SurroundingRectangle(
+                forground,
+                buff=self.margin,
+                color=self.background_color,
+                fill_color=self.background_color,
+                stroke_width=self.background_stroke_width,
+                stroke_color=self.background_stroke_color,
+                fill_opacity=1,
+            )
             rect.round_corners(self.corner_radius)
             self.background_mobject = VGroup(rect)
         else:
@@ -152,35 +154,45 @@ class Code(VGroup):
                 forground = VGroup(self.code, self.line_numbers)
             else:
                 forground = self.code
-
             height = forground.get_height() + 0.1 * 3 + 2 * self.margin
             width = forground.get_width() + 0.1 * 3 + 2 * self.margin
 
-            rect = RoundedRectangle(corner_radius=self.corner_radius, height=height, width=width,
-                                    stroke_width=self.background_stroke_width,
-                                    stroke_color=self.background_stroke_color,
-                                    color=self.background_color, fill_opacity=1)
-            red_button = Dot(radius=0.1, stroke_width=0, color='#ff5f56')
+            rect = RoundedRectangle(
+                corner_radius=self.corner_radius,
+                height=height,
+                width=width,
+                stroke_width=self.background_stroke_width,
+                stroke_color=self.background_stroke_color,
+                color=self.background_color,
+                fill_opacity=1,
+            )
+            red_button = Dot(radius=0.1, stroke_width=0, color="#ff5f56")
             red_button.shift(LEFT * 0.1 * 3)
-            yellow_button = Dot(radius=0.1, stroke_width=0, color='#ffbd2e')
-            green_button = Dot(radius=0.1, stroke_width=0, color='#27c93f')
+            yellow_button = Dot(radius=0.1, stroke_width=0, color="#ffbd2e")
+            green_button = Dot(radius=0.1, stroke_width=0, color="#27c93f")
             green_button.shift(RIGHT * 0.1 * 3)
             buttons = VGroup(red_button, yellow_button, green_button)
             buttons.shift(
-                UP * (height / 2 - 0.1 * 2 - 0.05) + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05))
+                UP * (height / 2 - 0.1 * 2 - 0.05)
+                + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05)
+            )
 
             self.background_mobject = VGroup(rect, buttons)
             x = (height - forground.get_height()) / 2 - 0.1 * 3
             self.background_mobject.shift(forground.get_center())
             self.background_mobject.shift(UP * x)
-
         if self.insert_line_no:
-            VGroup.__init__(self, self.background_mobject,
-                            self.line_numbers, self.code, **kwargs)
+            VGroup.__init__(
+                self, self.background_mobject, self.line_numbers, self.code, **kwargs
+            )
         else:
-            VGroup.__init__(self, self.background_mobject, Dot(
-                fill_opacity=0, stroke_opacity=0), self.code, **kwargs)
-
+            VGroup.__init__(
+                self,
+                self.background_mobject,
+                Dot(fill_opacity=0, stroke_opacity=0),
+                self.code,
+                **kwargs
+            )
         self.move_to(np.array([0, 0, 0]))
 
     def ensure_valid_file(self):
@@ -192,8 +204,9 @@ class Code(VGroup):
         if self.file_name:
             self.file_path = self.file_name
             return
-        raise IOError("File %s not found. Please specify a correct file path." %
-                      self.file_name)
+        raise IOError(
+            "File %s not found. Please specify a correct file path." % self.file_name
+        )
 
         # if self.file_name is None:
         #     raise Exception("Must specify file for Code")
@@ -219,9 +232,13 @@ class Code(VGroup):
         for line_no in range(0, self.code_json.__len__()):
             number = str(self.line_no_from + line_no)
             line_numbers_array.append(number)
-        line_numbers = Paragraph(*[i for i in line_numbers_array], line_spacing=self.line_spacing,
-                                 alignment="right", font=self.font, stroke_width=self.stroke_width).scale(
-            self.scale_factor)
+        line_numbers = Paragraph(
+            *[i for i in line_numbers_array],
+            line_spacing=self.line_spacing,
+            alignment="right",
+            font=self.font,
+            stroke_width=self.stroke_width
+        ).scale(self.scale_factor)
         for i in line_numbers:
             i.set_color(self.default_color)
         return line_numbers
@@ -239,14 +256,21 @@ class Code(VGroup):
             for word_index in range(self.code_json[line_no].__len__()):
                 line_str = line_str + self.code_json[line_no][word_index][0]
             lines_text.append(self.tab_spaces[line_no] * "\t" + line_str)
-        code = Paragraph(*[i for i in lines_text], line_spacing=self.line_spacing, tab_width=self.tab_width,
-                         font=self.font, stroke_width=self.stroke_width).scale(self.scale_factor)
+        code = Paragraph(
+            *[i for i in lines_text],
+            line_spacing=self.line_spacing,
+            tab_width=self.tab_width,
+            font=self.font,
+            stroke_width=self.stroke_width
+        ).scale(self.scale_factor)
         for line_no in range(code.__len__()):
             line = code.chars[line_no]
             line_char_index = self.tab_spaces[line_no]
             for word_index in range(self.code_json[line_no].__len__()):
-                line[line_char_index:line_char_index + self.code_json[line_no][word_index][0].__len__()].set_color(
-                    self.code_json[line_no][word_index][1])
+                line[
+                    line_char_index: line_char_index
+                    + self.code_json[line_no][word_index][0].__len__()
+                ].set_color(self.code_json[line_no][word_index][1])
                 line_char_index += self.code_json[line_no][word_index][0].__len__()
         return code
 
@@ -256,15 +280,25 @@ class Code(VGroup):
         file = open(self.file_path, "r")
         code_str = file.read()
         file.close()
-        self.html_string = hilite_me(code_str, self.language, self.style, self.insert_line_no,
-                                     "border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;",
-                                     self.file_path)
+        self.html_string = hilite_me(
+            code_str,
+            self.language,
+            self.style,
+            self.insert_line_no,
+            "border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;",
+            self.file_path,
+        )
 
         if self.generate_html_file:
-            os.makedirs(os.path.join("assets", "codes",
-                                     "generated_html_files"), exist_ok=True)
-            file = open(os.path.join("assets", "codes",
-                                     "generated_html_files", self.file_name + ".html"), "w")
+            os.makedirs(
+                os.path.join("assets", "codes", "generated_html_files"), exist_ok=True
+            )
+            file = open(
+                os.path.join(
+                    "assets", "codes", "generated_html_files", self.file_name + ".html"
+                ),
+                "w",
+            )
             file.write(self.html_string)
             file.close()
 
@@ -276,10 +310,12 @@ class Code(VGroup):
         tab_spaces is 2d array with rows as line numbers
         and columns as corresponding number of indentation_chars in front of that line in code.
         """
-        if self.background_color == "#111111" or \
-                self.background_color == "#272822" or \
-                self.background_color == "#202020" or \
-                self.background_color == "#000000":
+        if (
+            self.background_color == "#111111"
+            or self.background_color == "#272822"
+            or self.background_color == "#202020"
+            or self.background_color == "#000000"
+        ):
             self.default_color = "#ffffff"
         else:
             self.default_color = "#000000"
@@ -288,7 +324,8 @@ class Code(VGroup):
             self.html_string = self.html_string.replace("</" + " " * i, "</")
         for i in range(10, -1, -1):
             self.html_string = self.html_string.replace(
-                "</span>" + " " * i, " " * i + "</span>")
+                "</span>" + " " * i, " " * i + "</span>"
+            )
         self.html_string = self.html_string.replace(
             "background-color:", "background:")
 
@@ -300,7 +337,7 @@ class Code(VGroup):
         self.html_string = self.html_string[start_point:]
         # print(self.html_string)
         lines = self.html_string.split("\n")
-        lines = lines[0:lines.__len__() - 2]
+        lines = lines[0: lines.__len__() - 2]
         start_point = lines[0].find(">")
         lines[0] = lines[0][start_point + 1:]
         # print(lines)
@@ -317,17 +354,27 @@ class Code(VGroup):
                 start_point = lines[line_index].find("<")
                 starting_string = lines[line_index][:start_point]
                 indentation_chars_count = lines[line_index][:start_point].count(
-                    self.indentation_chars)
-                if starting_string.__len__() != indentation_chars_count * self.indentation_chars.__len__():
-                    lines[line_index] = "\t" * indentation_chars_count + starting_string[starting_string.rfind(
-                        self.indentation_chars) + self.indentation_chars.__len__():] + \
-                        lines[line_index][start_point:]
+                    self.indentation_chars
+                )
+                if (
+                    starting_string.__len__()
+                    != indentation_chars_count * self.indentation_chars.__len__()
+                ):
+                    lines[line_index] = (
+                        "\t" * indentation_chars_count
+                        + starting_string[
+                            starting_string.rfind(self.indentation_chars)
+                            + self.indentation_chars.__len__():
+                        ]
+                        + lines[line_index][start_point:]
+                    )
                 else:
-                    lines[line_index] = "\t" * indentation_chars_count + \
+                    lines[line_index] = (
+                        "\t" * indentation_chars_count +
                         lines[line_index][start_point:]
-
+                    )
             indentation_chars_count = 0
-            while lines[line_index][indentation_chars_count] == '\t':
+            while lines[line_index][indentation_chars_count] == "\t":
                 indentation_chars_count = indentation_chars_count + 1
             self.tab_spaces.append(indentation_chars_count)
             # print(lines[line_index])
@@ -340,12 +387,12 @@ class Code(VGroup):
                     color = self.default_color
                 else:
                     starti = words[word_index][color_index:].find("#")
-                    color = words[word_index][color_index +
-                                              starti:color_index + starti + 7]
-
+                    color = words[word_index][
+                        color_index + starti: color_index + starti + 7
+                    ]
                 start_point = words[word_index].find(">")
                 end_point = words[word_index].find("</span>")
-                text = words[word_index][start_point + 1:end_point]
+                text = words[word_index][start_point + 1: end_point]
                 text = html.unescape(text)
                 if text != "":
                     # print(text, "'" + color + "'")
@@ -377,11 +424,20 @@ class Code(VGroup):
                     temp = temp + words[i][k]
             if temp != "":
                 if i != words.__len__() - 1:
-                    temp = '<span style="color:' + self.default_color + \
-                        '">' + words[i][starti:j] + "</span>"
+                    temp = (
+                        '<span style="color:'
+                        + self.default_color
+                        + '">'
+                        + words[i][starti:j]
+                        + "</span>"
+                    )
                 else:
-                    temp = '<span style="color:' + \
-                        self.default_color + '">' + words[i][starti:j]
+                    temp = (
+                        '<span style="color:'
+                        + self.default_color
+                        + '">'
+                        + words[i][starti:j]
+                    )
                 temp = temp + words[i][j:]
                 words[i] = temp
             if words[i] != "":
@@ -406,15 +462,17 @@ def hilite_me(code, language, style, insert_line_no, divstyles, file_path):
     file_path : :class:`str`
         Path of code file.
     """
-    style = style or 'colorful'
-    defstyles = 'overflow:auto;width:auto;'
+    style = style or "colorful"
+    defstyles = "overflow:auto;width:auto;"
 
-    formatter = HtmlFormatter(style=style,
-                              linenos=False,
-                              noclasses=True,
-                              cssclass='',
-                              cssstyles=defstyles + divstyles,
-                              prestyles='margin: 0')
+    formatter = HtmlFormatter(
+        style=style,
+        linenos=False,
+        noclasses=True,
+        cssclass="",
+        cssstyles=defstyles + divstyles,
+        prestyles="margin: 0",
+    )
     if language is None:
         lexer = guess_lexer_for_filename(file_path, code)
         html = highlight(code, lexer, formatter)
@@ -433,18 +491,18 @@ def insert_line_numbers(html):
     html : :class:`str`
         html string of highlighted code.
     """
-    match = re.search('(<pre[^>]*>)(.*)(</pre>)', html, re.DOTALL)
+    match = re.search("(<pre[^>]*>)(.*)(</pre>)", html, re.DOTALL)
     if not match:
         return html
-
     pre_open = match.group(1)
     pre = match.group(2)
     pre_close = match.group(3)
 
-    html = html.replace(pre_close, '</pre></td></tr></table>')
-    numbers = range(1, pre.count('\n') + 1)
-    format = '%' + str(len(str(numbers[-1]))) + 'i'
-    lines = '\n'.join(format % i for i in numbers)
-    html = html.replace(pre_open, '<table><tr><td>' +
-                        pre_open + lines + '</pre></td><td>' + pre_open)
+    html = html.replace(pre_close, "</pre></td></tr></table>")
+    numbers = range(1, pre.count("\n") + 1)
+    format = "%" + str(len(str(numbers[-1]))) + "i"
+    lines = "\n".join(format % i for i in numbers)
+    html = html.replace(
+        pre_open, "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open
+    )
     return html
