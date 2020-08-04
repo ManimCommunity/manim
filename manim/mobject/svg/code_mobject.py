@@ -197,28 +197,19 @@ class Code(VGroup):
     def ensure_valid_file(self):
         """Function to validate file.
         """
-
         if self.file_name is None:
             raise Exception("Must specify file for Code")
-        if self.file_name:
-            self.file_path = self.file_name
-            return
+        possible_paths = [
+            os.path.join(os.path.join("assets", "codes"), self.file_name),
+            self.file_name,
+        ]
+        for path in possible_paths:
+            if os.path.exists(path):
+                self.file_path = path
+                return
         raise IOError(
-            "File %s not found. Please specify a correct file path." % self.file_name
+            "File %s not found. Please specify a correct file path" % self.file_name
         )
-
-        # if self.file_name is None:
-        #     raise Exception("Must specify file for Code")
-        # possible_paths = [
-        #     os.path.join(os.path.join("assets", "codes"), self.file_name),
-        #     self.file_name,
-        # ]
-        # for path in possible_paths:
-        #     if os.path.exists(path):
-        #         self.file_path = path
-        #         return
-        # raise IOError("File %s not found. Please specify a correct file path" %
-        #               self.file_name)
 
     def gen_line_numbers(self):
         """Function to generate line_numbers.
