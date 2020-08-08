@@ -10,6 +10,7 @@ import cairo
 import numpy as np
 
 from ..constants import *
+from ..config import config, camera_config
 from ..logger import logger
 from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.mobject import Mobject
@@ -25,6 +26,7 @@ from ..utils.simple_functions import fdiv
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 
+
 class Camera(object):
     """
     Base Camera class.
@@ -38,7 +40,7 @@ class Camera(object):
         background_image : :class:`str`, optional
             The path to an image that should be the background image.
             If not set, the background is filled with `self.background_color`
-    
+
         pixel_height : :class:`int`
         pixel_width : :class:`int`
         frame_rate : :class:`int`
@@ -53,28 +55,30 @@ class Camera(object):
         z_buff_func : Callable[[:class:`~.Mobject`], float]
         cairo_line_width_multiple : :class:`float`
     """
+
     CONFIG = {
         "background_image": None,
-        "pixel_height": DEFAULT_PIXEL_HEIGHT,
-        "pixel_width": DEFAULT_PIXEL_WIDTH,
-        "frame_rate": DEFAULT_FRAME_RATE,
+        "pixel_height": config["pixel_height"],
+        "pixel_width": config["pixel_width"],
+        "frame_rate": config["frame_rate"],
         # Note: frame height and width will be resized to match
         # the pixel aspect ratio
-        "frame_height": FRAME_HEIGHT,
-        "frame_width": FRAME_WIDTH,
+        "frame_height": config["frame_height"],
+        "frame_width": config["frame_width"],
         "frame_center": ORIGIN,
         "background_color": BLACK,
         "background_opacity": 1,
         # Points in vectorized mobjects with norm greater
         # than this value will be rescaled.
-        "max_allowable_norm": FRAME_WIDTH,
+        "max_allowable_norm": config["frame_width"],
         "image_mode": "RGBA",
         "n_channels": 4,
-        "pixel_array_dtype": 'uint8',
+        "pixel_array_dtype": "uint8",
         # z_buff_func is only used if the flag above is set to True.
         # round z coordinate to nearest hundredth when comparring
         "z_buff_func": lambda m: np.round(m.get_center()[2], 2),
         "cairo_line_width_multiple": 0.01,
+        "use_z_index": True,
     }
 
     def __init__(self, background=None, **kwargs):
@@ -106,8 +110,8 @@ class Camera(object):
         of a single pixel to the passed new_height and new_width.
 
         Parameters
-        ------
-        new_height : Union[:class:`int`, :class:`float`]
+        ----------
+        new_height : int, float
             The new height of the entire scene in pixels
         new_width : Union[:class:`int`, :class:`float`]
             The new width of the entire scene in pixels
@@ -249,8 +253,7 @@ class Camera(object):
                 self.background_color, self.background_opacity
             )
             self.background = np.zeros(
-                (height, width, self.n_channels),
-                dtype=self.pixel_array_dtype
+                (height, width, self.n_channels), dtype=self.pixel_array_dtype
             )
             self.background[:, :] = background_rgba
 
@@ -271,10 +274,7 @@ class Camera(object):
         """
         if pixel_array is None:
             pixel_array = self.pixel_array
-        return Image.fromarray(
-            pixel_array,
-            mode=self.image_mode
-        )
+        return Image.fromarray(pixel_array, mode=self.image_mode)
 
     def get_pixel_array(self):
         """Returns the pixel array
@@ -308,7 +308,7 @@ class Camera(object):
             retval = np.apply_along_axis(
                 lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
                 2,
-                retval
+                retval,
             )
         return retval
 
@@ -322,9 +322,11 @@ class Camera(object):
         convert_from_floats : :class:`bool`, optional
             Whether or not to convert float values to proper RGB values, by default False
         """
-        converted_array = self.convert_pixel_array(
-            pixel_array, convert_from_floats)
-        if not (hasattr(self, "pixel_array") and self.pixel_array.shape == converted_array.shape):
+        converted_array = self.convert_pixel_array(pixel_array, convert_from_floats)
+        if not (
+            hasattr(self, "pixel_array")
+            and self.pixel_array.shape == converted_array.shape
+        ):
             self.pixel_array = converted_array
         else:
             # Set in place
@@ -341,8 +343,7 @@ class Camera(object):
         convert_from_floats : :class:`bool`, optional
             Whether or not to convert floats values to proper RGB valid ones, by default False
         """
-        self.background = self.convert_pixel_array(
-            pixel_array, convert_from_floats)
+        self.background = self.convert_pixel_array(pixel_array, convert_from_floats)
 
     # TODO, this should live in utils, not as a method of Camera
     def make_background_from_func(self, coords_to_colors_func):
@@ -353,7 +354,7 @@ class Camera(object):
 
         Parameters
         ----------
-        coords_to_colors_func : Callable[[Tuple[:class:`float`, :class:`float`]], :class:`str`] 
+        coords_to_colors_func : Callable[[Tuple[:class:`float`, :class:`float`]], :class:`str`]
             The function whose input is an (x,y) pair of coordinates and
             whose return value must be the color for that point
         Returns
@@ -362,14 +363,16 @@ class Camera(object):
             The pixel array which can then be passed to set_background.
         """
 
-        logger.info("Starting set_background; for reference, the current time is ", time.strftime("%H:%M:%S"))
-        coords = self.get_coords_of_all_pixels()
-        new_background = np.apply_along_axis(
-            coords_to_colors_func,
-            2,
-            coords
+        logger.info(
+            "Starting set_background; for reference, the current time is ",
+            time.strftime("%H:%M:%S"),
         )
-        logger.info("Ending set_background; for reference, the current time is ", time.strftime("%H:%M:%S"))
+        coords = self.get_coords_of_all_pixels()
+        new_background = np.apply_along_axis(coords_to_colors_func, 2, coords)
+        logger.info(
+            "Ending set_background; for reference, the current time is ",
+            time.strftime("%H:%M:%S"),
+        )
 
         return self.convert_pixel_array(new_background, convert_from_floats=True)
 
@@ -385,8 +388,7 @@ class Camera(object):
             The function whose input is an (x,y) pair of coordinats and
             whose return values must be the colors for that point
         """
-        self.set_background(
-            self.make_background_from_func(coords_to_colors_func))
+        self.set_background(self.make_background_from_func(coords_to_colors_func))
 
     def reset(self):
         """Resets the camera's pixel array
@@ -396,7 +398,7 @@ class Camera(object):
         -------
         :class:`Camera`
             The camera object after setting the pixel array.
-        """""
+        """
         self.set_pixel_array(self.background)
         return self
 
@@ -404,9 +406,7 @@ class Camera(object):
 
     # TODO, it's weird that this is part of camera.
     # Clearly it should live elsewhere.
-    def extract_mobject_family_members(
-            self, mobjects,
-            only_those_with_points=False):
+    def extract_mobject_family_members(self, mobjects, only_those_with_points=False):
         """Returns a list of the types of mobjects and
         their family members present.
 
@@ -427,14 +427,13 @@ class Camera(object):
             method = Mobject.family_members_with_points
         else:
             method = Mobject.get_family
-        return remove_list_redundancies(list(
-            it.chain(*[method(m) for m in mobjects])
-        ))
+        if self.use_z_index:
+            mobjects.sort(key=lambda m: m.z_index)
+        return remove_list_redundancies(list(it.chain(*[method(m) for m in mobjects])))
 
     def get_mobjects_to_display(
-            self, mobjects,
-            include_submobjects=True,
-            excluded_mobjects=None):
+        self, mobjects, include_submobjects=True, excluded_mobjects=None
+    ):
         """Used to get the list of mobjects to display
         with the camera.
 
@@ -457,9 +456,7 @@ class Camera(object):
                 mobjects, only_those_with_points=True,
             )
             if excluded_mobjects:
-                all_excluded = self.extract_mobject_family_members(
-                    excluded_mobjects
-                )
+                all_excluded = self.extract_mobject_family_members(excluded_mobjects)
                 mobjects = list_difference_update(mobjects, all_excluded)
         return mobjects
 
@@ -480,17 +477,24 @@ class Camera(object):
         fc = self.get_frame_center()
         fh = self.get_frame_height()
         fw = self.get_frame_width()
-        return not reduce(op.or_, [
-            mobject.get_right()[0] < fc[0] - fw,
-            mobject.get_bottom()[1] > fc[1] + fh,
-            mobject.get_left()[0] > fc[0] + fw,
-            mobject.get_top()[1] < fc[1] - fh,
-        ])
+        return not reduce(
+            op.or_,
+            [
+                mobject.get_right()[0] < fc[0] - fw,
+                mobject.get_bottom()[1] > fc[1] + fh,
+                mobject.get_left()[0] > fc[0] + fw,
+                mobject.get_top()[1] < fc[1] - fh,
+            ],
+        )
 
-    def capture_mobject(self, mobject, **kwargs): #TODO Write better docstrings for this method.
+    def capture_mobject(
+        self, mobject, **kwargs
+    ):  # TODO Write better docstrings for this method.
         return self.capture_mobjects([mobject], **kwargs)
 
-    def capture_mobjects(self, mobjects, **kwargs): #TODO Write better docstrings for this method.
+    def capture_mobjects(
+        self, mobjects, **kwargs
+    ):  # TODO Write better docstrings for this method.
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
 
         # Organize this list into batches of the same type, and
@@ -506,9 +510,8 @@ class Camera(object):
             for mobject_type, func in type_func_pairs:
                 if isinstance(mobject, mobject_type):
                     return mobject_type
-            raise Exception(
-                "Trying to display something which is not of type Mobject"
-            )
+            raise Exception("Trying to display something which is not of type Mobject")
+
         batch_type_pairs = batch_by_property(mobjects, get_mobject_type)
 
         # Display in these batches
@@ -537,9 +540,7 @@ class Camera(object):
         :class:`Cairo.Context.Context`
             The cached cairo context.
         """
-        return self.pixel_array_to_cairo_context.get(
-            id(pixel_array), None
-        )
+        return self.pixel_array_to_cairo_context.get(id(pixel_array), None)
 
     def cache_cairo_context(self, pixel_array, ctx):
         """Caches the passed Pixel array into a Cairo Context
@@ -578,18 +579,20 @@ class Camera(object):
         fh = self.get_frame_height()
         fc = self.get_frame_center()
         surface = cairo.ImageSurface.create_for_data(
-            pixel_array,
-            cairo.FORMAT_ARGB32,
-            pw, ph
+            pixel_array, cairo.FORMAT_ARGB32, pw, ph
         )
         ctx = cairo.Context(surface)
         ctx.scale(pw, ph)
-        ctx.set_matrix(cairo.Matrix(
-            fdiv(pw, fw), 0,
-            0, -fdiv(ph, fh),
-            (pw / 2) - fc[0] * fdiv(pw, fw),
-            (ph / 2) + fc[1] * fdiv(ph, fh),
-        ))
+        ctx.set_matrix(
+            cairo.Matrix(
+                fdiv(pw, fw),
+                0,
+                0,
+                -fdiv(ph, fh),
+                (pw / 2) - fc[0] * fdiv(pw, fw),
+                (ph / 2) + fc[1] * fdiv(ph, fh),
+            )
+        )
         self.cache_cairo_context(pixel_array, ctx)
         return ctx
 
@@ -606,14 +609,15 @@ class Camera(object):
         if len(vmobjects) == 0:
             return
         batch_file_pairs = batch_by_property(
-            vmobjects,
-            lambda vm: vm.get_background_image_file()
+            vmobjects, lambda vm: vm.get_background_image_file()
         )
         for batch, file_name in batch_file_pairs:
             if file_name:
                 self.display_multiple_background_colored_vmobject(batch, pixel_array)
             else:
-                self.display_multiple_non_background_colored_vmobjects(batch, pixel_array)
+                self.display_multiple_non_background_colored_vmobjects(
+                    batch, pixel_array
+                )
 
     def display_multiple_non_background_colored_vmobjects(self, vmobjects, pixel_array):
         """Displays multiple VMobjects in the cairo context, as long as they don't have
@@ -666,9 +670,7 @@ class Camera(object):
         :class:`Camera`
             Camera object after setting cairo_context_path
         """
-        points = self.transform_points_pre_display(
-            vmobject, vmobject.points
-        )
+        points = self.transform_points_pre_display(vmobject, vmobject.points)
         # TODO, shouldn't this be handled in transform_points_pre_display?
         # points = points - self.get_frame_center()
         if len(points) == 0:
@@ -707,23 +709,15 @@ class Camera(object):
         if len(rgbas) == 1:
             # Use reversed rgb because cairo surface is
             # encodes it in reverse order
-            ctx.set_source_rgba(
-                *rgbas[0][2::-1], rgbas[0][3]
-            )
+            ctx.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])
         else:
             points = vmobject.get_gradient_start_and_end_points()
-            points = self.transform_points_pre_display(
-                vmobject, points
-            )
-            pat = cairo.LinearGradient(*it.chain(*[
-                point[:2] for point in points
-            ]))
+            points = self.transform_points_pre_display(vmobject, points)
+            pat = cairo.LinearGradient(*it.chain(*[point[:2] for point in points]))
             step = 1.0 / (len(rgbas) - 1)
             offsets = np.arange(0, 1 + step, step)
             for rgba, offset in zip(rgbas, offsets):
-                pat.add_color_stop_rgba(
-                    offset, *rgba[2::-1], rgba[3]
-                )
+                pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
             ctx.set_source(pat)
         return self
 
@@ -742,9 +736,7 @@ class Camera(object):
         :class:`Camera`
             The camera object.
         """
-        self.set_cairo_context_color(
-            ctx, self.get_fill_rgbas(vmobject), vmobject
-        )
+        self.set_cairo_context_color(ctx, self.get_fill_rgbas(vmobject), vmobject)
         ctx.fill_preserve()
         return self
 
@@ -770,15 +762,15 @@ class Camera(object):
         if width == 0:
             return self
         self.set_cairo_context_color(
-            ctx,
-            self.get_stroke_rgbas(vmobject, background=background),
-            vmobject
+            ctx, self.get_stroke_rgbas(vmobject, background=background), vmobject
         )
         ctx.set_line_width(
-            width * self.cairo_line_width_multiple *
+            width
+            * self.cairo_line_width_multiple
+            *
             # This ensures lines have constant width
             # as you zoom in on them.
-            (self.get_frame_width() / FRAME_WIDTH)
+            (self.get_frame_width() / self.frame_width)
         )
         ctx.stroke_preserve()
         return self
@@ -895,12 +887,8 @@ class Camera(object):
         """
         if len(points) == 0:
             return
-        pixel_coords = self.points_to_pixel_coords(
-            pmobject, points
-        )
-        pixel_coords = self.thickened_coordinates(
-            pixel_coords, thickness
-        )
+        pixel_coords = self.points_to_pixel_coords(pmobject, points)
+        pixel_coords = self.thickened_coordinates(pixel_coords, thickness)
         rgba_len = pixel_array.shape[2]
 
         rgbas = (self.rgb_max_val * rgbas).astype(self.pixel_array_dtype)
@@ -915,10 +903,10 @@ class Camera(object):
         ph = self.get_pixel_height()
         pw = self.get_pixel_width()
 
-        flattener = np.array([1, pw], dtype='int')
+        flattener = np.array([1, pw], dtype="int")
         flattener = flattener.reshape((2, 1))
         indices = np.dot(pixel_coords, flattener)[:, 0]
-        indices = indices.astype('int')
+        indices = indices.astype("int")
 
         new_pa = pixel_array.reshape((ph * pw, rgba_len))
         new_pa[indices] = rgbas
@@ -947,18 +935,13 @@ class Camera(object):
         pixel_array : :class:`numpy.ndarray`
             The Pixel array to put the imagemobject in.
         """
-        corner_coords = self.points_to_pixel_coords(
-            image_mobject, image_mobject.points
-        )
+        corner_coords = self.points_to_pixel_coords(image_mobject, image_mobject.points)
         ul_coords, ur_coords, dl_coords = corner_coords
         right_vect = ur_coords - ul_coords
         down_vect = dl_coords - ul_coords
         center_coords = ul_coords + (right_vect + down_vect) / 2
 
-        sub_image = Image.fromarray(
-            image_mobject.get_pixel_array(),
-            mode="RGBA"
-        )
+        sub_image = Image.fromarray(image_mobject.get_pixel_array(), mode="RGBA")
 
         # Reshape
         pixel_width = max(int(pdist([ul_coords, ur_coords])), 1)
@@ -979,8 +962,7 @@ class Camera(object):
 
         # Paste into an image as large as the camear's pixel array
         full_image = Image.fromarray(
-            np.zeros((self.get_pixel_height(), self.get_pixel_width())),
-            mode="RGBA"
+            np.zeros((self.get_pixel_height(), self.get_pixel_width())), mode="RGBA"
         )
         new_ul_coords = center_coords - np.array(sub_image.size) / 2
         new_ul_coords = new_ul_coords.astype(int)
@@ -991,7 +973,7 @@ class Camera(object):
                 new_ul_coords[1],
                 new_ul_coords[0] + sub_image.size[0],
                 new_ul_coords[1] + sub_image.size[1],
-            )
+            ),
         )
         # Paint on top of existing pixel array
         self.overlay_PIL_image(pixel_array, full_image)
@@ -1007,8 +989,7 @@ class Camera(object):
             The new pixel array to overlay.
         """
         self.overlay_PIL_image(
-            pixel_array,
-            self.get_image(new_array),
+            pixel_array, self.get_image(new_array),
         )
 
     def overlay_PIL_image(self, pixel_array, image):
@@ -1022,11 +1003,7 @@ class Camera(object):
             The Image to overlay.
         """
         pixel_array[:, :] = np.array(
-            Image.alpha_composite(
-                self.get_image(pixel_array),
-                image
-            ),
-            dtype='uint8'
+            Image.alpha_composite(self.get_image(pixel_array), image), dtype="uint8"
         )
 
     def adjust_out_of_range_points(self, points):
@@ -1050,15 +1027,16 @@ class Camera(object):
         violators = points[violator_indices, :]
         violator_norms = norms[violator_indices]
         reshaped_norms = np.repeat(
-            violator_norms.reshape((len(violator_norms), 1)),
-            points.shape[1], 1
+            violator_norms.reshape((len(violator_norms), 1)), points.shape[1], 1
         )
         rescaled = self.max_allowable_norm * violators / reshaped_norms
         points[violator_indices] = rescaled
         return points
 
-    def transform_points_pre_display(self, mobject, points): #TODO: Write more detailed docstrings for this method.
-        #NOTE: There seems to be an unused argument `mobject`.
+    def transform_points_pre_display(
+        self, mobject, points
+    ):  # TODO: Write more detailed docstrings for this method.
+        # NOTE: There seems to be an unused argument `mobject`.
 
         # Subclasses (like ThreeDCamera) may want to
         # adjust points futher before they're shown
@@ -1068,10 +1046,10 @@ class Camera(object):
             points = np.zeros((1, 3))
         return points
 
-    def points_to_pixel_coords(self, mobject, points): #TODO: Write more detailed docstrings for this method.
-        points = self.transform_points_pre_display(
-            mobject, points
-        )
+    def points_to_pixel_coords(
+        self, mobject, points
+    ):  # TODO: Write more detailed docstrings for this method.
+        points = self.transform_points_pre_display(mobject, points)
         shifted_points = points - self.get_frame_center()
 
         result = np.zeros((len(points), 2))
@@ -1088,7 +1066,7 @@ class Camera(object):
 
         result[:, 0] = shifted_points[:, 0] * width_mult + width_add
         result[:, 1] = shifted_points[:, 1] * height_mult + height_add
-        return result.astype('int')
+        return result.astype("int")
 
     def on_screen_pixels(self, pixel_coords):
         """Returns array of pixels that are on the screen from a given
@@ -1104,12 +1082,15 @@ class Camera(object):
         :class:`array`
             The pixel coords on screen.
         """
-        return reduce(op.and_, [
-            pixel_coords[:, 0] >= 0,
-            pixel_coords[:, 0] < self.get_pixel_width(),
-            pixel_coords[:, 1] >= 0,
-            pixel_coords[:, 1] < self.get_pixel_height(),
-        ])
+        return reduce(
+            op.and_,
+            [
+                pixel_coords[:, 0] >= 0,
+                pixel_coords[:, 0] < self.get_pixel_width(),
+                pixel_coords[:, 1] >= 0,
+                pixel_coords[:, 1] < self.get_pixel_height(),
+            ],
+        )
 
     def adjusted_thickness(self, thickness):
         """
@@ -1125,13 +1106,9 @@ class Camera(object):
         """
         # TODO: This seems...unsystematic
         big_sum = op.add(
-            PRODUCTION_QUALITY_CAMERA_CONFIG["pixel_height"],
-            PRODUCTION_QUALITY_CAMERA_CONFIG["pixel_width"],
+            camera_config["default_pixel_height"], camera_config["default_pixel_width"],
         )
-        this_sum = op.add(
-            self.get_pixel_height(),
-            self.get_pixel_width(),
-        )
+        this_sum = op.add(self.get_pixel_height(), self.get_pixel_width(),)
         factor = fdiv(big_sum, this_sum)
         return 1 + (thickness - 1) / factor
 
@@ -1168,10 +1145,7 @@ class Camera(object):
             Array of thickened pixel coords.
         """
         nudges = self.get_thickening_nudges(thickness)
-        pixel_coords = np.array([
-            pixel_coords + nudge
-            for nudge in nudges
-        ])
+        pixel_coords = np.array([pixel_coords + nudge for nudge in nudges])
         size = pixel_coords.size
         return pixel_coords.reshape((size // 2, 2))
 
@@ -1185,14 +1159,8 @@ class Camera(object):
             The array of cartesian coordinates.
         """
         # These are in x, y order, to help me keep things straight
-        full_space_dims = np.array([
-            self.get_frame_width(),
-            self.get_frame_height()
-        ])
-        full_pixel_dims = np.array([
-            self.get_pixel_width(),
-            self.get_pixel_height()
-        ])
+        full_space_dims = np.array([self.get_frame_width(), self.get_frame_height()])
+        full_pixel_dims = np.array([self.get_pixel_width(), self.get_pixel_height()])
 
         # These are addressed in the same y, x order as in pixel_array, but the values in them
         # are listed in x, y order
@@ -1200,22 +1168,21 @@ class Camera(object):
             [self.get_pixel_height(), self.get_pixel_width()]
         )[::-1].transpose(1, 2, 0)
         uncentered_space_coords = fdiv(
-            uncentered_pixel_coords * full_space_dims,
-            full_pixel_dims)
+            uncentered_pixel_coords * full_space_dims, full_pixel_dims
+        )
         # Could structure above line's computation slightly differently, but figured (without much
         # thought) multiplying by frame_shape first, THEN dividing by pixel_shape, is probably
         # better than the other order, for avoiding underflow quantization in the division (whereas
         # overflow is unlikely to be a problem)
 
-        centered_space_coords = (
-            uncentered_space_coords - fdiv(full_space_dims, 2)
-        )
+        centered_space_coords = uncentered_space_coords - fdiv(full_space_dims, 2)
 
         # Have to also flip the y coordinates to account for pixel array being listed in
         # top-to-bottom order, opposite of screen coordinate convention
         centered_space_coords = centered_space_coords * (1, -1)
 
         return centered_space_coords
+
 
 # NOTE: The methods of the following class have not been mentioned outside of their definitons.
 # Their DocStrings are not as detailed as preferred.
@@ -1236,9 +1203,7 @@ class BackgroundColoredVMobjectDisplayer(object):
         self.pixel_array[:, :] = 0
 
     def resize_background_array(
-        self, background_array,
-        new_width, new_height,
-        mode="RGBA"
+        self, background_array, new_width, new_height, mode="RGBA"
     ):
         """Resizes the pixel array represinting the background.
 
@@ -1303,9 +1268,7 @@ class BackgroundColoredVMobjectDisplayer(object):
 
         pixel_array = self.pixel_array
         if not np.all(pixel_array.shape == back_array.shape):
-            back_array = self.resize_background_array_to_match(
-                back_array, pixel_array
-            )
+            back_array = self.resize_background_array_to_match(back_array, pixel_array)
 
         self.file_name_to_pixel_array_map[file_name] = back_array
         return back_array
@@ -1334,8 +1297,8 @@ class BackgroundColoredVMobjectDisplayer(object):
                 batch, pixel_array
             )
             new_array = np.array(
-                (background_array * pixel_array.astype('float') / 255),
-                dtype=self.camera.pixel_array_dtype
+                (background_array * pixel_array.astype("float") / 255),
+                dtype=self.camera.pixel_array_dtype,
             )
             if curr_array is None:
                 curr_array = new_array

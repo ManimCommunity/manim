@@ -1,6 +1,6 @@
 ![logo](logo/cropped.png)
 
-[![Build Status](https://travis-ci.com/ManimCommunity/manim.svg?branch=master)](https://travis-ci.com/ManimCommunity/manim)
+![CI](https://github.com/ManimCommunity/manim/workflows/CI/badge.svg)
 [![Documentation](https://img.shields.io/badge/docs-EulerTour-blue.svg)](https://www.eulertour.com/docs)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
 [![Manim Subreddit](https://img.shields.io/reddit/subreddit-subscribers/manim.svg?color=ff4301&label=reddit)](https://www.reddit.com/r/manim/)
@@ -10,6 +10,8 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 
 > NOTE: This repository is maintained by the Manim Community, and is not associated with Grant Sanderson or 3Blue1Brown in any way (though we are definitely indebted to him for providing his work to the world). If you want to study how Grant makes his videos, head over to the main repository (3b1b/manim). This is a more frequently updated repository than the main one, and is recommended if you want to use Manim for your own projects.
 
+
+
 ## Table of Contents:
 - [Installation](#installation)
   * [Windows](#windows)
@@ -17,23 +19,28 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
     + [FFmpeg Installation](#ffmpeg-installation)
     + [SoX Installation](#sox-installation)
     + [LaTeX Installation](#latex-installation)
-  * [Linux](#linux)
+  * [Ubuntu/Debian](#ubuntudebian)
     + [Cairo Installation](#cairo-installation-1)
     + [FFmpeg Installation](#ffmpeg-installation-1)
     + [SoX Installation](#sox-installation-1)
     + [LaTeX Installation](#latex-installation-1)
-    + [Additional Installation Steps](#additional-installation-steps)
-  * [Mac](#mac)
-    + [Homebrew Installation](#homebrew-installation)
+  * [Arch/Manjaro](#archmanjaro)
     + [Cairo Installation](#cairo-installation-2)
     + [FFmpeg Installation](#ffmpeg-installation-2)
     + [SoX Installation](#sox-installation-2)
     + [LaTeX Installation](#latex-installation-2)
+  * [Mac](#mac)
+    + [Homebrew Installation](#homebrew-installation)
+    + [Cairo Installation](#cairo-installation-3)
+    + [FFmpeg Installation](#ffmpeg-installation-3)
+    + [SoX Installation](#sox-installation-3)
+    + [LaTeX Installation](#latex-installation-3)
   * [Installing Manim-Community itself](#installing-manim-community-itself)
 - [Usage](#usage)
 - [Documentation](#documentation)
 - [Help with Manim](#help-with-manim)
 - [Contributing](#contributing)
+- [License](#license)
 
 ## Installation
 
@@ -93,7 +100,7 @@ Before installing `manim-community`, there are some additional dependencies that
 <img style="width: 20vw;" src="./readme-assets/windows_miktex.png" />
 <br><br>
 
-### Linux
+### Ubuntu/Debian
 
 Before installing `manim-community`, there are some additional dependencies that you must have installed:
  - Cairo
@@ -120,12 +127,32 @@ sudo apt install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-r
 > Note: this installation may take up a lot of space. The developers are working on providing a simpler, lighter LaTeX package for you to install
 2. You can check you did it right by running `latex`
 
-#### Additional Installation Steps
-- You must install additional codecs to play MP4 files:
+### Arch/Manjaro
+
+Before installing `manim-community`, there are some additional dependencies that you must have installed:
+ - Cairo
+ - FFmpeg
+ - Sox (optional, for sound)
+ - LaTeX (optional, for LaTeX)
+
+#### Cairo Installation
+1. Install the `cairo` package with your package manager: `sudo pacman -S cairo`
+
+#### FFmpeg Installation
+1. Install the `ffmpeg` package with your package manager: `sudo pacman -S ffmpeg`
+2. You can check you did it right by running `ffmpeg -version`
+
+#### SoX Installation
+1. Install the `sox` package with your package manager: `sudo pacman -S sox`
+2. You can check you did it right by running `sox`
+
+#### LaTeX Installation
+1. Install `texlive` with your package manager by running the following commands:
 ```
-sudo apt install libdvdnav4 libdvd-pkg gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg
-sudo apt install ubuntu-restricted-extras
+sudo pacman -S texlive-most
 ```
+> Note: this installation may take up a lot of space. The developers are working on providing a simpler, lighter LaTeX package for you to install
+2. You can check you did it right by running `latex`
 
 ### Mac
 
@@ -249,4 +276,13 @@ Documentation is in progress at [eulertour.com/docs](https://www.eulertour.com/d
 The issues board is reserved for bugs, and future features planned for Manim. If you need help installing or using Manim, please take a look at [the Reddit Community](https://www.reddit.com/r/manim) or the [Discord Community](https://discord.gg/mMRrZQW)
 
 ## Contributing
-Is always welcome. In particular, there is a dire need for tests and documentation.
+Is always welcome. In particular, there is a dire need for tests and documentation. 
+
+For instructions, guidelines and other details, please check out the file [CONTRIBUTING.md](https://github.com/ManimCommunity/manim/blob/master/CONTRIBUTING.md).
+
+## License
+
+The software is double-licensed under the MIT license, with copyright
+by 3blue1brown LLC (see LICENSE), and copyright by Manim Community
+Developers (see LICENSE.community).
+

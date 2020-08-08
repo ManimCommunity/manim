@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+# Importing config should be the first thing since other modules use it
+from .config import config
 from .constants import *
 
 from .animation.animation import *
@@ -68,3 +71,4 @@ from .utils.simple_functions import *
 from .utils.sounds import *
 from .utils.space_ops import *
 from .utils.strings import *
+from .utils.tex import *
