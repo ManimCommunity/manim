@@ -41,6 +41,7 @@ def modify_atime(file_path):
     """
     os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
 
+
 def open_file(file_path):
     current_os = platform.system()
     if current_os == "Windows":
