@@ -34,6 +34,7 @@ def _parse_config(config_parser, args):
     else:
         section = config_parser['CLI']
     config = {opt: section.getint(opt) for opt in config_parser[flag]}
+
     # The -r, --resolution flag overrides the *_quality flags
     if args.resolution is not None:
         if "," in args.resolution:
@@ -163,6 +164,7 @@ def _parse_file_writer_config(config_parser, args):
                               for opt in ['live_stream_name', 'twitch_stream_key',
                                           'streaming_protocol', 'streaming_ip',
                                           'streaming_protocol', 'streaming_client',
+
                                           'streaming_port', 'streaming_port',
                                           'streaming_console_banner']}
 
@@ -170,12 +172,12 @@ def _parse_file_writer_config(config_parser, args):
     fw_config['skip_animations'] = any([fw_config['save_last_frame'],
                                         fw_config['from_animation_number']])
 
-
+    # the the custom_folders flag overrides the default folder structure with
+    # the custom folders defined in default.cfg
     if args.custom_folders:
         for opt in ['media_dir', 'video_dir', 'tex_dir',
                     'text_dir', 'output_file']:
-            fw_config[opt] = config_parser['custom_folders'].get(opt)
-            print(fw_config)
+            fw_config[opt] = str(config_parser['custom_folders'].get(opt))
     return fw_config
 
 
@@ -364,11 +366,11 @@ def _parse_cli(arg_list, input=True):
         "--config_file",
         help="Specify the configuration file",
     )
-
+    #
     parser.add_argument(
         "--custom_folders",
         action="store_true",
-        help="Defines the output folder structure",
+        help="Use the folders defined in the [custom_folders] section of the config file to define the output folder structure",
     )
 
     return parser.parse_args(arg_list)
@@ -429,8 +431,6 @@ logger.info(f'Read configuration files: {successfully_read_files}')
 
 # this is for internal use when writing output files
 file_writer_config = _parse_file_writer_config(config_parser, args)
-for k, v in file_writer_config.items():
-    print (k, '-->', v)
 
 # this is for the user
 config = _parse_config(config_parser, args)
