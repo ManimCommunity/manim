@@ -1,4 +1,6 @@
 import os
+import subprocess as sp
+import platform
 import numpy as np
 import time
 
@@ -38,3 +40,19 @@ def modify_atime(file_path):
         The path of the file. 
     """
     os.utime(file_path, times=(time.time(), os.path.getmtime(file_path)))
+
+def open_file(file_path):
+    current_os = platform.system()
+    if current_os == "Windows":
+        os.startfile(file_path)
+    else:
+        if current_os == "Linux":
+            commands = ["xdg-open"]
+        elif current_os.startswith("CYGWIN"):
+            commands = ["cygstart"]
+        elif current_os == "Darwin":
+            commands = ["open"]
+        else:
+            raise OSError("Unable to identify your operating system...")
+        commands.append(file_path)
+        sp.Popen(commands)
