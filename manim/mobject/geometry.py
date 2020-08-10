@@ -788,16 +788,15 @@ class Triangle(RegularPolygon):
         RegularPolygon.__attrs_post_init__(self)
 
 
+@dclass
 class ArrowTip(Triangle):
-    CONFIG = {
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "length": DEFAULT_ARROW_TIP_LENGTH,
-        "start_angle": PI,
-    }
+    fill_opacity: float = 1
+    stroke_width: float = 0
+    length: float = DEFAULT_ARROW_TIP_LENGTH
+    start_angle: float = PI
 
-    def __init__(self, **kwargs):
-        Triangle.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        Triangle.__attrs_post_init__(self)
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
 
