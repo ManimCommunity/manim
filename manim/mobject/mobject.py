@@ -43,21 +43,15 @@ class Mobject(Container):
 
     """
 
-    CONFIG = {
-        "color": WHITE,
-        "name": None,
-        "dim": 3,
-        "target": None,
-        "z_index": 0,
-    }
-
-    name: Optional[str]
-    target: Optional[Any]
+    name: Optional[str] = None
+    target: Optional[Any] = None
     color: Union[str, Color] = WHITE
     dim: int = 3
-    submobjects: List[Mobject] = []
+    z_index: int = 0
+    submobjects: List["Mobject"] = []
     updaters: List = []
     updating_suspended: bool = False
+    points: Optional[np.ndarray] = attr.attrib(init=False)
 
     def __attrs_post_init__(self):
         if self.name is None:
