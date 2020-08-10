@@ -781,9 +781,11 @@ class RegularPolygon(Polygon):
         Polygon.__attrs_post_init__(self)
 
 
+@dclass
 class Triangle(RegularPolygon):
-    def __init__(self, **kwargs):
-        RegularPolygon.__init__(self, n=3, **kwargs)
+    def __attrs_post_init__(self):
+        self.n = 3
+        RegularPolygon.__attrs_post_init__(self)
 
 
 class ArrowTip(Triangle):
