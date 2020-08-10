@@ -310,15 +310,22 @@ class ArcBetweenPoints(Arc):
                 self.radius = math.inf
 
 
+@dclass
 class CurvedArrow(ArcBetweenPoints):
-    def __init__(self, start_point, end_point, **kwargs):
-        ArcBetweenPoints.__init__(self, start_point, end_point, **kwargs)
+    start_point: tp.Any = None
+    end_point: tp.Any = None
+
+    def __attrs_post_init__(self):
+        self.start = self.start_point
+        self.end = self.end_point
+        ArcBetweenPoints.__attrs_post_init__(self)
         self.add_tip()
 
 
+@dclass
 class CurvedDoubleArrow(CurvedArrow):
-    def __init__(self, start_point, end_point, **kwargs):
-        CurvedArrow.__init__(self, start_point, end_point, **kwargs)
+    def __attrs_post_init__(self):
+        CurvedArrow.__attrs_post_init__(self)
         self.add_tip(at_start=True)
 
 
