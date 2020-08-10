@@ -612,14 +612,13 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
+@dclass
 class Elbow(VMobject):
-    CONFIG = {
-        "width": 0.2,
-        "angle": 0,
-    }
+    width: float = 0.2
+    angle: float = 0
 
-    def __init__(self, **kwargs):
-        VMobject.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        VMobject.__attrs_post_init__(self)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
         self.set_width(self.width, about_point=ORIGIN)
         self.rotate(self.angle, about_point=ORIGIN)
