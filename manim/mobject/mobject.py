@@ -164,7 +164,7 @@ class Mobject(Container):
 
     # Displaying
 
-    def get_image(self, camera: Optional[Camera] = None):
+    def get_image(self, camera: Optional[Any] = None):
         """WARNING: INTERNALLY USED METHOD. USE AT YOUR OWN DISCRETION.
 
         Gets the image of the mobject by capturing it with the
@@ -192,7 +192,7 @@ class Mobject(Container):
         camera.capture_mobject(self)
         return camera.get_image()
 
-    def show(self, camera: Optional[Camera] = None):
+    def show(self, camera: Optional[Any] = None):
         """
         Shows the created `PIL.Image` of the mobject on screen.
 
