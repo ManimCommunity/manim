@@ -624,19 +624,16 @@ class Elbow(VMobject):
         self.rotate(self.angle, about_point=ORIGIN)
 
 
+@dclass
 class Arrow(Line):
-    CONFIG = {
-        "stroke_width": 6,
-        "buff": MED_SMALL_BUFF,
-        "max_tip_length_to_length_ratio": 0.25,
-        "max_stroke_width_to_length_ratio": 5,
-        "preserve_tip_size_when_scaling": True,
-    }
+    stroke_width: float = 6.0
+    buff: float = MED_SMALL_BUFF
+    max_tip_length_to_length_ratio: float = 0.25
+    max_stroke_width_to_length_ratio: float = 5
+    preserve_tip_size_when_scaling: bool = True
 
-    def __init__(self, *args, **kwargs):
-        Line.__init__(self, *args, **kwargs)
-        # TODO, should this be affected when
-        # Arrow.set_stroke is called?
+    def __attrs_post_init__(self):
+        Line.__attrs_post_init__(self)
         self.initial_stroke_width = self.stroke_width
         self.add_tip()
         self.set_stroke_width_from_length()
@@ -693,20 +690,23 @@ class Arrow(Line):
         return self.deepcopy()
 
 
+@dclass
 class Vector(Arrow):
-    CONFIG = {
-        "buff": 0,
-    }
+    buff: float = 0.0
+    direction: np.ndarray = RIGHT
 
-    def __init__(self, direction=RIGHT, **kwargs):
-        if len(direction) == 2:
-            direction = np.append(np.array(direction), 0)
-        Arrow.__init__(self, ORIGIN, direction, **kwargs)
+    def __attrs_post_init__(self):
+        if len(self.direction) == 2:
+            self.direction = np.append(np.array(self.direction), 0)
+        self.left = ORIGIN
+        self.right = self.direction
+        Arrow.__attrs_post_init__(self)
 
 
+@dclass
 class DoubleArrow(Arrow):
-    def __init__(self, *args, **kwargs):
-        Arrow.__init__(self, *args, **kwargs)
+    def __attrs_post_init__(self):
+        Arrow.__attrs_post_init__(self)
         self.add_tip(at_start=True)
 
 
