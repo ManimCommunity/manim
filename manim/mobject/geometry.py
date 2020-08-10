@@ -796,16 +796,14 @@ class Rectangle(Polygon):
         self.set_height(self.height, stretch=True)
 
 
+@dclass
 class Square(Rectangle):
-    CONFIG = {
-        "side_length": 2.0,
-    }
+    side_length: float = 2.0
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        Rectangle.__init__(
-            self, height=self.side_length, width=self.side_length, **kwargs
-        )
+    def __attrs_post_init__(self):
+        self.height = self.side_length
+        self.width = self.side_length
+        Rectangle.__attrs_post_init__(self)
 
 
 class RoundedRectangle(Rectangle):
