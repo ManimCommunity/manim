@@ -269,39 +269,41 @@ class Arc(TipableVMobject):
         return angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU
 
 
+@dclass
 class ArcBetweenPoints(Arc):
     """
     Inherits from Arc and additionally takes 2 points between which the arc is spanned.
     """
 
-    def __init__(self, start, end, angle=TAU / 4, radius=None, **kwargs):
-        if radius is not None:
-            self.radius = radius
-            if radius < 0:
+    start: tp.Any = None
+    end: tp.Any = None
+    angle: float = TAU / 4
+    radius: tp.Optional[float] = None
+
+    # TODO perhaps this should be a class method of Arc
+    def __attrs_post_init__(self):
+        if self.radius is not None:
+            if self.radius < 0:
                 sign = -2
-                radius *= -1
+                self.radius *= -1
             else:
                 sign = 2
-            halfdist = np.linalg.norm(np.array(start) - np.array(end)) / 2
-            if radius < halfdist:
+            halfdist = np.linalg.norm(np.array(self.start) - np.array(self.end)) / 2
+            if self.radius < halfdist:
                 raise ValueError(
                     """ArcBetweenPoints called with a radius that is
                             smaller than half the distance between the points."""
                 )
-            arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
-            angle = math.acos((radius - arc_height) / radius) * sign
-
-        Arc.__init__(
-            self, angle=angle, **kwargs,
-        )
-        if angle == 0:
+            arc_height = self.radius - math.sqrt(self.radius ** 2 - halfdist ** 2)
+            self.angle = math.acos((self.radius - arc_height) / self.radius) * sign
+        Arc.__attrs_post_init__(self)
+        if self.angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
-        self.put_start_and_end_on(start, end)
-
-        if radius is None:
+        self.put_start_and_end_on(self.start, self.end)
+        if self.radius is None:
             center = self.get_arc_center(warning=False)
             if not self._failed_to_get_center:
-                self.radius = np.linalg.norm(np.array(start) - np.array(center))
+                self.radius = np.linalg.norm(np.array(self.start) - np.array(center))
             else:
                 self.radius = math.inf
 
