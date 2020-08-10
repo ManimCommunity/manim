@@ -30,6 +30,7 @@ DEFAULT_DASH_LENGTH = 0.05
 DEFAULT_ARROW_TIP_LENGTH = 0.35
 
 
+@dclass
 class TipableVMobject(VMobject):
     """
     Meant for shared functionality between Arc and Line.
@@ -50,12 +51,12 @@ class TipableVMobject(VMobject):
 
     """
 
-    CONFIG = {
-        "tip_length": DEFAULT_ARROW_TIP_LENGTH,
-        # TODO
-        "normal_vector": OUT,
-        "tip_style": {"fill_opacity": 1, "stroke_width": 0,},
-    }
+    tip_length: float = DEFAULT_ARROW_TIP_LENGTH
+    normal_vector: np.ndarray = OUT
+    tip_style: dict = {"fill_opacity": 1, "stroke_width": 0}
+
+    def __attrs_post_init__(self):
+        VMobject.__attrs_post_init__(self)
 
     # Adding, Creating, Modifying tips
 
@@ -196,19 +197,18 @@ class TipableVMobject(VMobject):
         return get_norm(start - end)
 
 
+@dclass
 class Arc(TipableVMobject):
-    CONFIG = {
-        "radius": 1.0,
-        "num_components": 9,
-        "anchors_span_full_range": True,
-        "arc_center": ORIGIN,
-    }
+    radius: float = 1.0
+    num_components: int = 9
+    anchors_span_full_range: bool = True
+    arc_center: np.ndarray = ORIGIN
+    start_angle: float = 0
+    angle: float = TAU / 4
+    _failed_to_get_center: bool = attr.attrib(init=False, default=False)
 
-    def __init__(self, start_angle=0, angle=TAU / 4, **kwargs):
-        self.start_angle = start_angle
-        self.angle = angle
-        self._failed_to_get_center = False
-        VMobject.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        TipableVMobject.__attrs_post_init__(self)
 
     def generate_points(self):
         self.set_pre_positioned_points()
