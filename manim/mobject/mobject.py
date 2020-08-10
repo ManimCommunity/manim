@@ -148,7 +148,7 @@ class Mobject(Container):
         self.submobjects = list_update(self.submobjects, mobject_attrs)
         return self
 
-    def apply_over_attr_arrays(self, func: Callable[[*Any], Any]):
+    def apply_over_attr_arrays(self, func: Callable[..., Any]):
         """
         Applies function on all attributes.
 
