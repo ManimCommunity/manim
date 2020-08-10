@@ -1,5 +1,7 @@
 import itertools as it
 import sys
+import attr
+import typing as tp
 
 from colour import Color
 
@@ -18,6 +20,7 @@ from ...utils.iterables import tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector
 from ...utils.space_ops import get_norm
+from ...utils.dataclasses import dclass
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -27,39 +30,43 @@ from ...utils.space_ops import get_norm
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
 
+DEFAULT_N_POINTS_PER_CUBIC_CURVE = 4
 
+
+@dclass
 class VMobject(Mobject):
-    CONFIG = {
-        "fill_color": None,
-        "fill_opacity": 0.0,
-        "stroke_color": None,
-        "stroke_opacity": 1.0,
-        "stroke_width": DEFAULT_STROKE_WIDTH,
-        # The purpose of background stroke is to have
-        # something that won't overlap the fill, e.g.
-        # For text against some textured background
-        "background_stroke_color": BLACK,
-        "background_stroke_opacity": 1.0,
-        "background_stroke_width": 0,
-        # When a color c is set, there will be a second color
-        # computed based on interpolating c to WHITE by with
-        # sheen_factor, and the display will gradient to this
-        # secondary color in the direction of sheen_direction.
-        "sheen_factor": 0.0,
-        "sheen_direction": UL,
-        # Indicates that it will not be displayed, but
-        # that it should count in parent mobject's path
-        "close_new_points": False,
-        "pre_function_handle_to_anchor_scale_factor": 0.01,
-        "make_smooth_after_applying_functions": False,
-        "background_image_file": None,
-        "shade_in_3d": False,
-        # This is within a pixel
-        # TODO, do we care about accounting for
-        # varying zoom levels?
-        "tolerance_for_point_equality": 1e-6,
-        "n_points_per_cubic_curve": 4,
-    }
+    fill_color: tp.Optional[tp.Union[str, Color]] = None
+    fill_opacity: float = 0.0
+    stroke_color: tp.Optional[tp.Union[str, Color]] = None
+    stroke_opacity: float = 1.0
+    stroke_width: float = DEFAULT_STROKE_WIDTH
+    # The purpose of background stroke is to have
+    # something that won't overlap the fill, e.g.
+    # For text against some textured background
+    background_stroke_color: tp.Union[str, Color] = BLACK
+    background_stroke_opacity: float = 1.0
+    background_stroke_width: float = 0
+    # When a color c is set, there will be a second color
+    # computed based on interpolating c to WHITE by with
+    # sheen_factor, and the display will gradient to this
+    # secondary color in the direction of sheen_direction.
+    sheen_factor: float = 0.0
+    sheen_direction: np.ndarray = UL
+    # Indicates that it will not be displayed, but
+    # that it should count in parent mobject's path
+    close_new_points: bool = False
+    pre_function_handle_to_anchor_scale_factor: float = 0.01
+    make_smooth_after_applying_functions: bool = False
+    background_image_file: tp.Optional[tp.Any] = None
+    shade_in_3d: bool = False
+    # This is within a pixel
+    # TODO, do we care about accounting for
+    # varying zoom levels?
+    tolerance_for_point_equality: float = 1e-6
+    n_points_per_cubic_curve: int = DEFAULT_N_POINTS_PER_CUBIC_CURVE
+
+    def __attrs_post_init__(self):
+        Mobject.__attrs_post_init__(self)
 
     def get_group_class(self):
         return VGroup
@@ -586,7 +593,7 @@ class VMobject(Mobject):
 
         Generator to not materialize a list or np.array needlessly.
         """
-        nppcc = VMobject.CONFIG["n_points_per_cubic_curve"]
+        nppcc = DEFAULT_N_POINTS_PER_CUBIC_CURVE
         remainder = len(points) % nppcc
         points = points[: len(points) - remainder]
         return (points[i : i + nppcc] for i in range(0, len(points), nppcc))
