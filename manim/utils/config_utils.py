@@ -130,11 +130,19 @@ def _parse_file_writer_config(config_parser, args):
         ]
     }
 
+
+
     # For internal use (no CLI flag)
     fw_config["skip_animations"] = any(
         [fw_config["save_last_frame"], fw_config["from_animation_number"]]
     )
 
+    # the the custom_folders flag overrides the default folder structure with
+    # the custom folders defined in default.cfg
+    if args.custom_folders:
+        for opt in ['media_dir', 'video_dir', 'tex_dir',
+                'text_dir', 'output_file']:
+            fw_config[opt] = str(config_parser['custom_folders'].get(opt))
     return fw_config
 
 
@@ -363,6 +371,13 @@ def _parse_cli(arg_list, input=True):
     parser.add_argument(
         "--config_file", help="Specify the configuration file",
     )
+
+    parser.add_argument(
+        "--custom_folders",
+        action="store_true",
+        help="Use the folders defined in the [custom_folders] section of the config file to define the output folder structure",
+    )
+
     parsed = parser.parse_args(arg_list)
     if hasattr(parsed, "subcommands"):
         setattr(
