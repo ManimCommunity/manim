@@ -841,11 +841,10 @@ class Square(Rectangle):
         Rectangle.__attrs_post_init__(self)
 
 
+@dclass
 class RoundedRectangle(Rectangle):
-    CONFIG = {
-        "corner_radius": 0.5,
-    }
+    corner_radius: float = 0.5
 
-    def __init__(self, **kwargs):
-        Rectangle.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        Rectangle.__attrs_post_init__(self)
         self.round_corners(self.corner_radius)
