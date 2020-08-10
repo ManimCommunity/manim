@@ -356,22 +356,25 @@ class Circle(Arc):
         return self.point_from_proportion((angle - start_angle) / TAU)
 
 
+@dclass
 class Dot(Circle):
-    CONFIG = {
-        "radius": DEFAULT_DOT_RADIUS,
-        "stroke_width": 0,
-        "fill_opacity": 1.0,
-        "color": WHITE,
-    }
+    radius: float = DEFAULT_DOT_RADIUS
+    stroke_width: float = 0
+    fill_opacity: float = 1.0
+    color: tp.Union[str, Color] = WHITE
+    point: tp.Any = ORIGIN
 
-    def __init__(self, point=ORIGIN, **kwargs):
-        Circle.__init__(self, arc_center=point, **kwargs)
+    def __attrs_post_init__(self):
+        self.arc_center = self.point
+        Circle.__attrs_post_init__(self)
 
 
+@dclass
 class SmallDot(Dot):
-    CONFIG = {
-        "radius": DEFAULT_SMALL_DOT_RADIUS,
-    }
+    radius: float = DEFAULT_SMALL_DOT_RADIUS
+
+    def __attrs_post_init__(self):
+        Dot.__attrs_post_init__(self)
 
 
 class Ellipse(Circle):
