@@ -764,21 +764,21 @@ class Polygon(VMobject):
         return self
 
 
+@dclass
 class RegularPolygon(Polygon):
-    CONFIG = {
-        "start_angle": None,
-    }
+    start_angle: float = None
+    n: int = 6
 
-    def __init__(self, n=6, **kwargs):
-        digest_config(self, kwargs, locals())
+    def __attrs_post_init__(self):
+        digest_config(self, {}, locals())
         if self.start_angle is None:
-            if n % 2 == 0:
+            if self.n % 2 == 0:
                 self.start_angle = 0
             else:
                 self.start_angle = 90 * DEGREES
         start_vect = rotate_vector(RIGHT, self.start_angle)
-        vertices = compass_directions(n, start_vect)
-        Polygon.__init__(self, *vertices, **kwargs)
+        self.vertices = compass_directions(self.n, start_vect)
+        Polygon.__attrs_post_init__(self)
 
 
 class Triangle(RegularPolygon):
