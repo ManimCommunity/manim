@@ -329,11 +329,16 @@ class CurvedDoubleArrow(CurvedArrow):
         self.add_tip(at_start=True)
 
 
+@dclass
 class Circle(Arc):
-    CONFIG = {"color": RED, "close_new_points": True, "anchors_span_full_range": False}
+    color: tp.Union[str, Color] = RED
+    close_new_points: bool = True
+    anchors_span_full_range: bool = False
 
-    def __init__(self, **kwargs):
-        Arc.__init__(self, 0, TAU, **kwargs)
+    def __attrs_post_init__(self):
+        self.start_angle = 0
+        self.angle = TAU
+        Arc.__attrs_post_init__(self)
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
         # Ignores dim_to_match and stretch; result will always be a circle
