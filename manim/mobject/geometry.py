@@ -449,16 +449,17 @@ class Annulus(Circle):
         self.shift(self.arc_center)
 
 
+@dclass
 class Line(TipableVMobject):
-    CONFIG = {
-        "buff": 0,
-        "path_arc": None,  # angle of arc specified here
-    }
+    buff: float = 0
+    path_arc: tp.Any = None
+    start: np.ndarray = LEFT
+    end: np.ndarray = RIGHT
 
-    def __init__(self, start=LEFT, end=RIGHT, **kwargs):
-        digest_config(self, kwargs)
-        self.set_start_and_end_attrs(start, end)
-        VMobject.__init__(self, **kwargs)
+    # TODO this should probably be a class method instead
+    def __attrs_post_init__(self):
+        self.set_start_and_end_attrs(self.start, self.end)
+        VMobject.__attrs_post_init__(self)
 
     def generate_points(self):
         if self.path_arc:
@@ -548,15 +549,14 @@ class Line(TipableVMobject):
         return self
 
 
+@dclass
 class DashedLine(Line):
-    CONFIG = {
-        "dash_length": DEFAULT_DASH_LENGTH,
-        "dash_spacing": None,
-        "positive_space_ratio": 0.5,
-    }
+    dash_length: float = DEFAULT_DASH_LENGTH
+    dash_spacing: tp.Optional[float] = None
+    positive_space_ratio: float = 0.5
 
-    def __init__(self, *args, **kwargs):
-        Line.__init__(self, *args, **kwargs)
+    def __attrs_post_init__(self):
+        Line.__attrs_post_init__(self)
         ps_ratio = self.positive_space_ratio
         num_dashes = self.calculate_num_dashes(ps_ratio)
         dashes = DashedVMobject(
@@ -594,17 +594,21 @@ class DashedLine(Line):
         return self.submobjects[-1].points[-2]
 
 
+@dclass
 class TangentLine(Line):
+    length: float = 1.0
+    d_alpha: float = 1e-6
     CONFIG = {"length": 1, "d_alpha": 1e-6}
+    vmob: tp.Any = None
+    alpha: tp.Any = None
 
-    def __init__(self, vmob, alpha, **kwargs):
-        digest_config(self, kwargs)
+    def __attrs_post_init__(self):
         da = self.d_alpha
-        a1 = np.clip(alpha - da, 0, 1)
-        a2 = np.clip(alpha + da, 0, 1)
-        super().__init__(
-            vmob.point_from_proportion(a1), vmob.point_from_proportion(a2), **kwargs
-        )
+        a1 = np.clip(self.alpha - da, 0, 1)
+        a2 = np.clip(self.alpha + da, 0, 1)
+        self.left = self.vmob.point_from_proportion(a1)
+        self.right = self.vmob.point_from_proportion(a2)
+        Line.__attrs_post_init__(self)
         self.scale(self.length / self.get_length())
 
 
