@@ -710,10 +710,11 @@ class DoubleArrow(Arrow):
         self.add_tip(at_start=True)
 
 
+@dclass
 class CubicBezier(VMobject):
-    def __init__(self, points, **kwargs):
-        VMobject.__init__(self, **kwargs)
-        self.set_points(points)
+    def __attrs_post_init__(self):
+        VMobject.__attrs_post_init__(self)
+        self.set_points(self.points)
 
 
 @dclass
