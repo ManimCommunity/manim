@@ -24,6 +24,7 @@ from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix
+from ..utils.dataclasses import dclass
 
 if TYPE_CHECKING:
     from ..camera.camera import Camera
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
 
 # TODO: Explain array_attrs
 
-@attr.s(auto_attribs=True, slots=True, str=False)
+@dclass
 class Mobject(Container):
     """
     Mathematical Object
