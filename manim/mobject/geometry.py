@@ -377,11 +377,13 @@ class SmallDot(Dot):
         Dot.__attrs_post_init__(self)
 
 
+@dclass
 class Ellipse(Circle):
-    CONFIG = {"width": 2, "height": 1}
+    width: float = 2.0
+    height: float = 1.0
 
-    def __init__(self, **kwargs):
-        Circle.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        Circle.__attrs_post_init__(self)
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
