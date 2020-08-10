@@ -140,9 +140,13 @@ def _parse_file_writer_config(config_parser, args):
     # the the custom_folders flag overrides the default folder structure with
     # the custom folders defined in default.cfg
     if args.custom_folders:
-        for opt in ['media_dir', 'video_dir', 'tex_dir',
-                'text_dir', 'output_file']:
-            fw_config[opt] = str(config_parser['custom_folders'].get(opt))
+        from pathlib import Path
+        root_folder = str(config_parser['custom_folders'].get("custom_root"))
+        for opt in ['video_dir', 'tex_dir', 'text_dir', 'output_file']:
+            sub_folder = config_parser['custom_folders'].get(opt)
+            path = Path.home() / root_folder / sub_folder
+            fw_config[opt] = str(path)
+        fw_config["output_file"]= fw_config["output_file"] +"/SceneName"
     return fw_config
 
 
