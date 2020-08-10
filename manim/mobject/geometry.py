@@ -4,6 +4,7 @@ import math
 import attr
 import typing as tp
 
+from colour import Color
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
@@ -685,9 +686,9 @@ class CubicBezier(VMobject):
 @dclass
 class Polygon(VMobject):
     vertices: tp.List = []  # TODO add validator
+    color: tp.Union[str, Color] = BLUE
 
     def __attrs_post_init__(self):
-        self.color = BLUE
         VMobject.__attrs_post_init__(self)
         self.set_points_as_corners([*self.vertices, self.vertices[0]])
 
