@@ -212,6 +212,8 @@ class Arc(TipableVMobject):
 
     def generate_points(self):
         self.set_pre_positioned_points()
+        if self.radius is None:
+            self.radius = 1.0
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
 
