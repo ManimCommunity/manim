@@ -781,17 +781,17 @@ class ArrowTip(Triangle):
         return get_norm(self.get_vector())
 
 
+@dclass
 class Rectangle(Polygon):
-    CONFIG = {
-        "color": WHITE,
-        "height": 2.0,
-        "width": 4.0,
-        "mark_paths_closed": True,
-        "close_new_points": True,
-    }
+    color: tp.Union[str, Color] = WHITE
+    height: float = 2.0
+    width: float = 4.0
+    mark_paths_closed: bool = True
+    close_new_points: bool = True
+    vertices: np.ndarray = [UL, UR, DR, DL]
 
-    def __init__(self, **kwargs):
-        Polygon.__init__(self, UL, UR, DR, DL, **kwargs)
+    def __attrs_post_init__(self):
+        Polygon.__attrs_post_init__(self)
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
