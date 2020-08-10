@@ -1,6 +1,8 @@
 import warnings
 import numpy as np
 import math
+import attr
+import typing as tp
 
 from ..constants import *
 from ..mobject.mobject import Mobject
@@ -18,6 +20,7 @@ from ..utils.space_ops import line_intersection
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import normalize
 from ..utils.space_ops import rotate_vector
+from ..utils.dataclasses import dclass
 
 
 DEFAULT_DOT_RADIUS = 0.08
@@ -679,14 +682,14 @@ class CubicBezier(VMobject):
         self.set_points(points)
 
 
+@dclass
 class Polygon(VMobject):
-    CONFIG = {
-        "color": BLUE,
-    }
+    vertices: tp.List = []  # TODO add validator
 
-    def __init__(self, *vertices, **kwargs):
-        VMobject.__init__(self, **kwargs)
-        self.set_points_as_corners([*vertices, vertices[0]])
+    def __attrs_post_init__(self):
+        self.color = BLUE
+        VMobject.__attrs_post_init__(self)
+        self.set_points_as_corners([*self.vertices, self.vertices[0]])
 
     def get_vertices(self):
         return self.get_start_anchors()
