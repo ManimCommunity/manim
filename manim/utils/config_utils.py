@@ -130,8 +130,6 @@ def _parse_file_writer_config(config_parser, args):
         ]
     }
 
-
-
     # For internal use (no CLI flag)
     fw_config["skip_animations"] = any(
         [fw_config["save_last_frame"], fw_config["from_animation_number"]]
@@ -141,12 +139,13 @@ def _parse_file_writer_config(config_parser, args):
     # the custom folders defined in default.cfg
     if args.custom_folders:
         from pathlib import Path
-        root_folder = str(config_parser['custom_folders'].get("custom_root"))
-        for opt in ['video_dir', 'tex_dir', 'text_dir', 'output_file']:
-            sub_folder = config_parser['custom_folders'].get(opt)
+
+        root_folder = str(config_parser["custom_folders"].get("custom_root"))
+        for opt in ["video_dir", "tex_dir", "text_dir", "output_file"]:
+            sub_folder = config_parser["custom_folders"].get(opt)
             path = Path.home() / root_folder / sub_folder
             fw_config[opt] = str(path)
-        fw_config["output_file"]= fw_config["output_file"] +"/SceneName"
+        fw_config["output_file"] = fw_config["output_file"] + "/SceneName"
     return fw_config
 
 
@@ -182,7 +181,7 @@ def _parse_cli(arg_list, input=True):
             ignore=["--help", "-h"]
         ):
             parser.add_argument(
-                "file", help="path to file holding the python code for the scene",
+                "file", help="path to file holding the python code for the scene"
             )
             parser.add_argument(
                 "scene_names",
@@ -218,13 +217,10 @@ def _parse_cli(arg_list, input=True):
         help="Show the output file in finder",
     )
     parser.add_argument(
-        "-q", "--quiet", action="store_const", const=True, help="Quiet mode",
+        "-q", "--quiet", action="store_const", const=True, help="Quiet mode"
     )
     parser.add_argument(
-        "--sound",
-        action="store_const",
-        const=True,
-        help="Play a success/failure sound",
+        "--sound", action="store_const", const=True, help="Play a success/failure sound"
     )
     parser.add_argument(
         "--leave_progress_bars",
@@ -276,19 +272,11 @@ def _parse_cli(arg_list, input=True):
     )
 
     # The default value of the following is set in manim.cfg
-    parser.add_argument(
-        "-c", "--color", help="Background color",
-    )
-    parser.add_argument(
-        "--background_opacity", help="Background opacity",
-    )
-    parser.add_argument(
-        "--media_dir", help="directory to write media",
-    )
+    parser.add_argument("-c", "--color", help="Background color")
+    parser.add_argument("--background_opacity", help="Background opacity")
+    parser.add_argument("--media_dir", help="directory to write media")
 
-    parser.add_argument(
-        "--log_dir", help="directory to write log files to",
-    )
+    parser.add_argument("--log_dir", help="directory to write log files to")
 
     # video_group = parser.add_mutually_exclusive_group()
     # video_group.add_argument(
@@ -303,9 +291,7 @@ def _parse_cli(arg_list, input=True):
     #     "--text_dir",
     #     help="directory to write text",
     # )
-    parser.add_argument(
-        "--tex_template", help="Specify a custom TeX template file",
-    )
+    parser.add_argument("--tex_template", help="Specify a custom TeX template file")
 
     # All of the following use (action="store_true"). This means that
     # they are by default False.  In contrast to the previous ones that
@@ -358,7 +344,7 @@ def _parse_cli(arg_list, input=True):
 
     # This overrides any of the above
     parser.add_argument(
-        "-r", "--resolution", help='Resolution, passed as "height,width"',
+        "-r", "--resolution", help='Resolution, passed as "height,width"'
     )
 
     # This sets FROM_ANIMATION_NUMBER and UPTO_ANIMATION_NUMBER
@@ -372,9 +358,7 @@ def _parse_cli(arg_list, input=True):
     )
 
     # Specify the manim.cfg file
-    parser.add_argument(
-        "--config_file", help="Specify the configuration file",
-    )
+    parser.add_argument("--config_file", help="Specify the configuration file")
 
     parser.add_argument(
         "--custom_folders",
