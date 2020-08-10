@@ -388,16 +388,18 @@ class Ellipse(Circle):
         self.set_height(self.height, stretch=True)
 
 
+@dclass
 class AnnularSector(Arc):
-    CONFIG = {
-        "inner_radius": 1,
-        "outer_radius": 2,
-        "angle": TAU / 4,
-        "start_angle": 0,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "color": WHITE,
-    }
+    inner_radius: float = 1.0
+    outer_radius: float = 2.0
+    angle: float = TAU / 4
+    start_angle: float = 0
+    fill_opacity: float = 1.0
+    stroke_width: float = 0.0
+    color: tp.Union[str, Color] = WHITE
+
+    def __attrs_post_init__(self):
+        Arc.__attrs_post_init__(self)
 
     def generate_points(self):
         inner_arc, outer_arc = [
@@ -416,19 +418,26 @@ class AnnularSector(Arc):
         self.add_line_to(inner_arc.points[0])
 
 
+@dclass
 class Sector(AnnularSector):
-    CONFIG = {"outer_radius": 1, "inner_radius": 0}
+    outer_radius: float = 1.0
+    inner_radius: float = 0.0
+
+    def __attrs_post_init__(self):
+        AnnularSector.__attrs_post_init__(self)
 
 
+@dclass
 class Annulus(Circle):
-    CONFIG = {
-        "inner_radius": 1,
-        "outer_radius": 2,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "color": WHITE,
-        "mark_paths_closed": False,
-    }
+    inner_radius: float = 1.0
+    outer_radius: float = 2.0
+    fill_opacity: float = 1.0
+    stroke_width: float = 0.0
+    color: tp.Union[str, Color] = WHITE
+    mark_paths_closed: bool = False
+
+    def __attrs_post_init__(self):
+        Circle.__attrs_post_init__(self)
 
     def generate_points(self):
         self.radius = self.outer_radius
