@@ -5,25 +5,25 @@ from testing_utils import utils_test_scenes, get_scenes_to_test
 
 class CoordinatesTest(Scene):
     def construct(self):
-        dots = [Dot(np.array([x, y, 0])) for x in range(-7, 8) for y in range(-4, 5)]
+        dots = [Dot(point=np.array([x, y, 0])) for x in range(-7, 8) for y in range(-4, 5)]
         self.play(Animation(VGroup(*dots)))
 
 
 class ArcTest(Scene):
     def construct(self):
-        a = Arc(PI)
+        a = Arc(start_angle=PI)
         self.play(Animation(a))
 
 
 class ArcBetweenPointsTest(Scene):
     def construct(self):
-        a = ArcBetweenPoints(np.array([1, 1, 0]), np.array([2, 2, 0]))
+        a = ArcBetweenPoints(start=np.array([1, 1, 0]), end=np.array([2, 2, 0]))
         self.play(Animation(a))
 
 
 class CurvedArrowTest(Scene):
     def construct(self):
-        a = CurvedArrow(np.array([1, 1, 0]), np.array([2, 2, 0]))
+        a = CurvedArrow(start_point=np.array([1, 1, 0]), end_point=np.array([2, 2, 0]))
         self.play(Animation(a))
 
 
@@ -65,7 +65,7 @@ class AnnularSectorTest(Scene):
 
 class LineTest(Scene):
     def construct(self):
-        a = Line(np.array([1, 1, 0]), np.array([2, 2, 0]))
+        a = Line(start=np.array([1, 1, 0]), end=np.array([2, 2, 0]))
         self.play(Animation(a))
 
 
@@ -83,13 +83,13 @@ class DoubleArrowTest(Scene):
 
 class VectorTest(Scene):
     def construct(self):
-        a = Vector(UP)
+        a = Vector(direction=UP)
         self.play(Animation(a))
 
 
 class PolygonTest(Scene):
     def construct(self):
-        a = Polygon(*[np.array([1, 1, 0]), np.array([2, 2, 0]), np.array([2, 3, 0])])
+        a = Polygon(vertices=[np.array([1, 1, 0]), np.array([2, 2, 0]), np.array([2, 3, 0])])
         self.play(Animation(a))
 
 
