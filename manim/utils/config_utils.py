@@ -137,6 +137,9 @@ def _parse_file_writer_config(config_parser, args):
     fw_config["skip_animations"] = any(
         [fw_config["save_last_frame"], fw_config["from_animation_number"]]
     )
+    fw_config["max_files_cached"] = default.getint("max_files_cached")
+    if fw_config["max_files_cached"] == -1:
+        fw_config["max_files_cached"] = float("inf")
     # Parse the verbose flag to read in the log level
     verbose = getattr(args, "verbose")
     verbose = default["verbose"] if verbose is None else verbose
