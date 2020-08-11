@@ -1,5 +1,7 @@
 import operator as op
+import typing as tp
 
+from colour import Color
 from ..constants import *
 from ..config import config
 from ..mobject.geometry import Line
@@ -10,45 +12,43 @@ from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
+from ..utils.dataclasses import dclass
 
 
+@dclass
 class NumberLine(Line):
-    CONFIG = {
-        "color": LIGHT_GREY,
-        "x_min": -config["frame_x_radius"],
-        "x_max": config["frame_x_radius"],
-        "unit_size": 1,
-        "include_ticks": True,
-        "tick_size": 0.1,
-        "tick_frequency": 1,
-        # Defaults to value near x_min s.t. 0 is a tick
-        # TODO, rename this
-        "leftmost_tick": None,
-        # Change name
-        "numbers_with_elongated_ticks": [0],
-        "include_numbers": False,
-        "numbers_to_show": None,
-        "longer_tick_multiple": 2,
-        "number_at_center": 0,
-        "number_scale_val": 0.75,
-        "label_direction": DOWN,
-        "line_to_number_buff": MED_SMALL_BUFF,
-        "include_tip": False,
-        "tip_width": 0.25,
-        "tip_height": 0.25,
-        "add_start": 0,  # extend number line by this amount at its starting point
-        "add_end": 0,  # extend number line by this amount at its end point
-        "decimal_number_config": {"num_decimal_places": 0,},
-        "exclude_zero_from_default_numbers": False,
-    }
+    color: tp.Union[str, Color] = LIGHT_GREY
+    x_min: float = -config["frame_x_radius"]
+    x_max: float = config["frame_x_radius"]
+    unit_size: float = 1
+    include_ticks: bool = True
+    tick_size: float = 0.1
+    tick_frequency: float = 1
+    # Defaults to value near x_min s.t. 0 is a tick
+    # TODO, rename this
+    leftmost_tick: tp.Any = None
+    # Change name
+    numbers_with_elongated_ticks: tp.List = [0]
+    include_numbers: bool = False
+    numbers_to_show: tp.Any = None
+    longer_tick_multiple: tp.Any = 2 # TODO is it int or float ?
+    number_at_center: float = 0 # TODO is it int or float ?
+    number_scale_val: float =0.75
+    label_direction: np.ndarray = DOWN
+    line_to_number_buff: float = MED_SMALL_BUFF
+    include_tip: bool = False
+    tip_width: float = 0.25
+    tip_height: float = 0.25
+    add_start: float = 0  # extend number line by this amount at its starting point
+    add_end: float = 0  # extend number line by this amount at its end point
+    decimal_number_config: dict = {"num_decimal_places": 0,}
+    exclude_zero_from_default_numbers: bool = False
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+    def __attrs_post_init__(self):
         start = self.unit_size * self.x_min * RIGHT
         end = self.unit_size * self.x_max * RIGHT
-        Line.__init__(
-            self, start - self.add_start * RIGHT, end + self.add_end * RIGHT, **kwargs
-        )
+        self.start = start - self.add_start * RIGHT
+        self.end = end + self.add_end * RIGHT
         self.shift(-self.number_to_point(self.number_at_center))
 
         self.init_leftmost_tick()
@@ -172,13 +172,15 @@ class NumberLine(Line):
         return self
 
 
+@dclass
 class UnitInterval(NumberLine):
-    CONFIG = {
-        "x_min": 0,
-        "x_max": 1,
-        "unit_size": 6,
-        "tick_frequency": 0.1,
-        "numbers_with_elongated_ticks": [0, 1],
-        "number_at_center": 0.5,
-        "decimal_number_config": {"num_decimal_places": 1,},
-    }
+    x_min: float = 0
+    x_max: float = 1
+    unit_size: float = 6
+    tick_frequency: float = 0.1
+    numbers_with_elongated_ticks: tp.List = [0, 1]
+    number_at_center: float = 0.5
+    decimal_number_config: dict = {"num_decimal_places": 1}
+
+    def __attrs_post_init__(self):
+        NumberLine.__attrs_post_init__(self)
