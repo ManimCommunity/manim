@@ -49,6 +49,7 @@ class NumberLine(Line):
         end = self.unit_size * self.x_max * RIGHT
         self.start = start - self.add_start * RIGHT
         self.end = end + self.add_end * RIGHT
+        Line.__attrs_post_init__(self)
         self.shift(-self.number_to_point(self.number_at_center))
 
         self.init_leftmost_tick()
