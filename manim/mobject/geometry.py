@@ -698,8 +698,8 @@ class Vector(Arrow):
     def __attrs_post_init__(self):
         if len(self.direction) == 2:
             self.direction = np.append(np.array(self.direction), 0)
-        self.left = ORIGIN
-        self.right = self.direction
+        self.start = ORIGIN
+        self.end = self.direction
         Arrow.__attrs_post_init__(self)
 
 
@@ -745,8 +745,8 @@ class Polygon(VMobject):
             # Determines counterclockwise vs. clockwise
             sign = np.sign(np.cross(vect1, vect2)[2])
             arc = ArcBetweenPoints(
-                v2 - unit_vect1 * cut_off_length,
-                v2 + unit_vect2 * cut_off_length,
+                start=v2 - unit_vect1 * cut_off_length,
+                end=v2 + unit_vect2 * cut_off_length,
                 angle=sign * angle,
             )
             arcs.append(arc)
@@ -756,7 +756,7 @@ class Polygon(VMobject):
         arcs = [arcs[-1], *arcs[:-1]]
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
-            line = Line(arc1.get_end(), arc2.get_start())
+            line = Line(start=arc1.get_end(), end=arc2.get_start())
             # Make sure anchors are evenly distributed
             len_ratio = line.get_length() / arc1.get_arc_length()
             line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
