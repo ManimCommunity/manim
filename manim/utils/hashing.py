@@ -21,12 +21,12 @@ class CustomEncoder(json.JSONEncoder):
 
         Parameters
         ----------
-        obj : `any`
+        obj : Any
             Arbitrary object to convert
 
         Returns
         -------
-        `any`
+        Any
             Python object that JSON encoder will recognize
 
         """
@@ -59,12 +59,12 @@ class CustomEncoder(json.JSONEncoder):
 
         Parameters
         ----------
-        obj : :class:`any`
+        obj : Any
             The obj to be cleaned.
         
         Returns
         -------
-        `any`
+        Any
             The object cleaned following the processus above.
         """
 
@@ -128,10 +128,10 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
     camera_object : :class:`~.Camera`
         The camera object used in the scene.
 
-    animations_list : :class:`list`
+    animations_list : Iterable[:class:`~.Animation`]
         The list of animations.
 
-    current_mobjects_list : :class:`list`
+    current_mobjects_list : Iterable[:class:`~.Mobject`]
         The list of mobjects.
 
     Returns

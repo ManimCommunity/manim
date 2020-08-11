@@ -34,7 +34,7 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
 def modify_atime(file_path):
     """Will manually change the accessed time (called `atime`) of the file, as on a lot of OS the accessed time refresh is disabled by default. 
 
-    Paramaters
+    Parameters
     ----------
     file_path : :class:`str`
         The path of the file. 

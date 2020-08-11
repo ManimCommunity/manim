@@ -856,7 +856,7 @@ class Scene(Container):
         
         Parameters
         ----------
-        func : :class:`Callable[[...], None]`    
+        func : Callable[[...], None]    
             The play like function that has to be written to the video file stream. Take the same parameters as `scene.play`.
         """
 
@@ -890,7 +890,7 @@ class Scene(Container):
 
         Parameters
         ----------
-        func : :class:`Callable[[...], None]`    
+        func : Callable[[...], None]
             The wait like function that has to be written to the video file stream. Take the same parameters as `scene.wait`.
         """
 
