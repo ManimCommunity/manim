@@ -13,6 +13,7 @@ class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
         """
         This method is used to serialize objects to JSON format.
+        
         If obj is a function, then it will return a dict with two keys : 'code', for the code source, and 'nonlocals' for all nonlocalsvalues. (including nonlocals functions, that will be serialized as this is recursive.)
         if obj is a np.darray, it converts it into a list.
         if obj is an object with __dict__ attribute, it returns its __dict__.

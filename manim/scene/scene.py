@@ -850,9 +850,10 @@ class Scene(Container):
 
     def handle_caching_play(func):
         """
-        This method is used internally to wrap the passed function into a function that will compute the hash of the play invocation, 
-        and will act accordingly : either skip the animation because already cached, either nothing and let the play invocation be processed normally.
+        Decorator that returns a wrapped version of func that will compute the hash of the play invocation.
 
+        The returned function will act according to the computed hash: either skip the animation because it's already cached, or let the invoked function play normally.
+        
         Parameters
         ----------
         func : :class:`Callable[[...], None]`    
@@ -883,8 +884,9 @@ class Scene(Container):
 
     def handle_caching_wait(func):
         """
-        This method is used internally to wrap the passed function into a function that will compute the hash of the wait invocation, 
-        and will act accordingly : either skip the animation because already cached or nothing and let the play invocation be processed normally
+        Decorator that returns a wrapped version of func that will compute the hash of the wait invocation.
+
+        The returned function will act according to the computed hash: either skip the animation because it's already cached, or let the invoked function play normally.
 
         Parameters
         ----------

@@ -430,12 +430,12 @@ class SceneFileWriter(object):
             f"Animation {self.scene.num_plays} : Partial movie file written in {self.partial_movie_file_path}"
         )
 
-    def is_already_cached(self, hash_invokation):
-        """Will check if a file named with `hash_invokation` exists.
+    def is_already_cached(self, hash_invocation):
+        """Will check if a file named with `hash_invocation` exists.
 
         Parameters
         ----------
-        hash_invokation : :class:`str`
+        hash_invocation : :class:`str`
             The hash corresponding to an invocation to either `scene.play` or `scene.wait`.
 
         Returns
@@ -445,7 +445,7 @@ class SceneFileWriter(object):
         """
         path = os.path.join(
             self.partial_movie_directory,
-            "{}{}".format(hash_invokation, self.movie_file_extension),
+            "{}{}".format(hash_invocation, self.movie_file_extension),
         )
         return os.path.exists(path)
 
