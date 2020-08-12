@@ -31,12 +31,12 @@ class CustomEncoder(json.JSONEncoder):
 
         """
         if inspect.isfunction(obj) and not isinstance(obj, ModuleType):
-            r = inspect.getclosurevars(obj)
-            x = {**copy.copy(r.globals), **copy.copy(r.nonlocals)}
-            for i in list(x):
+            cvars = inspect.getclosurevars(obj)
+            cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
+            for i in list(cvardict):
                 # NOTE : All module types objects are removed, because otherwise it throws ValueError: Circular reference detected if not. TODO
-                if isinstance(x[i], ModuleType):
-                    del x[i]
+                if isinstance(cvardict[i], ModuleType):
+                    del cvardict[i]
             return {"code": inspect.getsource(obj), "nonlocals": x}
         elif isinstance(obj, np.ndarray):
             return list(obj)
@@ -177,7 +177,7 @@ def get_hash_from_wait_call(
     ]
     hash_current_mobjects = zlib.crc32(repr(current_mobjects_list_json).encode())
     hash_camera = zlib.crc32(repr(camera_json).encode())
-    if stop_condition_function != None:
+    if stop_condition_function is not None:
         hash_function = zlib.crc32(get_json(stop_condition_function).encode())
         return "{}_{}{}_{}".format(
             hash_camera,
