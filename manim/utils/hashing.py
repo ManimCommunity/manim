@@ -37,7 +37,7 @@ class CustomEncoder(json.JSONEncoder):
                 # NOTE : All module types objects are removed, because otherwise it throws ValueError: Circular reference detected if not. TODO
                 if isinstance(cvardict[i], ModuleType):
                     del cvardict[i]
-            return {"code": inspect.getsource(obj), "nonlocals": x}
+            return {"code": inspect.getsource(obj), "nonlocals": cvardict}
         elif isinstance(obj, np.ndarray):
             return list(obj)
         elif hasattr(obj, "__dict__"):
