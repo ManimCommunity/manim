@@ -275,35 +275,32 @@ class BulletedList(TextMobject):
                 other_part.set_fill(opacity=opacity)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class TexMobjectFromPresetString(TexMobject):
-    CONFIG = {
-        # To be filled by subclasses
-        "tex": None,
-        "color": None,
-    }
+    # To be filled by subclasses
+    tex: tp.Any = None
+    color: tp.Union[str, Color] = None
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        TexMobject.__init__(self, self.tex, **kwargs)
+    def __attrs_post_init__(self):
+        TexMobject.__attrs_post_init__(self)
         self.set_color(self.color)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Title(TextMobject):
-    CONFIG = {
-        "scale_factor": 1,
-        "include_underline": True,
-        "underline_width": config["frame_width"] - 2,
-        # This will override underline_width
-        "match_underline_width_to_text": False,
-        "underline_buff": MED_SMALL_BUFF,
-    }
+    scale_factor: float = 1
+    include_underline: bool = True
+    underline_width: float = config["frame_width"] - 2
+    # This will override underline_width
+    match_underline_width_to_text: bool = False
+    underline_buff: float = MED_SMALL_BUFF
 
-    def __init__(self, *text_parts, **kwargs):
-        TextMobject.__init__(self, *text_parts, **kwargs)
+    def __attrs_post_init__(self):
+        TextMobject.__attrs_post_init__(self)
         self.scale(self.scale_factor)
         self.to_edge(UP)
         if self.include_underline:
-            underline = Line(LEFT, RIGHT)
+            underline = Line(start=LEFT, end=RIGHT)
             underline.next_to(self, DOWN, buff=self.underline_buff)
             if self.match_underline_width_to_text:
                 underline.match_width(self)
