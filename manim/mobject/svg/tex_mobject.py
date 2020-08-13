@@ -129,20 +129,17 @@ class SingleStringTexMobject(SVGMobject):
         return self
 
 
+@attr.s(auto_attribs=True, eq=False)
 class TexMobject(SingleStringTexMobject):
-    CONFIG = {
-        "arg_separator": " ",
-        "substrings_to_isolate": [],
-        "tex_to_color_map": {},
-    }
+    arg_separator: str = " "
+    substrings_to_isolate: tp.List = []
+    tex_to_color_map: tp.Dict = {}
+    tex_strings: tp.List = []
 
-    def __init__(self, *tex_strings, **kwargs):
-        digest_config(self, kwargs)
-        tex_strings = self.break_up_tex_strings(tex_strings)
-        self.tex_strings = tex_strings
-        SingleStringTexMobject.__init__(
-            self, self.arg_separator.join(tex_strings), **kwargs
-        )
+    def __attrs_post_init__(self):
+        self.tex_strings = self.break_up_tex_strings(self.tex_strings)
+        self.tex_string = self.arg_separator.join(self.tex_strings)
+        SingleStringTexMobject.__attrs_post_init__(self)
         self.break_up_by_substrings()
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
