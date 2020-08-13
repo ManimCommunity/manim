@@ -1,5 +1,6 @@
 import operator as op
 import typing as tp
+import attr
 
 from colour import Color
 from ..constants import *
@@ -12,10 +13,9 @@ from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
-from ..utils.dataclasses import dclass
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class NumberLine(Line):
     color: tp.Union[str, Color] = LIGHT_GREY
     x_min: float = -config["frame_x_radius"]
@@ -173,7 +173,7 @@ class NumberLine(Line):
         return self
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class UnitInterval(NumberLine):
     x_min: float = 0
     x_max: float = 1

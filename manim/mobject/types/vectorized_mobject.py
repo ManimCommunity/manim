@@ -20,7 +20,6 @@ from ...utils.iterables import tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector
 from ...utils.space_ops import get_norm
-from ...utils.dataclasses import dclass
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -33,7 +32,7 @@ from ...utils.dataclasses import dclass
 DEFAULT_N_POINTS_PER_CUBIC_CURVE = 4
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class VMobject(Mobject):
     fill_color: tp.Optional[tp.Union[str, Color]] = None
     fill_opacity: float = 0.0

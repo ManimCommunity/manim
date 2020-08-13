@@ -21,7 +21,6 @@ from ..utils.space_ops import line_intersection
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import normalize
 from ..utils.space_ops import rotate_vector
-from ..utils.dataclasses import dclass
 
 
 DEFAULT_DOT_RADIUS = 0.08
@@ -30,7 +29,7 @@ DEFAULT_DASH_LENGTH = 0.05
 DEFAULT_ARROW_TIP_LENGTH = 0.35
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class TipableVMobject(VMobject):
     """
     Meant for shared functionality between Arc and Line.
@@ -197,7 +196,7 @@ class TipableVMobject(VMobject):
         return get_norm(start - end)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Arc(TipableVMobject):
     radius: float = 1.0
     num_components: int = 9
@@ -271,7 +270,7 @@ class Arc(TipableVMobject):
         return angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class ArcBetweenPoints(Arc):
     """
     Inherits from Arc and additionally takes 2 points between which the arc is spanned.
@@ -310,7 +309,7 @@ class ArcBetweenPoints(Arc):
                 self.radius = math.inf
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class CurvedArrow(ArcBetweenPoints):
     start_point: tp.Any = None
     end_point: tp.Any = None
@@ -322,14 +321,14 @@ class CurvedArrow(ArcBetweenPoints):
         self.add_tip()
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class CurvedDoubleArrow(CurvedArrow):
     def __attrs_post_init__(self):
         CurvedArrow.__attrs_post_init__(self)
         self.add_tip(at_start=True)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Circle(Arc):
     color: tp.Union[str, Color] = RED
     close_new_points: bool = True
@@ -356,7 +355,7 @@ class Circle(Arc):
         return self.point_from_proportion((angle - start_angle) / TAU)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Dot(Circle):
     radius: float = DEFAULT_DOT_RADIUS
     stroke_width: float = 0
@@ -369,7 +368,7 @@ class Dot(Circle):
         Circle.__attrs_post_init__(self)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class SmallDot(Dot):
     radius: float = DEFAULT_SMALL_DOT_RADIUS
 
@@ -377,7 +376,7 @@ class SmallDot(Dot):
         Dot.__attrs_post_init__(self)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Ellipse(Circle):
     width: float = 2.0
     height: float = 1.0
@@ -388,7 +387,7 @@ class Ellipse(Circle):
         self.set_height(self.height, stretch=True)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class AnnularSector(Arc):
     inner_radius: float = 1.0
     outer_radius: float = 2.0
@@ -418,7 +417,7 @@ class AnnularSector(Arc):
         self.add_line_to(inner_arc.points[0])
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Sector(AnnularSector):
     outer_radius: float = 1.0
     inner_radius: float = 0.0
@@ -427,7 +426,7 @@ class Sector(AnnularSector):
         AnnularSector.__attrs_post_init__(self)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Annulus(Circle):
     inner_radius: float = 1.0
     outer_radius: float = 2.0
@@ -449,7 +448,7 @@ class Annulus(Circle):
         self.shift(self.arc_center)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Line(TipableVMobject):
     buff: float = 0
     path_arc: tp.Any = None
@@ -549,7 +548,7 @@ class Line(TipableVMobject):
         return self
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class DashedLine(Line):
     dash_length: float = DEFAULT_DASH_LENGTH
     dash_spacing: tp.Optional[float] = None
@@ -594,7 +593,7 @@ class DashedLine(Line):
         return self.submobjects[-1].points[-2]
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class TangentLine(Line):
     length: float = 1.0
     d_alpha: float = 1e-6
@@ -612,7 +611,7 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Elbow(VMobject):
     width: float = 0.2
     angle: float = 0
@@ -624,7 +623,7 @@ class Elbow(VMobject):
         self.rotate(self.angle, about_point=ORIGIN)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Arrow(Line):
     stroke_width: float = 6.0
     buff: float = MED_SMALL_BUFF
@@ -690,7 +689,7 @@ class Arrow(Line):
         return self.deepcopy()
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Vector(Arrow):
     buff: float = 0.0
     direction: np.ndarray = RIGHT
@@ -703,21 +702,21 @@ class Vector(Arrow):
         Arrow.__attrs_post_init__(self)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class DoubleArrow(Arrow):
     def __attrs_post_init__(self):
         Arrow.__attrs_post_init__(self)
         self.add_tip(at_start=True)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class CubicBezier(VMobject):
     def __attrs_post_init__(self):
         VMobject.__attrs_post_init__(self)
         self.set_points(self.points)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Polygon(VMobject):
     vertices: tp.List = []  # TODO add validator
     color: tp.Union[str, Color] = BLUE
@@ -764,7 +763,7 @@ class Polygon(VMobject):
         return self
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class RegularPolygon(Polygon):
     start_angle: float = None
     n: int = 6
@@ -781,14 +780,14 @@ class RegularPolygon(Polygon):
         Polygon.__attrs_post_init__(self)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Triangle(RegularPolygon):
     def __attrs_post_init__(self):
         self.n = 3
         RegularPolygon.__attrs_post_init__(self)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class ArrowTip(Triangle):
     fill_opacity: float = 1
     stroke_width: float = 0
@@ -816,7 +815,7 @@ class ArrowTip(Triangle):
         return get_norm(self.get_vector())
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Rectangle(Polygon):
     color: tp.Union[str, Color] = WHITE
     height: float = 2.0
@@ -831,7 +830,7 @@ class Rectangle(Polygon):
         self.set_height(self.height, stretch=True)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class Square(Rectangle):
     side_length: float = 2.0
 
@@ -841,7 +840,7 @@ class Square(Rectangle):
         Rectangle.__attrs_post_init__(self)
 
 
-@dclass
+@attr.s(auto_attribs=True, eq=False)
 class RoundedRectangle(Rectangle):
     corner_radius: float = 0.5
 
