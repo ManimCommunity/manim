@@ -264,7 +264,7 @@ class GraphScene(Scene):
                 y = self.y_max
             return self.coords_to_point(x, y)
 
-        graph = ParametricFunction(parameterized_function, color=color, **kwargs)
+        graph = ParametricFunction(function=parameterized_function, color=color, **kwargs)
         graph.underlying_function = func
         return graph
 
