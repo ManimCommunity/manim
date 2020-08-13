@@ -2,6 +2,8 @@ import inspect
 import random
 import warnings
 import platform
+import attr
+import typing as tp
 
 from tqdm import tqdm as ProgressDisplay
 import numpy as np
@@ -18,6 +20,7 @@ from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.iterables import list_update
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Scene(Container):
     """
     A Scene can be thought of as the Canvas of your animation.
@@ -43,16 +46,12 @@ class Scene(Container):
         time: time elapsed since initialisation of scene.
         random_seed: The seed with which all random operations are done.
     """
+    camera_class: tp.Any = Camera
+    skip_animations: bool = False
+    always_update_mobjects: bool = False
+    random_seed: tp.Optional[int] = 0
 
-    CONFIG = {
-        "camera_class": Camera,
-        "skip_animations": False,
-        "always_update_mobjects": False,
-        "random_seed": 0,
-    }
-
-    def __init__(self, **kwargs):
-        Container.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
         self.camera = self.camera_class(**camera_config)
         self.file_writer = SceneFileWriter(self, **file_writer_config,)
 
