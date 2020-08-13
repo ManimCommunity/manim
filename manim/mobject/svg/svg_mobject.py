@@ -110,7 +110,7 @@ class SVGMobject(VMobject):
         return mob.submobjects
 
     def path_string_to_mobject(self, path_string):
-        return VMobjectFromSVGPathstring(path_string)
+        return VMobjectFromSVGPathstring(path_string=path_string)
 
     def use_to_mobjects(self, use_element):
         # Remove initial "#" character

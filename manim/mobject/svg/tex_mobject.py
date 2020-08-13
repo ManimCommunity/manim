@@ -131,7 +131,7 @@ class SingleStringTexMobject(SVGMobject):
     def path_string_to_mobject(self, path_string):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string)
+        return TexSymbol(path_string=path_string)
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
@@ -176,10 +176,10 @@ class TexMobject(SingleStringTexMobject):
         """
         new_submobjects = []
         curr_index = 0
-        config = dict(self.CONFIG)
+        config = vars(self)
         config["alignment"] = ""
         for tex_string in self.tex_strings:
-            sub_tex_mob = SingleStringTexMobject(tex_string=tex_string, **config)
+            sub_tex_mob = SingleStringTexMobject.from_other_config(tex_string, **config)
             num_submobs = len(sub_tex_mob.submobjects)
             new_index = curr_index + num_submobs
             if num_submobs == 0:
