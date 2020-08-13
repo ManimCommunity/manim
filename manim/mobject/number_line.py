@@ -85,7 +85,7 @@ class NumberLine(Line):
     def get_tick(self, x, size=None):
         if size is None:
             size = self.tick_size
-        result = Line(size * DOWN, size * UP)
+        result = Line(start=size * DOWN, end=size * UP)
         result.rotate(self.get_angle())
         result.move_to(self.number_to_point(x))
         result.match_style(self)
@@ -152,7 +152,7 @@ class NumberLine(Line):
             direction = self.label_direction
         buff = buff or self.line_to_number_buff
 
-        num_mob = DecimalNumber(number, **number_config)
+        num_mob = DecimalNumber(number=number, **number_config)
         num_mob.scale(scale_val)
         num_mob.next_to(self.number_to_point(number), direction=direction, buff=buff)
         return num_mob

@@ -114,7 +114,8 @@ class GraphScene(Scene):
                 self.x_labeled_nums = [x for x in self.x_labeled_nums if x != 0]
             x_axis.add_numbers(*self.x_labeled_nums)
         if self.x_axis_label:
-            x_label = TextMobject(self.x_axis_label)
+            print("x axis found")
+            x_label = TextMobject(tex_strings=[self.x_axis_label])
             x_label.next_to(
                 x_axis.get_tips() if self.include_tip else x_axis.get_tick_marks(),
                 self.x_label_position,
@@ -411,7 +412,7 @@ class GraphScene(Scene):
             The LaTeX of the passed 'label' parameter
 
         """
-        label = TexMobject(label)
+        label = TexMobject(tex_strings=[label])
         color = color or graph.get_color()
         label.set_color(color)
         if x_val is None:
@@ -791,17 +792,17 @@ class GraphScene(Scene):
         p2 = self.input_to_graph_point(x + dx, graph)
         interim_point = p2[0] * RIGHT + p1[1] * UP
 
-        group.dx_line = Line(p1, interim_point, color=dx_line_color)
-        group.df_line = Line(interim_point, p2, color=df_line_color)
+        group.dx_line = Line(start=p1, end=interim_point, color=dx_line_color)
+        group.df_line = Line(start=interim_point, end=p2, color=df_line_color)
         group.add(group.dx_line, group.df_line)
 
         labels = VGroup()
         if dx_label is not None:
-            group.dx_label = TexMobject(dx_label)
+            group.dx_label = TexMobject(tex_strings=[dx_label])
             labels.add(group.dx_label)
             group.add(group.dx_label)
         if df_label is not None:
-            group.df_label = TexMobject(df_label)
+            group.df_label = TexMobject(tex_strings=[df_label])
             labels.add(group.df_label)
             group.add(group.df_label)
 
@@ -827,7 +828,7 @@ class GraphScene(Scene):
 
         if include_secant_line:
             secant_line_color = secant_line_color or self.default_derivative_color
-            group.secant_line = Line(p1, p2, color=secant_line_color)
+            group.secant_line = Line(start=p1, end=p2, color=secant_line_color)
             group.secant_line.scale_in_place(
                 secant_line_length / group.secant_line.get_length()
             )
@@ -871,9 +872,9 @@ class GraphScene(Scene):
         triangle.set_fill(color, 1)
         triangle.set_stroke(width=0)
         if label is None:
-            T_label = TexMobject(self.variable_point_label, fill_color=color)
+            T_label = TexMobject(tex_strings=[self.variable_point_label], fill_color=color)
         else:
-            T_label = TexMobject(label, fill_color=color)
+            T_label = TexMobject(tex_strings=[label], fill_color=color)
 
         T_label.next_to(triangle, DOWN)
         v_line = self.get_vertical_line_to_graph(x_val, self.v_graph, color=YELLOW)
