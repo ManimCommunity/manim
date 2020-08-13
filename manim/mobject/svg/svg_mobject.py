@@ -3,6 +3,8 @@ import re
 import os
 import string
 import warnings
+import attr
+import typing as tp
 
 from xml.dom import minidom
 
@@ -23,24 +25,21 @@ def string_to_numbers(num_string):
     return [float(s) for s in re.split("[ ,]", num_string) if s != ""]
 
 
+@attr.s(auto_attribs=True, eq=False)
 class SVGMobject(VMobject):
-    CONFIG = {
-        "should_center": True,
-        "height": 2,
-        "width": None,
-        # Must be filled in in a subclass, or when called
-        "file_name": None,
-        "unpack_groups": True,  # if False, creates a hierarchy of VGroups
-        "stroke_width": DEFAULT_STROKE_WIDTH,
-        "fill_opacity": 1.0,
-        # "fill_color" : LIGHT_GREY,
-    }
+    should_center: bool = True
+    height: float = 2
+    width: tp.Optional[float] = None
+    # Must be filled in in a subclass, or when called
+    file_name: tp.Optional[str] = None
+    unpack_groups: bool = True  # if False, creates a hierarchy of VGroups
+    stroke_width: float = DEFAULT_STROKE_WIDTH
+    fill_opacity: float = 1.0
+    # "fill_color" : LIGHT_GREY,
 
-    def __init__(self, file_name=None, **kwargs):
-        digest_config(self, kwargs)
-        self.file_name = file_name or self.file_name
+    def __attrs_post_init__(self):
         self.ensure_valid_file()
-        VMobject.__init__(self, **kwargs)
+        VMobject.__attrs_post_init__(self)
         self.move_into_position()
 
     def ensure_valid_file(self):
