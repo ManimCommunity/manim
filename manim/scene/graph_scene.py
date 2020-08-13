@@ -1,5 +1,8 @@
 import itertools as it
+import attr
+import typing as tp
 
+from colour import Color
 from ..config import config
 from ..animation.creation import Write, DrawBorderThenFill, ShowCreation
 from ..animation.transform import Transform
@@ -26,42 +29,44 @@ from ..utils.space_ops import angle_of_vector
 # is way too messy to work with.
 
 
+@attr.s(auto_attribs=True, eq=False)
 class GraphScene(Scene):
-    CONFIG = {
-        "x_min": -1,
-        "x_max": 10,
-        "x_axis_width": 9,
-        "x_tick_frequency": 1,
-        "x_leftmost_tick": None,  # Change if different from x_min
-        "x_labeled_nums": None,
-        "x_axis_label": "$x$",
-        "y_min": -1,
-        "y_max": 10,
-        "y_axis_height": 6,
-        "y_tick_frequency": 1,
-        "y_bottom_tick": None,  # Change if different from y_min
-        "y_labeled_nums": None,
-        "y_axis_label": "$y$",
-        "axes_color": GREY,
-        "graph_origin": 2.5 * DOWN + 4 * LEFT,
-        "exclude_zero_label": True,
-        "default_graph_colors": [BLUE, GREEN, YELLOW],
-        "default_derivative_color": GREEN,
-        "default_input_color": YELLOW,
-        "default_riemann_start_color": BLUE,
-        "default_riemann_end_color": GREEN,
-        "area_opacity": 0.8,
-        "num_rects": 50,
-        "include_tip": False,  # add tip at the end of the axes
-        "x_axis_visibility": True,  # show or hide the x axis
-        "y_axis_visibility": True,  # show or hide the y axis
-        "x_label_position": UP + RIGHT,  # where to place the label of the x axis
-        "y_label_position": UP + RIGHT,  # where to place the label of the y axis
-        "x_add_start": 0,  # extend the x axis to the left
-        "x_add_end": 0,  # extend the x axis to the right
-        "y_add_start": 0,  # extend the y axis to the bottom
-        "y_add_end": 0,  # extend the y axis to the top
-    }
+    x_min: float = -1
+    x_max: float = 10
+    x_axis_width: float = 9
+    x_tick_frequency: float = 1
+    x_leftmost_tick: tp.Optional[float] = None  # Change if different from x_min
+    x_labeled_nums: tp.Optional[tp.List] = None
+    x_axis_label: str = "$x$"
+    y_min: float = -1
+    y_max: float = 10
+    y_axis_height: float = 6
+    y_tick_frequency: float = 1
+    y_bottom_tick: tp.Optional[float] = None  # Change if different from y_min
+    y_labeled_nums: tp.Optional[tp.List] = None
+    y_axis_label: str = "$y$"
+    axes_color: tp.Union[str, Color] = GREY
+    graph_origin: np.ndarray = 2.5 * DOWN + 4 * LEFT
+    exclude_zero_label: bool = True
+    default_graph_colors: tp.List[tp.Union[str, Color]] = [BLUE, GREEN, YELLOW]
+    default_derivative_color: tp.Union[str, Color] = GREEN
+    default_input_color: tp.Union[str, Color] = YELLOW
+    default_riemann_start_color: tp.Union[str, Color] = BLUE
+    default_riemann_end_color: tp.Union[str, Color] = GREEN
+    area_opacity: float = 0.8
+    num_rects: int = 50
+    include_tip: bool = False  # add tip at the end of the axes
+    x_axis_visibility: bool = True  # show or hide the x axis
+    y_axis_visibility: bool = True  # show or hide the y axis
+    x_label_position: np.ndarray = UP + RIGHT  # where to place the label of the x axis
+    y_label_position: np.ndarray = UP + RIGHT  # where to place the label of the y axis
+    x_add_start: float = 0  # extend the x axis to the left
+    x_add_end: float = 0  # extend the x axis to the right
+    y_add_start: float = 0  # extend the y axis to the bottom
+    y_add_end: float = 0  # extend the y axis to the top
+
+    def __attrs_post_init__(self):
+        Scene.__attrs_post_init__(self)
 
     def setup(self):
         """
