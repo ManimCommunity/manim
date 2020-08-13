@@ -50,7 +50,7 @@ class Mobject(Container):
     submobjects: List["Mobject"] = []
     updaters: List = []
     updating_suspended: bool = False
-    points: Optional[np.ndarray] = attr.attrib(init=False)
+    points: Optional[np.ndarray] = None
 
     def __attrs_post_init__(self):
         if self.name is None:
