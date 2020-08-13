@@ -301,10 +301,13 @@ class SVGMobject(VMobject):
             self.set_width(self.width)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class VMobjectFromSVGPathstring(VMobject):
-    def __init__(self, path_string, **kwargs):
+    path_string: tp.Optional[str] = None
+
+    def __attrs_post_init__(self):
         digest_locals(self)
-        VMobject.__init__(self, **kwargs)
+        VMobject.__attrs_post_init__(self)
 
     def get_path_commands(self):
         result = [
