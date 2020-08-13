@@ -235,27 +235,27 @@ class TexMobject(SingleStringTexMobject):
         self.submobjects.sort(key=lambda m: m.get_tex_string())
 
 
+@attr.s(auto_attribs=True, eq=False)
 class TextMobject(TexMobject):
-    CONFIG = {
-        "alignment": "\\centering",
-        "arg_separator": "",
-        "type": "text",
-    }
+    alignment: str = "\\centering"
+    arg_separator: str = ""
+    type: str = "text"
 
 
+@attr.s(auto_attribs=True, eq=False)
 class BulletedList(TextMobject):
-    CONFIG = {
-        "buff": MED_LARGE_BUFF,
-        "dot_scale_factor": 2,
-        # Have to include because of handle_multiple_args implementation
-        "alignment": "",
-    }
+    buff: float = MED_LARGE_BUFF
+    dot_scale_factor: float = 2
+    # Have to include because of handle_multiple_args implementation
+    alignment: str = ""
+    items: tp.List = []
 
-    def __init__(self, *items, **kwargs):
-        line_separated_items = [s + "\\\\" for s in items]
-        TextMobject.__init__(self, *line_separated_items, **kwargs)
+    def __attrs_post_init__(self):
+        line_separated_items = [s + "\\\\" for s in self.items]
+        self.tex_strings = line_separated_items
+        TextMobject.__attrs_post_init__(self)
         for part in self:
-            dot = TexMobject("\\cdot").scale(self.dot_scale_factor)
+            dot = TexMobject(tex_strings=["\\cdot"]).scale(self.dot_scale_factor)
             dot.next_to(part[0], LEFT, SMALL_BUFF)
             part.add_to_back(dot)
         self.arrange(DOWN, aligned_edge=LEFT, buff=self.buff)
