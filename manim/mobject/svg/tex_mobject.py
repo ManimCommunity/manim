@@ -178,6 +178,7 @@ class TexMobject(SingleStringTexMobject):
         curr_index = 0
         config = vars(self)
         config["alignment"] = ""
+        config.pop("tex_string", None)
         for tex_string in self.tex_strings:
             sub_tex_mob = SingleStringTexMobject.from_other_config(tex_string, **config)
             num_submobs = len(sub_tex_mob.submobjects)
