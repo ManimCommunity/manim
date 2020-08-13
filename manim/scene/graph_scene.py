@@ -139,7 +139,6 @@ class GraphScene(Scene):
             leftmost_tick=self.y_bottom_tick,
             numbers_with_elongated_ticks=self.y_labeled_nums,
             color=self.axes_color,
-            line_to_number_vect=LEFT,
             label_direction=LEFT,
             include_tip=self.include_tip,
             add_start=self.y_add_start,
@@ -152,7 +151,7 @@ class GraphScene(Scene):
                 self.y_labeled_nums = [y for y in self.y_labeled_nums if y != 0]
             y_axis.add_numbers(*self.y_labeled_nums)
         if self.y_axis_label:
-            y_label = TextMobject(self.y_axis_label)
+            y_label = TextMobject(tex_strings=[self.y_axis_label])
             y_label.next_to(
                 y_axis.get_corner(self.y_label_position),
                 self.y_label_position,
