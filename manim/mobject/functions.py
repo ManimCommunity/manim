@@ -3,22 +3,22 @@ from ..config import config
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.config_ops import digest_config
 import math
+import attr
+import typing as tp
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ParametricFunction(VMobject):
-    CONFIG = {
-        "t_min": 0,
-        "t_max": 1,
-        "step_size": 0.01,  # Use "auto" (lowercase) for automatic step size
-        "dt": 1e-8,
-        # TODO, be smarter about figuring these out?
-        "discontinuities": [],
-    }
+    t_min: float = 0
+    t_max: float = 1
+    step_size: tp.Union[str, float] = 0.01  # Use "auto" (lowercase) for automatic step size
+    dt: float = 1e-8
+    # TODO, be smarter about figuring these out?
+    discontinuities: tp.List = []
+    function: tp.Optional[tp.Callable] = None
 
-    def __init__(self, function=None, **kwargs):
-        # either get a function from __init__ or from CONFIG
-        self.function = function or self.function
-        VMobject.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        VMobject.__attrs_post_init__(self)
 
     def get_function(self):
         return self.function
