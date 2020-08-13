@@ -241,6 +241,9 @@ class TextMobject(TexMobject):
     arg_separator: str = ""
     type: str = "text"
 
+    def __attrs_post_init__(self):
+        TexMobject.__attrs_post_init__(self)
+
 
 @attr.s(auto_attribs=True, eq=False)
 class BulletedList(TextMobject):
