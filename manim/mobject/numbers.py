@@ -1,50 +1,52 @@
+import attr
+import typing as tp
+
 from ..constants import *
 from ..mobject.svg.tex_mobject import SingleStringTexMobject
 from ..mobject.types.vectorized_mobject import VMobject
 
 
+@attr.s(auto_attribs=True, eq=False)
 class DecimalNumber(VMobject):
-    CONFIG = {
-        "num_decimal_places": 2,
-        "include_sign": False,
-        "group_with_commas": True,
-        "digit_to_digit_buff": 0.05,
-        "show_ellipsis": False,
-        "unit": None,  # Aligned to bottom unless it starts with "^"
-        "include_background_rectangle": False,
-        "edge_to_fix": LEFT,
-    }
+    num_decimal_places: int = 2
+    include_sign: bool = False
+    group_with_commas: bool = True
+    digit_to_digit_buff: float = 0.05
+    show_ellipsis: bool = False
+    unit: tp.Any = None  # Aligned to bottom unless it starts with "^"
+    include_background_rectangle: bool = False
+    edge_to_fix: np.ndarray = LEFT
+    number: tp.Any = 0
 
-    def __init__(self, number=0, **kwargs):
-        super().__init__(**kwargs)
-        self.number = number
-        self.initial_config = kwargs
+    def __attrs_post_init__(self):
+        VMobject.__attrs_post_init__(self)
+        self.initial_config = vars(self)
 
-        if isinstance(number, complex):
+        if isinstance(self.number, complex):
             formatter = self.get_complex_formatter()
         else:
             formatter = self.get_formatter()
-        num_string = formatter.format(number)
+        num_string = formatter.format(self.number)
 
-        rounded_num = np.round(number, self.num_decimal_places)
+        rounded_num = np.round(self.number, self.num_decimal_places)
         if num_string.startswith("-") and rounded_num == 0:
             if self.include_sign:
                 num_string = "+" + num_string[1:]
             else:
                 num_string = num_string[1:]
 
-        self.add(*[SingleStringTexMobject(char, **kwargs) for char in num_string])
+        self.add(*[SingleStringTexMobject.from_other_config(char, **vars(self)) for char in num_string])
 
         # Add non-numerical bits
         if self.show_ellipsis:
-            self.add(SingleStringTexMobject("\\dots"))
+            self.add(SingleStringTexMobject(tex_string="\\dots"))
 
         if num_string.startswith("-"):
             minus = self.submobjects[0]
             minus.next_to(self.submobjects[1], LEFT, buff=self.digit_to_digit_buff)
 
         if self.unit is not None:
-            self.unit_sign = SingleStringTexMobject(self.unit, color=self.color)
+            self.unit_sign = SingleStringTexMobject(tex_string=self.unit, color=self.color)
             self.add(self.unit_sign)
 
         self.arrange(buff=self.digit_to_digit_buff, aligned_edge=DOWN)

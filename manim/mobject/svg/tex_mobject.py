@@ -48,6 +48,15 @@ class SingleStringTexMobject(SVGMobject):
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
 
+    @classmethod
+    def from_other_config(cls, tex_string, **kwargs):
+        new_kwargs = {}
+        fields = attr.fields_dict(cls)
+        for key in kwargs.keys():
+            if key in fields:
+                new_kwargs[key] = kwargs[key]
+        return cls(tex_string=tex_string, **new_kwargs)
+
     def get_modified_expression(self, tex_string):
         result = self.alignment + " " + tex_string
         result = result.strip()
