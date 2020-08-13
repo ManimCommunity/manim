@@ -1,6 +1,9 @@
 from functools import reduce
 import operator as op
+import attr
+import typing as tp
 
+from colour import Color
 from ...constants import *
 from ...config import config
 from ...mobject.geometry import Line
@@ -15,31 +18,31 @@ from ...utils.tex_file_writing import tex_to_svg_file
 TEX_MOB_SCALE_FACTOR = 0.05
 
 
+@attr.s(auto_attribs=True, eq=False)
 class TexSymbol(VMobjectFromSVGPathstring):
     """Purely a renaming of VMobjectFromSVGPathstring."""
 
-    pass
+    def __attrs_post_init__(self):
+        VMobjectFromSVGPathstring.__attrs_post_init__(self)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class SingleStringTexMobject(SVGMobject):
-    CONFIG = {
-        "stroke_width": 0,
-        "fill_opacity": 1.0,
-        "background_stroke_width": 1,
-        "background_stroke_color": BLACK,
-        "should_center": True,
-        "height": None,
-        "organize_left_to_right": False,
-        "alignment": "",
-        "type": "tex",
-    }
+    stroke_width: float = 0
+    fill_opacity: float = 1.0
+    background_stroke_width: float = 1
+    background_stroke_color: tp.Union[str, Color] = BLACK
+    should_center: bool = True
+    height: tp.Union[float] = None
+    organize_left_to_right: bool = False
+    alignment: str = ""
+    type: str = "tex"
+    tex_string: tp.Optional[str] = None
 
-    def __init__(self, tex_string, **kwargs):
-        digest_config(self, kwargs)
-        assert isinstance(tex_string, str)
-        self.tex_string = tex_string
-        file_name = tex_to_svg_file(self.get_modified_expression(tex_string), self.type)
-        SVGMobject.__init__(self, file_name=file_name, **kwargs)
+    def __attrs_post_init__(self):
+        assert isinstance(self.tex_string, str)
+        self.file_name = tex_to_svg_file(self.get_modified_expression(self.tex_string), self.type)
+        SVGMobject.__attrs_post_init__(self)
         if self.height is None:
             self.scale(TEX_MOB_SCALE_FACTOR)
         if self.organize_left_to_right:
