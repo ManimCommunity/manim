@@ -1,4 +1,4 @@
-# Quickstart
+# Quickstart-old
 
 This document will lead you step by step through the necessary procedure to get
 `manim` up and running as soon as possible.
