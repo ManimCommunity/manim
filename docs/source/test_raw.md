@@ -10,7 +10,7 @@ class TestScene(Scene):
         self.add(dot)
         self.wait(1)
 ```
-![](media/images/file0/TestScene.png)
+
 
 and one more:
 
@@ -23,4 +23,3 @@ class TestSceneXX(Scene):
         self.add(sq)
         self.wait(1)
 ```
-![](media/images/file1/TestSceneXX.png)
