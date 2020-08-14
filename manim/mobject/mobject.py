@@ -47,12 +47,16 @@ class Mobject(Container):
     color: Union[str, Color] = WHITE
     dim: int = 3
     z_index: int = 0
-    submobjects: List["Mobject"] = []
-    updaters: List = []
+    submobjects: Optional[List["Mobject"]] = None
+    updaters: Optional[List] = None
     updating_suspended: bool = False
     points: Optional[np.ndarray] = None
 
     def __attrs_post_init__(self):
+        if self.submobjects is None:
+            self.submobjects = []
+        if self.updaters is None:
+            self.updaters = []
         if self.name is None:
             self.name = self.__class__.__name__
         self.reset_points()
