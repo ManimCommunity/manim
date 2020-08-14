@@ -21,7 +21,11 @@ class DecimalNumber(VMobject):
     def __attrs_post_init__(self):
         VMobject.__attrs_post_init__(self)
         self.initial_config = vars(self)
-
+        keys = set(self.initial_config.keys())
+        # TODO not really clear what should be passed on to SingleStringTexMobject
+        for key in attr.fields_dict(VMobject).keys():
+            keys.remove(key)
+        self.initial_config = {key: self.initial_config[key] for key in keys}
         if isinstance(self.number, complex):
             formatter = self.get_complex_formatter()
         else:
@@ -35,7 +39,7 @@ class DecimalNumber(VMobject):
             else:
                 num_string = num_string[1:]
 
-        self.add(*[SingleStringTexMobject.from_other_config(char, **vars(self)) for char in num_string])
+        self.add(*[SingleStringTexMobject.from_other_config(char, **self.initial_config) for char in num_string])
 
         # Add non-numerical bits
         if self.show_ellipsis:
@@ -106,6 +110,7 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number, **config):
+        print("I am executed !")
         full_config = dict(self.CONFIG)
         full_config.update(self.initial_config)
         full_config.update(config)
