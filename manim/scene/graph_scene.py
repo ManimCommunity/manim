@@ -114,7 +114,6 @@ class GraphScene(Scene):
                 self.x_labeled_nums = [x for x in self.x_labeled_nums if x != 0]
             x_axis.add_numbers(*self.x_labeled_nums)
         if self.x_axis_label:
-            print("x axis found")
             x_label = TextMobject(tex_strings=[self.x_axis_label])
             x_label.next_to(
                 x_axis.get_tips() if self.include_tip else x_axis.get_tick_marks(),
