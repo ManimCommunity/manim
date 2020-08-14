@@ -176,9 +176,13 @@ class TexMobject(SingleStringTexMobject):
         """
         new_submobjects = []
         curr_index = 0
-        config = vars(self)
-        config["alignment"] = ""
-        config.pop("tex_string", None)
+        # TODO what should actually by passed by this dict ?
+        config = {
+            "substrings_to_isolate": self.substrings_to_isolate,
+            "tex_to_color_map": self.tex_to_color_map,
+            "type": self.type,
+            "alignment": "",
+        }
         for tex_string in self.tex_strings:
             sub_tex_mob = SingleStringTexMobject.from_other_config(tex_string, **config)
             num_submobs = len(sub_tex_mob.submobjects)
