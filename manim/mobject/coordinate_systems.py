@@ -184,23 +184,22 @@ class Axes(VGroup, CoordinateSystem):
         return self
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ThreeDAxes(Axes):
-    CONFIG = {
-        "dimension": 3,
-        "x_min": -5.5,
-        "x_max": 5.5,
-        "y_min": -5.5,
-        "y_max": 5.5,
-        "z_axis_config": {},
-        "z_min": -3.5,
-        "z_max": 3.5,
-        "z_normal": DOWN,
-        "num_axis_pieces": 20,
-        "light_source": 9 * DOWN + 7 * LEFT + 10 * OUT,
-    }
+    dimension: int = 3
+    x_min: float = -5.5
+    x_max: float = 5.5
+    y_min: float = -5.5
+    y_max: float = 5.5
+    z_axis_config: tp.Dict = attr.ib(default=attr.Factory(dict))
+    z_min: float = -3.5
+    z_max: float = 3.5
+    z_normal: np.ndarray = DOWN
+    num_axis_pieces: int = 20
+    light_source: np.ndarray = 9 * DOWN + 7 * LEFT + 10 * OUT
 
-    def __init__(self, **kwargs):
-        Axes.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        Axes.__attrs_post_init__(self)
         z_axis = self.z_axis = self.create_axis(
             self.z_min, self.z_max, self.z_axis_config
         )
