@@ -1,5 +1,7 @@
 import numpy as np
 import numbers
+import attr
+import typing as tp
 
 from ..constants import *
 from ..config import config
@@ -17,18 +19,17 @@ from ..utils.space_ops import angle_of_vector
 # TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene
 
 
+@attr.s(auto_attribs=True, eq=False)
 class CoordinateSystem:
     """
     Abstract class for Axes and NumberPlane
     """
 
-    CONFIG = {
-        "dimension": 2,
-        "x_min": -config["frame_x_radius"],
-        "x_max": config["frame_x_radius"],
-        "y_min": -config["frame_y_radius"],
-        "y_max": config["frame_y_radius"],
-    }
+    dimension: int = 2
+    x_min: float = -config["frame_x_radius"]
+    x_max: float = config["frame_x_radius"]
+    y_min: float = -config["frame_y_radius"]
+    y_max: float = config["frame_y_radius"]
 
     def coords_to_point(self, *coords):
         raise Exception("Not implemented")
