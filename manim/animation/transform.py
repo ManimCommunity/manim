@@ -92,19 +92,25 @@ class Transform(Animation):
         return self
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ReplacementTransform(Transform):
-    CONFIG = {
-        "replace_mobject_with_target_in_scene": True,
-    }
+    replace_mobject_with_target_in_scene: bool = True
+
+    def __attrs_post_init__(self):
+        Transform.__attrs_post_init__(self)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class TransformFromCopy(Transform):
     """
     Performs a reversed Transform
     """
 
-    def __init__(self, mobject, target_mobject, **kwargs):
-        super().__init__(target_mobject, mobject, **kwargs)
+    def __attrs_post_init__(self):
+        tmp = self.mobject
+        self.mobject = self.target_mobject
+        self.target_mobject = tmp
+        Transform.__attrs_post_init__(self)
 
     def interpolate(self, alpha):
         super().interpolate(1 - alpha)
