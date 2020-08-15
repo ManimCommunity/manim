@@ -1,3 +1,6 @@
+import attr
+import typing as tp
+
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.types.vectorized_mobject import VMobject
@@ -12,6 +15,7 @@ import numpy as np
 import itertools as it
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ShowPartial(Animation):
     """
     Abstract class for ShowCreation and ShowPassingFlash
@@ -24,17 +28,18 @@ class ShowPartial(Animation):
         raise Exception("Not Implemented")
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ShowCreation(ShowPartial):
-    CONFIG = {
-        "lag_ratio": 1,
-    }
+    lag_ratio: float = 1
 
     def get_bounds(self, alpha):
         return (0, alpha)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Uncreate(ShowCreation):
-    CONFIG = {"rate_func": lambda t: smooth(1 - t), "remover": True}
+    rate_func: tp.Any = lambda t: smooth(1 - t)
+    remover: bool = True
 
 
 class DrawBorderThenFill(Animation):
