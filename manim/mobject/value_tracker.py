@@ -1,9 +1,12 @@
 import numpy as np
+import attr
+import typing as tp
 
 from ..utils.paths import straight_path
 from ..mobject.mobject import Mobject
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ValueTracker(Mobject):
     """
     Not meant to be displayed.  Instead the position encodes some
@@ -11,11 +14,12 @@ class ValueTracker(Mobject):
     uses for its update function, and by treating it as a mobject it can
     still be animated and manipulated just like anything else.
     """
+    value: tp.Any = 0
 
-    def __init__(self, value=0, **kwargs):
-        Mobject.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        Mobject.__attrs_post_init__(self)
         self.points = np.zeros((1, 3))
-        self.set_value(value)
+        self.set_value(self.value)
 
     def get_value(self):
         return self.points[0, 0]
@@ -36,12 +40,15 @@ class ValueTracker(Mobject):
         return self
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ExponentialValueTracker(ValueTracker):
     """
     Operates just like ValueTracker, except it encodes the value as the
     exponential of a position coordinate, which changes how interpolation
     behaves
     """
+    def __attrs_post_init__(self):
+        ValueTracker.__attrs_post_init__(self)
 
     def get_value(self):
         return np.exp(ValueTracker.get_value(self))
@@ -50,7 +57,11 @@ class ExponentialValueTracker(ValueTracker):
         return ValueTracker.set_value(self, np.log(value))
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ComplexValueTracker(ValueTracker):
+    def __attrs_post_init__(self):
+        ValueTracker.__attrs_post_init__(self)
+
     def get_value(self):
         return complex(*self.points[0, :2])
 

@@ -41,10 +41,10 @@ class ThreeDCamera(Camera):
             Any keyword argument of Camera.
         """
         Camera.__init__(self, *args, **kwargs)
-        self.phi_tracker = ValueTracker(self.phi)
-        self.theta_tracker = ValueTracker(self.theta)
-        self.distance_tracker = ValueTracker(self.distance)
-        self.gamma_tracker = ValueTracker(self.gamma)
+        self.phi_tracker = ValueTracker(value=self.phi)
+        self.theta_tracker = ValueTracker(value=self.theta)
+        self.distance_tracker = ValueTracker(value=self.distance)
+        self.gamma_tracker = ValueTracker(value=self.gamma)
         self.light_source = Point(location=self.light_source_start_point)
         self.frame_center = Point(location=self.frame_center)
         self.fixed_orientation_mobjects = dict()
