@@ -12,10 +12,12 @@ from ..utils.space_ops import z_to_vector
 ##############
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ThreeDVMobject(VMobject):
-    CONFIG = {
-        "shade_in_3d": True,
-    }
+    shade_in_3d: bool = True
+
+    def __attrs_post_init__(self):
+        VMobject.__attrs_post_init__(self)
 
 
 @attr.s(auto_attribs=True, eq=False)
