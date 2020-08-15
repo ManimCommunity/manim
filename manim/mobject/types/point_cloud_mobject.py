@@ -1,3 +1,7 @@
+import attr
+import typing as tp
+
+from colour import Color
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -9,10 +13,12 @@ from ...utils.iterables import stretch_array_to_length
 from ...utils.space_ops import get_norm
 
 
+@attr.s(auto_attribs=True, eq=False)
 class PMobject(Mobject):
-    CONFIG = {
-        "stroke_width": DEFAULT_STROKE_WIDTH,
-    }
+    stroke_width: float = DEFAULT_STROKE_WIDTH
+
+    def __attrs_post_init__(self):
+        Mobject.__attrs_post_init__(self)
 
     def reset_points(self):
         self.rgbas = np.zeros((0, 4))
@@ -152,7 +158,7 @@ class PMobject(Mobject):
     def get_point_mobject(self, center=None):
         if center is None:
             center = self.get_center()
-        return Point(center)
+        return Point(center=center)
 
     def interpolate_color(self, mobject1, mobject2, alpha):
         self.rgbas = interpolate(mobject1.rgbas, mobject2.rgbas, alpha)
@@ -172,15 +178,13 @@ class PMobject(Mobject):
 
 
 # TODO, Make the two implementations bellow non-redundant
+@attr.s(auto_attribs=True, eq=False)
 class Mobject1D(PMobject):
-    CONFIG = {
-        "density": DEFAULT_POINT_DENSITY_1D,
-    }
+    density: float = DEFAULT_POINT_DENSITY_1D
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+    def __attrs_post_init__(self):
         self.epsilon = 1.0 / self.density
-        Mobject.__init__(self, **kwargs)
+        Mobject.__attrs_post_init__(self)  # why does this call Mobject initialization and not PMobject ?
 
     def add_line(self, start, end, color=None):
         start, end = list(map(np.array, [start, end]))
@@ -193,36 +197,43 @@ class Mobject1D(PMobject):
         self.add_points(points, color=color)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Mobject2D(PMobject):
-    CONFIG = {
-        "density": DEFAULT_POINT_DENSITY_2D,
-    }
+    density: float = DEFAULT_POINT_DENSITY_2D
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+    def __attrs_post_init__(self):
         self.epsilon = 1.0 / self.density
-        Mobject.__init__(self, **kwargs)
+        Mobject.__attrs_post_init__(self)  # why does this call Mobject initialization and not PMobject ?
 
 
+@attr.s(auto_attribs=True, eq=False)
 class PGroup(PMobject):
-    def __init__(self, *pmobs, **kwargs):
+    def __attrs_post_init__(self):
+        PMobject.__attrs_post_init__(self)
+
+    def check_pmobs(self, *pmobs):
         if not all([isinstance(m, PMobject) for m in pmobs]):
             raise Exception("All submobjects must be of type PMobject")
-        super().__init__(**kwargs)
-        self.add(*pmobs)
+
+    @classmethod
+    def from_pmobs(cls, *pmobs, **kwargs):
+        cls.check_pmobs(*pmobs)
+        instance = cls(**kwargs)
+        instance.add(*pmobs)
+        return instance
 
 
+@attr.s(auto_attribs=True, eq=False)
 class PointCloudDot(Mobject1D):
-    CONFIG = {
-        "radius": 0.075,
-        "stroke_width": 2,
-        "density": DEFAULT_POINT_DENSITY_1D,
-        "color": YELLOW,
-    }
+    radius: float = 0.075
+    stroke_width: float = 2
+    density: float = DEFAULT_POINT_DENSITY_1D
+    color: tp.Union[str, Color] = YELLOW
+    center: np.ndarray = ORIGIN
 
-    def __init__(self, center=ORIGIN, **kwargs):
-        Mobject1D.__init__(self, **kwargs)
-        self.shift(center)
+    def __attrs_post_init__(self):
+        Mobject1D.__attrs_post_init__(self)
+        self.shift(self.center)
 
     def generate_points(self):
         self.add_points(
@@ -234,11 +245,11 @@ class PointCloudDot(Mobject1D):
         )
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Point(PMobject):
-    CONFIG = {
-        "color": BLACK,
-    }
+    color: tp.Union[str, Color] = BLACK
+    location: np.ndarray = ORIGIN
 
-    def __init__(self, location=ORIGIN, **kwargs):
-        PMobject.__init__(self, **kwargs)
-        self.add_points([location])
+    def __attrs_post_init__(self):
+        PMobject.__attrs_post_init__(self)
+        self.add_points([self.location])
