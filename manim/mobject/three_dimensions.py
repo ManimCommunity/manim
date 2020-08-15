@@ -95,23 +95,23 @@ class ParametricSurface(VGroup):
 
 # Specific shapes
 
+def func_sphere(u, v):
+    return np.array([np.cos(v) * np.sin(u), np.sin(v) * np.sin(u), np.cos(u)])
 
+
+@attr.s(auto_attribs=True, eq=False)
 class Sphere(ParametricSurface):
-    CONFIG = {
-        "resolution": (12, 24),
-        "radius": 1,
-        "u_min": 0.001,
-        "u_max": PI - 0.001,
-        "v_min": 0,
-        "v_max": TAU,
-    }
+    resolution: tp.Any = (12, 24)  # TODO give appropriate type
+    radius: float = 1
+    u_min: float = 0.001
+    u_max: float = PI - 0.001
+    v_min: float = 0
+    v_max: float = TAU
 
-    def __init__(self, **kwargs):
-        ParametricSurface.__init__(self, self.func, **kwargs)
+    def __attrs_post_init__(self):
+        self.func = func_sphere
+        ParametricSurface.__attrs_post_init__(self)
         self.scale(self.radius)
-
-    def func(self, u, v):
-        return np.array([np.cos(v) * np.sin(u), np.sin(v) * np.sin(u), np.cos(u)])
 
 
 @attr.s(auto_attribs=True, eq=False)
