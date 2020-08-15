@@ -1,5 +1,8 @@
 import numpy as np
+import attr
+import typing as tp
 
+from colour import Color
 from ..constants import *
 from ..config import config
 from ..animation.animation import Animation
@@ -51,12 +54,14 @@ class FocusOn(Transform):
         )
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Indicate(Transform):
-    CONFIG = {
-        "rate_func": there_and_back,
-        "scale_factor": 1.2,
-        "color": YELLOW,
-    }
+    rate_func: tp.Any = there_and_back
+    scale_factor: float = 1.2
+    color: tp.Union[str, Color] = YELLOW
+
+    def __attrs_post_init__(self):
+        Transform.__attrs_post_init__(self)
 
     def create_target(self):
         target = self.mobject.copy()
@@ -100,17 +105,16 @@ class Flash(AnimationGroup):
         return [ShowCreationThenDestruction(line) for line in self.lines]
 
 
+@attr.s(auto_attribs=True, eq=False)
 class CircleIndicate(Indicate):
-    CONFIG = {
-        "rate_func": there_and_back,
-        "remover": True,
-        "circle_config": {"color": YELLOW,},
-    }
+    rate_func: tp.Any = there_and_back
+    remover: bool = True
+    circle_config: tp.Dict = attr.ib(default=attr.Factory(lambda: {"color": YELLOW,}))
 
-    def __init__(self, mobject, **kwargs):
-        digest_config(self, kwargs)
-        circle = self.get_circle(mobject)
-        super().__init__(circle, **kwargs)
+    def __attrs_post_init__(self):
+        circle = self.get_circle(self.mobject)
+        self.mobject = circle
+        Indicate.__attrs_post_init__(self)
 
     def get_circle(self, mobject):
         circle = Circle(**self.circle_config)
