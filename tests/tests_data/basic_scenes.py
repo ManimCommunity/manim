@@ -12,7 +12,7 @@ class SquareToCircle(Scene):
         circle.set_fill(PINK, opacity=0.5)
 
         self.play(ShowCreation(square))
-        self.play(Transform(square, circle))
+        self.play(Transform(square, target_mobject=circle))
         self.play(FadeOut(square))
 
 

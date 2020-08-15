@@ -6,28 +6,28 @@ class TransformTest(Scene):
     def construct(self):
         square = Square()
         circle = Circle()
-        self.play(Transform(square, circle))
+        self.play(Transform(square, target_mobject=circle))
 
 
 class TransformFromCopyTest(Scene):
     def construct(self):
         square = Square()
         circle = Circle()
-        self.play(TransformFromCopy(square, circle))
+        self.play(TransformFromCopy(square, target_mobject=circle))
 
 
 class ClockwiseTransformTest(Scene):
     def construct(self):
         square = Square()
         circle = Circle()
-        self.play(ClockwiseTransform(square, circle))
+        self.play(ClockwiseTransform(square, target_mobject=circle))
 
 
 class CounterclockwiseTransformTest(Scene):
     def construct(self):
         square = Square()
         circle = Circle()
-        self.play(CounterclockwiseTransform(square, circle))
+        self.play(CounterclockwiseTransform(square, target_mobject=circle))
 
 
 class MoveToTargetTest(Scene):
@@ -70,7 +70,7 @@ class RestoreTest(Scene):
     def construct(self):
         square = Square()
         circle = Circle()
-        self.play(Transform(square, circle))
+        self.play(Transform(square, target_mobject=circle))
         square.save_state()
         self.play(square.shift, UP)
         self.play(Restore(square))
