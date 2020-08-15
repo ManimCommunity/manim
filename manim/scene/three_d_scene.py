@@ -1,3 +1,6 @@
+import attr
+import typing as tp
+
 from ..animation.transform import ApplyMethod
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
@@ -12,20 +15,22 @@ from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ThreeDScene(Scene):
     """
     This is a Scene, with special configurations and properties that
     make it suitable for Three Dimensional Scenes.
     """
 
-    CONFIG = {
-        "camera_class": ThreeDCamera,
-        "ambient_camera_rotation": None,
-        "default_angled_camera_orientation_kwargs": {
+    camera_class: tp.Any = ThreeDCamera
+    ambient_camera_rotation: tp.Any = None  # TODO add appropriate type hint
+    default_angled_camera_orientation_kwargs: tp.Dict = {
             "phi": 70 * DEGREES,
             "theta": -135 * DEGREES,
-        },
     }
+
+    def __attrs_post_init__(self):
+        Scene.__attrs_post_init__(self)
 
     def set_camera_orientation(self, phi=None, theta=None, distance=None, gamma=None):
         """
