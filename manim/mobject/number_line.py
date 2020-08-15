@@ -68,11 +68,11 @@ class NumberLine(Line):
 
     def add_tick_marks(self):
         tick_size = self.tick_size
-        self.tick_marks = VGroup(
+        self.tick_marks = VGroup.from_vmobjects(
             *[self.get_tick(x, tick_size) for x in self.get_tick_numbers()]
         )
         big_tick_size = tick_size * self.longer_tick_multiple
-        self.big_tick_marks = VGroup(
+        self.big_tick_marks = VGroup.from_vmobjects(
             *[
                 self.get_tick(x, big_tick_size)
                 for x in self.numbers_with_elongated_ticks
@@ -92,7 +92,7 @@ class NumberLine(Line):
         return result
 
     def get_tick_marks(self):
-        return VGroup(*self.tick_marks, *self.big_tick_marks,)
+        return VGroup.from_vmobjects(*self.tick_marks, *self.big_tick_marks, )
 
     def get_tick_numbers(self):
         u = -1 if self.include_tip and self.add_end == 0 else 1
@@ -160,7 +160,7 @@ class NumberLine(Line):
     def get_number_mobjects(self, *numbers, **kwargs):
         if len(numbers) == 0:
             numbers = self.default_numbers_to_display()
-        return VGroup(
+        return VGroup.from_vmobjects(
             *[self.get_number_mobject(number, **kwargs) for number in numbers]
         )
 

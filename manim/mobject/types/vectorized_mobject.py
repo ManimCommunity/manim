@@ -876,7 +876,7 @@ class VGroup(VMobject):
         VMobject.__attrs_post_init__(self)
 
     @classmethod
-    def from_mobjects(cls, *vmobjects, **kwargs):
+    def from_vmobjects(cls, *vmobjects, **kwargs):
         """Creates an instance of VGroup by checking and then adding all `vmobjects`
 
         Parameters

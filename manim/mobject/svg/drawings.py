@@ -170,9 +170,9 @@ class PartyHat(SVGMobject):
         SVGMobject.__init__(self, **kwargs)
         self.set_height(self.height)
 
-        self.frills = VGroup(*self[: self.NUM_FRILLS])
+        self.frills = VGroup.from_vmobjects(*self[: self.NUM_FRILLS])
         self.cone = self[self.NUM_FRILLS]
-        self.dots = VGroup(*self[self.NUM_FRILLS + 1 :])
+        self.dots = VGroup.from_vmobjects(*self[self.NUM_FRILLS + 1:])
 
         self.frills.set_color_by_gradient(*self.frills_colors)
         self.cone.set_color(self.cone_color)
@@ -209,9 +209,9 @@ class Laptop(VGroup):
         body.sort(lambda p: p[2])
         body[-1].set_fill(self.body_color)
         screen_plate = body.copy()
-        keyboard = VGroup(
+        keyboard = VGroup.from_vmobjects(
             *[
-                VGroup(
+                VGroup.from_vmobjects(
                     *[Square(**self.key_color_kwargs) for x in range(12 - y % 2)]
                 ).arrange(RIGHT, buff=SMALL_BUFF)
                 for y in range(4)
@@ -403,7 +403,7 @@ class Bubble(SVGMobject):
         return self.get_center() + factor * self.get_height() * UP
 
     def move_tip_to(self, point):
-        mover = VGroup(self)
+        mover = VGroup.from_vmobjects(self)
         if self.content is not None:
             mover.add(self.content)
         mover.shift(point - self.get_tip())
@@ -544,10 +544,10 @@ class Car(SVGMobject):
         return self
 
     def get_tires(self):
-        return VGroup(self[1][0], self[1][1])
+        return VGroup.from_vmobjects(self[1][0], self[1][1])
 
     def get_lights(self):
-        return VGroup(self.get_front_light(), self.get_rear_light())
+        return VGroup.from_vmobjects(self.get_front_light(), self.get_rear_light())
 
     def get_front_light(self):
         return self[1][3]
@@ -610,7 +610,7 @@ class Logo(VMobject):
             fill_opacity=1,
             stroke_width=0,
         )
-        self.iris_background = VGroup(blue_iris_back, brown_iris_back,)
+        self.iris_background = VGroup.from_vmobjects(blue_iris_back, brown_iris_back, )
         self.add(self.iris_background)
 
     def add_spikes(self):
@@ -645,7 +645,7 @@ class Logo(VMobject):
             ]
             index = (3 * n_spikes) // 4
             if radius == radii[0]:
-                layer = VGroup(*full_spikes)
+                layer = VGroup.from_vmobjects(*full_spikes)
                 layer.rotate(-TAU / n_spikes / 2, about_point=ORIGIN)
                 layer.brown_index = index
             else:
@@ -657,7 +657,7 @@ class Logo(VMobject):
                     ),
                     left_half_triangle.copy(),
                 ]
-                layer = VGroup(
+                layer = VGroup.from_vmobjects(
                     *it.chain(
                         half_spikes[:1],
                         full_spikes[1:index],
@@ -695,7 +695,7 @@ class Logo(VMobject):
     def cut_pupil(self):
         pupil = self.pupil
         center = pupil.get_center()
-        new_pupil = VGroup(
+        new_pupil = VGroup.from_vmobjects(
             *[
                 pupil.copy().pointwise_become_partial(pupil, a, b)
                 for (a, b) in [(0.25, 1), (0, 0.25)]
@@ -717,12 +717,12 @@ class Logo(VMobject):
         # circle.set_fill(BLACK, opacity=1)
         # circle.match_width(self)
         # circle.move_to(self)
-        blue_part = VGroup(
+        blue_part = VGroup.from_vmobjects(
             self.iris_background[0],
             *[layer[: layer.brown_index] for layer in self.spike_layers],
             self.pupil[0],
         )
-        brown_part = VGroup(
+        brown_part = VGroup.from_vmobjects(
             self.iris_background[1],
             *[layer[layer.brown_index :] for layer in self.spike_layers],
             self.pupil[1],
@@ -784,7 +784,7 @@ class PlayingCard(VGroup):
             symbol = self.get_symbol()
             design = self.get_design(value, symbol)
             corner_numbers = self.get_corner_numbers(value, symbol)
-            contents = VGroup(design, corner_numbers)
+            contents = VGroup.from_vmobjects(design, corner_numbers)
             self.design = design
             self.corner_numbers = corner_numbers
         self.add(contents)
@@ -857,7 +857,7 @@ class PlayingCard(VGroup):
             interpolate(top, bottom, alpha) for alpha in np.linspace(0, 1, n_rows)
         ]
 
-        design = VGroup(*[symbol.copy().move_to(point) for point in column_points])
+        design = VGroup.from_vmobjects(*[symbol.copy().move_to(point) for point in column_points])
         if n_cols == 2:
             space = 0.2 * self.get_width()
             column_copy = design.copy().shift(space * RIGHT)
@@ -890,11 +890,11 @@ class PlayingCard(VGroup):
         corner_symbol = symbol.copy()
         corner_symbol.set_width(width)
         corner_symbol.next_to(value_mob, DOWN, buff=MED_SMALL_BUFF * width)
-        corner_group = VGroup(value_mob, corner_symbol)
+        corner_group = VGroup.from_vmobjects(value_mob, corner_symbol)
         opposite_corner_group = corner_group.copy()
         opposite_corner_group.rotate(np.pi, about_point=self.get_center())
 
-        return VGroup(corner_group, opposite_corner_group)
+        return VGroup.from_vmobjects(corner_group, opposite_corner_group)
 
 
 class SuitSymbol(SVGMobject):

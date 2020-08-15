@@ -208,7 +208,7 @@ class VectorScene(Scene):
         VGroup
             VGroup of the Vector Mobjects representing the basis vectors.
         """
-        return VGroup(
+        return VGroup.from_vmobjects(
             *[
                 Vector(vect, color=color, stroke_width=self.basis_vector_stroke_width)
                 for vect, color in [([1, 0], i_hat_color), ([0, 1], j_hat_color)]
@@ -232,7 +232,7 @@ class VectorScene(Scene):
                 label_scale_factor=VECTOR_LABEL_SCALE_FACTOR (int, float),
         """
         i_hat, j_hat = self.get_basis_vectors()
-        return VGroup(
+        return VGroup.from_vmobjects(
             *[
                 self.get_vector_label(
                     vect, label, color=color, label_scale_factor=1, **kwargs
@@ -869,8 +869,8 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        start = VGroup(*pieces)
-        target = VGroup(*[mob.target for mob in pieces])
+        start = VGroup.from_vmobjects(*pieces)
+        target = VGroup.from_vmobjects(*[mob.target for mob in pieces])
         if self.leave_ghost_vectors:
             self.add(start.copy().fade(0.7))
         return Transform(start, target, lag_ratio=0)

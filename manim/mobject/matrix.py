@@ -72,7 +72,7 @@ class Matrix(VMobject):
         matrix = np.array(matrix, ndmin=1)
         mob_matrix = self.matrix_to_mob_matrix(matrix)
         self.organize_mob_matrix(mob_matrix)
-        self.elements = VGroup(*mob_matrix.flatten())
+        self.elements = VGroup.from_vmobjects(*mob_matrix.flatten())
         self.add(self.elements)
         self.add_brackets(self.left_bracket, self.right_bracket)
         self.center()
@@ -106,11 +106,11 @@ class Matrix(VMobject):
         l_bracket.next_to(self, LEFT, self.bracket_h_buff)
         r_bracket.next_to(self, RIGHT, self.bracket_h_buff)
         self.add(l_bracket, r_bracket)
-        self.brackets = VGroup(l_bracket, r_bracket)
+        self.brackets = VGroup.from_vmobjects(l_bracket, r_bracket)
         return self
 
     def get_columns(self):
-        return VGroup(
+        return VGroup.from_vmobjects(
             *[VGroup(*self.mob_matrix[:, i]) for i in range(self.mob_matrix.shape[1])]
         )
 
@@ -128,7 +128,7 @@ class Matrix(VMobject):
         List[:class:`~.VGroup`]
             Each VGroup contains a row of the matrix.
         """
-        return VGroup(
+        return VGroup.from_vmobjects(
             *[VGroup(*self.mob_matrix[i, :]) for i in range(self.mob_matrix.shape[1])]
         )
 
@@ -159,7 +159,7 @@ class Matrix(VMobject):
         return self.mob_matrix
 
     def get_entries(self):
-        return VGroup(*self.get_mob_matrix().flatten())
+        return VGroup.from_vmobjects(*self.get_mob_matrix().flatten())
 
     def get_brackets(self):
         return self.brackets
@@ -198,7 +198,7 @@ def get_det_text(
     det.next_to(l_paren, LEFT, buff=0.1)
     if background_rect:
         det.add_background_rectangle()
-    det_text = VGroup(det, l_paren, r_paren)
+    det_text = VGroup.from_vmobjects(det, l_paren, r_paren)
     if determinant is not None:
         eq = TexMobject("=")
         eq.next_to(r_paren, RIGHT, buff=0.1)

@@ -96,7 +96,7 @@ class SampleSpace(Rectangle):
             "direction": direction,
             "buff": buff,
         }
-        return VGroup(parts.braces, parts.labels)
+        return VGroup.from_vmobjects(parts.braces, parts.labels)
 
     def get_side_braces_and_labels(self, labels, direction=LEFT, **kwargs):
         assert hasattr(self, "horizontal_parts")

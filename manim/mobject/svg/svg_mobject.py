@@ -98,14 +98,14 @@ class SVGMobject(VMobject):
             pass  # TODO
             # warnings.warn("Unknown element type: " + element.tagName)
         result = [m for m in result if m is not None]
-        self.handle_transforms(element, VGroup(*result))
+        self.handle_transforms(element, VGroup.from_vmobjects(*result))
         if len(result) > 1 and not self.unpack_groups:
-            result = [VGroup(*result)]
+            result = [VGroup.from_vmobjects(*result)]
 
         return result
 
     def g_to_mobjects(self, g_element):
-        mob = VGroup(*self.get_mobjects_from(g_element))
+        mob = VGroup.from_vmobjects(*self.get_mobjects_from(g_element))
         self.handle_transforms(g_element, mob)
         return mob.submobjects
 

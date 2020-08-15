@@ -88,7 +88,7 @@ class SampleSpaceScene(Scene):
         return self.get_conditional_change_anims(1, *args, **kwargs)
 
     def get_prior_rectangles(self):
-        return VGroup(
+        return VGroup.from_vmobjects(
             *[self.sample_space.horizontal_parts[i].vertical_parts[0] for i in range(2)]
         )
 

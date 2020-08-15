@@ -290,7 +290,7 @@ class SpecialThreeDScene(ThreeDScene):
                 p1 = axis.number_to_point(-1)
                 p2 = axis.number_to_point(1)
                 p3 = axis.get_end()
-                new_pieces = VGroup(Line(p0, p1), Line(p1, p2), Line(p2, p3),)
+                new_pieces = VGroup.from_vmobjects(Line(p0, p1), Line(p1, p2), Line(p2, p3), )
                 for piece in new_pieces:
                     piece.shade_in_3d = True
                 new_pieces.match_style(axis.pieces)

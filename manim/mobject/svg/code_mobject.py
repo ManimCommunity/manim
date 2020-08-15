@@ -67,7 +67,7 @@ class Code(VGroup):
 
         if self.background == "rectangle":
             if self.insert_line_no:
-                forground = VGroup(self.code, self.line_numbers)
+                forground = VGroup.from_vmobjects(self.code, self.line_numbers)
             else:
                 forground = self.code
             self.background_mobject = SurroundingRectangle(
@@ -81,7 +81,7 @@ class Code(VGroup):
             self.background_mobject.round_corners(self.corner_radius)
         else:
             if self.insert_line_no:
-                forground = VGroup(self.code, self.line_numbers)
+                forground = VGroup.from_vmobjects(self.code, self.line_numbers)
             else:
                 forground = self.code
 
@@ -101,13 +101,13 @@ class Code(VGroup):
             yellow_button = Dot(radius=0.1, stroke_width=0, color="#ffbd2e")
             green_button = Dot(radius=0.1, stroke_width=0, color="#27c93f")
             green_button.shift(RIGHT * 0.1 * 3)
-            buttons = VGroup(red_button, yellow_button, green_button)
+            buttons = VGroup.from_vmobjects(red_button, yellow_button, green_button)
             buttons.shift(
                 UP * (height / 2 - 0.1 * 2 - 0.05)
                 + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05)
             )
 
-            self.background_mobject = VGroup(rrect, buttons)
+            self.background_mobject = VGroup.from_vmobjects(rrect, buttons)
             x = (height - forground.get_height()) / 2 - 0.1 * 3
             self.background_mobject.shift(forground.get_center())
             self.background_mobject.shift(UP * x)

@@ -76,7 +76,7 @@ class CoordinateSystem:
         return label
 
     def get_axis_labels(self, x_label_tex="x", y_label_tex="y"):
-        self.axis_labels = VGroup(
+        self.axis_labels = VGroup.from_vmobjects(
             self.get_x_axis_label(x_label_tex), self.get_y_axis_label(y_label_tex),
         )
         return self.axis_labels
@@ -139,7 +139,7 @@ class Axes(VGroup, CoordinateSystem):
         # Add as a separate group incase various other
         # mobjects are added to self, as for example in
         # NumberPlane below
-        self.axes = VGroup(self.x_axis, self.y_axis)
+        self.axes = VGroup.from_vmobjects(self.x_axis, self.y_axis)
         self.add(*self.axes)
         self.shift(self.center_point)
 
@@ -176,7 +176,7 @@ class Axes(VGroup, CoordinateSystem):
         x_mobs = self.get_x_axis().get_number_mobjects(*x_vals)
         y_mobs = self.get_y_axis().get_number_mobjects(*y_vals)
 
-        self.coordinate_labels = VGroup(x_mobs, y_mobs)
+        self.coordinate_labels = VGroup.from_vmobjects(x_mobs, y_mobs)
         return self.coordinate_labels
 
     def add_coordinates(self, x_vals=None, y_vals=None):
@@ -214,7 +214,7 @@ class ThreeDAxes(Axes):
 
     def add_3d_pieces(self):
         for axis in self.axes:
-            axis.pieces = VGroup(*axis.get_pieces(self.num_axis_pieces))
+            axis.pieces = VGroup.from_vmobjects(*axis.get_pieces(self.num_axis_pieces))
             axis.add(axis.pieces)
             axis.set_stroke(width=0, family=False)
             axis.set_shade_in_3d(True)
@@ -297,8 +297,8 @@ class NumberPlane(Axes):
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
             y_axis, x_axis, y_freq, self.faded_line_ratio,
         )
-        lines1 = VGroup(*x_lines1, *y_lines1)
-        lines2 = VGroup(*x_lines2, *y_lines2)
+        lines1 = VGroup.from_vmobjects(*x_lines1, *y_lines1)
+        lines2 = VGroup.from_vmobjects(*x_lines2, *y_lines2)
         return lines1, lines2
 
     def get_lines_parallel_to_axis(

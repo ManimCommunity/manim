@@ -168,10 +168,10 @@ class GraphScene(Scene):
             axes.append(y_axis)
 
         if animate:
-            self.play(Write(VGroup(*axes)))
+            self.play(Write(VGroup.from_vmobjects(*axes)))
         else:
             self.add(*axes)
-        self.x_axis, self.y_axis = self.axes = VGroup(x_axis, y_axis)
+        self.x_axis, self.y_axis = self.axes = VGroup.from_vmobjects(x_axis, y_axis)
         self.default_graph_colors = it.cycle(self.default_graph_colors)
 
     def coords_to_point(self, x, y):
@@ -705,7 +705,7 @@ class GraphScene(Scene):
         """
         x_min = x_min or self.x_min
         x_max = x_max or self.x_max
-        return VGroup(
+        return VGroup.from_vmobjects(
             *[
                 self.get_vertical_line_to_graph(x, graph, **kwargs)
                 for x in np.linspace(x_min, x_max, num_lines)
@@ -887,11 +887,11 @@ class GraphScene(Scene):
             )
 
         if np.all(side == LEFT):
-            self.left_T_label_group = VGroup(T_label, triangle)
+            self.left_T_label_group = VGroup.from_vmobjects(T_label, triangle)
             self.left_v_line = v_line
             self.add(self.left_T_label_group, self.left_v_line)
         elif np.all(side == RIGHT):
-            self.right_T_label_group = VGroup(T_label, triangle)
+            self.right_T_label_group = VGroup.from_vmobjects(T_label, triangle)
             self.right_v_line = v_line
             self.add(self.right_T_label_group, self.right_v_line)
 
@@ -932,7 +932,7 @@ class GraphScene(Scene):
         if new_t_max is None:
             new_t_max = curr_t_max
 
-        group = VGroup(self.area)
+        group = VGroup.from_vmobjects(self.area)
         group.add(self.left_v_line)
         group.add(self.left_T_label_group)
         group.add(self.right_v_line)
