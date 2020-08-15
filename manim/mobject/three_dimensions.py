@@ -1,3 +1,7 @@
+import attr
+import typing as tp
+
+from colour import Color
 from ..constants import *
 from ..mobject.geometry import Square
 from ..mobject.types.vectorized_mobject import VGroup
@@ -111,13 +115,15 @@ class Sphere(ParametricSurface):
         return np.array([np.cos(v) * np.sin(u), np.sin(v) * np.sin(u), np.cos(u)])
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Cube(VGroup):
-    CONFIG = {
-        "fill_opacity": 0.75,
-        "fill_color": BLUE,
-        "stroke_width": 0,
-        "side_length": 2,
-    }
+    fill_opacity: float = 0.75
+    fill_color: tp.Union[str, Color] = BLUE
+    stroke_width: float = 0
+    side_length: float = 2
+
+    def __attrs_post_init__(self):
+        VGroup.__attrs_post_init__(self)
 
     def generate_points(self):
         for vect in IN, OUT, LEFT, RIGHT, UP, DOWN:
