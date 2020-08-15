@@ -1,4 +1,6 @@
 import numpy as np
+import attr
+import typing as tp
 
 from ..animation.animation import Animation
 from ..mobject.mobject import Group
@@ -12,29 +14,27 @@ from ..utils.rate_functions import linear
 DEFAULT_LAGGED_START_LAG_RATIO = 0.05
 
 
+@attr.s(auto_attribs=True, eq=False)
 class AnimationGroup(Animation):
-    CONFIG = {
-        # If None, this defaults to the sum of all
-        # internal animations
-        "run_time": None,
-        "rate_func": linear,
-        # If 0, all animations are played at once.
-        # If 1, all are played successively.
-        # If >0 and <1, they start at lagged times
-        # from one and other.
-        "lag_ratio": 0,
-        "group": None,
-    }
+    # If None, this defaults to the sum of all
+    # internal animations
+    run_time: float = None
+    rate_func: tp.Any = linear
+    # If 0, all animations are played at once.
+    # If 1, all are played successively.
+    # If >0 and <1, they start at lagged times
+    # from one and other.
+    lag_ratio: float = 0
+    group: tp.Any = None
+    animations: tp.List = attr.ib(default=attr.Factory(list))
 
-    def __init__(self, *animations, **kwargs):
-        digest_config(self, kwargs)
-        self.animations = animations
+    def __attrs_post_init__(self):
         if self.group is None:
             self.group = Group(
-                *remove_list_redundancies([anim.mobject for anim in animations])
+                *remove_list_redundancies([anim.mobject for anim in self.animations])
             )
         self.init_run_time()
-        Animation.__init__(self, self.group, **kwargs)
+        self.mobject = self.group
 
     def get_all_mobjects(self):
         return self.group
