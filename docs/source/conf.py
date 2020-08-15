@@ -32,7 +32,8 @@ extensions = [
     'sphinx_rtd_theme',
     'recommonmark',
     'sphinx.ext.napoleon',
-    'sphinx.ext.autosummary'
+    'sphinx.ext.autosummary',
+    'sphinx.ext.doctest',
 ]
 
 autosummary_generate = True
