@@ -1,3 +1,7 @@
+import attr
+import typing as tp
+import numpy as np
+
 from ..animation.animation import Animation
 from ..animation.animation import DEFAULT_ANIMATION_LAG_RATIO
 from ..animation.transform import Transform
@@ -42,16 +46,13 @@ class FadeIn(Transform):
         return start
 
 
+@attr.s(auto_attribs=True, eq=False)
 class FadeInFrom(Transform):
-    CONFIG = {
-        "direction": DOWN,
-        "lag_ratio": DEFAULT_ANIMATION_LAG_RATIO,
-    }
+    direction: np.ndarray = DOWN
+    lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO
 
-    def __init__(self, mobject, direction=None, **kwargs):
-        if direction is not None:
-            self.direction = direction
-        super().__init__(mobject, **kwargs)
+    def __attrs_post_init__(self):
+        Transform.__attrs_post_init__(self)
 
     def create_target(self):
         return self.mobject.copy()
@@ -62,19 +63,18 @@ class FadeInFrom(Transform):
         self.starting_mobject.fade(1)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class FadeInFromDown(FadeInFrom):
     """
     Identical to FadeInFrom, just with a name that
     communicates the default
     """
 
-    CONFIG = {
-        "direction": DOWN,
-        "lag_ratio": DEFAULT_ANIMATION_LAG_RATIO,
-    }
+    direction: np.ndarray = DOWN
+    lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO
 
-    def __init__(self, mobject, **kwargs):
-        super().__init__(mobject, direction=DOWN, **kwargs)
+    def __attrs_post_init__(self):
+        FadeInFrom.__attrs_post_init__(self)
         logger.warning(
             "FadeInFromDown is deprecated and will eventually disappear. Please use FadeInFrom(<mobject>, direction=DOWN, <other_args>) instead."
         )
