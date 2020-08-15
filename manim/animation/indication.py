@@ -150,13 +150,13 @@ class ShowCreationThenDestruction(ShowPassingFlash):
     run_time: float = 1
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ShowCreationThenFadeOut(Succession):
-    CONFIG = {
-        "remover": True,
-    }
+    remover: bool = True
 
-    def __init__(self, mobject, **kwargs):
-        super().__init__(ShowCreation(mobject), FadeOut(mobject), **kwargs)
+    def __attrs_post_init__(self):
+        self.animations = [ShowCreation(self.mobject), FadeOut(self.mobject)]
+        Succession.__attrs_post_init__(self)
 
 
 class AnimationOnSurroundingRectangle(AnimationGroup):

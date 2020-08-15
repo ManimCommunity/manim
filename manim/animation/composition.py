@@ -96,10 +96,12 @@ class AnimationGroup(Animation):
             anim.interpolate(sub_alpha)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Succession(AnimationGroup):
-    CONFIG = {
-        "lag_ratio": 1,
-    }
+    lag_ratio: float = 1
+
+    def __attrs_post_init__(self):
+        AnimationGroup.__attrs_post_init__(self)
 
     def begin(self):
         assert len(self.animations) > 0
