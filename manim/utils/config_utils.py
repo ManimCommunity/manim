@@ -323,34 +323,24 @@ def _parse_cli(arg_list, input=True):
     # The following are mutually exclusive and each overrides
     # FRAME_RATE, PIXEL_HEIGHT, and PIXEL_WIDTH,
     parser.add_argument(
-        "-l",
-        "--low_quality",
-        action="store_true",
-        help="Render at low quality",
+        "-l", "--low_quality", action="store_true", help="Render at low quality",
     )
     parser.add_argument(
-        "-m",
-        "--medium_quality",
-        action="store_true",
-        help="Render at medium quality",
+        "-m", "--medium_quality", action="store_true", help="Render at medium quality",
     )
     parser.add_argument(
-        "-e",
-        "--high_quality",
-        action="store_true",
-        help="Render at high quality",
+        "-e", "--high_quality", action="store_true", help="Render at high quality",
     )
     parser.add_argument(
-        "-k",
-        "--fourk_quality",
-        action="store_true",
-        help="Render at 4K quality",
+        "-k", "--fourk_quality", action="store_true", help="Render at 4K quality",
     )
 
     # This overrides any of the above
     parser.add_argument(
-        "-r", "--resolution", help='Resolution, passed as "height,width". '
-        "Overrides the -l, -m, -e, and -k flags, if present"
+        "-r",
+        "--resolution",
+        help='Resolution, passed as "height,width". '
+        "Overrides the -l, -m, -e, and -k flags, if present",
     )
 
     # This sets FROM_ANIMATION_NUMBER and UPTO_ANIMATION_NUMBER
