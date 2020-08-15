@@ -182,8 +182,12 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         )
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
-    CONFIG = {"rect_animation": ShowPassingFlash}
+    rect_animation: type = ShowPassingFlash
+
+    def __attrs_post_init__(self):
+        AnimationOnSurroundingRectangle.__attrs_post_init__(self)
 
 
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
