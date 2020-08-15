@@ -120,20 +120,19 @@ class CoordinateSystem:
                 return None
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Axes(VGroup, CoordinateSystem):
-    CONFIG = {
-        "axis_config": {
+    axis_config: tp.Dict = {
             "color": LIGHT_GREY,
             "include_tip": True,
             "exclude_zero_from_default_numbers": True,
-        },
-        "x_axis_config": {},
-        "y_axis_config": {"label_direction": LEFT,},
-        "center_point": ORIGIN,
     }
+    x_axis_config: tp.Dict = attr.ib(default=attr.Factory(dict))
+    y_axis_config: tp.Dict = attr.ib(default=attr.Factory(lambda: {"label_direction": LEFT, }))
+    center_point: np.ndarray = ORIGIN
 
-    def __init__(self, **kwargs):
-        VGroup.__init__(self, **kwargs)
+    def __attrs_post_init__(self):
+        VGroup.__attrs_post_init__(self)
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
         self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
