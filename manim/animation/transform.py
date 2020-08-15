@@ -118,10 +118,13 @@ class CounterclockwiseTransform(Transform):
     CONFIG = {"path_arc": np.pi}
 
 
+@attr.s(auto_attribs=True, eq=False)
 class MoveToTarget(Transform):
-    def __init__(self, mobject, **kwargs):
-        self.check_validity_of_input(mobject)
-        super().__init__(mobject, mobject.target, **kwargs)
+
+    def __attrs_post_init__(self):
+        self.check_validity_of_input(self.mobject)
+        self.target_mobject = self.mobject.target
+        Transform.__attrs_post_init__(self)
 
     def check_validity_of_input(self, mobject):
         if not hasattr(mobject, "target"):
