@@ -127,7 +127,7 @@ sudo apt install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-r
 > Note: this installation may take up a lot of space. The developers are working on providing a simpler, lighter LaTeX package for you to install
 2. You can check you did it right by running `latex`
 
-#### Pip3 Installation
+#### `pip3` Installation
 1. Install `pip3` in the `python3-pip` package with your package manager: `sudo apt-get install python3-pip`
 2. You can check you did it right by running `pip3`
 
