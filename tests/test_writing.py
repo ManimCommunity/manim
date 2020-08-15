@@ -8,7 +8,7 @@ from testing_utils import utils_test_scenes, get_scenes_to_test
 
 class TextTest(Scene):
     def construct(self):
-        t = Text("testing", font="Arial")
+        t = Text(text="testing", font="Arial")
         self.play(Animation(t))
 
 

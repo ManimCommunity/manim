@@ -3,7 +3,10 @@ import os
 import copy
 import hashlib
 import cairo
+import attr
+import typing as tp
 
+from colour import Color
 from ...constants import *
 from ...config import config, file_writer_config
 from ...container.container import Container
@@ -27,45 +30,44 @@ class TextSetting(object):
         self.line_num = line_num
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Text(SVGMobject):
-    CONFIG = {
-        # Mobject
-        "color": WHITE,
-        "height": None,
-        "width": None,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "should_center": True,
-        "unpack_groups": True,
-        # Text
-        "font": "",
-        "gradient": None,
-        "lsh": -1,
-        "size": 1,
-        "slant": NORMAL,
-        "weight": NORMAL,
-        "t2c": {},
-        "t2f": {},
-        "t2g": {},
-        "t2s": {},
-        "t2w": {},
-        "tab_width": 4,
-    }
+    # Mobject
+    color: tp.Union[str, Color] = WHITE
+    height: tp.Optional[float] = None
+    width: tp.Optional[float] = None
+    fill_opacity: float = 1
+    stroke_width: float = 0
+    should_center: bool = True
+    unpack_groups: bool = True
+    # Text
+    font: str = ""
+    gradient: tp.Any = None  # TODO give appropriate type hint
+    lsh: tp.Any = -1  # TODO give appropriate type hint
+    size: float = 1
+    slant: str = NORMAL
+    weight: str = NORMAL
+    t2c: tp.Dict = attr.ib(default=attr.Factory(dict))
+    t2f: tp.Dict = attr.ib(default=attr.Factory(dict))
+    t2g: tp.Dict = attr.ib(default=attr.Factory(dict))
+    t2s: tp.Dict = attr.ib(default=attr.Factory(dict))
+    t2w: tp.Dict = attr.ib(default=attr.Factory(dict))
+    tab_width: int = 4
+    text: tp.Optional[str] = None
 
-    def __init__(self, text, **config):
-        self.full2short(config)
-        digest_config(self, config)
-        text_without_tabs = text
-        if text.find("\t") != -1:
-            text_without_tabs = text.replace("\t", " " * self.tab_width)
+    def __attrs_post_init__(self):
+        # self.full2short(config)
+        text_without_tabs = self.text
+        if self.text.find("\t") != -1:
+            text_without_tabs = self.text.replace("\t", " " * self.tab_width)
         self.text = text_without_tabs
         self.lsh = self.size if self.lsh == -1 else self.lsh
 
         file_name = self.text2svg()
         self.remove_last_M(file_name)
-        SVGMobject.__init__(self, file_name, **config)
+        self.file_name = file_name
+        SVGMobject.__attrs_post_init__(self)
         self.apply_front_and_end_spaces()
-        self.text = text
         self.apply_space_chars()
 
         nppc = self.n_points_per_cubic_curve
@@ -114,7 +116,7 @@ class Text(SVGMobject):
         context.show_text("_")
         surface.finish()
         svg_with_space = SVGMobject(
-            file_name,
+            file_name=file_name,
             height=self.height,
             width=self.width,
             stroke_width=self.stroke_width,
