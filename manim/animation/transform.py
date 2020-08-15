@@ -110,8 +110,12 @@ class TransformFromCopy(Transform):
         super().interpolate(1 - alpha)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ClockwiseTransform(Transform):
-    CONFIG = {"path_arc": -np.pi}
+    path_arc: float = -np.pi
+
+    def __attrs_post_init__(self):
+        Transform.__attrs_post_init__(self)
 
 
 class CounterclockwiseTransform(Transform):
