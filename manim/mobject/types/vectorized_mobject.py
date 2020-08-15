@@ -850,12 +850,48 @@ class VMobject(Mobject):
         return vmob
 
 
+@attr.s(auto_attribs=True, eq=False)
 class VGroup(VMobject):
-    def __init__(self, *vmobjects, **kwargs):
+    def check_vmobjects(*vmobjects):
+        """Checks if all passed elements or an instance of VMobject
+
+        Parameters
+        ----------
+        vmobjects :
+            List of VMobject to add
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        Exception
+            If one element of the list is not an instance of VMobject
+        """
         if not all([isinstance(m, VMobject) for m in vmobjects]):
             raise Exception("All submobjects must be of type VMobject")
-        VMobject.__init__(self, **kwargs)
-        self.add(*vmobjects)
+
+    def __attrs_post_init__(self):
+        VMobject.__attrs_post_init__(self)
+
+    @classmethod
+    def from_mobjects(cls, *vmobjects, **kwargs):
+        """Creates an instance of VGroup by checking and then adding all `vmobjects`
+
+        Parameters
+        ----------
+        vmobjects
+        kwargs
+
+        Returns
+        -------
+        VGroup
+        """
+        cls.check_vmobjects(*vmobjects)
+        instance = cls(**kwargs)
+        instance.add(*vmobjects)
+        return instance
 
 
 class VDict(VMobject):
