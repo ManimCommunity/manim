@@ -16,7 +16,8 @@ if typing.TYPE_CHECKING:
 DEFAULT_ANIMATION_RUN_TIME = 1.0
 DEFAULT_ANIMATION_LAG_RATIO = 0
 
-@dclass
+
+@attr.s(auto_attribs=True, eq=False)
 class Animation(object):
     """Represents a generic animation.
 
@@ -37,28 +38,20 @@ class Animation(object):
         - If 1, it is applied to each successively.
         - If 0 < lag_ratio < 1, it's applied to each with lagged start times.
     """
-    mobject: Mobject = attr.ib(validator=lambda x: isinstance(x, Mobject))
+    mobject: Mobject = attr.ib(validator=attr.validators.instance_of(Mobject))
     run_time: float = DEFAULT_ANIMATION_RUN_TIME
     rate_func: typing.Union[typing.Callable[[float, float], float], typing.Callable[[float], float]] \
         = smooth
     name: typing.Optional[str] = None
+    # Does this animation add or remove a mobject form the screen
     remover: bool = False
+    # If 0, the animation is applied to all submobjects
+    # at the same time
+    # If 1, it is applied to each successively.
+    # If 0 < lag_ratio < 1, its applied to each
+    # with lagged start times
+    lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO
     suspend_mobject_updating: bool = True
-
-    CONFIG = {
-        "run_time": DEFAULT_ANIMATION_RUN_TIME,
-        "rate_func": smooth,
-        "name": None,
-        # Does this animation add or remove a mobject form the screen
-        "remover": False,
-        # If 0, the animation is applied to all submobjects
-        # at the same time
-        # If 1, it is applied to each successively.
-        # If 0 < lag_ratio < 1, its applied to each
-        # with lagged start times
-        "lag_ratio": DEFAULT_ANIMATION_LAG_RATIO,
-        "suspend_mobject_updating": True,
-    }
 
     def __str__(self):
         if self.name:
