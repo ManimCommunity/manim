@@ -852,8 +852,8 @@ class VMobject(Mobject):
 
 @attr.s(auto_attribs=True, eq=False)
 class VGroup(VMobject):
-    def check_vmobjects(*vmobjects):
-        """Checks if all passed elements or an instance of VMobject
+    def add(self, *vmobjects):
+        """Checks if all passed elements are an instance of VMobject and add them to submobjects
 
         Parameters
         ----------
@@ -871,6 +871,7 @@ class VGroup(VMobject):
         """
         if not all([isinstance(m, VMobject) for m in vmobjects]):
             raise Exception("All submobjects must be of type VMobject")
+        super().add(*vmobjects)
 
     def __attrs_post_init__(self):
         VMobject.__attrs_post_init__(self)
@@ -888,7 +889,6 @@ class VGroup(VMobject):
         -------
         VGroup
         """
-        cls.check_vmobjects(*vmobjects)
         instance = cls(**kwargs)
         instance.add(*vmobjects)
         return instance
