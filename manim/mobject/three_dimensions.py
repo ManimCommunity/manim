@@ -18,28 +18,27 @@ class ThreeDVMobject(VMobject):
     }
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ParametricSurface(VGroup):
-    CONFIG = {
-        "u_min": 0,
-        "u_max": 1,
-        "v_min": 0,
-        "v_max": 1,
-        "resolution": 32,
-        "surface_piece_config": {},
-        "fill_color": BLUE_D,
-        "fill_opacity": 1.0,
-        "checkerboard_colors": [BLUE_D, BLUE_E],
-        "stroke_color": LIGHT_GREY,
-        "stroke_width": 0.5,
-        "should_make_jagged": False,
-        "pre_function_handle_to_anchor_scale_factor": 0.00001,
-    }
+    u_min: float = 0
+    u_max: float = 1
+    v_min: float = 0
+    v_max: float = 1
+    resolution: float = 32
+    surface_piece_config: tp.Dict = attr.ib(default=attr.Factory(dict))
+    fill_color: tp.Union[str, Color] = BLUE_D
+    fill_opacity: float = 1.0
+    checkerboard_colors: tp.List[tp.Union[str, Color]] = [BLUE_D, BLUE_E]
+    stroke_color: tp.Union[str, Color] = LIGHT_GREY
+    stroke_width: float = 0.5
+    should_make_jagged: bool = False
+    pre_function_handle_to_anchor_scale_factor: float = 0.00001
+    func: tp.Optional[tp.Callable] = None
 
-    def __init__(self, func, **kwargs):
-        VGroup.__init__(self, **kwargs)
-        self.func = func
+    def __attrs_post_init__(self):
+        VGroup.__attrs_post_init__(self)
         self.setup_in_uv_space()
-        self.apply_function(lambda p: func(p[0], p[1]))
+        self.apply_function(lambda p: self.func(p[0], p[1]))
         if self.should_make_jagged:
             self.make_jagged()
 
