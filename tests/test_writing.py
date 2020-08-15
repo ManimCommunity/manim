@@ -15,7 +15,7 @@ class TextTest(Scene):
 class TextMobjectTest(Scene):
     def construct(self):
         constants.TEX_TEMPLATE = TexTemplate()
-        t = TextMobject("Hello world !")
+        t = TextMobject(tex_strings=["Hello world !"])
         self.play(Animation(t))
 
 
@@ -25,7 +25,7 @@ class TexMobjectTest(Scene):
         # i.e It will pass even if latex is not installed.
         # This is due to the fact that the latex used here has been cached (see test_cache directory)
         constants.TEX_TEMPLATE = TexTemplate()
-        t = TexMobject("\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}")
+        t = TexMobject(tex_strings=["\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}"])
         self.play(Animation(t))
 
 
