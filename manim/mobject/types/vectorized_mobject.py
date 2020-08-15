@@ -845,7 +845,6 @@ class VMobject(Mobject):
 
 
 class VGroup(VMobject):
-
     def __init__(self, *vmobjects, **kwargs):
         VMobject.__init__(self, **kwargs)
         self.add(*vmobjects)
