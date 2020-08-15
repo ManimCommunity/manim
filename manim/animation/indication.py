@@ -125,11 +125,10 @@ class CircleIndicate(Indicate):
         self.mobject.set_stroke(opacity=alpha)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ShowPassingFlash(ShowPartial):
-    CONFIG = {
-        "time_width": 0.1,
-        "remover": True,
-    }
+    time_width: float = 0.1
+    remover: bool = True
 
     def get_bounds(self, alpha):
         tw = self.time_width
@@ -145,11 +144,10 @@ class ShowPassingFlash(ShowPartial):
             submob.pointwise_become_partial(start, 0, 1)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class ShowCreationThenDestruction(ShowPassingFlash):
-    CONFIG = {
-        "time_width": 2.0,
-        "run_time": 1,
-    }
+    time_width: float = 2.0
+    run_time: float = 1
 
 
 class ShowCreationThenFadeOut(Succession):
