@@ -159,25 +159,22 @@ class ShowCreationThenFadeOut(Succession):
         Succession.__attrs_post_init__(self)
 
 
+@attr.s(auto_attribs=True, eq=False)
 class AnimationOnSurroundingRectangle(AnimationGroup):
-    CONFIG = {
-        "surrounding_rectangle_config": {},
-        # Function which takes in a rectangle, and spits
-        # out some animation.  Could be some animation class,
-        # could be something more
-        "rect_animation": Animation,
-    }
+    surrounding_rectangle_config: tp.Dict = attr.ib(default=attr.Factory(dict))
+    # Function which takes in a rectangle, and spits
+    # out some animation.  Could be some animation class,
+    # could be something more
+    rect_animation: type = Animation
+    kwargs_animations: tp.Dict = attr.ib(default=attr.Factory(dict))
 
-    def __init__(self, mobject, **kwargs):
-        digest_config(self, kwargs)
-        if "surrounding_rectangle_config" in kwargs:
-            kwargs.pop("surrounding_rectangle_config")
-        self.mobject_to_surround = mobject
+    def __attrs_post_init__(self):
+        self.mobject_to_surround = self.mobject
 
         rect = self.get_rect()
-        rect.add_updater(lambda r: r.move_to(mobject))
-
-        super().__init__(self.rect_animation(rect, **kwargs),)
+        rect.add_updater(lambda r: r.move_to(self.mobject))
+        self.animations = [self.rect_animation(rect, **self.kwargs_animations)]
+        AnimationGroup.__attrs_post_init__(self)
 
     def get_rect(self):
         return SurroundingRectangle(
