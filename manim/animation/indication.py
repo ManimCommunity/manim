@@ -13,6 +13,7 @@ from ..animation.creation import ShowCreation
 from ..animation.creation import ShowPartial
 from ..animation.fading import FadeOut
 from ..animation.transform import Transform
+from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.geometry import Circle
 from ..mobject.geometry import Dot
@@ -70,29 +71,27 @@ class Indicate(Transform):
         return target
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Flash(AnimationGroup):
-    CONFIG = {
-        "line_length": 0.2,
-        "num_lines": 12,
-        "flash_radius": 0.3,
-        "line_stroke_width": 3,
-        "run_time": 1,
-    }
+    line_length: float = 0.2
+    num_lines: int = 12
+    flash_radius: float = 0.3
+    line_stroke_width: float = 3
+    run_time: float = 1
+    color: tp.Union[str, Color] = YELLOW
+    point: tp.Optional[np.ndarray] = None
+    mobject: tp.Optional[Mobject] = None
 
-    def __init__(self, point, color=YELLOW, **kwargs):
-        self.point = point
-        self.color = color
-        digest_config(self, kwargs)
+    def __attrs_post_init__(self):
         self.lines = self.create_lines()
-        animations = self.create_line_anims()
-        super().__init__(
-            *animations, group=self.lines, **kwargs,
-        )
+        self.animations = self.create_line_anims()
+        self.group = self.lines
+        AnimationGroup.__attrs_post_init__(self)
 
     def create_lines(self):
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
-            line = Line(ORIGIN, self.line_length * RIGHT)
+            line = Line(start=ORIGIN, end=self.line_length * RIGHT)
             line.shift((self.flash_radius - self.line_length) * RIGHT)
             line.rotate(angle, about_point=ORIGIN)
             lines.add(line)

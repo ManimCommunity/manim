@@ -19,7 +19,7 @@ class FlashTest(Scene):
     def construct(self):
         square = Square()
         self.add(square)
-        self.play(Flash(square))
+        self.play(Flash(point=square))
 
 
 class CircleIndicateTest(Scene):
