@@ -1,6 +1,8 @@
 import inspect
 
 import numpy as np
+import attr
+import typing as tp
 
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME
@@ -15,17 +17,15 @@ from ..utils.rate_functions import smooth
 from ..utils.rate_functions import squish_rate_func
 
 
+@attr.s(auto_attribs=True, eq=False)
 class Transform(Animation):
-    CONFIG = {
-        "path_arc": 0,
-        "path_arc_axis": OUT,
-        "path_func": None,
-        "replace_mobject_with_target_in_scene": False,
-    }
+    path_arc: float = 0
+    path_arc_axis: np.ndarray = OUT
+    path_func: tp.Any = None
+    replace_mobject_with_target_in_scene: bool = False
+    target_mobject: tp.Optional[Mobject] = None
 
-    def __init__(self, mobject, target_mobject=None, **kwargs):
-        super().__init__(mobject, **kwargs)
-        self.target_mobject = target_mobject
+    def __attrs_post_init__(self):
         self.init_path_func()
 
     def init_path_func(self):
