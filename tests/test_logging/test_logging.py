@@ -1,7 +1,6 @@
 import subprocess
 import os
 import sys
-from shutil import rmtree
 import pytest
 import re
 
@@ -14,6 +13,7 @@ def capture(command, instream=None):
     return out, err, proc.returncode
 
 
+@pytest.mark.usefixtures("clean_tests_cache")
 def test_logging_to_file(python_version):
     """Test logging Terminal output to a log file.
     As some data will differ with each log (the timestamps, file paths, line nums etc)
@@ -21,7 +21,7 @@ def test_logging_to_file(python_version):
     whitespace.
     """
     path_basic_scene = os.path.join("tests", "tests_data", "basic_scenes.py")
-    path_output = os.path.join("tests_cache", "media_temp")
+    path_output = os.path.join("tests", "tests_cache", "media_temp")
     command = [
         python_version,
         "-m",
@@ -37,16 +37,16 @@ def test_logging_to_file(python_version):
     ]
     out, err, exitcode = capture(command)
     log_file_path = os.path.join(path_output, "logs", "SquareToCircle.log")
-    assert exitcode == 0, err
-    assert os.path.exists(log_file_path), err
+    assert exitcode == 0, err.decode()
+    assert os.path.exists(log_file_path), err.decode()
     if sys.platform.startswith("win32") or sys.platform.startswith("cygwin"):
         enc = "Windows-1252"
     else:
         enc = "utf-8"
     with open(log_file_path, encoding=enc) as logfile:
         logs = logfile.read()
-    # The following regex pattern selects timestamps, file paths and all numbers..
-    pattern = r"(\[?\d+:?]?)|(\['[A-Z]?:?[\/\\].*cfg'])|([A-Z]?:?[\/\\].*mp4)"
+    # The following regex pattern selects file paths and all numbers.
+    pattern = r"(\['[A-Z]?:?[\/\\].*cfg'])|([A-Z]?:?[\/\\].*mp4)|(\d+)"
 
     logs = re.sub(pattern, lambda m: " " * len((m.group(0))), logs)
     with open(

@@ -23,8 +23,6 @@ __all__ = [
     "finalized_configs_dict",
 ]
 
-min_argvs = 3 if "-m" in sys.argv[0] else 2
-
 
 def _parse_file_writer_config(config_parser, args):
     """Parse config files and CLI arguments into a single dictionary."""
@@ -51,8 +49,7 @@ def _parse_file_writer_config(config_parser, args):
     # in batches, depending on their type: booleans and strings
     for boolean_opt in [
         "preview",
-        "show_file_in_finder",
-        "quiet",
+        "show_in_file_browser",
         "sound",
         "leave_progress_bars",
         "write_to_movie",
@@ -60,8 +57,11 @@ def _parse_file_writer_config(config_parser, args):
         "save_pngs",
         "save_as_gif",
         "write_all",
+        "disable_caching",
+        "flush_cache",
         "log_to_file",
     ]:
+
         attr = getattr(args, boolean_opt)
         fw_config[boolean_opt] = (
             default.getboolean(boolean_opt) if attr is None else attr
@@ -113,7 +113,8 @@ def _parse_file_writer_config(config_parser, args):
             "write_all",
         ]:
             fw_config[opt] = config_parser["dry_run"].getboolean(opt)
-
+    if not fw_config["write_to_movie"]:
+        fw_config["disable_caching"] = True
     # Read in the streaming section -- all values are strings
     fw_config["streaming"] = {
         opt: config_parser["streaming"][opt]
@@ -134,7 +135,27 @@ def _parse_file_writer_config(config_parser, args):
     fw_config["skip_animations"] = any(
         [fw_config["save_last_frame"], fw_config["from_animation_number"]]
     )
+    fw_config["max_files_cached"] = default.getint("max_files_cached")
+    if fw_config["max_files_cached"] == -1:
+        fw_config["max_files_cached"] = float("inf")
+    # Parse the verbosity flag to read in the log level
+    verbosity = getattr(args, "verbosity")
+    verbosity = default["verbosity"] if verbosity is None else verbosity
+    fw_config["verbosity"] = verbosity
 
+    # Parse the ffmpeg log level in the config
+    ffmpeg_loglevel = config_parser["ffmpeg"].get("loglevel", None)
+    fw_config["ffmpeg_loglevel"] = (
+        constants.FFMPEG_VERBOSITY_MAP[verbosity]
+        if ffmpeg_loglevel is None
+        else ffmpeg_loglevel
+    )
+
+    # Parse the progress_bar flag
+    progress_bar = getattr(args, "progress_bar")
+    if progress_bar is None:
+        progress_bar = default.getboolean("progress_bar")
+    fw_config["progress_bar"] = progress_bar
     return fw_config
 
 
@@ -146,29 +167,19 @@ def _parse_cli(arg_list, input=True):
     if input:
         # If the only command is `manim`, we want both subcommands like `cfg`
         # and mandatory positional arguments like `file` to show up in the help section.
-        if len(sys.argv) == min_argvs - 1 or _subcommands_exist():
+        only_manim = len(sys.argv) == 1
+
+        if only_manim or _subcommand_name():
             subparsers = parser.add_subparsers(dest="subcommands")
-            cfg_related = subparsers.add_parser("cfg")
-            cfg_subparsers = cfg_related.add_subparsers(dest="cfg_subcommand")
 
-            cfg_write_parser = cfg_subparsers.add_parser("write")
-            cfg_write_parser.add_argument(
-                "--level",
-                choices=["user", "cwd"],
-                default=None,
-                help="Specify if this config is for user or just the working directory.",
-            )
-            cfg_write_parser.add_argument(
-                "--open", action="store_const", const=True, default=False
-            )
-            cfg_subparsers.add_parser("show")
+            # More subcommands can be added here, with elif statements.
+            # If a help command is passed, we still want subcommands to show
+            # up, so we check for help commands as well before adding the
+            # subcommand's subparser.
+            if only_manim or _subcommand_name() in ["cfg", "--help", "-h"]:
+                cfg_related = _init_cfg_subcmd(subparsers)
 
-            cfg_export_parser = cfg_subparsers.add_parser("export")
-            cfg_export_parser.add_argument("--dir", default=os.getcwd())
-
-        if len(sys.argv) == min_argvs - 1 or not _subcommands_exist(
-            ignore=["--help", "-h"]
-        ):
+        if only_manim or not _subcommand_name(ignore=["--help", "-h"]):
             parser.add_argument(
                 "file", help="path to file holding the python code for the scene",
             )
@@ -200,13 +211,10 @@ def _parse_cli(arg_list, input=True):
     )
     parser.add_argument(
         "-f",
-        "--show_file_in_finder",
+        "--show_in_file_browser",
         action="store_const",
         const=True,
-        help="Show the output file in finder",
-    )
-    parser.add_argument(
-        "-q", "--quiet", action="store_const", const=True, help="Quiet mode",
+        help="Show the output file in the File Browser",
     )
     parser.add_argument(
         "--sound",
@@ -255,14 +263,24 @@ def _parse_cli(arg_list, input=True):
         const=True,
         help="Save the video as gif",
     )
-
+    parser.add_argument(
+        "--disable_caching",
+        action="store_const",
+        const=True,
+        help="Disable caching (will generate partial-movie-files anyway).",
+    )
+    parser.add_argument(
+        "--flush_cache",
+        action="store_const",
+        const=True,
+        help="Remove all cached partial-movie-files.",
+    )
     parser.add_argument(
         "--log_to_file",
         action="store_const",
         const=True,
         help="Log terminal output to file.",
     )
-
     # The default value of the following is set in manim.cfg
     parser.add_argument(
         "-c", "--color", help="Background color",
@@ -363,15 +381,39 @@ def _parse_cli(arg_list, input=True):
     parser.add_argument(
         "--config_file", help="Specify the configuration file",
     )
+
+    # Specify the verbosity
+    parser.add_argument(
+        "-v",
+        "--verbosity",
+        type=str,
+        help="Verbosity level. Also changes the ffmpeg log level unless the latter is specified in the config",
+        choices=constants.VERBOSITY_CHOICES,
+    )
+
+    # Specify if the progress bar should be displayed
+    def _str2bool(s):
+        if s == "True":
+            return True
+        elif s == "False":
+            return False
+        else:
+            raise argparse.ArgumentTypeError("True or False expected")
+
+    parser.add_argument(
+        "--progress_bar",
+        type=_str2bool,
+        help="Display the progress bar",
+        metavar="True/False",
+    )
     parsed = parser.parse_args(arg_list)
     if hasattr(parsed, "subcommands"):
-        setattr(
-            parsed,
-            "cfg_subcommand",
-            cfg_related.parse_args(
-                sys.argv[min_argvs - (0 if min_argvs == 2 else 1) :]
-            ).cfg_subcommand,
-        )
+        if _subcommand_name() == "cfg":
+            setattr(
+                parsed,
+                "cfg_subcommand",
+                cfg_related.parse_args(sys.argv[2:]).cfg_subcommand,
+            )
 
     return parsed
 
@@ -420,15 +462,7 @@ def _paths_config_file():
     library_wide = os.path.abspath(
         os.path.join(os.path.dirname(__file__), "..", "default.cfg")
     )
-    if sys.platform.startswith("linux"):
-        user_wide = os.path.expanduser(
-            os.path.join("~", ".config", "manim", "manim.cfg")
-        )
-    elif sys.platform.startswith("darwin"):
-        user_wide = os.path.expanduser(
-            os.path.join("~", "Library", "Application Support", "Manim", "manim.cfg")
-        )
-    elif sys.platform.startswith("win32"):
+    if sys.platform.startswith("win32"):
         user_wide = os.path.expanduser(
             os.path.join("~", "AppData", "Roaming", "Manim", "manim.cfg")
         )
@@ -482,10 +516,72 @@ def finalized_configs_dict():
     return {section: dict(config[section]) for section in config.sections()}
 
 
-def _subcommands_exist(ignore=[]):
+def _subcommand_name(ignore=()):
+    """Goes through sys.argv to check if any subcommand has been passed,
+    and returns the first such subcommand's name, if found.
+
+    Parameters
+    ----------
+    ignore : Iterable[:class:`str`], optional
+        List of NON_ANIM_UTILS to ignore when searching for subcommands, by default []
+
+    Returns
+    -------
+    Optional[:class:`str`]
+        If a subcommand is found, returns the string of its name. Returns None if no
+        subcommand is found.
+    """
     NON_ANIM_UTILS = ["cfg", "--help", "-h"]
     NON_ANIM_UTILS = [util for util in NON_ANIM_UTILS if util not in ignore]
 
-    not_only_manim = len(sys.argv) > min_argvs - 1
-    sub_command_exists = any(a == item for a in sys.argv for item in NON_ANIM_UTILS)
-    return not_only_manim and sub_command_exists
+    # If a subcommand is found, break out of the inner loop, and hit the break of the outer loop
+    # on the way out, effectively breaking out of both loops. The value of arg will be the
+    # subcommand to be taken.
+    # If no subcommand is found, none of the breaks are hit, and the else clause of the outer loop
+    # is run, setting arg to None.
+
+    for item in NON_ANIM_UTILS:
+        for arg in sys.argv:
+            if arg == item:
+                break
+        else:
+            continue
+        break
+    else:
+        arg = None
+
+    return arg
+
+
+def _init_cfg_subcmd(subparsers):
+    """Initialises the subparser for the `cfg` subcommand.
+
+    Parameters
+    ----------
+    subparsers : :class:`argparse._SubParsersAction`
+        The subparser object for which to add the sub-subparser for the cfg subcommand.
+
+    Returns
+    -------
+    :class:`argparse.ArgumentParser`
+        The parser that parser anything cfg subcommand related.
+    """
+    cfg_related = subparsers.add_parser("cfg",)
+    cfg_subparsers = cfg_related.add_subparsers(dest="cfg_subcommand")
+
+    cfg_write_parser = cfg_subparsers.add_parser("write")
+    cfg_write_parser.add_argument(
+        "--level",
+        choices=["user", "cwd"],
+        default=None,
+        help="Specify if this config is for user or just the working directory.",
+    )
+    cfg_write_parser.add_argument(
+        "--open", action="store_const", const=True, default=False
+    )
+    cfg_subparsers.add_parser("show")
+
+    cfg_export_parser = cfg_subparsers.add_parser("export")
+    cfg_export_parser.add_argument("--dir", default=os.getcwd())
+
+    return cfg_related
