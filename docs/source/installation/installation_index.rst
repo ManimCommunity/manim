@@ -8,3 +8,4 @@ Installation
    installation_ubuntu
    installation_arch
    installation_mac
+   troubleshooting
