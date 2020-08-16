@@ -854,7 +854,7 @@ class VGroup(VMobject):
 
         Parameters
         ----------
-        vmobjects :
+        vmobjects : :class:`~.VMobject`
             List of VMobject to add
 
         Returns
