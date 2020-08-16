@@ -27,7 +27,6 @@ To install cairo:
 
    sudo apt install libcairo2-dev
 
-
 To install ffmpeg:
 
 .. code-block:: bash
@@ -90,8 +89,12 @@ Certifying a clean install
 To check that all dependencies have been installed properly, you can execute
 the commands ``ffmpeg -version`` and ``latex``.  (If LaTeX is installed
 properly, you will be taken to a command-line program that captures your
-cursor. Press CTRL+C to exit.)
+cursor. Press CTRL+C to exit.)  To check that Sox is installed correctly,
+simply run ``sox``.
 
 .. warning:: Note the LaTeX installation may take up a lot of space.  The manim
              community developers are currently working on providing a simpler,
              lighter LaTeX package for you to install.
+
+After making sure you have a clean install, you can go back to installing manim
+itself in :doc:`installation_index`.
