@@ -79,7 +79,7 @@ The output looks as follows.
      -w, --write_to_movie  Render the scene as a movie file (this is on by
                            default)
      -s, --save_last_frame
-                           Save the last frame only (no movie file generated)
+                           Save the last frame only (no movie file is generated)
      -g, --save_pngs       Save each frame as a png
      -i, --save_as_gif     Save the video as gif
      --disable_caching     Disable caching (will generate partial-movie-files
@@ -281,6 +281,6 @@ config file < folder-wide config file < CLI flags*.
 
 .. note:: There is also a **library-wide** config file that determines manim's
 	  default behavior, and applies to every user of the library.  It has
-	  the least precedence, and the **user should not** try to modify it.
+	  the least precedence, and **the user should not try to modify it**.
 	  Developers should receive explicit confirmation from the core
 	  developer team before modifying it.

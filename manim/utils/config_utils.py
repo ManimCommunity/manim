@@ -247,7 +247,7 @@ def _parse_cli(arg_list, input=True):
         "--save_last_frame",
         action="store_const",
         const=True,
-        help="Save the last frame only (no movie file generated)",
+        help="Save the last frame only (no movie file is generated)",
     )
     parser.add_argument(
         "-g",
