@@ -863,11 +863,11 @@ class VGroup(VMobject):
 
         Raises
         ------
-        Exception
+        TypeError
             If one element of the list is not an instance of VMobject
         """
         if not all([isinstance(m, VMobject) for m in vmobjects]):
-            raise Exception("All submobjects must be of type VMobject")
+            raise TypeError("All submobjects must be of type VMobject")
         super().add(*vmobjects)
 
 
