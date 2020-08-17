@@ -20,22 +20,22 @@ steps:
    your best Google practices.  If you can't find anything helpful, then go to
    the next step.
 
-1. Make sure you can reproduce the issue, i.e. that you have some code that
+2. Make sure you can reproduce the issue, i.e. that you have some code that
    illustrates the bug **every time** (or at least most of the time) it is
    executed.
    
-2. Make sure to clarify what behavior you expected, and how the actual behavior
+3. Make sure to clarify what behavior you expected, and how the actual behavior
    differs from your expectation.
 
-3. Make sure to gather information about your environment, such as your
+4. Make sure to gather information about your environment, such as your
    operating system, manim version, python version, and any stack traces that
    the code may have generated (if applicable).
    
-4. Only after you have gathered this information, please open an issue.  A
+5. Only after you have gathered this information, please open an issue.  A
    community member will (hopefully) respond and start a conversation to
    address the issue.
    
-5. Please give the community a reasonable amount of time before asking again,
+6. Please give the community a reasonable amount of time before asking again,
    or insisting on your issue.  Keep in mind that everyone is a volunteer.  If
    you wait for a reasonable amount of time and you receive no response, feel
    free to insist.
