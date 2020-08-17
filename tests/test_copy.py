@@ -1,5 +1,6 @@
 from manim import Mobject, BraceLabel
 
+
 def test_mobject_copy():
     """Test that a copy is a deepcopy."""
     orig = Mobject()
@@ -18,7 +19,7 @@ def test_bracelabel_copy():
     # Before the refactoring of Mobject.copy(), the class BraceLabel was the
     # only one to have a non-trivial definition of copy.  Here we test that it
     # still works after the refactoring.
-    orig = BraceLabel(Mobject(), 'label')
+    orig = BraceLabel(Mobject(), "label")
     copy = orig.copy()
 
     assert orig is orig
