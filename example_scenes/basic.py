@@ -118,7 +118,7 @@ class UpdatersExample(Scene):
         self.wait()
 
 
-class VDictTest(Scene):
+class VDictExample(Scene):
     def construct(self):
         square = Square().set_color(RED)
         circle = Circle().set_color(YELLOW).next_to(square, UP)
@@ -150,7 +150,7 @@ class VDictTest(Scene):
         my_dict["t"] = TextMobject("Some other text").set_color(BLUE)
         self.wait()
 
-        # remove submojects by key
+        # remove submoject by key
         my_dict.remove("t")
         self.wait()
 
@@ -167,6 +167,23 @@ class VDictTest(Scene):
         for submob in my_dict.get_all_submobjects():
             self.play(ShowCreation(submob))
             self.wait()
+
+        # you can also make a VDict from an existing dict of mobjects
+        vanilla_dict = {
+            1 : Integer(1).shift(DOWN),
+            2 : Integer(2).shift(2*DOWN),
+            3 : Integer(3).shift(3*DOWN)
+        }
+
+        # to use a vanilla python dict of mobjects as a VDict, just
+        # use the keyword argument 'plain_dict='
+        vdict_from_plain_dict = VDict(plain_dict=vanilla_dict)
+        vdict_from_plain_dict.shift(1.5*UP)
+        self.play(ShowCreation(vdict_from_plain_dict))
+
+        # You can also mix both kinds of initializations like this
+        pairs = [("s", square), ("c", circle)]
+        mixed_vdict = VDict(*pairs, plain_dict=vanilla_dict)
 
 
 # See old_projects folder for many, many more
