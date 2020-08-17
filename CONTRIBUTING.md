@@ -131,20 +131,20 @@ problems. Please check out the [Wiki Entry for Documentation](https://github.com
 1. When submitting a PR, please make special note of whether your proposed
    changes will result in breaking changes.
 
-1. When submitting a PR, make sure that your proposed changes are as general as
-   possible, and ready to be taken advantage by all of manim's users.  In
+2. When submitting a PR, make sure that your proposed changes are as general as
+   possible, and ready to be taken advantage of by all of manim's users.  In
    particular, leave out any machine-specific configurations, or any personal
    information it may contain.
 
-2. If you are a maintainer, please label issues and PRs appropriately and
+3. If you are a maintainer, please label issues and PRs appropriately and
    frequently.
 
-3. When opening a new issue, if there are old issues that are related, link
-   them in your new issue (even if the old ones are close).
+4. When opening a new issue, if there are old issues that are related, link
+   them in your new issue (even if the old ones are closed).
 
-4. If you find stale or inactive issues that seem to be irrelevant, please post
+5. If you find stale or inactive issues that seem to be irrelevant, please post
    a comment saying 'This issue should be closed', and a community developer
    will take a look.
 
-5. Please do as much as possible to keep issues, PRs, and development in
+6. Please do as much as possible to keep issues, PRs, and development in
    general as tidy as possible.
