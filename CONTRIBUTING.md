@@ -119,7 +119,7 @@ any methods, classes, or modules that your PR modifies, if necessary.
 Note: if you are contributing new features or bug fixes, it is strongly
 preferred that you include tests that accompany them in your PR.  For this
 purpose, you can create a new file under the `tests/` folder and make sure that
-your new tests pass before submitting your PR.
+your new tests pass before submitting your PR. Please check out the [Wiki Entry for Testing](https://github.com/ManimCommunity/manim/wiki/Testing) to learn more about how our tests work. 
 
 Note: if you are contributing documentation, you must also make sure that the
 command `make doctest`, executed from the `docs/` folder terminates without
