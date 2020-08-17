@@ -123,7 +123,7 @@ your new tests pass before submitting your PR. Please check out the [Wiki Entry 
 
 Note: if you are contributing documentation, you must also make sure that the
 command `make doctest`, executed from the `docs/` folder terminates without
-problems.
+problems. Please check out the [Wiki Entry for Documentation](https://github.com/ManimCommunity/manim/wiki//Documentation-guidelines-(WIP)) to learn more about how we prefer our code documented.
 
 
 ## Other guidelines
