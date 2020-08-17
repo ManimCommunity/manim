@@ -5,20 +5,28 @@ Dependencies
 ************
 
 Before installing manim, there are some additional dependencies that you must
-have installed:
- - Cairo
- - FFmpeg
- - Sox (optional, for sound)
- - LaTeX (optional, for LaTeX)
-
-The following documents contain instructions to install all of these
-dependencies, depending on your operating system.
+have installed: Cairo, FFmpeg, Sox (optional, for sound), and LaTeX (optional,
+but strongly recommended).  The following documents contain instructions to
+install all of these dependencies, depending on your operating system.
 
 .. toctree::
+   :maxdepth: 1
 
    installation_win
    installation_linux
    installation_mac
+
+After following the instructions therein, come back to this document to install
+manim, following the next section.  For any problems encountered when
+installing the dependencies or manim itself, visit the :doc:`troubleshooting`
+page.
+
+.. This is here so that sphinx doesn't complain about troubleshooting.rst not
+   being included in any toctree
+.. toctree::
+   :hidden:
+
+   troubleshooting
 
 
 Installing manim
