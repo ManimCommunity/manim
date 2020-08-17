@@ -171,14 +171,14 @@ class VDictExample(Scene):
         # you can also make a VDict from an existing dict of mobjects
         vanilla_dict = {
             1: Integer(1).shift(DOWN),
-            2: Integer(2).shift(2*DOWN),
-            3: Integer(3).shift(3*DOWN)
+            2: Integer(2).shift(2 * DOWN),
+            3: Integer(3).shift(3 * DOWN),
         }
 
         # to use a vanilla python dict of mobjects as a VDict, just
         # use the keyword argument 'plain_dict='
         vdict_from_plain_dict = VDict(plain_dict=vanilla_dict)
-        vdict_from_plain_dict.shift(1.5*UP)
+        vdict_from_plain_dict.shift(1.5 * UP)
         self.play(ShowCreation(vdict_from_plain_dict))
 
         # You can also mix both kinds of initializations like this
