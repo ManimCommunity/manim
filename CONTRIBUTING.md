@@ -31,7 +31,7 @@ steps:
    operating system, manim version, python version, and any stack traces that
    the code may have generated (if applicable).
    
-4. Only after you have gathered this information, please open an issue.  A
+4. Please open an issue only after you have gathered this information.  A
    community member will (hopefully) respond and start a conversation to
    address the issue.
    
