@@ -8,7 +8,6 @@ import warnings
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-from manim import logger
 from manim import config, file_writer_config
 
 
