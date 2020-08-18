@@ -133,7 +133,7 @@ class VDictExample(Scene):
 
         text = TextMobject("Some text").set_color(GREEN).next_to(square, DOWN)
 
-        # add like a VGroup, but inside of a list of tuple for now
+        # add a key-value pair by wrapping it in a single-element list of tuple
         # after attrs branch is merged, it will be easier like `.add(t=text)`
         my_dict.add([("t", text)])
         self.wait()
