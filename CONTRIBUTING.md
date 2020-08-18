@@ -34,7 +34,7 @@ steps:
    operating system, python version, and any stack traces that the code may
    have generated (if applicable).
    
-6. Only after you have gathered this information, please open an issue.  A
+4. Please open an issue only after you have gathered this information.  A
    community member will (hopefully) respond and start a conversation to
    address the issue.
    
@@ -138,11 +138,11 @@ any methods, classes, or modules that your PR modifies, if necessary.
 Note: if you are contributing new features or bug fixes, it is strongly
 preferred that you include tests that accompany them in your PR.  For this
 purpose, you can create a new file under the `tests/` folder and make sure that
-your new tests pass before submitting your PR.
+your new tests pass before submitting your PR. Please check out the [Wiki Entry for Testing](https://github.com/ManimCommunity/manim/wiki/Testing) to learn more about how our tests work. 
 
 Note: if you are contributing documentation, you must also make sure that the
 command `make doctest`, executed from the `docs/` folder terminates without
-problems.
+problems. Please check out the [Wiki Entry for Documentation](https://github.com/ManimCommunity/manim/wiki//Documentation-guidelines-(WIP)) to learn more about how we prefer our code documented.
 
 
 ## Other guidelines
@@ -151,7 +151,7 @@ problems.
    changes will result in breaking changes.
 
 2. When submitting a PR, make sure that your proposed changes are as general as
-   possible, and ready to be taken advantage by all of manim's users.  In
+   possible, and ready to be taken advantage of by all of manim's users.  In
    particular, leave out any machine-specific configurations, or any personal
    information it may contain.
 
@@ -159,7 +159,7 @@ problems.
    frequently.
 
 4. When opening a new issue, if there are old issues that are related, link
-   them in your new issue (even if the old ones are close).
+   them in your new issue (even if the old ones are closed).
 
 5. When submitting a code review, it is highly recommended that you adhere to
    [these general guidelines](https://conventionalcomments.org/).  Similarly,
