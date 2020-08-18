@@ -903,7 +903,7 @@ class VDict(VMobject):
             the keys to the mobjects
     """
 
-    def __init__(self, mapping_or_iterable=dict(), show_keys=False, **kwargs):
+    def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
         VMobject.__init__(self, **kwargs)
         self.show_keys = show_keys
         self.submob_dict = {}
