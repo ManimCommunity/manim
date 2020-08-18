@@ -1,6 +1,9 @@
 import os
+import tempfile
+import numpy as np
+
 import manim
-from manim import config, file_writer_config
+from manim import config, file_writer_config, logger
 
 def set_test_scene(scene_object, module_name):
     """Function used to set up the test data for a new feature. This will basically set up a pre-rendered frame for a scene. This is meant to be used only
@@ -19,13 +22,20 @@ def set_test_scene(scene_object, module_name):
     Normal usage::
         set_test_scene(DotTest, "geometry")
     """
+
     file_writer_config["skip_animations"] = True
+    file_writer_config["write_to_movie"] = False
+    file_writer_config["disable_caching"] = True
     config["pixel_height"] = 480
     config["pixel_width"] = 854
     config["frame_rate"] = 15
 
-    scene = scene_object()
-    data = scene.get_frame()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        os.makedirs(os.path.join(tmpdir, "tex"))
+        file_writer_config['text_dir'] = os.path.join(tmpdir, "text")
+        file_writer_config['tex_dir'] = os.path.join(tmpdir, "tex")
+        scene = scene_object()
+        data = scene.get_frame()
 
     tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     path_control_data = os.path.join(tests_directory, "control_data", "graphical_units_data")
