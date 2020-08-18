@@ -903,15 +903,13 @@ class VDict(VMobject):
             the keys to the mobjects
     """
 
-    def __init__(self, *pairs, plain_dict=None, show_keys=False, **kwargs):
-        if not all(isinstance(m[1], VMobject) for m in pairs):
-            raise Exception("All submobjects must be of type VMobject")
+    def __init__(self, mapping_or_iterable, show_keys=False, **kwargs):
         VMobject.__init__(self, **kwargs)
         self.show_keys = show_keys
         self.submob_dict = {}
-        self.add(*pairs, plain_dict=plain_dict)
+        self.add(mapping_or_iterable)
 
-    def add(self, *pairs, plain_dict=None):
+    def add(self, mapping_or_iterable):
         """Adds the key-value pairs to the :class:`VDict` object.
 
         Also, it internally adds the value to the `submobjects` :class:`list`
@@ -935,15 +933,8 @@ class VDict(VMobject):
             square_obj = Square()
             my_dict.add(('s', square_obj))
         """
-        for pair in pairs:
-            key = pair[0]
-            value = pair[1]
-
+        for key, value in dict(mapping_or_iterable).items():
             self.add_key_value_pair(key, value)
-
-        if plain_dict is not None:
-            for key, value in plain_dict.items():
-                self.add_key_value_pair(key, value)
 
         return self
 
@@ -1017,7 +1008,7 @@ class VDict(VMobject):
         """
         if key in self.submob_dict:
             self.remove(key)
-        self.add((key, value))
+        self.add([(key, value)])
 
     def get_all_submobjects(self):
         """To get all the submobjects associated with a particular :class:`VDict` object
@@ -1037,6 +1028,8 @@ class VDict(VMobject):
         return submobjects
 
     def add_key_value_pair(self, key, value):
+        if not isinstance(value, VMobject):
+            raise Exception("Value must be of type VMobject")
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
