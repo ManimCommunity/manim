@@ -14,31 +14,34 @@ One of the best ways of contributing to Manim is by reporting bugs.  If you
 have encountered something that you believe is a bug, please follow these
 steps:
 
-1. Make sure to search for other users who may have had similar issues in the
+1. First of all, make sure you are running the latest version of manim.  If
+   not, update your version and try again.
+
+2. Make sure to search for other users who may have had similar issues in the
    past.  Search the repository's issues page (don't forget to search closed
    issues), bring it up on Discord, use sites like StackOverflow, and exercise
    your best Google practices.  If you can't find anything helpful, then go to
    the next step.
 
-2. Make sure you can reproduce the issue, i.e. that you have some code that
+3. Make sure you can reproduce the issue, i.e. that you have some code that
    illustrates the bug **every time** (or at least most of the time) it is
    executed.
    
-3. Make sure to clarify what behavior you expected, and how the actual behavior
+4. Make sure to clarify what behavior you expected, and how the actual behavior
    differs from your expectation.
 
-4. Make sure to gather information about your environment, such as your
-   operating system, manim version, python version, and any stack traces that
-   the code may have generated (if applicable).
+5. Make sure to gather information about your environment, such as your
+   operating system, python version, and any stack traces that the code may
+   have generated (if applicable).
    
-5. Only after you have gathered this information, please open an issue.  A
+6. Only after you have gathered this information, please open an issue.  A
    community member will (hopefully) respond and start a conversation to
    address the issue.
    
-6. Please give the community a reasonable amount of time before asking again,
+7. Please give the community a reasonable amount of time before asking again,
    or insisting on your issue.  Keep in mind that everyone is a volunteer.  If
    you wait for a reasonable amount of time and you receive no response, feel
-   free to insist.
+   free to ask again.
 
 
 ## Contributing code
@@ -75,14 +78,25 @@ confusing.  Here is a short guide on how to do it.
     (referred to as 'origin') as well as the main ManimCommunity repository
     (referred to as 'upstream').
 
-4. You can now make any changes to your local repository, add them, and commit
+4. Choose the correct branch for your changes.  If you are working on a branch
+   that already exists on the main repository, you can execute
+   ```sh
+   git checkout -b <branch-name> upstream/master
+   ```
+   
+   If you are starting a new branch, execute
+   ```sh
+   git checkout -b <new_branch-name>
+   ```
+
+	You can now make any changes to your local repository, add them, and commit
    them.
 
 5. To make your changes visible in your GitHub fork, instead of typing in `git
    push` as usual, you need to enter the command below.
 
    ```sh
-   git push -u origin <your-branch-name>
+   git push -u origin <branch-name>
    ```
 
    Doing so creates a new branch with the updated contents of your fork on
@@ -104,7 +118,7 @@ confusing.  Here is a short guide on how to do it.
    You can execute it by running `black <your_file>`.  This will make changes
    to your code, and you will need to add/commit those changes.
 
-6. To request the ManimCommunity dev team to incorporate the changes in your
+9. To request the ManimCommunity dev team to incorporate the changes in your
    fork into the main repository, you can make a Pull Request to the Manim
    Community repo from your fork. Make sure to select `ManimCommunity/manim`
    instead of `3b1b/manim` as the `base repository` and your fork and branch as
@@ -112,6 +126,11 @@ confusing.  Here is a short guide on how to do it.
 
    ![pull-requests-example-manim-community](./readme-assets/pull-requests.PNG)
 
+10. Once a PR is submitted, it will required at least two approving code
+    reviews from community developers, as well as all tests passing.  It is
+    very likely that you will be asked to edit or modify your PR in one way or
+    another during this process.  This is not an indictment of your work, but
+    rather a strong signal that the dev community wants to merge your changes!
 
 Note: before submitting a PR please make sure that you update the docstrings of
 any methods, classes, or modules that your PR modifies, if necessary.
@@ -131,20 +150,28 @@ problems.
 1. When submitting a PR, please make special note of whether your proposed
    changes will result in breaking changes.
 
-1. When submitting a PR, make sure that your proposed changes are as general as
+2. When submitting a PR, make sure that your proposed changes are as general as
    possible, and ready to be taken advantage by all of manim's users.  In
    particular, leave out any machine-specific configurations, or any personal
    information it may contain.
 
-2. If you are a maintainer, please label issues and PRs appropriately and
+3. If you are a maintainer, please label issues and PRs appropriately and
    frequently.
 
-3. When opening a new issue, if there are old issues that are related, link
+4. When opening a new issue, if there are old issues that are related, link
    them in your new issue (even if the old ones are close).
 
-4. If you find stale or inactive issues that seem to be irrelevant, please post
+5. When submitting a code review, it is highly recommended that you adhere to
+   [these general guidelines](https://conventionalcomments.org/).  Similarly,
+   when crafting commit messages, it is highly recommended that you adhere to
+   [these guidelines](https://www.conventionalcommits.org/en/v1.0.0/).
+   
+6. If you find stale or inactive issues that seem to be irrelevant, please post
    a comment saying 'This issue should be closed', and a community developer
    will take a look.
 
-5. Please do as much as possible to keep issues, PRs, and development in
+7. Please do as much as possible to keep issues, PRs, and development in
    general as tidy as possible.
+   
+
+   
