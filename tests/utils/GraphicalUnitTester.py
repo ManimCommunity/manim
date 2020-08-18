@@ -5,6 +5,8 @@ import inspect
 import logging
 import pytest
 import warnings
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 from manim import logger
 from manim import config, file_writer_config
@@ -76,7 +78,31 @@ class GraphicalUnitTester:
         )
         return np.load(frame_data_path)
 
-    def test(self):
+    def _show_diff_helper(self, frame_data, expected_frame_data):
+        """Will visually display with matplotlib differences between frame generared and the one expected."""
+        gs = gridspec.GridSpec(2, 2)
+        fig = plt.figure()
+        fig.suptitle(f"Test for {str(self.scene).replace('Test', '')}", fontsize=16)
+
+        ax = fig.add_subplot(gs[0,0])
+        ax.imshow(frame_data)
+        ax.set_title('Generated :')
+
+        ax = fig.add_subplot(gs[0,1])
+        ax.imshow(expected_frame_data)
+        ax.set_title('Expected :')
+
+        ax = fig.add_subplot(gs[1,:])
+        diff_im = expected_frame_data.copy()
+        diff_im = np.where(frame_data != np.array([0,0,0,255]), np.array([255, 0, 0, 255], dtype="uint8"), np.array([0, 0, 0, 255], dtype="uint8")) # Set the points of the frame generated to red.
+        np.putmask(diff_im, expected_frame_data != np.array([0,0,0,255], dtype="uint8"), np.array([0,255,0,255], dtype="uint8")) # Set the points of the frame generated to green.
+        ax.imshow(diff_im, interpolation="nearest")
+        ax.set_title("Differences summary : (red = got, green = expected)")
+
+        plt.show()
+
+
+    def test(self, show_diff=False):
         """Compare pre-rendered frame to the frame rendered during the test."""
         frame_data = self.scene.get_frame()
         expected_frame_data = self._load_data()
@@ -93,6 +119,8 @@ class GraphicalUnitTester:
             first_incorrect_index = incorrect_indices[0][:2]
             first_incorrect_point = frame_data[tuple(first_incorrect_index)]
             expected_point = expected_frame_data[tuple(first_incorrect_index)]
+            if show_diff : 
+                self._show_diff_helper(frame_data, expected_frame_data)
             assert test_result, (
                 f"The frames don't match. {str(self.scene).replace('Test', '')} has been modified."
                 + "\nPlease ignore if it was intended."

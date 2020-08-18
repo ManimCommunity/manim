@@ -1,11 +1,9 @@
 import pytest
 
 from manim import *
-from tests.utils.testing_utils import get_scenes_to_test
-from tests.utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
+from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
-# NOTE : All of these tests use cached data (in /test_cache)
-# Cache functionality is tested within test_CLI.
 
 
 class TextTest(Scene):
@@ -30,6 +28,6 @@ class TexMobjectTest(Scene):
 
 MODULE_NAME = "writing"
 @pytest.mark.slow
-@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__))
-def test_scene(scene_to_test, tmpdir): 
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test()
+@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
+def test_scene(scene_to_test, tmpdir, show_diff): 
+    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)

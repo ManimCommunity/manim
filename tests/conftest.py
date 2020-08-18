@@ -5,13 +5,18 @@ import os
 import sys
 import logging
 
-
 def pytest_addoption(parser):
     parser.addoption(
         "--skip_slow",
         action="store_true",
         default=False,
         help="Will skip all the slow marked tests.",
+    )
+    parser.addoption(
+        "--show_diff",
+        action="store_true",
+        default=False,
+        help="Will show a vizual comparison if a graphical unit test fails.",
     )
 
 
