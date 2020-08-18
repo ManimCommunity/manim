@@ -34,9 +34,11 @@ steps:
    operating system, python version, and any stack traces that the code may
    have generated (if applicable).
    
-4. Please open an issue only after you have gathered this information.  A
-   community member will (hopefully) respond and start a conversation to
-   address the issue.
+4. Please open an issue only after you have gathered this information.  When
+   submitting an issue, make sure to follow the template (this is the default
+   text you are shown when first opening the 'New Issue' page).  A community
+   member will (hopefully) respond and start a conversation to address the
+   issue.
    
 7. Please give the community a reasonable amount of time before asking again,
    or insisting on your issue.  Keep in mind that everyone is a volunteer.  If
@@ -126,7 +128,10 @@ confusing.  Here is a short guide on how to do it.
 
    ![pull-requests-example-manim-community](./readme-assets/pull-requests.PNG)
 
-10. Once a PR is submitted, it will required at least two approving code
+	Once again, please make sure to follow the template (this is the default
+    text you are shown when first opening the 'New Pull Request' page)
+
+10. Once a PR is submitted, it will require at least two approving code
     reviews from community developers, as well as all tests passing.  It is
     very likely that you will be asked to edit or modify your PR in one way or
     another during this process.  This is not an indictment of your work, but
@@ -138,11 +143,22 @@ any methods, classes, or modules that your PR modifies, if necessary.
 Note: if you are contributing new features or bug fixes, it is strongly
 preferred that you include tests that accompany them in your PR.  For this
 purpose, you can create a new file under the `tests/` folder and make sure that
-your new tests pass before submitting your PR. Please check out the [Wiki Entry for Testing](https://github.com/ManimCommunity/manim/wiki/Testing) to learn more about how our tests work. 
+your new tests pass before submitting your PR. Please check out the [Wiki Entry
+for Testing](https://github.com/ManimCommunity/manim/wiki/Testing) to learn
+more about how our tests work.
 
 Note: if you are contributing documentation, you must also make sure that the
 command `make doctest`, executed from the `docs/` folder terminates without
-problems. Please check out the [Wiki Entry for Documentation](https://github.com/ManimCommunity/manim/wiki//Documentation-guidelines-(WIP)) to learn more about how we prefer our code documented.
+problems. Please check out the [Wiki Entry for
+Documentation](https://github.com/ManimCommunity/manim/wiki//Documentation-guidelines-(WIP))
+to learn more about how we prefer our code documented.
+
+Note: In order to open a PR, you do not need to have everything
+(documentation/tests) complete and ready to go.  However, the more complete
+your PR is, the easier it will be for community devs to review it, and the
+quicker it will be merged.  If you open a PR that is still under development
+and you want a quick overview or start some discussion about planned
+yet-to-be-implemented changes, please mark your PR as a draft.
 
 
 ## Other guidelines
