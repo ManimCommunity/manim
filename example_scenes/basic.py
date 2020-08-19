@@ -171,8 +171,6 @@ class VDictExample(Scene):
             3: Integer(3).shift(3 * DOWN),
         }
 
-        # to use a vanilla python dict of mobjects as a VDict, just
-        # use the keyword argument 'plain_dict='
         vdict_from_plain_dict = VDict(plain_dict)
         vdict_from_plain_dict.shift(1.5 * (UP + LEFT))
         self.play(ShowCreation(vdict_from_plain_dict))
