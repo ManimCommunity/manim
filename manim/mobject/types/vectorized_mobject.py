@@ -1038,6 +1038,11 @@ class VDict(VMobject):
         -------
         None
 
+        Raises
+        ------
+        TypeError
+            If the value is not an instance of VMobject
+
         Examples
         --------
         Normal usage::
@@ -1046,7 +1051,7 @@ class VDict(VMobject):
 
         """
         if not isinstance(value, VMobject):
-            raise Exception("Value must be of type VMobject")
+            raise TypeError("All submobjects must be of type VMobject")
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import

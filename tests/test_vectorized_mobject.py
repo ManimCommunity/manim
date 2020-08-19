@@ -41,6 +41,9 @@ def test_vdict_init():
     VDict({"a": VMobject(), "b": VMobject(), "c": VMobject()})
     # Test VDict made using zip
     VDict(zip(["a", "b", "c"], [VMobject(), VMobject(), VMobject()]))
+    # If the value is of type Mobject, must raise a TypeError
+    with pytest.raises(TypeError):
+        VDict({"a": Mobject()})
 
 
 def test_vdict_add():
@@ -49,6 +52,8 @@ def test_vdict_add():
     assert len(obj.submob_dict) == 0
     obj.add([("a", VMobject())])
     assert len(obj.submob_dict) == 1
+    with pytest.raises(TypeError):
+        obj.add([("b", Mobject())])
 
 
 def test_vdict_remove():
@@ -57,3 +62,5 @@ def test_vdict_remove():
     assert len(obj.submob_dict) == 1
     obj.remove("a")
     assert len(obj.submob_dict) == 0
+    with pytest.raises(Exception):
+        obj.remove("a")
