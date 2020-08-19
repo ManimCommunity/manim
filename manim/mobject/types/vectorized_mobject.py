@@ -877,15 +877,13 @@ class VDict(VMobject):
 
     Parameters
     ----------
-    pairs: Tuple[Hashable, :class:`~.VMobject`]
-            Each pair is a 2-element :class:`tuple` wherein the first 
-            element is the key for the mobject and the second
-            element is the actual mobject
+    mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
+            The parameter specifying the key-value mapping of keys and mobjects.
     show_keys : :class:`bool`, optional
             Whether to also display the key associated with 
             the mobject. This might be useful when debugging,
             especially when there are a lot of mobjects in the
-            :class:`VDict`. Defaults to False
+            :class:`VDict`. Defaults to False.
     kwargs : Any
             Other arguments to be passed to `Mobject` or the CONFIG.
 
@@ -897,10 +895,10 @@ class VDict(VMobject):
             especially when there are a lot of mobjects in the
             :class:`VDict`. When displayed, the key is towards
             the left of the mobject.
-            Defaults to False
+            Defaults to False.
     submob_dict : :class:`dict`
             Is the actual python dictionary that is used to bind
-            the keys to the mobjects
+            the keys to the mobjects.
     """
 
     def __init__(self, mapping_or_iterable=dict(), show_keys=False, **kwargs):
@@ -913,25 +911,23 @@ class VDict(VMobject):
         """Adds the key-value pairs to the :class:`VDict` object.
 
         Also, it internally adds the value to the `submobjects` :class:`list`
-        of :class:`~.Mobject`, which is responsible for actual on-screen display
+        of :class:`~.Mobject`, which is responsible for actual on-screen display.
 
         Parameters
         ---------
-        pairs : Tuple[Hashable, :class:`~.VMobject`]
-            Each pair is a :class:`tuple` wherein the first 
-            element is the key for the mobject and the second
-            element is the actual mobject
+        mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
+            The parameter specifying the key-value mapping of keys and mobjects.
 
         Returns
         -------
         :class:`VDict`
-            Returns the :class:`VDict` object on which this method was called
+            Returns the :class:`VDict` object on which this method was called.
 
         Examples
         --------
         Normal usage::
             square_obj = Square()
-            my_dict.add(('s', square_obj))
+            my_dict.add([('s', square_obj)])
         """
         for key, value in dict(mapping_or_iterable).items():
             self.add_key_value_pair(key, value)
@@ -947,12 +943,12 @@ class VDict(VMobject):
         Parameters
         ----------
         key : Hashable
-            The key of the submoject to be removed
+            The key of the submoject to be removed.
 
         Returns
         -------
         :class:`VDict`
-            Returns the :class:`VDict` object on which this method was called
+            Returns the :class:`VDict` object on which this method was called.
 
         Examples
         --------
@@ -1028,6 +1024,27 @@ class VDict(VMobject):
         return submobjects
 
     def add_key_value_pair(self, key, value):
+        """A utility function used by :meth:`add` to add the key-value pair
+        to :attr:`submob_dict`. Not really meant to be used externally.
+
+        Parameters
+        ----------
+        key : Hashable
+            The key of the submobject to be added.
+        value : :class:`~.VMobject`
+            The mobject associated with the key
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Normal usage::
+            square_obj = Square()
+            self.add_key_value_pair('s', square_obj)
+
+        """
         if not isinstance(value, VMobject):
             raise Exception("Value must be of type VMobject")
         mob = value
