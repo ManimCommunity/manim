@@ -62,5 +62,5 @@ def test_vdict_remove():
     assert len(obj.submob_dict) == 1
     obj.remove("a")
     assert len(obj.submob_dict) == 0
-    with pytest.raises(Exception):
+    with pytest.raises(KeyError):
         obj.remove("a")
