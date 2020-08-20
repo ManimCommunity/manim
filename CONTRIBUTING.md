@@ -73,7 +73,7 @@ confusing.  Here is a short guide on how to do it.
 
    ```sh
    git remote add upstream https://github.com/ManimCommunity/manim.git
-   git pull upstream master
+   git fetch upstream
    ```
 
 	After these commands, your local repository can keep track of your fork
