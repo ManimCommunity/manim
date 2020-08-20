@@ -68,8 +68,8 @@ confusing.  Here is a short guide on how to do it.
     repositories to keep track of: the original ManimCommunity repo, your own
     fork of it, and your local repository.
 
-3. You have to make `git` be aware of the three repositories, by entering the
-   commands below.
+3. You have to make `git` be aware of the two remote repositories, by entering
+   the commands below.
 
    ```sh
    git remote add upstream https://github.com/ManimCommunity/manim.git
