@@ -73,7 +73,7 @@ confusing.  Here is a short guide on how to do it.
 
    ```sh
    git remote add upstream https://github.com/ManimCommunity/manim.git
-   git pull upstream master
+   git fetch upstream
    ```
 
 	After these commands, your local repository can keep track of your fork
@@ -107,7 +107,7 @@ confusing.  Here is a short guide on how to do it.
 6. If you want your changes to be incorporated to the main ManimCommunity
    repository, you need to make sure that there are no merge conflicts between
    the current upstream/master and the changes you are trying to make.  For
-   this purpose, please execute `git pull origin master` before you push
+   this purpose, please execute `git pull upstream master` before you push
    changes to your fork.  If this generates merge conflicts, make sure to
    resolve them before submitting a PR.
 
