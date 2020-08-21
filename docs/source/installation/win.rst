@@ -29,7 +29,7 @@ Cairo installation
    appropriate name of the ``.whl`` file.
 
 6. Alternatively, running the command below installs pycairo.  This needs to be
-   an elevated command prompt like Powershell.
+   run in an elevated command prompt like Powershell.
 
    .. code-block:: bash
 
