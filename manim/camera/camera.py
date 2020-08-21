@@ -1051,9 +1051,9 @@ class Camera(object):
 
         # These are addressed in the same y, x order as in pixel_array, but the values in them
         # are listed in x, y order
-        uncentered_pixel_coords = np.indices(
-            [self.pixel_height, self.pixel_width]
-        )[::-1].transpose(1, 2, 0)
+        uncentered_pixel_coords = np.indices([self.pixel_height, self.pixel_width])[
+            ::-1
+        ].transpose(1, 2, 0)
         uncentered_space_coords = fdiv(
             uncentered_pixel_coords * full_space_dims, full_pixel_dims
         )
