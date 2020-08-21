@@ -8,7 +8,7 @@ dependencies are installed correctly.  All distributions will follow the same
 instructions in `Certifying a clean install`_.
 
 The two necessary dependencies are cairo and ffmpeg.  LaTeX is strongly
-recommended, as it is necessary to have access to the ``TexMoboject`` class.
+recommended, as it is necessary to have access to the ``TexMobject`` class.
 Sox is only required if you want manim to play sounds when rendering scenes.
 
 Ubuntu/Debian
