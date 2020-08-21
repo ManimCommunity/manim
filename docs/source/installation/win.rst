@@ -42,7 +42,7 @@ FFmpeg installation
 1. To install ``ffmpeg`` and add it to your PATH, install `Chocolatey
    <https://chocolatey.org/>`_ and run ``choco install ffmpeg``.
 
-2. You can check you did it right by running ``refreshenv`` to update your
+2. You can check if you did it right by running ``refreshenv`` to update your
    environment variable and running ``ffmpeg``.
 
 
