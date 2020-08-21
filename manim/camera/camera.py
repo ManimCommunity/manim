@@ -85,11 +85,11 @@ class Camera(object):
         # this dict (or an instance of a class that inherits from a class in
         # this dict), then it cannot be rendered.
         self.display_funcs = {
-                VMobject: self.display_multiple_vectorized_mobjects,
-                PMobject: self.display_multiple_point_cloud_mobjects,
-                AbstractImageMobject: self.display_multiple_image_mobjects,
-                Mobject: lambda batch, pa: batch,  # Do nothing
-            }
+            VMobject: self.display_multiple_vectorized_mobjects,
+            PMobject: self.display_multiple_point_cloud_mobjects,
+            AbstractImageMobject: self.display_multiple_image_mobjects,
+            Mobject: lambda batch, pa: batch,  # Do nothing
+        }
 
         self.init_background()
         self.resize_frame_shape()
@@ -643,7 +643,9 @@ class Camera(object):
         """
         if len(vmobjects) == 0:
             return
-        batch_file_pairs = it.groupby(vmobjects, lambda vm: vm.get_background_image_file())
+        batch_file_pairs = it.groupby(
+            vmobjects, lambda vm: vm.get_background_image_file()
+        )
         for file_name, batch in batch_file_pairs:
             if file_name:
                 self.display_multiple_background_colored_vmobjects(batch, pixel_array)
@@ -1317,7 +1319,9 @@ class BackgroundColoredVMobjectDisplayer(object):
         np.array
             The pixel array with the `cvmobjects` displayed.
         """
-        batch_image_file_pairs = it.groupby(cvmobjects, lambda cv: cv.get_background_image_file())
+        batch_image_file_pairs = it.groupby(
+            cvmobjects, lambda cv: cv.get_background_image_file()
+        )
         curr_array = None
         for batch, image_file in batch_image_file_pairs:
             background_array = self.get_background_array(image_file)
