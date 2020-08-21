@@ -4,7 +4,7 @@ Windows
 Cairo installation
 ******************
 
-1. Visit the official `Download Page
+1. Visit the `Download Page
    <https://www.lfd.uci.edu/~gohlke/pythonlibs/#pycairo>`_.
 
 2. Select the download that corresponds to your PC's architechture and Python
