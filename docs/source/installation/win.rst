@@ -83,7 +83,7 @@ LaTeX Installation
        :width: 500px
        :alt: windows latex download page
 
-2. You can check you did it right by running ``refreshenv`` to update your
+2. You can check if you did it right by running ``refreshenv`` to update your
    environment variable and running ``latex``.
 
 
