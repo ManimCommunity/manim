@@ -1,6 +1,11 @@
 Windows
 =======
 
+First, you need to install Chocolatey, which is a package manager for Windows
+systems.  Please refer to `this page <https://chocolatey.org/install>`_ for
+instructions.
+
+
 Cairo installation
 ******************
 
@@ -49,17 +54,9 @@ FFmpeg installation
 Sox installation (optional)
 ***************************
 
-1. Go to the SoX `SourceForge
-   <https://sourceforge.net/projects/sox/files/sox>`_ page.
+1. To install Sox, execute ``choco install sox.portable``.
 
-2. Select the newest version, and download the ``.exe`` file
-
-   .. image:: ../_static/installation/windows_sox.png
-       :align: center
-       :width: 600px
-       :alt: windows sox download page
-
-3. Add SoX to your PATH: Find the directory where SoX is installed.  This is
+2. Add SoX to your PATH: Find the directory where SoX is installed.  This is
    probably ``C:\Program Files (x86)\sox-(version_number)`` or ``C:\Program
    Files\sox-(version_number)``.  Open a command prompt window by hitting the
    Win key and typing ``cmd``. Run this command to update your PATH:

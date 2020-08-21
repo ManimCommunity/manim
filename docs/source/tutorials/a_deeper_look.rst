@@ -95,8 +95,8 @@ When working on a project with multiple scenes, and trying out multiple
 resolutions, the structure of the output directories will keep all your videos
 organized.
 
-Further, manim has the option to output the last frame of a scene, when adding the tag ``-s``. This is the fastest
-option to quickly get a preview of a scene.
+Further, manim has the option to output the last frame of a scene, when adding
+the flag ``-s``. This is the fastest option to quickly get a preview of a scene.
 The corresponding folder structure looks like this:
 
 .. code-block:: bash
@@ -118,7 +118,8 @@ The corresponding folder structure looks like this:
      ├─text
      └─Tex
 
-Saving the last frame with ``-s`` can be combined with the flags for different resolutions, e.g. ``-s -l``, ``-s -e``
+Saving the last frame with ``-s`` can be combined with the flags for different
+resolutions, e.g. ``-s -l``, ``-s -e``
 
 
 

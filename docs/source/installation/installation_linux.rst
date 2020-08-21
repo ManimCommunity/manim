@@ -78,7 +78,7 @@ To install Sox (optional):
 
    sudo pacman -S sox
 
-.. note:: These instructions are also valid for other RedHat-based
+.. note:: These instructions are also valid for other Arch-based
           distributions or distributions that use the ``pacman`` package
           manager.
 
@@ -92,9 +92,9 @@ properly, you will be taken to a command-line program that captures your
 cursor. Press CTRL+C to exit.)  To check that Sox is installed correctly,
 simply run ``sox``.
 
-.. warning:: Note the LaTeX installation may take up a lot of space.  The manim
-             community developers are currently working on providing a simpler,
-             lighter LaTeX package for you to install.
+.. note:: Note the LaTeX installation may take up a lot of space.  The manim
+          community developers are currently working on providing a simpler,
+          lighter LaTeX package for you to install.
 
 After making sure you have a clean install, you can go back to installing manim
 itself in :doc:`installation_index`.
