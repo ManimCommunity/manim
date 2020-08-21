@@ -68,7 +68,7 @@ Sox installation (optional)
 
       setx PATH %PATH%;C:\Program Files (x86)\sox-(version_number)
 
-   Check you did it right by running ``refreshenv`` to update your environment
+   Check whether you did it right by running ``refreshenv`` to update your environment
    variable and running ``sox``.
 
 
