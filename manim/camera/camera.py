@@ -138,7 +138,6 @@ class Camera(object):
         else:
             raise TypeError(f"Displaying an object of class {_type} is not supported")
 
-
     def reset_pixel_shape(self, new_height, new_width):
         """This method resets the height and width
         of a single pixel to the passed new_heigh and new_width.
