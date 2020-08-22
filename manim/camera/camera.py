@@ -121,7 +121,7 @@ class Camera(object):
 
         Returns
         -------
-        :class:`type`
+        Type[:class:`~.Mobject`]
             The type of mobjects, if it can be rendered.
 
         Raises
