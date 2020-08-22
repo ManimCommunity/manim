@@ -30,8 +30,10 @@ Cairo installation
    C:\path\to\cairo`` with the path being where you downloaded the ``.whl``
    file in step 2.
 
-5. Finally, run ``pip3 install (cairo-file).whl``, where the file the
-   appropriate name of the ``.whl`` file.
+5. Finally, run ``pip(pyversion) install (cairo-file).whl``, where
+   ``pyversion`` is the python version you are using.  For example, if you are
+   using python3.7, you should run ``pip3.7 install (cairo-file).whl``.
+
 
 6. Alternatively, running the command below installs pycairo.  This needs to be
    run in an elevated command prompt like Powershell.
