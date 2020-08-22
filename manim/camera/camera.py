@@ -541,7 +541,7 @@ class Camera(object):
 
         Notes
         -----
-        For a list of classes that can currently be rendered, see self.display_funcs.
+        For a list of classes that can currently be rendered, see :meth:`display_funcs`.
 
         """
         # The mobjects will be processed in batches (or runs) of mobjects of
