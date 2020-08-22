@@ -63,7 +63,7 @@ Sox installation (optional)
 
 LaTeX Installation
 ******************
-You can install latex by below method. MiKTex is very large(2 GB) while TinyTex is small and around 500Mb.
+You can install latex by either of the two methods below. MiKTex is very large (2 GB) while TinyTex is small  (500Mb).
 
 Using MiKTex
 ------------
@@ -97,6 +97,7 @@ dialog or two about ``luatex.dll`` during the installation `(like this)
       tlmgr install standalone preview doublestroke ms setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english
 
 4. Finally, check whether it installed properly by running an example scene.
+
 Certifying a clean install
 **************************
 
