@@ -526,7 +526,7 @@ class Camera(object):
         return self.capture_mobjects([mobject], **kwargs)
 
     def capture_mobjects(self, mobjects, **kwargs):
-        """Capture mobjects by printing them on self.pixel_array.
+        """Capture mobjects by printing them on :attr:`pixel_array`.
 
         This is the essential function that converts the contents of a Scene
         into an array, which is then converted to an image or video.
