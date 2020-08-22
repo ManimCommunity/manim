@@ -112,7 +112,7 @@ class Camera(object):
 
         Parameters
         ----------
-        mobject : :class:`~Mobject`
+        mobject : :class:`~.Mobject`
             The object to take the type of.
 
         Notes
@@ -126,7 +126,7 @@ class Camera(object):
 
         Raises
         ------
-        :exception:`TypeError`
+        :exc:`TypeError`
             When mobject is not an instance of a class that can be rendered.
         """
         # We have to check each type in turn because we are dealing with
@@ -533,12 +533,11 @@ class Camera(object):
 
         Parameters
         ----------
-
-        mobjects : :class:`~Mobject`
+        mobjects : :class:`~.Mobject`
             Mobjects to capture.
 
         kwargs : Any
-            Keyword arguments to be passed to :func:`~self.get_mobjects_to_display`.
+            Keyword arguments to be passed to :meth:`get_mobjects_to_display`.
 
         Notes
         -----
