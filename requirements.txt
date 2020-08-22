@@ -12,5 +12,5 @@ rich>=4.2.1
 # for development only:
 # pytest
 # black
-# sphinx-rtd-theme
+# guzzle-sphinx-theme
 # recommonmark>=0.5.0
