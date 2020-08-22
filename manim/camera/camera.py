@@ -105,10 +105,10 @@ class Camera(object):
     def type_or_raise(self, mobject):
         """Return the type of mobject, if it is a type that can be rendered.
 
-        If mobject is an instance of a class that inherits from a class that
+        If `mobject` is an instance of a class that inherits from a class that
         can be rendered, return the super class.  For example, an instance of a
         Square is also an instance of VMobject, and these can be rendered.
-        Therefore, type_or_raise(Square()) returns True.
+        Therefore, `type_or_raise(Square())` returns True.
 
         Parameters
         ----------
