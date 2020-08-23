@@ -33,15 +33,23 @@ class GraphicalUnitTester:
         The scene tested
     """
 
-    def __init__(self, scene_object, module_tested, tmpdir,):
+    def __init__(
+        self, scene_object, module_tested, tmpdir,
+    ):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
         tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.path_tests_medias_cache = os.path.join(
-            tmpdir, "test_graphical_units","tests_cache", module_tested, scene_object.__name__,
+            tmpdir,
+            "test_graphical_units",
+            "tests_cache",
+            module_tested,
+            scene_object.__name__,
         )
-        self.path_control_data = os.path.join(tests_directory, "control_data", "graphical_units_data", module_tested)
-        
+        self.path_control_data = os.path.join(
+            tests_directory, "control_data", "graphical_units_data", module_tested
+        )
+
         # IMPORTANT NOTE : The graphical units tests don't use for now any custom manim.cfg,
         # since it is impossible to manually select a manim.cfg from a python file. (see issue #293)
         file_writer_config["text_dir"] = os.path.join(
@@ -50,7 +58,7 @@ class GraphicalUnitTester:
         file_writer_config["tex_dir"] = os.path.join(
             self.path_tests_medias_cache, "Tex"
         )
-        
+
         file_writer_config["skip_animations"] = True
         file_writer_config["write_to_movie"] = False
         file_writer_config["disable_caching"] = True
@@ -58,7 +66,11 @@ class GraphicalUnitTester:
         config["pixel_width"] = 854
         config["frame_rate"] = 15
 
-        for dir_temp in [self.path_tests_medias_cache, file_writer_config["text_dir"], file_writer_config["tex_dir"]]:
+        for dir_temp in [
+            self.path_tests_medias_cache,
+            file_writer_config["text_dir"],
+            file_writer_config["tex_dir"],
+        ]:
             os.makedirs(dir_temp)
 
         # By invoking this, the scene is rendered.
@@ -83,23 +95,30 @@ class GraphicalUnitTester:
         fig = plt.figure()
         fig.suptitle(f"Test for {str(self.scene).replace('Test', '')}", fontsize=16)
 
-        ax = fig.add_subplot(gs[0,0])
+        ax = fig.add_subplot(gs[0, 0])
         ax.imshow(frame_data)
-        ax.set_title('Generated :')
+        ax.set_title("Generated :")
 
-        ax = fig.add_subplot(gs[0,1])
+        ax = fig.add_subplot(gs[0, 1])
         ax.imshow(expected_frame_data)
-        ax.set_title('Expected :')
+        ax.set_title("Expected :")
 
-        ax = fig.add_subplot(gs[1,:])
+        ax = fig.add_subplot(gs[1, :])
         diff_im = expected_frame_data.copy()
-        diff_im = np.where(frame_data != np.array([0,0,0,255]), np.array([255, 0, 0, 255], dtype="uint8"), np.array([0, 0, 0, 255], dtype="uint8")) # Set the points of the frame generated to red.
-        np.putmask(diff_im, expected_frame_data != np.array([0,0,0,255], dtype="uint8"), np.array([0,255,0,255], dtype="uint8")) # Set the points of the frame generated to green.
+        diff_im = np.where(
+            frame_data != np.array([0, 0, 0, 255]),
+            np.array([255, 0, 0, 255], dtype="uint8"),
+            np.array([0, 0, 0, 255], dtype="uint8"),
+        )  # Set the points of the frame generated to red.
+        np.putmask(
+            diff_im,
+            expected_frame_data != np.array([0, 0, 0, 255], dtype="uint8"),
+            np.array([0, 255, 0, 255], dtype="uint8"),
+        )  # Set the points of the frame generated to green.
         ax.imshow(diff_im, interpolation="nearest")
         ax.set_title("Differences summary : (red = got, green = expected)")
 
         plt.show()
-
 
     def test(self, show_diff=False):
         """Compare pre-rendered frame to the frame rendered during the test."""
@@ -118,11 +137,10 @@ class GraphicalUnitTester:
             first_incorrect_index = incorrect_indices[0][:2]
             first_incorrect_point = frame_data[tuple(first_incorrect_index)]
             expected_point = expected_frame_data[tuple(first_incorrect_index)]
-            if show_diff : 
+            if show_diff:
                 self._show_diff_helper(frame_data, expected_frame_data)
             assert test_result, (
                 f"The frames don't match. {str(self.scene).replace('Test', '')} has been modified."
                 + "\nPlease ignore if it was intended."
                 + f"\nFirst unmatched index is at {first_incorrect_index}: {first_incorrect_point} != {expected_point}"
             )
-

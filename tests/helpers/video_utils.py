@@ -1,8 +1,9 @@
-import os 
+import os
 import subprocess
-import json 
+import json
 
-from manim import logger 
+from manim import logger
+
 
 def capture(command):
     proc = subprocess.Popen(
@@ -11,7 +12,8 @@ def capture(command):
     out, err = proc.communicate()
     return out, err, proc.returncode
 
-def get_hash_from_video(path_to_video): 
+
+def get_hash_from_video(path_to_video):
     command = [
         "ffmpeg",
         "-i",
@@ -27,8 +29,9 @@ def get_hash_from_video(path_to_video):
         "error",
     ]
     hash_video, err, exitcode = capture(command)
-    assert exitcode == 0, err 
-    return hash_video.replace('\n', '')
+    assert exitcode == 0, err
+    return hash_video.replace("\n", "")
+
 
 def get_config_from_video(path_to_video):
     command = [
@@ -47,6 +50,7 @@ def get_config_from_video(path_to_video):
     assert exitcode == 0, err
     return config
 
+
 def save_control_data_from_video(path_to_video, name):
     """Helper used to set up a new test that will compare videos. This will create a new .json file in control_data/videos_data that contains 
     informations tested of the video, including its hash. Refer to the wiki for more informations. 
@@ -63,9 +67,17 @@ def save_control_data_from_video(path_to_video, name):
     path_control_data = os.path.join(tests_directory, "control_data", "videos_data")
     hash_video = get_hash_from_video(path_to_video)
     config_video = get_config_from_video(path_to_video)
-    data = {"name": name, "hash": hash_video, "config": json.loads(config_video)["streams"][0]}
+    data = {
+        "name": name,
+        "hash": hash_video,
+        "config": json.loads(config_video)["streams"][0],
+    }
     path_saved = os.path.join(path_control_data, f"{name}.json")
     json.dump(data, open(path_saved, "w"), indent=4)
     logger.info(f"Data for {name} saved in {path_saved}")
 
-save_control_data_from_video(r"C:\Users\User\OneDrive\Bureau\Programmation\PYTHON\MANIM-DEV\media\videos\simple_scenes\480p15\SquareToCircle.mp4", "SquareToCircleWithPFlag")
+
+save_control_data_from_video(
+    r"C:\Users\User\OneDrive\Bureau\Programmation\PYTHON\MANIM-DEV\media\videos\simple_scenes\480p15\SquareToCircle.mp4",
+    "SquareToCircleWithPFlag",
+)

@@ -1,6 +1,7 @@
 import sys
 import inspect
 
+
 def get_scenes_to_test(module_name):
     """Get all Test classes of the module from which it is called. Used to fetch all the SceneTest of the module.
 

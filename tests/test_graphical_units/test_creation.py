@@ -93,7 +93,10 @@ class ShrinkToCenterTest(Scene):
         square = Square()
         self.play(ShrinkToCenter(square))
 
+
 MODULE_NAME = "creation"
+
+
 @pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
-def test_scene(scene_to_test, tmpdir, show_diff): 
+def test_scene(scene_to_test, tmpdir, show_diff):
     GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)

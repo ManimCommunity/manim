@@ -1,6 +1,6 @@
-import pytest 
+import pytest
 
 
 @pytest.fixture
-def show_diff(request): 
+def show_diff(request):
     return request.config.getoption("show_diff")
