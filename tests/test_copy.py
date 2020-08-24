@@ -1,4 +1,5 @@
-from manim import Mobject, BraceLabel
+import os
+from manim import Mobject, BraceLabel, file_writer_config
 
 
 def test_mobject_copy():
@@ -16,6 +17,13 @@ def test_mobject_copy():
 
 def test_bracelabel_copy():
     """Test that a copy is a deepcopy."""
+    # For this test to work, we need to tweak some folders temporarily
+    mediadir = os.path.join("tests", "media")
+    original_text_dir = file_writer_config["text_dir"]
+    original_tex_dir = file_writer_config["tex_dir"]
+    file_writer_config["text_dir"] = os.path.join(mediadir, "Text")
+    file_writer_config["tex_dir"] = os.path.join(mediadir, "Tex")
+
     # Before the refactoring of Mobject.copy(), the class BraceLabel was the
     # only one to have a non-trivial definition of copy.  Here we test that it
     # still works after the refactoring.
@@ -31,3 +39,7 @@ def test_bracelabel_copy():
     assert copy.submobjects[0] is copy.brace
     assert orig.submobjects[0] is not copy.brace
     assert copy.submobjects[0] is not orig.brace
+
+    # Restore the original folders
+    file_writer_config["text_dir"] = original_text_dir
+    file_writer_config["tex_dir"] = original_tex_dir
