@@ -18,9 +18,9 @@ def test_mobject_copy():
 def test_bracelabel_copy():
     """Test that a copy is a deepcopy."""
     # For this test to work, we need to tweak some folders temporarily
-    mediadir = os.path.join("tests", "media")
     original_text_dir = file_writer_config["text_dir"]
     original_tex_dir = file_writer_config["tex_dir"]
+    mediadir = os.path.join("tests", "tests_data", "deepcopy")
     file_writer_config["text_dir"] = os.path.join(mediadir, "Text")
     file_writer_config["tex_dir"] = os.path.join(mediadir, "Tex")
 
