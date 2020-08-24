@@ -1,12 +1,11 @@
 import pytest
-from manim import Camera, tempconfig
-import manim
+from manim import Camera, tempconfig, config
 
 
 def test_camera():
     """Test that Camera instances initialize to the correct config."""
     # by default, use the config
-    assert Camera().frame_width == manim.config['frame_width']
+    assert Camera().frame_width == config['frame_width']
     # init args override config
     assert Camera(frame_width=10).frame_width == 10
 
