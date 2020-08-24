@@ -48,11 +48,11 @@ def test_logging_to_file(python_version):
     # The following regex pattern selects file paths and all numbers.
     pattern = r"(\['[A-Z]?:?[\/\\].*cfg'])|([A-Z]?:?[\/\\].*mp4)|(\d+)"
 
-    logs = re.sub(pattern, lambda m: " " * len((m.group(0))), logs)
+    logs = re.sub(pattern, lambda m: " " * len((m.group(0))), logs).replace(" ", "")
     with open(
         os.path.join(os.path.dirname(__file__), "expected.txt"), "r"
     ) as expectedfile:
         expected = re.sub(
             pattern, lambda m: " " * len((m.group(0))), expectedfile.read()
-        )
+        ).replace(" ", "")
     assert logs == expected, logs
