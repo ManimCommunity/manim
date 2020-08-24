@@ -78,17 +78,18 @@ class Camera(object):
         # dict, which is a class attribute and is defined at the time of _class
         # definition_.
         for attr in [
-                "pixel_height",
-                "pixel_width",
-                "frame_height",
-                "frame_width",
-                "frame_rate"]:
+            "pixel_height",
+            "pixel_width",
+            "frame_height",
+            "frame_width",
+            "frame_rate",
+        ]:
             setattr(self, attr, kwargs.get(attr, config[attr]))
 
         # This one must also be read from config at the time of instance
         # construction, but it doesn't have the same name as the corresponding
         # key :(
-        self.max_allowable_norm = config['frame_width']
+        self.max_allowable_norm = config["frame_width"]
 
         self.rgb_max_val = np.iinfo(self.pixel_array_dtype).max
         self.pixel_array_to_cairo_context = {}

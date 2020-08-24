@@ -21,6 +21,7 @@ __all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
 
 config = None
 
+
 @contextmanager
 def tempconfig(temp):
     """Context manager that temporarily modifies the global config dict.
@@ -63,7 +64,7 @@ def tempconfig(temp):
     try:
         yield
     finally:
-        config.update(original) # update, not assignment!
+        config.update(original)  # update, not assignment!
 
 
 def _parse_config(config_parser, args):
