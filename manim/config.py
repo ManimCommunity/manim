@@ -6,6 +6,7 @@ config object.
 """
 import os
 import sys
+from contextlib import contextmanager
 
 import colour
 
@@ -15,7 +16,26 @@ from .utils.config_utils import _run_config, _init_dirs, _from_command_line
 from .logger import logger
 from .utils.tex import TexTemplate, TexTemplateFromFile
 
-__all__ = ["file_writer_config", "config", "camera_config"]
+__all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
+
+
+config = None
+
+@contextmanager
+def tempconfig(temp):
+    """Temporarily modify the global config dict."""
+    global config
+    original = config.copy()
+
+    # In order to change the config that every module has acces to, use update,
+    # DO NOT use assignment.  Doing config = some_dict will just make the
+    # _local_ config point to a new dictionary, it will not change the
+    # dictionary that every module has a reference to.
+    config.update(temp)
+    try:
+        yield
+    finally:
+        config.update(original) # update, not assignment!
 
 
 def _parse_config(config_parser, args):
