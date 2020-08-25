@@ -12,7 +12,6 @@ from ...mobject.geometry import RoundedRectangle
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
 from ...mobject.types.vectorized_mobject import VGroup
-
 """
 1) Code is VGroup() with three things
     1.1) Code[0] is Code.background_mobject
@@ -59,13 +58,15 @@ class Code(VGroup):
         self.style = self.style.lower()
         self.gen_html_string()
         strati = self.html_string.find("background:")
-        self.background_color = self.html_string[strati + 12 : strati + 19]
+        self.background_color = self.html_string[strati + 12:strati + 19]
         self.gen_code_json()
 
         self.code = self.gen_colored_lines()
         if self.insert_line_no:
             self.line_numbers = self.gen_line_numbers()
-            self.line_numbers.next_to(self.code, direction=LEFT, buff=self.line_no_buff)
+            self.line_numbers.next_to(self.code,
+                                      direction=LEFT,
+                                      buff=self.line_no_buff)
 
         if self.background == "rectangle":
             if self.insert_line_no:
@@ -105,9 +106,8 @@ class Code(VGroup):
             green_button.shift(RIGHT * 0.1 * 3)
             buttons = VGroup(red_button, yellow_button, green_button)
             buttons.shift(
-                UP * (height / 2 - 0.1 * 2 - 0.05)
-                + LEFT * (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05)
-            )
+                UP * (height / 2 - 0.1 * 2 - 0.05) + LEFT *
+                (width / 2 - 0.1 * 5 - self.corner_radius / 2 - 0.05))
 
             self.background_mobject = VGroup(rrect, buttons)
             x = (height - forground.get_height()) / 2 - 0.1 * 3
@@ -115,9 +115,8 @@ class Code(VGroup):
             self.background_mobject.shift(UP * x)
 
         if self.insert_line_no:
-            VGroup.__init__(
-                self, self.background_mobject, self.line_numbers, *self.code, **kwargs
-            )
+            VGroup.__init__(self, self.background_mobject, self.line_numbers,
+                            *self.code, **kwargs)
         else:
             VGroup.__init__(
                 self,
@@ -129,9 +128,10 @@ class Code(VGroup):
 
         self.move_to(np.array([0, 0, 0]))
 
-    def apply_points_function_about_point(
-        self, func, about_point=None, about_edge=None
-    ):
+    def apply_points_function_about_point(self,
+                                          func,
+                                          about_point=None,
+                                          about_edge=None):
         if about_point is None:
             if about_edge is None:
                 about_edge = self.get_corner(UP + LEFT)
@@ -153,7 +153,8 @@ class Code(VGroup):
             if os.path.exists(path):
                 self.file_path = path
                 return
-        raise IOError("No file matching %s in codes directory" % self.file_name)
+        raise IOError("No file matching %s in codes directory" %
+                      self.file_name)
 
     def gen_line_numbers(self):
         line_numbers_array = []
@@ -188,11 +189,11 @@ class Code(VGroup):
             line = code[line_no]
             line_char_index = self.tab_spaces[line_no]
             for word_index in range(self.code_json[line_no].__len__()):
-                line[
-                    line_char_index : line_char_index
-                    + self.code_json[line_no][word_index][0].__len__()
-                ].set_color(self.code_json[line_no][word_index][1])
-                line_char_index += self.code_json[line_no][word_index][0].__len__()
+                line[line_char_index:line_char_index + self.
+                     code_json[line_no][word_index][0].__len__()].set_color(
+                         self.code_json[line_no][word_index][1])
+                line_char_index += self.code_json[line_no][word_index][
+                    0].__len__()
         return code
 
     def gen_html_string(self):
@@ -208,25 +209,22 @@ class Code(VGroup):
             "border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;",
         )
         if self.generate_html_file:
-            os.makedirs(
-                os.path.join("assets", "codes", "generated_html_files"), exist_ok=True
-            )
+            os.makedirs(os.path.join("assets", "codes",
+                                     "generated_html_files"),
+                        exist_ok=True)
             file = open(
-                os.path.join(
-                    "assets", "codes", "generated_html_files", self.file_name + ".html"
-                ),
+                os.path.join("assets", "codes", "generated_html_files",
+                             self.file_name + ".html"),
                 "w",
             )
             file.write(self.html_string)
             file.close()
 
     def gen_code_json(self):
-        if (
-            self.background_color == "#111111"
-            or self.background_color == "#272822"
-            or self.background_color == "#202020"
-            or self.background_color == "#000000"
-        ):
+        if (self.background_color == "#111111"
+                or self.background_color == "#272822"
+                or self.background_color == "#202020"
+                or self.background_color == "#000000"):
             self.default_color = "#ffffff"
         else:
             self.default_color = "#000000"
@@ -234,9 +232,9 @@ class Code(VGroup):
             self.html_string = self.html_string.replace("</" + " " * i, "</")
         for i in range(10, -1, -1):
             self.html_string = self.html_string.replace(
-                "</span>" + " " * i, " " * i + "</span>"
-            )
-        self.html_string = self.html_string.replace("background-color:", "background:")
+                "</span>" + " " * i, " " * i + "</span>")
+        self.html_string = self.html_string.replace("background-color:",
+                                                    "background:")
 
         if self.insert_line_no:
             start_point = self.html_string.find("</td><td><pre")
@@ -246,9 +244,9 @@ class Code(VGroup):
         self.html_string = self.html_string[start_point:]
         # print(self.html_string)
         lines = self.html_string.split("\n")
-        lines = lines[0 : lines.__len__() - 2]
+        lines = lines[0:lines.__len__() - 2]
         start_point = lines[0].find(">")
-        lines[0] = lines[0][start_point + 1 :]
+        lines[0] = lines[0][start_point + 1:]
         # print(lines)
         self.code_json = []
         self.tab_spaces = []
@@ -263,24 +261,18 @@ class Code(VGroup):
                 start_point = lines[line_index].find("<")
                 starting_string = lines[line_index][:start_point]
                 indentation_char_count = lines[line_index][:start_point].count(
-                    self.indentation_char
-                )
-                if (
-                    starting_string.__len__()
-                    != indentation_char_count * self.indentation_char.__len__()
-                ):
+                    self.indentation_char)
+                if (starting_string.__len__() != indentation_char_count *
+                        self.indentation_char.__len__()):
                     lines[line_index] = (
-                        "\t" * indentation_char_count
-                        + starting_string[
-                            starting_string.rfind(self.indentation_char)
-                            + self.indentation_char.__len__() :
-                        ]
-                        + lines[line_index][start_point:]
-                    )
+                        "\t" * indentation_char_count +
+                        starting_string[starting_string.
+                                        rfind(self.indentation_char) +
+                                        self.indentation_char.__len__():] +
+                        lines[line_index][start_point:])
                 else:
-                    lines[line_index] = (
-                        "\t" * indentation_char_count + lines[line_index][start_point:]
-                    )
+                    lines[line_index] = ("\t" * indentation_char_count +
+                                         lines[line_index][start_point:])
 
             indentation_char_count = 0
             while lines[line_index][indentation_char_count] == "\t":
@@ -296,13 +288,12 @@ class Code(VGroup):
                     color = self.default_color
                 else:
                     starti = words[word_index][color_index:].find("#")
-                    color = words[word_index][
-                        color_index + starti : color_index + starti + 7
-                    ]
+                    color = words[word_index][color_index +
+                                              starti:color_index + starti + 7]
 
                 start_point = words[word_index].find(">")
                 end_point = words[word_index].find("</span>")
-                text = words[word_index][start_point + 1 : end_point]
+                text = words[word_index][start_point + 1:end_point]
                 text = html.unescape(text)
                 if text != "":
                     # print(text, "'" + color + "'")
@@ -328,20 +319,11 @@ class Code(VGroup):
                     temp = temp + words[i][k]
             if temp != "":
                 if i != words.__len__() - 1:
-                    temp = (
-                        '<span style="color:'
-                        + self.default_color
-                        + '">'
-                        + words[i][starti:j]
-                        + "</span>"
-                    )
+                    temp = ('<span style="color:' + self.default_color + '">' +
+                            words[i][starti:j] + "</span>")
                 else:
-                    temp = (
-                        '<span style="color:'
-                        + self.default_color
-                        + '">'
-                        + words[i][starti:j]
-                    )
+                    temp = ('<span style="color:' + self.default_color + '">' +
+                            words[i][starti:j])
                 temp = temp + words[i][j:]
                 words[i] = temp
             if words[i] != "":
@@ -387,6 +369,6 @@ def insert_line_numbers(html):
     format = "%" + str(len(str(numbers[-1]))) + "i"
     lines = "\n".join(format % i for i in numbers)
     html = html.replace(
-        pre_open, "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open
-    )
+        pre_open,
+        "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open)
     return html
