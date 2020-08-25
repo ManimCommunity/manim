@@ -28,7 +28,15 @@ from ..utils.space_ops import rotation_matrix
 
 
 class Mobject(Container):
-    """Mathematical Object: base class for all objects shown on screen."""
+    """Mathematical Object: base class for all objects shown on screen.
+
+    Attributes
+    ----------
+    submobjects : :class:`list`
+        The contained objects.
+
+
+    """
 
     CONFIG = {
         "color": WHITE,
@@ -65,6 +73,30 @@ class Mobject(Container):
         pass
 
     def add(self, *mobjects):
+        """Add mobjects as submobjects.
+
+        The mobjects are added to self.submobjects, but without repetition.
+
+        Parameters
+        ----------
+        mobjects : List[:class:`Mobject`]
+            The mobjects to add.
+
+        Returns
+        -------
+        :class:`Mobject`
+            :code:`self`
+
+        Raises
+        ------
+        :class:`ValueError`
+            When a mobject tries to add itself.
+
+        See Also
+        --------
+        :meth:`~Mobject.remove`
+
+        """
         if self in mobjects:
             raise ValueError("Mobject cannot contain self")
         self.submobjects = list_update(self.submobjects, mobjects)
@@ -76,6 +108,25 @@ class Mobject(Container):
         return self
 
     def remove(self, *mobjects):
+        """Remove submobjects.
+
+        The mobjects are removed from self.submobjects, if they exist.
+
+        Parameters
+        ----------
+        mobjects : List[:class:`Mobject`]
+            The mobjects to remove.
+
+        Returns
+        -------
+        :class:`Mobject`
+            :code:`self`
+
+        See Also
+        --------
+        :meth:`~Mobject.add`
+
+        """
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
