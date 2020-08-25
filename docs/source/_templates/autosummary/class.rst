@@ -8,6 +8,7 @@
    {% if methods %}
    .. rubric:: {{ _('Methods') }}
 
+
    .. autosummary::
       :nosignatures:
       :toctree: .
