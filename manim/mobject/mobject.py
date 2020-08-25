@@ -1,6 +1,4 @@
-"""
-MObject: Base classes for all mathematical objects.
-"""
+"""Base classes for all mathematical objects."""
 from functools import reduce
 import copy
 import itertools as it
@@ -30,9 +28,7 @@ from ..utils.space_ops import rotation_matrix
 
 
 class Mobject(Container):
-    """
-    Mathematical Object
-    """
+    """Mathematical Object: base class for all objects shown on screen."""
 
     CONFIG = {
         "color": WHITE,
@@ -1097,6 +1093,8 @@ class Mobject(Container):
 
 
 class Group(Mobject):
+    """Groups together multiple MObjects."""
+
     def __init__(self, *mobjects, **kwargs):
         if not all([isinstance(m, Mobject) for m in mobjects]):
             raise Exception("All submobjects must be of type Mobject")
