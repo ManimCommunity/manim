@@ -2,6 +2,7 @@
 Constant definitions.
 """
 
+from enum import Enum
 import numpy as np
 
 
@@ -108,80 +109,6 @@ DEGREES = TAU / 360
 
 # ffmpeg stuff
 FFMPEG_BIN = "ffmpeg"
-
-# gif stuff
-GIF_FILE_EXTENSION = ".gif"
-
-# Colors
-COLOR_MAP = {
-    "DARK_BLUE": "#236B8E",
-    "DARK_BROWN": "#8B4513",
-    "LIGHT_BROWN": "#CD853F",
-    "BLUE_E": "#1C758A",
-    "BLUE_D": "#29ABCA",
-    "BLUE_C": "#58C4DD",
-    "BLUE_B": "#9CDCEB",
-    "BLUE_A": "#C7E9F1",
-    "TEAL_E": "#49A88F",
-    "TEAL_D": "#55C1A7",
-    "TEAL_C": "#5CD0B3",
-    "TEAL_B": "#76DDC0",
-    "TEAL_A": "#ACEAD7",
-    "GREEN_E": "#699C52",
-    "GREEN_D": "#77B05D",
-    "GREEN_C": "#83C167",
-    "GREEN_B": "#A6CF8C",
-    "GREEN_A": "#C9E2AE",
-    "YELLOW_E": "#E8C11C",
-    "YELLOW_D": "#F4D345",
-    "YELLOW_C": "#FFFF00",
-    "YELLOW_B": "#FFEA94",
-    "YELLOW_A": "#FFF1B6",
-    "GOLD_E": "#C78D46",
-    "GOLD_D": "#E1A158",
-    "GOLD_C": "#F0AC5F",
-    "GOLD_B": "#F9B775",
-    "GOLD_A": "#F7C797",
-    "RED_E": "#CF5044",
-    "RED_D": "#E65A4C",
-    "RED_C": "#FC6255",
-    "RED_B": "#FF8080",
-    "RED_A": "#F7A1A3",
-    "MAROON_E": "#94424F",
-    "MAROON_D": "#A24D61",
-    "MAROON_C": "#C55F73",
-    "MAROON_B": "#EC92AB",
-    "MAROON_A": "#ECABC1",
-    "PURPLE_E": "#644172",
-    "PURPLE_D": "#715582",
-    "PURPLE_C": "#9A72AC",
-    "PURPLE_B": "#B189C6",
-    "PURPLE_A": "#CAA3E8",
-    "WHITE": "#FFFFFF",
-    "BLACK": "#000000",
-    "LIGHT_GRAY": "#BBBBBB",
-    "LIGHT_GREY": "#BBBBBB",
-    "GRAY": "#888888",
-    "GREY": "#888888",
-    "DARK_GREY": "#444444",
-    "DARK_GRAY": "#444444",
-    "DARKER_GREY": "#222222",
-    "DARKER_GRAY": "#222222",
-    "GREY_BROWN": "#736357",
-    "PINK": "#D147BD",
-    "LIGHT_PINK": "#DC75CD",
-    "GREEN_SCREEN": "#00FF00",
-    "ORANGE": "#FF862F",
-}
-COLOR_MAP.update(
-    {
-        name.replace("_C", ""): COLOR_MAP[name]
-        for name in COLOR_MAP
-        if name.endswith("_C")
-    }
-)
-PALETTE = list(COLOR_MAP.values())
-locals().update(COLOR_MAP)
 FFMPEG_VERBOSITY_MAP = {
     "DEBUG": "error",
     "INFO": "error",
@@ -190,3 +117,77 @@ FFMPEG_VERBOSITY_MAP = {
     "CRITICAL": "fatal",
 }
 VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
+
+# gif stuff
+GIF_FILE_EXTENSION = ".gif"
+
+
+# Colors
+class Colors(Enum):
+    """A list of pre-defined colors."""
+    dark_blue = "#236B8E"
+    dark_brown = "#8B4513"
+    light_brown = "#CD853F"
+    blue_e = "#1C758A"
+    blue_d = "#29ABCA"
+    blue_c = "#58C4DD"
+    blue = "#58C4DD"
+    blue_b = "#9CDCEB"
+    blue_a = "#C7E9F1"
+    teal_e = "#49A88F"
+    teal_d = "#55C1A7"
+    teal_c = "#5CD0B3"
+    teal = "#5CD0B3"
+    teal_b = "#76DDC0"
+    teal_a = "#ACEAD7"
+    green_e = "#699C52"
+    green_d = "#77B05D"
+    green_c = "#83C167"
+    green = "#83C167"
+    green_b = "#A6CF8C"
+    green_a = "#C9E2AE"
+    yellow_e = "#E8C11C"
+    yellow_d = "#F4D345"
+    yellow_c = "#FFFF00"
+    yellow = "#FFFF00"
+    yellow_b = "#FFEA94"
+    yellow_a = "#FFF1B6"
+    gold_e = "#C78D46"
+    gold_d = "#E1A158"
+    gold_c = "#F0AC5F"
+    gold = "#F0AC5F"
+    gold_b = "#F9B775"
+    gold_a = "#F7C797"
+    red_e = "#CF5044"
+    red_d = "#E65A4C"
+    red_c = "#FC6255"
+    red = "#FC6255"
+    red_b = "#FF8080"
+    red_a = "#F7A1A3"
+    maroon_e = "#94424F"
+    maroon_d = "#A24D61"
+    maroon_c = "#C55F73"
+    maroon = "#C55F73"
+    maroon_b = "#EC92AB"
+    maroon_a = "#ECABC1"
+    purple_e = "#644172"
+    purple_d = "#715582"
+    purple_c = "#9A72AC"
+    purple = "#9A72AC"
+    purple_b = "#B189C6"
+    purple_a = "#CAA3E8"
+    white = "#FFFFFF"
+    black = "#000000"
+    light_gray = "#BBBBBB"
+    light_grey = "#BBBBBB"
+    gray = "#888888"
+    grey = "#888888"
+    dark_grey = "#444444"
+    dark_gray = "#444444"
+    darker_grey = "#222222"
+    darker_gray = "#222222"
+    grey_brown = "#736357"
+    pink = "#D147BD"
+    light_pink = "#DC75CD"
+    green_screen = "#00FF00"
+    orange = "#FF862F"

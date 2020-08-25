@@ -3,8 +3,7 @@ import random
 from colour import Color
 import numpy as np
 
-from ..constants import COLOR_MAP
-from ..constants import WHITE
+from ..constants import Colors
 from ..utils.bezier import interpolate
 from ..utils.simple_functions import clip_in_place
 from ..utils.space_ops import normalize
@@ -27,7 +26,7 @@ def rgb_to_color(rgb):
     try:
         return Color(rgb=rgb)
     except:
-        return Color(WHITE)
+        return Color(Colors.white.value)
 
 
 def rgba_to_color(rgba):
@@ -93,7 +92,7 @@ def random_bright_color():
 
 
 def random_color():
-    return random.choice(list(COLOR_MAP.values()))
+    return random.choice([c.value for c in Colors])
 
 
 def get_shaded_rgb(rgb, point, unit_normal_vect, light_source):

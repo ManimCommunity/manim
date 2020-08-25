@@ -9,8 +9,8 @@ class PlotFunctionsTest(GraphScene):
         "y_min": -1.5,
         "y_max": 1.5,
         "graph_origin": ORIGIN,
-        "function_color": RED,
-        "axes_color": GREEN,
+        "function_color": Colors.red.value,
+        "axes_color": Colors.green.value,
         "x_labeled_nums": range(-10, 12, 2),
     }
 
@@ -29,7 +29,7 @@ class NumberLineTest(GraphScene):
         "y_min": -1.5,
         "y_max": 1.5,
         "graph_origin": ORIGIN,
-        "axes_color": YELLOW,
+        "axes_color": Colors.yellow.value,
         "x_labeled_nums": range(-10, 12, 2),
         "y_labeled_nums": range(-1, 2),
         "x_axis_config": {
@@ -37,7 +37,7 @@ class NumberLineTest(GraphScene):
             "decimal_number_config": {"num_decimal_places": 1,},
         },
         "y_axis_config": {
-            "color": RED,
+            "color": Colors.red.value,
             "decimal_number_config": {"num_decimal_places": 2,},
         },
     }

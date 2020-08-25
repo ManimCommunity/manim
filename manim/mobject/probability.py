@@ -16,10 +16,10 @@ class SampleSpace(Rectangle):
     CONFIG = {
         "height": 3,
         "width": 3,
-        "fill_color": DARK_GREY,
+        "fill_color": Colors.dark_grey.value,
         "fill_opacity": 1,
         "stroke_width": 0.5,
-        "stroke_color": LIGHT_GREY,
+        "stroke_color": Colors.light_grey.value,
         ##
         "default_label_scale_val": 1,
     }
@@ -59,10 +59,10 @@ class SampleSpace(Rectangle):
             parts.add(part)
         return parts
 
-    def get_horizontal_division(self, p_list, colors=[GREEN_E, BLUE_E], vect=DOWN):
+    def get_horizontal_division(self, p_list, colors=[Colors.green_e.value, Colors.blue_e.value], vect=DOWN):
         return self.get_division_along_dimension(p_list, 1, colors, vect)
 
-    def get_vertical_division(self, p_list, colors=[MAROON_B, YELLOW], vect=RIGHT):
+    def get_vertical_division(self, p_list, colors=[Colors.maroon_b.value, Colors.yellow.value], vect=RIGHT):
         return self.get_division_along_dimension(p_list, 0, colors, vect)
 
     def divide_horizontally(self, *args, **kwargs):
@@ -141,7 +141,7 @@ class BarChart(VGroup):
         "label_y_axis": True,
         "y_axis_label_height": 0.25,
         "max_value": 1,
-        "bar_colors": [BLUE, YELLOW],
+        "bar_colors": [Colors.blue.value, Colors.yellow.value],
         "bar_fill_opacity": 0.8,
         "bar_stroke_width": 3,
         "bar_names": [],

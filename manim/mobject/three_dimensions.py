@@ -22,10 +22,10 @@ class ParametricSurface(VGroup):
         "v_max": 1,
         "resolution": 32,
         "surface_piece_config": {},
-        "fill_color": BLUE_D,
+        "fill_color": Colors.blue_d.value,
         "fill_opacity": 1.0,
-        "checkerboard_colors": [BLUE_D, BLUE_E],
-        "stroke_color": LIGHT_GREY,
+        "checkerboard_colors": [Colors.blue_d.value, Colors.blue_e.value],
+        "stroke_color": Colors.light_grey.value,
         "stroke_width": 0.5,
         "should_make_jagged": False,
         "pre_function_handle_to_anchor_scale_factor": 0.00001,
@@ -114,7 +114,7 @@ class Sphere(ParametricSurface):
 class Cube(VGroup):
     CONFIG = {
         "fill_opacity": 0.75,
-        "fill_color": BLUE,
+        "fill_color": Colors.blue.value,
         "stroke_width": 0,
         "side_length": 2,
     }

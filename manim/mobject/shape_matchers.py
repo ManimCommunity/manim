@@ -9,7 +9,7 @@ from ..utils.config_ops import digest_config
 
 class SurroundingRectangle(Rectangle):
     CONFIG = {
-        "color": YELLOW,
+        "color": Colors.yellow.value,
         "buff": SMALL_BUFF,
     }
 
@@ -23,7 +23,7 @@ class SurroundingRectangle(Rectangle):
 
 class BackgroundRectangle(SurroundingRectangle):
     CONFIG = {
-        "color": BLACK,
+        "color": Colors.black.value,
         "stroke_width": 0,
         "stroke_opacity": 0,
         "fill_opacity": 0.75,
@@ -49,9 +49,9 @@ class BackgroundRectangle(SurroundingRectangle):
         # Unchangable style, except for fill_opacity
         VMobject.set_style_data(
             self,
-            stroke_color=BLACK,
+            stroke_color=Colors.black.value,
             stroke_width=0,
-            fill_color=BLACK,
+            fill_color=Colors.black.value,
             fill_opacity=fill_opacity,
         )
         return self
@@ -62,7 +62,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
 class Cross(VGroup):
     CONFIG = {
-        "stroke_color": RED,
+        "stroke_color": Colors.red.value,
         "stroke_width": 6,
     }
 

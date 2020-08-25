@@ -25,7 +25,7 @@ from ..utils.rate_functions import wiggle
 class FocusOn(Transform):
     CONFIG = {
         "opacity": 0.2,
-        "color": GREY,
+        "color": Colors.grey.value,
         "run_time": 2,
         "remover": True,
     }
@@ -55,7 +55,7 @@ class Indicate(Transform):
     CONFIG = {
         "rate_func": there_and_back,
         "scale_factor": 1.2,
-        "color": YELLOW,
+        "color": Colors.yellow.value,
     }
 
     def create_target(self):
@@ -74,7 +74,7 @@ class Flash(AnimationGroup):
         "run_time": 1,
     }
 
-    def __init__(self, point, color=YELLOW, **kwargs):
+    def __init__(self, point, color=Colors.yellow.value, **kwargs):
         self.point = point
         self.color = color
         digest_config(self, kwargs)
@@ -104,7 +104,7 @@ class CircleIndicate(Indicate):
     CONFIG = {
         "rate_func": there_and_back,
         "remover": True,
-        "circle_config": {"color": YELLOW,},
+        "circle_config": {"color": Colors.yellow.value,},
     }
 
     def __init__(self, mobject, **kwargs):

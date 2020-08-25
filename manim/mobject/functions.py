@@ -76,7 +76,7 @@ class ParametricFunction(VMobject):
 
 class FunctionGraph(ParametricFunction):
     CONFIG = {
-        "color": YELLOW,
+        "color": Colors.yellow.value,
         "x_min": -config["frame_x_radius"],
         "x_max": config["frame_x_radius"],
     }

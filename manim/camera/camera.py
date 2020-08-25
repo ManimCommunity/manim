@@ -52,7 +52,7 @@ class Camera(object):
         "frame_height": config["frame_height"],
         "frame_width": config["frame_width"],
         "frame_center": ORIGIN,
-        "background_color": BLACK,
+        "background_color": Colors.black.value,
         "background_opacity": 1,
         # Points in vectorized mobjects with norm greater
         # than this value will be rescaled.

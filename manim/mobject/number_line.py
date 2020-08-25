@@ -14,7 +14,7 @@ from ..utils.space_ops import normalize
 
 class NumberLine(Line):
     CONFIG = {
-        "color": LIGHT_GREY,
+        "color": Colors.light_grey.value,
         "x_min": -config["frame_x_radius"],
         "x_max": config["frame_x_radius"],
         "unit_size": 1,

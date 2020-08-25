@@ -30,7 +30,7 @@ class TextSetting(object):
 class Text(SVGMobject):
     CONFIG = {
         # Mobject
-        "color": WHITE,
+        "color": Colors.white.value,
         "height": None,
         "width": None,
         "fill_opacity": 1,

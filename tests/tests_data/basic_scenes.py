@@ -9,7 +9,7 @@ class SquareToCircle(Scene):
         square = Square()
         square.flip(RIGHT)
         square.rotate(-3 * TAU / 8)
-        circle.set_fill(PINK, opacity=0.5)
+        circle.set_fill(Colors.pink.value, opacity=0.5)
 
         self.play(ShowCreation(square))
         self.play(Transform(square, circle))
@@ -19,7 +19,7 @@ class SquareToCircle(Scene):
 class WriteStuff(Scene):
     def construct(self):
         example_text = TextMobject(
-            "This is a some text", tex_to_color_map={"text": YELLOW}
+            "This is a some text", tex_to_color_map={"text": Colors.yellow.value}
         )
         example_tex = TexMobject(
             "\\sum_{k=1}^\\infty {1 \\over k^2} = {\\pi^2 \\over 6}",

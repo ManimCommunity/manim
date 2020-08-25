@@ -3,8 +3,7 @@ import operator as op
 from ..animation.composition import LaggedStart
 from ..animation.transform import ApplyMethod
 from ..animation.transform import Restore
-from ..constants import WHITE
-from ..constants import BLACK
+from ..constants import Colors
 from ..mobject.geometry import Circle
 from ..mobject.svg.drawings import Car
 from ..mobject.types.vectorized_mobject import VGroup
@@ -53,7 +52,7 @@ class Broadcast(LaggedStart):
         "big_radius": 5,
         "n_circles": 5,
         "start_stroke_width": 8,
-        "color": WHITE,
+        "color": Colors.white.value,
         "remover": True,
         "lag_ratio": 0.2,
         "run_time": 3,
@@ -64,7 +63,7 @@ class Broadcast(LaggedStart):
         digest_config(self, kwargs)
         circles = VGroup()
         for x in range(self.n_circles):
-            circle = Circle(radius=self.big_radius, stroke_color=BLACK, stroke_width=0,)
+            circle = Circle(radius=self.big_radius, stroke_color=Colors.black.value, stroke_width=0,)
             circle.add_updater(lambda c: c.move_to(focal_point))
             circle.save_state()
             circle.set_width(self.small_radius * 2)

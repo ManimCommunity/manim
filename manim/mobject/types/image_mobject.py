@@ -107,7 +107,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
     CONFIG = {
         "default_display_frame_config": {
             "stroke_width": 3,
-            "stroke_color": WHITE,
+            "stroke_color": Colors.white.value,
             "buff": 0,
         }
     }

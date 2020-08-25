@@ -38,11 +38,11 @@ class VMobject(Mobject):
         # The purpose of background stroke is to have
         # something that won't overlap the fill, e.g.
         # For text against some textured background
-        "background_stroke_color": BLACK,
+        "background_stroke_color": Colors.black.value,
         "background_stroke_opacity": 1.0,
         "background_stroke_width": 0,
         # When a color c is set, there will be a second color
-        # computed based on interpolating c to WHITE by with
+        # computed based on interpolating c to Colors.white by with
         # sheen_factor, and the display will gradient to this
         # secondary color in the direction of sheen_direction.
         "sheen_factor": 0.0,
@@ -107,7 +107,7 @@ class VMobject(Mobject):
         return rgbas
 
     def update_rgbas_array(self, array_name, color=None, opacity=None):
-        passed_color = color if (color is not None) else BLACK
+        passed_color = color if (color is not None) else Colors.black.value
         passed_opacity = opacity if (opacity is not None) else 0
         rgbas = self.generate_rgbas_array(passed_color, passed_opacity)
         if not hasattr(self, array_name):
@@ -353,7 +353,7 @@ class VMobject(Mobject):
 
     def color_using_background_image(self, background_image_file):
         self.background_image_file = background_image_file
-        self.set_color(WHITE)
+        self.set_color(Colors.white.value)
         for submob in self.submobjects:
             submob.color_using_background_image(background_image_file)
         return self
@@ -1066,7 +1066,7 @@ class VDict(VMobject):
 
 class VectorizedPoint(VMobject):
     CONFIG = {
-        "color": BLACK,
+        "color": Colors.black.value,
         "fill_opacity": 0,
         "stroke_width": 0,
         "artificial_width": 0.01,
@@ -1102,7 +1102,7 @@ class CurvesAsSubmobjects(VGroup):
 
 
 class DashedVMobject(VMobject):
-    CONFIG = {"num_dashes": 15, "positive_space_ratio": 0.5, "color": WHITE}
+    CONFIG = {"num_dashes": 15, "positive_space_ratio": 0.5, "color": Colors.white.value}
 
     def __init__(self, vmobject, **kwargs):
         VMobject.__init__(self, **kwargs)

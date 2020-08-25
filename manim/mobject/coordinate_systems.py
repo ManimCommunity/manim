@@ -122,7 +122,7 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem):
     CONFIG = {
         "axis_config": {
-            "color": LIGHT_GREY,
+            "color": Colors.light_grey.value,
             "include_tip": True,
             "exclude_zero_from_default_numbers": True,
         },
@@ -234,7 +234,7 @@ class ThreeDAxes(Axes):
 class NumberPlane(Axes):
     CONFIG = {
         "axis_config": {
-            "stroke_color": WHITE,
+            "stroke_color": Colors.white.value,
             "stroke_width": 2,
             "include_ticks": False,
             "include_tip": False,
@@ -244,7 +244,7 @@ class NumberPlane(Axes):
         },
         "y_axis_config": {"label_direction": DR,},
         "background_line_style": {
-            "stroke_color": BLUE_D,
+            "stroke_color": Colors.blue_d.value,
             "stroke_width": 2,
             "stroke_opacity": 1,
         },
@@ -373,7 +373,7 @@ class NumberPlane(Axes):
 
 class ComplexPlane(NumberPlane):
     CONFIG = {
-        "color": BLUE,
+        "color": Colors.blue.value,
         "line_frequency": 1,
     }
 

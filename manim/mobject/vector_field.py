@@ -24,7 +24,7 @@ from ..utils.space_ops import get_norm
 # from ..utils.space_ops import normalize
 
 
-DEFAULT_SCALAR_FIELD_COLORS = [BLUE_E, GREEN, YELLOW, RED]
+DEFAULT_SCALAR_FIELD_COLORS = [Colors.blue_e.value, Colors.green.value, Colors.yellow.value, Colors.red.value]
 
 
 def get_colored_background_image(
@@ -53,7 +53,7 @@ def get_colored_background_image(
 
 
 def get_rgb_gradient_function(
-    min_value=0, max_value=1, colors=[BLUE, RED], flip_alphas=True,  # Why?
+    min_value=0, max_value=1, colors=[Colors.blue.value, Colors.red.value], flip_alphas=True,  # Why?
 ):
     rgbs = np.array(list(map(color_to_rgb, colors)))
 
@@ -187,7 +187,7 @@ class StreamLines(VGroup):
         "virtual_time": 3,
         "n_anchors_per_line": 100,
         "stroke_width": 1,
-        "stroke_color": WHITE,
+        "stroke_color": Colors.white.value,
         "color_by_arc_length": True,
         # Min and max arc lengths meant to define
         # the color range, should color_by_arc_length be True

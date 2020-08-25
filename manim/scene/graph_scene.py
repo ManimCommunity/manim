@@ -40,14 +40,14 @@ class GraphScene(Scene):
         "y_bottom_tick": None,  # Change if different from y_min
         "y_labeled_nums": None,
         "y_axis_label": "$y$",
-        "axes_color": GREY,
+        "axes_color": Colors.grey.value,
         "graph_origin": 2.5 * DOWN + 4 * LEFT,
         "exclude_zero_label": True,
-        "default_graph_colors": [BLUE, GREEN, YELLOW],
-        "default_derivative_color": GREEN,
-        "default_input_color": YELLOW,
-        "default_riemann_start_color": BLUE,
-        "default_riemann_end_color": GREEN,
+        "default_graph_colors": [Colors.blue.value, Colors.green.value, Colors.yellow.value],
+        "default_derivative_color": Colors.green.value,
+        "default_input_color": Colors.yellow.value,
+        "default_riemann_start_color": Colors.blue.value,
+        "default_riemann_end_color": Colors.green.value,
         "area_opacity": 0.8,
         "num_rects": 50,
         "include_tip": False,  # add tip at the end of the axes
@@ -436,7 +436,7 @@ class GraphScene(Scene):
         input_sample_type="left",
         bounded_graph=None,
         stroke_width=1,
-        stroke_color=BLACK,
+        stroke_color=Colors.black.value,
         fill_opacity=1,
         start_color=None,
         end_color=None,
@@ -591,7 +591,7 @@ class GraphScene(Scene):
         ]
 
     def get_area(
-        self, graph, t_min, t_max, bounded=None, dx_scaling=1, area_color=WHITE
+        self, graph, t_min, t_max, bounded=None, dx_scaling=1, area_color=Colors.white.value
     ):
         """
         Returns a VGroup of Riemann rectangles
@@ -854,7 +854,7 @@ class GraphScene(Scene):
         return group
 
     def add_T_label(
-        self, x_val, side=RIGHT, label=None, color=WHITE, animated=False, **kwargs
+        self, x_val, side=RIGHT, label=None, color=Colors.white.value, animated=False, **kwargs
     ):
         """
         This method adds to the Scene:
@@ -894,7 +894,7 @@ class GraphScene(Scene):
             T_label = TexMobject(label, fill_color=color)
 
         T_label.next_to(triangle, DOWN)
-        v_line = self.get_vertical_line_to_graph(x_val, self.v_graph, color=YELLOW)
+        v_line = self.get_vertical_line_to_graph(x_val, self.v_graph, color=Colors.yellow.value)
 
         if animated:
             self.play(

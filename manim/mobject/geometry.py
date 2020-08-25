@@ -322,7 +322,7 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
-    CONFIG = {"color": RED, "close_new_points": True, "anchors_span_full_range": False}
+    CONFIG = {"color": Colors.red.value, "close_new_points": True, "anchors_span_full_range": False}
 
     def __init__(self, **kwargs):
         Arc.__init__(self, 0, TAU, **kwargs)
@@ -348,7 +348,7 @@ class Dot(Circle):
         "radius": DEFAULT_DOT_RADIUS,
         "stroke_width": 0,
         "fill_opacity": 1.0,
-        "color": WHITE,
+        "color": Colors.white.value,
     }
 
     def __init__(self, point=ORIGIN, **kwargs):
@@ -378,7 +378,7 @@ class AnnularSector(Arc):
         "start_angle": 0,
         "fill_opacity": 1,
         "stroke_width": 0,
-        "color": WHITE,
+        "color": Colors.white.value,
     }
 
     def generate_points(self):
@@ -408,7 +408,7 @@ class Annulus(Circle):
         "outer_radius": 2,
         "fill_opacity": 1,
         "stroke_width": 0,
-        "color": WHITE,
+        "color": Colors.white.value,
         "mark_paths_closed": False,
     }
 
@@ -684,7 +684,7 @@ class CubicBezier(VMobject):
 
 class Polygon(VMobject):
     CONFIG = {
-        "color": BLUE,
+        "color": Colors.blue.value,
     }
 
     def __init__(self, *vertices, **kwargs):
@@ -782,7 +782,7 @@ class ArrowTip(Triangle):
 
 class Rectangle(Polygon):
     CONFIG = {
-        "color": WHITE,
+        "color": Colors.white.value,
         "height": 2.0,
         "width": 4.0,
         "mark_paths_closed": True,

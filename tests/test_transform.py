@@ -51,7 +51,7 @@ class ApplyPointwiseFunctionTest(Scene):
 class FadeToColortTest(Scene):
     def construct(self):
         square = Square()
-        self.play(FadeToColor(square, RED))
+        self.play(FadeToColor(square, Colors.red.value))
 
 
 class ScaleInPlaceTest(Scene):
@@ -85,7 +85,7 @@ class ApplyFunctionTest(Scene):
             mob.scale(2)
             mob.to_corner(UR)
             mob.rotate(PI / 4)
-            mob.set_color(RED)
+            mob.set_color(Colors.red.value)
             return mob
 
         self.play(ApplyFunction(apply_function, square))

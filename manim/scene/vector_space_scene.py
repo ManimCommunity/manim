@@ -31,9 +31,9 @@ from ..utils.rate_functions import rush_into
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 
-X_COLOR = GREEN_C
-Y_COLOR = RED_C
-Z_COLOR = BLUE_D
+X_COLOR = Colors.green_c.value
+Y_COLOR = Colors.red_c.value
+Z_COLOR = Colors.blue_d.value
 
 
 # TODO: Much of this scene type seems dependent on the coordinate system chosen.
@@ -67,7 +67,7 @@ class VectorScene(Scene):
         self.add(plane)
         return plane
 
-    def add_axes(self, animate=False, color=WHITE, **kwargs):
+    def add_axes(self, animate=False, color=Colors.white.value, **kwargs):
         """
         Adds a pair of Axes to the Scene.
 
@@ -76,7 +76,7 @@ class VectorScene(Scene):
         animate : bool, optional
             Whether or not to animate the addition of the axes through ShowCreation.
         color : bool, optional
-            The color of the axes. Defaults to WHITE.
+            The color of the axes. Defaults to Colors.white.value.
         """
         axes = Axes(color=color, tick_frequency=1)
         if animate:
@@ -100,7 +100,7 @@ class VectorScene(Scene):
         plane = self.add_plane()
         axes = plane.get_axes()
         plane.fade(dimness)
-        axes.set_color(WHITE)
+        axes.set_color(Colors.white.value)
         axes.fade(axes_dimness)
         self.add(axes)
         self.freeze_background()
@@ -128,7 +128,7 @@ class VectorScene(Scene):
             **kwargs,
         )
 
-    def add_vector(self, vector, color=YELLOW, animate=True, **kwargs):
+    def add_vector(self, vector, color=Colors.yellow.value, animate=True, **kwargs):
         """
         Returns the Vector after adding it to the Plane.
 
@@ -141,7 +141,7 @@ class VectorScene(Scene):
         color : str
             The string of the hex color of the vector.
             This is only taken into consideration if
-            'vector' is not an Arrow. Defaults to YELLOW.
+            'vector' is not an Arrow. Defaults to Colors.yellow.value.
 
         animate : bool
             Whether or not to animate the addition of the vector
@@ -180,7 +180,7 @@ class VectorScene(Scene):
             integer_labels (True) : Whether or not to round the coordinates
                                     to integers.
             n_dim (2) : The number of dimensions of the vector.
-            color (WHITE) : The color of the label.
+            color (Colors.white.value) : The color of the label.
 
         Returns
         -------
@@ -487,8 +487,8 @@ class VectorScene(Scene):
                 for y in range(-y_max, y_max)
             ]
         )
-        dots.set_fill(BLACK, opacity=0)
-        dots_halfway = dots.copy().shift(vector / 2).set_fill(WHITE, 1)
+        dots.set_fill(Colors.black.value, opacity=0)
+        dots_halfway = dots.copy().shift(vector / 2).set_fill(Colors.white.value, 1)
         dots_end = dots.copy().shift(vector)
 
         self.play(Transform(dots, dots_halfway, rate_func=rush_into))
@@ -513,10 +513,10 @@ class LinearTransformationScene(VectorScene):
             "faded_line_ratio": 0,
         },
         "background_plane_kwargs": {
-            "color": GREY,
-            "axis_config": {"stroke_color": LIGHT_GREY,},
-            "axis_config": {"color": GREY,},
-            "background_line_style": {"stroke_color": GREY, "stroke_width": 1,},
+            "color": Colors.grey.value,
+            "axis_config": {"stroke_color": Colors.light_grey.value,},
+            "axis_config": {"color": Colors.grey.value,},
+            "background_line_style": {"stroke_color": Colors.grey.value, "stroke_width": 1,},
         },
         "show_coordinates": False,
         "show_basis_vectors": True,
@@ -633,7 +633,7 @@ class LinearTransformationScene(VectorScene):
         mobject.target = target_mobject
         self.add_special_mobjects(self.moving_mobjects, mobject)
 
-    def get_unit_square(self, color=YELLOW, opacity=0.3, stroke_width=3):
+    def get_unit_square(self, color=Colors.yellow.value, opacity=0.3, stroke_width=3):
         """
         Returns a unit square for the current NumberPlane.
 
@@ -693,7 +693,7 @@ class LinearTransformationScene(VectorScene):
         self.square = square
         return self
 
-    def add_vector(self, vector, color=YELLOW, **kwargs):
+    def add_vector(self, vector, color=Colors.yellow.value, **kwargs):
         """
         Adds a vector to the scene, and puts it in the special
         list self.moving_vectors.
@@ -707,7 +707,7 @@ class LinearTransformationScene(VectorScene):
         color : str
             The string of the hex color of the vector.
             This is only taken into consideration if
-            'vector' is not an Arrow. Defaults to YELLOW.
+            'vector' is not an Arrow. Defaults to Colors.yellow.value.
 
         **kwargs
             Any valid keyword argument of VectorScene.add_vector.
