@@ -1,3 +1,4 @@
+"""A Camera converts a Scene into visual data."""
 from functools import reduce
 import itertools as it
 import operator as op

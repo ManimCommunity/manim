@@ -1,3 +1,4 @@
+"""Mobjects generated from SVG files."""
 import itertools as it
 import re
 import os

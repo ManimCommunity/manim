@@ -1,3 +1,4 @@
+"""Animate a Mobject's arrival on screen."""
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.types.vectorized_mobject import VMobject
