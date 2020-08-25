@@ -35,7 +35,6 @@ class Mobject(Container):
     submobjects : :class:`list`
         The contained objects.
 
-
     """
 
     CONFIG = {
