@@ -1,16 +1,17 @@
 import html
 import os
+import re
+
+from pygments import highlight
+from pygments.formatters.html import HtmlFormatter
+from pygments.lexers import get_lexer_by_name
+
 from ...constants import *
 from ...container import Container
 from ...mobject.geometry import RoundedRectangle
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
 from ...mobject.types.vectorized_mobject import VGroup
-
-import re
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters.html import HtmlFormatter
 
 """
 1) Code is VGroup() with three things
