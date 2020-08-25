@@ -58,14 +58,13 @@ class Code(VGroup):
         self.style = self.style.lower()
         self.gen_html_string()
         strati = self.html_string.find("background:")
-        self.background_color = self.html_string[strati + 12: strati + 19]
+        self.background_color = self.html_string[strati + 12 : strati + 19]
         self.gen_code_json()
 
         self.code = self.gen_colored_lines()
         if self.insert_line_no:
             self.line_numbers = self.gen_line_numbers()
-            self.line_numbers.next_to(
-                self.code, direction=LEFT, buff=self.line_no_buff)
+            self.line_numbers.next_to(self.code, direction=LEFT, buff=self.line_no_buff)
 
         if self.background == "rectangle":
             if self.insert_line_no:
@@ -153,8 +152,7 @@ class Code(VGroup):
             if os.path.exists(path):
                 self.file_path = path
                 return
-        raise IOError("No file matching %s in codes directory" %
-                      self.file_name)
+        raise IOError("No file matching %s in codes directory" % self.file_name)
 
     def gen_line_numbers(self):
         line_numbers_array = []
@@ -190,7 +188,7 @@ class Code(VGroup):
             line_char_index = self.tab_spaces[line_no]
             for word_index in range(self.code_json[line_no].__len__()):
                 line[
-                    line_char_index: line_char_index
+                    line_char_index : line_char_index
                     + self.code_json[line_no][word_index][0].__len__()
                 ].set_color(self.code_json[line_no][word_index][1])
                 line_char_index += self.code_json[line_no][word_index][0].__len__()
@@ -237,8 +235,7 @@ class Code(VGroup):
             self.html_string = self.html_string.replace(
                 "</span>" + " " * i, " " * i + "</span>"
             )
-        self.html_string = self.html_string.replace(
-            "background-color:", "background:")
+        self.html_string = self.html_string.replace("background-color:", "background:")
 
         if self.insert_line_no:
             start_point = self.html_string.find("</td><td><pre")
@@ -248,9 +245,9 @@ class Code(VGroup):
         self.html_string = self.html_string[start_point:]
         # print(self.html_string)
         lines = self.html_string.split("\n")
-        lines = lines[0: lines.__len__() - 2]
+        lines = lines[0 : lines.__len__() - 2]
         start_point = lines[0].find(">")
-        lines[0] = lines[0][start_point + 1:]
+        lines[0] = lines[0][start_point + 1 :]
         # print(lines)
         self.code_json = []
         self.tab_spaces = []
@@ -275,14 +272,13 @@ class Code(VGroup):
                         "\t" * indentation_char_count
                         + starting_string[
                             starting_string.rfind(self.indentation_char)
-                            + self.indentation_char.__len__():
+                            + self.indentation_char.__len__() :
                         ]
                         + lines[line_index][start_point:]
                     )
                 else:
                     lines[line_index] = (
-                        "\t" * indentation_char_count +
-                        lines[line_index][start_point:]
+                        "\t" * indentation_char_count + lines[line_index][start_point:]
                     )
 
             indentation_char_count = 0
@@ -300,12 +296,12 @@ class Code(VGroup):
                 else:
                     starti = words[word_index][color_index:].find("#")
                     color = words[word_index][
-                        color_index + starti: color_index + starti + 7
+                        color_index + starti : color_index + starti + 7
                     ]
 
                 start_point = words[word_index].find(">")
                 end_point = words[word_index].find("</span>")
-                text = words[word_index][start_point + 1: end_point]
+                text = words[word_index][start_point + 1 : end_point]
                 text = html.unescape(text)
                 if text != "":
                     # print(text, "'" + color + "'")
