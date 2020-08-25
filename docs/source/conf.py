@@ -71,5 +71,5 @@ extensions.append("guzzle_sphinx_theme")
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-
+# This specifies any additional css files that will override the theme's
 html_css_files = ['custom.css']
