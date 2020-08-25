@@ -516,7 +516,10 @@ class LinearTransformationScene(VectorScene):
             "color": Colors.grey.value,
             "axis_config": {"stroke_color": Colors.light_grey.value,},
             "axis_config": {"color": Colors.grey.value,},
-            "background_line_style": {"stroke_color": Colors.grey.value, "stroke_width": 1,},
+            "background_line_style": {
+                "stroke_color": Colors.grey.value,
+                "stroke_width": 1,
+            },
         },
         "show_coordinates": False,
         "show_basis_vectors": True,

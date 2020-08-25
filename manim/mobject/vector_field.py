@@ -24,7 +24,12 @@ from ..utils.space_ops import get_norm
 # from ..utils.space_ops import normalize
 
 
-DEFAULT_SCALAR_FIELD_COLORS = [Colors.blue_e.value, Colors.green.value, Colors.yellow.value, Colors.red.value]
+DEFAULT_SCALAR_FIELD_COLORS = [
+    Colors.blue_e.value,
+    Colors.green.value,
+    Colors.yellow.value,
+    Colors.red.value,
+]
 
 
 def get_colored_background_image(
@@ -53,7 +58,10 @@ def get_colored_background_image(
 
 
 def get_rgb_gradient_function(
-    min_value=0, max_value=1, colors=[Colors.blue.value, Colors.red.value], flip_alphas=True,  # Why?
+    min_value=0,
+    max_value=1,
+    colors=[Colors.blue.value, Colors.red.value],
+    flip_alphas=True,  # Why?
 ):
     rgbs = np.array(list(map(color_to_rgb, colors)))
 

@@ -7,7 +7,12 @@ from ..utils.space_ops import get_norm
 
 class AnimatedBoundary(VGroup):
     CONFIG = {
-        "colors": [Colors.blue_d.value, Colors.blue_b.value, Colors.blue_e.value, Colors.grey_brown.value],
+        "colors": [
+            Colors.blue_d.value,
+            Colors.blue_b.value,
+            Colors.blue_e.value,
+            Colors.grey_brown.value,
+        ],
         "max_stroke_width": 3,
         "cycle_rate": 0.5,
         "back_and_forth": True,

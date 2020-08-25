@@ -125,6 +125,7 @@ GIF_FILE_EXTENSION = ".gif"
 # Colors
 class Colors(Enum):
     """A list of pre-defined colors."""
+
     dark_blue = "#236B8E"
     dark_brown = "#8B4513"
     light_brown = "#CD853F"

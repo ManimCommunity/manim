@@ -27,7 +27,9 @@ def matrix_to_mobject(matrix):
     return TexMobject(matrix_to_tex_string(matrix))
 
 
-def vector_coordinate_label(vector_mob, integer_labels=True, n_dim=2, color=Colors.white.value):
+def vector_coordinate_label(
+    vector_mob, integer_labels=True, n_dim=2, color=Colors.white.value
+):
     vect = np.array(vector_mob.get_end())
     if integer_labels:
         vect = np.round(vect).astype(int)

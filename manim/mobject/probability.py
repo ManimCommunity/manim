@@ -59,10 +59,14 @@ class SampleSpace(Rectangle):
             parts.add(part)
         return parts
 
-    def get_horizontal_division(self, p_list, colors=[Colors.green_e.value, Colors.blue_e.value], vect=DOWN):
+    def get_horizontal_division(
+        self, p_list, colors=[Colors.green_e.value, Colors.blue_e.value], vect=DOWN
+    ):
         return self.get_division_along_dimension(p_list, 1, colors, vect)
 
-    def get_vertical_division(self, p_list, colors=[Colors.maroon_b.value, Colors.yellow.value], vect=RIGHT):
+    def get_vertical_division(
+        self, p_list, colors=[Colors.maroon_b.value, Colors.yellow.value], vect=RIGHT
+    ):
         return self.get_division_along_dimension(p_list, 0, colors, vect)
 
     def divide_horizontally(self, *args, **kwargs):

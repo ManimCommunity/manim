@@ -228,7 +228,9 @@ class Laptop(VGroup):
         body.add(keyboard)
 
         screen_plate.stretch(self.screen_thickness / self.body_dimensions[2], dim=2)
-        screen = Rectangle(stroke_width=0, fill_color=Colors.black.value, fill_opacity=1,)
+        screen = Rectangle(
+            stroke_width=0, fill_color=Colors.black.value, fill_opacity=1,
+        )
         screen.replace(screen_plate, stretch=True)
         screen.scale_in_place(self.screen_width_to_screen_plate_width)
         screen.next_to(screen_plate, OUT, buff=0.1 * SMALL_BUFF)
@@ -533,7 +535,10 @@ class Car(SVGMobject):
             radius = tire.get_width() / 2
             center = tire.get_center()
             tred = Line(
-                0.7 * radius * RIGHT, 1.1 * radius * RIGHT, stroke_width=2, color=Colors.black.value
+                0.7 * radius * RIGHT,
+                1.1 * radius * RIGHT,
+                stroke_width=2,
+                color=Colors.black.value,
             )
             tred.rotate(PI / 5, about_point=tred.get_end())
             for theta in np.arange(0, 2 * np.pi, np.pi / 4):
@@ -566,7 +571,10 @@ class VectorizedEarth(SVGMobject):
     def __init__(self, **kwargs):
         SVGMobject.__init__(self, **kwargs)
         circle = Circle(
-            stroke_width=3, stroke_color=Colors.green.value, fill_opacity=1, fill_color=Colors.blue_c.value,
+            stroke_width=3,
+            stroke_color=Colors.green.value,
+            fill_opacity=1,
+            fill_color=Colors.blue_c.value,
         )
         circle.replace(self)
         self.add_to_back(circle)

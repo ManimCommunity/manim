@@ -539,7 +539,9 @@ class Mobject(Container):
         return self
 
     # Background rectangle
-    def add_background_rectangle(self, color=Colors.black.value, opacity=0.75, **kwargs):
+    def add_background_rectangle(
+        self, color=Colors.black.value, opacity=0.75, **kwargs
+    ):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
         from ..mobject.shape_matchers import BackgroundRectangle
@@ -580,7 +582,11 @@ class Mobject(Container):
         return self
 
     def set_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=Colors.white.value, outer_color=Colors.black.value
+        self,
+        center=None,
+        radius=1,
+        inner_color=Colors.white.value,
+        outer_color=Colors.black.value,
     ):
         self.set_submobject_colors_by_radial_gradient(
             center, radius, inner_color, outer_color
@@ -601,7 +607,11 @@ class Mobject(Container):
         return self
 
     def set_submobject_colors_by_radial_gradient(
-        self, center=None, radius=1, inner_color=Colors.white.value, outer_color=Colors.black.value
+        self,
+        center=None,
+        radius=1,
+        inner_color=Colors.white.value,
+        outer_color=Colors.black.value,
     ):
         if center is None:
             center = self.get_center()

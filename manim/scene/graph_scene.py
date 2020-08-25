@@ -43,7 +43,11 @@ class GraphScene(Scene):
         "axes_color": Colors.grey.value,
         "graph_origin": 2.5 * DOWN + 4 * LEFT,
         "exclude_zero_label": True,
-        "default_graph_colors": [Colors.blue.value, Colors.green.value, Colors.yellow.value],
+        "default_graph_colors": [
+            Colors.blue.value,
+            Colors.green.value,
+            Colors.yellow.value,
+        ],
         "default_derivative_color": Colors.green.value,
         "default_input_color": Colors.yellow.value,
         "default_riemann_start_color": Colors.blue.value,
@@ -591,7 +595,13 @@ class GraphScene(Scene):
         ]
 
     def get_area(
-        self, graph, t_min, t_max, bounded=None, dx_scaling=1, area_color=Colors.white.value
+        self,
+        graph,
+        t_min,
+        t_max,
+        bounded=None,
+        dx_scaling=1,
+        area_color=Colors.white.value,
     ):
         """
         Returns a VGroup of Riemann rectangles
@@ -854,7 +864,13 @@ class GraphScene(Scene):
         return group
 
     def add_T_label(
-        self, x_val, side=RIGHT, label=None, color=Colors.white.value, animated=False, **kwargs
+        self,
+        x_val,
+        side=RIGHT,
+        label=None,
+        color=Colors.white.value,
+        animated=False,
+        **kwargs,
     ):
         """
         This method adds to the Scene:
@@ -894,7 +910,9 @@ class GraphScene(Scene):
             T_label = TexMobject(label, fill_color=color)
 
         T_label.next_to(triangle, DOWN)
-        v_line = self.get_vertical_line_to_graph(x_val, self.v_graph, color=Colors.yellow.value)
+        v_line = self.get_vertical_line_to_graph(
+            x_val, self.v_graph, color=Colors.yellow.value
+        )
 
         if animated:
             self.play(

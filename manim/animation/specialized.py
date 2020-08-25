@@ -63,7 +63,9 @@ class Broadcast(LaggedStart):
         digest_config(self, kwargs)
         circles = VGroup()
         for x in range(self.n_circles):
-            circle = Circle(radius=self.big_radius, stroke_color=Colors.black.value, stroke_width=0,)
+            circle = Circle(
+                radius=self.big_radius, stroke_color=Colors.black.value, stroke_width=0,
+            )
             circle.add_updater(lambda c: c.move_to(focal_point))
             circle.save_state()
             circle.set_width(self.small_radius * 2)

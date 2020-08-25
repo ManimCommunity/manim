@@ -1102,7 +1102,11 @@ class CurvesAsSubmobjects(VGroup):
 
 
 class DashedVMobject(VMobject):
-    CONFIG = {"num_dashes": 15, "positive_space_ratio": 0.5, "color": Colors.white.value}
+    CONFIG = {
+        "num_dashes": 15,
+        "positive_space_ratio": 0.5,
+        "color": Colors.white.value,
+    }
 
     def __init__(self, vmobject, **kwargs):
         VMobject.__init__(self, **kwargs)
