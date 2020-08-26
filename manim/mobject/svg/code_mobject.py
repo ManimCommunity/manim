@@ -1,7 +1,6 @@
 import html
 import os
 from ...constants import *
-from ...container.container import Container
 from ...mobject.geometry import RoundedRectangle, Dot
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
@@ -119,7 +118,7 @@ class Code(VGroup):
     }
 
     def __init__(self, file_name=None, **kwargs):
-        Container.__init__(self, **kwargs)
+        VGroup.__init__(self, **kwargs)
         self.file_name = file_name or self.file_name
         self.ensure_valid_file()
         self.style = self.style.lower()
