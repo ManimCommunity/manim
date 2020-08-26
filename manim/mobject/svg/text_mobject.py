@@ -51,9 +51,9 @@ class TextSetting(object):
 
 """
 Text is VGroup() of each characters
-that mean you can use it like 
-    Text[0:5] or Text.chars[0:5] to access first five characters 
-Text[0:5] or Text or Text.chars[0:5] will create problems when using Transform() because of invisible characters 
+that mean you can use it like
+    Text[0:5] or Text.chars[0:5] to access first five characters
+Text[0:5] or Text or Text.chars[0:5] will create problems when using Transform() because of invisible characters
 so, before using Transform() remove invisible characters by using remove_invisible_chars()
 for example self.play(Transform(remove_invisible_chars(text.chars[0:4]), remove_invisible_chars(text2.chars[0:2])))
 """
@@ -409,11 +409,11 @@ class TextWithBackground(Text):
 
 
 """
-paragraph paragraph.chars is VGroup() of each lines and each line is VGroup() of that line's characters 
-that mean you can use it like 
+paragraph paragraph.chars is VGroup() of each lines and each line is VGroup() of that line's characters
+that mean you can use it like
     paragraph[0:5] or paragraph.chars[0:5] to access first five lines
     paragraph[0][0:5] or paragraph.chars[0][0:5] to access first line's first five characters
-paragraph or paragraph[] or paragraph.chars[][] will create problems when using Transform() because of invisible characters 
+paragraph or paragraph[] or paragraph.chars[][] will create problems when using Transform() because of invisible characters
 so, before using Transform() remove invisible characters by using remove_invisible_chars()
 for example self.play(Transform(remove_invisible_chars(paragraph.chars[0:2]), remove_invisible_chars(paragraph.chars[3][0:3])))
 paragraph(" a b", " bcd\nefg") is same as paragraph(" a b", " bcd", "efg")
