@@ -52,15 +52,15 @@ def get_config_from_video(path_to_video):
 
 
 def save_control_data_from_video(path_to_video, name):
-    """Helper used to set up a new test that will compare videos. This will create a new .json file in control_data/videos_data that contains 
-    informations tested of the video, including its hash. Refer to the wiki for more informations. 
+    """Helper used to set up a new test that will compare videos. This will create a new .json file in control_data/videos_data that contains
+    informations tested of the video, including its hash. Refer to the wiki for more informations.
 
     Parameters :
     ------------
     path_to_video : :class:`str`
         Path to the video to extract  informations from.
     name : :class:`str`
-        Name of the test. The .json file will be named with it. 
+        Name of the test. The .json file will be named with it.
 
     """
     tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
