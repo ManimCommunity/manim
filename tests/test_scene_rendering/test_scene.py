@@ -3,10 +3,9 @@ import subprocess
 
 import pytest
 
-from manim import file_writer_config
-
 from ..utils.commands import capture
 from ..utils.video_tester import *
+from manim import file_writer_config
 
 
 @pytest.mark.slow

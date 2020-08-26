@@ -4,7 +4,9 @@ import tempfile
 import numpy as np
 
 import manim
-from manim import config, file_writer_config, logger
+from manim import config
+from manim import file_writer_config
+from manim import logger
 
 
 def set_test_scene(scene_object, module_name):

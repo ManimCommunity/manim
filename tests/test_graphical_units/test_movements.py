@@ -1,9 +1,8 @@
 import pytest
 
-from manim import *
-
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
+from manim import *
 
 
 class HomotopyTest(Scene):
