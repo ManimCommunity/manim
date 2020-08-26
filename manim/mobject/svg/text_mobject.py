@@ -30,7 +30,8 @@ def remove_invisible_chars(mobject):
     if mobject[0].__class__ == VGroup:
         for i in range(mobject.__len__()):
             mobject_without_dots.add(VGroup())
-            mobject_without_dots[i].add(*[k for k in mobject[i] if k.__class__ != Dot])
+            mobject_without_dots[i].add(
+                *[k for k in mobject[i] if k.__class__ != Dot])
     else:
         mobject_without_dots.add(*[k for k in mobject if k.__class__ != Dot])
     if iscode:
@@ -112,11 +113,8 @@ class Text(SVGMobject):
             each.clear_points()
             for index, point in enumerate(points):
                 each.append_points([point])
-                if (
-                    index != len(points) - 1
-                    and (index + 1) % nppc == 0
-                    and any(point != points[index + 1])
-                ):
+                if (index != len(points) - 1 and (index + 1) % nppc == 0
+                        and any(point != points[index + 1])):
                     each.add_line_to(last)
                     last = points[index + 1]
             each.add_line_to(last)
@@ -155,18 +153,15 @@ class Text(SVGMobject):
         chars = VGroup()
         submobjects_char_index = 0
         for char_index in range(self.text.__len__()):
-            if (
-                self.text[char_index] == " "
-                or self.text[char_index] == "\t"
-                or self.text[char_index] == "\n"
-            ):
+            if (self.text[char_index] == " " or self.text[char_index] == "\t"
+                    or self.text[char_index] == "\n"):
                 space = Dot(redius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
-                    space.move_to(self.submobjects[submobjects_char_index].get_center())
-                else:
                     space.move_to(
-                        self.submobjects[submobjects_char_index - 1].get_center()
-                    )
+                        self.submobjects[submobjects_char_index].get_center())
+                else:
+                    space.move_to(self.submobjects[submobjects_char_index -
+                                                   1].get_center())
                 chars.add(space)
             else:
                 chars.add(self.submobjects[submobjects_char_index])
@@ -311,15 +306,14 @@ class Text(SVGMobject):
             font = setting.font
             slant = self.str2slant(setting.slant)
             weight = self.str2weight(setting.weight)
-            text = self.text[setting.start : setting.end].replace("\n", " ")
+            text = self.text[setting.start:setting.end].replace("\n", " ")
 
             context.select_font_face(font, slant, weight)
             if setting.line_num != last_line_num:
                 offset_x = 0
                 last_line_num = setting.line_num
-            context.move_to(
-                START_X + offset_x, START_Y + line_spacing * setting.line_num
-            )
+            context.move_to(START_X + offset_x,
+                            START_Y + line_spacing * setting.line_num)
             context.show_text(text)
             offset_x += context.text_extents(text)[4]
         surface.finish()
@@ -375,7 +369,7 @@ class TextWithBackground(Text):
             font = setting.font
             slant = self.str2slant(setting.slant)
             weight = self.str2weight(setting.weight)
-            text = self.text[setting.start : setting.end].replace("\n", " ")
+            text = self.text[setting.start:setting.end].replace("\n", " ")
             context.select_font_face(font, slant, weight)
             if setting.line_num != last_line_num:
                 offset_x = 0
@@ -439,12 +433,8 @@ class Paragraph(VGroup):
         char_index_counter = 0
         for line_index in range(lines_str_list.__len__()):
             chars_lines_text_list.add(
-                self.lines_text[
-                    char_index_counter : char_index_counter
-                    + lines_str_list[line_index].__len__()
-                    + 1
-                ]
-            )
+                self.lines_text[char_index_counter:char_index_counter +
+                                lines_str_list[line_index].__len__() + 1])
             char_index_counter += lines_str_list[line_index].__len__() + 1
         self.lines = []
         self.lines.append([])
@@ -452,14 +442,14 @@ class Paragraph(VGroup):
             self.lines[0].append(chars_lines_text_list[line_no])
         self.lines_initial_positions = []
         for line_no in range(self.lines[0].__len__()):
-            self.lines_initial_positions.append(self.lines[0][line_no].get_center())
+            self.lines_initial_positions.append(
+                self.lines[0][line_no].get_center())
         self.lines.append([])
         self.lines[1].extend(
-            [self.alignment for _ in range(chars_lines_text_list.__len__())]
-        )
+            [self.alignment for _ in range(chars_lines_text_list.__len__())])
         VGroup.__init__(
-            self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config
-        )
+            self, *[self.lines[0][i] for i in range(self.lines[0].__len__())],
+            **config)
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
             self.set_all_lines_alignments(self.alignment)
@@ -470,12 +460,8 @@ class Paragraph(VGroup):
         for line_no in range(lines_str_list.__len__()):
             chars.add(VGroup())
             chars[line_no].add(
-                *self.lines_text.chars[
-                    char_index_counter : char_index_counter
-                    + lines_str_list[line_no].__len__()
-                    + 1
-                ]
-            )
+                *self.lines_text.chars[char_index_counter:char_index_counter +
+                                       lines_str_list[line_no].__len__() + 1])
             char_index_counter += lines_str_list[line_no].__len__() + 1
         return chars
 
@@ -491,39 +477,33 @@ class Paragraph(VGroup):
     def set_all_lines_to_initial_positions(self):
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
-            self[line_no].move_to(
-                self.get_center() + self.lines_initial_positions[line_no]
-            )
+            self[line_no].move_to(self.get_center() +
+                                  self.lines_initial_positions[line_no])
         return self
 
     def set_line_to_initial_position(self, line_no):
         self.lines[1][line_no] = None
-        self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
+        self[line_no].move_to(self.get_center() +
+                              self.lines_initial_positions[line_no])
         return self
 
     def change_alignment_for_a_line(self, alignment, line_no):
         self.lines[1][line_no] = alignment
         if self.lines[1][line_no] == "center":
             self[line_no].move_to(
-                np.array([self.get_center()[0], self[line_no].get_center()[1], 0])
-            )
+                np.array(
+                    [self.get_center()[0], self[line_no].get_center()[1], 0]))
         elif self.lines[1][line_no] == "right":
             self[line_no].move_to(
-                np.array(
-                    [
-                        self.get_right()[0] - self[line_no].get_width() / 2,
-                        self[line_no].get_center()[1],
-                        0,
-                    ]
-                )
-            )
+                np.array([
+                    self.get_right()[0] - self[line_no].get_width() / 2,
+                    self[line_no].get_center()[1],
+                    0,
+                ]))
         elif self.lines[1][line_no] == "left":
             self[line_no].move_to(
-                np.array(
-                    [
-                        self.get_left()[0] + self[line_no].get_width() / 2,
-                        self[line_no].get_center()[1],
-                        0,
-                    ]
-                )
-            )
+                np.array([
+                    self.get_left()[0] + self[line_no].get_width() / 2,
+                    self[line_no].get_center()[1],
+                    0,
+                ]))
