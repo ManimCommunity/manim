@@ -14,8 +14,8 @@ from ...mobject.geometry import Rectangle
 from ...mobject.geometry import Square
 from ...mobject.mobject import Mobject
 from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.svg.tex_mobject import TexMobject
-from ...mobject.svg.tex_mobject import TextMobject
+from ...mobject.svg.tex_mobject import MathTex
+from ...mobject.svg.tex_mobject import Tex
 from ...mobject.three_dimensions import Cube
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VMobject
@@ -84,7 +84,7 @@ class Speedometer(VMobject):
         for index, angle in enumerate(tick_angle_range):
             vect = rotate_vector(RIGHT, angle)
             tick = Line((1 - self.tick_length) * vect, vect)
-            label = TexMobject(str(10 * index))
+            label = MathTex(str(10 * index))
             label.set_height(self.tick_length)
             label.shift((1 + self.tick_length) * vect)
             self.add(tick, label)
@@ -439,7 +439,7 @@ class Bubble(SVGMobject):
         return self.content
 
     def write(self, *text):
-        self.add_content(TextMobject(*text))
+        self.add_content(Tex(*text))
         return self
 
     def resize_to_content(self):
@@ -878,7 +878,7 @@ class PlayingCard(VGroup):
         return VGroup()
 
     def get_corner_numbers(self, value, symbol):
-        value_mob = TextMobject(value)
+        value_mob = Tex(value)
         width = self.get_width() / self.card_width_to_corner_num_width
         height = self.get_height() / self.card_height_to_corner_num_height
         value_mob.set_width(width)

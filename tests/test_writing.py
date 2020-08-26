@@ -12,20 +12,20 @@ class TextTest(Scene):
         self.play(Animation(t))
 
 
-class TextMobjectTest(Scene):
+class TexTest(Scene):
     def construct(self):
         constants.TEX_TEMPLATE = TexTemplate()
-        t = TextMobject("Hello world !")
+        t = Tex("Hello world !")
         self.play(Animation(t))
 
 
-class TexMobjectTest(Scene):
+class MathTexTest(Scene):
     def construct(self):
         # IMPORTANT NOTE : This won't test the abitilty of manim to write/cache latex.
         # i.e It will pass even if latex is not installed.
         # This is due to the fact that the latex used here has been cached (see test_cache directory)
         constants.TEX_TEMPLATE = TexTemplate()
-        t = TexMobject("\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}")
+        t = MathTex("\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}")
         self.play(Animation(t))
 
 

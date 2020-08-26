@@ -1055,9 +1055,9 @@ class VDict(VMobject):
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
-            from ...mobject.svg.tex_mobject import TextMobject
+            from ...mobject.svg.tex_mobject import Tex
 
-            key_text = TextMobject(str(key)).next_to(value, LEFT)
+            key_text = Tex(str(key)).next_to(value, LEFT)
             mob.add(key_text)
 
         self.submob_dict[key] = mob
