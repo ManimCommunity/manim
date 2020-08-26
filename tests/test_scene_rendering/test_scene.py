@@ -34,8 +34,7 @@ def test_basic_scene_p_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     command = [
         "python",
         "-m",
-        "manim",
-        simple_scenes_path,
+        "manim", simple_scenes_path,
         scene_name,
         "-l",
         "--media_dir",
