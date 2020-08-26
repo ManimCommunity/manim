@@ -25,9 +25,6 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
-    # print(out)
-    # print(out)
-    # assert os.path.isfile()
 
 
 @video_comparison(

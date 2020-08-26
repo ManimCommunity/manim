@@ -17,7 +17,7 @@ def pytest_addoption(parser):
         "--show_diff",
         action="store_true",
         default=False,
-        help="Will show a vizual comparison if a graphical unit test fails.",
+        help="Will show a visual comparison if a graphical unit test fails.",
     )
 
 
