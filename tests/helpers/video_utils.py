@@ -1,3 +1,6 @@
+"""Helpers for dev to set up new tests that use videos. 
+"""
+
 import os
 import subprocess
 import json
