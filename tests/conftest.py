@@ -22,8 +22,7 @@ def pytest_addoption(parser):
 
 
 def pytest_configure(config):
-    config.addinivalue_line(
-        "markers", "skip_end_to_end: mark test as end_to_end test")
+    config.addinivalue_line("markers", "skip_end_to_end: mark test as end_to_end test")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -45,8 +44,7 @@ def python_version():
 
 @pytest.fixture
 def reset_cfg_file():
-    cfgfilepath = os.path.join(os.path.dirname(
-        __file__), "test_cli", "manim.cfg")
+    cfgfilepath = os.path.join(os.path.dirname(__file__), "test_cli", "manim.cfg")
     with open(cfgfilepath) as cfgfile:
         original = cfgfile.read()
     yield

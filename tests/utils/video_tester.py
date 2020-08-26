@@ -63,8 +63,7 @@ def _check_video_data(path_control_data, path_to_video_generated):
         len(diff_keys) == 0
     ), f"Config don't match. : \n{newline.join([f'For {key}, got {config_generated[key]}, expected : {config_expected[key]}.' for key in diff_keys])}"
 
-    hash_generated = _get_hash_from_video(
-        path_to_video_generated).replace("\n", "")
+    hash_generated = _get_hash_from_video(path_to_video_generated).replace("\n", "")
     assert (
         control_data["hash"] == hash_generated
     ), f"Hashes mismatch ! generated : {hash_generated} != expected : {control_data['hash']}"
