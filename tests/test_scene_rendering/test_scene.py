@@ -31,9 +31,9 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
 
 
 @video_comparison(
-    "SquareToCircleWithPFlag.json", "videos/simple_scenes/480p15/SquareToCircle.mp4"
+    "SquareToCircleWithlFlag.json", "videos/simple_scenes/480p15/SquareToCircle.mp4"
 )
-def test_basic_scene_p_flag(tmp_path, manim_cfg_file, simple_scenes_path):
+def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
         "python",
