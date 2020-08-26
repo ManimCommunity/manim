@@ -28,8 +28,7 @@ def remove_invisible_chars(mobject):
     if mobject[0].__class__ == VGroup:
         for i in range(mobject.__len__()):
             mobject_without_dots.add(VGroup())
-            mobject_without_dots[i].add(
-                *[k for k in mobject[i] if k.__class__ != Dot])
+            mobject_without_dots[i].add(*[k for k in mobject[i] if k.__class__ != Dot])
     else:
         mobject_without_dots.add(*[k for k in mobject if k.__class__ != Dot])
     if iscode:
@@ -161,12 +160,10 @@ class Text(SVGMobject):
             ):
                 space = Dot(redius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
-                    space.move_to(
-                        self.submobjects[submobjects_char_index].get_center())
+                    space.move_to(self.submobjects[submobjects_char_index].get_center())
                 else:
                     space.move_to(
-                        self.submobjects[submobjects_char_index -
-                                         1].get_center()
+                        self.submobjects[submobjects_char_index - 1].get_center()
                     )
                 chars.add(space)
             else:
@@ -312,7 +309,7 @@ class Text(SVGMobject):
             font = setting.font
             slant = self.str2slant(setting.slant)
             weight = self.str2weight(setting.weight)
-            text = self.text[setting.start: setting.end].replace("\n", " ")
+            text = self.text[setting.start : setting.end].replace("\n", " ")
 
             context.select_font_face(font, slant, weight)
             if setting.line_num != last_line_num:
@@ -376,7 +373,7 @@ class TextWithBackground(Text):
             font = setting.font
             slant = self.str2slant(setting.slant)
             weight = self.str2weight(setting.weight)
-            text = self.text[setting.start: setting.end].replace("\n", " ")
+            text = self.text[setting.start : setting.end].replace("\n", " ")
             context.select_font_face(font, slant, weight)
             if setting.line_num != last_line_num:
                 offset_x = 0
@@ -441,7 +438,7 @@ class Paragraph(VGroup):
         for line_index in range(lines_str_list.__len__()):
             chars_lines_text_list.add(
                 self.lines_text[
-                    char_index_counter: char_index_counter
+                    char_index_counter : char_index_counter
                     + lines_str_list[line_index].__len__()
                     + 1
                 ]
@@ -453,8 +450,7 @@ class Paragraph(VGroup):
             self.lines[0].append(chars_lines_text_list[line_no])
         self.lines_initial_positions = []
         for line_no in range(self.lines[0].__len__()):
-            self.lines_initial_positions.append(
-                self.lines[0][line_no].get_center())
+            self.lines_initial_positions.append(self.lines[0][line_no].get_center())
         self.lines.append([])
         self.lines[1].extend(
             [self.alignment for _ in range(chars_lines_text_list.__len__())]
@@ -473,7 +469,7 @@ class Paragraph(VGroup):
             chars.add(VGroup())
             chars[line_no].add(
                 *self.lines_text.chars[
-                    char_index_counter: char_index_counter
+                    char_index_counter : char_index_counter
                     + lines_str_list[line_no].__len__()
                     + 1
                 ]
@@ -500,8 +496,7 @@ class Paragraph(VGroup):
 
     def set_line_to_initial_position(self, line_no):
         self.lines[1][line_no] = None
-        self[line_no].move_to(self.get_center() +
-                              self.lines_initial_positions[line_no])
+        self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
         return self
 
     def change_alignment_for_a_line(self, alignment, line_no):
