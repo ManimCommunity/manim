@@ -7,10 +7,15 @@ import re
 
 def capture(command, instream=None):
     proc = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=instream, shell=True
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdin=instream,
+        shell=True,
     )
     out, err = proc.communicate()
     return out, err, proc.returncode
+
 
 def test_logging_to_file(tmp_path, python_version):
     """Test logging Terminal output to a log file.
@@ -33,8 +38,10 @@ def test_logging_to_file(tmp_path, python_version):
         os.path.join(path_output, "logs"),
         "--media_dir",
         path_output,
-        "-v", "DEBUG",
-        "--config_file", os.path.join("tests", "test_logging", "testloggingconfig.cfg")
+        "-v",
+        "DEBUG",
+        "--config_file",
+        os.path.join("tests", "test_logging", "testloggingconfig.cfg"),
     ]
     out, err, exitcode = capture(command)
     log_file_path = os.path.join(path_output, "logs", "SquareToCircle.log")
