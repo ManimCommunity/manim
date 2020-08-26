@@ -43,12 +43,12 @@ def _parse_config(config_parser, args):
             height, width = int(height_str), int(width_str)
         else:
             height, width = int(args.resolution), int(16 * height / 9)
-        config["camera_config"].update({"pixel_height": height, "pixel_width": width})
+        config.update({"pixel_height": height, "pixel_width": width})
 
-    # Handle the -c (--color) flag
-    if args.color is not None:
+    # Handle the -c (--background_color) flag
+    if args.background_color is not None:
         try:
-            background_color = colour.Color(args.color)
+            background_color = colour.Color(args.background_color)
         except AttributeError as err:
             logger.warning("Please use a valid color.")
             logger.error(err)
@@ -88,8 +88,9 @@ def _parse_config(config_parser, args):
 
 
 args, config_parser, file_writer_config, successfully_read_files = _run_config()
+logger.setLevel(file_writer_config["verbosity"])
 if _from_command_line():
-    logger.info(
+    logger.debug(
         f"Read configuration files: {[os.path.abspath(cfgfile) for cfgfile in successfully_read_files]}"
     )
     if not (hasattr(args, "subcommands")):

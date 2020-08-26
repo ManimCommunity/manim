@@ -207,13 +207,13 @@ If you have installed MacTeX and are comfortable with it, do not install BasicTe
 
 ### Installing Manim-Community itself
 
-Manim runs on Python 3.7+. If you'd like to just use the library, you can install it from PyPI via pip:
+1. Manim-Community runs on Python 3.6+. If you'd like to just use the library, you can install it from PyPI via pip:
 
 ```sh
-pip3 install manimlib
+pip3 install manimce
 ```
 
-However, if you'd like to contribute to and/or help develop
+2. However, if you'd like to contribute to and/or help develop
 `manim-community`, you can clone this branch to your local device. To do
 this, first make sure you have `git` installed. Then, clone this repo by
 executing either
@@ -228,7 +228,7 @@ or
 git clone https://github.com/ManimCommunity/manim.git
 ```
 
-depending on whether you want to use HTTPS or SSH. Finally, run the
+depending on whether you want to use HTTPS or SSH. Finally, after having cloned this repo, run the
 following:
 
 ```sh
@@ -237,14 +237,24 @@ python3 -m pip install -r requirements.txt
 
 ## Usage
 
-To run your first example Scene, you can run the following commands:
+To run your first example Scenes, you can run the following commands:
 
 ### For users:
 
-1. Download the `example_scenes/basic.py` file from [GitHub](https://github.com/ManimCommunity/manim/blob/master/example_scenes/basic.py)
+1. Download the `example_scenes/basic.py` file from [GitHub](https://raw.github.com/ManimCommunity/manim/blob/master/example_scenes/basic.py), or place it manually
+in your current working directory with
+```sh
+wget https://raw.github.com/ManimCommunity/manim/master/example_scenes/basic.py
+```
+
 2. Run the following command:
 ```sh
 manim example_scenes/basic.py SquareToCircle -pl
+```
+
+3. Download the [custom_template.tex](https://raw.github.com/ManimCommunity/manim/blob/master/example_scenes/custom_template.tex) and [customtex.py](https://raw.github.com/ManimCommunity/manim/blob/master/example_scenes/customtex.py) example_scenes files, and run the following command:
+```sh
+manim customtex.py --tex_template custom_template.tex -pl
 ```
 
 ### For developers:
@@ -267,7 +277,7 @@ Some other useful flags include:
 * `-n <number>` to skip ahead to the `n`'th animation of a scene.
 * `-f` to show the file in finder (for OSX).
 
-You can also set `MEDIA_DIR` environment variable to specify where the image and animation files will be written.
+You can also use the `--media_dir <directory-path>` command line parameter to specify where the image and animation files will be written.
 
 ## Documentation
 Documentation is in progress at [eulertour.com/docs](https://www.eulertour.com/docs/).

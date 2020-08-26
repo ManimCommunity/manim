@@ -1,64 +1,100 @@
 Linux
 =====
 
-Ubuntu
-------
+The following instructions are given for different linux distributions that use
+different package managers.  After executing the instructions corresponding to
+your distribution, go to `Certifying a clean install`_ to check whether the
+dependencies are installed correctly.  All distributions will follow the same
+instructions in `Certifying a clean install`_.
 
-Install system libraries::
+The two necessary dependencies are cairo and ffmpeg.  LaTeX is strongly
+recommended, as it is necessary to have access to the ``TexMobject`` class.
+Sox is only required if you want manim to play sounds when rendering scenes.
 
-    # apt install sox ffmpeg libcairo2 libcairo2-dev
+Ubuntu/Debian
+*************
 
-Install Latex distribution::
+Before installing anything, make sure that your system is up to date.
 
-    # apt install texlive-full
+.. code-block:: bash
 
-Install manim via pypi::
+   sudo apt update
+   sudo apt upgrade
 
-    # pip3 install manimlib
+To install cairo:
 
-OR Install manim via the git repository with venv::
+.. code-block:: bash
 
-    $ git clone https://github.com/3b1b/manim
-    $ cd manim
-    $ python3 -m venv ./
-    $ source bin/activate
-    $ pip3 install -r requirement.txt
+   sudo apt install libcairo2-dev
 
-To use manim in virtual environment you need to activate the environment with
-the ``activate`` binary by doing ``source bin/activate``, to exit use the ``deactivate`` command.
+To install ffmpeg:
 
-.. note:: The git repository is updated first before the one on pypi. The git repository also
-          includes project files used to produce 3b1b videos. Some of the old projects might not
-          work as due to api changes.
+.. code-block:: bash
+
+   sudo apt install ffmpeg
+
+To install LaTeX:
+
+.. code-block:: bash
+
+   sudo apt install texlive texlive-latex-extra texlive-fonts-extra \
+   texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+
+To install Sox (optional):
+
+.. code-block:: bash
+
+   sudo apt install sox
+
+.. note:: These instructions are also valid for other Debian-based
+          distributions or distributions that use the ``apt`` package manager.
 
 
-.. note:: The required latex packages are dictated by
-          ``manimlib/tex_template.tex`` which ``texlive-full`` will satisfy. The download size
-          can be quite large. If you wish to install only the packages required to use
-          manim, substitude ``texlive-full`` with::
+Arch/Manjaro
+************
 
-            texlive texlive-latex-extra texlive-fonts-extra
-            texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+To install cairo:
 
-Arch Linux
-----------
-Install system libraries::
+.. code-block:: bash
 
-    # pacman -S cairo ffmpeg opencv sox
+   sudo pacman -S cairo
 
-Install Latex distribution::
 
-    # pacman -S texlive-most
+To install ffmpeg:
 
-OR install python-manimlib_:sup:`AUR` package::
+.. code-block:: bash
 
-    $ git clone https://aur.archlinux.org/python-manimlib.git
-    $ cd python-manimlib
-    $ makepkg -si
+   sudo pacman -S ffmpeg
 
-You can use AUR helpers such as yay_:sup:`AUR`::
+To install LaTeX:
 
-    $ yay -S python-manimlib
+.. code-block:: bash
 
-.. _python-manimlib: https://aur.archlinux.org/packages/python-manimlib/
-.. _yay: https://aur.archlinux.org/packages/yay/
+   sudo pacman -S texlive-most
+
+To install Sox (optional):
+
+.. code-block:: bash
+
+   sudo pacman -S sox
+
+.. note:: These instructions are also valid for other Arch-based
+          distributions or distributions that use the ``pacman`` package
+          manager.
+
+
+Certifying a clean install
+**************************
+
+To check that all dependencies have been installed properly, you can execute
+the commands ``ffmpeg -version`` and ``latex``.  (If LaTeX is installed
+properly, you will be taken to a command-line program that captures your
+cursor. Press CTRL+C to exit.)  To check that Sox is installed correctly,
+simply run ``sox``.
+
+.. note:: Note the LaTeX installation may take up a lot of space.  The manim
+          community developers are currently working on providing a simpler,
+          lighter LaTeX package for you to install.
+
+After making sure you have a clean install, you can go back to
+:ref:`installing-manim`.
