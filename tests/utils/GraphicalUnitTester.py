@@ -1,12 +1,13 @@
-import numpy as np
-import os
-import sys
 import inspect
 import logging
-import pytest
+import os
+import sys
 import warnings
-import matplotlib.pyplot as plt
+
 import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
+import numpy as np
+import pytest
 
 from manim import config, file_writer_config
 

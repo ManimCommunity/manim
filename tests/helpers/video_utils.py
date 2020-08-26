@@ -1,6 +1,6 @@
+import json
 import os
 import subprocess
-import json
 
 from manim import logger
 

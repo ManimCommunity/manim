@@ -1,8 +1,8 @@
 import os
-import pytest
 import tempfile
 from tempfile import TemporaryDirectory
 
+import pytest
 
 from manim import file_writer_config
 
