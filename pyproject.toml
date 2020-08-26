@@ -34,7 +34,7 @@ tqdm = "*"
 pydub = "*"
 pygments = "*"
 pyreadline = { version = "*", markers = "sys_platform == 'win32'" }
-rich = "*"
+rich = "^4.2.1"
 pycairo = "*"
 
 [tool.poetry.dev-dependencies]
