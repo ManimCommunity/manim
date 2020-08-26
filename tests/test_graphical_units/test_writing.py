@@ -21,7 +21,8 @@ class TextMobjectTest(Scene):
 class TexMobjectTest(Scene):
     def construct(self):
         constants.TEX_TEMPLATE = TexTemplate()
-        t = TexMobject("\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}")
+        t = TexMobject(
+            "\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}")
         self.play(Animation(t))
 
 
@@ -31,4 +32,5 @@ MODULE_NAME = "writing"
 @pytest.mark.slow
 @pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
 def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(
+        show_diff=show_diff)
