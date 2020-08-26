@@ -1,17 +1,17 @@
-import re
-import os
 import copy
 import hashlib
+import os
+import re
+
 import cairo
 
-from ...constants import *
 from ...config import config, file_writer_config
+from ...constants import *
 from ...logger import logger
 from ...mobject.geometry import Dot, Rectangle
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.config_ops import digest_config
-
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 
