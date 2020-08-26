@@ -12,6 +12,7 @@ def capture(command, instream=None):
     out, err = proc.communicate()
     return out, err, proc.returncode
 
+
 @pytest.mark.xfail
 def test_logging_to_file(tmp_path, python_version):
     """Test logging Terminal output to a log file.

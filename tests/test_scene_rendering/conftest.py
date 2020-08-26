@@ -1,5 +1,5 @@
 import pytest
-import os 
+import os
 
 
 from manim import file_writer_config
