@@ -1,4 +1,4 @@
-"""Base classes for all mathematical objects."""
+"""Base classes for objects that can be displayed."""
 from functools import reduce
 import copy
 import itertools as it
@@ -28,7 +28,7 @@ from ..utils.space_ops import rotation_matrix
 
 
 class Mobject(Container):
-    """Mathematical Object: base class for all objects shown on screen.
+    """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
     ----------
@@ -74,7 +74,9 @@ class Mobject(Container):
     def add(self, *mobjects):
         """Add mobjects as submobjects.
 
-        The mobjects are added to self.submobjects, but without repetition.
+        The mobjects are added to self.submobjects.  If the parent mobject is
+        displayed, the newly-added submobjects will also be displayed
+        (i.e. they are automatically added to the parent Scene).
 
         Parameters
         ----------
@@ -90,6 +92,11 @@ class Mobject(Container):
         ------
         :class:`ValueError`
             When a mobject tries to add itself.
+
+        Notes
+        -----
+        A mobject cannot contain itself, and it cannot contain a submobject
+        more than once.
 
         See Also
         --------

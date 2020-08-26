@@ -1,4 +1,4 @@
-"""Tools for showing multiple animations at once."""
+"""Tools for displaying multiple animations at once."""
 import numpy as np
 
 from ..animation.animation import Animation
