@@ -5,10 +5,12 @@ import re
 
 import cairo
 
-from ...config import config, file_writer_config
+from ...config import config
+from ...config import file_writer_config
 from ...constants import *
 from ...logger import logger
-from ...mobject.geometry import Dot, Rectangle
+from ...mobject.geometry import Dot
+from ...mobject.geometry import Rectangle
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.config_ops import digest_config
