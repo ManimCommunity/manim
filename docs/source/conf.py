@@ -18,6 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 import guzzle_sphinx_theme
+
 project = "manim"
 copyright = "2020, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"

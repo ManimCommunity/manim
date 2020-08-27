@@ -36,8 +36,7 @@ class GraphicalUnitTester:
     ):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
-        tests_directory = os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__)))
+        tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.path_tests_medias_cache = os.path.join(
             tmpdir,
             "test_graphical_units",
@@ -92,10 +91,10 @@ class GraphicalUnitTester:
         """Will visually display with matplotlib differences between frame generared and the one expected."""
         import matplotlib.pyplot as plt
         import matplotlib.gridspec as gridspec
+
         gs = gridspec.GridSpec(2, 2)
         fig = plt.figure()
-        fig.suptitle(
-            f"Test for {str(self.scene).replace('Test', '')}", fontsize=16)
+        fig.suptitle(f"Test for {str(self.scene).replace('Test', '')}", fontsize=16)
 
         ax = fig.add_subplot(gs[0, 0])
         ax.imshow(frame_data)

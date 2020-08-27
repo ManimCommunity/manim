@@ -7,8 +7,7 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 class CoordinatesTest(Scene):
     def construct(self):
-        dots = [Dot(np.array([x, y, 0]))
-                for x in range(-7, 8) for y in range(-4, 5)]
+        dots = [Dot(np.array([x, y, 0])) for x in range(-7, 8) for y in range(-4, 5)]
         self.play(Animation(VGroup(*dots)))
 
 
@@ -92,8 +91,7 @@ class VectorTest(Scene):
 
 class PolygonTest(Scene):
     def construct(self):
-        a = Polygon(
-            *[np.array([1, 1, 0]), np.array([2, 2, 0]), np.array([2, 3, 0])])
+        a = Polygon(*[np.array([1, 1, 0]), np.array([2, 2, 0]), np.array([2, 3, 0])])
         self.play(Animation(a))
 
 
@@ -114,5 +112,4 @@ MODULE_NAME = "geometry"
 
 @pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
 def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(
-        show_diff=show_diff)
+    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
