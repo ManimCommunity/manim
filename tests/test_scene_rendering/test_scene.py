@@ -13,7 +13,8 @@ from manim import file_writer_config
     "SquareToCircleWithDefaultValues.json",
     "videos/simple_scenes/1440p60/SquareToCircle.mp4",
 )
-def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes_path):
+def test_basic_scene_with_default_values(tmp_path, manim_cfg_file,
+                                         simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
         "python",
@@ -28,9 +29,8 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
     assert exit_code == 0, err
 
 
-@video_comparison(
-    "SquareToCircleWithPFlag.json", "videos/simple_scenes/480p15/SquareToCircle.mp4"
-)
+@video_comparison("SquareToCircleWithPFlag.json",
+                  "videos/simple_scenes/480p15/SquareToCircle.mp4")
 def test_basic_scene_p_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
