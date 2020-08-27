@@ -20,7 +20,7 @@ jobs:
           python-version: 3.8
 
       - name: Install black
-        run: pip install black
+        run: pip install black==19.10b0
 
       - name: Check manim formatting
         run: black --check --diff manim
