@@ -7,7 +7,8 @@ import warnings
 import numpy as np
 import pytest
 
-from manim import config, file_writer_config
+from manim import config
+from manim import file_writer_config
 
 
 class GraphicalUnitTester:
