@@ -1,6 +1,8 @@
 import os
-import pytest
 import subprocess
+
+import pytest
+
 from manim import file_writer_config
 
 from ..utils.commands import capture
