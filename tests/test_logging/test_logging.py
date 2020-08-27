@@ -1,8 +1,9 @@
-import subprocess
 import os
-import sys
-import pytest
 import re
+import subprocess
+import sys
+
+import pytest
 
 
 def capture(command, instream=None):

@@ -1,10 +1,11 @@
-import numpy as np
-import os
-import sys
 import inspect
 import logging
-import pytest
+import os
+import sys
 import warnings
+
+import numpy as np
+import pytest
 
 from manim import config, file_writer_config
 
@@ -89,8 +90,8 @@ class GraphicalUnitTester:
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
         """Will visually display with matplotlib differences between frame generared and the one expected."""
-        import matplotlib.pyplot as plt
         import matplotlib.gridspec as gridspec
+        import matplotlib.pyplot as plt
 
         gs = gridspec.GridSpec(2, 2)
         fig = plt.figure()

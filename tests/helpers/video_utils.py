@@ -1,9 +1,9 @@
 """Helpers for dev to set up new tests that use videos. 
 """
 
+import json
 import os
 import subprocess
-import json
 
 from manim import logger
 

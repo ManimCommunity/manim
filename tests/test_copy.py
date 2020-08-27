@@ -1,5 +1,6 @@
 import os
-from manim import Mobject, BraceLabel, file_writer_config
+
+from manim import BraceLabel, Mobject, file_writer_config
 
 
 def test_mobject_copy():

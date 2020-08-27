@@ -1,6 +1,6 @@
-import pytest
 import os
 
+import pytest
 
 from manim import file_writer_config
 
