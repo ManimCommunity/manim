@@ -117,7 +117,11 @@ confusing.  Here is a short guide on how to do it.
 
 8. Finally, make sure to use the `black` autoformatter before submitting a PR.
    You can execute it by running `black <your_file>`.  This will make changes
-   to your code, and you will need to add/commit those changes.
+   to your code, and you will need to add/commit those changes. Please note the
+   version of black which the codebase follows is `19.10b0` and install it using
+   ```sh
+   pip install black==19.10b0
+   ```
 
 9. To request the ManimCommunity dev team to incorporate the changes in your
    fork into the main repository, you can make a Pull Request to the Manim
