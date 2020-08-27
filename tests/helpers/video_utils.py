@@ -64,10 +64,12 @@ def save_control_data_from_video(path_to_video, name):
         Path to the video to extract  informations from.
     name : :class:`str`
         Name of the test. The .json file will be named with it. 
-    
+
     """
-    tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path_control_data = os.path.join(tests_directory, "control_data", "videos_data")
+    tests_directory = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__)))
+    path_control_data = os.path.join(
+        tests_directory, "control_data", "videos_data")
     hash_video = get_hash_from_video(path_to_video)
     config_video = get_config_from_video(path_to_video)
     data = {

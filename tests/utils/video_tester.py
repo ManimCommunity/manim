@@ -63,7 +63,8 @@ def _check_video_data(path_control_data, path_to_video_generated):
         len(diff_keys) == 0
     ), f"Config don't match. : \n{newline.join([f'For {key}, got {config_generated[key]}, expected : {config_expected[key]}.' for key in diff_keys])}"
 
-    hash_generated = _get_hash_from_video(path_to_video_generated).replace("\n", "")
+    hash_generated = _get_hash_from_video(
+        path_to_video_generated).replace("\n", "")
     assert (
         control_data["hash"] == hash_generated
     ), f"Hashes mismatch ! generated : {hash_generated} != expected : {control_data['hash']}"
@@ -76,7 +77,7 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
     -----------
     control_data_file : :class:`str`
         Name of the control data file, ie the .json containing all the pre-rendered references of the scene tested. Warning : you don't have to pass the path here.
-    
+
     scene_path_from_media_dir : :class:`str` 
         The path of the scene generated, from the media dir. Example: /videos/1080p60/SquareToCircle.mp4.
     """

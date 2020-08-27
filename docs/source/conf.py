@@ -17,6 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
+import guzzle_sphinx_theme
 project = "manim"
 copyright = "2020, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
@@ -53,7 +54,6 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-import guzzle_sphinx_theme
 
 html_theme_path = guzzle_sphinx_theme.html_theme_path()
 html_theme = "guzzle_sphinx_theme"
