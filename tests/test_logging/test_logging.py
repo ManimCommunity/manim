@@ -58,10 +58,8 @@ def test_logging_to_file(tmp_path, python_version):
     pattern = r"(\['[A-Z]?:?[\/\\].*cfg'])|([A-Z]?:?[\/\\].*mp4)|(\d+)"
 
     logs = re.sub(pattern, lambda m: " " * len((m.group(0))), logs)
-    with open(
-        os.path.join(os.path.dirname(__file__), "expected.txt"), "r"
-    ) as expectedfile:
-        expected = re.sub(
-            pattern, lambda m: " " * len((m.group(0))), expectedfile.read()
-        )
+    with open(os.path.join(os.path.dirname(__file__), "expected.txt"),
+              "r") as expectedfile:
+        expected = re.sub(pattern, lambda m: " " * len((m.group(0))),
+                          expectedfile.read())
     assert logs == expected, logs

@@ -99,9 +99,8 @@ class ApplyComplexFunctionTest(Scene):
         square = Square()
         self.play(
             ApplyComplexFunction(
-                lambda complex_num: complex_num + 2 * np.complex(0, 1), square
-            )
-        )
+                lambda complex_num: complex_num + 2 * np.complex(0, 1),
+                square))
 
 
 class ApplyMatrixTest(Scene):
@@ -122,6 +121,9 @@ class CyclicReplaceTest(Scene):
 MODULE_NAME = "transform"
 
 
-@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
+@pytest.mark.parametrize("scene_to_test",
+                         get_scenes_to_test(__name__),
+                         indirect=False)
 def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+    GraphicalUnitTester(scene_to_test[1], MODULE_NAME,
+                        tmpdir).test(show_diff=show_diff)

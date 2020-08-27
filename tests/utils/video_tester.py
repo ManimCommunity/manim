@@ -63,7 +63,8 @@ def _check_video_data(path_control_data, path_to_video_generated):
         len(diff_keys) == 0
     ), f"Config don't match. : \n{newline.join([f'For {key}, got {config_generated[key]}, expected : {config_expected[key]}.' for key in diff_keys])}"
 
-    hash_generated = _get_hash_from_video(path_to_video_generated).replace("\n", "")
+    hash_generated = _get_hash_from_video(path_to_video_generated).replace(
+        "\n", "")
     assert (
         control_data["hash"] == hash_generated
     ), f"Hashes mismatch ! generated : {hash_generated} != expected : {control_data['hash']}"
@@ -88,11 +89,9 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
             result = f(*args, **kwargs)
             tmp_path = kwargs["tmp_path"]
             tests_directory = os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__))
-            )
-            path_control_data = os.path.join(
-                tests_directory, "control_data", "videos_data", control_data_file
-            )
+                os.path.dirname(os.path.abspath(__file__)))
+            path_control_data = os.path.join(tests_directory, "control_data",
+                                             "videos_data", control_data_file)
             path_video_generated = tmp_path / scene_path_from_media_dir
             # assert 0, path_exists(path_video_generated)
             if not os.path.exists(path_video_generated):

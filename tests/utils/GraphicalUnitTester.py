@@ -34,11 +34,15 @@ class GraphicalUnitTester:
     """
 
     def __init__(
-        self, scene_object, module_tested, tmpdir,
+            self,
+            scene_object,
+            module_tested,
+            tmpdir,
     ):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
-        tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        tests_directory = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__)))
         self.path_tests_medias_cache = os.path.join(
             tmpdir,
             "test_graphical_units",
@@ -46,18 +50,16 @@ class GraphicalUnitTester:
             module_tested,
             scene_object.__name__,
         )
-        self.path_control_data = os.path.join(
-            tests_directory, "control_data", "graphical_units_data", module_tested
-        )
+        self.path_control_data = os.path.join(tests_directory, "control_data",
+                                              "graphical_units_data",
+                                              module_tested)
 
         # IMPORTANT NOTE : The graphical units tests don't use for now any custom manim.cfg,
         # since it is impossible to manually select a manim.cfg from a python file. (see issue #293)
         file_writer_config["text_dir"] = os.path.join(
-            self.path_tests_medias_cache, "Text"
-        )
+            self.path_tests_medias_cache, "Text")
         file_writer_config["tex_dir"] = os.path.join(
-            self.path_tests_medias_cache, "Tex"
-        )
+            self.path_tests_medias_cache, "Tex")
 
         file_writer_config["skip_animations"] = True
         file_writer_config["write_to_movie"] = False
@@ -67,9 +69,9 @@ class GraphicalUnitTester:
         config["frame_rate"] = 15
 
         for dir_temp in [
-            self.path_tests_medias_cache,
-            file_writer_config["text_dir"],
-            file_writer_config["tex_dir"],
+                self.path_tests_medias_cache,
+                file_writer_config["text_dir"],
+                file_writer_config["tex_dir"],
         ]:
             os.makedirs(dir_temp)
 
@@ -84,9 +86,8 @@ class GraphicalUnitTester:
         :class:`numpy.array`
             The pre-rendered frame.
         """
-        frame_data_path = os.path.join(
-            self.path_control_data, "{}.npy".format(str(self.scene))
-        )
+        frame_data_path = os.path.join(self.path_control_data,
+                                       "{}.npy".format(str(self.scene)))
         return np.load(frame_data_path)
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
@@ -96,7 +97,8 @@ class GraphicalUnitTester:
 
         gs = gridspec.GridSpec(2, 2)
         fig = plt.figure()
-        fig.suptitle(f"Test for {str(self.scene).replace('Test', '')}", fontsize=16)
+        fig.suptitle(f"Test for {str(self.scene).replace('Test', '')}",
+                     fontsize=16)
 
         ax = fig.add_subplot(gs[0, 0])
         ax.imshow(frame_data)
@@ -129,10 +131,9 @@ class GraphicalUnitTester:
         expected_frame_data = self._load_data()
 
         assert frame_data.shape == expected_frame_data.shape, (
-            "The frames have different shape:"
-            + f"\nexpected_frame_data.shape = {expected_frame_data.shape}"
-            + f"\nframe_data.shape = {frame_data.shape}"
-        )
+            "The frames have different shape:" +
+            f"\nexpected_frame_data.shape = {expected_frame_data.shape}" +
+            f"\nframe_data.shape = {frame_data.shape}")
 
         test_result = np.array_equal(frame_data, expected_frame_data)
         if not test_result:
@@ -144,6 +145,6 @@ class GraphicalUnitTester:
                 self._show_diff_helper(frame_data, expected_frame_data)
             assert test_result, (
                 f"The frames don't match. {str(self.scene).replace('Test', '')} has been modified."
-                + "\nPlease ignore if it was intended."
-                + f"\nFirst unmatched index is at {first_incorrect_index}: {first_incorrect_point} != {expected_point}"
+                + "\nPlease ignore if it was intended." +
+                f"\nFirst unmatched index is at {first_incorrect_index}: {first_incorrect_point} != {expected_point}"
             )
