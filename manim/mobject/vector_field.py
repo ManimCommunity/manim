@@ -14,6 +14,7 @@ from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import inverse_interpolate
 from ..utils.bezier import interpolate
+from ..utils import color as C
 from ..utils.color import color_to_rgb
 from ..utils.color import rgb_to_color
 from ..utils.config_ops import digest_config
@@ -25,10 +26,10 @@ from ..utils.space_ops import get_norm
 
 
 DEFAULT_SCALAR_FIELD_COLORS = [
-    Colors.blue_e.value,
-    Colors.green.value,
-    Colors.yellow.value,
-    Colors.red.value,
+    C.BLUE_E,
+    C.GREEN,
+    C.YELLOW,
+    C.RED,
 ]
 
 
@@ -60,7 +61,7 @@ def get_colored_background_image(
 def get_rgb_gradient_function(
     min_value=0,
     max_value=1,
-    colors=[Colors.blue.value, Colors.red.value],
+    colors=[C.BLUE, C.RED],
     flip_alphas=True,  # Why?
 ):
     rgbs = np.array(list(map(color_to_rgb, colors)))
@@ -195,7 +196,7 @@ class StreamLines(VGroup):
         "virtual_time": 3,
         "n_anchors_per_line": 100,
         "stroke_width": 1,
-        "stroke_color": Colors.white.value,
+        "stroke_color": C.WHITE,
         "color_by_arc_length": True,
         # Min and max arc lengths meant to define
         # the color range, should color_by_arc_length be True

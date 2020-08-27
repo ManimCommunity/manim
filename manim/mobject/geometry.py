@@ -14,6 +14,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.vectorized_mobject import DashedVMobject
+from ..utils import color as C
 from ..utils.config_ops import digest_config
 from ..utils.iterables import adjacent_n_tuples
 from ..utils.iterables import adjacent_pairs
@@ -323,7 +324,7 @@ class CurvedDoubleArrow(CurvedArrow):
 
 class Circle(Arc):
     CONFIG = {
-        "color": Colors.red.value,
+        "color": C.RED,
         "close_new_points": True,
         "anchors_span_full_range": False,
     }
@@ -352,7 +353,7 @@ class Dot(Circle):
         "radius": DEFAULT_DOT_RADIUS,
         "stroke_width": 0,
         "fill_opacity": 1.0,
-        "color": Colors.white.value,
+        "color": C.WHITE,
     }
 
     def __init__(self, point=ORIGIN, **kwargs):
@@ -382,7 +383,7 @@ class AnnularSector(Arc):
         "start_angle": 0,
         "fill_opacity": 1,
         "stroke_width": 0,
-        "color": Colors.white.value,
+        "color": C.WHITE,
     }
 
     def generate_points(self):
@@ -412,7 +413,7 @@ class Annulus(Circle):
         "outer_radius": 2,
         "fill_opacity": 1,
         "stroke_width": 0,
-        "color": Colors.white.value,
+        "color": C.WHITE,
         "mark_paths_closed": False,
     }
 
@@ -688,7 +689,7 @@ class CubicBezier(VMobject):
 
 class Polygon(VMobject):
     CONFIG = {
-        "color": Colors.blue.value,
+        "color": C.BLUE,
     }
 
     def __init__(self, *vertices, **kwargs):
@@ -786,7 +787,7 @@ class ArrowTip(Triangle):
 
 class Rectangle(Polygon):
     CONFIG = {
-        "color": Colors.white.value,
+        "color": C.WHITE,
         "height": 2.0,
         "width": 4.0,
         "mark_paths_closed": True,

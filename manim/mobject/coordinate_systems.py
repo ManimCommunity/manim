@@ -9,6 +9,7 @@ from ..mobject.geometry import Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import TexMobject
 from ..mobject.types.vectorized_mobject import VGroup
+from ..utils import color as C
 from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import binary_search
@@ -122,7 +123,7 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem):
     CONFIG = {
         "axis_config": {
-            "color": Colors.light_grey.value,
+            "color": C.LIGHT_GREY,
             "include_tip": True,
             "exclude_zero_from_default_numbers": True,
         },
@@ -234,7 +235,7 @@ class ThreeDAxes(Axes):
 class NumberPlane(Axes):
     CONFIG = {
         "axis_config": {
-            "stroke_color": Colors.white.value,
+            "stroke_color": C.WHITE,
             "stroke_width": 2,
             "include_ticks": False,
             "include_tip": False,
@@ -244,7 +245,7 @@ class NumberPlane(Axes):
         },
         "y_axis_config": {"label_direction": DR,},
         "background_line_style": {
-            "stroke_color": Colors.blue_d.value,
+            "stroke_color": C.BLUE_D,
             "stroke_width": 2,
             "stroke_opacity": 1,
         },
@@ -280,7 +281,7 @@ class NumberPlane(Axes):
 
     def get_lines(self):
         """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
-        
+
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
@@ -313,9 +314,9 @@ class NumberPlane(Axes):
 
         axis_perpendicular_to : :class:`~.Line`
             The axis with which the lines will be perpendicular.
-        
+
         ratio_faded_lines : :class:`float`
-            The number of faded lines between each non-faded line. 
+            The number of faded lines between each non-faded line.
 
         freq : :class:`float`
             Frequency of non-faded lines (number of non-faded lines per graph unit).
@@ -323,7 +324,7 @@ class NumberPlane(Axes):
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
-            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.     
+            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
         dense_freq = ratio_faded_lines
@@ -373,7 +374,7 @@ class NumberPlane(Axes):
 
 class ComplexPlane(NumberPlane):
     CONFIG = {
-        "color": Colors.blue.value,
+        "color": C.BLUE,
         "line_frequency": 1,
     }
 

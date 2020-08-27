@@ -8,6 +8,7 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_mobject import VMobjectFromSVGPathstring
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VectorizedPoint
+from ...utils import color as C
 from ...utils.config_ops import digest_config
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
@@ -26,7 +27,7 @@ class SingleStringTexMobject(SVGMobject):
         "stroke_width": 0,
         "fill_opacity": 1.0,
         "background_stroke_width": 1,
-        "background_stroke_color": Colors.black.value,
+        "background_stroke_color": C.BLACK,
         "should_center": True,
         "height": None,
         "organize_left_to_right": False,

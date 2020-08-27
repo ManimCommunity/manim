@@ -12,7 +12,7 @@ from ...mobject.geometry import Rectangle
 from ...mobject.geometry import RoundedRectangle
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VMobject
-from ...utils.color import *
+from ...utils import color as C
 from ...utils.config_ops import digest_config
 from ...utils.config_ops import digest_locals
 
@@ -33,7 +33,7 @@ class SVGMobject(VMobject):
         "unpack_groups": True,  # if False, creates a hierarchy of VGroups
         "stroke_width": DEFAULT_STROKE_WIDTH,
         "fill_opacity": 1.0,
-        # "fill_color" : Colors.light_grey.value,
+        # "fill_color" : C.LIGHT_GREY,
     }
 
     def __init__(self, file_name=None, **kwargs):
@@ -163,19 +163,19 @@ class SVGMobject(VMobject):
 
         # input preprocessing
         if fill_color in ["", "none", "#FFF", "#FFFFFF"] or Color(fill_color) == Color(
-            Colors.white.value
+            C.WHITE
         ):
             opacity = 0
-            fill_color = Colors.black.value  # shdn't be necessary but avoids error msgs
+            fill_color = C.BLACK  # shdn't be necessary but avoids error msgs
         if fill_color in ["#000", "#000000"]:
-            fill_color = Colors.white.value
+            fill_color = C.WHITE
         if stroke_color in ["", "none", "#FFF", "#FFFFFF"] or Color(
             stroke_color
-        ) == Color(Colors.white.value):
+        ) == Color(C.WHITE):
             stroke_width = 0
-            stroke_color = Colors.black.value
+            stroke_color = C.BLACK
         if stroke_color in ["#000", "#000000"]:
-            stroke_color = Colors.white.value
+            stroke_color = C.WHITE
         if stroke_width in ["", "none", "0"]:
             stroke_width = 0
 

@@ -16,6 +16,7 @@ from ..mobject.geometry import Dot
 from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.geometry import Line
+from ..utils import color as C
 from ..utils.bezier import interpolate
 from ..utils.config_ops import digest_config
 from ..utils.rate_functions import there_and_back
@@ -25,7 +26,7 @@ from ..utils.rate_functions import wiggle
 class FocusOn(Transform):
     CONFIG = {
         "opacity": 0.2,
-        "color": Colors.grey.value,
+        "color": C.GREY,
         "run_time": 2,
         "remover": True,
     }
@@ -55,7 +56,7 @@ class Indicate(Transform):
     CONFIG = {
         "rate_func": there_and_back,
         "scale_factor": 1.2,
-        "color": Colors.yellow.value,
+        "color": C.YELLOW,
     }
 
     def create_target(self):
@@ -74,7 +75,7 @@ class Flash(AnimationGroup):
         "run_time": 1,
     }
 
-    def __init__(self, point, color=Colors.yellow.value, **kwargs):
+    def __init__(self, point, color=C.YELLOW, **kwargs):
         self.point = point
         self.color = color
         digest_config(self, kwargs)
@@ -104,7 +105,7 @@ class CircleIndicate(Indicate):
     CONFIG = {
         "rate_func": there_and_back,
         "remover": True,
-        "circle_config": {"color": Colors.yellow.value,},
+        "circle_config": {"color": C.YELLOW,},
     }
 
     def __init__(self, mobject, **kwargs):

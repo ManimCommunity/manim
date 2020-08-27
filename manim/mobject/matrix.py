@@ -8,6 +8,7 @@ from ..mobject.svg.tex_mobject import TexMobject
 from ..mobject.svg.tex_mobject import TextMobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
+from ..utils import color as C
 
 VECTOR_LABEL_SCALE_FACTOR = 0.8
 
@@ -28,7 +29,7 @@ def matrix_to_mobject(matrix):
 
 
 def vector_coordinate_label(
-    vector_mob, integer_labels=True, n_dim=2, color=Colors.white.value
+    vector_mob, integer_labels=True, n_dim=2, color=C.WHITE
 ):
     vect = np.array(vector_mob.get_end())
     if integer_labels:
@@ -124,7 +125,7 @@ class Matrix(VMobject):
 
     def get_rows(self):
         """Return rows of the matrix as VGroups
-        
+
         Returns
         --------
         List[:class:`~.VGroup`]
@@ -136,12 +137,12 @@ class Matrix(VMobject):
 
     def set_row_colors(self, *colors):
         """Set individual colors for each row of the matrix
-        
+
         Parameters
         ----------
         colors : :class:`str`
             The list of colors; each color specified corresponds to a row.
-        
+
         Returns
         -------
         :class:`Matrix`

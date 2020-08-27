@@ -16,6 +16,7 @@ from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.mobject import Mobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
+from ..utils import color as C
 from ..utils.color import color_to_int_rgba
 from ..utils.config_ops import digest_config
 from ..utils.images import get_full_raster_image_path
@@ -52,7 +53,7 @@ class Camera(object):
         "frame_height": config["frame_height"],
         "frame_width": config["frame_width"],
         "frame_center": ORIGIN,
-        "background_color": Colors.black.value,
+        "background_color": C.BLACK,
         "background_opacity": 1,
         # Points in vectorized mobjects with norm greater
         # than this value will be rescaled.

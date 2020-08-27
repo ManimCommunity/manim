@@ -1,6 +1,6 @@
-from ..constants import Colors
 from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup
+from . import color as C
 
 
 def print_family(mobject, n_tabs=0):
@@ -16,6 +16,6 @@ def get_submobject_index_labels(mobject, label_height=0.15):
         label = Integer(n)
         label.set_height(label_height)
         label.move_to(submob)
-        label.set_stroke(Colors.black.value, 5, background=True)
+        label.set_stroke(C.BLACK, 5, background=True)
         labels.add(label)
     return labels

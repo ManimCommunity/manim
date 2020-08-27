@@ -1,6 +1,6 @@
-from ..constants import Colors
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.vectorized_mobject import VGroup
+from ..utils import color as C
 from ..utils.rate_functions import smooth
 from ..utils.space_ops import get_norm
 
@@ -8,10 +8,10 @@ from ..utils.space_ops import get_norm
 class AnimatedBoundary(VGroup):
     CONFIG = {
         "colors": [
-            Colors.blue_d.value,
-            Colors.blue_b.value,
-            Colors.blue_e.value,
-            Colors.grey_brown.value,
+            C.BLUE_D,
+            C.BLUE_B,
+            C.BLUE_E,
+            C.GREY_BROWN,
         ],
         "max_stroke_width": 3,
         "cycle_rate": 0.5,
@@ -69,7 +69,7 @@ class AnimatedBoundary(VGroup):
 class TracedPath(VMobject):
     CONFIG = {
         "stroke_width": 2,
-        "stroke_color": Colors.white.value,
+        "stroke_color": C.WHITE,
         "min_distance_to_new_point": 0.1,
     }
 

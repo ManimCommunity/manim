@@ -3,13 +3,13 @@ from ..mobject.geometry import Line
 from ..mobject.geometry import Rectangle
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import Color
+from ..utils import color as C
 from ..utils.config_ops import digest_config
 
 
 class SurroundingRectangle(Rectangle):
     CONFIG = {
-        "color": Colors.yellow.value,
+        "color": C.YELLOW,
         "buff": SMALL_BUFF,
     }
 
@@ -23,7 +23,7 @@ class SurroundingRectangle(Rectangle):
 
 class BackgroundRectangle(SurroundingRectangle):
     CONFIG = {
-        "color": Colors.black.value,
+        "color": C.BLACK,
         "stroke_width": 0,
         "stroke_opacity": 0,
         "fill_opacity": 0.75,
@@ -49,9 +49,9 @@ class BackgroundRectangle(SurroundingRectangle):
         # Unchangable style, except for fill_opacity
         VMobject.set_style_data(
             self,
-            stroke_color=Colors.black.value,
+            stroke_color=C.BLACK,
             stroke_width=0,
-            fill_color=Colors.black.value,
+            fill_color=C.BLACK,
             fill_opacity=fill_opacity,
         )
         return self
@@ -62,7 +62,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
 class Cross(VGroup):
     CONFIG = {
-        "stroke_color": Colors.red.value,
+        "stroke_color": C.RED,
         "stroke_width": 6,
     }
 

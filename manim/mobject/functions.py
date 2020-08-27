@@ -2,6 +2,7 @@ from ..constants import *
 from ..config import config
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.config_ops import digest_config
+from ..utils import color as C
 import math
 
 
@@ -76,7 +77,7 @@ class ParametricFunction(VMobject):
 
 class FunctionGraph(ParametricFunction):
     CONFIG = {
-        "color": Colors.yellow.value,
+        "color": C.YELLOW,
         "x_min": -config["frame_x_radius"],
         "x_max": config["frame_x_radius"],
     }

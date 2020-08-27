@@ -11,6 +11,7 @@ from ...utils.bezier import get_smooth_handle_points
 from ...utils.bezier import interpolate
 from ...utils.bezier import integer_interpolate
 from ...utils.bezier import partial_bezier_points
+from ...utils import color as C
 from ...utils.color import color_to_rgba
 from ...utils.iterables import make_even
 from ...utils.iterables import stretch_array_to_length
@@ -38,7 +39,7 @@ class VMobject(Mobject):
         # The purpose of background stroke is to have
         # something that won't overlap the fill, e.g.
         # For text against some textured background
-        "background_stroke_color": Colors.black.value,
+        "background_stroke_color": C.BLACK,
         "background_stroke_opacity": 1.0,
         "background_stroke_width": 0,
         # When a color c is set, there will be a second color
@@ -107,7 +108,7 @@ class VMobject(Mobject):
         return rgbas
 
     def update_rgbas_array(self, array_name, color=None, opacity=None):
-        passed_color = color if (color is not None) else Colors.black.value
+        passed_color = color if (color is not None) else C.BLACK
         passed_opacity = opacity if (opacity is not None) else 0
         rgbas = self.generate_rgbas_array(passed_color, passed_opacity)
         if not hasattr(self, array_name):
@@ -353,7 +354,7 @@ class VMobject(Mobject):
 
     def color_using_background_image(self, background_image_file):
         self.background_image_file = background_image_file
-        self.set_color(Colors.white.value)
+        self.set_color(C.WHITE)
         for submob in self.submobjects:
             submob.color_using_background_image(background_image_file)
         return self
@@ -880,7 +881,7 @@ class VDict(VMobject):
     mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
             The parameter specifying the key-value mapping of keys and mobjects.
     show_keys : :class:`bool`, optional
-            Whether to also display the key associated with 
+            Whether to also display the key associated with
             the mobject. This might be useful when debugging,
             especially when there are a lot of mobjects in the
             :class:`VDict`. Defaults to False.
@@ -890,7 +891,7 @@ class VDict(VMobject):
     Attributes
     ----------
     show_keys : :class:`bool`
-            Whether to also display the key associated with 
+            Whether to also display the key associated with
             the mobject. This might be useful when debugging,
             especially when there are a lot of mobjects in the
             :class:`VDict`. When displayed, the key is towards
@@ -936,7 +937,7 @@ class VDict(VMobject):
 
     def remove(self, key):
         """Removes the mobject from the :class:`VDict` object having the key `key`
-        
+
         Also, it internally removes the mobject from the `submobjects` :class:`list`
         of :class:`~.Mobject`, (which is responsible for removing it from the screen)
 
@@ -963,12 +964,12 @@ class VDict(VMobject):
 
     def __getitem__(self, key):
         """Overriding the [] operator for getting submobject by key
-        
+
         Parameters
         ----------
         key : Hashable
            The key of the submoject to be accessed
-            
+
         Returns
         -------
         :class:`VMobject`
@@ -991,7 +992,7 @@ class VDict(VMobject):
             The key of the submoject to be assigned
         value : :class:`VMobject`
             The submobject to bind the key to
-            
+
         Returns
         -------
         None
@@ -1008,7 +1009,7 @@ class VDict(VMobject):
 
     def get_all_submobjects(self):
         """To get all the submobjects associated with a particular :class:`VDict` object
-        
+
         Returns
         -------
         :class:`dict_values`
@@ -1066,7 +1067,7 @@ class VDict(VMobject):
 
 class VectorizedPoint(VMobject):
     CONFIG = {
-        "color": Colors.black.value,
+        "color": C.BLACK,
         "fill_opacity": 0,
         "stroke_width": 0,
         "artificial_width": 0.01,
@@ -1105,7 +1106,7 @@ class DashedVMobject(VMobject):
     CONFIG = {
         "num_dashes": 15,
         "positive_space_ratio": 0.5,
-        "color": Colors.white.value,
+        "color": C.WHITE,
     }
 
     def __init__(self, vmobject, **kwargs):

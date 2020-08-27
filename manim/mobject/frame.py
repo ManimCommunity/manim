@@ -1,7 +1,7 @@
-from ..constants import Colors
 from ..config import config
 from ..mobject.geometry import Rectangle
 from ..utils.config_ops import digest_config
+from ..utils import color as C
 
 
 class ScreenRectangle(Rectangle):
@@ -21,7 +21,7 @@ class FullScreenRectangle(ScreenRectangle):
 class FullScreenFadeRectangle(FullScreenRectangle):
     CONFIG = {
         "stroke_width": 0,
-        "fill_color": Colors.black.value,
+        "fill_color": C.BLACK,
         "fill_opacity": 0.7,
     }
 

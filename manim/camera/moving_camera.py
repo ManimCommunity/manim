@@ -1,8 +1,9 @@
 from ..camera.camera import Camera
 from ..config import config
-from ..constants import ORIGIN, Colors
+from ..constants import ORIGIN
 from ..mobject.frame import ScreenRectangle
 from ..mobject.types.vectorized_mobject import VGroup
+from ..utils import color as C
 from ..utils.config_ops import digest_config
 
 
@@ -25,7 +26,7 @@ class MovingCamera(Camera):
 
     CONFIG = {
         "fixed_dimension": 0,  # width
-        "default_frame_stroke_color": Colors.white.value,
+        "default_frame_stroke_color": C.WHITE,
         "default_frame_stroke_width": 0,
     }
 

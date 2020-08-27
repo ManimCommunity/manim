@@ -15,6 +15,7 @@ import numpy as np
 from ..constants import *
 from ..config import config
 from ..container import Container
+from ..utils import color as C
 from ..utils.color import color_gradient
 from ..utils.color import interpolate_color
 from ..utils.iterables import list_update
@@ -35,7 +36,7 @@ class Mobject(Container):
     """
 
     CONFIG = {
-        "color": Colors.white.value,
+        "color": C.WHITE,
         "name": None,
         "dim": 3,
         "target": None,
@@ -540,7 +541,7 @@ class Mobject(Container):
 
     # Background rectangle
     def add_background_rectangle(
-        self, color=Colors.black.value, opacity=0.75, **kwargs
+        self, color=C.BLACK, opacity=0.75, **kwargs
     ):
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
@@ -564,7 +565,7 @@ class Mobject(Container):
 
     # Color functions
 
-    def set_color(self, color=Colors.yellow_c.value, family=True):
+    def set_color(self, color=C.YELLOW_C, family=True):
         """
         Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
@@ -585,8 +586,8 @@ class Mobject(Container):
         self,
         center=None,
         radius=1,
-        inner_color=Colors.white.value,
-        outer_color=Colors.black.value,
+        inner_color=C.WHITE,
+        outer_color=C.BLACK,
     ):
         self.set_submobject_colors_by_radial_gradient(
             center, radius, inner_color, outer_color
@@ -610,8 +611,8 @@ class Mobject(Container):
         self,
         center=None,
         radius=1,
-        inner_color=Colors.white.value,
-        outer_color=Colors.black.value,
+        inner_color=C.WHITE,
+        outer_color=C.BLACK,
     ):
         if center is None:
             center = self.get_center()

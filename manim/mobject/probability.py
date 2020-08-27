@@ -6,6 +6,7 @@ from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import TexMobject
 from ..mobject.svg.tex_mobject import TextMobject
 from ..mobject.types.vectorized_mobject import VGroup
+from ..utils import color as C
 from ..utils.color import color_gradient
 from ..utils.iterables import tuplify
 
@@ -16,10 +17,10 @@ class SampleSpace(Rectangle):
     CONFIG = {
         "height": 3,
         "width": 3,
-        "fill_color": Colors.dark_grey.value,
+        "fill_color": C.DARK_GREY,
         "fill_opacity": 1,
         "stroke_width": 0.5,
-        "stroke_color": Colors.light_grey.value,
+        "stroke_color": C.LIGHT_GREY,
         ##
         "default_label_scale_val": 1,
     }
@@ -60,12 +61,12 @@ class SampleSpace(Rectangle):
         return parts
 
     def get_horizontal_division(
-        self, p_list, colors=[Colors.green_e.value, Colors.blue_e.value], vect=DOWN
+        self, p_list, colors=[C.GREEN_E, C.BLUE_E], vect=DOWN
     ):
         return self.get_division_along_dimension(p_list, 1, colors, vect)
 
     def get_vertical_division(
-        self, p_list, colors=[Colors.maroon_b.value, Colors.yellow.value], vect=RIGHT
+        self, p_list, colors=[C.MAROON_B, C.YELLOW], vect=RIGHT
     ):
         return self.get_division_along_dimension(p_list, 0, colors, vect)
 
@@ -145,7 +146,7 @@ class BarChart(VGroup):
         "label_y_axis": True,
         "y_axis_label_height": 0.25,
         "max_value": 1,
-        "bar_colors": [Colors.blue.value, Colors.yellow.value],
+        "bar_colors": [C.BLUE, C.YELLOW],
         "bar_fill_opacity": 0.8,
         "bar_stroke_width": 3,
         "bar_names": [],

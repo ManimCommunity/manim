@@ -6,6 +6,7 @@ from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...utils.bezier import interpolate
+from ...utils import color as C
 from ...utils.color import color_to_int_rgb
 from ...utils.config_ops import digest_config
 from ...utils.images import get_full_raster_image_path
@@ -107,7 +108,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
     CONFIG = {
         "default_display_frame_config": {
             "stroke_width": 3,
-            "stroke_color": Colors.white.value,
+            "stroke_color": C.WHITE,
             "buff": 0,
         }
     }

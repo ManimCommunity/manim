@@ -5,6 +5,7 @@ from ..config import config
 from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber
 from ..mobject.types.vectorized_mobject import VGroup
+from ..utils import color as C
 from ..utils.bezier import interpolate
 from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
@@ -14,7 +15,7 @@ from ..utils.space_ops import normalize
 
 class NumberLine(Line):
     CONFIG = {
-        "color": Colors.light_grey.value,
+        "color": C.LIGHT_GREY,
         "x_min": -config["frame_x_radius"],
         "x_max": config["frame_x_radius"],
         "unit_size": 1,

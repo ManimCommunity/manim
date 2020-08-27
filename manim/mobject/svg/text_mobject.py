@@ -11,6 +11,7 @@ from ...logger import logger
 from ...mobject.geometry import Dot, Rectangle
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
+from ...utils import color as C
 from ...utils.config_ops import digest_config
 
 
@@ -30,7 +31,7 @@ class TextSetting(object):
 class Text(SVGMobject):
     CONFIG = {
         # Mobject
-        "color": Colors.white.value,
+        "color": C.WHITE,
         "height": None,
         "width": None,
         "fill_opacity": 1,

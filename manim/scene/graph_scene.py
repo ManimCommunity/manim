@@ -15,6 +15,7 @@ from ..mobject.svg.tex_mobject import TextMobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VectorizedPoint
 from ..scene.scene import Scene
+from ..utils import color as C
 from ..utils.bezier import interpolate
 from ..utils.color import color_gradient
 from ..utils.color import invert_color
@@ -40,18 +41,18 @@ class GraphScene(Scene):
         "y_bottom_tick": None,  # Change if different from y_min
         "y_labeled_nums": None,
         "y_axis_label": "$y$",
-        "axes_color": Colors.grey.value,
+        "axes_color": C.GREY,
         "graph_origin": 2.5 * DOWN + 4 * LEFT,
         "exclude_zero_label": True,
         "default_graph_colors": [
-            Colors.blue.value,
-            Colors.green.value,
-            Colors.yellow.value,
+            C.BLUE,
+            C.GREEN,
+            C.YELLOW,
         ],
-        "default_derivative_color": Colors.green.value,
-        "default_input_color": Colors.yellow.value,
-        "default_riemann_start_color": Colors.blue.value,
-        "default_riemann_end_color": Colors.green.value,
+        "default_derivative_color": C.GREEN,
+        "default_input_color": C.YELLOW,
+        "default_riemann_start_color": C.BLUE,
+        "default_riemann_end_color": C.GREEN,
         "area_opacity": 0.8,
         "num_rects": 50,
         "include_tip": False,  # add tip at the end of the axes
@@ -440,7 +441,7 @@ class GraphScene(Scene):
         input_sample_type="left",
         bounded_graph=None,
         stroke_width=1,
-        stroke_color=Colors.black.value,
+        stroke_color=C.BLACK,
         fill_opacity=1,
         start_color=None,
         end_color=None,
@@ -601,7 +602,7 @@ class GraphScene(Scene):
         t_max,
         bounded=None,
         dx_scaling=1,
-        area_color=Colors.white.value,
+        area_color=C.WHITE,
     ):
         """
         Returns a VGroup of Riemann rectangles
@@ -868,7 +869,7 @@ class GraphScene(Scene):
         x_val,
         side=RIGHT,
         label=None,
-        color=Colors.white.value,
+        color=C.WHITE,
         animated=False,
         **kwargs,
     ):
@@ -911,7 +912,7 @@ class GraphScene(Scene):
 
         T_label.next_to(triangle, DOWN)
         v_line = self.get_vertical_line_to_graph(
-            x_val, self.v_graph, color=Colors.yellow.value
+            x_val, self.v_graph, color=C.YELLOW
         )
 
         if animated:
