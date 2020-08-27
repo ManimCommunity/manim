@@ -66,6 +66,7 @@ List of Modules
 
    _config
    constants
+   ~utils.color
    container
 
 
