@@ -7,5 +7,10 @@ pycairo
 pydub
 pygments
 pyreadline; sys_platform == 'win32'
-rich
-# pytest (for development only)
+rich>=4.2.1
+
+# for development only:
+# pytest
+# black
+# guzzle-sphinx-theme
+# recommonmark>=0.5.0

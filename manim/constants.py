@@ -1,7 +1,12 @@
+"""
+Constant definitions.
+"""
+
 import numpy as np
 
+
 # Messages
-NOT_SETTING_FONT_MSG = '''
+NOT_SETTING_FONT_MSG = """
 You haven't set font.
 If you are not using English, this may cause text rendering problem.
 You set font like:
@@ -11,7 +16,7 @@ class MyText(Text):
     CONFIG = {
         'font': 'My Font'
     }
-'''
+"""
 SCENE_NOT_FOUND_MESSAGE = """
    {} is not in the script
 """
@@ -25,30 +30,50 @@ NO_SCENE_MESSAGE = """
 """
 
 # Cairo stuff
-NORMAL = 'NORMAL'
-ITALIC = 'ITALIC'
-OBLIQUE = 'OBLIQUE'
-BOLD = 'BOLD'
+NORMAL = "NORMAL"
+ITALIC = "ITALIC"
+OBLIQUE = "OBLIQUE"
+BOLD = "BOLD"
 
 # Geometry: directions
-ORIGIN = np.array((0., 0., 0.))
-UP = np.array((0., 1., 0.))
-DOWN = np.array((0., -1., 0.))
-RIGHT = np.array((1., 0., 0.))
-LEFT = np.array((-1., 0., 0.))
-IN = np.array((0., 0., -1.))
-OUT = np.array((0., 0., 1.))
+ORIGIN = np.array((0.0, 0.0, 0.0))
+"""The center of the coordinate system."""
+
+UP = np.array((0.0, 1.0, 0.0))
+"""One unit step in the positive Y direction."""
+
+DOWN = np.array((0.0, -1.0, 0.0))
+"""One unit step in the negative Y direction."""
+
+RIGHT = np.array((1.0, 0.0, 0.0))
+"""One unit step in the positive X direction."""
+
+LEFT = np.array((-1.0, 0.0, 0.0))
+"""One unit step in the negative X direction."""
+
+IN = np.array((0.0, 0.0, -1.0))
+"""One unit step in the negative Z direction."""
+
+OUT = np.array((0.0, 0.0, 1.0))
+"""One unit step in the positive Z direction."""
 
 # Geometry: axes
-X_AXIS = np.array((1., 0., 0.))
-Y_AXIS = np.array((0., 1., 0.))
-Z_AXIS = np.array((0., 0., 1.))
+X_AXIS = np.array((1.0, 0.0, 0.0))
+Y_AXIS = np.array((0.0, 1.0, 0.0))
+Z_AXIS = np.array((0.0, 0.0, 1.0))
 
 # Geometry: useful abbreviations for diagonals
 UL = UP + LEFT
+"""One step up plus one step left."""
+
 UR = UP + RIGHT
+"""One step up plus one step right."""
+
 DL = DOWN + LEFT
+"""One step down plus one step left."""
+
 DR = DOWN + RIGHT
+"""One step down plus one step right."""
 
 # Geometry
 START_X = 30
@@ -73,14 +98,19 @@ DEFAULT_STROKE_WIDTH = 4
 
 # Mathematical constants
 PI = np.pi
+"""The ratio of the circumference of a circle to its diameter."""
+
 TAU = 2 * PI
+"""The ratio of the circumference of a circle to its radius."""
+
 DEGREES = TAU / 360
+"""The exchange rate between radians and degrees."""
 
 # ffmpeg stuff
 FFMPEG_BIN = "ffmpeg"
 
 # gif stuff
-GIF_FILE_EXTENSION = '.gif'
+GIF_FILE_EXTENSION = ".gif"
 
 # Colors
 COLOR_MAP = {
@@ -143,8 +173,20 @@ COLOR_MAP = {
     "GREEN_SCREEN": "#00FF00",
     "ORANGE": "#FF862F",
 }
-COLOR_MAP.update({name.replace("_C", ""): COLOR_MAP[name]
-                  for name in COLOR_MAP
-                  if name.endswith("_C")})
+COLOR_MAP.update(
+    {
+        name.replace("_C", ""): COLOR_MAP[name]
+        for name in COLOR_MAP
+        if name.endswith("_C")
+    }
+)
 PALETTE = list(COLOR_MAP.values())
 locals().update(COLOR_MAP)
+FFMPEG_VERBOSITY_MAP = {
+    "DEBUG": "error",
+    "INFO": "error",
+    "WARNING": "error",
+    "ERROR": "error",
+    "CRITICAL": "fatal",
+}
+VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
