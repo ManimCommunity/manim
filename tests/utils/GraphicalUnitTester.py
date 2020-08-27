@@ -5,8 +5,6 @@ import inspect
 import logging
 import pytest
 import warnings
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 
 from manim import config, file_writer_config
 
@@ -91,6 +89,8 @@ class GraphicalUnitTester:
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
         """Will visually display with matplotlib differences between frame generared and the one expected."""
+        import matplotlib.pyplot as plt
+        import matplotlib.gridspec as gridspec
         gs = gridspec.GridSpec(2, 2)
         fig = plt.figure()
         fig.suptitle(f"Test for {str(self.scene).replace('Test', '')}", fontsize=16)
