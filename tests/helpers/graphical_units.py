@@ -1,4 +1,4 @@
-"""Helpers functions for devs to set up new graphical-units data.  
+"""Helpers functions for devs to set up new graphical-units data.
 """
 import os
 import tempfile
