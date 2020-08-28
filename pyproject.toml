@@ -35,13 +35,22 @@ pydub = "*"
 pygments = "*"
 pyreadline = { version = "*", markers = "sys_platform == 'win32'" }
 rich = "^4.2.1"
-pycairo = "*"
+pycairo = [
+	{ version = "^1.19", markers = "sys_platform != 'win32'"},
+	{ version = "^1.19", markers = "sys_platform == 'win32'", source="testpypi" },
+]
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+black  = "19.10b0"
+
+[[tool.poetry.source]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+secondary = true
+
 
 [tool.poetry.plugins]
-
 [tool.poetry.plugins."console_scripts"]
 "manim" = "manim.__main__:main"
 "manimcm" = "manim.__main__:main"
