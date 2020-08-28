@@ -101,7 +101,7 @@ class TipableVMobject(VMobject):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.get_angle())
+        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
         tip.shift(anchor - tip.tip_point)
         return tip
 
@@ -807,7 +807,8 @@ class ArrowTip(VMobject):
     def vector(self):
         return self.tip_point - self.base
 
-    def get_angle(self):
+    @property
+    def tip_angle(self):
         return angle_of_vector(self.vector)
 
 
