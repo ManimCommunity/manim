@@ -3,10 +3,12 @@ import zlib
 import inspect
 import copy
 import numpy as np
-from types import ModuleType
+from types import ModuleType, MappingProxyType
+from time import perf_counter
 
+from manim import logger
 
-ALREADY_PROCESSED_ID = set()
+ALREADY_PROCESSED_ID = {}
 
 
 class CustomEncoder(json.JSONEncoder):
@@ -30,8 +32,6 @@ class CustomEncoder(json.JSONEncoder):
             Python object that JSON encoder will recognize
 
         """
-        # This will ensure that the object processed has not been processed previously.
-        obj = self._handle_already_processed(obj)
         if inspect.isfunction(obj) and not isinstance(obj, ModuleType):
             cvars = inspect.getclosurevars(obj)
             cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
@@ -39,55 +39,29 @@ class CustomEncoder(json.JSONEncoder):
                 # NOTE : All module types objects are removed, because otherwise it throws ValueError: Circular reference detected if not. TODO
                 if isinstance(cvardict[i], ModuleType):
                     del cvardict[i]
-            return {"code": inspect.getsource(obj), "nonlocals": cvardict}
+            return self._check_iterable(
+                {"code": inspect.getsource(obj), "nonlocals": cvardict}
+            )
         elif isinstance(obj, np.ndarray):
-            return list(obj)
+            if obj.size > 1000:
+                return f"Np array too big {obj.size}"
+            return "hash nparray crc32-" + str(zlib.crc32(obj))
+            return self._handle_already_processed(list(obj))  # TODO CHANGE THAT !
         elif hasattr(obj, "__dict__"):
             temp = getattr(obj, "__dict__")
-            # pprint(self._encode_dict(temp))
-            return self._encode_dict(temp)
+            # MappingProxy is not supported by the Json Encoder
+            if isinstance(temp, MappingProxyType):
+                return "Unsupported type for serializing ->" + str(type(temp))
+            return self._check_iterable(temp)
         elif isinstance(obj, np.uint8):
             return int(obj)
-        try:
-            return json.JSONEncoder.default(self, obj)
-        except TypeError:
-            # This is used when the user enters an unknown type in CONFIG. Rather than throwing an error, we transform
-            # it into a string "Unsupported type for hashing" so that it won't affect the hash.
-            return "Unsupported type for serialize"
+        return "Unsupported type for serializing ->" + str(type(obj))
 
-    def _encode_dict(self, obj):
-        """Clean dicts to be serialized : As dict keys must be of the type (str, int, float, bool), we have to change them when they are not of the right type.
-        To do that, if one is not of the good type we turn it into its hash using the same
-        method as all the objects here.
-
-        Parameters
-        ----------
-        obj : Any
-            The obj to be cleaned.
-        
-        Returns
-        -------
-        Any
-            The object cleaned following the processus above.
-        """
-
-        def key_to_hash(key):
-            if not isinstance(key, (str, int, float, bool)) and key is not None:
-                return zlib.crc32(json.dumps(key, cls=CustomEncoder).encode())
-            return key
-
-        if isinstance(obj, dict):
-            # We have to check if the items of th dict has not been already processed to avoid the Circular Reference Error by json module.
-            # Circular reference means that we are trying to serialize an object (a dict) that refer (directly or not) to itself. To not end up with an endless recursion, circular reference exception is raised.
-            # Note that the check of circular reference is done before CustomEncoder.default get called so we have to check here in addition to at the beginning of default.
-            return {
-                key_to_hash(k): self._encode_dict(self._handle_already_processed(v))
-                for k, v in obj.items()
-            }
-        return obj
 
     def _handle_already_processed(self, obj):
         """Handle if an object has been already processed by checking the id of the object. 
+
+        This prevents the mechanism to handle an object several times, and is used to prevent any circular reference.
 
         Parameters 
         ----------
@@ -99,13 +73,81 @@ class CustomEncoder(json.JSONEncoder):
         Any
             "already_processed" string if it has been processed, otherwise obj.
         """
-        if id(obj) in ALREADY_PROCESSED_ID:
-            return "already processed"
-        ALREADY_PROCESSED_ID.add(id(obj))
+        global ALREADY_PROCESSED_ID
+        if (
+            not isinstance(obj, (str, int, bool, float))
+            and id(obj) in ALREADY_PROCESSED_ID
+        ):
+            return "already_processed"
+        ALREADY_PROCESSED_ID[id(obj)] = obj
         return obj
 
+    def _check_iterable(self, iterable):
+        """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.  
+
+        If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
+        If a circular reference is founs within the iterable, it will be replaced by the string "already processed". 
+        
+        Parameters: 
+        -----------
+        iterable : :class:`Iterable`
+            The iterable to check.
+        """
+
+        def _key_to_hash(key):
+            if not isinstance(key, (str, int, float, bool)) and key is not None:
+                return zlib.crc32(json.dumps(key, cls=CustomEncoder).encode())
+            return key
+
+        def _iter_check_list(lst):
+            for i, el in enumerate(lst):
+                lst[i] = self._handle_already_processed(el)
+                if isinstance(lst[i], list):
+                    temp = copy.deepcopy(lst[i])
+                    lst[i] = _iter_check_list(temp)
+                elif isinstance(lst[i], dict):
+                    temp = copy.deepcopy(lst[i])
+                    temp = dict(sorted(temp.items()))
+                    lst[i] = _iter_check_dict(temp)
+            return lst
+
+        def _iter_check_dict(dct):
+            for k, v in dct.items():
+                dct[k] = self._handle_already_processed(v)
+                k = _key_to_hash(
+                    k
+                )  
+                if isinstance(dct[k], dict):
+                    temp = copy.deepcopy(dct[k])
+                    temp = dict(sorted(temp.items()))
+                    dct[k] = _iter_check_dict(temp)
+                elif isinstance(dct[k], list): 
+                    temp = copy.deepcopy(dct[k])
+                    dct[k] = _iter_check_list(temp)
+            return dct
+
+        # We have to make a copy, as we don't want to touch to the original dict
+        iterable = copy.deepcopy(iterable)
+        if isinstance(iterable, (list, tuple)):
+            return _iter_check_list(iterable)
+        elif isinstance(iterable, dict):
+            return _iter_check_dict(iterable)
+
     def encode(self, obj):
-        return super().encode(self._encode_dict(obj))
+        """Overwriting of JSONEncoder.encode, to make our own process.
+
+        Parameters: 
+        -----------
+        obj: :class:Any
+            The object to encode in JSON.
+        """
+        # We need to mark as already processed the first object to go in the process,
+        # As after, only objects that come from iterables will be marked as such.
+        global ALREADY_PROCESSED_ID
+        ALREADY_PROCESSED_ID[id(obj)] = obj
+        if isinstance(obj, (dict, list, tuple)):
+            return super().encode(self._check_iterable(obj))
+        return super().encode(obj)
 
 
 def get_json(obj):
@@ -165,6 +207,8 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
     :class:`str` 
         A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`.
     """
+    logger.debug("Hashing ...")
+    t_start = perf_counter()
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [
         get_json(x) for x in sorted(animations_list, key=lambda obj: str(obj))
@@ -176,9 +220,11 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
         zlib.crc32(repr(json_val).encode())
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
     ]
+    t_end = perf_counter()
+    logger.debug(f"Hashing done in {t_end - t_start} s.")
     # This will reset ALREADY_PROCESSED_ID as all the hashing processus is finished.
     global ALREADY_PROCESSED_ID
-    ALREADY_PROCESSED_ID = set()
+    ALREADY_PROCESSED_ID = {}
     return "{}_{}_{}".format(hash_camera, hash_animations, hash_current_mobjects)
 
 
@@ -200,6 +246,8 @@ def get_hash_from_wait_call(
     :class:`str`
         A concatenation of the respective hashes of `animations_list and `current_mobjects_list`, separated by `_`.
     """
+    logger.debug("Hashing ...")
+    t_start = perf_counter()
     global ALREADY_PROCESSED_ID
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     current_mobjects_list_json = [
@@ -210,7 +258,9 @@ def get_hash_from_wait_call(
     if stop_condition_function is not None:
         hash_function = zlib.crc32(get_json(stop_condition_function).encode())
         # This will reset ALREADY_PROCESSED_ID as all the hashing processus is finished.
-        ALREADY_PROCESSED_ID = set()
+        ALREADY_PROCESSED_ID = {}
+        t_end = perf_counter()
+        logger.debug(f"Hashing done in {t_end - t_start} s.")
         return "{}_{}{}_{}".format(
             hash_camera,
             str(wait_time).replace(".", "-"),
@@ -218,7 +268,9 @@ def get_hash_from_wait_call(
             hash_current_mobjects,
         )
     else:
-        ALREADY_PROCESSED_ID = set()
+        ALREADY_PROCESSED_ID = {}
+        t_end = perf_counter()
+        logger.debug(f"Hashing done in {t_end - t_start} s.")
         return "{}_{}_{}".format(
             hash_camera, str(wait_time).replace(".", "-"), hash_current_mobjects
         )
