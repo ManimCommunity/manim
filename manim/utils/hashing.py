@@ -32,7 +32,7 @@ class CustomEncoder(json.JSONEncoder):
             Python object that JSON encoder will recognize
 
         """
-        if inspect.isfunction(obj) and not isinstance(obj, ModuleType):
+        if inspect.isfunction(obj)  and not isinstance(obj, ModuleType):
             cvars = inspect.getclosurevars(obj)
             cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
             for i in list(cvardict):
@@ -179,7 +179,7 @@ def get_camera_dict_for_hashing(camera_object):
     :class:`dict`
         `Camera.__dict__` but cleaned.
     """
-    camera_object_dict = copy.copy(camera_object.__dict__)
+    camera_object_dict = copy.copy(camera_object.__dict__) # TODO : maybe a bug, deepcopy?
     # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays.
     # They are not essential to caching process.
     # We also have to remove pixel_array_to_cairo_context as it contains used memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
@@ -188,11 +188,14 @@ def get_camera_dict_for_hashing(camera_object):
     return camera_object_dict
 
 
-def get_hash_from_play_call(camera_object, animations_list, current_mobjects_list):
+def get_hash_from_play_call(scene_object, camera_object, animations_list, current_mobjects_list):
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 
     Parameters
     -----------
+    scene_object : :class:`~.Scene`
+        The scene object.
+    
     camera_object : :class:`~.Camera`
         The camera object used in the scene.
 
@@ -208,6 +211,9 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
         A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`.
     """
     logger.debug("Hashing ...")
+    global ALREADY_PROCESSED_ID
+    # We add the scene object within the ALREADY_PROCESSED_ID, as we don't want to process because pretty much all of its attributes will be soon or later processed (in one of the three hashes).
+    ALREADY_PROCESSED_ID = {id(scene_object) : scene_object}
     t_start = perf_counter()
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [
@@ -223,18 +229,19 @@ def get_hash_from_play_call(camera_object, animations_list, current_mobjects_lis
     t_end = perf_counter()
     logger.debug(f"Hashing done in {t_end - t_start} s.")
     # This will reset ALREADY_PROCESSED_ID as all the hashing processus is finished.
-    global ALREADY_PROCESSED_ID
     ALREADY_PROCESSED_ID = {}
     return "{}_{}_{}".format(hash_camera, hash_animations, hash_current_mobjects)
 
 
-def get_hash_from_wait_call(
+def get_hash_from_wait_call(scene_object,
     camera_object, wait_time, stop_condition_function, current_mobjects_list
 ):
     """Take a wait time, a boolean function as a stop condition and a list of mobjects, and then output their individual hashes. This is meant to be used for `scene.wait` function.
 
     Parameters
     -----------
+     : :class:`~.Scene`
+        The scene object.
     wait_time : :class:`float`
         The time to wait
 
@@ -249,6 +256,8 @@ def get_hash_from_wait_call(
     logger.debug("Hashing ...")
     t_start = perf_counter()
     global ALREADY_PROCESSED_ID
+    # We add the scene object within the ALREADY_PROCESSED_ID, as we don't want to process because pretty much all of its attributes will be soon or later processed (in one of the three hashes).
+    ALREADY_PROCESSED_ID = {id(scene_object) : scene_object}
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     current_mobjects_list_json = [
         get_json(x) for x in sorted(current_mobjects_list, key=lambda obj: str(obj))

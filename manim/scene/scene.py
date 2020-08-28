@@ -866,7 +866,7 @@ class Scene(Container):
             self.add_mobjects_from_animations(animations)
             if not file_writer_config["disable_caching"]:
                 mobjects_on_scene = self.get_mobjects()
-                hash_play = get_hash_from_play_call(
+                hash_play = get_hash_from_play_call(self,
                     self.camera, animations, mobjects_on_scene
                 )
                 self.play_hashes_list.append(hash_play)
@@ -897,7 +897,7 @@ class Scene(Container):
         def wrapper(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
             self.revert_to_original_skipping_status()
             if not file_writer_config["disable_caching"]:
-                hash_wait = get_hash_from_wait_call(
+                hash_wait = get_hash_from_wait_call(self,
                     self.camera, duration, stop_condition, self.get_mobjects()
                 )
                 self.play_hashes_list.append(hash_wait)
