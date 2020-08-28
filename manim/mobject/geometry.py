@@ -82,8 +82,6 @@ class TipableVMobject(VMobject):
         Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
-        if tip_shape is None:
-            tip_shape = ArrowTriangleTip
         if tip_length is None:
             tip_length = self.get_default_tip_length()
         color = self.get_color()
@@ -599,12 +597,12 @@ class Arrow(Line):
         "preserve_tip_size_when_scaling": True,
     }
 
-    def __init__(self, *args, tip_shape=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         Line.__init__(self, *args, **kwargs)
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
-        self.add_tip(tip_shape=tip_shape)
+        self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleTip))
         self.set_stroke_width_from_length()
 
     def scale(self, factor, **kwargs):
