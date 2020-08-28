@@ -3,6 +3,7 @@ __all__ = [
     "guarantee_existence",
     "seek_full_path_from_defaults",
     "modify_atime",
+    "open_file",
 ]
 
 

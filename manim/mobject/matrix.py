@@ -1,4 +1,13 @@
-__all__ = ["Matrix", "DecimalMatrix", "IntegerMatrix", "MobjectMatrix"]
+__all__ = [
+    "Matrix",
+    "DecimalMatrix",
+    "IntegerMatrix",
+    "MobjectMatrix",
+    "matrix_to_tex_string",
+    "matrix_to_mobject",
+    "vector_coordinate_label",
+    "get_det_text",
+]
 
 
 import numpy as np

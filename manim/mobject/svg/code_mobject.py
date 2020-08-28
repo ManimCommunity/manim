@@ -17,7 +17,12 @@
 """
 
 
-__all__ = ["Code"]
+__all__ = [
+    "Code",
+    "hilite_me",
+    "get_default_style",
+    "insert_line_numbers",
+]
 
 
 import html
