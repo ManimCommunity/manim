@@ -117,7 +117,7 @@ class CustomEncoder(json.JSONEncoder):
             for k, v in dct.items():
                 dct_copy[k] = self._handle_already_processed(v)
                 # We check if the k is of the right format (supporter bu Json)
-                if not isinstance(k, (str, int, float, bool)) and key is not None:
+                if not isinstance(k, (str, int, float, bool)) and k is not None:
                     k_new = _key_to_hash(k)
                     # We delete the value coupled with the old key, as the value is now coupled with the new key.
                     dct_copy[k_new] = dct_copy[k]
