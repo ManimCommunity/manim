@@ -792,6 +792,9 @@ class ArrowTip(VMobject):
         "start_angle": PI,
     }
 
+    def __init__(self, *args, **kwargs):
+        raise NotImplementedError("Has to be implemented in inheriting subclasses.")
+
     def get_base(self):
         return self.point_from_proportion(0.5)
 
