@@ -47,8 +47,8 @@ class CustomEncoder(json.JSONEncoder):
         elif isinstance(obj, np.ndarray):
             if obj.size > 1000:
                 return f"Np array too big {obj.size}"
-            return "hash nparray crc32-" + str(zlib.crc32(obj))
-            return self._handle_already_processed(list(obj))  # TODO CHANGE THAT !
+            # We return the repr and not a list to avoid the JsonEncoder to iterate over it. 
+            return repr(obj)
         elif hasattr(obj, "__dict__"):
             temp = getattr(obj, "__dict__")
             # MappingProxy is not supported by the Json Encoder
@@ -75,12 +75,10 @@ class CustomEncoder(json.JSONEncoder):
             "already_processed" string if it has been processed, otherwise obj.
         """
         global ALREADY_PROCESSED_ID
-        if (
-            not isinstance(obj, (str, int, bool, float))
-            and id(obj) in ALREADY_PROCESSED_ID
-        ):
+        if (id(obj) in ALREADY_PROCESSED_ID):
             return "already_processed"
-        ALREADY_PROCESSED_ID[id(obj)] = obj
+        if not isinstance(obj, (str, int, bool, float)):
+            ALREADY_PROCESSED_ID[id(obj)] = obj
         return obj
 
     def _check_iterable(self, iterable):
@@ -96,40 +94,38 @@ class CustomEncoder(json.JSONEncoder):
         """
 
         def _key_to_hash(key):
-            if not isinstance(key, (str, int, float, bool)) and key is not None:
-                return zlib.crc32(json.dumps(key, cls=CustomEncoder).encode())
-            return key
+            return zlib.crc32(json.dumps(key, cls=CustomEncoder).encode())
 
         def _iter_check_list(lst):
+            # We have to make a copy, as we don't want to touch to the original list
+            # A deepcopy isn't necessary as it is already recursive.            
+            lst_copy = copy.copy(lst)
             for i, el in enumerate(lst):
-                lst[i] = self._handle_already_processed(el)
-                if isinstance(lst[i], list):
-                    temp = copy.deepcopy(lst[i])
-                    lst[i] = _iter_check_list(temp)
-                elif isinstance(lst[i], dict):
-                    temp = copy.deepcopy(lst[i])
-                    temp = dict(sorted(temp.items()))
-                    lst[i] = _iter_check_dict(temp)
-            return lst
+                lst_copy[i] = self._handle_already_processed(el) # ISSUE here, because of copy. 
+                if isinstance(el, list):
+                    lst_copy[i] = _iter_check_list(el)
+                elif isinstance(el, dict):
+                    lst_copy[i] = _iter_check_dict(temp)
+            return lst_copy
 
         def _iter_check_dict(dct):
+            # We have to make a copy, as we don't want to touch to the original dict
+            # A deepcopy isn't necessary as it is already recursive.
+            dct_copy = copy.copy(dct)
             for k, v in dct.items():
-                dct[k] = self._handle_already_processed(v)
-                k = _key_to_hash(k)
-                if isinstance(dct[k], dict):
-                    temp = copy.deepcopy(dct[k])
-                    temp = dict(sorted(temp.items()))
-                    dct[k] = _iter_check_dict(temp)
-                elif isinstance(dct[k], list):
-                    temp = copy.deepcopy(dct[k])
-                    dct[k] = _iter_check_list(temp)
-            return dct
+                dct_copy[k] = self._handle_already_processed(v)
+                # We check if the k is of the right format (supporter bu Json)
+                if not isinstance(k, (str, int, float, bool)) and key is not None:
+                    k_new = _key_to_hash(k) 
+                    # We delete the value coupled with the old key, as the value is now coupled with the new key.
+                    dct_copy[k_new] = dct_copy[k]
+                    del dct_copy[k]
+                if isinstance(v, dict):
+                    dct_copy[k] = _iter_check_dict(v)
+                elif isinstance(v, list):
+                    dct_copy[k] = _iter_check_list(v)
+            return dct_copy
 
-        # We have to make a copy, as we don't want to touch to the original dict
-        try:
-            iterable = copy.deepcopy(iterable)
-        except:
-            return "Unable to deep_copy"
         if isinstance(iterable, (list, tuple)):
             return _iter_check_list(iterable)
         elif isinstance(iterable, dict):
@@ -183,7 +179,7 @@ def get_camera_dict_for_hashing(camera_object):
     """
     camera_object_dict = copy.copy(
         camera_object.__dict__
-    )  # TODO : maybe a bug, deepcopy?
+    ) 
     # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays.
     # They are not essential to caching process.
     # We also have to remove pixel_array_to_cairo_context as it contains used memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
