@@ -1,3 +1,6 @@
+__all__ = ["Scene", "EndSceneEarlyException"]
+
+
 import inspect
 import random
 import warnings

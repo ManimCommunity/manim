@@ -1,3 +1,11 @@
+__all__ = [
+    "VectorField",
+    "StreamLines",
+    "ShowPassingFlashWithThinningStrokeWidth",
+    "AnimatedStreamLines",
+]
+
+
 import numpy as np
 import os
 import itertools as it

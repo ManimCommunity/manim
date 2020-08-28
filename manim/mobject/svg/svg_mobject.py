@@ -1,3 +1,6 @@
+__all__ = ["SVGMobject", "VMobjectFromSVGPathstring"]
+
+
 import itertools as it
 import re
 import os

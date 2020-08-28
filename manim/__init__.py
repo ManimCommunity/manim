@@ -6,9 +6,11 @@
 # global config dict is called 'config', just like the module itself.  That's
 # why we import the module first with a different name, and then the dict.
 from . import config as _config
-from .config import config
+from .config import config, file_writer_config
 
 from .constants import *
+
+from .container import *
 
 from .animation.animation import *
 from .animation.composition import *
@@ -59,7 +61,6 @@ from .scene.moving_camera_scene import *
 from .scene.reconfigurable_scene import *
 from .scene.scene import *
 from .scene.sample_space_scene import *
-from .scene.graph_scene import *
 from .scene.three_d_scene import *
 from .scene.vector_space_scene import *
 from .scene.zoomed_scene import *

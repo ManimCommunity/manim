@@ -3,8 +3,7 @@ from ..utils.iterables import list_difference_update
 
 
 class MultiCamera(MovingCamera):
-    """Camera Object that allows for multiple perspectives.
-    """
+    """Camera Object that allows for multiple perspectives."""
 
     CONFIG = {
         "allow_cameras_to_capture_their_own_display": False,

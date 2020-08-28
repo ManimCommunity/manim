@@ -1,3 +1,6 @@
+__all__ = ["Matrix", "DecimalMatrix", "IntegerMatrix", "MobjectMatrix"]
+
+
 import numpy as np
 
 from ..constants import *
@@ -122,7 +125,7 @@ class Matrix(VMobject):
 
     def get_rows(self):
         """Return rows of the matrix as VGroups
-        
+
         Returns
         --------
         List[:class:`~.VGroup`]
@@ -134,12 +137,12 @@ class Matrix(VMobject):
 
     def set_row_colors(self, *colors):
         """Set individual colors for each row of the matrix
-        
+
         Parameters
         ----------
         colors : :class:`str`
             The list of colors; each color specified corresponds to a row.
-        
+
         Returns
         -------
         :class:`Matrix`
