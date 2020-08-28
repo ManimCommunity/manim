@@ -32,7 +32,7 @@ class CustomEncoder(json.JSONEncoder):
             Python object that JSON encoder will recognize
 
         """
-        if inspect.isfunction(obj)  and not isinstance(obj, ModuleType):
+        if (inspect.ismethod(obj) or inspect.isfunction(obj)) and not isinstance(obj, ModuleType):
             cvars = inspect.getclosurevars(obj)
             cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
             for i in list(cvardict):
