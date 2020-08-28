@@ -74,7 +74,7 @@ jobs:
            $($env:APPDATA)\ManimCache
          key: ${{ runner.os }}-dependencies
       - name: Download system dependencies (Windows)
-        if: runner.os == 'Windows' and steps.cache-windows.outputs.cache-hit != 'true'
+        if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
           Invoke-WebRequest https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.zip?job=image:%20Visual%20Studio%202019 -O "$($TEMP)\TinyTex\TinyTex.zip"
           Expand-Archive -LiteralPath "$($TEMP)\TinyTex\TinyTex.zip" -DestinationPath "$($env:APPDATA)\ManimCache\LatexWindows"
