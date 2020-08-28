@@ -811,3 +811,25 @@ class ArrowTip(VMobject):
     def get_length(self):
         return get_norm(self.get_vector())
 
+class ArrowTriangleTip(ArrowTip, Triangle):
+    def __init__(self, **kwargs):
+        digest_config(self, kwargs)
+        Triangle.__init__(self, **kwargs)
+        self.set_width(self.length)
+        self.set_height(self.length, stretch=True)
+
+
+class ArrowCircleTip(ArrowTip, Circle):
+    def __init__(self, **kwargs):
+        digest_config(self, kwargs)
+        Circle.__init__(self, **kwargs)
+        self.set_width(self.length)
+        self.set_height(self.length, stretch=True)
+
+
+class ArrowSquareTip(ArrowTip, Square):
+    def __init__(self, **kwargs):
+        digest_config(self, kwargs)
+        Square.__init__(self, side_length=self.length, **kwargs)
+        self.set_width(self.length)
+        self.set_height(self.length, stretch=True)
