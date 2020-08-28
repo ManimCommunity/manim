@@ -102,7 +102,7 @@ class TipableVMobject(VMobject):
             handle = self.get_last_handle()
             anchor = self.get_end()
         tip.rotate(angle_of_vector(handle - anchor) - PI - tip.get_angle())
-        tip.shift(anchor - tip.get_tip_point())
+        tip.shift(anchor - tip.tip_point)
         return tip
 
     def reset_endpoints_based_on_tip(self, tip, at_start):
@@ -112,10 +112,10 @@ class TipableVMobject(VMobject):
             return self
 
         if at_start:
-            self.put_start_and_end_on(tip.get_base(), self.get_end())
+            self.put_start_and_end_on(tip.base, self.get_end())
         else:
             self.put_start_and_end_on(
-                self.get_start(), tip.get_base(),
+                self.get_start(), tip.base,
             )
         return self
 
@@ -795,20 +795,20 @@ class ArrowTip(VMobject):
     def __init__(self, *args, **kwargs):
         raise NotImplementedError("Has to be implemented in inheriting subclasses.")
 
-    def get_base(self):
+    @property
+    def base(self):
         return self.point_from_proportion(0.5)
 
-    def get_tip_point(self):
+    @property
+    def tip_point(self):
         return self.points[0]
 
-    def get_vector(self):
-        return self.get_tip_point() - self.get_base()
+    @property
+    def vector(self):
+        return self.tip_point - self.base
 
     def get_angle(self):
-        return angle_of_vector(self.get_vector())
-
-    def get_length(self):
-        return get_norm(self.get_vector())
+        return angle_of_vector(self.vector)
 
 
 class ArrowTriangleTip(ArrowTip, Triangle):
