@@ -807,6 +807,7 @@ class ArrowTip(VMobject):
     def get_length(self):
         return get_norm(self.get_vector())
 
+
 class ArrowTriangleTip(ArrowTip, Triangle):
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
