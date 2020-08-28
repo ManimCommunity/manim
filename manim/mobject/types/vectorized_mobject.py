@@ -1,3 +1,6 @@
+"""Mobjects that use vector graphics."""
+
+
 __all__ = [
     "VMobject",
     "VGroup",

@@ -1,3 +1,6 @@
+"A Camera converts the mobjects contained in a Scene into an array of pixels"
+
+
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
 
 

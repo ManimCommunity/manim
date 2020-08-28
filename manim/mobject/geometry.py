@@ -1,10 +1,4 @@
-"""
-geometry.py
------------
-
-Classes implementing geometric objects, mostly derived from MObject.
-
-"""
+"""Mobjects that are simple geometric shapes."""
 
 
 __all__ = [

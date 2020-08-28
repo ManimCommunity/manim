@@ -1,3 +1,6 @@
+"""Fading in and out of view."""
+
+
 __all__ = [
     "FadeOut",
     "FadeIn",

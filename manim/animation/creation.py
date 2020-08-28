@@ -1,3 +1,6 @@
+"""Animate the display or removal of a mobject from a scene."""
+
+
 __all__ = [
     "ShowPartial",
     "ShowCreation",
@@ -144,7 +147,11 @@ class ShowIncreasingSubsets(Animation):
 
 class AddTextLetterByLetter(ShowIncreasingSubsets):
     """
+<<<<<<< HEAD
     Add a Text Object letter by letter on the scene. Use time_per_char to change frequency of appearance of the letters.
+=======
+        Add a Text Object letter by letter on the scene. Use time_per_char to change frequency of appearance of the letters.
+>>>>>>> master
     """
 
     CONFIG = {

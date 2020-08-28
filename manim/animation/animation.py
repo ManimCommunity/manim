@@ -1,3 +1,6 @@
+"""Animate mobjects."""
+
+
 __all__ = ["Animation"]
 
 

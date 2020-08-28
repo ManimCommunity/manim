@@ -1,3 +1,6 @@
+"""Mobject representing a number line."""
+
+
 __all__ = ["NumberLine", "UnitInterval"]
 
 

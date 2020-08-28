@@ -1,3 +1,6 @@
+"""Mobjects generated from an SVG file."""
+
+
 __all__ = ["SVGMobject", "VMobjectFromSVGPathstring", "string_to_numbers"]
 
 
