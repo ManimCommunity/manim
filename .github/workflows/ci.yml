@@ -87,9 +87,9 @@ jobs:
       - name: Add Windows dependecies to path
         if: runner.os == 'Windows'
         run: |
-          $env:Path += ";" + "$env:APPDATA\ManimCache\FFmpeg\ffmpeg-4.3.1-win64-static\bin"
-          $env:Path += ";" + "$env:APPDATA\ManimCache\LatexWindows\TinyTeX\bin\win32"
-          $env:Path += ";" + "$env:APPDATA\ManimCache\SoX\sox-14.4.2"
+          $env:Path += ";" + "$($PWD)\ManimCache\FFmpeg\ffmpeg-4.3.1-win64-static\bin"
+          $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
+          $env:Path += ";" + "$($PWD)\ManimCache\SoX\sox-14.4.2"
           echo "::set-env name=Path::$env:Path"
       - name: Install Pycairo (Non-Windows)
         if: runner.os == 'macOS' || runner.os == 'Linux'
