@@ -127,7 +127,10 @@ class CustomEncoder(json.JSONEncoder):
             return dct
 
         # We have to make a copy, as we don't want to touch to the original dict
+        try:
         iterable = copy.deepcopy(iterable)
+        except:
+            return "Unable to deep_copy"
         if isinstance(iterable, (list, tuple)):
             return _iter_check_list(iterable)
         elif isinstance(iterable, dict):
