@@ -47,7 +47,7 @@ class CustomEncoder(json.JSONEncoder):
         elif isinstance(obj, np.ndarray):
             if obj.size > 1000:
                 return f"Np array too big {obj.size}"
-            # We return the repr and not a list to avoid the JsonEncoder to iterate over it. 
+            # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
             return repr(obj)
         elif hasattr(obj, "__dict__"):
             temp = getattr(obj, "__dict__")
@@ -75,7 +75,7 @@ class CustomEncoder(json.JSONEncoder):
             "already_processed" string if it has been processed, otherwise obj.
         """
         global ALREADY_PROCESSED_ID
-        if (id(obj) in ALREADY_PROCESSED_ID):
+        if id(obj) in ALREADY_PROCESSED_ID:
             return "already_processed"
         if not isinstance(obj, (str, int, bool, float)):
             ALREADY_PROCESSED_ID[id(obj)] = obj
@@ -98,10 +98,12 @@ class CustomEncoder(json.JSONEncoder):
 
         def _iter_check_list(lst):
             # We have to make a copy, as we don't want to touch to the original list
-            # A deepcopy isn't necessary as it is already recursive.            
+            # A deepcopy isn't necessary as it is already recursive.
             lst_copy = copy.copy(lst)
             for i, el in enumerate(lst):
-                lst_copy[i] = self._handle_already_processed(el) # ISSUE here, because of copy. 
+                lst_copy[i] = self._handle_already_processed(
+                    el
+                )  # ISSUE here, because of copy.
                 if isinstance(el, list):
                     lst_copy[i] = _iter_check_list(el)
                 elif isinstance(el, dict):
@@ -116,7 +118,7 @@ class CustomEncoder(json.JSONEncoder):
                 dct_copy[k] = self._handle_already_processed(v)
                 # We check if the k is of the right format (supporter bu Json)
                 if not isinstance(k, (str, int, float, bool)) and key is not None:
-                    k_new = _key_to_hash(k) 
+                    k_new = _key_to_hash(k)
                     # We delete the value coupled with the old key, as the value is now coupled with the new key.
                     dct_copy[k_new] = dct_copy[k]
                     del dct_copy[k]
@@ -177,9 +179,7 @@ def get_camera_dict_for_hashing(camera_object):
     :class:`dict`
         `Camera.__dict__` but cleaned.
     """
-    camera_object_dict = copy.copy(
-        camera_object.__dict__
-    ) 
+    camera_object_dict = copy.copy(camera_object.__dict__)
     # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays.
     # They are not essential to caching process.
     # We also have to remove pixel_array_to_cairo_context as it contains used memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
