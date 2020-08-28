@@ -1,4 +1,4 @@
-"""Display a mobject by fading it in, or stop displaying it by fading it out."""
+"""Animate the display or removal of a mobject from a scene."""
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.types.vectorized_mobject import VMobject

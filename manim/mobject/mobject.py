@@ -1150,7 +1150,7 @@ class Mobject(Container):
 
 
 class Group(Mobject):
-    """Groups together multiple MObjects."""
+    """Groups together multiple Mobjects."""
 
     def __init__(self, *mobjects, **kwargs):
         if not all([isinstance(m, Mobject) for m in mobjects]):
