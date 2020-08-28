@@ -751,35 +751,6 @@ class Triangle(RegularPolygon):
         RegularPolygon.__init__(self, n=3, **kwargs)
 
 
-class ArrowTip(Triangle):
-    CONFIG = {
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "length": DEFAULT_ARROW_TIP_LENGTH,
-        "start_angle": PI,
-    }
-
-    def __init__(self, **kwargs):
-        Triangle.__init__(self, **kwargs)
-        self.set_width(self.length)
-        self.set_height(self.length, stretch=True)
-
-    def get_base(self):
-        return self.point_from_proportion(0.5)
-
-    def get_tip_point(self):
-        return self.points[0]
-
-    def get_vector(self):
-        return self.get_tip_point() - self.get_base()
-
-    def get_angle(self):
-        return angle_of_vector(self.get_vector())
-
-    def get_length(self):
-        return get_norm(self.get_vector())
-
-
 class Rectangle(Polygon):
     CONFIG = {
         "color": WHITE,
@@ -815,3 +786,28 @@ class RoundedRectangle(Rectangle):
     def __init__(self, **kwargs):
         Rectangle.__init__(self, **kwargs)
         self.round_corners(self.corner_radius)
+
+
+class ArrowTip(VMobject):
+    CONFIG = {
+        "fill_opacity": 0,
+        "stroke_width": 0,
+        "length": DEFAULT_ARROW_TIP_LENGTH,
+        "start_angle": PI,
+    }
+
+    def get_base(self):
+        return self.point_from_proportion(0.5)
+
+    def get_tip_point(self):
+        return self.points[0]
+
+    def get_vector(self):
+        return self.get_tip_point() - self.get_base()
+
+    def get_angle(self):
+        return angle_of_vector(self.get_vector())
+
+    def get_length(self):
+        return get_norm(self.get_vector())
+
