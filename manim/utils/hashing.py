@@ -32,7 +32,9 @@ class CustomEncoder(json.JSONEncoder):
             Python object that JSON encoder will recognize
 
         """
-        if (inspect.ismethod(obj) or inspect.isfunction(obj)) and not isinstance(obj, ModuleType):
+        if (inspect.ismethod(obj) or inspect.isfunction(obj)) and not isinstance(
+            obj, ModuleType
+        ):
             cvars = inspect.getclosurevars(obj)
             cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
             for i in list(cvardict):
@@ -56,7 +58,6 @@ class CustomEncoder(json.JSONEncoder):
         elif isinstance(obj, np.uint8):
             return int(obj)
         return "Unsupported type for serializing ->" + str(type(obj))
-
 
     def _handle_already_processed(self, obj):
         """Handle if an object has been already processed by checking the id of the object. 
@@ -114,14 +115,12 @@ class CustomEncoder(json.JSONEncoder):
         def _iter_check_dict(dct):
             for k, v in dct.items():
                 dct[k] = self._handle_already_processed(v)
-                k = _key_to_hash(
-                    k
-                )  
+                k = _key_to_hash(k)
                 if isinstance(dct[k], dict):
                     temp = copy.deepcopy(dct[k])
                     temp = dict(sorted(temp.items()))
                     dct[k] = _iter_check_dict(temp)
-                elif isinstance(dct[k], list): 
+                elif isinstance(dct[k], list):
                     temp = copy.deepcopy(dct[k])
                     dct[k] = _iter_check_list(temp)
             return dct
@@ -182,7 +181,9 @@ def get_camera_dict_for_hashing(camera_object):
     :class:`dict`
         `Camera.__dict__` but cleaned.
     """
-    camera_object_dict = copy.copy(camera_object.__dict__) # TODO : maybe a bug, deepcopy?
+    camera_object_dict = copy.copy(
+        camera_object.__dict__
+    )  # TODO : maybe a bug, deepcopy?
     # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays.
     # They are not essential to caching process.
     # We also have to remove pixel_array_to_cairo_context as it contains used memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
@@ -191,7 +192,9 @@ def get_camera_dict_for_hashing(camera_object):
     return camera_object_dict
 
 
-def get_hash_from_play_call(scene_object, camera_object, animations_list, current_mobjects_list):
+def get_hash_from_play_call(
+    scene_object, camera_object, animations_list, current_mobjects_list
+):
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 
     Parameters
@@ -216,7 +219,7 @@ def get_hash_from_play_call(scene_object, camera_object, animations_list, curren
     logger.debug("Hashing ...")
     global ALREADY_PROCESSED_ID
     # We add the scene object within the ALREADY_PROCESSED_ID, as we don't want to process because pretty much all of its attributes will be soon or later processed (in one of the three hashes).
-    ALREADY_PROCESSED_ID = {id(scene_object) : scene_object}
+    ALREADY_PROCESSED_ID = {id(scene_object): scene_object}
     t_start = perf_counter()
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [
@@ -236,8 +239,12 @@ def get_hash_from_play_call(scene_object, camera_object, animations_list, curren
     return "{}_{}_{}".format(hash_camera, hash_animations, hash_current_mobjects)
 
 
-def get_hash_from_wait_call(scene_object,
-    camera_object, wait_time, stop_condition_function, current_mobjects_list
+def get_hash_from_wait_call(
+    scene_object,
+    camera_object,
+    wait_time,
+    stop_condition_function,
+    current_mobjects_list,
 ):
     """Take a wait time, a boolean function as a stop condition and a list of mobjects, and then output their individual hashes. This is meant to be used for `scene.wait` function.
 
@@ -260,7 +267,7 @@ def get_hash_from_wait_call(scene_object,
     t_start = perf_counter()
     global ALREADY_PROCESSED_ID
     # We add the scene object within the ALREADY_PROCESSED_ID, as we don't want to process because pretty much all of its attributes will be soon or later processed (in one of the three hashes).
-    ALREADY_PROCESSED_ID = {id(scene_object) : scene_object}
+    ALREADY_PROCESSED_ID = {id(scene_object): scene_object}
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     current_mobjects_list_json = [
         get_json(x) for x in sorted(current_mobjects_list, key=lambda obj: str(obj))
