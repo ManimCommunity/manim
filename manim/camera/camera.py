@@ -73,10 +73,12 @@ class Camera(object):
         """
         digest_config(self, kwargs, locals())
 
-        # All of the following must be set to the value in stored in config at
-        # the time of _instance construction_.  Before, they were in the CONFIG
-        # dict, which is a class attribute and is defined at the time of _class
-        # definition_.
+        # All of the following are set to EITHER the value passed via kwargs,
+        # OR the value stored in the global config dict at the time of
+        # _instance construction_.  Before, they were in the CONFIG dict, which
+        # is a class attribute and is defined at the time of _class
+        # definition_.  This did not allow for creating two Cameras with
+        # different configurations in the same session.
         for attr in [
             "pixel_height",
             "pixel_width",
@@ -86,9 +88,8 @@ class Camera(object):
         ]:
             setattr(self, attr, kwargs.get(attr, config[attr]))
 
-        # This one must also be read from config at the time of instance
-        # construction, but it doesn't have the same name as the corresponding
-        # key :(
+        # This one is in the same boat as the above, but it doesn't have the
+        # same name as the corresponding key so it has to be handled on its own
         self.max_allowable_norm = config["frame_width"]
 
         self.rgb_max_val = np.iinfo(self.pixel_array_dtype).max
