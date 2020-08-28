@@ -128,7 +128,7 @@ class CustomEncoder(json.JSONEncoder):
 
         # We have to make a copy, as we don't want to touch to the original dict
         try:
-        iterable = copy.deepcopy(iterable)
+            iterable = copy.deepcopy(iterable)
         except:
             return "Unable to deep_copy"
         if isinstance(iterable, (list, tuple)):
@@ -230,7 +230,7 @@ def get_hash_from_play_call(scene_object, camera_object, animations_list, curren
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
     ]
     t_end = perf_counter()
-    logger.debug(f"Hashing done in {t_end - t_start} s.")
+    logger.debug(f"Hashing done in {round(t_end - t_start, 5)} s.")
     # This will reset ALREADY_PROCESSED_ID as all the hashing processus is finished.
     ALREADY_PROCESSED_ID = {}
     return "{}_{}_{}".format(hash_camera, hash_animations, hash_current_mobjects)
@@ -272,7 +272,7 @@ def get_hash_from_wait_call(scene_object,
         # This will reset ALREADY_PROCESSED_ID as all the hashing processus is finished.
         ALREADY_PROCESSED_ID = {}
         t_end = perf_counter()
-        logger.debug(f"Hashing done in {t_end - t_start} s.")
+        logger.debug(f"Hashing done in {round(t_end - t_start, 5)} s.")
         return "{}_{}{}_{}".format(
             hash_camera,
             str(wait_time).replace(".", "-"),
@@ -282,7 +282,7 @@ def get_hash_from_wait_call(scene_object,
     else:
         ALREADY_PROCESSED_ID = {}
         t_end = perf_counter()
-        logger.debug(f"Hashing done in {t_end - t_start} s.")
+        logger.debug(f"Hashing done in {round(t_end - t_start, 5)} s.")
         return "{}_{}_{}".format(
             hash_camera, str(wait_time).replace(".", "-"), hash_current_mobjects
         )
