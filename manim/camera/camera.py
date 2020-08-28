@@ -1,4 +1,4 @@
-"""A Camera converts a Scene into visual data."""
+"A Camera converts the mobjects contained in a Scene into an array of pixels"
 from functools import reduce
 import itertools as it
 import operator as op
