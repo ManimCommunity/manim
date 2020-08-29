@@ -316,8 +316,10 @@ class CurvedDoubleArrow(CurvedArrow):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         CurvedArrow.__init__(self, start_point, end_point, **kwargs)
-        self.add_tip(at_start=True,
-                     tip_shape=kwargs.get("tip_shape_start", ArrowTriangleFilledTip))
+        self.add_tip(
+            at_start=True,
+            tip_shape=kwargs.get("tip_shape_start", ArrowTriangleFilledTip),
+        )
 
 
 class Circle(Arc):
@@ -674,8 +676,10 @@ class DoubleArrow(Arrow):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         Arrow.__init__(self, *args, **kwargs)
-        self.add_tip(at_start=True,
-                     tip_shape=kwargs.get("tip_shape_start", ArrowTriangleFilledTip))
+        self.add_tip(
+            at_start=True,
+            tip_shape=kwargs.get("tip_shape_start", ArrowTriangleFilledTip),
+        )
 
 
 class CubicBezier(VMobject):
