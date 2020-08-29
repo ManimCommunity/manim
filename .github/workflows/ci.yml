@@ -87,7 +87,9 @@ jobs:
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
           $soxVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['sox'])"
+          $soxVersionNumber = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['sox'].split('-')[1])"
           $ffmpegVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'])"
+          $ffmpegVersionNumber = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'].split('-')[1])"
           $OriPath = $env:PATH
           
           echo "Install Tinytex"
@@ -98,7 +100,7 @@ jobs:
           $env:PATH=$OriPath
           
           echo "Completed Latex Install Sox"
-          Invoke-WebRequest "https://downloads.sourceforge.net/project/sox/sox/$((Get-Version $soxVersion).Version.toString())/$($soxVersion).zip" -UserAgent "wget" -O "$($env:TMP)\SoX.zip"
+          Invoke-WebRequest "https://downloads.sourceforge.net/project/sox/sox/$($soxVersionNumber)/$($soxVersion).zip" -UserAgent "wget" -O "$($env:TMP)\SoX.zip"
           7z x "$($env:TMP)\SoX.zip" -o"$($PWD)\ManimCache"
           Move-Item "ManimCache\sox-*" "ManimCache\SoX"
           
