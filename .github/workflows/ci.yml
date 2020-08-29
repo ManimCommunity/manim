@@ -46,6 +46,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
+
       - name: Get pip cache dir
         shell: bash
         id: pip-cache-and-time
@@ -58,6 +59,7 @@ jobs:
         with:
           path: ${{ steps.pip-cache-and-time.outputs.dir }}
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python }}-${{ steps.pip-cache-and-time.outputs.date }}
+
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -82,6 +84,7 @@ jobs:
         with:
          path: ${{ github.workspace }}\ManimCache
          key: ${{ runner.os }}-dependencies-ffmpeg-sox-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
+
       - name: Download system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
@@ -90,22 +93,20 @@ jobs:
           $ffmpegVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'])"
           $ffmpegVersionNumber = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'].split('-')[1])"
           $OriPath = $env:PATH
-          
           echo "Install Tinytex"
           Invoke-WebRequest "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.zip?job=image:%20Visual%20Studio%202019" -O "$($env:TMP)\TinyTex.zip"
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32;$($env:PATH)"
           tlmgr install standalone preview doublestroke ms setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english
           $env:PATH=$OriPath
-          
           echo "Completed Latex Install Sox"
           Invoke-WebRequest "https://downloads.sourceforge.net/project/sox/sox/$($soxVersionNumber)/$($soxVersion).zip" -UserAgent "wget" -O "$($env:TMP)\SoX.zip"
           7z x "$($env:TMP)\SoX.zip" -o"$($PWD)\ManimCache"
           Move-Item "ManimCache\sox-*" "ManimCache\SoX"
-          
           Invoke-WebRequest https://ffmpeg.zeranoe.com/builds/win64/static/$($ffmpegVersion).zip -O "$($env:TMP)\$($ffmpegVersion).zip"
           7z x "$($env:TMP)\$($ffmpegVersion).zip" -o"$($PWD)\ManimCache"
           Move-Item "ManimCache\ffmpeg-*" "ManimCache\FFmpeg"
+
       - name: Add Windows dependecies to path
         if: runner.os == 'Windows'
         run: |
@@ -113,6 +114,7 @@ jobs:
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path += ";" + "$($PWD)\ManimCache\SoX"
           echo "::set-env name=Path::$env:Path"
+
       - name: Install Pycairo (Non-Windows)
         if: runner.os == 'macOS' || runner.os == 'Linux'
         run: pip install pycairo
