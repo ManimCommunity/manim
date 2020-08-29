@@ -88,12 +88,14 @@ jobs:
         run: |
           $soxVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['sox'])"
           $ffmpegVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'])"
+          $OriPath = $env:PATH
           
           echo "Install Tinytex"
           Invoke-WebRequest "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.zip?job=image:%20Visual%20Studio%202019" -O "$($env:TMP)\TinyTex.zip"
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32;$($env:PATH)"
           tlmgr install standalone preview doublestroke ms setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english
+          $env:PATH=$OriPath
           
           echo "Completed Latex Install Sox"
           Invoke-WebRequest "https://downloads.sourceforge.net/project/sox/sox/$((Get-Version $soxVersion).Version.toString())/$($soxVersion).zip" -UserAgent "wget" -O "$($env:TMP)\SoX.zip"
