@@ -59,8 +59,6 @@ jobs:
         with:
           path: ${{ steps.pip-cache-and-time.outputs.dir }}
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python }}-${{ steps.pip-cache-and-time.outputs.date }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
