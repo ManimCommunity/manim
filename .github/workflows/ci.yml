@@ -51,7 +51,7 @@ jobs:
         id: pip-cache-and-time
         run: |
            echo "::set-output name=dir::$(pip cache dir)"
-           echo "::set-output name=date::$(python -c "import time; print(time.localtime().tm_mon,time.localtime().tm_year,sep='')")
+           echo "::set-output name=date::$(python -c `"import time; print(time.localtime().tm_mon,time.localtime().tm_year,sep='')`")"
 
       - name: pip cache
         uses: actions/cache@v2
