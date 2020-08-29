@@ -3,7 +3,7 @@ import zlib
 import inspect
 import copy
 import numpy as np
-from types import ModuleType, MappingProxyType
+from types import ModuleType, MappingProxyType, FunctionType, MethodType
 from time import perf_counter
 
 from manim import logger
@@ -32,8 +32,8 @@ class CustomEncoder(json.JSONEncoder):
             Python object that JSON encoder will recognize
 
         """
-        if (inspect.ismethod(obj) or inspect.isfunction(obj)) and not isinstance(
-            obj, ModuleType
+        if not (isinstance(obj, ModuleType)) and isinstance(
+            obj, (MethodType, FunctionType)
         ):
             cvars = inspect.getclosurevars(obj)
             cvardict = {**copy.copy(cvars.globals), **copy.copy(cvars.nonlocals)}
