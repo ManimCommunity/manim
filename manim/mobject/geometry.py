@@ -82,6 +82,8 @@ class TipableVMobject(VMobject):
         Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
+        if tip_shape is None:
+            tip_shape = ArrowTriangleTip
         if tip_length is None:
             tip_length = self.get_default_tip_length()
         color = self.get_color()
