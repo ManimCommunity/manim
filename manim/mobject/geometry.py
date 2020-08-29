@@ -308,13 +308,16 @@ class ArcBetweenPoints(Arc):
 class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
         ArcBetweenPoints.__init__(self, start_point, end_point, **kwargs)
-        self.add_tip()
+        self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleTip))
 
 
 class CurvedDoubleArrow(CurvedArrow):
     def __init__(self, start_point, end_point, **kwargs):
+        if "tip_shape_end" in kwargs:
+            kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         CurvedArrow.__init__(self, start_point, end_point, **kwargs)
-        self.add_tip(at_start=True)
+        self.add_tip(at_start=True,
+                     tip_shape=kwargs.get("tip_shape_start", ArrowTriangleTip))
 
 
 class Circle(Arc):
@@ -668,8 +671,11 @@ class Vector(Arrow):
 
 class DoubleArrow(Arrow):
     def __init__(self, *args, **kwargs):
+        if "tip_shape_end" in kwargs:
+            kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         Arrow.__init__(self, *args, **kwargs)
-        self.add_tip(at_start=True)
+        self.add_tip(at_start=True,
+                     tip_shape=kwargs.get("tip_shape_start", ArrowTriangleTip))
 
 
 class CubicBezier(VMobject):
