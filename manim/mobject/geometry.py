@@ -51,7 +51,7 @@ class TipableVMobject(VMobject):
         "tip_length": DEFAULT_ARROW_TIP_LENGTH,
         # TODO
         "normal_vector": OUT,
-        "tip_style": {"fill_opacity": 1, "stroke_width": 0,},
+        "tip_style": dict(),
     }
 
     # Adding, Creating, Modifying tips
@@ -83,7 +83,7 @@ class TipableVMobject(VMobject):
         but has not yet been given a position in space.
         """
         if tip_shape is None:
-            tip_shape = ArrowTriangleTip
+            tip_shape = ArrowTriangleFilledTip
         if tip_length is None:
             tip_length = self.get_default_tip_length()
         color = self.get_color()
@@ -308,7 +308,7 @@ class ArcBetweenPoints(Arc):
 class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
         ArcBetweenPoints.__init__(self, start_point, end_point, **kwargs)
-        self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleTip))
+        self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleFilledTip))
 
 
 class CurvedDoubleArrow(CurvedArrow):
@@ -317,7 +317,7 @@ class CurvedDoubleArrow(CurvedArrow):
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         CurvedArrow.__init__(self, start_point, end_point, **kwargs)
         self.add_tip(at_start=True,
-                     tip_shape=kwargs.get("tip_shape_start", ArrowTriangleTip))
+                     tip_shape=kwargs.get("tip_shape_start", ArrowTriangleFilledTip))
 
 
 class Circle(Arc):
@@ -607,7 +607,7 @@ class Arrow(Line):
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
-        self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleTip))
+        self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleFilledTip))
         self.set_stroke_width_from_length()
 
     def scale(self, factor, **kwargs):
@@ -675,7 +675,7 @@ class DoubleArrow(Arrow):
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         Arrow.__init__(self, *args, **kwargs)
         self.add_tip(at_start=True,
-                     tip_shape=kwargs.get("tip_shape_start", ArrowTriangleTip))
+                     tip_shape=kwargs.get("tip_shape_start", ArrowTriangleFilledTip))
 
 
 class CubicBezier(VMobject):
@@ -793,7 +793,7 @@ class RoundedRectangle(Rectangle):
 class ArrowTip(VMobject):
     CONFIG = {
         "fill_opacity": 0,
-        "stroke_width": 0,
+        "stroke_width": 3,
         "length": DEFAULT_ARROW_TIP_LENGTH,
         "start_angle": PI,
     }
@@ -818,12 +818,25 @@ class ArrowTip(VMobject):
         return angle_of_vector(self.vector)
 
 
+class ArrowFilledTip(ArrowTip):
+    CONFIG = {
+        "fill_opacity": 1,
+        "stroke_width": 0,
+        "length": DEFAULT_ARROW_TIP_LENGTH,
+        "start_angle": PI,
+    }
+
+
 class ArrowTriangleTip(ArrowTip, Triangle):
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
         Triangle.__init__(self, **kwargs)
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
+
+
+class ArrowTriangleFilledTip(ArrowFilledTip, ArrowTriangleTip):
+    pass
 
 
 class ArrowCircleTip(ArrowTip, Circle):
@@ -834,9 +847,17 @@ class ArrowCircleTip(ArrowTip, Circle):
         self.set_height(self.length, stretch=True)
 
 
+class ArrowCircleFilledTip(ArrowFilledTip, ArrowCircleTip):
+    pass
+
+
 class ArrowSquareTip(ArrowTip, Square):
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
         Square.__init__(self, side_length=self.length, **kwargs)
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
+
+
+class ArrowSquareFilledTip(ArrowFilledTip, ArrowSquareTip):
+    pass
