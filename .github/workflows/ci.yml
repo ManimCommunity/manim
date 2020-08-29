@@ -48,15 +48,16 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Get pip cache dir
-        id: pip-cache
+        id: pip-cache-and-time
         run: |
            echo "::set-output name=dir::$(pip cache dir)"
+           echo "::set-output name=date::$(python -c "import time; print(time.localtime().tm_mon,time.localtime().tm_year,sep='')")
 
       - name: pip cache
         uses: actions/cache@v2
         with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python }}
+          path: ${{ steps.pip-cache-and-time.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python }}-${{ steps.pip-cache-and-time.outputs.date }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Install system dependencies (Linux)
@@ -82,7 +83,7 @@ jobs:
         uses: actions/cache@v2
         with:
          path: ${{ github.workspace }}\ManimCache
-         key: ${{ runner.os }}-dependencies-ffmpeg-sox-tinytex
+         key: ${{ runner.os }}-dependencies-ffmpeg-sox-tinytex-${{ steps.pip-cache-and-time.outputs.date }}
       - name: Download system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
@@ -111,7 +112,7 @@ jobs:
         run: python ./scripts/pycairoinstall.py
 
       - name: Install manim
-        run: pip install . pytest
+        run: pip install . pytest wheel
 
       - name: Run tests
         run: pytest
