@@ -123,7 +123,9 @@ jobs:
         run: python ./scripts/pycairoinstall.py
 
       - name: Install manim
-        run: pip install . pytest wheel
+        run: |
+          pip install wheel
+          pip install . pytest
 
       - name: Run tests
         run: pytest
