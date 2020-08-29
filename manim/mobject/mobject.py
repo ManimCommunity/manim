@@ -1,6 +1,4 @@
-"""
-MObject: Base classes for all mathematical objects.
-"""
+"""Base classes for objects that can be displayed."""
 from functools import reduce
 import copy
 import itertools as it
@@ -30,8 +28,13 @@ from ..utils.space_ops import rotation_matrix
 
 
 class Mobject(Container):
-    """
-    Mathematical Object
+    """Mathematical Object: base class for objects that can be displayed on screen.
+
+    Attributes
+    ----------
+    submobjects : :class:`list`
+        The contained objects.
+
     """
 
     CONFIG = {
@@ -69,6 +72,37 @@ class Mobject(Container):
         pass
 
     def add(self, *mobjects):
+        """Add mobjects as submobjects.
+
+        The mobjects are added to self.submobjects.
+
+        Parameters
+        ----------
+        mobjects : List[:class:`Mobject`]
+            The mobjects to add.
+
+        Returns
+        -------
+        :class:`Mobject`
+            :code:`self`
+
+        Raises
+        ------
+        :class:`ValueError`
+            When a mobject tries to add itself.
+
+        Notes
+        -----
+        A mobject cannot contain itself, and it cannot contain a submobject
+        more than once.  If the parent mobject is displayed, the newly-added
+        submobjects will also be displayed (i.e. they are automatically added
+        to the parent Scene).
+
+        See Also
+        --------
+        :meth:`~Mobject.remove`
+
+        """
         if self in mobjects:
             raise ValueError("Mobject cannot contain self")
         self.submobjects = list_update(self.submobjects, mobjects)
@@ -80,6 +114,25 @@ class Mobject(Container):
         return self
 
     def remove(self, *mobjects):
+        """Remove submobjects.
+
+        The mobjects are removed from self.submobjects, if they exist.
+
+        Parameters
+        ----------
+        mobjects : List[:class:`Mobject`]
+            The mobjects to remove.
+
+        Returns
+        -------
+        :class:`Mobject`
+            :code:`self`
+
+        See Also
+        --------
+        :meth:`~Mobject.add`
+
+        """
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
@@ -123,23 +176,6 @@ class Mobject(Container):
         )
 
     def copy(self):
-        # TODO, either justify reason for shallow copy, or
-        # remove this redundancy everywhere
-        # return self.deepcopy()
-
-        copy_mobject = copy.copy(self)
-        copy_mobject.points = np.array(self.points)
-        copy_mobject.submobjects = [submob.copy() for submob in self.submobjects]
-        copy_mobject.updaters = list(self.updaters)
-        family = self.get_family()
-        for attr, value in list(self.__dict__.items()):
-            if isinstance(value, Mobject) and value in family and value is not self:
-                setattr(copy_mobject, attr, value.copy())
-            if isinstance(value, np.ndarray):
-                setattr(copy_mobject, attr, np.array(value))
-        return copy_mobject
-
-    def deepcopy(self):
         return copy.deepcopy(self)
 
     def generate_target(self, use_deepcopy=False):
@@ -1114,6 +1150,8 @@ class Mobject(Container):
 
 
 class Group(Mobject):
+    """Groups together multiple Mobjects."""
+
     def __init__(self, *mobjects, **kwargs):
         if not all([isinstance(m, Mobject) for m in mobjects]):
             raise Exception("All submobjects must be of type Mobject")

@@ -1,10 +1,4 @@
-"""
-geometry.py
------------
-
-Classes implementing geometric objects, mostly derived from MObject.
-
-"""
+"""Mobjects that are simple geometric shapes."""
 import warnings
 import numpy as np
 import math
@@ -657,10 +651,6 @@ class Arrow(Line):
             family=False,
         )
         return self
-
-    # TODO, should this be the default for everything?
-    def copy(self):
-        return self.deepcopy()
 
 
 class Vector(Arrow):
