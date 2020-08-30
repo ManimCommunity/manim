@@ -56,13 +56,16 @@ class TipableVMobject(VMobject):
 
     # Adding, Creating, Modifying tips
 
-    def add_tip(self, tip_shape=None, tip_length=None, at_start=False):
+    def add_tip(self, tip=None, tip_shape=None, tip_length=None, at_start=False):
         """
         Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
         a 'starting tip' or not.
         """
-        tip = self.create_tip(tip_shape, tip_length, at_start)
+        if tip is None:
+            tip = self.create_tip(tip_shape, tip_length, at_start)
+        else:
+            self.position_tip(tip, at_start)
         self.reset_endpoints_based_on_tip(tip, at_start)
         self.asign_tip_attr(tip, at_start)
         self.add(tip)
@@ -624,19 +627,10 @@ class Arrow(Line):
         VMobject.scale(self, factor, **kwargs)
         self.set_stroke_width_from_length()
 
-        # So horribly confusing, must redo
         if has_tip:
-            self.add_tip()
-            old_tips[0].points[:, :] = self.tip.points
-            self.remove(self.tip)
-            self.tip = old_tips[0]
-            self.add(self.tip)
+            self.add_tip(tip=old_tips[0])
         if has_start_tip:
-            self.add_tip(at_start=True)
-            old_tips[1].points[:, :] = self.start_tip.points
-            self.remove(self.start_tip)
-            self.start_tip = old_tips[1]
-            self.add(self.start_tip)
+            self.add_tip(tip=old_tips[1], at_start=True)
         return self
 
     def get_normal_vector(self):
