@@ -147,11 +147,7 @@ class ShowIncreasingSubsets(Animation):
 
 class AddTextLetterByLetter(ShowIncreasingSubsets):
     """
-<<<<<<< HEAD
-        Add a Text Object letter by letter on the scene. Use time_per_char to change frequency of appearance of the letters.
-=======
     Add a Text Object letter by letter on the scene. Use time_per_char to change frequency of appearance of the letters.
->>>>>>> feat/add-all-module-variables
     """
 
     CONFIG = {
