@@ -241,10 +241,10 @@ To run your first example Scenes, you can run the following commands:
 
 ### For users:
 
-1. Download the `example_scenes/basic.py` file from [GitHub](https://raw.github.com/ManimCommunity/manim/blob/master/example_scenes/basic.py), or place it manually
+1. Download the `example_scenes/basic.py` file from [GitHub](https://raw.github.com/ManimCommunity/manim/master/example_scenes/basic.py), or place it manually
 in your current working directory with
 ```sh
-wget https://raw.github.com/ManimCommunity/manim/blob/master/example_scenes/basic.py
+wget https://raw.github.com/ManimCommunity/manim/master/example_scenes/basic.py
 ```
 
 2. Run the following command:
