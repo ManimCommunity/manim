@@ -5,13 +5,13 @@ import pytest
 import re
 
 
-def capture(command, instream=None):
+def capture(command, instream=None, use_shell=False):
     proc = subprocess.Popen(
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         stdin=instream,
-        shell=True,
+        shell=use_shell,
     )
     out, err = proc.communicate()
     return out, err, proc.returncode
@@ -26,24 +26,26 @@ def test_logging_to_file(tmp_path, python_version):
     path_basic_scene = os.path.join("tests", "test_logging", "basic_scenes.py")
     path_output = os.path.join(tmp_path, "media_temp")
     os.makedirs(tmp_path, exist_ok=True)
-    command = [
-        python_version,
-        "-m",
-        "manim",
-        path_basic_scene,
-        "SquareToCircle",
-        "-l",
-        "--log_to_file",
-        "--log_dir",
-        os.path.join(path_output, "logs"),
-        "--media_dir",
-        path_output,
-        "-v",
-        "DEBUG",
-        "--config_file",
-        os.path.join("tests", "test_logging", "testloggingconfig.cfg"),
-    ]
-    out, err, exitcode = capture(command)
+    command = " ".join(
+        [
+            python_version,
+            "-m",
+            "manim",
+            path_basic_scene,
+            "SquareToCircle",
+            "-l",
+            "--log_to_file",
+            "--log_dir",
+            os.path.join(path_output, "logs"),
+            "--media_dir",
+            path_output,
+            "-v",
+            "DEBUG",
+            "--config_file",
+            os.path.join("tests", "test_logging", "testloggingconfig.cfg"),
+        ]
+    )
+    out, err, exitcode = capture(command, use_shell=True)
     log_file_path = os.path.join(path_output, "logs", "SquareToCircle.log")
     assert exitcode == 0, err.decode()
     assert os.path.exists(log_file_path), err.decode()
