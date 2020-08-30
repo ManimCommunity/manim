@@ -194,9 +194,9 @@ class VariableExample(Scene):
         self.play(ShowCreation(on_screen_var))
         # The above line will just display the variable with
         # its initial value on the screen. If you also wish to
-        # update it, you can do so by calling the `get_tracker` method
+        # update it, you can do so by accessing the `tracker` attribute
         self.wait()
-        var_tracker = on_screen_var.get_tracker()
+        var_tracker = on_screen_var.tracker
         var = 10
         self.play(var_tracker.set_value, var)
         self.wait()
