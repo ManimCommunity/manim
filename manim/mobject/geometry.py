@@ -661,7 +661,7 @@ class Arrow(Line):
         self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleFilledTip))
         self.set_stroke_width_from_length()
 
-    def scale(self, factor, **kwargs):
+    def scale(self, factor, scale_tips=False, **kwargs):
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
         See Also
@@ -688,6 +688,10 @@ class Arrow(Line):
 
         """
         if self.get_length() == 0:
+            return self
+            
+        if scale_tips:
+            VMobject.scale(self, factor, **kwargs)
             return self
 
         has_tip = self.has_tip()
