@@ -53,7 +53,7 @@ cloned this repo, run the following:
    python3 -m pip install -r requirements.txt
 
 .. warning::
-    If you want to contribute to ``manim-community`` and have clone the
+    If you want to contribute to ``manim-community`` and have cloned the
     repository to your local device, please uninstall the pip-installed version
     of ``manim-community``, if you had installed it previously.
     This is to avoid any accidental usage of the pip-installed version when developing
