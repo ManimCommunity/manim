@@ -1,9 +1,10 @@
-__all__ = ["DecimalNumber", "Integer"]
+__all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
 from ..constants import *
-from ..mobject.svg.tex_mobject import SingleStringTexMobject
-from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.svg.tex_mobject import SingleStringTexMobject, TexMobject
+from ..mobject.types.vectorized_mobject import VDict, VMobject
+from ..mobject.value_tracker import ValueTracker
 
 
 class DecimalNumber(VMobject):
@@ -139,3 +140,18 @@ class Integer(DecimalNumber):
 
     def get_value(self):
         return int(np.round(super().get_value()))
+
+
+class Variable(VDict):
+    def __init__(self, var, label):
+        var_label = TexMobject(label + "=")
+        self.var_tracker = ValueTracker(var)
+        value_tex = (
+            DecimalNumber(self.var_tracker.get_value())
+            .add_updater(lambda v: v.set_value(self.var_tracker.get_value()))
+            .next_to(var_label, RIGHT)
+        )
+        VDict.__init__(self, {"label": var_label, "value": value_tex})
+
+    def get_tracker(self):
+        return self.var_tracker
