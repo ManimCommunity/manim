@@ -1,9 +1,9 @@
 import numpy as np
-from manim import *
+from manim import Mobject, VMobject, RIGHT
 
 
 def test_family():
-    """Check that the family is gathered correclty."""
+    """Check that the family is gathered correctly."""
     # Check that an empty mobject's family only contains itself
     mob = Mobject()
     assert mob.get_family() == [mob]
@@ -56,9 +56,9 @@ def test_shift_family():
 
     """
     # Note Mobject.shift() needs the mobject to have a non-empty `points`
-    # attribute, so we cannot use Mobject.  We use Circle instead.
-    mob, child1, child2, = Circle(), Circle(), Circle(),
-    gchild1, gchild2, gchild_common = Circle(), Circle(), Circle()
+    # attribute, so we cannot use Mobject.  We use VMobject instead.
+    mob, child1, child2, = VMobject(), VMobject(), VMobject(),
+    gchild1, gchild2, gchild_common = VMobject(), VMobject(), VMobject()
 
     child1.add(gchild1, gchild_common)
     child2.add(gchild2, gchild_common)
