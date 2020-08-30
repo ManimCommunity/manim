@@ -616,6 +616,31 @@ class Arrow(Line):
         self.set_stroke_width_from_length()
 
     def scale(self, factor, **kwargs):
+        r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
+
+        See Also
+        --------
+        :meth:`~VMobject.scale`
+
+        Examples
+        --------
+
+        ::
+            >>> arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
+            >>> scaled_arrow = arrow.scale(2)
+            >>> scaled_arrow.get_start_and_end()
+            (array([-2., -2.,  0.]), array([2., 2., 0.]))
+            >>> arrow.tip.tip_length == scaled_arrow.tip.tip_length
+            True
+
+        Manually scaling the object using the default method
+        :meth:`~VMobject.scale` does not have the same properties::
+            >>> new_arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
+            >>> another_scaled_arrow = VMobject.scale(new_arrow, 2)
+            >>> another_scaled_arrow.tip.tip_length == arrow.tip.tip_length
+            False
+
+        """
         if self.get_length() == 0:
             return self
 
@@ -789,6 +814,30 @@ class RoundedRectangle(Rectangle):
 
 
 class ArrowTip(VMobject):
+    r"""Base class for arrow tips.
+
+
+    Examples
+    --------
+
+    Cannot be used directly, only intended for inheritance::
+        >>> tip = ArrowTip()
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: Has to be implemented in inheriting subclasses.
+
+    Instead, use it like this::
+        >>> class MyCustomArrowTip(ArrowTip, RegularPolygon):
+        ...     def __init__(self, **kwargs):
+        ...         RegularPolygon.__init__(self, n=5, **kwargs)
+        ...         self.set_width(self.length)
+        ...         self.set_height(self.length, stretch=True)
+        >>> arr = Arrow(np.array([0, 0, 0]), np.array([1, 1, 0]),
+        ...             tip_shape=MyCustomArrowTip)
+        >>> isinstance(arr.tip, RegularPolygon)
+        True
+    
+    """
     CONFIG = {
         "fill_opacity": 0,
         "stroke_width": 3,
@@ -801,22 +850,98 @@ class ArrowTip(VMobject):
 
     @property
     def base(self):
+        r"""The base point of the arrow tip.
+        
+        This is the point connecting to the arrow line.
+
+        Examples
+        --------
+
+        ::
+            >>> arrow = Arrow(np.array([0, 0, 0]), np.array([2, 0, 0]), buff=0)
+            >>> arrow.tip.base.round(2)
+            array([1.65, 0.  , 0.  ])
+        
+        """
         return self.point_from_proportion(0.5)
 
     @property
     def tip_point(self):
+        r"""The tip point of the arrow tip.
+        
+        Examples
+        --------
+
+        ::
+            >>> arrow = Arrow(np.array([0, 0, 0]), np.array([2, 0, 0]), buff=0)
+            >>> arrow.tip.tip_point.round(2)
+            array([2., 0., 0.])
+        
+        """
         return self.points[0]
 
     @property
     def vector(self):
+        r"""The arrow tip vector spanning from base to tip.
+        
+        Examples
+        --------
+
+        ::
+            >>> arrow = Arrow(np.array([0, 0, 0]), np.array([2, 2, 0]), buff=0)
+            >>> arrow.tip.vector.round(2)
+            array([0.25, 0.25, 0.  ])
+        
+        """
         return self.tip_point - self.base
 
     @property
     def tip_angle(self):
+        r"""The angle of the arrow tip.
+        
+        Examples
+        --------
+
+        ::
+            >>> arrow = Arrow(np.array([0, 0, 0]), np.array([1, 1, 0]), buff=0)
+            >>> round(arrow.tip.tip_angle, 5) == round(PI/4, 5)
+            True
+        
+        """
         return angle_of_vector(self.vector)
+
+    @property
+    def tip_length(self):
+        r"""The length of the arrow tip.
+
+        Examples
+        --------
+
+        ::
+            >>> arrow = Arrow(np.array([0, 0, 0]), np.array([1, 2, 0]))
+            >>> round(arrow.tip.tip_length, 3)
+            0.35
+
+        """
+        return get_norm(self.vector)
 
 
 class ArrowFilledTip(ArrowTip):
+    r"""Base class for arrow tips with filled tip.
+
+    Note
+    ----
+    In comparison to :class:`ArrowTip`, this class only provides
+    different default settings for styling arrow tips. These settings
+    (in particular `fill_opacity` and `stroke_width`) can also be
+    overridden manually.
+
+    See Also
+    --------
+    :class:`ArrowTip`
+
+
+    """
     CONFIG = {
         "fill_opacity": 1,
         "stroke_width": 0,
@@ -826,6 +951,7 @@ class ArrowFilledTip(ArrowTip):
 
 
 class ArrowTriangleTip(ArrowTip, Triangle):
+    r"""Triangular arrow tip."""
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
         Triangle.__init__(self, **kwargs)
@@ -834,10 +960,15 @@ class ArrowTriangleTip(ArrowTip, Triangle):
 
 
 class ArrowTriangleFilledTip(ArrowFilledTip, ArrowTriangleTip):
+    r"""Triangular arrow tip with filled tip.
+    
+    This is the default arrow tip shape.
+    """
     pass
 
 
 class ArrowCircleTip(ArrowTip, Circle):
+    r"""Circular arrow tip."""
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
         Circle.__init__(self, **kwargs)
@@ -846,10 +977,12 @@ class ArrowCircleTip(ArrowTip, Circle):
 
 
 class ArrowCircleFilledTip(ArrowFilledTip, ArrowCircleTip):
+    r"""Circular arrow tip with filled tip."""
     pass
 
 
 class ArrowSquareTip(ArrowTip, Square):
+    r"""Square arrow tip."""
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
         Square.__init__(self, side_length=self.length, **kwargs)
@@ -858,4 +991,5 @@ class ArrowSquareTip(ArrowTip, Square):
 
 
 class ArrowSquareFilledTip(ArrowFilledTip, ArrowSquareTip):
+    r"""Square arrow tip with filled tip."""
     pass
