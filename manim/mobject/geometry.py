@@ -867,7 +867,15 @@ class RoundedRectangle(Rectangle):
 
 class ArrowTip(VMobject):
     r"""Base class for arrow tips.
-
+    
+    See Also
+    --------
+    :class:`ArrowTriangleTip`
+    :class:`ArrowTriangleFilledTip`
+    :class:`ArrowCircleTip`
+    :class:`ArrowCircleFilledTip`
+    :class:`ArrowSquareTip`
+    :class:`ArrowSquareFilledTip`
 
     Examples
     --------
@@ -878,7 +886,8 @@ class ArrowTip(VMobject):
         ...
         NotImplementedError: Has to be implemented in inheriting subclasses.
 
-    Instead, use it like this::
+    Instead, use one of the pre-defined ones, or make
+    a custom one like this::
         >>> class MyCustomArrowTip(ArrowTip, RegularPolygon):
         ...     def __init__(self, **kwargs):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
@@ -888,6 +897,12 @@ class ArrowTip(VMobject):
         ...             tip_shape=MyCustomArrowTip)
         >>> isinstance(arr.tip, RegularPolygon)
         True
+
+    Using a class inherited from :class:`ArrowTip` to get a non-filled
+    tip is a shorthand to manually specifying the arrow tip style as follows::
+        >>> arrow = Arrow(np.array([0, 0, 0]), np.array([1, 1, 0]),
+        ...               tip_style={'fill_opacity': 0, 'stroke_width': 3})
+
 
     """
     CONFIG = {
@@ -934,7 +949,7 @@ class ArrowTip(VMobject):
 
     @property
     def vector(self):
-        r"""The arrow tip vector spanning from base to tip.
+        r"""The vector pointing from the base point to the tip point.
 
         Examples
         --------
@@ -991,8 +1006,10 @@ class ArrowFilledTip(ArrowTip):
     See Also
     --------
     :class:`ArrowTip`
-
-
+    :class:`ArrowTriangleFilledTip`
+    :class:`ArrowCircleFilledTip`
+    :class:`ArrowSquareFilledTip`
+            
     """
     CONFIG = {
         "fill_opacity": 1,
