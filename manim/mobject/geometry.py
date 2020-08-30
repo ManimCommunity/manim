@@ -666,12 +666,12 @@ class Arrow(Line):
 
         See Also
         --------
-        :meth:`~VMobject.scale`
+        :meth:`~.Mobject.scale`
 
         Examples
         --------
-
         ::
+
             >>> arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
             >>> scaled_arrow = arrow.scale(2)
             >>> scaled_arrow.get_start_and_end()
@@ -680,7 +680,8 @@ class Arrow(Line):
             True
 
         Manually scaling the object using the default method
-        :meth:`~VMobject.scale` does not have the same properties::
+        :meth:`~.Mobject.scale` does not have the same properties::
+
             >>> new_arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
             >>> another_scaled_arrow = VMobject.scale(new_arrow, 2)
             >>> another_scaled_arrow.tip.tip_length == arrow.tip.tip_length
@@ -689,7 +690,7 @@ class Arrow(Line):
         """
         if self.get_length() == 0:
             return self
-            
+
         if scale_tips:
             VMobject.scale(self, factor, **kwargs)
             return self
@@ -871,7 +872,7 @@ class RoundedRectangle(Rectangle):
 
 class ArrowTip(VMobject):
     r"""Base class for arrow tips.
-    
+
     See Also
     --------
     :class:`ArrowTriangleTip`
@@ -883,8 +884,8 @@ class ArrowTip(VMobject):
 
     Examples
     --------
-
     Cannot be used directly, only intended for inheritance::
+
         >>> tip = ArrowTip()
         Traceback (most recent call last):
         ...
@@ -892,6 +893,7 @@ class ArrowTip(VMobject):
 
     Instead, use one of the pre-defined ones, or make
     a custom one like this::
+
         >>> class MyCustomArrowTip(ArrowTip, RegularPolygon):
         ...     def __init__(self, **kwargs):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
@@ -904,6 +906,7 @@ class ArrowTip(VMobject):
 
     Using a class inherited from :class:`ArrowTip` to get a non-filled
     tip is a shorthand to manually specifying the arrow tip style as follows::
+
         >>> arrow = Arrow(np.array([0, 0, 0]), np.array([1, 1, 0]),
         ...               tip_style={'fill_opacity': 0, 'stroke_width': 3})
 
@@ -927,7 +930,6 @@ class ArrowTip(VMobject):
 
         Examples
         --------
-
         ::
             >>> arrow = Arrow(np.array([0, 0, 0]), np.array([2, 0, 0]), buff=0)
             >>> arrow.tip.base.round(2)
@@ -942,7 +944,6 @@ class ArrowTip(VMobject):
 
         Examples
         --------
-
         ::
             >>> arrow = Arrow(np.array([0, 0, 0]), np.array([2, 0, 0]), buff=0)
             >>> arrow.tip.tip_point.round(2)
@@ -957,7 +958,6 @@ class ArrowTip(VMobject):
 
         Examples
         --------
-
         ::
             >>> arrow = Arrow(np.array([0, 0, 0]), np.array([2, 2, 0]), buff=0)
             >>> arrow.tip.vector.round(2)
@@ -972,7 +972,6 @@ class ArrowTip(VMobject):
 
         Examples
         --------
-
         ::
             >>> arrow = Arrow(np.array([0, 0, 0]), np.array([1, 1, 0]), buff=0)
             >>> round(arrow.tip.tip_angle, 5) == round(PI/4, 5)
@@ -987,7 +986,6 @@ class ArrowTip(VMobject):
 
         Examples
         --------
-
         ::
             >>> arrow = Arrow(np.array([0, 0, 0]), np.array([1, 2, 0]))
             >>> round(arrow.tip.tip_length, 3)
@@ -1013,7 +1011,7 @@ class ArrowFilledTip(ArrowTip):
     :class:`ArrowTriangleFilledTip`
     :class:`ArrowCircleFilledTip`
     :class:`ArrowSquareFilledTip`
-            
+
     """
     CONFIG = {
         "fill_opacity": 1,
