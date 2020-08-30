@@ -5,6 +5,7 @@ import inspect
 import logging
 import pytest
 import warnings
+from platform import system
 
 from manim import config, file_writer_config
 
@@ -82,8 +83,12 @@ class GraphicalUnitTester:
         :class:`numpy.array`
             The pre-rendered frame.
         """
-        frame_data_path = os.path.join(
-            self.path_control_data, "{}.npy".format(str(self.scene))
+        frame_data_path = (
+            os.path.join(
+                self.path_control_data, "{}.npy".format(system() + str(self.scene))
+            )
+            if "Tex" in str(self.scene)
+            else os.path.join(self.path_control_data, "{}.npy".format(str(self.scene)))
         )
         return np.load(frame_data_path)
 
@@ -91,6 +96,7 @@ class GraphicalUnitTester:
         """Will visually display with matplotlib differences between frame generared and the one expected."""
         import matplotlib.pyplot as plt
         import matplotlib.gridspec as gridspec
+
         gs = gridspec.GridSpec(2, 2)
         fig = plt.figure()
         fig.suptitle(f"Test for {str(self.scene).replace('Test', '')}", fontsize=16)
