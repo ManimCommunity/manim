@@ -15,11 +15,11 @@ class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
         """
         This method is used to serialize objects to JSON format.
-        
+
         If obj is a function, then it will return a dict with two keys : 'code', for the code source, and 'nonlocals' for all nonlocalsvalues. (including nonlocals functions, that will be serialized as this is recursive.)
         if obj is a np.darray, it converts it into a list.
         if obj is an object with __dict__ attribute, it returns its __dict__.
-        Else, will let the JSONEncoder do the stuff, and throw an error if the type is not suitable for JSONEncoder. 
+        Else, will let the JSONEncoder do the stuff, and throw an error if the type is not suitable for JSONEncoder.
 
         Parameters
         ----------
@@ -60,14 +60,14 @@ class CustomEncoder(json.JSONEncoder):
         return "Unsupported type for serializing ->" + str(type(obj))
 
     def _handle_already_processed(self, obj):
-        """Handle if an object has been already processed by checking the id of the object. 
+        """Handle if an object has been already processed by checking the id of the object.
 
         This prevents the mechanism to handle an object several times, and is used to prevent any circular reference.
 
-        Parameters 
+        Parameters
         ----------
-        obj : Any 
-            The obj to check. 
+        obj : Any
+            The obj to check.
 
         Returns
         -------
@@ -82,12 +82,12 @@ class CustomEncoder(json.JSONEncoder):
         return obj
 
     def _check_iterable(self, iterable):
-        """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.  
+        """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
         If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
-        If a circular reference is founs within the iterable, it will be replaced by the string "already processed". 
-        
-        Parameters: 
+        If a circular reference is founs within the iterable, it will be replaced by the string "already processed".
+
+        Parameters:
         -----------
         iterable : :class:`Iterable`
             The iterable to check.
@@ -136,7 +136,7 @@ class CustomEncoder(json.JSONEncoder):
     def encode(self, obj):
         """Overwriting of JSONEncoder.encode, to make our own process.
 
-        Parameters: 
+        Parameters:
         -----------
         obj: :class:Any
             The object to encode in JSON.
@@ -160,7 +160,7 @@ def get_json(obj):
 
     Returns
     -------
-    :class:`str` 
+    :class:`str`
         The flattened object
     """
     return json.dumps(obj, cls=CustomEncoder)
@@ -197,7 +197,7 @@ def get_hash_from_play_call(
     -----------
     scene_object : :class:`~.Scene`
         The scene object.
-    
+
     camera_object : :class:`~.Camera`
         The camera object used in the scene.
 
@@ -209,7 +209,7 @@ def get_hash_from_play_call(
 
     Returns
     -------
-    :class:`str` 
+    :class:`str`
         A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`.
     """
     logger.debug("Hashing ...")

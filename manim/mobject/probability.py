@@ -1,3 +1,6 @@
+__all__ = ["SampleSpace", "BarChart"]
+
+
 from ..constants import *
 from ..mobject.geometry import Line
 from ..mobject.geometry import Rectangle
@@ -213,6 +216,3 @@ class BarChart(VGroup):
             bar_bottom = bar.get_bottom()
             bar.stretch_to_fit_height((value / self.max_value) * self.height)
             bar.move_to(bar_bottom, DOWN)
-
-    def copy(self):
-        return self.deepcopy()
