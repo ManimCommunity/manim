@@ -10,7 +10,7 @@ from ..utils.video_tester import *
 @pytest.mark.slow
 @video_comparison(
     "SquareToCircleWithDefaultValues.json",
-    "videos/simple_scenes/1440p60/SquareToCircle.mp4",
+    "videos/simple_scenes/1080p60/SquareToCircle.mp4",
 )
 def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
