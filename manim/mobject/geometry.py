@@ -1,10 +1,37 @@
-"""
-geometry.py
------------
+"""Mobjects that are simple geometric shapes."""
 
-Classes implementing geometric objects, mostly derived from MObject.
 
-"""
+__all__ = [
+    "TipableVMobject",
+    "Arc",
+    "ArcBetweenPoints",
+    "CurvedArrow",
+    "CurvedDoubleArrow",
+    "Circle",
+    "Dot",
+    "SmallDot",
+    "Ellipse",
+    "AnnularSector",
+    "Sector",
+    "Annulus",
+    "Line",
+    "DashedLine",
+    "TangentLine",
+    "Elbow",
+    "Arrow",
+    "Vector",
+    "DoubleArrow",
+    "CubicBezier",
+    "Polygon",
+    "RegularPolygon",
+    "Triangle",
+    "ArrowTip",
+    "Rectangle",
+    "Square",
+    "RoundedRectangle",
+]
+
+
 import warnings
 import numpy as np
 import math

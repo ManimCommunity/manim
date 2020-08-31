@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
-
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.  Note that the
 # global config dict is called 'config', just like the module itself.  That's
 # why we import the module first with a different name, and then the dict.
 from . import config as _config
-from .config import config
+from .config import config, file_writer_config, camera_config, tempconfig
 
 from .constants import *
+
+from .container import *
 
 from .animation.animation import *
 from .animation.composition import *
@@ -27,6 +28,7 @@ from .camera.camera import *
 from .camera.mapping_camera import *
 from .camera.moving_camera import *
 from .camera.three_d_camera import *
+from .camera.multi_camera import *
 
 from .mobject.coordinate_systems import *
 from .mobject.changing import *
@@ -59,10 +61,10 @@ from .scene.moving_camera_scene import *
 from .scene.reconfigurable_scene import *
 from .scene.scene import *
 from .scene.sample_space_scene import *
-from .scene.graph_scene import *
 from .scene.three_d_scene import *
 from .scene.vector_space_scene import *
 from .scene.zoomed_scene import *
+from .scene.scene_file_writer import *
 
 from .utils.bezier import *
 from .utils.color import *
