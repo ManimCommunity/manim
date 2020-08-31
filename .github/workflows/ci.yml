@@ -47,12 +47,18 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      - name: Install Poetry
+        shell: bash
+        run: |
+          pip install wheel
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt update
           sudo apt install -y ffmpeg
           sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+          echo "::add-path::$HOME/.poetry/bin"
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
@@ -80,16 +86,10 @@ jobs:
           $env:Path += ";" + "$env:APPDATA\FFmpeg\ffmpeg-4.3.1-win64-static\bin"
           echo "::set-env name=Path::$env:Path"
 
-      - name: Install Pycairo (Non-Windows)
-        if: runner.os == 'macOS' || runner.os == 'Linux'
-        run: pip install pycairo
-
-      - name: Install Pycairo (Windows)
-        if: runner.os == 'Windows'
-        run: python ./scripts/pycairoinstall.py
-
       - name: Install manim
-        run: pip install . pytest
+        run: poetry install
 
       - name: Run tests
-        run: pytest
+        run: |
+          poetry shell
+          pytest
