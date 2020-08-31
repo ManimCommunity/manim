@@ -143,14 +143,23 @@ class Integer(DecimalNumber):
 
 
 class Variable(VDict):
-    def __init__(self, var, label, num_decimal_places=2):
+    def __init__(
+        self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
+    ):
+        # if the label contains underscores, we need to escape them
+        # because otherwise the next letter after underscore will be subscripted
+        label = label.replace("_", "\_")
         var_label = TexMobject(label + "=")
         self.tracker = ValueTracker(var)
-        value_tex = (
-            DecimalNumber(
+
+        if var_type == DecimalNumber:
+            value_tex = DecimalNumber(
                 self.tracker.get_value(), num_decimal_places=num_decimal_places
             )
-            .add_updater(lambda v: v.set_value(self.tracker.get_value()))
-            .next_to(var_label, RIGHT)
+        elif var_type == Integer:
+            value_tex = Integer(self.tracker.get_value())
+        value_tex.add_updater(lambda v: v.set_value(self.tracker.get_value())).next_to(
+            var_label, RIGHT
         )
-        VDict.__init__(self, {"label": var_label, "value": value_tex})
+
+        VDict.__init__(self, {"label": var_label, "value": value_tex}, **kwargs)

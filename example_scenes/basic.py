@@ -184,20 +184,34 @@ class VDictExample(Scene):
 
 class VariableExample(Scene):
     def construct(self):
-        var = 0
+        var = 0.5
         on_screen_var = Variable(var, "var", num_decimal_places=3)
 
         # You can also change the colours for the label and value
         on_screen_var["label"].set_color(RED)
         on_screen_var["value"].set_color(GREEN)
 
-        self.play(ShowCreation(on_screen_var))
+        self.play(Write(on_screen_var))
         # The above line will just display the variable with
         # its initial value on the screen. If you also wish to
         # update it, you can do so by accessing the `tracker` attribute
         self.wait()
         var_tracker = on_screen_var.tracker
-        var = 10
+        var = 10.5
+        self.play(var_tracker.set_value, var)
+        self.wait()
+
+        int_var = 0
+        on_screen_int_var = Variable(int_var, "int_var", var_type=Integer).next_to(
+            on_screen_var, DOWN
+        )
+        on_screen_int_var["label"].set_color(RED)
+        on_screen_int_var["value"].set_color(GREEN)
+
+        self.play(Write(on_screen_int_var))
+        self.wait()
+        var_tracker = on_screen_int_var.tracker
+        var = 10.5
         self.play(var_tracker.set_value, var)
         self.wait()
 
