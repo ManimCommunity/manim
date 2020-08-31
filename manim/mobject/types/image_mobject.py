@@ -117,10 +117,13 @@ class ImageMobjectFromCamera(AbstractImageMobject):
 
     def __init__(self, camera, **kwargs):
         self.camera = camera
+        self.pixel_array = self.camera.pixel_array
         AbstractImageMobject.__init__(self, **kwargs)
 
+    # TODO: Get rid of this.
     def get_pixel_array(self):
-        return self.camera.get_pixel_array()
+        self.pixel_array = self.camera.pixel_array
+        return self.pixel_array
 
     def add_display_frame(self, **kwargs):
         config = dict(self.default_display_frame_config)
@@ -128,3 +131,9 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         self.display_frame = SurroundingRectangle(self, **config)
         self.add(self.display_frame)
         return self
+
+    def interpolate_color(self, mobject1, mobject2, alpha):
+        assert mobject1.pixel_array.shape == mobject2.pixel_array.shape
+        self.pixel_array = interpolate(
+            mobject1.pixel_array, mobject2.pixel_array, alpha
+        ).astype(self.pixel_array_dtype)
