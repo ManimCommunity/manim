@@ -1,3 +1,16 @@
+"""Mobjects that use vector graphics."""
+
+
+__all__ = [
+    "VMobject",
+    "VGroup",
+    "VDict",
+    "VectorizedPoint",
+    "CurvesAsSubmobjects",
+    "DashedVMobject",
+]
+
+
 import itertools as it
 import sys
 import typing
@@ -146,8 +159,10 @@ class VMobject(Mobject):
         self.update_rgbas_array("fill_rgbas", color, opacity)
         return self
 
-    def set_stroke(self, color: Color = None, width: float = None, opacity: float = None,
-                   background: bool = False, family: bool = True) -> "VMobject":
+    def set_stroke(
+        self, color: Color = None, width: float = None, opacity: float = None,
+        background: bool = False, family: bool = True
+    ) -> "VMobject":
         if family:
             for submobject in self.submobjects:
                 submobject.set_stroke(
@@ -169,19 +184,21 @@ class VMobject(Mobject):
         self.set_stroke(**kwargs)
         return self
 
-    def set_style(self,
-                  fill_color: Color = None,
-                  fill_opacity: Color = None,
-                  stroke_color: Color = None,
-                  stroke_width: float = None,
-                  stroke_opacity: float = None,
-                  background_stroke_color: Color = None,
-                  background_stroke_width: float = None,
-                  background_stroke_opacity: float = None,
-                  sheen_factor: float = None,
-                  sheen_direction: Vector = None,
-                  background_image_file: str = None,
-                  family: bool = True) -> "VMobject":
+    def set_style(
+            self,
+            fill_color: Color = None,
+            fill_opacity: Color = None,
+            stroke_color: Color = None,
+            stroke_width: float = None,
+            stroke_opacity: float = None,
+            background_stroke_color: Color = None,
+            background_stroke_width: float = None,
+            background_stroke_opacity: float = None,
+            sheen_factor: float = None,
+            sheen_direction: Vector = None,
+            background_image_file: str = None,
+            family: bool = True
+    ) -> "VMobject":
         self.set_fill(
             color=fill_color,
             opacity=fill_opacity,
@@ -410,7 +427,7 @@ class VMobject(Mobject):
 
     def set_anchors_and_handles(self, anchors1: Sequence[Vector], handles1: Sequence[Vector],
                                 handles2: Sequence[Vector], anchors2: Sequence[Vector]) -> "VMobject":
-        assert(len(anchors1) == len(handles1) == len(handles2) == len(anchors2))
+        assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
         self.points = np.zeros((total_len, self.dim))
@@ -477,7 +494,7 @@ class VMobject(Mobject):
         else:
             self.throw_error_if_no_points()
             last_h2, last_a2 = self.points[-2:]
-            last_tangent = (last_a2 - last_h2)
+            last_tangent = last_a2 - last_h2
             handle1 = last_a2 + last_tangent
             if handle2 is None:
                 to_anchor_vect = new_anchor - last_a2
@@ -523,7 +540,7 @@ class VMobject(Mobject):
         return self
 
     def change_anchor_mode(self, mode: str) -> "VMobject":
-        assert(mode in ["jagged", "smooth"])
+        assert mode in ["jagged", "smooth"]
         nppcc = self.n_points_per_cubic_curve
         for submob in self.family_members_with_points():
             subpaths = submob.get_subpaths()
@@ -554,7 +571,7 @@ class VMobject(Mobject):
         return self.change_anchor_mode("jagged")
 
     def add_subpath(self, points: Sequence[Vector]) -> "VMobject":
-        assert(len(points) % 4 == 0)
+        assert len(points) % 4 == 0
         self.points = np.append(self.points, points, axis=0)
         return self
 
@@ -571,7 +588,7 @@ class VMobject(Mobject):
         factor = self.pre_function_handle_to_anchor_scale_factor
         self.scale_handle_to_anchor_distances(factor)
         Mobject.apply_function(self, function)
-        self.scale_handle_to_anchor_distances(1. / factor)
+        self.scale_handle_to_anchor_distances(1.0 / factor)
         if self.make_smooth_after_applying_functions:
             self.make_smooth()
         return self
@@ -611,7 +628,7 @@ class VMobject(Mobject):
         This uses the algorithm from np.isclose(), but expanded here for the
         2D point case. NumPy is overkill for such a small question.
         """
-        rtol = 1.e-5  # default from np.isclose()
+        rtol = 1.0e-5  # default from np.isclose()
         atol = self.tolerance_for_point_equality
         if abs(p0[0] - p1[0]) > atol + rtol * abs(p1[0]):
             return False
@@ -631,9 +648,9 @@ class VMobject(Mobject):
         """
         nppcc = VMobject.CONFIG["n_points_per_cubic_curve"]
         remainder = len(points) % nppcc
-        points = points[:len(points) - remainder]
+        points = points[: len(points) - remainder]
         return (
-            points[i:i + nppcc]
+            points[i : i + nppcc]
             for i in range(0, len(points), nppcc)
         )
 
@@ -672,9 +689,9 @@ class VMobject(Mobject):
         return self.get_subpaths_from_points(self.get_points())
 
     def get_nth_curve_points(self, n: int) -> List[Vector]:
-        assert(n < self.get_num_curves())
+        assert n < self.get_num_curves()
         nppcc = self.n_points_per_cubic_curve
-        return self.points[nppcc * n:nppcc * (n + 1)]
+        return self.points[nppcc * n : nppcc * (n + 1)]
 
     def get_nth_curve_function(self, n):
         return bezier(self.get_nth_curve_points(n))
@@ -707,7 +724,7 @@ class VMobject(Mobject):
 
     def get_end_anchors(self) -> List[List[float]]:
         nppcc = self.n_points_per_cubic_curve
-        return self.points[nppcc - 1::nppcc]
+        return self.points[nppcc - 1 :: nppcc]
 
     def get_anchors(self) -> np.ndarray:
         if self.points.shape[0] == 1:
@@ -910,10 +927,222 @@ class VMobject(Mobject):
 
 class VGroup(VMobject):
     def __init__(self, *vmobjects, **kwargs):
-        if not all([isinstance(m, VMobject) for m in vmobjects]):
-            raise Exception("All submobjects must be of type VMobject")
         VMobject.__init__(self, **kwargs)
         self.add(*vmobjects)
+
+    def add(self, *vmobjects):
+        """Checks if all passed elements are an instance of VMobject and then add them to submobjects
+
+        Parameters
+        ----------
+        vmobjects : :class:`~.VMobject`
+            List of VMobject to add
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If one element of the list is not an instance of VMobject
+        """
+        if not all(isinstance(m, VMobject) for m in vmobjects):
+            raise TypeError("All submobjects must be of type VMobject")
+        super().add(*vmobjects)
+
+
+class VDict(VMobject):
+    """A VGroup-like class, also offering submobject access by
+    key, like a python dict
+
+    Parameters
+    ----------
+    mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
+            The parameter specifying the key-value mapping of keys and mobjects.
+    show_keys : :class:`bool`, optional
+            Whether to also display the key associated with
+            the mobject. This might be useful when debugging,
+            especially when there are a lot of mobjects in the
+            :class:`VDict`. Defaults to False.
+    kwargs : Any
+            Other arguments to be passed to `Mobject` or the CONFIG.
+
+    Attributes
+    ----------
+    show_keys : :class:`bool`
+            Whether to also display the key associated with
+            the mobject. This might be useful when debugging,
+            especially when there are a lot of mobjects in the
+            :class:`VDict`. When displayed, the key is towards
+            the left of the mobject.
+            Defaults to False.
+    submob_dict : :class:`dict`
+            Is the actual python dictionary that is used to bind
+            the keys to the mobjects.
+    """
+
+    def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
+        VMobject.__init__(self, **kwargs)
+        self.show_keys = show_keys
+        self.submob_dict = {}
+        self.add(mapping_or_iterable)
+
+    def add(self, mapping_or_iterable):
+        """Adds the key-value pairs to the :class:`VDict` object.
+
+        Also, it internally adds the value to the `submobjects` :class:`list`
+        of :class:`~.Mobject`, which is responsible for actual on-screen display.
+
+        Parameters
+        ---------
+        mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
+            The parameter specifying the key-value mapping of keys and mobjects.
+
+        Returns
+        -------
+        :class:`VDict`
+            Returns the :class:`VDict` object on which this method was called.
+
+        Examples
+        --------
+        Normal usage::
+            square_obj = Square()
+            my_dict.add([('s', square_obj)])
+        """
+        for key, value in dict(mapping_or_iterable).items():
+            self.add_key_value_pair(key, value)
+
+        return self
+
+    def remove(self, key):
+        """Removes the mobject from the :class:`VDict` object having the key `key`
+
+        Also, it internally removes the mobject from the `submobjects` :class:`list`
+        of :class:`~.Mobject`, (which is responsible for removing it from the screen)
+
+        Parameters
+        ----------
+        key : Hashable
+            The key of the submoject to be removed.
+
+        Returns
+        -------
+        :class:`VDict`
+            Returns the :class:`VDict` object on which this method was called.
+
+        Examples
+        --------
+        Normal usage::
+            my_dict.remove('square')
+        """
+        if key not in self.submob_dict:
+            raise KeyError("The given key '%s' is not present in the VDict" % str(key))
+        super().remove(self.submob_dict[key])
+        del self.submob_dict[key]
+        return self
+
+    def __getitem__(self, key):
+        """Overriding the [] operator for getting submobject by key
+
+        Parameters
+        ----------
+        key : Hashable
+           The key of the submoject to be accessed
+
+        Returns
+        -------
+        :class:`VMobject`
+           The submobject corresponding to the key `key`
+
+        Examples
+        --------
+        Normal usage::
+           self.play(ShowCreation(my_dict['s']))
+        """
+        submob = self.submob_dict[key]
+        return submob
+
+    def __setitem__(self, key, value):
+        """Overriding the [] operator for assigning submobject like a python dict
+
+        Parameters
+        ----------
+        key : Hashable
+            The key of the submoject to be assigned
+        value : :class:`VMobject`
+            The submobject to bind the key to
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Normal usage::
+            square_obj = Square()
+            my_dict['sq'] = square_obj
+        """
+        if key in self.submob_dict:
+            self.remove(key)
+        self.add([(key, value)])
+
+    def get_all_submobjects(self):
+        """To get all the submobjects associated with a particular :class:`VDict` object
+
+        Returns
+        -------
+        :class:`dict_values`
+            All the submobjects associated with the :class:`VDict` object
+
+        Examples
+        --------
+        Normal usage::
+            for submob in my_dict.get_all_submobjects():
+                self.play(ShowCreation(submob))
+        """
+        submobjects = self.submob_dict.values()
+        return submobjects
+
+    def add_key_value_pair(self, key, value):
+        """A utility function used by :meth:`add` to add the key-value pair
+        to :attr:`submob_dict`. Not really meant to be used externally.
+
+        Parameters
+        ----------
+        key : Hashable
+            The key of the submobject to be added.
+        value : :class:`~.VMobject`
+            The mobject associated with the key
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If the value is not an instance of VMobject
+
+        Examples
+        --------
+        Normal usage::
+            square_obj = Square()
+            self.add_key_value_pair('s', square_obj)
+
+        """
+        if not isinstance(value, VMobject):
+            raise TypeError("All submobjects must be of type VMobject")
+        mob = value
+        if self.show_keys:
+            # This import is here and not at the top to avoid circular import
+            from ...mobject.svg.tex_mobject import TextMobject
+
+            key_text = TextMobject(str(key)).next_to(value, LEFT)
+            mob.add(key_text)
+
+        self.submob_dict[key] = mob
+        super().add(value)
 
 
 class VectorizedPoint(VMobject):
@@ -969,12 +1198,12 @@ class DashedVMobject(VMobject):
             alphas = np.linspace(0, 1, num_dashes + 1)
 
             # This determines the length of each "dash"
-            full_d_alpha = (1.0 / num_dashes)
+            full_d_alpha = 1.0 / num_dashes
             partial_d_alpha = full_d_alpha * ps_ratio
 
             # Rescale so that the last point of vmobject will
             # be the end of the last dash
-            alphas /= (1 - full_d_alpha + partial_d_alpha)
+            alphas /= 1 - full_d_alpha + partial_d_alpha
 
             self.add(*[
                 vmobject.get_subcurve(alpha, alpha + partial_d_alpha)

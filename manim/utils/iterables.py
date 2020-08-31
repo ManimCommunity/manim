@@ -1,3 +1,19 @@
+__all__ = [
+    "remove_list_redundancies",
+    "list_update",
+    "list_difference_update",
+    "all_elements_are_instances",
+    "adjacent_n_tuples",
+    "adjacent_pairs",
+    "tuplify",
+    "stretch_array_to_length",
+    "make_even",
+    "make_even_by_cycling",
+    "remove_nones",
+    "concatenate_lists",
+]
+
+
 import itertools as it
 import numpy as np
 
@@ -34,43 +50,11 @@ def all_elements_are_instances(iterable, Class):
 
 
 def adjacent_n_tuples(objects, n):
-    return zip(*[
-        [*objects[k:], *objects[:k]]
-        for k in range(n)
-    ])
+    return zip(*[[*objects[k:], *objects[:k]] for k in range(n)])
 
 
 def adjacent_pairs(objects):
     return adjacent_n_tuples(objects, 2)
-
-
-def batch_by_property(items, property_func):
-    """
-    Takes in a list, and returns a list of tuples, (batch, prop)
-    such that all items in a batch have the same output when
-    put into property_func, and such that chaining all these
-    batches together would give the original list (i.e. order is
-    preserved)
-    """
-    batch_prop_pairs = []
-
-    def add_batch_prop_pair(batch):
-        if len(batch) > 0:
-            batch_prop_pairs.append(
-                (batch, property_func(batch[0]))
-            )
-    curr_batch = []
-    curr_prop = None
-    for item in items:
-        prop = property_func(item)
-        if prop != curr_prop:
-            add_batch_prop_pair(curr_batch)
-            curr_prop = prop
-            curr_batch = [item]
-        else:
-            curr_batch.append(item)
-    add_batch_prop_pair(curr_batch)
-    return batch_prop_pairs
 
 
 def tuplify(obj):
@@ -85,11 +69,10 @@ def tuplify(obj):
 def stretch_array_to_length(nparray, length):
     curr_len = len(nparray)
     if curr_len > length:
-        raise Warning(
-            "Trying to stretch array to a length shorter than its own")
+        raise Warning("Trying to stretch array to a length shorter than its own")
     indices = np.arange(length) / float(length)
     indices *= curr_len
-    return nparray[indices.astype('int')]
+    return nparray[indices.astype("int")]
 
 
 def make_even(iterable_1, iterable_2):
@@ -97,7 +80,7 @@ def make_even(iterable_1, iterable_2):
     length = max(len(list_1), len(list_2))
     return (
         [list_1[(n * len(list_1)) // length] for n in range(length)],
-        [list_2[(n * len(list_2)) // length] for n in range(length)]
+        [list_2[(n * len(list_2)) // length] for n in range(length)],
     )
 
 
@@ -107,7 +90,7 @@ def make_even_by_cycling(iterable_1, iterable_2):
     cycle2 = it.cycle(iterable_2)
     return (
         [next(cycle1) for x in range(length)],
-        [next(cycle2) for x in range(length)]
+        [next(cycle2) for x in range(length)],
     )
 
 

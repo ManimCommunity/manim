@@ -1,6 +1,6 @@
 ![logo](logo/cropped.png)
 
-[![Build Status](https://travis-ci.com/ManimCommunity/manim.svg?branch=master)](https://travis-ci.com/ManimCommunity/manim)
+![CI](https://github.com/ManimCommunity/manim/workflows/CI/badge.svg)
 [![Documentation](https://img.shields.io/badge/docs-EulerTour-blue.svg)](https://www.eulertour.com/docs)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://choosealicense.com/licenses/mit/)
 [![Manim Subreddit](https://img.shields.io/reddit/subreddit-subscribers/manim.svg?color=ff4301&label=reddit)](https://www.reddit.com/r/manim/)
@@ -19,18 +19,22 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
     + [FFmpeg Installation](#ffmpeg-installation)
     + [SoX Installation](#sox-installation)
     + [LaTeX Installation](#latex-installation)
-  * [Linux](#linux)
+  * [Ubuntu/Debian](#ubuntudebian)
     + [Cairo Installation](#cairo-installation-1)
     + [FFmpeg Installation](#ffmpeg-installation-1)
     + [SoX Installation](#sox-installation-1)
     + [LaTeX Installation](#latex-installation-1)
-    + [Additional Installation Steps](#additional-installation-steps)
-  * [Mac](#mac)
-    + [Homebrew Installation](#homebrew-installation)
+  * [Arch/Manjaro](#archmanjaro)
     + [Cairo Installation](#cairo-installation-2)
     + [FFmpeg Installation](#ffmpeg-installation-2)
     + [SoX Installation](#sox-installation-2)
     + [LaTeX Installation](#latex-installation-2)
+  * [Mac](#mac)
+    + [Homebrew Installation](#homebrew-installation)
+    + [Cairo Installation](#cairo-installation-3)
+    + [FFmpeg Installation](#ffmpeg-installation-3)
+    + [SoX Installation](#sox-installation-3)
+    + [LaTeX Installation](#latex-installation-3)
   * [Installing Manim-Community itself](#installing-manim-community-itself)
 - [Usage](#usage)
 - [Documentation](#documentation)
@@ -96,7 +100,7 @@ Before installing `manim-community`, there are some additional dependencies that
 <img style="width: 20vw;" src="./readme-assets/windows_miktex.png" />
 <br><br>
 
-### Linux
+### Ubuntu/Debian
 
 Before installing `manim-community`, there are some additional dependencies that you must have installed:
  - Cairo
@@ -123,12 +127,32 @@ sudo apt install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-r
 > Note: this installation may take up a lot of space. The developers are working on providing a simpler, lighter LaTeX package for you to install
 2. You can check you did it right by running `latex`
 
-#### Additional Installation Steps
-- You must install additional codecs to play MP4 files:
+### Arch/Manjaro
+
+Before installing `manim-community`, there are some additional dependencies that you must have installed:
+ - Cairo
+ - FFmpeg
+ - Sox (optional, for sound)
+ - LaTeX (optional, for LaTeX)
+
+#### Cairo Installation
+1. Install the `cairo` package with your package manager: `sudo pacman -S cairo`
+
+#### FFmpeg Installation
+1. Install the `ffmpeg` package with your package manager: `sudo pacman -S ffmpeg`
+2. You can check you did it right by running `ffmpeg -version`
+
+#### SoX Installation
+1. Install the `sox` package with your package manager: `sudo pacman -S sox`
+2. You can check you did it right by running `sox`
+
+#### LaTeX Installation
+1. Install `texlive` with your package manager by running the following commands:
 ```
-sudo apt install libdvdnav4 libdvd-pkg gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg
-sudo apt install ubuntu-restricted-extras
+sudo pacman -S texlive-most
 ```
+> Note: this installation may take up a lot of space. The developers are working on providing a simpler, lighter LaTeX package for you to install
+2. You can check you did it right by running `latex`
 
 ### Mac
 
@@ -183,13 +207,13 @@ If you have installed MacTeX and are comfortable with it, do not install BasicTe
 
 ### Installing Manim-Community itself
 
-Manim runs on Python 3.7+. If you'd like to just use the library, you can install it from PyPI via pip:
+1. Manim-Community runs on Python 3.6+. If you'd like to just use the library, you can install it from PyPI via pip:
 
 ```sh
-pip3 install manimlib
+pip3 install manimce
 ```
 
-However, if you'd like to contribute to and/or help develop
+2. However, if you'd like to contribute to and/or help develop
 `manim-community`, you can clone this branch to your local device. To do
 this, first make sure you have `git` installed. Then, clone this repo by
 executing either
@@ -204,7 +228,7 @@ or
 git clone https://github.com/ManimCommunity/manim.git
 ```
 
-depending on whether you want to use HTTPS or SSH. Finally, run the
+depending on whether you want to use HTTPS or SSH. Finally, after having cloned this repo, run the
 following:
 
 ```sh
@@ -213,14 +237,24 @@ python3 -m pip install -r requirements.txt
 
 ## Usage
 
-To run your first example Scene, you can run the following commands:
+To run your first example Scenes, you can run the following commands:
 
 ### For users:
 
-1. Download the `example_scenes/basic.py` file from [GitHub](https://github.com/ManimCommunity/manim/blob/master/example_scenes/basic.py)
+1. Download the `example_scenes/basic.py` file from [GitHub](https://raw.github.com/ManimCommunity/manim/master/example_scenes/basic.py), or place it manually
+in your current working directory with
+```sh
+wget https://raw.github.com/ManimCommunity/manim/master/example_scenes/basic.py
+```
+
 2. Run the following command:
 ```sh
 manim example_scenes/basic.py SquareToCircle -pl
+```
+
+3. Download the [custom_template.tex](https://raw.github.com/ManimCommunity/manim/master/example_scenes/custom_template.tex) and [customtex.py](https://raw.github.com/ManimCommunity/manim/master/example_scenes/customtex.py) example_scenes files, and run the following command:
+```sh
+manim customtex.py --tex_template custom_template.tex -pl
 ```
 
 ### For developers:
@@ -243,7 +277,7 @@ Some other useful flags include:
 * `-n <number>` to skip ahead to the `n`'th animation of a scene.
 * `-f` to show the file in finder (for OSX).
 
-You can also set `MEDIA_DIR` environment variable to specify where the image and animation files will be written.
+You can also use the `--media_dir <directory-path>` command line parameter to specify where the image and animation files will be written.
 
 ## Documentation
 Documentation is in progress at [eulertour.com/docs](https://www.eulertour.com/docs/).
@@ -252,7 +286,9 @@ Documentation is in progress at [eulertour.com/docs](https://www.eulertour.com/d
 The issues board is reserved for bugs, and future features planned for Manim. If you need help installing or using Manim, please take a look at [the Reddit Community](https://www.reddit.com/r/manim) or the [Discord Community](https://discord.gg/mMRrZQW)
 
 ## Contributing
-Is always welcome. In particular, there is a dire need for tests and documentation.
+Is always welcome. In particular, there is a dire need for tests and documentation. 
+
+For instructions, guidelines and other details, please check out the file [CONTRIBUTING.md](https://github.com/ManimCommunity/manim/blob/master/CONTRIBUTING.md).
 
 ## License
 

@@ -1,3 +1,21 @@
+"""Fading in and out of view."""
+
+
+__all__ = [
+    "FadeOut",
+    "FadeIn",
+    "FadeInFrom",
+    "FadeInFromDown",
+    "FadeOutAndShift",
+    "FadeOutAndShiftDown",
+    "FadeInFromPoint",
+    "FadeInFromLarge",
+    "VFadeIn",
+    "VFadeOut",
+    "VFadeInThenOut",
+]
+
+
 from ..animation.animation import Animation
 from ..animation.animation import DEFAULT_ANIMATION_LAG_RATIO
 from ..animation.transform import Transform
@@ -5,6 +23,7 @@ from ..constants import DOWN
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import interpolate
 from ..utils.rate_functions import there_and_back
+from ..logger import logger
 
 
 DEFAULT_FADE_LAG_RATIO = 0
@@ -66,10 +85,17 @@ class FadeInFromDown(FadeInFrom):
     Identical to FadeInFrom, just with a name that
     communicates the default
     """
+
     CONFIG = {
         "direction": DOWN,
         "lag_ratio": DEFAULT_ANIMATION_LAG_RATIO,
     }
+
+    def __init__(self, mobject, **kwargs):
+        super().__init__(mobject, direction=DOWN, **kwargs)
+        logger.warning(
+            "FadeInFromDown is deprecated and will eventually disappear. Please use FadeInFrom(<mobject>, direction=DOWN, <other_args>) instead."
+        )
 
 
 class FadeOutAndShift(FadeOut):
@@ -93,9 +119,16 @@ class FadeOutAndShiftDown(FadeOutAndShift):
     Identical to FadeOutAndShift, just with a name that
     communicates the default
     """
+
     CONFIG = {
         "direction": DOWN,
     }
+
+    def __init__(self, mobject, **kwargs):
+        super().__init__(mobject, direction=DOWN, **kwargs)
+        logger.warning(
+            "FadeOutAndShiftDown is deprecated and will eventually disappear. Please use FadeOutAndShift(<mobject>, direction=DOWN, <other_args>) instead."
+        )
 
 
 class FadeInFromPoint(FadeIn):
@@ -130,23 +163,18 @@ class VFadeIn(Animation):
     """
     VFadeIn and VFadeOut only work for VMobjects,
     """
+
     CONFIG = {
         "suspend_mobject_updating": False,
     }
 
     def interpolate_submobject(self, submob, start, alpha):
-        submob.set_stroke(
-            opacity=interpolate(0, start.get_stroke_opacity(), alpha)
-        )
-        submob.set_fill(
-            opacity=interpolate(0, start.get_fill_opacity(), alpha)
-        )
+        submob.set_stroke(opacity=interpolate(0, start.get_stroke_opacity(), alpha))
+        submob.set_fill(opacity=interpolate(0, start.get_fill_opacity(), alpha))
 
 
 class VFadeOut(VFadeIn):
-    CONFIG = {
-        "remover": True
-    }
+    CONFIG = {"remover": True}
 
     def interpolate_submobject(self, submob, start, alpha):
         super().interpolate_submobject(submob, start, 1 - alpha)

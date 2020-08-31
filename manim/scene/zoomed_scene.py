@@ -1,3 +1,6 @@
+__all__ = ["ZoomedScene"]
+
+
 from ..animation.transform import ApplyMethod
 from ..camera.moving_camera import MovingCamera
 from ..camera.multi_camera import MultiCamera
@@ -16,6 +19,7 @@ class ZoomedScene(MovingCameraScene):
     a particular part of the scene must be zoomed in on and displayed
     separately.
     """
+
     CONFIG = {
         "camera_class": MultiCamera,
         "zoomed_display_height": 3,
@@ -57,8 +61,7 @@ class ZoomedScene(MovingCameraScene):
             zoomed_display.move_to(self.zoomed_display_center)
         else:
             zoomed_display.to_corner(
-                self.zoomed_display_corner,
-                buff=self.zoomed_display_corner_buff
+                self.zoomed_display_corner, buff=self.zoomed_display_corner_buff
             )
 
         self.zoomed_camera = zoomed_camera
@@ -81,8 +84,7 @@ class ZoomedScene(MovingCameraScene):
             self.play(self.get_zoom_in_animation())
             self.play(self.get_zoomed_display_pop_out_animation())
         self.add_foreground_mobjects(
-            self.zoomed_camera.frame,
-            self.zoomed_display,
+            self.zoomed_camera.frame, self.zoomed_display,
         )
 
     def get_zoom_in_animation(self, run_time=2, **kwargs):
@@ -102,8 +104,8 @@ class ZoomedScene(MovingCameraScene):
             The animation of the camera zooming in.
         """
         frame = self.zoomed_camera.frame
-        full_frame_height = self.camera.get_frame_height()
-        full_frame_width = self.camera.get_frame_width()
+        full_frame_height = self.camera.frame_height
+        full_frame_width = self.camera.frame_width
         frame.save_state()
         frame.stretch_to_fit_width(full_frame_width)
         frame.stretch_to_fit_height(full_frame_height)
@@ -139,6 +141,5 @@ class ZoomedScene(MovingCameraScene):
             The zoom factor.
         """
         return fdiv(
-            self.zoomed_camera.frame.get_height(),
-            self.zoomed_display.get_height()
+            self.zoomed_camera.frame.get_height(), self.zoomed_display.get_height()
         )

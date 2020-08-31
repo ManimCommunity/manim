@@ -1,3 +1,14 @@
+__all__ = [
+    "get_all_descendent_classes",
+    "filtered_locals",
+    "digest_config",
+    "merge_dicts_recursively",
+    "soft_dict_update",
+    "digest_locals",
+    "DictAsObject",
+]
+
+
 import inspect
 import itertools as it
 
@@ -77,13 +88,12 @@ def soft_dict_update(d1, d2):
 
 
 def digest_locals(obj, keys=None):
-    caller_locals = filtered_locals(
-        inspect.currentframe().f_back.f_locals
-    )
+    caller_locals = filtered_locals(inspect.currentframe().f_back.f_locals)
     if keys is None:
         keys = list(caller_locals.keys())
     for key in keys:
         setattr(obj, key, caller_locals[key])
+
 
 # Occasionally convenient in order to write dict.x instead of more laborious
 # (and less in keeping with all other attr accesses) dict["x"]

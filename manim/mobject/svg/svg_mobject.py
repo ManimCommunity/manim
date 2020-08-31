@@ -1,5 +1,13 @@
+"""Mobjects generated from an SVG file."""
+
+
+__all__ = ["SVGMobject", "VMobjectFromSVGPathstring", "string_to_numbers"]
+
+
 import itertools as it
 import re
+import os
+import string
 import warnings
 import string
 from typing import *
@@ -82,28 +90,28 @@ class SVGMobject(VMobject):
         result = []
         if not isinstance(element, minidom.Element):
             return result
-        if element.tagName == 'defs':
+        if element.tagName == "defs":
             self.update_ref_to_element(element)
-        elif element.tagName == 'style':
+        elif element.tagName == "style":
             pass  # TODO, handle style
-        elif element.tagName in ['g', 'svg', 'symbol']:
+        elif element.tagName in ["g", "svg", "symbol"]:
             result += it.chain(*[
                 self.get_mobjects_from(child)
                 for child in element.childNodes
             ])
-        elif element.tagName == 'path':
-            temp = element.getAttribute('d')
-            if temp != '':
+        elif element.tagName == "path":
+            temp = element.getAttribute("d")
+            if temp != "":
                 result.append(self.path_string_to_mobject(temp))
-        elif element.tagName == 'use':
+        elif element.tagName == "use":
             result += self.use_to_mobjects(element)
-        elif element.tagName == 'rect':
+        elif element.tagName == "rect":
             result.append(self.rect_to_mobject(element))
-        elif element.tagName == 'circle':
+        elif element.tagName == "circle":
             result.append(self.circle_to_mobject(element))
-        elif element.tagName == 'ellipse':
+        elif element.tagName == "ellipse":
             result.append(self.ellipse_to_mobject(element))
-        elif element.tagName in ['polygon', 'polyline']:
+        elif element.tagName in ["polygon", "polyline"]:
             result.append(self.polygon_to_mobject(element))
         elif element.tagName == 'line':
             result.append(self.line_to_mobject(element))
@@ -348,7 +356,7 @@ class SVGMobject(VMobject):
                 stroke_width=stroke_width,
                 stroke_color=stroke_color,
                 fill_color=fill_color,
-                fill_opacity=opacity
+                fill_opacity=opacity,
             )
         else:
             mob = RoundedRectangle(
@@ -358,7 +366,7 @@ class SVGMobject(VMobject):
                 stroke_color=stroke_color,
                 fill_color=fill_color,
                 fill_opacity=opacity,
-                corner_radius=corner_radius
+                corner_radius=corner_radius,
             )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
@@ -395,14 +403,14 @@ class SVGMobject(VMobject):
     def handle_transforms(self, element: minidom.Element, mobject: Mobject):
         x, y = 0, 0
         try:
-            x = self.attribute_to_float(element.getAttribute('x'))
+            x = self.attribute_to_float(element.getAttribute("x"))
             # Flip y
-            y = -self.attribute_to_float(element.getAttribute('y'))
+            y = -self.attribute_to_float(element.getAttribute("y"))
             mobject.shift(x * RIGHT + y * UP)
         except:
             pass
 
-        transform = element.getAttribute('transform')
+        transform = element.getAttribute("transform")
 
         prefix = "matrix("
         suffix = ")"
@@ -483,14 +491,17 @@ class SVGMobject(VMobject):
         all_childNodes_have_id = []
         if not isinstance(element, minidom.Element):
             return
-        if element.hasAttribute('id'):
+        if element.hasAttribute("id"):
             return [element]
         for e in element.childNodes:
             all_childNodes_have_id.append(self.get_all_childNodes_have_id(e))
         return self.flatten([e for e in all_childNodes_have_id if e])
 
     def update_ref_to_element(self, defs: minidom.Element):
-        new_refs = dict([(e.getAttribute('id'), e) for e in self.get_all_childNodes_have_id(defs)])
+        new_refs = dict([
+            (e.getAttribute("id"), e)
+            for e in self.get_all_childNodes_have_id(defs)
+        ])
         self.ref_to_element.update(new_refs)
 
     def move_into_position(self):
@@ -600,9 +611,9 @@ class VMobjectFromSVGPathstring(VMobject):
             # Add subsequent offset points relatively.
             for i in range(3, len(new_points), 3):
                 if isLower:
-                    new_points[i:i + 3] -= points[-1]
-                    new_points[i:i + 3] += new_points[i - 1]
-                self.add_cubic_bezier_curve_to(*new_points[i:i + 3])
+                    new_points[i : i + 3] -= points[-1]
+                    new_points[i : i + 3] += new_points[i - 1]
+                self.add_cubic_bezier_curve_to(*new_points[i : i + 3])
 
     def string_to_points(self, coord_string: str):
         numbers = string_to_numbers(coord_string)

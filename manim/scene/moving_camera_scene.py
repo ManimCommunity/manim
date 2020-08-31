@@ -1,3 +1,5 @@
+__all__ = ["MovingCameraScene"]
+
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
 from ..utils.iterables import list_update
@@ -8,9 +10,8 @@ class MovingCameraScene(Scene):
     This is a Scene, with special configurations and properties that
     make it suitable for cases where the camera must be moved around.
     """
-    CONFIG = {
-        "camera_class": MovingCamera
-    }
+
+    CONFIG = {"camera_class": MovingCamera}
 
     def setup(self):
         """
@@ -18,7 +19,7 @@ class MovingCameraScene(Scene):
         to set up the scene for proper use.
         """
         Scene.setup(self)
-        assert(isinstance(self.camera, MovingCamera))
+        assert isinstance(self.camera, MovingCamera)
         self.camera_frame = self.camera.frame
         # Hmm, this currently relies on the fact that MovingCamera
         # willd default to a full-sized frame.  Is that okay?
