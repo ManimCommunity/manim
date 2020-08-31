@@ -1,11 +1,12 @@
 __all__ = [
-    "TexSymbol",
-    "SingleStringTexMobject",
+    "SingleStringMathTex",
+    "MathTex",
+    "Tex",
+    "BulletedList",
+    "MathTexFromPresetString",
+    "Title",
     "TexMobject",
     "TextMobject",
-    "BulletedList",
-    "TexMobjectFromPresetString",
-    "Title",
 ]
 
 
