@@ -34,11 +34,15 @@ class NumberLineTest(GraphScene):
         "y_labeled_nums": range(-1, 2),
         "x_axis_config": {
             "x_min": -5,
-            "decimal_number_config": {"num_decimal_places": 1,},
+            "decimal_number_config": {
+                "num_decimal_places": 1,
+            },
         },
         "y_axis_config": {
             "color": RED,
-            "decimal_number_config": {"num_decimal_places": 2,},
+            "decimal_number_config": {
+                "num_decimal_places": 2,
+            },
         },
     }
 
