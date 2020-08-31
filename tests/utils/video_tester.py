@@ -69,7 +69,6 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
                 tests_directory, "control_data", "videos_data", control_data_file
             )
             path_video_generated = tmp_path / scene_path_from_media_dir
-            # assert 0, path_exists(path_video_generated)
             if not os.path.exists(path_video_generated):
                 for parent in reversed(path_video_generated.parents):
                     if not parent.exists():
