@@ -185,7 +185,7 @@ class VDictExample(Scene):
 class VariableExample(Scene):
     def construct(self):
         var = 0
-        on_screen_var = Variable(var, "var")
+        on_screen_var = Variable(var, "var", num_decimal_places=3)
 
         # You can also change the colours for the label and value
         on_screen_var["label"].set_color(RED)

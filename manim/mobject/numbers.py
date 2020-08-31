@@ -143,11 +143,13 @@ class Integer(DecimalNumber):
 
 
 class Variable(VDict):
-    def __init__(self, var, label):
+    def __init__(self, var, label, num_decimal_places=2):
         var_label = TexMobject(label + "=")
         self.tracker = ValueTracker(var)
         value_tex = (
-            DecimalNumber(self.tracker.get_value())
+            DecimalNumber(
+                self.tracker.get_value(), num_decimal_places=num_decimal_places
+            )
             .add_updater(lambda v: v.set_value(self.tracker.get_value()))
             .next_to(var_label, RIGHT)
         )
