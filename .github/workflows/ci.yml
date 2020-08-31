@@ -3,13 +3,14 @@ on:
   push:
       branches:
         - master
+        - actions-poetry
   pull_request:
       branches:
         - master
 
 jobs:
   format:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -23,8 +24,8 @@ jobs:
         run: |
           pip install wheel
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-          #$env:PATH="$($env:USERPROFILE)/.poetry/bin;$($env:PATH)"
-          echo "::set-env name=PATH::$($env:PATH)"
+          echo "::add-path::$HOME/.poetry/bin"
+          
       - name: Check manim formatting
         run: poetry install
       - name: Check manim formatting
@@ -38,7 +39,10 @@ jobs:
 
   test:
     runs-on: ${{ matrix.os }}
+    env:
+       POETRY_VIRTUALENVS_CREATE: false
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python: [3.6,3.7, 3.8]
@@ -63,6 +67,7 @@ jobs:
           sudo apt update
           sudo apt install -y ffmpeg
           sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+          echo "::add-path::$HOME/.poetry/bin"
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
@@ -72,9 +77,8 @@ jobs:
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
-          echo "::set-env name=PATH::$PATH"
           echo "::add-path::$HOME/.poetry/bin"
-
+          echo "::set-env name=PATH::$PATH"
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows'
         run: |
@@ -85,16 +89,18 @@ jobs:
           echo "Completed Latex Install Sox"
           Invoke-WebRequest https://downloads.sourceforge.net/project/sox/sox/14.4.2/sox-14.4.2-win32.zip -SkipCertificateCheck -UserAgent "pwsh" -O SoX.zip
           7z x "$PWD\SoX.zip" -o"$env:APPDATA\SoX"
-          $env:Path ="$env:APPDATA\SoX\sox-14.4.2;$(env:PATH)"
+          $env:Path ="$env:APPDATA\SoX\sox-14.4.2;$($env:PATH)"
           Invoke-WebRequest https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-4.3.1-win64-static.zip -O ffmpeg-4.3.1-win64-static.zip
           7z x "$PWD\ffmpeg-4.3.1-win64-static.zip" -o"$env:APPDATA\FFmpeg"
-          $env:Path = "$env:APPDATA\FFmpeg\ffmpeg-4.3.1-win64-static\bin;$(env:PATH)"
+          $env:Path = "$env:APPDATA\FFmpeg\ffmpeg-4.3.1-win64-static\bin;$($env:PATH)"
+          $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           echo "::set-env name=Path::$env:Path"
+          
 
       - name: Install manim
-        run: poetry install
+        run: |
+          poetry install
 
       - name: Run tests
         run: |
-          poetry shell
-          pytest
+          poetry run pytest
