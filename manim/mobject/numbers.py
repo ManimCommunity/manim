@@ -1,3 +1,6 @@
+__all__ = ["DecimalNumber", "Integer"]
+
+
 from ..constants import *
 from ..mobject.svg.tex_mobject import SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject

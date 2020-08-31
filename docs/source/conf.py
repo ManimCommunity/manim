@@ -29,7 +29,6 @@ author = 'The Manim Community Dev Team'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx_rtd_theme',
     'recommonmark',
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
@@ -66,8 +65,10 @@ html_sidebars = {'**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']}
 # Register the theme as an extension to generate a sitemap.xml
 extensions.append("guzzle_sphinx_theme")
 
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# This specifies any additional css files that will override the theme's
+html_css_files = ['custom.css']
