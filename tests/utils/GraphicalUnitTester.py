@@ -33,7 +33,10 @@ class GraphicalUnitTester:
     """
 
     def __init__(
-        self, scene_object, module_tested, tmpdir,
+        self,
+        scene_object,
+        module_tested,
+        tmpdir,
     ):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
@@ -83,12 +86,8 @@ class GraphicalUnitTester:
         :class:`numpy.array`
             The pre-rendered frame.
         """
-        frame_data_path = (
-            os.path.join(
-                self.path_control_data, "{}.npy".format(system() + str(self.scene))
-            )
-            if "Tex" in str(self.scene)
-            else os.path.join(self.path_control_data, "{}.npy".format(str(self.scene)))
+        frame_data_path = os.path.join(
+            os.path.join(self.path_control_data, "{}.npy".format(str(self.scene)))
         )
         return np.load(frame_data_path)
 
