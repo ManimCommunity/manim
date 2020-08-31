@@ -188,8 +188,8 @@ class VariableExample(Scene):
         on_screen_var = Variable(var, "var", num_decimal_places=3)
 
         # You can also change the colours for the label and value
-        on_screen_var["label"].set_color(RED)
-        on_screen_var["value"].set_color(GREEN)
+        on_screen_var.label.set_color(RED)
+        on_screen_var.value.set_color(GREEN)
 
         self.play(Write(on_screen_var))
         # The above line will just display the variable with
@@ -205,8 +205,8 @@ class VariableExample(Scene):
         on_screen_int_var = Variable(int_var, "int_var", var_type=Integer).next_to(
             on_screen_var, DOWN
         )
-        on_screen_int_var["label"].set_color(RED)
-        on_screen_int_var["value"].set_color(GREEN)
+        on_screen_int_var.label.set_color(RED)
+        on_screen_int_var.value.set_color(GREEN)
 
         self.play(Write(on_screen_int_var))
         self.wait()
