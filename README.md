@@ -45,16 +45,19 @@ class SquareToCircle(Scene):
         self.play(FadeOut(square))
 ```
 
-Save this code in a file called `basic.py`.  Now open your terminal in the
+Save this code in a file called `example.py`.  Now open your terminal in the
 folder where you saved the file and execute
 ```sh
-manim example_scenes/basic.py SquareToCircle -pl
+manim example.py SquareToCircle -pl
 ```
 
 You should see your video player pop up and play a simple scene where a square
-is transformed into a circle.  Visit [this
-link](https://manimce.readthedocs.io/en/latest/examples.html) for more
-examples.
+is transformed into a circle.  You can find some more simple examples in the
+[GitHub
+repository](https://github.com/ManimCommunity/manim/tree/master/example_scenes).
+Visit the [official
+gallery](https://manimce.readthedocs.io/en/latest/examples.html) for more
+advanced examples.
 
 
 ## Command line arguments
