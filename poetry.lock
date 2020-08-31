@@ -9,6 +9,7 @@ version = "1.4.4"
 [[package]]
 category = "dev"
 description = "Atomic file writes."
+marker = "sys_platform == \"win32\""
 name = "atomicwrites"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -44,7 +45,6 @@ regex = ">=2020.1.8"
 toml = ">=0.10.1"
 typed-ast = ">=1.4.0"
 typing-extensions = ">=3.7.4"
-dataclasses = {version = ">=0.6", markers = "python_version < \"3.7\""}
 
 [package.extras]
 colorama = ["colorama (>=0.4.3)"]
@@ -89,16 +89,9 @@ version = "0.9.1"
 test = ["flake8 (3.7.8)", "hypothesis (3.55.3)"]
 
 [[package]]
-category = "main"
-description = "A backport of the dataclasses module for Python 3.6"
-name = "dataclasses"
-optional = false
-python-versions = ">=3.6, <3.7"
-version = "0.7"
-
-[[package]]
 category = "dev"
 description = "Read metadata from Python packages"
+marker = "python_version < \"3.8\""
 name = "importlib-metadata"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
@@ -180,7 +173,9 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.13.1"
 
 [package.dependencies]
-importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
+[package.dependencies.importlib-metadata]
+python = "<3.8"
+version = ">=0.12"
 
 [package.extras]
 dev = ["pre-commit", "tox"]
@@ -204,6 +199,7 @@ version = "1.9.0"
 [[package]]
 category = "main"
 description = "Python interface for cairo"
+marker = "sys_platform != \"win32\" or sys_platform == \"win32\""
 name = "pycairo"
 optional = false
 python-versions = ">=3.5, <4"
@@ -241,6 +237,7 @@ version = "2.4.7"
 [[package]]
 category = "main"
 description = "A python implmementation of GNU readline."
+marker = "sys_platform == \"win32\""
 name = "pyreadline"
 optional = false
 python-versions = "*"
@@ -255,16 +252,19 @@ python-versions = ">=3.5"
 version = "6.0.1"
 
 [package.dependencies]
+atomicwrites = ">=1.0"
 attrs = ">=17.4.0"
+colorama = "*"
 iniconfig = "*"
 more-itertools = ">=4.0.0"
 packaging = "*"
 pluggy = ">=0.12,<1.0"
 py = ">=1.8.2"
 toml = "*"
-atomicwrites = {version = ">=1.0", markers = "sys_platform == \"win32\""}
-colorama = {version = "*", markers = "sys_platform == \"win32\""}
-importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
+
+[package.dependencies.importlib-metadata]
+python = "<3.8"
+version = ">=0.12"
 
 [package.extras]
 checkqa_mypy = ["mypy (0.780)"]
@@ -291,7 +291,6 @@ colorama = ">=0.4.0,<0.5.0"
 commonmark = ">=0.9.0,<0.10.0"
 pygments = ">=2.6.0,<3.0.0"
 typing-extensions = ">=3.7.4,<4.0.0"
-dataclasses = {version = ">=0.7,<0.8", markers = "python_version >= \"3.6\" and python_version < \"3.7\""}
 
 [package.extras]
 jupyter = ["ipywidgets (>=7.5.1,<8.0.0)"]
@@ -353,6 +352,7 @@ version = "3.7.4.3"
 [[package]]
 category = "dev"
 description = "Backport of pathlib-compatible object wrapper for zip files"
+marker = "python_version < \"3.8\""
 name = "zipp"
 optional = false
 python-versions = ">=3.6"
@@ -363,9 +363,9 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "db3458b88c6236bcd3811a71f388e170016f0c8f5219077c5712f70c06ea5a3b"
-lock-version = "1.1"
-python-versions = "^3.6"
+content-hash = "7325b90cd8cfcf6ba1468c3ef0bcbcc2e5bb7cc704d5e1c3b24167ec6394eb23"
+lock-version = "1.0"
+python-versions = "^3.7"
 
 [metadata.files]
 appdirs = [
@@ -399,10 +399,6 @@ colour = [
 commonmark = [
     {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
     {file = "commonmark-0.9.1.tar.gz", hash = "sha256:452f9dc859be7f06631ddcb328b6919c67984aca654e5fefb3914d54691aed60"},
-]
-dataclasses = [
-    {file = "dataclasses-0.7-py3-none-any.whl", hash = "sha256:3459118f7ede7c8bea0fe795bff7c6c2ce287d01dd226202f7c9ebc0610a7836"},
-    {file = "dataclasses-0.7.tar.gz", hash = "sha256:494a6dcae3b8bcf80848eea2ef64c0cc5cd307ffc263e17cdf42f3e5420808e6"},
 ]
 importlib-metadata = [
     {file = "importlib_metadata-1.7.0-py2.py3-none-any.whl", hash = "sha256:dc15b2969b4ce36305c51eebe62d418ac7791e9a157911d58bfb1f9ccd8e2070"},
