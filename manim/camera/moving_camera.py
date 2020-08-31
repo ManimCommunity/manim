@@ -47,7 +47,8 @@ class MovingCamera(Camera):
         Camera.__init__(self, **kwargs)
 
     # TODO, make these work for a rotated frame
-    def get_frame_height(self):
+    @property
+    def frame_height(self):
         """Returns the height of the frame.
 
         Returns
@@ -57,7 +58,8 @@ class MovingCamera(Camera):
         """
         return self.frame.get_height()
 
-    def get_frame_width(self):
+    @property
+    def frame_width(self):
         """Returns the width of the frame
 
         Returns
@@ -67,7 +69,8 @@ class MovingCamera(Camera):
         """
         return self.frame.get_width()
 
-    def get_frame_center(self):
+    @property
+    def frame_center(self):
         """Returns the centerpoint of the frame in cartesian coordinates.
 
         Returns
@@ -77,7 +80,8 @@ class MovingCamera(Camera):
         """
         return self.frame.get_center()
 
-    def set_frame_height(self, frame_height):
+    @frame_height.setter
+    def frame_height(self, frame_height):
         """Sets the height of the frame in MUnits.
 
         Parameters
@@ -87,6 +91,7 @@ class MovingCamera(Camera):
         """
         self.frame.stretch_to_fit_height(frame_height)
 
+    @frame_width.setter
     def set_frame_width(self, frame_width):
         """Sets the width of the frame in MUnits.
 
@@ -97,6 +102,7 @@ class MovingCamera(Camera):
         """
         self.frame.stretch_to_fit_width(frame_width)
 
+    @frame_center.setter
     def set_frame_center(self, frame_center):
         """Sets the centerpoint of the frame.
 
