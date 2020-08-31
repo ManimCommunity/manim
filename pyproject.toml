@@ -34,7 +34,7 @@ tqdm = "*"
 pydub = "*"
 pygments = "*"
 pyreadline = { version = "*", markers = "sys_platform == 'win32'" }
-rich = "^4.2.1"
+rich = ">=4.2.1"
 pycairo = [
 	{ version = "^1.19", markers = "sys_platform != 'win32'"},
 	{ version = "^1.19", markers = "sys_platform == 'win32'", source="testpypi" },
@@ -42,7 +42,7 @@ pycairo = [
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-black  = "19.10b0"
+black  = "*"
 
 [[tool.poetry.source]]
 name = "testpypi"
