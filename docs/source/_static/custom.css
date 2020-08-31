@@ -1,3 +1,8 @@
 td {
     padding: 0px 10px 0px 10px;
 }
+
+img.align-center {
+    width: 100%;
+    margin-bottom: 10px;
+}
