@@ -1,3 +1,6 @@
+__all__ = ["ThreeDCamera"]
+
+
 import numpy as np
 
 from ..camera.camera import Camera
@@ -24,7 +27,6 @@ class ThreeDCamera(Camera):
         "theta": -90 * DEGREES,  # Rotation about z axis
         "gamma": 0,  # Rotation about normal vector to camera
         "light_source_start_point": 9 * DOWN + 7 * LEFT + 10 * OUT,
-        "frame_center": ORIGIN,
         "should_apply_shading": True,
         "exponential_projection": False,
         "max_allowable_norm": 3 * config["frame_width"],
@@ -46,10 +48,18 @@ class ThreeDCamera(Camera):
         self.distance_tracker = ValueTracker(self.distance)
         self.gamma_tracker = ValueTracker(self.gamma)
         self.light_source = Point(self.light_source_start_point)
-        self.frame_center = Point(self.frame_center)
+        self._frame_center = Point(kwargs.get("frame_center", ORIGIN))
         self.fixed_orientation_mobjects = dict()
         self.fixed_in_frame_mobjects = set()
         self.reset_rotation_matrix()
+
+    @property
+    def frame_center(self):
+        return self._frame_center.points[0]
+
+    @frame_center.setter
+    def frame_center(self, point):
+        self._frame_center.move_to(point)
 
     def capture_mobjects(self, mobjects, **kwargs):
         self.reset_rotation_matrix()
@@ -158,16 +168,6 @@ class ThreeDCamera(Camera):
         """
         return self.gamma_tracker.get_value()
 
-    def get_frame_center(self):
-        """Returns the center of the camera frame in cartesian coordinates.
-
-        Returns
-        -------
-        np.array
-            The cartesian coordinates of the center of the camera frame.
-        """
-        return self.frame_center.points[0]
-
     def set_phi(self, value):
         """Sets the polar angle i.e the angle between Z_AXIS and Camera through ORIGIN in radians.
 
@@ -207,16 +207,6 @@ class ThreeDCamera(Camera):
             The new angle of rotation of the camera.
         """
         self.gamma_tracker.set_value(value)
-
-    def set_frame_center(self, point):
-        """Sets the camera frame center to the passed cartesian coordinate.
-
-        Parameters
-        ----------
-        point : list, tuple, np.array
-            The cartesian coordinates of the new frame center.
-        """
-        self.frame_center.move_to(point)
 
     def reset_rotation_matrix(self):
         """Sets the value of self.rotation_matrix to
@@ -269,7 +259,7 @@ class ThreeDCamera(Camera):
         np.array
             The points after projecting.
         """
-        frame_center = self.get_frame_center()
+        frame_center = self.frame_center
         distance = self.get_distance()
         rot_matrix = self.get_rotation_matrix()
 
@@ -380,12 +370,12 @@ class ThreeDCamera(Camera):
 
     def remove_fixed_orientation_mobjects(self, *mobjects):
         """If a mobject was fixed in its orientation by passing it through
-        `self.add_fixed_orientation_mobjects`, then this undoes that fixing.
+        :meth:`.add_fixed_orientation_mobjects`, then this undoes that fixing.
         The Mobject will no longer have a fixed orientation.
 
-        Parameters:
-        -----------
-        *mobjects : Mobject
+        Parameters
+        ----------
+        mobjects : :class:`Mobject`
             The mobjects whose orientation need not be fixed any longer.
         """
         for mobject in self.extract_mobject_family_members(mobjects):
@@ -394,12 +384,12 @@ class ThreeDCamera(Camera):
 
     def remove_fixed_in_frame_mobjects(self, *mobjects):
         """If a mobject was fixed in frame by passing it through
-        `self.add_fixed_in_frame_mobjects`, then this undoes that fixing.
+        :meth:`.add_fixed_in_frame_mobjects`, then this undoes that fixing.
         The Mobject will no longer be fixed in frame.
 
-        Parameters:
-        -----------
-        *mobjects : Mobject
+        Parameters
+        ----------
+        mobjects : :class:`Mobject`
             The mobjects which need not be fixed in frame any longer.
         """
         for mobject in self.extract_mobject_family_members(mobjects):

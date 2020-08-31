@@ -1,3 +1,6 @@
+__all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
+
+
 import numpy as np
 
 from PIL import Image
@@ -35,9 +38,6 @@ class AbstractImageMobject(Mobject):
         h, w = self.get_pixel_array().shape[:2]
         self.stretch_to_fit_height(self.height)
         self.stretch_to_fit_width(self.height * w / h)
-
-    def copy(self):
-        return self.deepcopy()
 
 
 class ImageMobject(AbstractImageMobject):
