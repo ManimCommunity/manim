@@ -41,8 +41,9 @@ pycairo = [
 ]
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
-black  = "*"
+pytest = "^6.0"
+black  = "^20.8b1"
+
 
 [[tool.poetry.source]]
 name = "testpypi"
