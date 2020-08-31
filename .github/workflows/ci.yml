@@ -9,7 +9,7 @@ on:
 
 jobs:
   format:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -19,24 +19,27 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Install black
-        run: pip install black
-
+      - name: Install Poetry and then black
+        run: |
+          pip install wheel
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+          echo "::set-env name=PATH::$PATH"
+          poetry install
       - name: Check manim formatting
-        run: black --check --diff manim
+        run: poetry run black --check --diff manim
 
       - name: Check tests formatting
-        run: black --check --diff tests
+        run: poetry run black --check --diff tests
 
       - name: Check examples formatting
-        run: black --check --diff example_scenes
+        run: poetry run black --check --diff example_scenes
 
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python: [3.7, 3.8]
+        python: [3.6,3.7, 3.8]
 
     steps:
       - name: Checkout the repository

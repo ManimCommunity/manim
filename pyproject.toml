@@ -24,7 +24,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6"
 colour = "*"
 numpy = "*"
 Pillow = "*"
@@ -42,8 +42,12 @@ pycairo = [
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
-black  = "^20.8b1"
 
+[tool.poetry.dev-dependencies.black]
+version = "^19.10b0"
+allow-prereleases = true
+python = "^3.6"
+markers = "platform_python_implementation == 'CPython'"
 
 [[tool.poetry.source]]
 name = "testpypi"
