@@ -92,7 +92,7 @@ class MovingCamera(Camera):
         self.frame.stretch_to_fit_height(frame_height)
 
     @frame_width.setter
-    def set_frame_width(self, frame_width):
+    def frame_width(self, frame_width):
         """Sets the width of the frame in MUnits.
 
         Parameters
@@ -103,7 +103,7 @@ class MovingCamera(Camera):
         self.frame.stretch_to_fit_width(frame_width)
 
     @frame_center.setter
-    def set_frame_center(self, frame_center):
+    def frame_center(self, frame_center):
         """Sets the centerpoint of the frame.
 
         Parameters
