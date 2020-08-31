@@ -305,7 +305,6 @@ class Title(TextMobject):
     CONFIG = {
         "scale_factor": 1,
         "include_underline": True,
-        "underline_width": config["frame_width"] - 2,
         # This will override underline_width
         "match_underline_width_to_text": False,
         "underline_buff": MED_SMALL_BUFF,
@@ -313,6 +312,7 @@ class Title(TextMobject):
 
     def __init__(self, *text_parts, **kwargs):
         TextMobject.__init__(self, *text_parts, **kwargs)
+        self.underline_width = config["frame_width"] - 2
         self.scale(self.scale_factor)
         self.to_edge(UP)
         if self.include_underline:
