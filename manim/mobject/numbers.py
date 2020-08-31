@@ -158,6 +158,7 @@ class Variable(VMobject):
             )
         elif var_type == Integer:
             self.value = Integer(self.tracker.get_value())
+
         self.value.add_updater(lambda v: v.set_value(self.tracker.get_value())).next_to(
             self.label, RIGHT
         )
