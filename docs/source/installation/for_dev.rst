@@ -1,13 +1,14 @@
 Manim Installation For Developers
 =================================
 
-	This documentation is for developers who wats to contribute to ``ManimCommunity/manim``.
+	This documentation is for developers who want to contribute to ``ManimCommunity/manim``.
 
 Installing Poetry
 *****************
 
 Poetry can be easily installed in any OS by just running the below command.
 
+If your system has the curl, usually in Linux and Mac,
 .. code-block:: bash
 	
 	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
@@ -19,7 +20,7 @@ If you are a Windows developer and want to use PowerShell, you can use the below
 	
 	(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
 
-It will add it to path automatically.
+It will add it to path automatically. In order to make sure you have poetry installed correctly, try running:
 
 .. code-block:: bash
 
@@ -34,12 +35,12 @@ See the `docs on installation python poetry for more information
 Installing System Dependencies
 ******************************
 
-This section had to followed as in :ref:`installing-manim`.
+Please follow the instructions under :ref:`installing-manim` to install all dependencies. Then come back to this page to continue with the installation.
 
 .. important:: Windows Users can Ignore Pycairo Installation.
 
 
-Additional `git` has to be installed. For instructions see `Documentation
+Additionally, ``git`` has to be installed. For instructions see `Documentation
 <https://git-scm.com/>`_.
 
 .. _Install Manim Poetry:
@@ -67,15 +68,15 @@ Installing Manim using Poetry
 
     .. note:: This path should contain a file called `pyproject.toml` if it doesn't contain it, you would need to go a level up.
 
-3.  Use the below command to install dependencies. This will use default python version installed.
+3.  Use the below command to install python dependencies. This will use the default python version installed.
 
     .. code-block:: bash
 	
          poetry install
 
 
-    .. note:: Poetry creates a virtual environment by default and no need to worry about it.
-    You can select the required python version using 
+    .. note:: Poetry will create a virtual environment rooted at the current directory.
+    You can select the desired python version using 
 
     .. code-block:: bash
 	
@@ -86,10 +87,11 @@ Installing Manim using Poetry
     .. code-block:: bash
 	
          poetry env use 3.7
+     
     For more information about this you can visit the `docs
     <https://python-poetry.org/docs/managing-environments/>`_.
 
-4. Now you can activate the virtual environment, ``Poetry`` had created in the previous step, use the below command.
+4. Now you can activate the virtual environment ``Poetry`` has created by using the command below.
 
   .. code-block:: bash
 
@@ -101,21 +103,22 @@ Installing Manim using Poetry
 
        poetry run manim -h
 
+Now you are free to start developing on the Manim Repository.
 
 Running the Tests Using Poetry
 ******************************
 
-After you have :ref:`Install Manim Poetry`, you can run the tests using by activating a shell using ``poetry shell`` command and then running the command ``pytest`` to run the tests. 
+Once you are done with :ref:`Install Manim Poetry`, you can run manim's test suite by activating a shell using ``poetry shell`` command and then running the command ``pytest`` to run the tests. 
 
-.. important:: You should run this test before making a PR.
+.. important:: You should always run the test suite before making a PR. For other contributing guidelines, see :ref:`Contributing`
 
 
 Code Formatting Using Poetry
 ****************************
 
-After you have :ref:`Install Manim Poetry`, you can run the code formatter ``black`` by activating a shell using ``poetry shell`` command and then running the command ``black manim`` to run the tests. Or alternatively just use the command ``poetry run black manim``. 
+Once you are done with :ref:`Install Manim Poetry`, you can run the code formatter ``black`` by activating a shell using ``poetry shell`` and then running the command ``black manim``. Or alternatively just use the command ``poetry run black manim``. 
 
-.. note:: Here ``manim`` used in command ``black manim`` or ``poetry run black manim`` is folder which ``black`` formats the code.
+.. note:: Here, the word ``manim``, as used in the commands ``black manim`` or ``poetry run black manim``, refers to the folder which ``black`` is to format. You can also reformat the files containing the test suite by running the command ``black tests``.
 
 For example, if you have written some new example and want to format it use the below command
 

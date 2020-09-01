@@ -118,7 +118,7 @@ jobs:
           Invoke-WebRequest "https://downloads.sourceforge.net/project/sox/sox/$($soxVersionNumber)/$($soxVersion).zip" -UserAgent "wget" -O "$($env:TMP)\SoX.zip"
           7z x "$($env:TMP)\SoX.zip" -o"$($PWD)\ManimCache"
           Move-Item "ManimCache\sox-*" "ManimCache\SoX"
-          Invoke-WebRequest https://ffmpeg.zeranoe.com/builds/win64/static/$($ffmpegVersion).zip -O "$($env:TMP)\$($ffmpegVersion).zip"
+          Invoke-WebRequest "https://ffmpeg.zeranoe.com/builds/win64/static/$($ffmpegVersion).zip" -O "$($env:TMP)\$($ffmpegVersion).zip"
           7z x "$($env:TMP)\$($ffmpegVersion).zip" -o"$($PWD)\ManimCache"
           Move-Item "ManimCache\ffmpeg-*" "ManimCache\FFmpeg"
 

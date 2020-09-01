@@ -15,6 +15,7 @@ Installing dependencies
    installation/mac
    installation/linux
    installation/troubleshooting
+   installation/for_dev
 
 
 .. _installing-manim:
