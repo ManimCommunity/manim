@@ -10,9 +10,9 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
-        with: 
+        with:
           fetch-depth: 0
-  
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -24,7 +24,7 @@ jobs:
       - name: Black
         run: |
           black manim tests example_scenes
-          
+
       - name: Check for modified files
         shell: bash
         id: git-check
