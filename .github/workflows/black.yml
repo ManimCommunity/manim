@@ -22,12 +22,16 @@ jobs:
         run: pip install black
 
       - name: Black
-        run: black manim tests example_scenes
-
+        id: run-black
+        run: |
+          black manim tests example_scenes
+          $filesChanged = git ls-files -m
+          echo ::set-output name=filechange::$($filesChanged)
       - name: Check for modified files
         shell: bash
         id: git-check
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+        run: |
+          echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
 
       - name: Print Black Version if Failed
         shell: bash
@@ -41,7 +45,7 @@ jobs:
           git config user.email "actions@github.com"
           git checkout -B "$pushBranch"
           git add .
-          git commit -m "Running Black ON Master"
+          git commit -m "Running Black On Master"
 
       - name: Push branch
         if: steps.git-check.outputs.modified == 'true'
@@ -54,15 +58,20 @@ jobs:
           git push -u origin "${pushBranch}" --force
 
       - name: Make a PR
+        if: steps.git-check.outputs.modified == 'true'
         env:
           access_token: ${{ secrets.GITHUB_TOKEN }}
+          file_change: ${{ steps.run-black.outputs.filechange }}
         run: |
           $env:GITHUB_TOKEN = $env:access_token
           $blackVer = black --version
           $blackVersion = python -c "print('$($blackVer)'.split()[2])"
           $date = python -c "import time;print(time.localtime().tm_mday)"
           $pushBranch="black-$($blackVersion)-$($date)"
-          $postContents = @{title="Black on Master - Automation";head="ManimCommunity:$($pushBranch)";base="master";body="This an automated pull requests."} | ConvertTo-Json -Compress
+          $postContents = @{title="Automated PR:autoformat with black";
+          head="ManimCommunity:$($pushBranch)";
+          base="master";
+          body="This an automated pull requests. Files Changed are $($env:file_change)"} | ConvertTo-Json -Compress
           echo "$postContents"
           Invoke-WebRequest `
             -Method POST `
