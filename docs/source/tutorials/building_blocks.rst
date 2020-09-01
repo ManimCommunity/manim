@@ -1,9 +1,9 @@
 #######################
-Manim internals: Basics
+Manim's building blocks
 #######################
 
-This document explains the internals of how manim works and will give you all
-the necessary tools to start producing your own videos.
+This document explains the building blocks of manim and will give you all the
+necessary tools to start producing your own videos.
 
 .. note:: It is recommended that you read the tutorials :doc:`quickstart` and
           :doc:`a_deeper_look` before reading this page.
