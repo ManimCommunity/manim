@@ -50,7 +50,8 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
     Parameters
     ----------
     control_data_file : :class:`str`
-        Name of the control data file, ie the .json containing all the pre-rendered references of the scene tested. Warning : you don't have to pass the path here.
+        Name of the control data file, i.e. the .json containing all the pre-rendered references of the scene tested.
+        .. warning:: You don't have to pass the path here.
 
     scene_path_from_media_dir : :class:`str`
         The path of the scene generated, from the media dir. Example: /videos/1080p60/SquareToCircle.mp4.
