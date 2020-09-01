@@ -12,7 +12,7 @@ def get_scenes_to_test(module_name):
 
     Returns
     -------
-    :class:`list`
+    List[:class:`type`]
         The list of all the classes of the module.
     """
     return inspect.getmembers(

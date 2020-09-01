@@ -1,5 +1,4 @@
-"""Helpers functions for devs to set up new graphical-units data.  
-"""
+"""Helpers functions for devs to set up new graphical-units data."""
 
 
 import os
@@ -25,6 +24,7 @@ def set_test_scene(scene_object, module_name):
     Examples
     --------
     Normal usage::
+    
         set_test_scene(DotTest, "geometry")
     """
 
