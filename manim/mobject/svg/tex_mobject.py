@@ -1,4 +1,5 @@
 __all__ = [
+    "TexSymbol",
     "SingleStringMathTex",
     "MathTex",
     "Tex",
@@ -27,6 +28,10 @@ from ...utils.tex_file_writing import tex_to_svg_file
 
 TEX_MOB_SCALE_FACTOR = 0.05
 
+class TexSymbol(VMobjectFromSVGPathstring):
+    """Purely a renaming of VMobjectFromSVGPathstring."""
+
+    pass
 
 class SingleStringMathTex(SVGMobject):
     CONFIG = {
@@ -128,7 +133,7 @@ class SingleStringMathTex(SVGMobject):
     def path_string_to_mobject(self, path_string):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return VMobjectFromSVGPathstring(path_string)
+        return TexSymbol(path_string)
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
