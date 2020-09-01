@@ -8,7 +8,7 @@ Installing Poetry
 
 Poetry can be easily installed in any OS by just running the below command.
 
-If your system has the curl, usually in Linux and Mac,
+If your system has the ``curl`` program installed, which is usually true in Linux and Mac,
 .. code-block:: bash
 	
 	curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
@@ -125,5 +125,4 @@ For example, if you have written some new example and want to format it use the 
 .. code-block:: bash
 
     poetry run black example_scenes
-
 
