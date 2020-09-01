@@ -17,11 +17,11 @@ If your system has the ``curl`` program installed, which is usually true in Linu
 
 If you are a Windows developer and want to use PowerShell, you can use the below command.
 
-.. code-block:: powershell
+.. code-block:: bash
 	
 	  (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
 
-.. note:: Poetry can be installed by other ways also `see <https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_.
+.. note:: Poetry can be installed by other ways also see `<https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_.
 
 It will add it to path automatically. In order to make sure you have poetry installed correctly, try running:
 
@@ -120,7 +120,7 @@ Once you are done with :ref:`install-manim-poetry`, you can run manim's test sui
    poetry shell
    pytest
 
-.. important:: You should always run the test suite before making a PR. For other contributing guidelines, see :ref:`contributing`
+.. important:: You should always run the test suite before making a PR. For other contributing guidelines, see `the guide for contributions to manim <../contributing.html>`_.
 
 
 Code Formatting Using Poetry

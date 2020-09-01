@@ -6,7 +6,7 @@ authors = ["3b1b <grant@3blue1brown.com>"]
 license="MIT"
 readme="README.md"
 repository="https://github.com/manimcommunity/manim"
-documentation="https://eulertour.com"
+documentation="https://manimce.readthedocs.io/en/latest/"
 classifiers= [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
