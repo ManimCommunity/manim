@@ -162,6 +162,49 @@ bounding box around it.
             square = Square().shift(LEFT)
 
 
+Styling mobjects
+================
+
+The following scene changes the default aesthetics of the mobjects.
+
+.. code-block:: python
+
+   class MobjectStyling(Scene):
+       def construct(self):
+           circle = Circle().shift(LEFT)
+           square = Square().shift(UP)
+           triangle = Triangle().shift(RIGHT)
+
+           circle.set_stroke(color=GREEN, width=20)
+           square.set_fill(YELLOW, opacity=1.0)
+           triangle.set_fill(PINK, opacity=0.5)
+
+           self.add(circle, square, triangle)
+           self.wait(1)
+
+.. image:: ../_static/building_blocks/styling.png
+    :align: center
+    :alt: figure of a circle, a square, and a triangle
+
+This scene uses two of the main functions to change the visual style of a
+mobject: :meth:`.set_stroke` and :meth:`.set_fill`.  The former changes the
+visual style of the mobject's border while the latter changes the style of the
+interior.  By default, most mobjects have a fully transparent interior so you
+must specify the ``opacity`` parameter in order to display the color.  An
+opacity of ``1.0`` means fully opaque, while ``0.0`` means fully transparent.
+
+Only instances of :class:`.VMobject` implement :meth:`.set_stroke` and
+:meth:`.set_fill`.  Instances of :class:`.Mobject` implement
+:meth:`.~Mobject.set_color` instead.  The vast majority of pre-defined classes
+are derived from :class:`.VMobject` so it is usually safe to assume that you
+have access to :meth:`.set_stroke` and :meth:`.set_fill`.
+
+
+Mobject on-screen order
+=======================
+
+
+
 
 **********
 Animations
