@@ -46,7 +46,7 @@ class CustomEncoder(json.JSONEncoder):
             )
         elif isinstance(obj, np.ndarray):
             if obj.size > 1000:
-                return f"Np array too big {obj.size}"
+                obj.resize((100, 100))
             # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
             return repr(obj)
         elif hasattr(obj, "__dict__"):
