@@ -37,7 +37,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python: [3.6, 3.7, 3.8]
-      fail-fast: false
 
     steps:
       - name: Checkout the repository
