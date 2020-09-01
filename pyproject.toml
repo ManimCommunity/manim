@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "manim"
+name = "manimlib"
 version = "0.2.0"
 description = "Animation engine for explanatory math videos."
 authors = ["3b1b <grant@3blue1brown.com>"]
