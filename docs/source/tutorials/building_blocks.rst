@@ -5,15 +5,15 @@ Manim's building blocks
 This document explains the building blocks of manim and will give you all the
 necessary tools to start producing your own videos.
 
-.. note:: It is recommended that you read the tutorials :doc:`quickstart` and
-          :doc:`a_deeper_look` before reading this page.
-
 Essentially, manim puts at your disposal three different concepts that you can
 orchestrate together in order to produce mathematical animations: the
 **mathematical object** (or **mobject** for short) the **animation**, and the
 **scene**.  As we will see in the following sections, each of these three
 concepts is implemented in manim as a separate class: the :class:`.Mobject`,
 :class:`.Animation`, and :class:`.Scene` classes.
+
+.. note:: It is recommended that you read the tutorials :doc:`quickstart` and
+          :doc:`a_deeper_look` before reading this page.
 
 
 ********
@@ -33,13 +33,19 @@ abstract base class of all other mobjects, i.e. it does not have any
 pre-determined visual shape that can be displayed on screen.  It is only the
 skeleton of a thing that *could* be displayed.  Therefore, you will rarely need
 to use plain instances of :class:`.Mobject`; instead you will most likely
-create instances of its derived classes.
+create instances of its derived classes.  One of these derived classes is
+:class:`.VMobject`.  The ``V`` stands for Vectorized Mobject.  In essence, a
+vmobject is a mobject that uses vector graphics to be displayed.  Most of the
+time, you will be dealing with vmobjects, though we will continue to use the
+term "mobject" to refer to the class of shapes that can be displayed on screen,
+as it is more general.
 
 .. note:: Any object that can be displayed on screen is a ``mobject``, even if
           it is not necessarily *mathematical* in nature.
 
 .. tip:: To see examples of classes derived from :class:`.Mobject`, see the
-         :mod:`.geometry` module.
+         :mod:`.geometry` module.  Most of these are in fact derived from
+         :class:`.VMobject` as well.
 
 
 Creating and displaying mobjects
@@ -55,7 +61,7 @@ screen, simply call the :meth:`~.Scene.remove` method from the containing
 
 .. code-block:: python
 
-   class AddRemove(Scene):
+   class CreatingMobjects(Scene):
        def construct(self):
            circle = Circle()
            self.add(circle)
@@ -63,10 +69,9 @@ screen, simply call the :meth:`~.Scene.remove` method from the containing
            self.remove(circle)
            self.wait(1)
 
-.. image:: ../_static/internals_basic/addremove.gif
+.. image:: ../_static/building_blocks/addremove.gif
     :align: center
     :alt: a circle displayed for 1s then removed
-
 
 
 Placing mobjects
@@ -93,7 +98,7 @@ some mobjects to it.
 This script generates a static picture that displays a circle, a square, and a
 triangle:
 
-.. image:: ../_static/internals_basic/shapes.png
+.. image:: ../_static/building_blocks/shapes.png
     :align: center
     :alt: figure of a circle, a square, and a triangle
 
@@ -103,11 +108,11 @@ they are first created.  They are also given some default colors.  Further, the
 square is shifted one unit in the ``UP`` direction from the origin, while the
 circle and triangle are shifted one unit ``LEFT`` and ``RIGHT``, respectively.
 
-.. note:: Unlike other graphics software, manim places the center of
-          coordinates at the center of the screen.  The positive vertical
-          direction is up, and the positive horizontal direction is right.  See
-          also the constants ``ORIGIN``, ``UP``, ``DOWN``, ``LEFT``, ``RIGHT``,
-          and others, defined in the :mod:`.constants` module.
+.. attention:: Unlike other graphics software, manim places the center of
+               coordinates at the center of the screen.  The positive vertical
+               direction is up, and the positive horizontal direction is right.
+               See also the constants ``ORIGIN``, ``UP``, ``DOWN``, ``LEFT``,
+               ``RIGHT``, and others, defined in the :mod:`.constants` module.
 
 There are many other possible ways to place mobjects on the screen, for example
 :meth:`.move_to`, :meth:`.next_to`, and :meth:`.align_to`.  The next scene
@@ -115,7 +120,7 @@ There are many other possible ways to place mobjects on the screen, for example
 
 .. code-block:: python
 
-   class Shapes2(Scene):
+   class MobjectPlacement(Scene):
        def construct(self):
            circle = Circle()
            square = Square()
@@ -131,7 +136,7 @@ There are many other possible ways to place mobjects on the screen, for example
            self.add(circle, square, triangle)
            self.wait(1)
 
-.. image:: ../_static/internals_basic/shapes2.png
+.. image:: ../_static/building_blocks/placement.png
     :align: center
     :alt: figure of a circle, a square, and a triangle
 
