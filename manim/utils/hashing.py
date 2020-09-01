@@ -53,7 +53,7 @@ class CustomEncoder(json.JSONEncoder):
             temp = getattr(obj, "__dict__")
             # MappingProxy is not supported by the Json Encoder
             if isinstance(temp, MappingProxyType):
-                return "Unsupported type for serializing ->" + str(type(temp))
+                return dict(temp)
             return self._check_iterable(temp)
         elif isinstance(obj, np.uint8):
             return int(obj)
