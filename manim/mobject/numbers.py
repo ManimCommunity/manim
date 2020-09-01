@@ -2,7 +2,7 @@ __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
 from ..constants import *
-from ..mobject.svg.tex_mobject import SingleStringTexMobject, TexMobject
+from ..mobject.svg.tex_mobject import SingleStringTexMobject, TextMobject
 from ..mobject.types.vectorized_mobject import VDict, VMobject
 from ..mobject.value_tracker import ValueTracker
 
@@ -146,10 +146,8 @@ class Variable(VMobject):
     def __init__(
         self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
     ):
-        # if the label contains underscores, we need to escape them
-        # because otherwise the next letter after underscore will be subscripted
-        label = label.replace("_", "\_")
-        self.label = TexMobject(label + "=")
+
+        self.label = TextMobject(label + "=")
         self.tracker = ValueTracker(var)
 
         if var_type == DecimalNumber:
