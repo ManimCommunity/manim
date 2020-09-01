@@ -137,5 +137,7 @@ jobs:
           poetry install
 
       - name: Run tests
-        run: |
-          poetry run pytest
+        run: poetry run pytest
+
+      - name: Run module doctests
+        run: poetry run pytest --doctest-modules manim

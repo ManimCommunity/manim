@@ -4,19 +4,22 @@ config.py
 Process the manim.cfg file and the command line arguments into a single
 config object.
 """
+
+
+__all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
+
+
 import os
 import sys
 from contextlib import contextmanager
 
 import colour
 
-from . import constants
-from .utils.config_utils import _run_config, _init_dirs, _from_command_line
+from .. import constants
+from .config_utils import _run_config, _init_dirs, _from_command_line
 
 from .logger import logger
-from .utils.tex import TexTemplate, TexTemplateFromFile
-
-__all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
+from ..utils.tex import TexTemplate, TexTemplateFromFile
 
 
 config = None
@@ -91,7 +94,8 @@ def _parse_config(config_parser, args):
             height_str, width_str = args.resolution.split(",")
             height, width = int(height_str), int(width_str)
         else:
-            height, width = int(args.resolution), int(16 * height / 9)
+            height = int(args.resolution)
+            width = int(16 * height / 9)
         config.update({"pixel_height": height, "pixel_width": width})
 
     # Handle the -c (--background_color) flag
