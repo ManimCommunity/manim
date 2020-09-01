@@ -101,13 +101,14 @@ class CustomEncoder(json.JSONEncoder):
             # A deepcopy isn't necessary as it is already recursive.
             lst_copy = copy.copy(lst)
             for i, el in enumerate(lst):
-                lst_copy[i] = self._handle_already_processed(
-                    el
-                )  # ISSUE here, because of copy.
-                if isinstance(el, list):
+                if not isinstance(lst, tuple):
+                    lst_copy[i] = self._handle_already_processed(
+                        el
+                    )  # ISSUE here, because of copy.
+                if isinstance(el, (list, tuple)):
                     lst_copy[i] = _iter_check_list(el)
                 elif isinstance(el, dict):
-                    lst_copy[i] = _iter_check_dict(temp)
+                    lst_copy[i] = _iter_check_dict(el)
             return lst_copy
 
         def _iter_check_dict(dct):
@@ -116,22 +117,25 @@ class CustomEncoder(json.JSONEncoder):
             dct_copy = copy.copy(dct)
             for k, v in dct.items():
                 dct_copy[k] = self._handle_already_processed(v)
-                # We check if the k is of the right format (supporter bu Json)
+                # We check if the k is of the right format (supporter by Json)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
                     k_new = _key_to_hash(k)
                     # We delete the value coupled with the old key, as the value is now coupled with the new key.
                     dct_copy[k_new] = dct_copy[k]
                     del dct_copy[k]
+                else:
+                    k_new = k
                 if isinstance(v, dict):
-                    dct_copy[k] = _iter_check_dict(v)
-                elif isinstance(v, list):
-                    dct_copy[k] = _iter_check_list(v)
+                    dct_copy[k_new] = _iter_check_dict(v)
+                elif isinstance(v, (list, tuple)):
+                    dct_copy[k_new] = _iter_check_list(v)
             return dct_copy
 
         if isinstance(iterable, (list, tuple)):
             return _iter_check_list(iterable)
         elif isinstance(iterable, dict):
             return _iter_check_dict(iterable)
+        raise Exception("wtf")
 
     def encode(self, obj):
         """Overwriting of JSONEncoder.encode, to make our own process.
