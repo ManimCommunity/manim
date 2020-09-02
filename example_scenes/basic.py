@@ -198,7 +198,7 @@ class VariableExample(Scene):
         self.wait()
 
         int_var = 0
-        on_screen_int_var = Variable(int_var, "int_var", var_type=Integer).next_to(
+        on_screen_int_var = Variable(int_var, "int\_var", var_type=Integer).next_to(
             on_screen_var, DOWN
         )
         on_screen_int_var.label.set_color(RED)
