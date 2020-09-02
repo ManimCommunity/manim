@@ -412,7 +412,7 @@ class GraphScene(Scene):
 
         Returns
         -------
-        MathTex
+        :class:`~.MathTex`
             The LaTeX of the passed 'label' parameter
 
         """

@@ -329,7 +329,7 @@ class VectorScene(Scene):
 
         Returns
         -------
-        MathTex
+        :class:`~.MathTex`
             The MathTex of the label.
         """
         label = self.get_vector_label(vector, label, **kwargs)
@@ -759,13 +759,13 @@ class LinearTransformationScene(VectorScene):
         vector : Vector
             The vector for which the label must be added.
 
-        label : MathTex,str
+        label : Union[:class:`~.MathTex`, :class:`str`]
             The MathTex/string of the label.
 
-        transformation_name : str, MathTex, optional
+        transformation_name : Union[:class:`str`, :class:`~.MathTex`], optional
             The name to give the transformation as a label.
 
-        new_label : MathTex,str, optional
+        new_label : Union[:class:`str`, :class:`~.MathTex`], optional
             What the label should display after a Linear Transformation
 
         **kwargs
@@ -773,7 +773,7 @@ class LinearTransformationScene(VectorScene):
 
         Returns
         -------
-        MathTex
+        :class:`~.MathTex`
             The MathTex of the label.
         """
         label_mob = self.label_vector(vector, label, **kwargs)
@@ -799,7 +799,7 @@ class LinearTransformationScene(VectorScene):
 
         Parameters
         ----------
-        title : str,MathTex,Tex
+        title : Union[:class:`str`, :class:`~.MathTex`, :class:`~.Tex`]
             What the title should be.
 
         scale_factor : int, float, optional
