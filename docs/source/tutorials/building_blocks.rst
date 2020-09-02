@@ -186,7 +186,7 @@ The following scene changes the default aesthetics of the mobjects.
     :align: center
     :alt: figure of a circle, a square, and a triangle
 
-This scene uses two of the main functions to change the visual style of a
+This scene uses two of the main functions that change the visual style of a
 mobject: :meth:`.set_stroke` and :meth:`.set_fill`.  The former changes the
 visual style of the mobject's border while the latter changes the style of the
 interior.  By default, most mobjects have a fully transparent interior so you
@@ -203,7 +203,38 @@ have access to :meth:`.set_stroke` and :meth:`.set_fill`.
 Mobject on-screen order
 =======================
 
+The next scene is exactly the same as the ``MobjectStyling`` scene from the
+previous section, except for exactly one line.
 
+.. code-block:: python
+
+   class MobjectZOrder(Scene):
+       def construct(self):
+           circle = Circle().shift(LEFT)
+           square = Square().shift(UP)
+           triangle = Triangle().shift(RIGHT)
+
+           circle.set_stroke(color=GREEN, width=20)
+           square.set_fill(YELLOW, opacity=1.0)
+           triangle.set_fill(PINK, opacity=0.5)
+
+           self.add(triangle, square, circle)
+           self.wait(1)
+
+The only difference here (besides the scene name) is the order in which the
+mobjects are added to the scene.  In ``MobjectStyling``, we added them as
+``add(circle, square, triangle)``, whereas in ``MobjectZOrder`` we add them as
+``add(triangle, square, circle)``.  The result is the following:
+
+.. image:: ../_static/building_blocks/zorder.png
+    :align: center
+    :alt: figure of a circle, a square, and a triangle
+
+As you can see, the order of the arguments of :meth:`~.Scene.add` determines
+the order that the mobjects are displayed on screen, with the left-most
+arguments being put in the back.
+
+.. tip:: The display order of mobjects is called the *z-index*.
 
 
 **********
