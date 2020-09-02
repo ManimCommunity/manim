@@ -392,7 +392,6 @@ class TextWithBackground(Text):
 
             # else:
 
-            print(context.text_extents("  ").width)
             """
             for char_index in range(text.__len__()):
                 (x, y, width, height, dx, dy) = context.text_extents("a" + text[char_index] + "a")
