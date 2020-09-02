@@ -27,10 +27,14 @@ class CoordinateSystem:
 
     def __init__(self, dim=2):
         self.dimension = dim
-        self.x_min = -config["frame_x_radius"]
-        self.x_max = config["frame_x_radius"]
-        self.y_min = -config["frame_y_radius"]
-        self.y_max = config["frame_y_radius"]
+        if not hasattr(self, 'x_min'):
+            self.x_min = -config["frame_x_radius"]
+        if not hasattr(self, 'x_max'):
+            self.x_max = config["frame_x_radius"]
+        if not hasattr(self, 'y_min'):
+            self.y_min = -config["frame_y_radius"]
+        if not hasattr(self, 'y_max'):
+            self.y_max = config["frame_y_radius"]
 
     def coords_to_point(self, *coords):
         raise Exception("Not implemented")
@@ -189,10 +193,7 @@ class Axes(VGroup, CoordinateSystem):
 
 class ThreeDAxes(Axes):
     CONFIG = {
-        "x_min": -5.5,
-        "x_max": 5.5,
-        "y_min": -5.5,
-        "y_max": 5.5,
+
         "z_axis_config": {},
         "z_min": -3.5,
         "z_max": 3.5,
@@ -202,6 +203,10 @@ class ThreeDAxes(Axes):
     }
 
     def __init__(self, **kwargs):
+        self.x_min = -5.5
+        self.x_max = 5.5
+        self.y_min = -5.5
+        self.y_max = 5.5
         Axes.__init__(self, **kwargs)
         self.dimension = 3
         z_axis = self.z_axis = self.create_axis(

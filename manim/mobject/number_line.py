@@ -47,9 +47,9 @@ class NumberLine(Line):
     }
 
     def __init__(self, **kwargs):
-        digest_config(self, kwargs)
         self.x_min = -config["frame_x_radius"]
         self.x_max = config["frame_x_radius"]
+        digest_config(self, kwargs)
         start = self.unit_size * self.x_min * RIGHT
         end = self.unit_size * self.x_max * RIGHT
         Line.__init__(
