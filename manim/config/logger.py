@@ -112,6 +112,7 @@ def set_file_logger(log_file_path):
 
 
 logger = logging.getLogger("manim")
+# The console is set to None as it will be changed by set_rich_logger.
 console = None
 
 # TODO : This is only temporary to keep the terminal output clean when working with ImageMobject and matplotlib plots
