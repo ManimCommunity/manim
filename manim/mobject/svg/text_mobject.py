@@ -1,12 +1,15 @@
+__all__ = ["TextSetting", "Text", "TextWithFixHeight", "Paragraph"]
+
+
 import re
 import os
 import copy
 import hashlib
 import cairo
 
+from ... import config, file_writer_config, logger
 from ...constants import *
-from ...config import config, file_writer_config
-from ...logger import logger
+from ...container import Container
 from ...mobject.geometry import Dot, Rectangle
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup

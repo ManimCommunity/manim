@@ -1,3 +1,9 @@
+"""A Scene is the canvas of the animation."""
+
+
+__all__ = ["Scene", "EndSceneEarlyException"]
+
+
 import inspect
 import random
 import warnings
@@ -7,13 +13,12 @@ import copy
 from tqdm import tqdm as ProgressDisplay
 import numpy as np
 
+from .. import camera_config, file_writer_config, logger
 from ..animation.animation import Animation
 from ..animation.transform import MoveToTarget, ApplyMethod
 from ..camera.camera import Camera
 from ..constants import *
-from ..config import camera_config, file_writer_config
 from ..container import Container
-from ..logger import logger
 from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.iterables import list_update
@@ -160,7 +165,7 @@ class Scene(Container):
             NumPy array of pixel values of each pixel in screen.
             The shape of the array is height x width x 3
         """
-        return np.array(self.camera.get_pixel_array())
+        return np.array(self.camera.pixel_array)
 
     def update_frame(  # TODO Description in Docstring
         self,

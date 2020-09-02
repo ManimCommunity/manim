@@ -1,7 +1,25 @@
+__all__ = [
+    "FocusOn",
+    "Indicate",
+    "Flash",
+    "CircleIndicate",
+    "ShowPassingFlash",
+    "ShowCreationThenDestruction",
+    "ShowCreationThenFadeOut",
+    "AnimationOnSurroundingRectangle",
+    "ShowPassingFlashAround",
+    "ShowCreationThenDestructionAround",
+    "ShowCreationThenFadeAround",
+    "ApplyWave",
+    "WiggleOutThenIn",
+    "TurnInsideOut",
+]
+
+
 import numpy as np
 
+from .. import config
 from ..constants import *
-from ..config import config
 from ..animation.animation import Animation
 from ..animation.movement import Homotopy
 from ..animation.composition import AnimationGroup

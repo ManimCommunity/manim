@@ -1,3 +1,16 @@
+"""Mobjects that use vector graphics."""
+
+
+__all__ = [
+    "VMobject",
+    "VGroup",
+    "VDict",
+    "VectorizedPoint",
+    "CurvesAsSubmobjects",
+    "DashedVMobject",
+]
+
+
 import itertools as it
 import sys
 
@@ -67,7 +80,8 @@ class VMobject(Mobject):
     # Colors
     def init_colors(self):
         self.set_fill(
-            color=self.fill_color or self.color, opacity=self.fill_opacity,
+            color=self.fill_color or self.color,
+            opacity=self.fill_opacity,
         )
         self.set_stroke(
             color=self.stroke_color or self.color,
@@ -80,7 +94,8 @@ class VMobject(Mobject):
             opacity=self.background_stroke_opacity,
         )
         self.set_sheen(
-            factor=self.sheen_factor, direction=self.sheen_direction,
+            factor=self.sheen_factor,
+            direction=self.sheen_direction,
         )
         return self
 
@@ -188,7 +203,9 @@ class VMobject(Mobject):
         )
         if sheen_factor:
             self.set_sheen(
-                factor=sheen_factor, direction=sheen_direction, family=family,
+                factor=sheen_factor,
+                direction=sheen_direction,
+                family=family,
             )
         if background_image_file:
             self.color_using_background_image(background_image_file)
@@ -238,13 +255,16 @@ class VMobject(Mobject):
     def fade(self, darkness=0.5, family=True):
         factor = 1.0 - darkness
         self.set_fill(
-            opacity=factor * self.get_fill_opacity(), family=False,
+            opacity=factor * self.get_fill_opacity(),
+            family=False,
         )
         self.set_stroke(
-            opacity=factor * self.get_stroke_opacity(), family=False,
+            opacity=factor * self.get_stroke_opacity(),
+            family=False,
         )
         self.set_background_stroke(
-            opacity=factor * self.get_stroke_opacity(background=True), family=False,
+            opacity=factor * self.get_stroke_opacity(background=True),
+            family=False,
         )
         super().fade(darkness, family)
         return self
@@ -660,7 +680,14 @@ class VMobject(Mobject):
         if self.points.shape[0] == 1:
             return self.points
         return np.array(
-            list(it.chain(*zip(self.get_start_anchors(), self.get_end_anchors(),)))
+            list(
+                it.chain(
+                    *zip(
+                        self.get_start_anchors(),
+                        self.get_end_anchors(),
+                    )
+                )
+            )
         )
 
     def get_points_defining_boundary(self):
@@ -880,7 +907,7 @@ class VDict(VMobject):
     mapping_or_iterable : Union[:class:`Mapping`, Iterable[Tuple[Hashable, :class:`~.VMobject`]]], optional
             The parameter specifying the key-value mapping of keys and mobjects.
     show_keys : :class:`bool`, optional
-            Whether to also display the key associated with 
+            Whether to also display the key associated with
             the mobject. This might be useful when debugging,
             especially when there are a lot of mobjects in the
             :class:`VDict`. Defaults to False.
@@ -890,7 +917,7 @@ class VDict(VMobject):
     Attributes
     ----------
     show_keys : :class:`bool`
-            Whether to also display the key associated with 
+            Whether to also display the key associated with
             the mobject. This might be useful when debugging,
             especially when there are a lot of mobjects in the
             :class:`VDict`. When displayed, the key is towards
@@ -936,7 +963,7 @@ class VDict(VMobject):
 
     def remove(self, key):
         """Removes the mobject from the :class:`VDict` object having the key `key`
-        
+
         Also, it internally removes the mobject from the `submobjects` :class:`list`
         of :class:`~.Mobject`, (which is responsible for removing it from the screen)
 
@@ -963,12 +990,12 @@ class VDict(VMobject):
 
     def __getitem__(self, key):
         """Overriding the [] operator for getting submobject by key
-        
+
         Parameters
         ----------
         key : Hashable
            The key of the submoject to be accessed
-            
+
         Returns
         -------
         :class:`VMobject`
@@ -991,7 +1018,7 @@ class VDict(VMobject):
             The key of the submoject to be assigned
         value : :class:`VMobject`
             The submobject to bind the key to
-            
+
         Returns
         -------
         None
@@ -1008,7 +1035,7 @@ class VDict(VMobject):
 
     def get_all_submobjects(self):
         """To get all the submobjects associated with a particular :class:`VDict` object
-        
+
         Returns
         -------
         :class:`dict_values`
@@ -1055,9 +1082,9 @@ class VDict(VMobject):
         mob = value
         if self.show_keys:
             # This import is here and not at the top to avoid circular import
-            from ...mobject.svg.tex_mobject import TextMobject
+            from ...mobject.svg.tex_mobject import Tex
 
-            key_text = TextMobject(str(key)).next_to(value, LEFT)
+            key_text = Tex(str(key)).next_to(value, LEFT)
             mob.add(key_text)
 
         self.submob_dict[key] = mob

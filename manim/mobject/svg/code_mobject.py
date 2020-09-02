@@ -1,3 +1,30 @@
+"""
+1) Code is VGroup() with three things
+    1.1) Code[0] is Code.background_mobject
+        which can be a
+            1.1.1) Rectangle() if background == "rectangle"
+            1.1.2) VGroup() of Rectangle() and Dot() for three buttons if background == "window"
+    1.2) Code[1] is Code.line_numbers Which is a Paragraph() object, this mean you can use
+                Code.line_numbers[0] or Code[1][0] to access first line number
+    1.3) Code[2] is Code.code
+        1.3.1) Which is a Paragraph() with color highlighted, this mean you can use
+            Code.code[1] or Code[2][1]
+                line number 1
+            Code.code[1][0] or Code.code[1][0]
+                first character of line number 1
+            Code.code[1][0:5] or Code.code[1][0:5]
+                first five characters of line number 1
+"""
+
+
+__all__ = [
+    "Code",
+    "hilite_me",
+    "get_default_style",
+    "insert_line_numbers",
+]
+
+
 import html
 import os
 from ...constants import *
@@ -194,8 +221,7 @@ class Code(VGroup):
         self.move_to(np.array([0, 0, 0]))
 
     def ensure_valid_file(self):
-        """Function to validate file.
-        """
+        """Function to validate file."""
         if self.file_name is None:
             raise Exception("Must specify file for Code")
         possible_paths = [
@@ -264,8 +290,7 @@ class Code(VGroup):
         return code
 
     def gen_html_string(self):
-        """Function to generate html string with code highlighted and stores in variable html_string.
-        """
+        """Function to generate html string with code highlighted and stores in variable html_string."""
         file = open(self.file_path, "r")
         code_str = file.read()
         file.close()

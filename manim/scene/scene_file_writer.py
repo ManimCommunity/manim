@@ -1,3 +1,6 @@
+__all__ = ["SceneFileWriter"]
+
+
 import numpy as np
 from pydub import AudioSegment
 import shutil
@@ -8,9 +11,8 @@ from time import sleep
 import datetime
 from PIL import Image
 
+from .. import file_writer_config, logger, console
 from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
-from ..config import file_writer_config
-from ..logger import logger, console
 from ..utils.config_ops import digest_config
 from ..utils.file_ops import guarantee_existence
 from ..utils.file_ops import add_extension_if_not_present
@@ -394,8 +396,8 @@ class SceneFileWriter(object):
         self.temp_partial_movie_file_path = temp_file_path
 
         fps = self.scene.camera.frame_rate
-        height = self.scene.camera.get_pixel_height()
-        width = self.scene.camera.get_pixel_width()
+        height = self.scene.camera.pixel_height
+        width = self.scene.camera.pixel_width
 
         command = [
             FFMPEG_BIN,
