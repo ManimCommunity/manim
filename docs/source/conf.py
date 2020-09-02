@@ -29,11 +29,11 @@ author = "The Manim Community Dev Team"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx_rtd_theme",
     "recommonmark",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
+    "manim.sphinxext.manim_directive",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive

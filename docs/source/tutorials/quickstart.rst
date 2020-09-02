@@ -63,6 +63,18 @@ video playing the following animation.
     :align: center
     :alt: first scene output
 
+.. manim:: SquareToCircle False
+
+   from manim import *
+
+   # all code must be contained inside the construct
+   # method of a class that inherits from Scene
+   class SquareToCircle(Scene):
+       def construct(self):
+           circle = Circle()                   # create a circle
+           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
+           self.play(ShowCreation(circle))     # show the circle on screen
+
 If you see the video and it looks correct, congrats! You just wrote your first
 manim scene from scratch.  If you get an error message instead, or if do not
 see a video, or if the video output does not look like this, it is likely that
