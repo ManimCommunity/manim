@@ -147,9 +147,8 @@ class Integer(DecimalNumber):
 
 
 class Variable(VMobject):
-    """
     """A class for displaying text that continuously updates to reflect the value of a python variable.
-    
+
     Automatically adds the text for the label and the value when instantiated and added to the screen.
 
     Parameters
@@ -157,7 +156,7 @@ class Variable(VMobject):
     var : Union[:class:`int`, :class:`float`]
         The python variable you need to keep track of.
     label : :class:`str`
-        The label for your variable, for example `x = ...`. To use math mode, for e.g. 
+        The label for your variable, for example `x = ...`. To use math mode, for e.g.
         subscripts, superscripts, etc. pad your string with "$" on both sides.
     var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
         The class used for displaying the number. Defaults to :class:`DecimalNumber`.
@@ -165,12 +164,12 @@ class Variable(VMobject):
         The number of decimal places to display in your variable. Defaults to 2.
         If `var_type` is an :class:`Integer`, this parameter is ignored.
     kwargs : Any
-            Other arguments to be passed to `Mobject`.
+            Other arguments to be passed to `~.Mobject`.
 
     Attributes
     ----------
-    label : :class:`~.TextMobject`
-        The label for your variable, for example `x = ...`. To use math mode, for e.g. 
+    label : :class:`~.Tex`
+        The label for your variable, for example `x = ...`. To use math mode, for e.g.
         subscripts, superscripts, etc. pad your string with "$" on both sides.
     tracker : :class:`~.ValueTracker`
         Useful in updating the value of your variable on-screen.
@@ -188,14 +187,17 @@ class Variable(VMobject):
         on_screen_int_var = Variable(int_var, "int_var", var_type=Integer)
         # Using math mode for the label
         on_screen_int_var = Variable(int_var, "${a}_{i}$", var_type=Integer)
-    
+
     """
 
     def __init__(
         self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
     ):
+        # if the label is not in math mode, then escape all underscores
+        if not (label.startswith("$") and label.endswith("$")):
+            label = label.replace("_", "\_")
 
-        self.label = Tex(label + "=")
+        self.label = Tex(label, " =")
         self.tracker = ValueTracker(var)
 
         if var_type == DecimalNumber:
