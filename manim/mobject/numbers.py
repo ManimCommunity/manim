@@ -143,6 +143,50 @@ class Integer(DecimalNumber):
 
 
 class Variable(VMobject):
+    """
+    A class for using a variable(something that needs to be continuously updated)
+    Automatically adds the text for the label and the value when instantiated
+    and added to the screen.
+
+    Parameters
+    ----------
+    var : Union[:class:`int`, :class:`float`]
+        The python variable you need to keep track of.
+    label : :class:`str`
+        The label for your variable, for example `x = ...`. To use math mode, for e.g. 
+        subscripts, superscripts, etc. pad your string with "$" on both sides.
+    var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
+        The class used for displaying the number. Defaults to :class:`DecimalNumber`.
+    num_decimal_places : :class:`int`, optional
+        The number of decimal places to display in your variable. Defaults to 2.
+        If `var_type` is an :class:`Integer`, this parameter is ignored.
+    kwargs : Any
+            Other arguments to be passed to `Mobject` or the CONFIG.
+
+    Attributes
+    ----------
+    label : :class:`~.TextMobject`
+        The label for your variable, for example `x = ...`. To use math mode, for e.g. 
+        subscripts, superscripts, etc. pad your string with "$" on both sides.
+    tracker : :class:`~.ValueTracker`
+        Useful in updating the value of your variable on-screen.
+    value : Union[:class:`DecimalNumber`, :class:`Integer`]
+        The tex for the value of your variable.
+
+    Examples
+    --------
+    Normal usage::
+        # DecimalNumber type
+        var = 0.5
+        on_screen_var = Variable(var, "var", num_decimal_places=3)
+        # Integer type
+        int_var = 0
+        on_screen_int_var = Variable(int_var, "int_var", var_type=Integer)
+        # Using math mode for the label
+        on_screen_int_var = Variable(int_var, "${a}_{i}$", var_type=Integer)
+    
+    """
+
     def __init__(
         self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
     ):
