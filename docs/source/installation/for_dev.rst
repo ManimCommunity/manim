@@ -21,9 +21,9 @@ If you are a Windows developer and want to use PowerShell, you can use the below
 	
 	  (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
 
-.. note:: Poetry can be installed by other ways also see `<https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_.
+.. note:: Poetry can be installed by other ways also, such as with ``pip``. See `<https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_.
 
-It will add it to path automatically. In order to make sure you have poetry installed correctly, try running:
+It will add it to ``PATH`` variable automatically. In order to make sure you have poetry installed correctly, try running:
 
 .. code-block:: bash
 
@@ -40,7 +40,7 @@ Installing System Dependencies
 
 Please follow the instructions under :ref:`installing-manim` to install all dependencies. Then come back to this page to continue with the installation.
 
-.. important:: Windows Users can Ignore Pycairo Installation.
+.. important:: Windows Users can skip the steps to install Pycairo.
 
 
 Additionally, ``git`` has to be installed. For instructions see `Documentation
@@ -70,7 +70,7 @@ Installing Manim using Poetry
 		cd path/to/manim
     
 
-    .. note:: This path should contain a file called `pyproject.toml` if it doesn't contain it, you would need to go a level up.
+    .. note:: This path should contain a file called ``pyproject.toml`` if it doesn't contain it, you would need to go a level up.
 
 3.  Use the below command to install python dependencies. This will use the default python version installed.
 
