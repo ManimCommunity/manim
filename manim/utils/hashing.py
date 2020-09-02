@@ -46,7 +46,7 @@ class CustomEncoder(json.JSONEncoder):
             )
         elif isinstance(obj, np.ndarray):
             if obj.size > 1000:
-                obj.resize((100, 100))
+                obj = np.resize(obj, (100, 100))
                 return "TRUNCATED ARRAY: " + repr(obj)
             # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
             return repr(obj)
