@@ -152,11 +152,14 @@ if _from_command_line():
         _init_dirs(file_writer_config)
 config = _parse_config(config_parser, args)
 camera_config = config
+
+# Set the different loggers
 set_rich_logger(config_parser["logger"])
 if file_writer_config["log_to_file"]:
-    set_file_logger(
-        os.path.join(
-            file_writer_config["log_dir"],
-            "".join(file_writer_config["scene_names"]) + ".log",
-        )
+    # IMPORTANT note about file name : The log file name will be the scene_name get from the args (contained in file_writer_config). So it can differ from the real name of the scene.
+    log_file_path = os.path.join(
+        file_writer_config["log_dir"],
+        "".join(file_writer_config["scene_names"]) + ".log",
     )
+    set_file_logger(log_file_path)
+    logger.info("Log file wil be saved in %(logpath)s", {"logpath": log_file_path})

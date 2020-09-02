@@ -103,9 +103,10 @@ def set_rich_logger(config_logger):
 def set_file_logger(log_file_path):
     file_handler = logging.FileHandler(log_file_path, mode="w")
     file_handler.setFormatter(JSONFormatter())
+    # We set the level to DEBUG to it will be able to catch all logs.
+    file_handler.setLevel(logging.DEBUG)
     global logger
     logger.addHandler(file_handler)
-    logger.debug("Log file wil be saved in %(logpath)s", {"logpath": log_file_path})
 
 
 logger = logging.getLogger("manim")
