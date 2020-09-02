@@ -37,12 +37,6 @@ class JSONFormatter(logging.Formatter):
         }
         return json.dumps(return_dict)
 
-    def formatException(self, exc_info):
-        from pprint import pprint
-
-        pprint(vars(record))
-        return record
-
 
 def _parse_theme(config_logger):
     theme = dict(
