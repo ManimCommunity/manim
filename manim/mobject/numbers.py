@@ -165,7 +165,7 @@ class Variable(VMobject):
         The number of decimal places to display in your variable. Defaults to 2.
         If `var_type` is an :class:`Integer`, this parameter is ignored.
     kwargs : Any
-            Other arguments to be passed to `Mobject` or the CONFIG.
+            Other arguments to be passed to `Mobject`.
 
     Attributes
     ----------
