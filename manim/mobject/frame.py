@@ -1,5 +1,13 @@
+__all__ = [
+    "ScreenRectangle",
+    "FullScreenRectangle",
+    "FullScreenFadeRectangle",
+    "PictureInPictureFrame",
+]
+
+
+from .. import config
 from ..constants import *
-from ..config import config
 from ..mobject.geometry import Rectangle
 from ..utils.config_ops import digest_config
 

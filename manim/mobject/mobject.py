@@ -1,4 +1,9 @@
 """Base classes for objects that can be displayed."""
+
+
+__all__ = ["Mobject", "Group"]
+
+
 from functools import reduce
 import copy
 import itertools as it
@@ -10,8 +15,8 @@ import sys
 from colour import Color
 import numpy as np
 
+from .. import config
 from ..constants import *
-from ..config import config
 from ..container import Container
 from ..utils.color import color_gradient
 from ..utils.color import interpolate_color
@@ -101,6 +106,27 @@ class Mobject(Container):
         See Also
         --------
         :meth:`~Mobject.remove`
+
+        Examples
+        --------
+        ::
+
+            >>> outer = Mobject()
+            >>> inner = Mobject()
+            >>> outer = outer.add(inner)
+
+        Duplicates are not added again::
+
+            >>> outer = outer.add(inner)
+            >>> len(outer.submobjects)
+            1
+
+        Adding an object to itself raises an error::
+
+            >>> outer.add(outer)
+            Traceback (most recent call last):
+            ...
+            ValueError: Mobject cannot contain self
 
         """
         if self in mobjects:

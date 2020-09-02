@@ -1,12 +1,25 @@
+__all__ = [
+    "VectorField",
+    "StreamLines",
+    "ShowPassingFlashWithThinningStrokeWidth",
+    "AnimatedStreamLines",
+    "get_colored_background_image",
+    "get_rgb_gradient_function",
+    "get_color_field_image_file",
+    "move_along_vector_field",
+    "move_submobjects_along_vector_field",
+    "move_points_along_vector_field",
+]
+
+
 import numpy as np
 import os
 import itertools as it
 from PIL import Image
 import random
 
+from .. import config, logger
 from ..constants import *
-from ..config import config
-from ..logger import logger
 from ..animation.composition import AnimationGroup
 from ..animation.indication import ShowPassingFlash
 from ..mobject.geometry import Vector
