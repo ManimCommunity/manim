@@ -75,6 +75,7 @@ def set_rich_logger(config_logger):
         Config object of the logger.
     """
     theme = _parse_theme(config_logger)
+    global console
     console = Console(theme=theme)
     # These keywords Are Highlighted specially.
     RichHandler.KEYWORDS = [
@@ -108,6 +109,7 @@ def set_file_logger(log_file_path):
 
 
 logger = logging.getLogger("manim")
+console = None
 
 # TODO : This is only temporary to keep the terminal output clean when working with ImageMobject and matplotlib plots
 logging.getLogger("PIL").setLevel(logging.INFO)

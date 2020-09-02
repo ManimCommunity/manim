@@ -19,7 +19,7 @@ from .. import constants
 from .config_utils import _run_config, _init_dirs, _from_command_line
 
 from .logger import set_rich_logger, set_file_logger, logger
-from .utils.tex import TexTemplate, TexTemplateFromFile
+from ..utils.tex import TexTemplate, TexTemplateFromFile
 
 __all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
 
