@@ -148,9 +148,9 @@ class Integer(DecimalNumber):
 
 class Variable(VMobject):
     """
-    A class for using a variable(something that needs to be continuously updated)
-    Automatically adds the text for the label and the value when instantiated
-    and added to the screen.
+    """A class for displaying text that continuously updates to reflect the value of a python variable.
+    
+    Automatically adds the text for the label and the value when instantiated and added to the screen.
 
     Parameters
     ----------
@@ -165,7 +165,7 @@ class Variable(VMobject):
         The number of decimal places to display in your variable. Defaults to 2.
         If `var_type` is an :class:`Integer`, this parameter is ignored.
     kwargs : Any
-            Other arguments to be passed to `Mobject` or the CONFIG.
+            Other arguments to be passed to `Mobject`.
 
     Attributes
     ----------
