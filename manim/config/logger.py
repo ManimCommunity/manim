@@ -23,6 +23,8 @@ import copy
 
 
 class JSONFormatter(logging.Formatter):
+    """Subclass of logging.Formatter, to build our own format of the logs (JSON)."""
+
     def format(self, record):
         record_c = copy.deepcopy(record)
         if record_c.args:
@@ -33,7 +35,13 @@ class JSONFormatter(logging.Formatter):
             "module": record_c.module,
             "message": super().format(record_c),
         }
-        return json.dumps(return_dict, indent=2)
+        return json.dumps(return_dict)
+
+    def formatException(self, exc_info):
+        from pprint import pprint
+
+        pprint(vars(record))
+        return record
 
 
 def _parse_theme(config_logger):

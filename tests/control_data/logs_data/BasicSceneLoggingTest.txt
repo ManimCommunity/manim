@@ -1,0 +1,3 @@
+{"levelname": "INFO", "module": "config", "message": "Log file wil be saved in <>"}
+{"levelname": "INFO", "module": "scene_file_writer", "message": "\nFile ready at <>\n"}
+{"levelname": "INFO", "module": "scene", "message": "Rendered SquareToCircle\nPlayed 1 animations"}
