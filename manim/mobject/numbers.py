@@ -2,7 +2,8 @@ __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
 from ..constants import *
-from ..mobject.svg.tex_mobject import SingleStringMathTex, Tex
+from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex, Tex, MathTex
+from ..mobject.svg.text_mobject import Text
 from ..mobject.types.vectorized_mobject import VDict, VMobject
 from ..mobject.value_tracker import ValueTracker
 
@@ -154,10 +155,10 @@ class Variable(VMobject):
     Parameters
     ----------
     var : Union[:class:`int`, :class:`float`]
-        The python variable you need to keep track of.
-    label : :class:`str`
+        The python variable you need to keep track of and display.
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`Text`]
         The label for your variable, for example `x = ...`. To use math mode, for e.g.
-        subscripts, superscripts, etc. pad your string with "$" on both sides.
+        subscripts, superscripts, etc. simply pass in a raw string.
     var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
         The class used for displaying the number. Defaults to :class:`DecimalNumber`.
     num_decimal_places : :class:`int`, optional
@@ -168,9 +169,8 @@ class Variable(VMobject):
 
     Attributes
     ----------
-    label : :class:`~.Tex`
-        The label for your variable, for example `x = ...`. To use math mode, for e.g.
-        subscripts, superscripts, etc. pad your string with "$" on both sides.
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`Text`]
+        The label for your variable, for example `x = ...`.
     tracker : :class:`~.ValueTracker`
         Useful in updating the value of your variable on-screen.
     value : Union[:class:`DecimalNumber`, :class:`Integer`]
@@ -193,11 +193,20 @@ class Variable(VMobject):
     def __init__(
         self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
     ):
-        # if the label is not in math mode, then escape all underscores
-        if not (label.startswith("$") and label.endswith("$")):
-            label = label.replace("_", "\_")
 
-        self.label = Tex(label, " =")
+        the_class = type(label)
+        if the_class == str:
+            self.label = MathTex(label, " = ")
+        elif the_class == Text:
+            raw_string = label.text
+            self.label = Text(raw_string + " = ")
+        elif the_class == Tex or the_class == MathTex:
+            raw_strings = label.tex_strings
+            self.label = the_class(*raw_strings, " = ")
+        else:
+            raise TypeError("The type for label must be one of these: str, Text, MathTex, Text")
+            
+
         self.tracker = ValueTracker(var)
 
         if var_type == DecimalNumber:
