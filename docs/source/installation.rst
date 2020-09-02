@@ -29,7 +29,7 @@ can install it from PyPI via pip:
 
    pip install manimce
 
-You can replace ``pip`` with ``pip3`` is you need to in your system.
+You can replace ``pip`` with ``pip3`` if you need to in your system.
 
 If you'd like to contribute to and/or help develop ``manim-community``, you can
 clone this repository to your local device.  To do this, first make sure you
