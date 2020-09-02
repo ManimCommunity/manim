@@ -196,16 +196,12 @@ class Variable(VMobject):
 
         the_class = type(label)
         if the_class == str:
-            self.label = MathTex(label, " = ")
-        elif the_class == Text:
-            raw_string = label.text
-            self.label = Text(raw_string + " = ")
-        elif the_class == Tex or the_class == MathTex:
-            raw_strings = label.tex_strings
-            self.label = the_class(*raw_strings, " = ")
+            self.label = MathTex(label)
         else:
-            raise TypeError("The type for label must be one of these: str, Text, MathTex, Text")
-            
+            self.label = label
+
+        equals = MathTex("=").next_to(self.label, RIGHT)
+        self.label.add(equals)
 
         self.tracker = ValueTracker(var)
 
