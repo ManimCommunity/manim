@@ -385,12 +385,6 @@ class TextWithBackground(Text):
             tempy = START_Y + line_spacing * setting.line_num
             char_offset_x = 0
             char_height = tempy - size / 2 - (line_spacing - size)
-            # context.set_font_matrix(cairo.Matrix(13, 0, 0, 13, 0, 0))
-            # print(context.get_font_matrix(),size)
-            # if (context.text_extents("99").width-context.text_extents("11").width)/size > 0.13:
-            # for char_index in range(text.__len__()):
-
-            # else:
 
             """
             for char_index in range(text.__len__()):
