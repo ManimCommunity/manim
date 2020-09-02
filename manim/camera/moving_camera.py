@@ -1,8 +1,8 @@
 __all__ = ["CameraFrame", "MovingCamera"]
 
 
+from .. import config
 from ..camera.camera import Camera
-from ..config import config
 from ..constants import ORIGIN, WHITE
 from ..mobject.frame import ScreenRectangle
 from ..mobject.types.vectorized_mobject import VGroup
@@ -12,13 +12,13 @@ from ..utils.config_ops import digest_config
 # TODO, think about how to incorporate perspective
 class CameraFrame(VGroup):
     CONFIG = {
-        "width": config["frame_width"],
-        "height": config["frame_height"],
         "center": ORIGIN,
     }
 
     def __init__(self, **kwargs):
-        pass
+        VGroup.__init__(self, **kwargs)
+        self.width = config["frame_width"]
+        self.height = config["frame_height"]
 
 
 class MovingCamera(Camera):

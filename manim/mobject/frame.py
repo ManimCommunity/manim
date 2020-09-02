@@ -6,8 +6,8 @@ __all__ = [
 ]
 
 
+from .. import config
 from ..constants import *
-from ..config import config
 from ..mobject.geometry import Rectangle
 from ..utils.config_ops import digest_config
 
@@ -21,9 +21,9 @@ class ScreenRectangle(Rectangle):
 
 
 class FullScreenRectangle(ScreenRectangle):
-    CONFIG = {
-        "height": config["frame_height"],
-    }
+    def __init__(self, **kwargs):
+        ScreenRectangle.__init__(self, **kwargs)
+        self.set_height(config["frame_height"])
 
 
 class FullScreenFadeRectangle(FullScreenRectangle):

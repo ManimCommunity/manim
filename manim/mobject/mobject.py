@@ -15,8 +15,8 @@ import sys
 from colour import Color
 import numpy as np
 
+from .. import config, file_writer_config
 from ..constants import *
-from ..config import config
 from ..container import Container
 from ..utils.color import color_gradient
 from ..utils.color import interpolate_color
@@ -83,7 +83,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        mobjects : List[:class:`Mobject`]
+        mobjects : :class:`Mobject`
             The mobjects to add.
 
         Returns
@@ -107,6 +107,27 @@ class Mobject(Container):
         --------
         :meth:`~Mobject.remove`
 
+        Examples
+        --------
+        ::
+
+            >>> outer = Mobject()
+            >>> inner = Mobject()
+            >>> outer = outer.add(inner)
+
+        Duplicates are not added again::
+
+            >>> outer = outer.add(inner)
+            >>> len(outer.submobjects)
+            1
+
+        Adding an object to itself raises an error::
+
+            >>> outer.add(outer)
+            Traceback (most recent call last):
+            ...
+            ValueError: Mobject cannot contain self
+
         """
         if self in mobjects:
             raise ValueError("Mobject cannot contain self")
@@ -125,7 +146,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        mobjects : List[:class:`Mobject`]
+        mobjects : :class:`Mobject`
             The mobjects to remove.
 
         Returns
@@ -177,7 +198,7 @@ class Mobject(Container):
 
     def save_image(self, name=None):
         self.get_image().save(
-            os.path.join(config["VIDEO_DIR"], (name or str(self)) + ".png")
+            os.path.join(file_writer_config["video_dir"], (name or str(self)) + ".png")
         )
 
     def copy(self):

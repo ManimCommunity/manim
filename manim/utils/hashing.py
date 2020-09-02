@@ -6,7 +6,7 @@ import numpy as np
 from types import ModuleType, MappingProxyType, FunctionType, MethodType
 from time import perf_counter
 
-from ..logger import logger
+from .. import logger
 
 ALREADY_PROCESSED_ID = {}
 
