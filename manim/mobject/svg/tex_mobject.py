@@ -14,8 +14,7 @@ __all__ = [
 from functools import reduce
 import operator as op
 
-from ... import config
-from ...config import logger
+from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
