@@ -617,7 +617,8 @@ class SceneFileWriter(object):
         for f in cached_partial_movies:
             os.remove(f)
         logger.info(
-            f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in {self.partial_movie_directory}."
+            f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
+            {"par_dir": self.partial_movie_directory},
         )
 
     def print_file_ready_message(self, file_path):
