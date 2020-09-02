@@ -50,7 +50,8 @@ cloned this repo, run the following:
 
 .. code-block:: bash
 
-   python3 -m pip install -r requirements.txt
+   python3 setup.py sdist
+   python3 -m pip install dist/manimlib*.tar.gz
 
 .. warning::
     If you want to contribute to ``manim-community`` and have cloned the
