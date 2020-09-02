@@ -23,7 +23,7 @@ def test_logging_to_file(tmp_path, python_version):
         "-l",
         "--log_to_file",
         "--media_dir",
-        tmp_path,
+        str(tmp_path),
     ]
     out, err, exitcode = capture(command)
     print(out)
