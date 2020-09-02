@@ -27,10 +27,12 @@ from ...utils.tex_file_writing import tex_to_svg_file
 
 TEX_MOB_SCALE_FACTOR = 0.05
 
+
 class TexSymbol(VMobjectFromSVGPathstring):
     """Purely a renaming of VMobjectFromSVGPathstring."""
 
     pass
+
 
 class SingleStringMathTex(SVGMobject):
     CONFIG = {
