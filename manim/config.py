@@ -13,7 +13,7 @@ import colour
 from . import constants
 from .utils.config_utils import _run_config, _init_dirs, _from_command_line
 
-from .logger import logger
+from .logger import set_rich_logger, set_file_logger, logger
 from .utils.tex import TexTemplate, TexTemplateFromFile
 
 __all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
@@ -146,3 +146,11 @@ if _from_command_line():
         _init_dirs(file_writer_config)
 config = _parse_config(config_parser, args)
 camera_config = config
+set_rich_logger(config_parser["logger"])
+if file_writer_config["log_to_file"]:
+    set_file_logger(
+        os.path.join(
+            file_writer_config["log_dir"],
+            "".join(file_writer_config["scene_names"]) + ".log",
+        )
+    )
