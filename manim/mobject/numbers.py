@@ -79,7 +79,11 @@ class DecimalNumber(VMobject):
         config = dict(
             [
                 (attr, getattr(self, attr))
-                for attr in ["include_sign", "group_with_commas", "num_decimal_places",]
+                for attr in [
+                    "include_sign",
+                    "group_with_commas",
+                    "num_decimal_places",
+                ]
             ]
         )
         config.update(kwargs)

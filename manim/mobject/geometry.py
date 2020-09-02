@@ -84,7 +84,10 @@ class TipableVMobject(VMobject):
         "tip_length": DEFAULT_ARROW_TIP_LENGTH,
         # TODO
         "normal_vector": OUT,
-        "tip_style": {"fill_opacity": 1, "stroke_width": 0,},
+        "tip_style": {
+            "fill_opacity": 1,
+            "stroke_width": 0,
+        },
     }
 
     # Adding, Creating, Modifying tips
@@ -146,7 +149,8 @@ class TipableVMobject(VMobject):
             self.put_start_and_end_on(tip.get_base(), self.get_end())
         else:
             self.put_start_and_end_on(
-                self.get_start(), tip.get_base(),
+                self.get_start(),
+                tip.get_base(),
             )
         return self
 
@@ -267,7 +271,10 @@ class Arc(TipableVMobject):
         handles1 = anchors[:-1] + (d_theta / 3) * tangent_vectors[:-1]
         handles2 = anchors[1:] - (d_theta / 3) * tangent_vectors[1:]
         self.set_anchors_and_handles(
-            anchors[:-1], handles1, handles2, anchors[1:],
+            anchors[:-1],
+            handles1,
+            handles2,
+            anchors[1:],
         )
 
     def get_arc_center(self, warning=True):
@@ -284,7 +291,10 @@ class Arc(TipableVMobject):
         n1 = rotate_vector(t1, TAU / 4)
         n2 = rotate_vector(t2, TAU / 4)
         try:
-            return line_intersection(line1=(a1, a1 + n1), line2=(a2, a2 + n2),)
+            return line_intersection(
+                line1=(a1, a1 + n1),
+                line2=(a2, a2 + n2),
+            )
         except Exception:
             if warning:
                 warnings.warn("Can't find Arc center, using ORIGIN instead")
@@ -322,7 +332,9 @@ class ArcBetweenPoints(Arc):
             angle = math.acos((radius - arc_height) / radius) * sign
 
         Arc.__init__(
-            self, angle=angle, **kwargs,
+            self,
+            angle=angle,
+            **kwargs,
         )
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
@@ -532,7 +544,8 @@ class Line(TipableVMobject):
 
     def set_angle(self, angle):
         self.rotate(
-            angle - self.get_angle(), about_point=self.get_start(),
+            angle - self.get_angle(),
+            about_point=self.get_start(),
         )
 
     def set_length(self, length):
@@ -573,7 +586,10 @@ class DashedLine(Line):
             return 1
 
     def calculate_positive_space_ratio(self):
-        return fdiv(self.dash_length, self.dash_length + self.dash_spacing,)
+        return fdiv(
+            self.dash_length,
+            self.dash_length + self.dash_spacing,
+        )
 
     def get_start(self):
         if len(self.submobjects) > 0:
@@ -675,12 +691,18 @@ class Arrow(Line):
 
     def get_default_tip_length(self):
         max_ratio = self.max_tip_length_to_length_ratio
-        return min(self.tip_length, max_ratio * self.get_length(),)
+        return min(
+            self.tip_length,
+            max_ratio * self.get_length(),
+        )
 
     def set_stroke_width_from_length(self):
         max_ratio = self.max_stroke_width_to_length_ratio
         self.set_stroke(
-            width=min(self.initial_stroke_width, max_ratio * self.get_length(),),
+            width=min(
+                self.initial_stroke_width,
+                max_ratio * self.get_length(),
+            ),
             family=False,
         )
         return self
