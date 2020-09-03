@@ -63,7 +63,7 @@ video playing the following animation.
     :align: center
     :alt: first scene output
 
-.. manim:: SquareToCircle False
+.. manim:: SquareToCircle
 
    from manim import *
 
