@@ -89,6 +89,8 @@ please open an issue.
 Is always welcome. In particular, there is a dire need for tests and
 documentation. For guidelines please see the
 [documentation](https://manimce.readthedocs.io/en/latest/contributing.html).
+This project uses [Poetry](https://python-poetry.org/docs/) for management. You need to have poetry installed and available in your environment.
+You can find more information about it in its [Documentation](https://manimce.readthedocs.io/en/latest/installation/for_dev.html)
 
 
 ## License

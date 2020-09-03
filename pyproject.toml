@@ -55,6 +55,8 @@ name = "testpypi"
 url = "https://test.pypi.org/simple/"
 secondary = true
 
+[tool.pytest.ini_options]
+markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
 
 [tool.poetry.plugins]
 [tool.poetry.plugins."console_scripts"]
