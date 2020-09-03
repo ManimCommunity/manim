@@ -60,7 +60,6 @@ confusing.  Here is a short guide on how to do it.
 
    Install the required packages and manim itself:
    ```sh
-   pip install -r requirements.txt
    pip install -e .
    ```
 
