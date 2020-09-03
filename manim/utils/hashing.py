@@ -86,7 +86,7 @@ class CustomEncoder(json.JSONEncoder):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
         If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
-        If a circular reference is founs within the iterable, it will be replaced by the string "already processed".
+        If a circular reference is found within the iterable, it will be replaced by the string "already processed".
 
         Parameters:
         -----------
