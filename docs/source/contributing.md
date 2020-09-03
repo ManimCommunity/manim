@@ -46,10 +46,9 @@ confusing.  Here is a short guide on how to do it.
 
 4. Choose the branch for your changes.
 
-   If you want to work on a branch that already exists on the ManimCommunity repository
-   you can change to it with:
+   To work on the ManimCommunity master branch, you can change to it with:
    ```sh
-   git checkout -b <branch-name> upstream/master
+   git checkout -b master upstream/master
    ```
 
    If you are starting a new branch, execute
