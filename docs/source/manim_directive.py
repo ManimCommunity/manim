@@ -26,9 +26,9 @@ class ManimDirective(Directive):
     def run(self):
         clsname = self.arguments[0]
 
-        display_source = self.options.get('display_source', False)
-        save_as_gif = self.options.get('save_as_gif', False)
-        save_last_frame = self.options.get('save_last_frame', False)
+        display_source = 'display_source' in self.options
+        save_as_gif = 'save_as_gif' in self.options
+        save_last_frame = 'save_last_frame' in self.options
         assert not (save_as_gif and save_last_frame)
 
         state_machine = self.state_machine
