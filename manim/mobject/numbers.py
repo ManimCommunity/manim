@@ -2,7 +2,7 @@ __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
 from ..constants import *
-from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex, Tex, MathTex
+from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex, Tex
 from ..mobject.svg.text_mobject import Text
 from ..mobject.types.vectorized_mobject import VDict, VMobject
 from ..mobject.value_tracker import ValueTracker
