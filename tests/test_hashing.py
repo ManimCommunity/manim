@@ -12,13 +12,13 @@ def test_JSON_basic():
 
 def test_JSON_with_object():
     class Obj:
-        def __init__(self, a, b):
-            self.a = 2
+        def __init__(self, a):
+            self.a = a
             self.b = 3.0
             self.c = [1, 2, "test", ["nested list"]]
             self.d = {2: 3, "2": "salut"}
 
-    o = Obj(1, 2)
+    o = Obj(1)
     o_serialized = hashing.get_json(o)
     assert (
         str(o_serialized)
