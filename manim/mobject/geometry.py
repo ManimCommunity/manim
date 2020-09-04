@@ -751,8 +751,8 @@ class ArcPolygon(VMobject):
     ----------
     *arcs : Arc or ArcBetweenPoints
     
-    Example
-    -------
+    Examples
+    --------
     ArcPolygon(arc0,arc1,arc2,arcN,**kwargs)
 
     
