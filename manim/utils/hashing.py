@@ -228,11 +228,9 @@ def get_hash_from_play_call(
     ALREADY_PROCESSED_ID = {id(scene_object): scene_object}
     t_start = perf_counter()
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
-    animations_list_json = [
-        get_json(x) for x in sorted(animations_list, key=lambda obj: str(obj))
-    ]
+    animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
     current_mobjects_list_json = [
-        get_json(x) for x in sorted(current_mobjects_list, key=lambda obj: str(obj))
+        get_json(x) for x in sorted(current_mobjects_list, key=str)
     ]
     hash_camera, hash_animations, hash_current_mobjects = [
         zlib.crc32(repr(json_val).encode())
@@ -277,7 +275,7 @@ def get_hash_from_wait_call(
     ALREADY_PROCESSED_ID = {id(scene_object): scene_object}
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     current_mobjects_list_json = [
-        get_json(x) for x in sorted(current_mobjects_list, key=lambda obj: str(obj))
+        get_json(x) for x in sorted(current_mobjects_list, key=str)
     ]
     hash_current_mobjects = zlib.crc32(repr(current_mobjects_list_json).encode())
     hash_camera = zlib.crc32(repr(camera_json).encode())
@@ -293,10 +291,9 @@ def get_hash_from_wait_call(
             hash_function,
             hash_current_mobjects,
         )
-    else:
-        ALREADY_PROCESSED_ID = {}
-        t_end = perf_counter()
-        logger.debug("Hashing done in {:.5f} s.".format(t_end - t_start))
-        return "{}_{}_{}".format(
-            hash_camera, str(wait_time).replace(".", "-"), hash_current_mobjects
-        )
+    ALREADY_PROCESSED_ID = {}
+    t_end = perf_counter()
+    logger.debug("Hashing done in {:.5f} s.".format(t_end - t_start))
+    return "{}_{}_{}".format(
+        hash_camera, str(wait_time).replace(".", "-"), hash_current_mobjects
+    )
