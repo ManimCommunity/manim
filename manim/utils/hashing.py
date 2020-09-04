@@ -90,7 +90,7 @@ class CustomEncoder(json.JSONEncoder):
 
         Parameters:
         -----------
-        iterable : :class:`Iterable`
+        iterable : Iterable[Any]
             The iterable to check.
         """
 
@@ -136,15 +136,19 @@ class CustomEncoder(json.JSONEncoder):
             return _iter_check_list(iterable)
         elif isinstance(iterable, dict):
             return _iter_check_dict(iterable)
-        raise Exception("wtf")
 
     def encode(self, obj):
-        """Overwriting of JSONEncoder.encode, to make our own process.
+        """Overriding of :meth: JSONEncoder.encode, to make our own process.
 
         Parameters:
         -----------
         obj: :class:Any
             The object to encode in JSON.
+
+        Returns:
+        --------
+        :class: `str`
+           The object encoder with the standard json process.
         """
         # We need to mark as already processed the first object to go in the process,
         # As after, only objects that come from iterables will be marked as such.
@@ -251,11 +255,12 @@ def get_hash_from_wait_call(
 
     Parameters
     -----------
-     : :class:`~.Scene`
+    scene_object : :class:`~.Scene`
         The scene object.
+    camera_object : :vlass:`~Camera`
+        The camera object.
     wait_time : :class:`float`
         The time to wait
-
     stop_condition_function : Callable[[...], bool]
         Boolean function used as a stop_condition in `wait`.
 
