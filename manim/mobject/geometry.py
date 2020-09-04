@@ -769,7 +769,7 @@ class ArcPolygon(VMobject):
 
     def __init__(self, *arcs, **kwargs):
         if not all(
-            [isinstance(m, Arc) or isinstance(m, ArcBetweenPoints) for m in arcs]
+            isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs
         ):
             raise ValueError(
                 "All ArcPolygon submobjects must be of" "type Arc/ArcBetweenPoints"
