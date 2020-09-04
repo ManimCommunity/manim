@@ -33,7 +33,13 @@ class AbstractImageMobject(Mobject):
 
     def reset_points(self):
         # Corresponding corners of image are fixed to these 3 points
-        self.points = np.array([UP + LEFT, UP + RIGHT, DOWN + LEFT,])
+        self.points = np.array(
+            [
+                UP + LEFT,
+                UP + RIGHT,
+                DOWN + LEFT,
+            ]
+        )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
         self.stretch_to_fit_height(self.height)
@@ -95,7 +101,11 @@ class ImageMobject(AbstractImageMobject):
         return self
 
     def interpolate_color(self, mobject1, mobject2, alpha):
-        assert mobject1.pixel_array.shape == mobject2.pixel_array.shape
+        assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
+            f"Mobject pixel array shapes incompatible for interpolation.\n"
+            f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
+            f"Mobject 2 ({mobject2}) : {mobject1.pixel_array.shape}"
+        )
         self.pixel_array = interpolate(
             mobject1.pixel_array, mobject2.pixel_array, alpha
         ).astype(self.pixel_array_dtype)
@@ -133,7 +143,11 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         return self
 
     def interpolate_color(self, mobject1, mobject2, alpha):
-        assert mobject1.pixel_array.shape == mobject2.pixel_array.shape
+        assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
+            f"Mobject pixel array shapes incompatible for interpolation.\n"
+            f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
+            f"Mobject 2 ({mobject2}) : {mobject1.pixel_array.shape}"
+        )
         self.pixel_array = interpolate(
             mobject1.pixel_array, mobject2.pixel_array, alpha
         ).astype(self.pixel_array_dtype)
