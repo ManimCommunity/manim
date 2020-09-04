@@ -141,8 +141,8 @@ class CustomEncoder(json.JSONEncoder):
     def encode(self, obj):
         """Overriding of :meth:`JSONEncoder.encode`, to make our own process.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         obj: Any
             The object to encode in JSON.
 
