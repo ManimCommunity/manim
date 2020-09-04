@@ -89,8 +89,8 @@ class CustomEncoder(json.JSONEncoder):
         If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
         If a circular reference is found within the iterable, it will be replaced by the string "already processed".
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         iterable : Iterable[Any]
             The iterable to check.
         """
@@ -139,16 +139,16 @@ class CustomEncoder(json.JSONEncoder):
             return _iter_check_dict(iterable)
 
     def encode(self, obj):
-        """Overriding of :meth: JSONEncoder.encode, to make our own process.
+        """Overriding of :meth:`JSONEncoder.encode`, to make our own process.
 
         Parameters:
         -----------
         obj: Any
             The object to encode in JSON.
 
-        Returns:
-        --------
-        :class: `str`
+        Returns
+        -------
+        :class:`str`
            The object encoder with the standard json process.
         """
         # We need to mark as already processed the first object to go in the process,
@@ -256,7 +256,7 @@ def get_hash_from_wait_call(
     -----------
     scene_object : :class:`~.Scene`
         The scene object.
-    camera_object : :vlass:`~Camera`
+    camera_object : :class:`~.Camera`
         The camera object.
     wait_time : :class:`float`
         The time to wait
