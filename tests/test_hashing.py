@@ -18,7 +18,7 @@ def test_JSON_with_object():
             self.c = [1, 2, "test", ["nested list"]]
             self.d = {2: 3, "2": "salut"}
 
-    o = Obj(1)
+    o = Obj(2)
     o_serialized = hashing.get_json(o)
     assert (
         str(o_serialized)
