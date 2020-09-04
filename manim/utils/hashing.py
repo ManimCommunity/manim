@@ -47,7 +47,7 @@ class CustomEncoder(json.JSONEncoder):
         elif isinstance(obj, np.ndarray):
             if obj.size > 1000:
                 obj = np.resize(obj, (100, 100))
-                return "TRUNCATED ARRAY: " + repr(obj)
+                return f"TRUNCATED ARRAY: {repr(obj)}"
             # We return the repr and not a list to avoid the JsonEncoder to iterate over it.
             return repr(obj)
         elif hasattr(obj, "__dict__"):
@@ -58,7 +58,8 @@ class CustomEncoder(json.JSONEncoder):
             return self._check_iterable(temp)
         elif isinstance(obj, np.uint8):
             return int(obj)
-        return "Unsupported type for serializing ->" + str(type(obj))
+
+        return f"Unsupported type for serializing -> {str(type(obj))}"
 
     def _handle_already_processed(self, obj):
         """Handle if an object has been already processed by checking the id of the object.
@@ -142,7 +143,7 @@ class CustomEncoder(json.JSONEncoder):
 
         Parameters:
         -----------
-        obj: :class:Any
+        obj: Any
             The object to encode in JSON.
 
         Returns:
