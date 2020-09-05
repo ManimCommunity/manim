@@ -906,6 +906,7 @@ class ArrowTip(VMobject):
         ...             tip_shape=MyCustomArrowTip)
         >>> isinstance(arr.tip, RegularPolygon)
         True
+        >>> from manim import Scene
         >>> class CustomTipExample(Scene):
         ...     def construct(self):
         ...         self.play(ShowCreation(arr))
