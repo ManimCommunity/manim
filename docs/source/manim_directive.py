@@ -78,67 +78,74 @@ class ManimDirective(Directive):
     required_arguments = 1
     optional_arguments = 0
     option_spec = {
-        'display_source': bool,
-        'quality': lambda arg: directives.choice(arg, ('low', 'medium', 'high', 'fourk')),
-        'save_as_gif': bool,
-        'save_last_frame': bool,
+        "display_source": bool,
+        "quality": lambda arg: directives.choice(
+            arg, ("low", "medium", "high", "fourk")
+        ),
+        "save_as_gif": bool,
+        "save_last_frame": bool,
     }
     final_argument_whitespace = True
 
     def run(self):
         clsname = self.arguments[0]
 
-        display_source = 'display_source' in self.options
-        save_as_gif = 'save_as_gif' in self.options
-        save_last_frame = 'save_last_frame' in self.options
+        display_source = "display_source" in self.options
+        save_as_gif = "save_as_gif" in self.options
+        save_last_frame = "save_last_frame" in self.options
         assert not (save_as_gif and save_last_frame)
 
         frame_rate = 60
         pixel_height = 1080
         pixel_width = 1920
 
-        if 'quality' in self.options:
-            quality = self.options['quality']
-            if quality == 'low':
+        if "quality" in self.options:
+            quality = self.options["quality"]
+            if quality == "low":
                 pixel_height = 480
                 pixel_width = 854
                 frame_rate = 15
-            elif quality == 'medium':
+            elif quality == "medium":
                 pixel_height = 720
                 pixel_width = 1280
                 frame_rate = 30
-            elif quality == 'high':
+            elif quality == "high":
                 pixel_height = 1440
                 pixel_width = 2560
                 frame_rate = 60
-            elif quality == 'fourk':
+            elif quality == "fourk":
                 pixel_height = 2160
                 pixel_width = 3840
                 frame_rate = 60
-        
-        qualitydir = f'{pixel_height}p{frame_rate}'
+
+        qualitydir = f"{pixel_height}p{frame_rate}"
 
         state_machine = self.state_machine
         document = state_machine.document
 
-        source_file_name = document.attributes['source']
+        source_file_name = document.attributes["source"]
         source_rel_name = relpath(source_file_name, setup.confdir)
         source_rel_dir = os.path.dirname(source_rel_name)
         while source_rel_dir.startswith(os.path.sep):
             source_rel_dir = source_rel_dir[1:]
 
-        source_dir = os.path.abspath(os.path.join(setup.app.builder.srcdir,
-                                                  source_rel_dir))
+        source_dir = os.path.abspath(
+            os.path.join(setup.app.builder.srcdir, source_rel_dir)
+        )
 
-        dest_dir = os.path.abspath(os.path.join(setup.app.builder.outdir,
-                                            source_rel_dir))
+        dest_dir = os.path.abspath(
+            os.path.join(setup.app.builder.outdir, source_rel_dir)
+        )
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
 
-        source_block = ['.. code-block:: python', '', 
-                        *['    ' + line for line in self.content]]
-        source_block = '\n'.join(source_block)
-        
+        source_block = [
+            ".. code-block:: python",
+            "",
+            *["    " + line for line in self.content],
+        ]
+        source_block = "\n".join(source_block)
+
         file_writer_config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
@@ -147,36 +154,37 @@ class ManimDirective(Directive):
             'file_writer_config["images_dir"] = "./source/media/images"',
             'file_writer_config["video_dir"] = "./source/media/videos"',
             f'file_writer_config["save_last_frame"] = {save_last_frame}',
-            f'file_writer_config["save_as_gif"] = {save_as_gif}'
+            f'file_writer_config["save_as_gif"] = {save_as_gif}',
         ]
 
         user_code = self.content
-        if user_code[0].startswith('>>> '): # check whether block comes from doctest
-            user_code = [line[4:] for line in user_code 
-                         if line.startswith(('>>> ', '... '))]
+        if user_code[0].startswith(">>> "):  # check whether block comes from doctest
+            user_code = [
+                line[4:] for line in user_code if line.startswith((">>> ", "... "))
+            ]
 
         code = [
-            'from manim import *',
+            "from manim import *",
             *file_writer_config_code,
             *user_code,
-            f'{clsname}()'
+            f"{clsname}()",
         ]
-        exec('\n'.join(code), globals())
+        exec("\n".join(code), globals())
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
-            filename = f'{clsname}.mp4'
-            filesrc = f'source/media/videos/{qualitydir}/{filename}'
+            filename = f"{clsname}.mp4"
+            filesrc = f"source/media/videos/{qualitydir}/{filename}"
             destfile = os.path.join(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
-            filename = f'{clsname}.gif'
-            filesrc = f'source/media/videos/{qualitydir}/{filename}'
+            filename = f"{clsname}.gif"
+            filesrc = f"source/media/videos/{qualitydir}/{filename}"
         elif save_last_frame:
-            filename = f'{clsname}.png'
-            filesrc = f'source/media/images/{clsname}.png'
+            filename = f"{clsname}.png"
+            filesrc = f"source/media/images/{clsname}.png"
         else:
-            raise ValueError('Invalid combination of render flags received.')
+            raise ValueError("Invalid combination of render flags received.")
 
         rendered_template = jinja2.Template(TEMPLATE).render(
             clsname=clsname,
@@ -186,21 +194,22 @@ class ManimDirective(Directive):
             save_as_gif=save_as_gif,
             source_block=source_block,
         )
-        state_machine.insert_input(rendered_template.split('\n'), 
-                                   source=document.attributes['source'])
+        state_machine.insert_input(
+            rendered_template.split("\n"), source=document.attributes["source"]
+        )
 
         return []
 
 
-
 def setup(app):
     import manim
+
     setup.app = app
     setup.config = app.config
     setup.confdir = app.confdir
-    app.add_directive('manim', ManimDirective)
+    app.add_directive("manim", ManimDirective)
 
-    metadata = {'parallel_read_safe': True, 'parallel_write_safe': True}
+    metadata = {"parallel_read_safe": True, "parallel_write_safe": True}
     return metadata
 
 
@@ -231,4 +240,3 @@ TEMPLATE = r"""
     </div>
 {% endif %}
 """
-
