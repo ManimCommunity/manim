@@ -8,35 +8,6 @@ on:
         - master
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-
-      - name: Install Poetry and then black
-        run: |
-          pip install wheel
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-          echo "::add-path::$HOME/.poetry/bin"
-
-      - name: Check manim formatting
-        run: poetry install
-
-      - name: Check manim formatting
-        run: poetry run black --check --diff manim
-
-      - name: Check tests formatting
-        run: poetry run black --check --diff tests
-
-      - name: Check examples formatting
-        run: poetry run black --check --diff example_scenes
-
   test:
     runs-on: ${{ matrix.os }}
     env:
