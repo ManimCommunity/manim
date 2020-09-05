@@ -59,16 +59,9 @@ After showing some output, manim should render the scene into a .mp4 file,
 and open that file with the default movie player application.  You should see a
 video playing the following animation.
 
-.. image:: ../_static/quickstart/first_scene.gif
-    :align: center
-    :alt: first scene output
-
 .. manim:: SquareToCircle
+   :quality: low
 
-   from manim import *
-
-   # all code must be contained inside the construct
-   # method of a class that inherits from Scene
    class SquareToCircle(Scene):
        def construct(self):
            circle = Circle()                   # create a circle
@@ -113,9 +106,21 @@ And render it using the following command:
 
 The output should look as follows.
 
-.. image:: ../_static/quickstart/second_scene.gif
-    :align: center
-    :alt: second scene output
+.. manim:: SquareToCircle2
+   :quality: low
+
+   class SquareToCircle2(Scene):
+       def construct(self):
+           circle = Circle()                    # create a circle
+           circle.set_fill(PINK, opacity=0.5)   # set color and transparency
+
+           square = Square()                    # create a square
+           square.flip(RIGHT)                   # flip horizontally
+           square.rotate(-3 * TAU / 8)          # rotate a certain amount
+
+           self.play(ShowCreation(square))      # animate the creation of the square
+           self.play(Transform(square, circle)) # interpolate the square into the circle
+           self.play(FadeOut(square))           # fade out animation
 
 This example shows one of the most basic features of manim: the ability to
 implement complicated and mathematically-intensive animations (such as cleanly
