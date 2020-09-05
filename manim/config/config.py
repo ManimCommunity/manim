@@ -112,7 +112,9 @@ def _parse_config(config_parser, args):
 
     # Set the rest of the frame properties
     config["frame_width"] = 8 * 16 / 9
-    config["frame_height"] = config["frame_width"] * config["pixel_height"] / config["pixel_width"]
+    config["frame_height"] = (
+        config["frame_width"] * config["pixel_height"] / config["pixel_width"]
+    )
     config["frame_y_radius"] = config["frame_height"] / 2
     config["frame_x_radius"] = config["frame_width"] / 2
     config["top"] = config["frame_y_radius"] * constants.UP
