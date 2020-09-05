@@ -129,10 +129,6 @@ class ManimDirective(Directive):
         while source_rel_dir.startswith(os.path.sep):
             source_rel_dir = source_rel_dir[1:]
 
-        source_dir = os.path.abspath(
-            os.path.join(setup.app.builder.srcdir, source_rel_dir)
-        )
-
         dest_dir = os.path.abspath(
             os.path.join(setup.app.builder.outdir, source_rel_dir)
         )
@@ -146,13 +142,17 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block)
 
+        media_dir = os.path.join("source", "media")
+        images_dir = os.path.join(media_dir, "images")
+        video_dir = os.path.join(media_dir, "videos")
+
         file_writer_config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
             f'config["pixel_width"] = {pixel_width}',
-            'file_writer_config["media_dir"] = "./source/media"',
-            'file_writer_config["images_dir"] = "./source/media/images"',
-            'file_writer_config["video_dir"] = "./source/media/videos"',
+            f'file_writer_config["media_dir"] = "{media_dir}"',
+            f'file_writer_config["images_dir"] = "{images_dir}"',
+            f'file_writer_config["video_dir"] = "{video_dir}"',
             f'file_writer_config["save_last_frame"] = {save_last_frame}',
             f'file_writer_config["save_as_gif"] = {save_as_gif}',
         ]
@@ -174,15 +174,15 @@ class ManimDirective(Directive):
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f"{clsname}.mp4"
-            filesrc = f"source/media/videos/{qualitydir}/{filename}"
+            filesrc = os.path.join(video_dir, qualitydir, filename)
             destfile = os.path.join(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{clsname}.gif"
-            filesrc = f"source/media/videos/{qualitydir}/{filename}"
+            filesrc = os.path.join(video_dir, qualitydir, filename)
         elif save_last_frame:
             filename = f"{clsname}.png"
-            filesrc = f"source/media/images/{clsname}.png"
+            filesrc = os.path.join(images_dir, filename)
         else:
             raise ValueError("Invalid combination of render flags received.")
 
