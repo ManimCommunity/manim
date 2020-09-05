@@ -110,19 +110,29 @@ def setup(app):
 
 TEMPLATE = r"""
 {% if display_source %}
+.. raw:: html
+
+    <div class="manim-example">
+
 {{ source_block }}
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video style="width: 100%;" controls loop autoplay src="./{{ clsname }}.mp4"></video>
+    <video controls loop autoplay src="./{{ clsname }}.mp4"></video>
 {% elif save_as_gif %}
 .. image:: {{ filesrc }}
     :align: center
 {% elif save_last_frame %}
 .. image:: {{ filesrc }}
     :align: center
+{% endif %}
+
+{% if display_source %}
+.. raw:: html
+
+    </div>
 {% endif %}
 """
 
