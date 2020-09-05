@@ -225,7 +225,7 @@ TEMPLATE = r"""
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video controls loop autoplay src="./{{ clsname }}.mp4"></video>
+    <video class="manim-video" controls loop autoplay src="./{{ clsname }}.mp4"></video>
 {% elif save_as_gif %}
 .. image:: {{ filesrc }}
     :align: center
