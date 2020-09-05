@@ -88,6 +88,8 @@ class ManimDirective(Directive):
     final_argument_whitespace = True
 
     def run(self):
+        from manim import config
+
         clsname = self.arguments[0]
 
         display_source = "display_source" in self.options
@@ -95,9 +97,9 @@ class ManimDirective(Directive):
         save_last_frame = "save_last_frame" in self.options
         assert not (save_as_gif and save_last_frame)
 
-        frame_rate = 60
-        pixel_height = 1080
-        pixel_width = 1920
+        frame_rate = config["frame_rate"]
+        pixel_height = config["pixel_height"]
+        pixel_width = config["pixel_width"]
 
         if "quality" in self.options:
             quality = self.options["quality"]
