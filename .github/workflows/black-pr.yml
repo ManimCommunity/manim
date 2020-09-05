@@ -45,7 +45,7 @@ jobs:
           content=$(</d/changes.txt)
           while read file
           do
-            if [[ ($(python -c "print('${file}'[-2:])") == "py") && (-f ${file}) ]] 
+            if [[ ($(python -c "print('${file}'[-2:])") == "py") && (-f ${file}) ]]
             then
               black --diff $file
             fi
