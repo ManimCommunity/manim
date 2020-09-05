@@ -18,6 +18,7 @@ class ManimDirective(Directive):
     optional_arguments = 0
     option_spec = {
         'display_source': bool,
+        'quality': lambda arg: directives.choice(arg, ('low', 'medium', 'high', 'fourk')),
         'save_as_gif': bool,
         'save_last_frame': bool,
     }
@@ -31,6 +32,31 @@ class ManimDirective(Directive):
         save_last_frame = 'save_last_frame' in self.options
         assert not (save_as_gif and save_last_frame)
 
+        frame_rate = 60
+        pixel_height = 1080
+        pixel_width = 1920
+
+        if 'quality' in self.options:
+            quality = self.options['quality']
+            if quality == 'low':
+                pixel_height = 480
+                pixel_width = 854
+                frame_rate = 15
+            elif quality == 'medium':
+                pixel_height = 720
+                pixel_width = 1280
+                frame_rate = 30
+            elif quality == 'high':
+                pixel_height = 1440
+                pixel_width = 2560
+                frame_rate = 60
+            elif quality == 'fourk':
+                pixel_height = 2160
+                pixel_width = 3840
+                frame_rate = 60
+        
+        qualitydir = f'{pixel_height}p{frame_rate}'
+
         state_machine = self.state_machine
         document = state_machine.document
 
@@ -39,7 +65,7 @@ class ManimDirective(Directive):
         source_rel_dir = os.path.dirname(source_rel_name)
         while source_rel_dir.startswith(os.path.sep):
             source_rel_dir = source_rel_dir[1:]
-    
+
         source_dir = os.path.abspath(os.path.join(setup.app.builder.srcdir,
                                                   source_rel_dir))
 
@@ -53,6 +79,9 @@ class ManimDirective(Directive):
         source_block = '\n'.join(source_block)
         
         file_writer_config_code = [
+            f'config["frame_rate"] = {frame_rate}',
+            f'config["pixel_height"] = {pixel_height}',
+            f'config["pixel_width"] = {pixel_width}',
             'file_writer_config["media_dir"] = "./source/media"',
             'file_writer_config["images_dir"] = "./source/media/images"',
             'file_writer_config["video_dir"] = "./source/media/videos"',
@@ -76,12 +105,12 @@ class ManimDirective(Directive):
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f'{clsname}.mp4'
-            filesrc = f'source/media/videos/1080p60/{filename}'
+            filesrc = f'source/media/videos/{qualitydir}/{filename}'
             destfile = os.path.join(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f'{clsname}.gif'
-            filesrc = f'source/media/videos/1080p60/{filename}'
+            filesrc = f'source/media/videos/{qualitydir}/{filename}'
         elif save_last_frame:
             filename = f'{clsname}.png'
             filesrc = f'source/media/images/{clsname}.png'
