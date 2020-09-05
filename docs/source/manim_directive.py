@@ -59,10 +59,16 @@ class ManimDirective(Directive):
             f'file_writer_config["save_last_frame"] = {save_last_frame}',
             f'file_writer_config["save_as_gif"] = {save_as_gif}'
         ]
+
+        user_code = self.content
+        if user_code[0].startswith('>>> '): # check whether block comes from doctest
+            user_code = [line[4:] for line in user_code 
+                         if line.startswith(('>>> ', '... '))]
+
         code = [
-            'from manim import *', 
-            *file_writer_config_code, 
-            *self.content, 
+            'from manim import *',
+            *file_writer_config_code,
+            *user_code,
             f'{clsname}()'
         ]
         exec('\n'.join(code), globals())
