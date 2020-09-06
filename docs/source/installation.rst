@@ -53,6 +53,8 @@ cloned this repo, run the following:
 
    python3 -m pip install .
 
+Please see :doc:`contributing` for more details about contributing to Manim.
+
 .. warning::
     If you want to contribute to ``manim-community`` and have cloned the
     repository to your local device, please uninstall the pip-installed version
