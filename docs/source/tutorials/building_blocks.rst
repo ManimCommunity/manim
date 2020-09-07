@@ -234,12 +234,12 @@ As you can see, the order of the arguments of :meth:`~.Scene.add` determines
 the order that the mobjects are displayed on screen, with the left-most
 arguments being put in the back.
 
-.. tip:: The display order of mobjects is called the *z-index*.
-
 
 **********
 Animations
 **********
+
+
 
 
 ******
