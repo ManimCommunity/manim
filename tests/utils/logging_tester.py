@@ -28,11 +28,12 @@ def _check_logs(reference_logfile, generated_logfile):
         diff_keys = [
             d1[0] for d1, d2 in zip(ref_log.items(), gen_log.items()) if d1[1] != d2[1]
         ]
-        # \n does not work in f-strings.
+        # \n and \t don't not work in f-strings.
         newline = "\n"
+        tab = "\t"
         assert (
             len(diff_keys) == 0
-        ), f"Lgos don't match at {index} st log. : \n{newline.join([f'In {key} field, got -> {gen_log[key]}. {newline}Expected : -> {ref_log[key]}.' for key in diff_keys])}"
+        ), f"Lgos don't match at {index} st log. : \n{newline.join([f'In {key} field, got -> {newline}{tab}{repr(gen_log[key])}. {newline}Expected : -> {newline}{tab}{repr(ref_log[key])}.' for key in diff_keys])}"
 
 
 def logs_comparison(control_data_file, log_path_from_media_dir):
