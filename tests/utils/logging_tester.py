@@ -6,16 +6,14 @@ import json
 def _check_logs(reference_logfile, generated_logfile):
     reference_logs = open(reference_logfile, "r").readlines()
     generated_logs = open(generated_logfile, "r").readlines()
-
+    diff = abs(len(reference_logs) - len(generated_logs))
     if len(reference_logs) != len(generated_logs):
         msg_assert = ""
         if len(reference_logs) > len(generated_logs):
-            diff = len(reference_logs) - len(generated_logs)
             msg_assert += f"Logs generated are SHORTER than the expected logs. There are {diff} extra logs.\n"
             msg_assert += "Last log of the generated log is : \n"
             msg_assert += generated_logs[-1]
         else:
-            diff = len(generated_logs) - len(reference_logs)
             msg_assert += f"Logs generated are LONGER than the expected logs.\n There are {diff} extra logs :\n"
             for log in generated_logs[len(reference_logs) :]:
                 msg_assert += log
