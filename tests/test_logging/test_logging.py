@@ -25,5 +25,5 @@ def test_logging_to_file(tmp_path, python_version):
         "--media_dir",
         str(tmp_path),
     ]
-    out, err, exitcode = capture(command)
+    _, err, exitcode = capture(command)
     assert exitcode == 0, err.decode()
