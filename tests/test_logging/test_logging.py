@@ -13,7 +13,6 @@ from ..utils.logging_tester import *
 )
 def test_logging_to_file(tmp_path, python_version):
     path_basic_scene = os.path.join("tests", "test_logging", "basic_scenes.py")
-    # os.makedirs(path_output, exist_ok=True)
     command = [
         python_version,
         "-m",
