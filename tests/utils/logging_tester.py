@@ -4,8 +4,11 @@ import json
 
 
 def _check_logs(reference_logfile, generated_logfile):
-    reference_logs = open(reference_logfile, "r").readlines()
-    generated_logs = open(generated_logfile, "r").readlines()
+    with open(reference_logfile, "r") as reference_logs, open(
+        generated_logfile, "r"
+    ) as generated_logs:
+        reference_logs = reference_logs.readlines()
+        generated_logs = generated_logs.readlines()
     diff = abs(len(reference_logs) - len(generated_logs))
     if len(reference_logs) != len(generated_logs):
         msg_assert = ""
