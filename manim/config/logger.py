@@ -23,19 +23,18 @@ import copy
 
 
 class JSONFormatter(logging.Formatter):
-    """Subclass of logging.Formatter, to build our own format of the logs (JSON)."""
+    """Subclass of `:class:`logging.Formatter`, to build our own format of the logs (JSON)."""
 
     def format(self, record):
         record_c = copy.deepcopy(record)
         if record_c.args:
             for arg in record_c.args:
                 record_c.args[arg] = "<>"
-        return_dict = {
+        return json.dumps({
             "levelname": record_c.levelname,
             "module": record_c.module,
             "message": super().format(record_c),
-        }
-        return json.dumps(return_dict)
+        })
 
 
 def _parse_theme(config_logger):

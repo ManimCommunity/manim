@@ -22,7 +22,7 @@ def _check_logs(reference_logfile, generated_logfile):
                 msg_assert += log
         assert 0, msg_assert
 
-    for index, (ref, gen) in enumerate(zip(reference_logs, generated_logs)):
+    for index, ref, gen in zip(itertools.count(), reference_logs, generated_logs):
         # As they are string, we only need to check if they are equal. If they are not, we then compute a more precise difference, to debug.
         if ref == gen:
             continue
