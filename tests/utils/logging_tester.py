@@ -47,6 +47,7 @@ def logs_comparison(control_data_file, log_path_from_media_dir):
     control_data_file : :class:`str`
         Name of the control data file, i.e. .log that will be compared to the outputed logs.
         .. warning:: You don't have to pass the path here.
+        .. example:: "SquareToCircleWithLFlag.log"
 
     log_path_from_media_dir : :class:`str`
         The path of the .log generated, from the media dir. Example: /logs/Square.log.
@@ -66,7 +67,7 @@ def logs_comparison(control_data_file, log_path_from_media_dir):
             tests_directory = os.path.dirname(
                 os.path.dirname(os.path.abspath(__file__))
             )
-            path_control_data = os.path.join(
+            controle_data_path = os.path.join(
                 tests_directory, "control_data", "logs_data", control_data_file
             )
             path_log_generated = tmp_path / log_path_from_media_dir
@@ -78,7 +79,7 @@ def logs_comparison(control_data_file, log_path_from_media_dir):
                             False
                         ), f"'{parent.name}' does not exist in '{parent.parent}' (which exists). "
                         break
-            _check_logs(path_control_data, str(path_log_generated))
+            _check_logs(controle_data_path, str(path_log_generated))
             return result
 
         return wrapper
