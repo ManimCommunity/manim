@@ -1,6 +1,7 @@
 from functools import wraps
 import os
 import json
+import itertools
 
 
 def _check_logs(reference_logfile, generated_logfile):

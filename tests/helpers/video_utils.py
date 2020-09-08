@@ -4,7 +4,7 @@ import os
 import subprocess
 import json
 
-from manim.logger import logger
+from manim.config.logger import logger
 
 
 def capture(command):
@@ -57,3 +57,9 @@ def save_control_data_from_video(path_to_video, name):
     path_saved = os.path.join(path_control_data, f"{name}.json")
     json.dump(data, open(path_saved, "w"), indent=4)
     logger.info(f"Data for {name} saved in {path_saved}")
+
+
+save_control_data_from_video(
+    r"/home/hugues/Desktop/Programmation/PYTHON/MANIM-DEV/media/videos/test/1080p60/SceneWithMultipleCalls.mp4",
+    "SceneWithMultipleCallsWithNFlag",
+)
