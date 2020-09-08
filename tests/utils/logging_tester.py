@@ -50,6 +50,11 @@ def logs_comparison(control_data_file, log_path_from_media_dir):
 
     log_path_from_media_dir : :class:`str`
         The path of the .log generated, from the media dir. Example: /logs/Square.log.
+
+    Returns
+    -------
+    Callable[[Any], Any]
+        The test wrapped with which we are going to make the comparison.
     """
 
     def decorator(f):
