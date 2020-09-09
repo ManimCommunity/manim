@@ -608,7 +608,8 @@ class Mobject(Container):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
         self.scale(
-            get_norm(target_vect) / get_norm(curr_vect), about_point=curr_start,
+            get_norm(target_vect) / get_norm(curr_vect),
+            about_point=curr_start,
         )
         self.rotate(
             angle_of_vector(target_vect) - angle_of_vector(curr_vect),
@@ -717,14 +718,12 @@ class Mobject(Container):
 
     ##
 
-    def save_state(self, use_deepcopy=False):
+    def save_state(self):
         if hasattr(self, "saved_state"):
             # Prevent exponential growth of data
             self.saved_state = None
-        if use_deepcopy:
-            self.saved_state = self.deepcopy()
-        else:
-            self.saved_state = self.copy()
+        self.saved_state = self.copy()
+
         return self
 
     def restore(self):
@@ -917,7 +916,9 @@ class Mobject(Container):
 
     def match_coord(self, mobject, dim, direction=ORIGIN):
         return self.set_coord(
-            mobject.get_coord(dim, direction), dim=dim, direction=direction,
+            mobject.get_coord(dim, direction),
+            dim=dim,
+            direction=direction,
         )
 
     def match_x(self, mobject, direction=ORIGIN):
