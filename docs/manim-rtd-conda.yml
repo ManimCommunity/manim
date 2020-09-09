@@ -1,0 +1,35 @@
+name: manimrtd
+channels:
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - bzip2=1.0.8=h7b6447c_0
+  - ca-certificates=2020.7.22=0
+  - certifi=2020.6.20=py38_0
+  - ffmpeg=4.2.2=h20bf706_0
+  - freetype=2.10.2=h5ab3b9f_0
+  - gmp=6.1.2=h6c8ec71_1
+  - gnutls=3.6.5=h71b1129_1002
+  - lame=3.100=h7b6447c_0
+  - ld_impl_linux-64=2.33.1=h53a641e_7
+  - libedit=3.1.20191231=h14c3975_1
+  - libffi=3.3=he6710b0_2
+  - libgcc-ng=9.1.0=hdf63c60_0
+  - libopus=1.3.1=h7b6447c_0
+  - libpng=1.6.37=hbc83047_0
+  - libstdcxx-ng=9.1.0=hdf63c60_0
+  - libvpx=1.7.0=h439df22_0
+  - ncurses=6.2=he6710b0_1
+  - nettle=3.4.1=hbb512f6_0
+  - openh264=2.1.0=hd408876_0
+  - openssl=1.1.1g=h7b6447c_0
+  - pip=20.2.2=py38_0
+  - python=3.8.5=h7579374_1
+  - readline=8.0=h7b6447c_0
+  - setuptools=49.6.0=py38_0
+  - sqlite=3.33.0=h62c20be_0
+  - tk=8.6.10=hbc83047_0
+  - wheel=0.35.1=py_0
+  - x264=1!157.20191217=h7b6447c_0
+  - xz=5.2.5=h7b6447c_0
+  - zlib=1.2.11=h7b6447c_3
