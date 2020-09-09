@@ -36,7 +36,7 @@ def _check_logs(reference_logfile, generated_logfile):
         tab = "\t"
         assert (
             len(diff_keys) == 0
-        ), f"Lgos don't match at {index} st log. : \n{newline.join([f'In {key} field, got -> {newline}{tab}{repr(gen_log[key])}. {newline}Expected : -> {newline}{tab}{repr(ref_log[key])}.' for key in diff_keys])}"
+        ), f"Logs don't match at {index} log. : \n{newline.join([f'In {key} field, got -> {newline}{tab}{repr(gen_log[key])}. {newline}Expected : -> {newline}{tab}{repr(ref_log[key])}.' for key in diff_keys])}"
 
 
 def logs_comparison(control_data_file, log_path_from_media_dir):
