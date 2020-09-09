@@ -41,8 +41,12 @@ class CustomEncoder(json.JSONEncoder):
                 # NOTE : All module types objects are removed, because otherwise it throws ValueError: Circular reference detected if not. TODO
                 if isinstance(cvardict[i], ModuleType):
                     del cvardict[i]
+            try:
+                code = inspect.getsource(obj)
+            except OSError:
+                code = ""
             return self._check_iterable(
-                {"code": inspect.getsource(obj), "nonlocals": cvardict}
+                {"code": code, "nonlocals": cvardict}
             )
         elif isinstance(obj, np.ndarray):
             if obj.size > 1000:
