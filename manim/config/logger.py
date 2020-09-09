@@ -30,11 +30,13 @@ class JSONFormatter(logging.Formatter):
         if record_c.args:
             for arg in record_c.args:
                 record_c.args[arg] = "<>"
-        return json.dumps({
-            "levelname": record_c.levelname,
-            "module": record_c.module,
-            "message": super().format(record_c),
-        })
+        return json.dumps(
+            {
+                "levelname": record_c.levelname,
+                "module": record_c.module,
+                "message": super().format(record_c),
+            }
+        )
 
 
 def _parse_theme(config_logger):
@@ -67,7 +69,7 @@ def _parse_theme(config_logger):
     return customTheme
 
 
-def set_rich_logger(config_logger):
+def set_rich_logger(config_logger, verbosity):
     """Will set the RichHandler of the logger.
 
     Parameter
@@ -98,6 +100,7 @@ def set_rich_logger(config_logger):
         console=console, show_time=config_logger.getboolean("log_timestamps")
     )
     global logger
+    rich_handler.setLevel(verbosity)
     logger.addHandler(rich_handler)
 
 

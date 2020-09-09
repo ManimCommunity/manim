@@ -154,7 +154,7 @@ config = _parse_config(config_parser, args)
 camera_config = config
 
 # Set the different loggers
-set_rich_logger(config_parser["logger"])
+set_rich_logger(config_parser["logger"], file_writer_config["verbosity"])
 if file_writer_config["log_to_file"]:
     # IMPORTANT note about file name : The log file name will be the scene_name get from the args (contained in file_writer_config). So it can differ from the real name of the scene.
     log_file_path = os.path.join(
