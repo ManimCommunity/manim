@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath("."))
 
 
 if os.environ.get("MANIM_RTD_BUILD") == "yes":
-    os.system("apt-get install -y ffmpeg")
+    os.system("sudo apt-get install -y ffmpeg")
 
 
 # -- Project information -----------------------------------------------------
