@@ -65,7 +65,10 @@ class Scene(Container):
     def __init__(self, **kwargs):
         Container.__init__(self, **kwargs)
         self.camera = self.camera_class(**camera_config)
-        self.file_writer = SceneFileWriter(self, **file_writer_config,)
+        self.file_writer = SceneFileWriter(
+            self,
+            **file_writer_config,
+        )
         self.play_hashes_list = []
         self.mobjects = []
         # TODO, remove need for foreground mobjects
@@ -195,7 +198,10 @@ class Scene(Container):
         if file_writer_config["skip_animations"] and not ignore_skipping:
             return
         if mobjects is None:
-            mobjects = list_update(self.mobjects, self.foreground_mobjects,)
+            mobjects = list_update(
+                self.mobjects,
+                self.foreground_mobjects,
+            )
         if background is not None:
             self.camera.set_pixel_array(background)
         else:
@@ -805,7 +811,7 @@ class Scene(Container):
             if not file_writer_config["disable_caching"]:
                 mobjects_on_scene = self.get_mobjects()
                 hash_play = get_hash_from_play_call(
-                    self.camera, animations, mobjects_on_scene
+                    self, self.camera, animations, mobjects_on_scene
                 )
                 self.play_hashes_list.append(hash_play)
                 if self.file_writer.is_already_cached(hash_play):
@@ -836,7 +842,7 @@ class Scene(Container):
             self.revert_to_original_skipping_status()
             if not file_writer_config["disable_caching"]:
                 hash_wait = get_hash_from_wait_call(
-                    self.camera, duration, stop_condition, self.get_mobjects()
+                    self, self.camera, duration, stop_condition, self.get_mobjects()
                 )
                 self.play_hashes_list.append(hash_wait)
                 if self.file_writer.is_already_cached(hash_wait):
