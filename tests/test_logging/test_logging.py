@@ -21,8 +21,10 @@ def test_logging_to_file(tmp_path, python_version):
         "SquareToCircle",
         "-l",
         "--log_to_file",
+        "-v",
+        "DEBUG",
         "--media_dir",
         str(tmp_path),
     ]
     _, err, exitcode = capture(command)
-    assert exitcode == 0, err.decode()
+    assert exitcode == 0, err
