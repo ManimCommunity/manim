@@ -12,14 +12,15 @@
 
 import os
 import sys
-import site
+from distutils.sysconfig import get_python_lib
+
 
 sys.path.insert(0, os.path.abspath("."))
 
 
 if os.environ.get("READTHEDOCS") == "True":
     # we need to add ffmpeg to the path
-    site_path = site.getsitepackages()[0]
+    site_path = get_python_lib()
     ffmpeg_path = os.path.join(
         site_path,
         "imageio_ffmpeg",
