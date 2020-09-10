@@ -15,6 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 
+print(sys.executable)
 
 if os.environ.get("READTHEDOCS") == "True":
     # we need to add ffmpeg to the path
