@@ -1,9 +1,8 @@
 version: 2
 
-conda:
-   environment: docs/manim-rtd-conda.yml
-
 python:
    install:
+      - requirements: docs/rtd-requirements.txt
+      - requirements: docs/requirements.txt
       - method: pip
         path: .
