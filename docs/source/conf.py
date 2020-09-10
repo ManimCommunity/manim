@@ -12,19 +12,16 @@
 
 import os
 import sys
+import site
 
 sys.path.insert(0, os.path.abspath("."))
 
-print(sys.executable)
 
 if os.environ.get("READTHEDOCS") == "True":
     # we need to add ffmpeg to the path
-    venv_path = os.environ.get("VIRTUAL_ENV")
+    site_path = site.getsitepackages()[0]
     ffmpeg_path = os.path.join(
-        venv_path, 
-        "lib",
-        "python3.8",
-        "site-packages",
+        site_path,
         "imageio_ffmpeg",
         "binaries"
     )
