@@ -16,6 +16,29 @@ import sys
 sys.path.insert(0, os.path.abspath("."))
 
 
+if os.environ.get("MANIM_RTD_BUILD") == "yes":
+    # we need to add ffmpeg to the path
+    venv_path = os.environ.get("VIRTUAL_ENV")
+    ffmpeg_path = os.path.join(
+        venv_path, 
+        "lib",
+        "python3.8",
+        "site-packages",
+        "imageio_ffmpeg",
+        "binaries"
+    )
+    # the included binary is named ffmpeg-linux..., create a symlink
+    [ffmpeg_bin] = [file for file in os.listdir(ffmpeg_path) if file.startswith("ffmpeg-")]
+    os.symlink(
+        os.path.join(ffmpeg_path, ffmpeg_bin), 
+        os.path.join(ffmpeg_path, "ffmpeg")
+    )
+    os.environ["PATH"] += os.pathsep + ffmpeg_path
+
+
+
+
+
 # -- Project information -----------------------------------------------------
 
 project = "manim"
