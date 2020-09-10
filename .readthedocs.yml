@@ -1,6 +1,7 @@
 version: 2
 
 python:
+   version: 3.8
    install:
       - requirements: docs/rtd-requirements.txt
       - requirements: docs/requirements.txt
