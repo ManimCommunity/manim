@@ -16,7 +16,7 @@ import sys
 sys.path.insert(0, os.path.abspath("."))
 
 
-if os.environ.get("MANIM_RTD_BUILD") == "yes":
+if os.environ.get("READTHEDOCS") == "True":
     # we need to add ffmpeg to the path
     venv_path = os.environ.get("VIRTUAL_ENV")
     ffmpeg_path = os.path.join(
