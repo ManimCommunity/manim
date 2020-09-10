@@ -21,21 +21,15 @@ sys.path.insert(0, os.path.abspath("."))
 if os.environ.get("READTHEDOCS") == "True":
     # we need to add ffmpeg to the path
     site_path = get_python_lib()
-    ffmpeg_path = os.path.join(
-        site_path,
-        "imageio_ffmpeg",
-        "binaries"
-    )
+    ffmpeg_path = os.path.join(site_path, "imageio_ffmpeg", "binaries")
     # the included binary is named ffmpeg-linux..., create a symlink
-    [ffmpeg_bin] = [file for file in os.listdir(ffmpeg_path) if file.startswith("ffmpeg-")]
+    [ffmpeg_bin] = [
+        file for file in os.listdir(ffmpeg_path) if file.startswith("ffmpeg-")
+    ]
     os.symlink(
-        os.path.join(ffmpeg_path, ffmpeg_bin), 
-        os.path.join(ffmpeg_path, "ffmpeg")
+        os.path.join(ffmpeg_path, ffmpeg_bin), os.path.join(ffmpeg_path, "ffmpeg")
     )
     os.environ["PATH"] += os.pathsep + ffmpeg_path
-
-
-
 
 
 # -- Project information -----------------------------------------------------
