@@ -45,9 +45,7 @@ class CustomEncoder(json.JSONEncoder):
                 code = inspect.getsource(obj)
             except OSError:
                 code = ""
-            return self._check_iterable(
-                {"code": code, "nonlocals": cvardict}
-            )
+            return self._check_iterable({"code": code, "nonlocals": cvardict})
         elif isinstance(obj, np.ndarray):
             if obj.size > 1000:
                 obj = np.resize(obj, (100, 100))
