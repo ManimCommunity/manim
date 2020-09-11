@@ -335,8 +335,8 @@ Scenes
 
 The :class:`.Scene` class is the connective tissue of manim.  Every mobject has
 to be :meth:`added <.Scene.add>` to a scene to be displayed, or :meth:`removed
-<~.Scene.remove>` from it to cease being displayed.  Every animation has to be
-:meth:`played <~.Scene.play>` by a scene, and every time interval where no
+<.Scene.remove>` from it to cease being displayed.  Every animation has to be
+:meth:`played <.Scene.play>` by a scene, and every time interval where no
 animation occurs is determined by a call to :meth:`~.Scene.wait`.  All of the
 code of your video must be contained in the :meth:`~.Scene.construct` method of
 a class that derives from :class:`.Scene`.  Finally, a single file may contain
