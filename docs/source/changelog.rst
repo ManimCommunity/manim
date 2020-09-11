@@ -91,8 +91,7 @@ Of interest to developers
 #. Since the introduction of the :code:`TexTemplate` class, the files :code:`tex_template.tex` and :code:`ctex_template.tex` have been removed
 #. Added logging tests tools.
 #. Added ability to save logs in json
-
-
+#. Move to Poetry.
 
 Other Changes
 --------------
