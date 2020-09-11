@@ -60,7 +60,9 @@ on the screen when it is not being animated.  To remove a mobject from the
 screen, simply call the :meth:`~.Scene.remove` method from the containing
 :class:`.Scene`.
 
-.. code-block:: python
+.. manim:: CreatingMobjects
+   :display_source:
+   :quality: medium
 
    class CreatingMobjects(Scene):
        def construct(self):
@@ -70,18 +72,18 @@ screen, simply call the :meth:`~.Scene.remove` method from the containing
            self.remove(circle)
            self.wait(1)
 
-.. image:: ../_static/building_blocks/addremove.gif
-    :align: center
-    :alt: a circle displayed for 1s then removed
 
 
 Placing mobjects
 ================
 
 Let's define a new :class:`.Scene` called ``Shapes`` and :meth:`~.Scene.add`
-some mobjects to it.
+some mobjects to it. This script generates a static picture that displays a
+circle, a square, and a triangle:
 
-.. code-block:: python
+.. manim:: Shapes
+   :display_source:
+   :quality: medium
 
    class Shapes(Scene):
        def construct(self):
@@ -96,12 +98,6 @@ some mobjects to it.
            self.add(circle, square, triangle)
            self.wait(1)
 
-This script generates a static picture that displays a circle, a square, and a
-triangle:
-
-.. image:: ../_static/building_blocks/shapes.png
-    :align: center
-    :alt: figure of a circle, a square, and a triangle
 
 By default, mobjects are placed at the center of coordinates, or *origin*, when
 they are first created.  They are also given some default colors.  Further, the
@@ -119,7 +115,9 @@ There are many other possible ways to place mobjects on the screen, for example
 :meth:`.move_to`, :meth:`.next_to`, and :meth:`.align_to`.  The next scene
 ``MobjectPlacement`` uses all three.
 
-.. code-block:: python
+.. manim:: MobjectPlacement
+   :display_source:
+   :quality: medium
 
    class MobjectPlacement(Scene):
        def construct(self):
@@ -137,9 +135,6 @@ There are many other possible ways to place mobjects on the screen, for example
            self.add(circle, square, triangle)
            self.wait(1)
 
-.. image:: ../_static/building_blocks/placement.png
-    :align: center
-    :alt: figure of a circle, a square, and a triangle
 
 The :meth:`.move_to` method uses absolute units (measured relative to the
 ``ORIGIN``), while :meth:`.next_to` uses relative units (measured from the
@@ -170,7 +165,9 @@ Styling mobjects
 
 The following scene changes the default aesthetics of the mobjects.
 
-.. code-block:: python
+.. manim:: MobjectStyling
+   :display_source:
+   :quality: medium
 
    class MobjectStyling(Scene):
        def construct(self):
@@ -185,9 +182,6 @@ The following scene changes the default aesthetics of the mobjects.
            self.add(circle, square, triangle)
            self.wait(1)
 
-.. image:: ../_static/building_blocks/styling.png
-    :align: center
-    :alt: figure of a circle, a square, and a triangle
 
 This scene uses two of the main functions that change the visual style of a
 mobject: :meth:`.set_stroke` and :meth:`.set_fill`.  The former changes the
@@ -209,7 +203,9 @@ Mobject on-screen order
 The next scene is exactly the same as the ``MobjectStyling`` scene from the
 previous section, except for exactly one line.
 
-.. code-block:: python
+.. manim:: MobjectZOrder
+   :display_source:
+   :quality: medium
 
    class MobjectZOrder(Scene):
        def construct(self):
@@ -227,11 +223,7 @@ previous section, except for exactly one line.
 The only difference here (besides the scene name) is the order in which the
 mobjects are added to the scene.  In ``MobjectStyling``, we added them as
 ``add(circle, square, triangle)``, whereas in ``MobjectZOrder`` we add them as
-``add(triangle, square, circle)``.  The result is the following:
-
-.. image:: ../_static/building_blocks/zorder.png
-    :align: center
-    :alt: figure of a circle, a square, and a triangle
+``add(triangle, square, circle)``.
 
 As you can see, the order of the arguments of :meth:`~.Scene.add` determines
 the order that the mobjects are displayed on screen, with the left-most
@@ -245,7 +237,9 @@ Animations
 At the heart of manim is animation.  Generally, you can add an animation to
 your scene by calling the :meth:`~.Scene.play` method.
 
-.. code-block:: python
+.. manim:: SomeAnimations
+   :display_source:
+   :quality: medium
 
    class SomeAnimations(Scene):
        def construct(self):
@@ -262,10 +256,6 @@ your scene by calling the :meth:`~.Scene.play` method.
            self.play(FadeOut(square))
 
            self.wait(1)
-
-.. image:: ../_static/building_blocks/some_animations.gif
-    :align: center
-    :alt: a square fading in, rotating, and fading out
 
 Put simply, animations are procedures that interpolate between two mobjects.
 For example, :code:`FadeIn(square)` starts with a fully transparent version of
@@ -284,7 +274,9 @@ Any property of a mobject that can be changed can be animated.  In fact, any
 method that changes a mobject's property can be used as an animation, through
 the use of :class:`.ApplyMethod`.
 
-.. code-block:: python
+.. manim:: ApplyMethodExample
+   :display_source:
+   :quality: medium
 
    class ApplyMethodExample(Scene):
        def construct(self):
@@ -299,10 +291,6 @@ the use of :class:`.ApplyMethod`.
            self.play(ApplyMethod(square.shift, UP))
            self.wait(1)
 
-.. image:: ../_static/building_blocks/apply_method.gif
-    :align: center
-    :alt: animation of a square changing color, then moving up
-
 :meth:`.ApplyMethod` receives one mandatory argument which is the method of the
 mobject to animate (e.g. :code:`square.set_fill` or :code:`square.shift`), and
 any number of optional arguments which are then passed to the method call.  For
@@ -315,7 +303,9 @@ Animation run time
 By default, any animation passed to :meth:`play` lasts for exactly one second.
 Use the :code:`run_time` argument to control the duration.
 
-.. code-block:: python
+.. manim:: RunTime
+   :display_source:
+   :quality: medium
 
    class RunTime(Scene):
        def construct(self):
@@ -323,10 +313,6 @@ Use the :code:`run_time` argument to control the duration.
            self.add(square)
 	   self.play(ApplyMethod(square.shift, UP), run_time=3)
 	   self.wait(1)
-
-.. image:: ../_static/building_blocks/run_time.gif
-    :align: center
-    :alt: a square moving up very slowly
 
 
 ******
