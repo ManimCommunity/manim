@@ -94,7 +94,7 @@ Now let's look at the next two lines.
        def construct(self):
 
 Most of the time, the code for scripting an animation with manim will go inside
-the ``construct`` method of a class that derives from ``Scene``.  Inside this
+the :meth:`~.Scene.construct` method of a class that derives from :class:`.Scene`.  Inside this
 method, you will create objects, display them on screen, and animate them.
 
 The next two lines create a circle and set its color and opacity.
@@ -104,15 +104,15 @@ The next two lines create a circle and set its color and opacity.
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
 
-Finally, the last line uses the animation ``ShowCreation`` to display the
+Finally, the last line uses the animation :class:`.ShowCreation` to display the
 circle on screen.
 
 .. code-block:: python
 
            self.play(ShowCreation(circle))     # show the circle on screen
 
-.. tip:: Every animation must be contained within the ``construct`` method of a
-         class that derives from ``Scene``.  Other code, for example auxiliary
+.. tip:: Every animation must be contained within the :meth:`~.Scene.construct` method of a
+         class that derives from :class:`.Scene`.  Other code, for example auxiliary
          or mathematical functions, may reside outside the class.
 
 

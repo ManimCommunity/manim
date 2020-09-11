@@ -52,7 +52,7 @@ screen, as it is more general.
 Creating and displaying mobjects
 ================================
 
-As explained in the :doc:`quickstart`, usually all of the code in a manim
+As explained in :doc:`quickstart`, usually all of the code in a manim
 script is put inside the :meth:`.construct` method of a :class:`.Scene` class.
 To display a mobject on the screen, call the :meth:`~.Scene.add` method of the
 containing :class:`.Scene`.  This is the principal way of displaying a mobject
@@ -162,6 +162,8 @@ bounding box around it.
 
             square = Square().shift(LEFT)
 
+         Technically, this is possible because most methods calls return the modified mobject.
+
 
 Styling mobjects
 ================
@@ -263,7 +265,7 @@ your scene by calling the :meth:`~.Scene.play` method.
 
 .. image:: ../_static/building_blocks/some_animations.gif
     :align: center
-    :alt: a square fading it, rotating, and fading out
+    :alt: a square fading in, rotating, and fading out
 
 Put simply, animations are procedures that interpolate between two mobjects.
 For example, :code:`FadeIn(square)` starts with a fully transparent version of
