@@ -35,10 +35,11 @@ skeleton of a thing that *could* be displayed.  Therefore, you will rarely need
 to use plain instances of :class:`.Mobject`; instead you will most likely
 create instances of its derived classes.  One of these derived classes is
 :class:`.VMobject`.  The ``V`` stands for Vectorized Mobject.  In essence, a
-vmobject is a mobject that uses vector graphics to be displayed.  Most of the
-time, you will be dealing with vmobjects, though we will continue to use the
-term "mobject" to refer to the class of shapes that can be displayed on screen,
-as it is more general.
+vmobject is a mobject that uses vector `vector graphics
+<https://en.wikipedia.org/wiki/Vector_graphics/>`_ to be displayed.  Most of
+the time, you will be dealing with vmobjects, though we will continue to use
+the term "mobject" to refer to the class of shapes that can be displayed on
+screen, as it is more general.
 
 .. note:: Any object that can be displayed on screen is a ``mobject``, even if
           it is not necessarily *mathematical* in nature.
@@ -116,7 +117,7 @@ circle and triangle are shifted one unit ``LEFT`` and ``RIGHT``, respectively.
 
 There are many other possible ways to place mobjects on the screen, for example
 :meth:`.move_to`, :meth:`.next_to`, and :meth:`.align_to`.  The next scene
-``Shapes2`` uses all three.
+``MobjectPlacement`` uses all three.
 
 .. code-block:: python
 
@@ -141,7 +142,7 @@ There are many other possible ways to place mobjects on the screen, for example
     :alt: figure of a circle, a square, and a triangle
 
 The :meth:`.move_to` method uses absolute units (measured relative to the
-``ORIGIN``), while :meth:`.next_to` uses absolute units (measured from the
+``ORIGIN``), while :meth:`.next_to` uses relative units (measured from the
 mobject passed as the first argument).  :meth:`align_to` uses ``LEFT`` not as
 measuring units but as a way to determine the border to use for alignment.  The
 coordinates of the borders of a mobject are determined using an imaginary
@@ -239,9 +240,103 @@ arguments being put in the back.
 Animations
 **********
 
+At the heart of manim is animation.  Generally, you can add an animation to
+your scene by calling the :meth:`~.Scene.play` method.
 
+.. code-block:: python
+
+   class SomeAnimations(Scene):
+       def construct(self):
+           square = Square()
+           self.add(square)
+
+	   # some animations display mobjects, ...
+	   self.play(FadeIn(square))
+
+	   # ... some move or rotate mobjects around...
+	   self.play(Rotate(square, PI/4))
+
+	   # some animations remove mobjects from the screen
+	   self.play(FadeOut(square))
+
+           self.wait(1)
+
+.. image:: ../_static/building_blocks/some_animations.gif
+    :align: center
+    :alt: a square fading it, rotating, and fading out
+
+Put simply, animations are procedures that interpolate between two mobjects.
+For example, :code:`FadeIn(square)` starts with a fully transparent version of
+:code:`square` and ends with a fully opaque version, interpolating between them
+by gradually increasing the opacity.  :class:`.FadeOut` works in the opposite
+way: it interpolates from fully opaque to fully transparent.  As another
+example, :class:`.Rotate` starts with the mobject passed to it as argument, and
+ends with the same object but rotated by a certain amount, this time
+interpolating the mobject's angle instead of its opacity.
+
+
+Animating methods
+=================
+
+Any property of a mobject that can be changed can be animated.  In fact, any
+method that changes a mobject's property can be used as an animation, through
+the use of :class:`.ApplyMethod`.
+
+.. code-block:: python
+
+   class ApplyMethodExample(Scene):
+       def construct(self):
+           square = Square().set_fill(RED, opacity=1.0)
+           self.add(square)
+
+	   # animate the change of color
+	   self.play(ApplyMethod(square.set_fill, WHITE))
+	   self.wait(1)
+
+	   # animate the change of position
+	   self.play(ApplyMethod(square.shift, UP))
+           self.wait(1)
+
+.. image:: ../_static/building_blocks/apply_method.gif
+    :align: center
+    :alt: animation of a square changing color, then moving up
+
+:meth:`.ApplyMethod` receives one mandatory argument which is the method of the
+mobject to animate (e.g. :code:`square.set_fill` or :code:`square.shift`), and
+any number of optional arguments which are then passed to the method call.  For
+example, :code:`ApplyMethod(square.shift, UP)` executes
+:code:`square.shift(UP)`, but animates it instead of applying it immediately.
+
+Animation run time
+==================
+
+By default, any animation passed to :meth:`play` lasts for exactly one second.
+Use the :code:`run_time` argument to control the duration.
+
+.. code-block:: python
+
+   class RunTime(Scene):
+       def construct(self):
+           square = Square()
+           self.add(square)
+	   self.play(ApplyMethod(square.shift, UP), run_time=3)
+	   self.wait(1)
+
+.. image:: ../_static/building_blocks/run_time.gif
+    :align: center
+    :alt: a square moving up very slowly
 
 
 ******
 Scenes
 ******
+
+The :class:`.Scene` class is the connective tissue of manim.  Every mobject has
+to be :meth:`~.Scene.add` -ed to a scene to be displayed, or
+:meth:`~.Scene.remove` -d from it to cease being displayed.  Every animation
+has to be :meth:`~.Scene.play` -ed by a scene, and every time interval where no
+animation occurs is determined by a call to :meth:`~.Scene.wait`.  All of the
+code of your video must be contained in the :meth:`~.Scene.construct` method of
+a class that derives from :class:`.Scene`.  Finally, a single file may contain
+multiple :class:`.Scene` subclasses if the event that multiple scenes are to be
+rendered at the same time.
