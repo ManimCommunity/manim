@@ -1,3 +1,5 @@
+"""A scene whose camera can be moved around."""
+
 __all__ = ["MovingCameraScene"]
 
 from ..camera.moving_camera import MovingCamera

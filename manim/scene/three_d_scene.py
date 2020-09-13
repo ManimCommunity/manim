@@ -1,3 +1,5 @@
+"""A scene suitable for rendering three-dimensional objects and animations."""
+
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 

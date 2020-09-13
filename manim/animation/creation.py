@@ -1,4 +1,4 @@
-"""Animate the display or removal of a mobject from a scene."""
+"""Animate the addition to or removal from a mobject from a scene."""
 
 
 __all__ = [

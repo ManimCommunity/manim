@@ -1,3 +1,5 @@
+"""Growing animations."""
+
 __all__ = [
     "GrowFromPoint",
     "GrowFromCenter",

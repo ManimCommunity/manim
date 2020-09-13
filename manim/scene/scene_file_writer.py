@@ -1,3 +1,5 @@
+"""The interface between scenes and ffmpeg."""
+
 __all__ = ["SceneFileWriter"]
 
 

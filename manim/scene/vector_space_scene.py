@@ -1,3 +1,5 @@
+"""A scene suitable for vector spaces."""
+
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
 

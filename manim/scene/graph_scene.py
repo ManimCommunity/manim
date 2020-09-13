@@ -1,3 +1,5 @@
+"""A scene for plotting / graphing functions."""
+
 __all__ = ["GraphScene"]
 
 
