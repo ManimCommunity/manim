@@ -1,5 +1,4 @@
-"""Mobjects representing function graphs.
-"""
+"""Mobjects representing function graphs."""
 
 __all__ = ["ParametricFunction", "FunctionGraph"]
 

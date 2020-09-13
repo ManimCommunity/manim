@@ -1,5 +1,4 @@
-"""Mobjects representing matrices.
-"""
+"""Mobjects representing matrices."""
 
 __all__ = [
     "Matrix",

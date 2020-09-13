@@ -1,5 +1,4 @@
-"""Mobjects representing predefined SVG drawings.
-"""
+"""Mobjects representing predefined SVG drawings."""
 
 __all__ = [
     "Lightbulb",
