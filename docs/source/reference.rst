@@ -8,13 +8,11 @@ the :doc:`changelog`.
 
 .. warning:: The pages linked to here are currently a work in progress.
 
-
-List of Modules
-***************
-
 .. currentmodule:: manim
 
-**Mathematical Objects**
+********************
+Mathematical Objects
+********************
 
 .. autosummary::
    :toctree: reference
@@ -47,7 +45,9 @@ List of Modules
    ~mobject.types.vectorized_mobject
 
 
-**Scenes**
+******
+Scenes
+******
 
 .. autosummary::
    :toctree: reference
@@ -63,7 +63,9 @@ List of Modules
    ~scene.zoomed_scene
 
 
-**Animations**
+**********
+Animations
+**********
 
 .. autosummary::
    :toctree: reference
@@ -82,7 +84,9 @@ List of Modules
    ~animation.update
 
 
-**Cameras**
+*******
+Cameras
+*******
 
 .. autosummary::
    :toctree: reference
@@ -94,7 +98,9 @@ List of Modules
    ~camera.three_d_camera
 
 
-**Utilities**
+*********
+Utilities
+*********
 
 .. autosummary::
    :toctree: reference
@@ -115,7 +121,9 @@ List of Modules
    ~utils.tex_file_writing
 
 
-**Other modules**
+*************
+Other modules
+*************
 
 .. autosummary::
    :toctree: reference
