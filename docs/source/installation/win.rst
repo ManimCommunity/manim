@@ -10,11 +10,13 @@ Installing using Chocolatey
 
 You can install chocolatey very easily using chocolatey. Typing the command install Manim.
 
+
 .. code-block:: powershell
 
       choco install manim
-      
-And then you can skip all the other steps and move to installing :ref:`Latex<LaTeX Installation>`.
+
+
+And then you can skip all the other steps and move to installing :ref:`latex-installation`.
 
 Cairo installation
 ******************
@@ -70,6 +72,8 @@ Sox installation (optional)
 
 2. You can check if you did it right by running ``refreshenv`` to update your
    environment variable and running ``sox``.
+
+.. _latex-installation:
 
 LaTeX Installation
 ******************
