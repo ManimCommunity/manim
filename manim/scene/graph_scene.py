@@ -862,7 +862,7 @@ class GraphScene(Scene):
 
         - a Vertical line from the x-axis to the corresponding point on the graph/curve.
         - a small vertical Triangle whose top point lies on the base of the vertical line
-        - a MathTex to be a label for the Line and Triangle, at the bottom of 
+        - a MathTex to be a label for the Line and Triangle, at the bottom of
           the Triangle.
 
         The scene needs to have the graph have the identifier/variable

@@ -144,7 +144,7 @@ class SceneFileWriter(object):
         the video file.
 
         This method gets the name of the directory that immediately contains the
-        video file. This name is ``<height_in_pixels_of_video>p<frame_rate>``.        
+        video file. This name is ``<height_in_pixels_of_video>p<frame_rate>``.
         For example, if you are rendering an 854x480 px animation at 15fps,
         the name of the directory that immediately contains the video file
         will be ``480p15``.
