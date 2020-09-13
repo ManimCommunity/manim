@@ -263,15 +263,16 @@ class ThreeDScene(Scene):
 
 
 class SpecialThreeDScene(ThreeDScene):
-    """
-    This is basically ThreeDScene++ .
-    It has some extra configuration for
-    axes, spheres, lower quality etc.
+    """An extension of :class:`ThreeDScene` with more settings.
 
-    Some key differences are:
-        The camera shades applicable 3DMobjects by default,
-        except if rendering in low quality.
-        Some default params for Spheres and Axes have been added.
+    It has some extra configuration for axes, spheres,
+    and an override for low quality rendering. Further key differences
+    are:
+
+    * The camera shades applicable 3DMobjects by default,
+      except if rendering in low quality.
+    * Some default params for Spheres and Axes have been added.
+
     """
 
     CONFIG = {
@@ -310,12 +311,12 @@ class SpecialThreeDScene(ThreeDScene):
         ThreeDScene.__init__(self, **config)
 
     def get_axes(self):
-        """
-        Returns a set of 3D Axes.
+        """Return a set of 3D axes.
 
         Returns
         -------
-        ThreeDAxes
+        :class:`.ThreeDAxes`
+            A set of 3D axes.
         """
         axes = ThreeDAxes(**self.three_d_axes_config)
         for axis in axes:
@@ -335,18 +336,17 @@ class SpecialThreeDScene(ThreeDScene):
 
     def get_sphere(self, **kwargs):
         """
-        Returns a sphere with the passed **kwargs
+        Returns a sphere with the passed keyword arguments
         as properties.
 
         Parameters
         ----------
         **kwargs
-            Some valid kwargs are:
-                Any param of a Sphere or ParametricSurface.
+            Some valid kwargs are: Any param of a Sphere or ParametricSurface.
 
         Returns
         -------
-        Sphere
+        :class:`.Sphere`
             The sphere object.
         """
         config = merge_dicts_recursively(self.sphere_config, kwargs)
