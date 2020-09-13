@@ -1,5 +1,4 @@
-"""Mobjects related to vector fields.
-"""
+"""Mobjects representing vector fields."""
 
 __all__ = [
     "VectorField",

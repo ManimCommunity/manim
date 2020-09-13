@@ -1,5 +1,4 @@
-"""Mobject used for displaying text.
-"""
+"""Mobjects used for displaying (non-LaTeX) text."""
 
 __all__ = ["TextSetting", "Text", "TextWithFixHeight", "Paragraph"]
 

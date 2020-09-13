@@ -41,8 +41,7 @@ from pygments.formatters.html import HtmlFormatter
 
 
 class Code(VGroup):
-    """A highlighted source code listing.
-    """
+    """A highlighted source code listing."""
     CONFIG = {
         "tab_width": 3,
         "line_spacing": 0.1,

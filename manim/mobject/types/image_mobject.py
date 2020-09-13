@@ -1,5 +1,4 @@
-"""Mobjects representing images.
-"""
+"""Mobjects representing raster images."""
 
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 

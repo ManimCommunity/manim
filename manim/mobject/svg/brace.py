@@ -1,5 +1,4 @@
-"""Mobject representing a curly brace.
-"""
+"""Mobject representing curly braces."""
 
 __all__ = ["Brace", "BraceLabel", "BraceText"]
 

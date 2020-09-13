@@ -1,5 +1,4 @@
-"""Mobjects used for representing objects from probability theory and statistics.
-"""
+"""Mobjects representing objects from probability theory and statistics."""
 
 __all__ = ["SampleSpace", "BarChart"]
 
