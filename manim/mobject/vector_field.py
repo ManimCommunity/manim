@@ -1,3 +1,6 @@
+"""Mobjects related to vector fields.
+"""
+
 __all__ = [
     "VectorField",
     "StreamLines",

@@ -1,3 +1,6 @@
+"""Mobjects representing images.
+"""
+
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 

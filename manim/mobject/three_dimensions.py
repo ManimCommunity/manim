@@ -1,3 +1,6 @@
+"""Threedimensional mobjects.
+"""
+
 __all__ = ["ThreeDVMobject", "ParametricSurface", "Sphere", "Cube", "Prism"]
 
 

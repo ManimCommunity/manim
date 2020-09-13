@@ -1,3 +1,6 @@
+"""Mobjects used to mark and annotate other mobjects.
+"""
+
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
 

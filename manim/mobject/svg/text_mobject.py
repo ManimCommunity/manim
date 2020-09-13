@@ -1,3 +1,6 @@
+"""Mobject used for displaying text.
+"""
+
 __all__ = ["TextSetting", "Text", "TextWithFixHeight", "Paragraph"]
 
 

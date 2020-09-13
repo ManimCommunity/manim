@@ -1,3 +1,6 @@
+"""Mobjects representing text rendered using LaTeX.
+"""
+
 __all__ = [
     "TexSymbol",
     "SingleStringMathTex",

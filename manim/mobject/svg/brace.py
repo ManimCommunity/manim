@@ -1,3 +1,6 @@
+"""Mobject representing a curly brace.
+"""
+
 __all__ = ["Brace", "BraceLabel", "BraceText"]
 
 

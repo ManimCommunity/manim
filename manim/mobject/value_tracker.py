@@ -1,3 +1,6 @@
+"""Auxiliary mobjects used to animate parameters in update functions.
+"""
+
 __all__ = ["ValueTracker", "ExponentialValueTracker", "ComplexValueTracker"]
 
 
