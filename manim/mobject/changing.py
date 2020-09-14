@@ -28,6 +28,7 @@ class AnimatedBoundary(VGroup):
                 self.wait(2)
 
     """
+
     CONFIG = {
         "colors": [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
         "max_stroke_width": 3,
@@ -103,6 +104,7 @@ class TracedPath(VMobject):
                 self.play(rolling_circle.shift, 8*RIGHT, run_time=4, rate_func=linear)
 
     """
+
     CONFIG = {
         "stroke_width": 2,
         "stroke_color": WHITE,
