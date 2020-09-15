@@ -1,4 +1,4 @@
-__all__ = ["TextSetting", "Text", "TextWithFixHeight", "Paragraph"]
+__all__ = ["TextSetting", "Text", "Paragraph"]
 
 import re
 import os
