@@ -1,3 +1,5 @@
+"""Essential utilities for scene caching."""
+
 import json
 import zlib
 import inspect

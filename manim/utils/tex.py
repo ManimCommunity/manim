@@ -1,3 +1,5 @@
+"""Utilities for processing custom LaTeX templates."""
+
 __all__ = ["TexTemplateFromFile", "TexTemplate"]
 
 

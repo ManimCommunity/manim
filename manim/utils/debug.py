@@ -1,3 +1,5 @@
+"""Debug utilities."""
+
 __all__ = ["print_family", "get_submobject_index_labels"]
 
 
