@@ -20,6 +20,19 @@ TEXT_MOB_SCALE_FACTOR = 0.05
 
 
 def remove_invisible_chars(mobject):
+    """Fuction to remove unwanted invisble characters from some mobject
+
+    Parameters
+    ---------
+    mobject : :class:`~.SVGMobject`
+        Any SVGMobject from which we want to remove unwanted invisble characters.
+
+    Returns
+    -------
+    :class:`~.SVGMobject`
+        The SVGMobject without unwanted invisble characters.
+    """
+
     iscode = False
     if mobject.__class__.__name__ == "Text":
         mobject = mobject[:]
@@ -403,19 +416,42 @@ class TextWithBackground(Text):
 
 
 """
-paragraph paragraph.chars is VGroup() of each lines and each line is VGroup() of that line's characters 
-that mean you can use it like 
-    paragraph[0:5] or paragraph.chars[0:5] to access first five lines
-    paragraph[0][0:5] or paragraph.chars[0][0:5] to access first line's first five characters
-paragraph or paragraph[] or paragraph.chars[][] will create problems when using Transform() because of invisible characters 
-so, before using Transform() remove invisible characters by using remove_invisible_chars()
+
 for example self.play(Transform(remove_invisible_chars(paragraph.chars[0:2]), remove_invisible_chars(paragraph.chars[3][0:3])))
-paragraph(" a b", " bcd\nefg") is same as paragraph(" a b", " bcd", "efg")
-that means paragraph[2] is "efg"
+
 """
 
 
 class Paragraph(VGroup):
+    """Paragraph is used to display paragraphs with more efficiency or having some extra features.
+
+    paragraph paragraph.chars is VGroup() of each lines and each line is VGroup() of that line's characters 
+    that mean you can use it like 
+        paragraph[0:5] or paragraph.chars[0:5] to access first five lines
+        paragraph[0][0:5] or paragraph.chars[0][0:5] to access first line's first five characters
+    paragraph or paragraph[] or paragraph.chars[][] will create problems when using Transform() because of invisible characters 
+    so, before using Transform() remove invisible characters by using remove_invisible_chars()
+
+    paragraph(" a b", " bcd\nefg") is same as paragraph(" a b", " bcd", "efg")
+    that means paragraph[2] is "efg"
+
+    Parameters
+    ---------
+    line_spacing : :class:`int`, optional
+        Represents the spaning betweeb lines. Default to -1, which means auto.
+    alignment : :class:`str`, optional
+        Defines the alignment of paragraph. Default to "left". Possible values are "left", "right", "center"
+
+    Examples
+    --------
+    Normal usage::
+        paragraph = Paragraph('this is a awesome', 'paragraph', 'With \nNewlines', '\tWith Tabs', '  With Spaces',
+                      'With Alignments',
+                      'center', "left", "right")
+    Remove unwanted invisible characters::
+        self.play(Transform(remove_invisible_chars(paragraph.chars[0:2]), remove_invisible_chars(paragraph.chars[3][0:3]))
+    """
+
     CONFIG = {
         "line_spacing": -1,
         "alignment": None,
@@ -459,6 +495,18 @@ class Paragraph(VGroup):
             self.set_all_lines_alignments(self.alignment)
 
     def gen_chars(self, lines_str_list):
+        """Function to convert plain string to 2d-VGroup of chars. 2d-VGroup mean "VGroup of VGroup".
+
+        Parameters
+        ---------
+        lines_str_list : :class:`str`
+            Plain text string.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            The generated 2d-VGroup of chars.
+        """
         char_index_counter = 0
         chars = VGroup()
         for line_no in range(lines_str_list.__len__()):
@@ -474,15 +522,33 @@ class Paragraph(VGroup):
         return chars
 
     def set_all_lines_alignments(self, alignment):
+        """Function to set all line's aligment to a specific value.
+
+        Parameters
+        ---------
+        alignment : :class:`str`
+            Defines the alignment of paragraph. Possible values are "left", "right", "center".
+        """
         for line_no in range(0, self.lines[0].__len__()):
             self.change_alignment_for_a_line(alignment, line_no)
         return self
 
     def set_line_alignment(self, alignment, line_no):
+        """Function to set one line's aligment to a specific value.
+
+        Parameters
+        ---------
+        alignment : :class:`str`
+            Defines the alignment of paragraph. Possible values are "left", "right", "center".
+        line_no : :class:`int`
+            Defines the line number for which we want to set given alignment.
+        """
         self.change_alignment_for_a_line(alignment, line_no)
         return self
 
     def set_all_lines_to_initial_positions(self):
+        """Function to set one all lines to initial positions.
+        """
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
             self[line_no].move_to(
@@ -491,11 +557,27 @@ class Paragraph(VGroup):
         return self
 
     def set_line_to_initial_position(self, line_no):
+        """Function to set one line to initial positions.
+
+        Parameters
+        ---------
+        line_no : :class:`int`
+            Defines the line number for which we want to set given alignment.
+        """
         self.lines[1][line_no] = None
         self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
         return self
 
     def change_alignment_for_a_line(self, alignment, line_no):
+        """Function to change one line's aligment to a specific value.
+
+        Parameters
+        ---------
+        alignment : :class:`str`
+            Defines the alignment of paragraph. Possible values are "left", "right", "center".
+        line_no : :class:`int`
+            Defines the line number for which we want to set given alignment.
+        """
         self.lines[1][line_no] = alignment
         if self.lines[1][line_no] == "center":
             self[line_no].move_to(
