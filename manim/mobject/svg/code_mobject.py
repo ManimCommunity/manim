@@ -15,6 +15,7 @@ from pygments.styles import get_all_styles
 
 class Code(VGroup):
     """Class Code is used to display code with color highlighted.
+    
     Code.styles_list static variable is containing list of names of all styles
     Code is VGroup() with three things
         Code[0] is Code.background_mobject is a VGroup()
@@ -86,16 +87,6 @@ class Code(VGroup):
     Examples
     --------
     Normal usage::
-        helloworldc = Code(
-            "helloworldc.c",
-            tab_width=4,
-            background_stroke_width=1,
-            background_stroke_color=WHITE,
-            insert_line_no=True,
-            style=Code.styles_list[4],
-            background="window",
-            language="cpp",
-        )
         helloworldcpp = Code(
             "helloworldcpp.cpp",
             tab_width=4,
