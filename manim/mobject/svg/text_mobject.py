@@ -62,17 +62,15 @@ class TextSetting(object):
         self.line_num = line_num
 
 
-"""
-Text is VGroup() of each characters
-that mean you can use it like 
-    Text[0:5] or Text.chars[0:5] to access first five characters 
-Text[0:5] or Text or Text.chars[0:5] will create problems when using Transform() because of invisible characters 
-so, before using Transform() remove invisible characters by using remove_invisible_chars()
-for example self.play(Transform(remove_invisible_chars(text.chars[0:4]), remove_invisible_chars(text2.chars[0:2])))
-"""
-
-
 class Text(SVGMobject):
+    """ Text is used for displaying Text.
+    Text is VGroup() of each characters
+    that mean you can use it like 
+        Text[0:5] or Text.chars[0:5] to access first five characters 
+    Text[0:5] or Text or Text.chars[0:5] will create problems when using Transform() because of invisible characters 
+    so, before using Transform() remove invisible characters by using remove_invisible_chars()
+    for example self.play(Transform(remove_invisible_chars(text.chars[0:4]), remove_invisible_chars(text2.chars[0:2])))
+    """
     CONFIG = {
         # Mobject
         "color": WHITE,
@@ -376,28 +374,11 @@ class TextWithBackground(Text):
             tempy = START_Y + line_spacing * setting.line_num
             char_offset_x = 0
             char_height = tempy - size / 2 - (line_spacing - size)
-
-            """
-            for char_index in range(text.__len__()):
-                (x, y, width, height, dx, dy) = context.text_extents("a" + text[char_index] + "a")
-                (_, _, widtha, _, _, _) = context.text_extents("a")
-                width -= 2 * widtha
-                context.rectangle(tempx + char_offset_x, char_height, width, size)
-                context.fill()
-                char_offset_x += width
-            """
             context.move_to(tempx, tempy)
             context.show_text(text)
             offset_x += context.text_extents(text)[4]
         surface.finish()
         return file_name
-
-
-"""
-
-for example self.play(Transform(remove_invisible_chars(paragraph.chars[0:2]), remove_invisible_chars(paragraph.chars[3][0:3])))
-
-"""
 
 
 class Paragraph(VGroup):
