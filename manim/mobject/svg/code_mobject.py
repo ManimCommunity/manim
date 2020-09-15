@@ -1,29 +1,3 @@
-"""
-1) Code is VGroup() with three things
-    1.1) Code[0] is Code.background_mobject
-        which can be a
-            1.1.1) Rectangle() if background == "rectangle"
-            1.1.2) VGroup() of Rectangle() and Dot() for three buttons if background == "window"
-    1.2) Code[1] is Code.line_numbers Which is a Paragraph() object, this mean you can use
-                Code.line_numbers[0] or Code[1][0] to access first line number
-    1.3) Code[2] is Code.code
-        1.3.1) Which is a Paragraph() with color highlighted, this mean you can use
-            Code.code[1] or Code[2][1]
-                line number 1
-            Code.code[1][0] or Code.code[1][0]
-                first character of line number 1
-            Code.code[1][0:5] or Code.code[1][0:5]
-                first five characters of line number 1
-"""
-
-
-__all__ = [
-    "Code",
-    "hilite_me",
-    "insert_line_numbers",
-]
-
-
 import html
 import os
 from ...constants import *
@@ -39,31 +13,25 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments.styles import get_all_styles
 
-"""
-Code.styles_list static variable is containing list of names of all styles
-Code is VGroup() with three things
-    Code[0] is Code.background_mobject is a VGroup()
-        VGroup() of SurroundingRectangle() if background == "rectangle"
-        VGroup() of RoundedRectangle() and Dot() for three buttons if background == "window"
-    Code[1] is Code.line_numbers Which is a Paragraph() object, this mean you can use
-                Code.line_numbers[0] or Code.line_numbers.chars[0] or Code[1].chars[0] to access first line number
-    Code[2] is Code.code
-        Which is a Paragraph() with color highlighted, this mean you can use
-            Code.code[1] or Code.code.chars[1] or Code[2].chars[1]
-                line number 1
-            Code.code[1][0] or Code.code.chars[1][0] or Code[2].chars[1][0]
-                first character of line number 1
-            Code.code[1][0:5] Code.code.chars[1][0:5] or Code[2].chars[1][0:5]
-                first five characters of line number 1
-Code.code[][] Code.code.chars[][] or Code[2].chars[][] will create problems when using Transform() because of invisible characters
-so, before using Transform() remove invisible characters by using remove_invisible_chars()
-for example self.play(Transform(remove_invisible_chars(Code.code.chars[0:2]), remove_invisible_chars(Code.code.chars[3][0:3])))
-or remove_invisible_chars(Code.code) or remove_invisible_chars(Code)
-"""
-
-
 class Code(VGroup):
     """Class Code is used to display code with color highlighted.
+    Code.styles_list static variable is containing list of names of all styles
+    Code is VGroup() with three things
+        Code[0] is Code.background_mobject is a VGroup()
+            VGroup() of SurroundingRectangle() if background == "rectangle"
+            VGroup() of RoundedRectangle() and Dot() for three buttons if background == "window"
+        Code[1] is Code.line_numbers Which is a Paragraph() object, this mean you can use
+            Code.line_numbers[0] or Code.line_numbers.chars[0] or Code[1].chars[0] to access first line number
+        Code[2] is Code.code
+            Which is a Paragraph() with color highlighted, this mean you can use
+                Code.code[1] or Code.code.chars[1] or Code[2].chars[1]
+                    line number 1
+                Code.code[1][0] or Code.code.chars[1][0] or Code[2].chars[1][0]
+                    first character of line number 1
+                Code.code[1][0:5] Code.code.chars[1][0:5] or Code[2].chars[1][0:5]
+                    first five characters of line number 1
+    Code.code[][] Code.code.chars[][] or Code[2].chars[][] will create problems when using Transform() because of invisible characters
+    so, before using Transform() remove invisible characters by using remove_invisible_chars()
 
     Parameters
     ----------
@@ -114,6 +82,33 @@ class Code(VGroup):
         To display line numbers of displayed code if insert_line_no == True.
     code : :class:`~.Paragraph`
         To display highlighted code.
+
+    Examples
+    --------
+    Normal usage::
+        helloworldc = Code(
+            "helloworldc.c",
+            tab_width=4,
+            background_stroke_width=1,
+            background_stroke_color=WHITE,
+            insert_line_no=True,
+            style=Code.styles_list[4],
+            background="window",
+            language="cpp",
+        )
+        helloworldcpp = Code(
+            "helloworldcpp.cpp",
+            tab_width=4,
+            background_stroke_width=1,
+            background_stroke_color=WHITE,
+            insert_line_no=True,
+            style=Code.styles_list[15],
+            background="window",
+            language="cpp",
+        )
+    Remove unwanted invisible characters::
+        self.play(Transform(remove_invisible_chars(Code.code.chars[0:2]), remove_invisible_chars(Code.code.chars[3][0:3])))
+        remove_invisible_chars(Code.code) or remove_invisible_chars(Code)
     """
 
     # tuples in the form (name, aliases, filetypes, mimetypes)
@@ -237,6 +232,7 @@ class Code(VGroup):
 
     def gen_line_numbers(self):
         """Function to generate line_numbers.
+
         Returns
         -------
         :class:`~.Paragraph`
@@ -259,6 +255,7 @@ class Code(VGroup):
 
     def gen_colored_lines(self):
         """Function to generate code.
+
         Returns
         -------
         :class:`~.Paragraph`
@@ -300,6 +297,7 @@ class Code(VGroup):
             self.insert_line_no,
             "border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;",
             self.file_path,
+            self.line_no_from
         )
 
         if self.generate_html_file:
@@ -412,10 +410,16 @@ class Code(VGroup):
 
     def correct_non_span(self, line_str):
         """Function put text color to those strings that don't have one according to background_color of displayed code.
+
         Parameters
         ---------
         line_str : :class:`str`
-            Takes a string to put color to it according to background_color of displayed code.
+            Takes a html element's string to put color to it according to background_color of displayed code.
+
+        Returns
+        -------
+        :class:`str`
+            The generated html element's string with having color attributes.
         """
         words = line_str.split("</span>")
         line_str = ""
@@ -456,8 +460,9 @@ class Code(VGroup):
         return line_str
 
 
-def hilite_me(code, language, style, insert_line_no, divstyles, file_path):
+def hilite_me(code, language, style, insert_line_no, divstyles, file_path, line_no_from):
     """Function to highlight code from string to html.
+
     Parameters
     ---------
     code : :class:`str`
@@ -472,6 +477,8 @@ def hilite_me(code, language, style, insert_line_no, divstyles, file_path):
         Some html css styles.
     file_path : :class:`str`
         Path of code file.
+    line_no_from : :class:`int`
+        Defines the first line's number in the line count.
     """
     style = style or "colorful"
     defstyles = "overflow:auto;width:auto;"
@@ -490,18 +497,25 @@ def hilite_me(code, language, style, insert_line_no, divstyles, file_path):
     else:
         html = highlight(code, get_lexer_by_name(language, **{}), formatter)
     if insert_line_no:
-        html = insert_line_numbers(html)
+        html = insert_line_numbers_in_html(html, line_no_from)
     html = "<!-- HTML generated by Code() -->" + html
     return html
 
 
-def insert_line_numbers(html):
+def insert_line_numbers_in_html(html, line_no_from):
     """Function that inserts line numbers in the highlighted HTML code.
 
     Parameters
     ---------
     html : :class:`str`
         html string of highlighted code.
+    line_no_from : :class:`int`
+        Defines the first line's number in the line count.
+
+    Returns
+    -------
+    :class:`str`
+        The generated html string with having line numbers according given .
     """
     match = re.search("(<pre[^>]*>)(.*)(</pre>)", html, re.DOTALL)
     if not match:
@@ -511,7 +525,7 @@ def insert_line_numbers(html):
     pre_close = match.group(3)
 
     html = html.replace(pre_close, "</pre></td></tr></table>")
-    numbers = range(1, pre.count("\n") + 1)
+    numbers = range(line_no_from, line_no_from + pre.count("\n") + 1)
     format = "%" + str(len(str(numbers[-1]))) + "i"
     lines = "\n".join(format % i for i in numbers)
     html = html.replace(
