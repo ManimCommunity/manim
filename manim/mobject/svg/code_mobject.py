@@ -515,7 +515,7 @@ def insert_line_numbers_in_html(html, line_no_from):
     Returns
     -------
     :class:`str`
-        The generated html string with having line numbers according given .
+        The generated html string with having line numbers.
     """
     match = re.search("(<pre[^>]*>)(.*)(</pre>)", html, re.DOTALL)
     if not match:
