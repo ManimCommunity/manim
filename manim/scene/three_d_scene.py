@@ -338,8 +338,7 @@ class SpecialThreeDScene(ThreeDScene):
 
     def get_sphere(self, **kwargs):
         """
-        Returns a sphere with the passed keyword arguments
-        as properties.
+        Returns a sphere with the passed keyword arguments as properties.
 
         Parameters
         ----------

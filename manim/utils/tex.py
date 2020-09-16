@@ -46,8 +46,7 @@ class TexTemplateFromFile:
         return self.body.replace(self.text_to_replace, expression)
 
     def get_text_for_env(self, environment, expression):
-        """Inserts an expression wrapped in a given environment into
-        the TeX template.
+        """Inserts an expression wrapped in a given environment into the TeX template.
 
         Parameters
         ----------
@@ -68,8 +67,7 @@ class TexTemplateFromFile:
         )
 
     def get_text_for_tex_mode(self, expression):
-        """Inserts an expression wrapped in an ``align*`` environment into
-        the TeX template.
+        """Inserts an expression within an ``align*`` environment into the TeX template.
 
         Parameters
         ----------
