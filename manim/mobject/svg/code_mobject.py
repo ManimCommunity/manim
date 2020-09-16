@@ -41,9 +41,10 @@ class Code(VGroup):
 
     .. WARNING::
 
-        Using a :class:`.Transform` on the highlighted code of a listing
-        will create problems due to invisible characters. Remove them
-        first with :meth:`.text_mobject.remove_invisible_chars`.
+        Using a :class:`.Transform` on text with leading whitespace (and in
+        this particular case: code) can look
+        `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
+        :meth:`remove_invisible_chars` to resolve this issue.
 
     Parameters
     ----------
