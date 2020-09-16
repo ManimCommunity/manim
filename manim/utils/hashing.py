@@ -1,4 +1,4 @@
-"""Essential utilities for scene caching."""
+"""Utilities for scene caching."""
 
 import json
 import zlib

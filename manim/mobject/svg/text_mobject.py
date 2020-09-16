@@ -520,7 +520,7 @@ class Paragraph(VGroup):
         return self
 
     def set_all_lines_to_initial_positions(self):
-        """Function to set one all lines to initial positions."""
+        """Set all lines to their initial positions."""
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
             self[line_no].move_to(
