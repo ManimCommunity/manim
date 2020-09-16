@@ -66,7 +66,7 @@ class TextSetting(object):
 
 
 class Text(SVGMobject):
-    """Display Text.
+    """Display (non-LaTeX) text.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
