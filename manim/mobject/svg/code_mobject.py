@@ -21,6 +21,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments.styles import get_all_styles
 
+
 class Code(VGroup):
     """A highlighted source code listing.
 
@@ -307,7 +308,7 @@ class Code(VGroup):
             self.insert_line_no,
             "border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;",
             self.file_path,
-            self.line_no_from
+            self.line_no_from,
         )
 
         if self.generate_html_file:
@@ -470,7 +471,9 @@ class Code(VGroup):
         return line_str
 
 
-def hilite_me(code, language, style, insert_line_no, divstyles, file_path, line_no_from):
+def hilite_me(
+    code, language, style, insert_line_no, divstyles, file_path, line_no_from
+):
     """Function to highlight code from string to html.
 
     Parameters

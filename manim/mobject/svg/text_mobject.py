@@ -66,7 +66,7 @@ class TextSetting(object):
 
 
 class Text(SVGMobject):
-    """ Text is used for displaying Text.
+    """Text is used for displaying Text.
     Text is VGroup() of each characters
     that mean you can use it like
         Text[0:5] or Text.chars[0:5] to access first five characters
@@ -74,6 +74,7 @@ class Text(SVGMobject):
     so, before using Transform() remove invisible characters by using remove_invisible_chars()
     for example self.play(Transform(remove_invisible_chars(text.chars[0:4]), remove_invisible_chars(text2.chars[0:2])))
     """
+
     CONFIG = {
         # Mobject
         "color": WHITE,
@@ -509,8 +510,7 @@ class Paragraph(VGroup):
         return self
 
     def set_all_lines_to_initial_positions(self):
-        """Function to set one all lines to initial positions.
-        """
+        """Function to set one all lines to initial positions."""
         self.lines[1] = [None for _ in range(self.lines[0].__len__())]
         for line_no in range(0, self.lines[0].__len__()):
             self[line_no].move_to(
