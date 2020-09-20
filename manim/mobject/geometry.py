@@ -9,6 +9,8 @@ __all__ = [
     "CurvedDoubleArrow",
     "Circle",
     "Dot",
+    "AnnotationDot",
+    "LabledDot",
     "SmallDot",
     "Ellipse",
     "AnnularSector",
@@ -150,10 +152,7 @@ class TipableVMobject(VMobject):
         if at_start:
             self.put_start_and_end_on(tip.base, self.get_end())
         else:
-            self.put_start_and_end_on(
-                self.get_start(),
-                tip.base,
-            )
+            self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
     def asign_tip_attr(self, tip, at_start):
@@ -256,9 +255,7 @@ class Arc(TipableVMobject):
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
                 for a in np.linspace(
-                    self.start_angle,
-                    self.start_angle + self.angle,
-                    self.num_components,
+                    self.start_angle, self.start_angle + self.angle, self.num_components
                 )
             ]
         )
@@ -272,12 +269,7 @@ class Arc(TipableVMobject):
         # Use tangent vectors to deduce anchors
         handles1 = anchors[:-1] + (d_theta / 3) * tangent_vectors[:-1]
         handles2 = anchors[1:] - (d_theta / 3) * tangent_vectors[1:]
-        self.set_anchors_and_handles(
-            anchors[:-1],
-            handles1,
-            handles2,
-            anchors[1:],
-        )
+        self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
     def get_arc_center(self, warning=True):
         """
@@ -293,10 +285,7 @@ class Arc(TipableVMobject):
         n1 = rotate_vector(t1, TAU / 4)
         n2 = rotate_vector(t2, TAU / 4)
         try:
-            return line_intersection(
-                line1=(a1, a1 + n1),
-                line2=(a2, a2 + n2),
-            )
+            return line_intersection(line1=(a1, a1 + n1), line2=(a2, a2 + n2))
         except Exception:
             if warning:
                 warnings.warn("Can't find Arc center, using ORIGIN instead")
@@ -333,11 +322,7 @@ class ArcBetweenPoints(Arc):
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
-        Arc.__init__(
-            self,
-            angle=angle,
-            **kwargs,
-        )
+        Arc.__init__(self, angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
@@ -402,9 +387,22 @@ class Dot(Circle):
 
 
 class SmallDot(Dot):
-    CONFIG = {
-        "radius": DEFAULT_SMALL_DOT_RADIUS,
-    }
+    CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
+
+class AnnotationDot(VMobject):
+    def __init__(self,color= BLUE):
+        VMobject.__init__(self)
+        sourunding_dot = Dot().scale(1.3).set_fill(color=WHITE).set_z_index(-1)
+        innerdot = Dot().set_color(color)
+        annotation_dot= VGroup(sourunding_dot,innerdot)
+        self.add(annotation_dot)
+
+class LabledDot(Mobject):
+    def __init__(self, label_string):
+        Mobject.__init__(self)
+        from manim import MathTex
+        labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
+        self.add(labled_dot)
 
 
 class Ellipse(Circle):
@@ -469,10 +467,7 @@ class Annulus(Circle):
 
 
 class Line(TipableVMobject):
-    CONFIG = {
-        "buff": 0,
-        "path_arc": None,  # angle of arc specified here
-    }
+    CONFIG = {"buff": 0, "path_arc": None}  # angle of arc specified here
 
     def __init__(self, start=LEFT, end=RIGHT, **kwargs):
         digest_config(self, kwargs)
@@ -550,10 +545,7 @@ class Line(TipableVMobject):
         return np.tan(self.get_angle())
 
     def set_angle(self, angle):
-        self.rotate(
-            angle - self.get_angle(),
-            about_point=self.get_start(),
-        )
+        self.rotate(angle - self.get_angle(), about_point=self.get_start())
 
     def set_length(self, length):
         self.scale(length / self.get_length())
@@ -593,10 +585,7 @@ class DashedLine(Line):
             return 1
 
     def calculate_positive_space_ratio(self):
-        return fdiv(
-            self.dash_length,
-            self.dash_length + self.dash_spacing,
-        )
+        return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
     def get_start(self):
         if len(self.submobjects) > 0:
@@ -632,10 +621,7 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
-    CONFIG = {
-        "width": 0.2,
-        "angle": 0,
-    }
+    CONFIG = {"width": 0.2, "angle": 0}
 
     def __init__(self, **kwargs):
         VMobject.__init__(self, **kwargs)
@@ -719,27 +705,19 @@ class Arrow(Line):
 
     def get_default_tip_length(self):
         max_ratio = self.max_tip_length_to_length_ratio
-        return min(
-            self.tip_length,
-            max_ratio * self.get_length(),
-        )
+        return min(self.tip_length, max_ratio * self.get_length())
 
     def set_stroke_width_from_length(self):
         max_ratio = self.max_stroke_width_to_length_ratio
         self.set_stroke(
-            width=min(
-                self.initial_stroke_width,
-                max_ratio * self.get_length(),
-            ),
+            width=min(self.initial_stroke_width, max_ratio * self.get_length()),
             family=False,
         )
         return self
 
 
 class Vector(Arrow):
-    CONFIG = {
-        "buff": 0,
-    }
+    CONFIG = {"buff": 0}
 
     def __init__(self, direction=RIGHT, **kwargs):
         if len(direction) == 2:
@@ -765,9 +743,7 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
-    CONFIG = {
-        "color": BLUE,
-    }
+    CONFIG = {"color": BLUE}
 
     def __init__(self, *vertices, **kwargs):
         VMobject.__init__(self, **kwargs)
@@ -812,9 +788,7 @@ class Polygon(VMobject):
 
 
 class RegularPolygon(Polygon):
-    CONFIG = {
-        "start_angle": None,
-    }
+    CONFIG = {"start_angle": None}
 
     def __init__(self, n=6, **kwargs):
         digest_config(self, kwargs, locals())
@@ -849,9 +823,7 @@ class Rectangle(Polygon):
 
 
 class Square(Rectangle):
-    CONFIG = {
-        "side_length": 2.0,
-    }
+    CONFIG = {"side_length": 2.0}
 
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
@@ -861,9 +833,7 @@ class Square(Rectangle):
 
 
 class RoundedRectangle(Rectangle):
-    CONFIG = {
-        "corner_radius": 0.5,
-    }
+    CONFIG = {"corner_radius": 0.5}
 
     def __init__(self, **kwargs):
         Rectangle.__init__(self, **kwargs)
