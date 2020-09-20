@@ -10,7 +10,7 @@ __all__ = [
     "Circle",
     "Dot",
     "AnnotationDot",
-    "LabledDot",
+    "LabeledDot",
     "SmallDot",
     "Ellipse",
     "AnnularSector",
@@ -389,18 +389,21 @@ class Dot(Circle):
 class SmallDot(Dot):
     CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
 
+
 class AnnotationDot(VMobject):
-    def __init__(self,color= BLUE):
+    def __init__(self, color=BLUE):
         VMobject.__init__(self)
         sourunding_dot = Dot().scale(1.3).set_fill(color=WHITE).set_z_index(-1)
         innerdot = Dot().set_color(color)
-        annotation_dot= VGroup(sourunding_dot,innerdot)
+        annotation_dot = VGroup(sourunding_dot, innerdot)
         self.add(annotation_dot)
 
-class LabledDot(Mobject):
+
+class LabeledDot(Mobject):
     def __init__(self, label_string):
         Mobject.__init__(self)
         from manim import MathTex
+
         labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
         self.add(labled_dot)
 
