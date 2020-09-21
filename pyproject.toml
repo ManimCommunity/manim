@@ -39,7 +39,6 @@ pycairo = [
 	{ version = "^1.19", markers = "sys_platform != 'win32'"},
 	{ version = "^1.19", markers = "sys_platform == 'win32'", source="testpypi" },
 ]
-dataclasses = {version = "^0.7", python = "~3.6"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
