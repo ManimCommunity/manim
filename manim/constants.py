@@ -13,6 +13,7 @@ You set font like:
 text = Text('your text', font='your font')
 or:
 class MyText(Text):
+
     CONFIG = {
         'font': 'My Font'
     }
