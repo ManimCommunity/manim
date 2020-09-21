@@ -393,7 +393,7 @@ class SmallDot(Dot):
 class AnnotationDot(VMobject):
     def __init__(self, color=BLUE):
         VMobject.__init__(self)
-        sourunding_dot = Dot().scale(1.3).set_fill(color=WHITE).set_z_index(-1)
+        surrounding_dot = Dot().scale(1.3).set_fill(color=WHITE).set_z_index(-1)
         innerdot = Dot().set_color(color)
         annotation_dot = VGroup(surrounding_dot, innerdot)
         self.add(annotation_dot)
