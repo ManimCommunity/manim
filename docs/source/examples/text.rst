@@ -124,6 +124,6 @@ Text
                      '[4:5]':'#269a43', '[5:]':'#e53125', }).scale(3)
             self.add(text)
 
-`Text` works also with other languages like `你好` `こんにちは` `안녕하세요`
+`Text` works also with other languages like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
 Be sure you have the font that supports those languages!
 
