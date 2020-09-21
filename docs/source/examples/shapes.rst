@@ -5,7 +5,7 @@ Shapes
     :quality: medium
     :save_last_frame:
 
-    class Shape1(Scene):
+    class Example1Shape(Scene):
         def construct(self):
             d = Dot()
             c = Circle()
