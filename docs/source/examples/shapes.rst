@@ -28,7 +28,7 @@ Shapes
             image.set_height(7)
             self.add(image)
 
-.. manim:: Example1ImageFromArray
+.. manim:: Example2ImageFromFile
     :quality: medium
     :save_last_frame:
 
