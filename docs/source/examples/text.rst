@@ -48,11 +48,11 @@ Text
             text = Text('Hello world', font='Source Han Sans').scale(3)
             self.add(text)
 
-.. manim:: Example6Text
+.. manim:: Example5bText
     :quality: medium
     :save_last_frame:
 
-    class Example6Text(Scene):
+    class Example5bText(Scene):
         def construct(self):
             text = Text('Hello world', t2f={'world':'Forte'}).scale(3)
             self.add(text)
@@ -123,3 +123,7 @@ Text
                      '[2:3]':'#fbb003', '[3:4]':'#3174f0',
                      '[4:5]':'#269a43', '[5:]':'#e53125', }).scale(3)
             self.add(text)
+
+`Text` works also with other languages like `你好` `こんにちは` `안녕하세요`
+Be sure you have the font that supports those languages!
+
