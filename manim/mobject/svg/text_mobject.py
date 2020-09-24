@@ -297,7 +297,7 @@ class Text(SVGMobject):
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
             return file_name
-        surface = cairo.SVGSurface(file_name, 600, 400)
+        surface = cairo.SVGSurface(file_name, len(self.text) * size, 400)
         context = cairo.Context(surface)
         context.set_font_size(size)
         context.move_to(START_X, START_Y)
