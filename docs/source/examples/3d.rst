@@ -1,8 +1,6 @@
 3D Scenes
 =================================
 
-Hello World
-
 .. manim:: Example3DNo1
     :quality: medium
     :save_last_frame:
@@ -20,21 +18,6 @@ Hello World
             )
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
-
-.. manim:: Example3DNo3
-    :quality: medium
-
-    class Example3DNo3(ThreeDScene):
-        def construct(self):
-            axes = ThreeDAxes()
-            circle=Circle()
-            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-            self.add(circle,axes)
-            self.begin_ambient_camera_rotation(rate=0.1)
-            self.wait(3)
-            self.stop_ambient_camera_rotation()
-            self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES)
-            self.wait()
 
 .. manim:: Example3DNo2
     :quality: medium
@@ -55,11 +38,20 @@ Hello World
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
-and one more example:
+.. manim:: Example3DNo3
+    :quality: medium
 
-
-
-and further:
+    class Example3DNo3(ThreeDScene):
+        def construct(self):
+            axes = ThreeDAxes()
+            circle=Circle()
+            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.add(circle,axes)
+            self.begin_ambient_camera_rotation(rate=0.1)
+            self.wait(3)
+            self.stop_ambient_camera_rotation()
+            self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.wait()
 
 .. manim:: Example3DNo4
     :quality: medium
