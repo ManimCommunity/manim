@@ -4,7 +4,7 @@ import subprocess
 from manim import file_writer_config
 
 from ..utils.commands import capture
-from ..utils.video_tester import *
+from ..utils.video_tester import video_comparison
 
 
 @video_comparison(
