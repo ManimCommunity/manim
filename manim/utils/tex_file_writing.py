@@ -75,7 +75,7 @@ def tex_compilation_command(compiler, tex_file, tex_dir):
             os.devnull,
         ]
     else:
-        raise ValueError("Tex compiler " + compiler["command"] + " unknown.")
+        raise ValueError(f"Tex compiler {compiler['command']} unknown.")
     return " ".join(commands)
 
 
@@ -96,11 +96,9 @@ def tex_to_dvi(tex_file, use_ctex=False, tex_compiler=None):
         if exit_code != 0:
             log_file = tex_file.replace(".tex", ".log")
             raise ValueError(
-                tex_compiler["command"]
-                + " error converting to "
-                + tex_compiler["output_format"][1:]
-                + ". "
-                + f"See log output above or the log file: {log_file}"
+                f"{tex_compiler['command']} error converting to"
+                f" {tex_compiler['output_format'][1:]}. See log output above or"
+                f" the log file: {log_file}"
             )
     return result
 

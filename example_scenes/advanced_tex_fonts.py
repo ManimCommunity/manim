@@ -23,23 +23,23 @@ YourTextHere
 """
 
 
-class FrenchCursive(TextMobject):
+class FrenchCursive(Tex):
     def __init__(self, *tex_strings, **kwargs):
         super().__init__(*tex_strings, template=TexTemplateFrenchCursive(), **kwargs)
 
 
 class AdvancedTexFontExample(Scene):
     def construct(self):
-        self.add(TextMobject("Tex Font Example").to_edge(UL))
-        self.play(ShowCreation(FrenchCursive("$f: A \\longrightarrow B$").shift(UP)))
+        self.add(Tex("Tex Font Example").to_edge(UL))
+        self.play(ShowCreation(FrenchCursive(r"$f: A \longrightarrow B$").shift(UP)))
         self.play(
             ShowCreation(FrenchCursive("Behold! We can write math in French Cursive"))
         )
         self.wait(1)
         self.play(
             ShowCreation(
-                TextMobject(
-                    "See more font templates at \\\\ http://jf.burnol.free.fr/showcase.html"
+                Tex(
+                    r"See more font templates at \\ http://jf.burnol.free.fr/showcase.html"
                 ).shift(2 * DOWN)
             )
         )
