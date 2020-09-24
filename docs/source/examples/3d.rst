@@ -19,6 +19,8 @@
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
+
+
 .. manim:: Example3DNo2
     :quality: medium
     :save_last_frame:
@@ -38,6 +40,8 @@
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
+and one more example:
+
 .. manim:: Example3DNo3
     :quality: medium
 
@@ -52,6 +56,8 @@
             self.stop_ambient_camera_rotation()
             self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES)
             self.wait()
+
+and further:
 
 .. manim:: Example3DNo4
     :quality: medium
