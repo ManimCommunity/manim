@@ -13,8 +13,7 @@ __all__ = [
 
 import itertools as it
 import sys
-
-from colour import Color
+import colour
 
 from ...constants import *
 from ...mobject.mobject import Mobject
@@ -211,6 +210,15 @@ class VMobject(Mobject):
             self.color_using_background_image(background_image_file)
         return self
 
+    def get_simple_style(self):
+        return {
+            "fill_color": colour.rgb2hex(self.get_fill_color().get_rgb()),
+            "fill_opacity": self.get_fill_opacity(),
+            "stroke_color": colour.rgb2hex(self.get_stroke_color().get_rgb()),
+            "stroke_width": self.get_stroke_width(),
+            "stroke_opacity": self.get_stroke_opacity(),
+        }
+
     def get_style(self):
         return {
             "fill_color": self.get_fill_colors(),
@@ -290,7 +298,7 @@ class VMobject(Mobject):
         return self.get_fill_opacities()[0]
 
     def get_fill_colors(self):
-        return [Color(rgb=rgba[:3]) for rgba in self.get_fill_rgbas()]
+        return [colour.Color(rgb=rgba[:3]) for rgba in self.get_fill_rgbas()]
 
     def get_fill_opacities(self):
         return self.get_fill_rgbas()[:, 3]
@@ -319,7 +327,9 @@ class VMobject(Mobject):
         return self.get_stroke_opacities(background)[0]
 
     def get_stroke_colors(self, background=False):
-        return [Color(rgb=rgba[:3]) for rgba in self.get_stroke_rgbas(background)]
+        return [
+            colour.Color(rgb=rgba[:3]) for rgba in self.get_stroke_rgbas(background)
+        ]
 
     def get_stroke_opacities(self, background=False):
         return self.get_stroke_rgbas(background)[:, 3]
