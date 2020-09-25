@@ -1,3 +1,8 @@
+"""Animations for changing numbers."""
+
+__all__ = ["ChangingDecimal", "ChangeDecimalToValue"]
+
+
 import warnings
 
 from ..animation.animation import Animation

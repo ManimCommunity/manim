@@ -1,3 +1,28 @@
+"""Animations transforming one mobject into another."""
+
+__all__ = [
+    "Transform",
+    "ReplacementTransform",
+    "TransformFromCopy",
+    "ClockwiseTransform",
+    "CounterclockwiseTransform",
+    "MoveToTarget",
+    "ApplyMethod",
+    "ApplyPointwiseFunction",
+    "ApplyPointwiseFunctionToCenter",
+    "FadeToColor",
+    "ScaleInPlace",
+    "ShrinkToCenter",
+    "Restore",
+    "ApplyFunction",
+    "ApplyMatrix",
+    "ApplyComplexFunction",
+    "CyclicReplace",
+    "Swap",
+    "TransformAnimations",
+]
+
+
 import inspect
 
 import numpy as np
@@ -34,7 +59,10 @@ class Transform(Animation):
         elif self.path_arc == 0:
             self.path_func = straight_path
         else:
-            self.path_func = path_along_arc(self.path_arc, self.path_arc_axis,)
+            self.path_func = path_along_arc(
+                self.path_arc,
+                self.path_arc_axis,
+            )
 
     def begin(self):
         # Use a copy of target_mobject for the align_data
@@ -83,7 +111,11 @@ class Transform(Animation):
         return zip(
             *[
                 mob.family_members_with_points()
-                for mob in [self.mobject, self.starting_mobject, self.target_copy,]
+                for mob in [
+                    self.mobject,
+                    self.starting_mobject,
+                    self.target_copy,
+                ]
             ]
         )
 

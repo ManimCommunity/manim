@@ -1,3 +1,23 @@
+"""A selection of rate functions, i.e., *speed curves* for animations."""
+
+__all__ = [
+    "linear",
+    "smooth",
+    "rush_into",
+    "rush_from",
+    "slow_into",
+    "double_smooth",
+    "there_and_back",
+    "there_and_back_with_pause",
+    "running_start",
+    "not_quite_there",
+    "wiggle",
+    "squish_rate_func",
+    "lingering",
+    "exponential_decay",
+]
+
+
 import numpy as np
 
 from ..utils.bezier import bezier
@@ -10,7 +30,11 @@ def linear(t):
 
 def smooth(t, inflection=10.0):
     error = sigmoid(-inflection / 2)
-    return np.clip((sigmoid(inflection * (t - 0.5)) - error) / (1 - 2 * error), 0, 1,)
+    return np.clip(
+        (sigmoid(inflection * (t - 0.5)) - error) / (1 - 2 * error),
+        0,
+        1,
+    )
 
 
 def rush_into(t, inflection=10.0):

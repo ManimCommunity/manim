@@ -8,22 +8,22 @@ import traceback
 import importlib.util
 import types
 
-from .config import file_writer_config, args
-from .utils import cfg_subcmds
+from . import constants, logger, console, file_writer_config
+from .config.config import args
+from .config import cfg_subcmds
 from .scene.scene import Scene
-from .utils.sounds import play_error_sound
-from .utils.sounds import play_finish_sound
+from .utils.sounds import play_error_sound, play_finish_sound
+from .utils.file_ops import open_file as open_media_file
 from . import constants
-from .logger import logger, console
 
 
 def open_file_if_needed(file_writer):
-    if file_writer_config["verbose"] != "DEBUG":
+    if file_writer_config["verbosity"] != "DEBUG":
         curr_stdout = sys.stdout
         sys.stdout = open(os.devnull, "w")
 
     open_file = any(
-        [file_writer_config["preview"], file_writer_config["show_file_in_finder"]]
+        [file_writer_config["preview"], file_writer_config["show_in_file_browser"]]
     )
     if open_file:
         current_os = platform.system()
@@ -31,35 +31,18 @@ def open_file_if_needed(file_writer):
 
         if file_writer_config["save_last_frame"]:
             file_paths.append(file_writer.get_image_file_path())
-        if file_writer_config["write_to_movie"]:
+        if (
+            file_writer_config["write_to_movie"]
+            and not file_writer_config["save_as_gif"]
+        ):
             file_paths.append(file_writer.get_movie_file_path())
+        if file_writer_config["save_as_gif"]:
+            file_paths.append(file_writer.gif_file_path)
 
         for file_path in file_paths:
-            if current_os == "Windows":
-                if file_writer_config["preview"]:
-                    os.startfile(file_path)
-                if file_writer_config["show_file_in_finder"]:
-                    os.startfile(os.path.dirname(file_path))
-            else:
-                commands = []
-                if current_os == "Linux":
-                    commands.append("xdg-open")
-                elif current_os.startswith("CYGWIN"):
-                    commands.append("cygstart")
-                else:  # Assume macOS
-                    commands.append("open")
+            open_media_file(file_path, file_writer_config["show_in_file_browser"])
 
-                if file_writer_config["show_file_in_finder"]:
-                    commands.append("-R")
-
-                commands.append(file_path)
-
-                # commands.append("-g")
-                FNULL = open(os.devnull, "w")
-                sp.call(commands, stdout=FNULL, stderr=sp.STDOUT)
-                FNULL.close()
-
-    if file_writer_config["verbose"] != "DEBUG":
+    if file_writer_config["verbosity"] != "DEBUG":
         sys.stdout.close()
         sys.stdout = curr_stdout
 
@@ -129,13 +112,16 @@ def get_scene_classes_from_module(module):
 
 def get_module(file_name):
     if file_name == "-":
+        # Since this feature is used for rapid testing, using Scene Caching would be a
+        # hindrance in this case.
+        file_writer_config["disable_caching"] = True
         module = types.ModuleType("input_scenes")
         logger.info(
             "Enter the animation's code & end with an EOF (CTRL+D on Linux/Unix, CTRL+Z on Windows):"
         )
         code = sys.stdin.read()
         if not code.startswith("from manim import"):
-            logger.warn(
+            logger.warning(
                 "Didn't find an import statement for Manim. Importing automatically..."
             )
             code = "from manim import *\n" + code

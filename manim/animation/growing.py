@@ -1,6 +1,15 @@
-from ..animation.transform import Transform
+"""Animations that grow mobjects."""
 
-# from ..utils.paths import counterclockwise_path
+__all__ = [
+    "GrowFromPoint",
+    "GrowFromCenter",
+    "GrowFromEdge",
+    "GrowArrow",
+    "SpinInFromNothing",
+]
+
+
+from ..animation.transform import Transform
 from ..constants import PI
 
 

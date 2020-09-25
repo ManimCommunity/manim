@@ -1,3 +1,8 @@
+"""Mobjects used to mark and annotate other mobjects."""
+
+__all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
+
+
 from ..constants import *
 from ..mobject.geometry import Line
 from ..mobject.geometry import Rectangle
@@ -68,7 +73,9 @@ class Cross(VGroup):
 
     def __init__(self, mobject, **kwargs):
         VGroup.__init__(
-            self, Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT),
+            self,
+            Line(UP + LEFT, DOWN + RIGHT),
+            Line(UP + RIGHT, DOWN + LEFT),
         )
         self.replace(mobject, stretch=True)
         self.set_stroke(self.stroke_color, self.stroke_width)

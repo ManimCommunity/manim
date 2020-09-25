@@ -1,10 +1,26 @@
+"""Sound-related utility functions."""
+
+__all__ = [
+    "play_chord",
+    "play_error_sound",
+    "play_finish_sound",
+    "get_full_sound_file_path",
+]
+
+
 import os
 from ..utils.file_ops import seek_full_path_from_defaults
 
 
 def play_chord(*nums):
     commands = (
-        ["play", "-n", "-c1", "--no-show-progress", "synth",]
+        [
+            "play",
+            "-n",
+            "-c1",
+            "--no-show-progress",
+            "synth",
+        ]
         + ["sin %-" + str(num) for num in nums]
         + ["fade h 0.5 1 0.5", ">", os.devnull]
     )

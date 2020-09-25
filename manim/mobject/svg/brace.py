@@ -1,17 +1,22 @@
+"""Mobject representing curly braces."""
+
+__all__ = ["Brace", "BraceLabel", "BraceText"]
+
+
 import numpy as np
 
 from ...animation.composition import AnimationGroup
 from ...constants import *
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
-from ...mobject.svg.tex_mobject import TexMobject
-from ...mobject.svg.tex_mobject import TextMobject
+from ...mobject.svg.tex_mobject import MathTex
+from ...mobject.svg.tex_mobject import Tex
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.config_ops import digest_config
 from ...utils.space_ops import get_norm
 
 
-class Brace(TexMobject):
+class Brace(MathTex):
     CONFIG = {
         "buff": 0.2,
         "width_multiplier": 2,
@@ -35,7 +40,7 @@ class Brace(TexMobject):
             self.max_num_quads,
         )
         tex_string = "\\underbrace{%s}" % (num_quads * "\\qquad")
-        TexMobject.__init__(self, tex_string, **kwargs)
+        MathTex.__init__(self, tex_string, **kwargs)
         self.tip_point_index = np.argmin(self.get_all_points()[:, 1])
         self.stretch_to_fit_width(target_width)
         self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
@@ -53,12 +58,12 @@ class Brace(TexMobject):
         return self
 
     def get_text(self, *text, **kwargs):
-        text_mob = TextMobject(*text)
+        text_mob = Tex(*text)
         self.put_at_tip(text_mob, **kwargs)
         return text_mob
 
     def get_tex(self, *tex, **kwargs):
-        tex_mob = TexMobject(*tex)
+        tex_mob = MathTex(*tex)
         self.put_at_tip(tex_mob, **kwargs)
         return tex_mob
 
@@ -75,7 +80,7 @@ class Brace(TexMobject):
 
 class BraceLabel(VMobject):
     CONFIG = {
-        "label_constructor": TexMobject,
+        "label_constructor": MathTex,
         "label_scale": 1,
     }
 
@@ -121,14 +126,6 @@ class BraceLabel(VMobject):
         self.change_label(*text)
         return self
 
-    def copy(self):
-        copy_mobject = copy.copy(self)
-        copy_mobject.brace = self.brace.copy()
-        copy_mobject.label = self.label.copy()
-        copy_mobject.submobjects = [copy_mobject.brace, copy_mobject.label]
-
-        return copy_mobject
-
 
 class BraceText(BraceLabel):
-    CONFIG = {"label_constructor": TextMobject}
+    CONFIG = {"label_constructor": Tex}

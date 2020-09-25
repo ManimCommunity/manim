@@ -1,3 +1,16 @@
+"""Utilities required by manim's CONFIG attributes."""
+
+__all__ = [
+    "get_all_descendent_classes",
+    "filtered_locals",
+    "digest_config",
+    "merge_dicts_recursively",
+    "soft_dict_update",
+    "digest_locals",
+    "DictAsObject",
+]
+
+
 import inspect
 import itertools as it
 

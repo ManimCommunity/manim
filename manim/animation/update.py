@@ -1,3 +1,8 @@
+"""Animations that update mobjects."""
+
+__all__ = ["UpdateFromFunc", "UpdateFromAlphaFunc", "MaintainPositionRelativeTo"]
+
+
 import operator as op
 
 from ..animation.animation import Animation
@@ -30,7 +35,10 @@ class UpdateFromAlphaFunc(UpdateFromFunc):
 class MaintainPositionRelativeTo(Animation):
     def __init__(self, mobject, tracked_mobject, **kwargs):
         self.tracked_mobject = tracked_mobject
-        self.diff = op.sub(mobject.get_center(), tracked_mobject.get_center(),)
+        self.diff = op.sub(
+            mobject.get_center(),
+            tracked_mobject.get_center(),
+        )
         super().__init__(mobject, **kwargs)
 
     def interpolate_mobject(self, alpha):

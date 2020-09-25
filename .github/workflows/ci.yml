@@ -8,35 +8,15 @@ on:
         - master
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-
-      - name: Install black
-        run: pip install black
-
-      - name: Check manim formatting
-        run: black --check --diff manim
-
-      - name: Check tests formatting
-        run: black --check --diff tests
-
-      - name: Check examples formatting
-        run: black --check --diff example_scenes
-
   test:
     runs-on: ${{ matrix.os }}
+    env:
+       POETRY_VIRTUALENVS_CREATE: false
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python: [3.6, 3.7, 3.8]
+        python: [3.6,3.7, 3.8]
 
     steps:
       - name: Checkout the repository
@@ -47,12 +27,31 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      - name: Install Poetry
+        run: |
+          pip install wheel
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+
+      - name: Get pip cache dir
+        shell: bash
+        id: pip-cache-and-time
+        run: |
+           echo "::set-output name=dir::$(pip cache dir)"
+           echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
+
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache-and-time.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python }}-${{ steps.pip-cache-and-time.outputs.date }}
+
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt update
           sudo apt install -y ffmpeg
           sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+          echo "::add-path::$HOME/.poetry/bin"
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
@@ -62,30 +61,54 @@ jobs:
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
+          echo "::add-path::$HOME/.poetry/bin"
           echo "::set-env name=PATH::$PATH"
 
-      - name: Install system dependencies (Windows)
+      - name: Cache Windows
+        id: cache-windows
+        if: runner.os == 'Windows'
+        uses: actions/cache@v2
+        with:
+         path: ${{ github.workspace }}\ManimCache
+         key: ${{ runner.os }}-dependencies-ffmpeg-sox-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
+
+      - name: Download system dependencies (Windows)
+        if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
+        run: |
+          $soxVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['sox'])"
+          $soxVersionNumber = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['sox'].split('-')[1])"
+          $ffmpegVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'])"
+          $ffmpegVersionNumber = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'].split('-')[1])"
+          $OriPath = $env:PATH
+          echo "Install Tinytex"
+          Invoke-WebRequest "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.zip?job=image:%20Visual%20Studio%202019" -O "$($env:TMP)\TinyTex.zip"
+          Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
+          $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32;$($env:PATH)"
+          tlmgr install standalone preview doublestroke ms setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english
+          $env:PATH=$OriPath
+          echo "Completed Latex Install Sox"
+          Invoke-WebRequest "https://downloads.sourceforge.net/project/sox/sox/$($soxVersionNumber)/$($soxVersion).zip" -UserAgent "wget" -O "$($env:TMP)\SoX.zip"
+          7z x "$($env:TMP)\SoX.zip" -o"$($PWD)\ManimCache"
+          Move-Item "ManimCache\sox-*" "ManimCache\SoX"
+          Invoke-WebRequest "https://ffmpeg.zeranoe.com/builds/win64/static/$($ffmpegVersion).zip" -O "$($env:TMP)\$($ffmpegVersion).zip"
+          7z x "$($env:TMP)\$($ffmpegVersion).zip" -o"$($PWD)\ManimCache"
+          Move-Item "ManimCache\ffmpeg-*" "ManimCache\FFmpeg"
+
+      - name: Add Windows dependecies to path
         if: runner.os == 'Windows'
         run: |
-          Try {Invoke-WebRequest https://yihui.org/gh/tinytex/tools/install-windows.bat -O install_tinytex.bat}
-          Catch {Invoke-WebRequest https://raw.githubusercontent.com/yihui/tinytex/master/tools/install-windows.bat -O install_tinytex.bat}
-          Start-Process install_tinytex.bat -NoNewWindow -Wait
-          $env:Path += ";" + $env:APPDATA + "\TinyTeX\bin\win32"
-          tlmgr install standalone preview doublestroke ms setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english
-          choco install --no-progress ffmpeg
-          choco install --no-progress sox.portable
+          $env:Path += ";" + "$($PWD)\ManimCache\FFmpeg\bin"
+          $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
+          $env:Path += ";" + "$($PWD)\ManimCache\SoX"
+          $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           echo "::set-env name=Path::$env:Path"
 
-      - name: Install Pycairo (Non-Windows)
-        if: runner.os == 'macOS' || runner.os == 'Linux'
-        run: pip install pycairo
-
-      - name: Install Pycairo (Windows)
-        if: runner.os == 'Windows'
-        run: python ./scripts/pycairoinstall.py
-
       - name: Install manim
-        run: pip install . pytest
+        run: |
+          poetry install
 
       - name: Run tests
-        run: pytest
+        run: poetry run pytest
+
+      - name: Run module doctests
+        run: poetry run pytest --doctest-modules manim

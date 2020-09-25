@@ -1,3 +1,8 @@
+"""Image manipulation utilities."""
+
+__all__ = ["get_full_raster_image_path", "drag_pixels", "invert_image"]
+
+
 import numpy as np
 import os
 

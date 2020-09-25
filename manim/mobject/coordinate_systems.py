@@ -1,13 +1,18 @@
+"""Mobjects that represent coordinate systems."""
+
+__all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlane"]
+
+
 import numpy as np
 import numbers
 
+from .. import config
 from ..constants import *
-from ..config import config
 from ..mobject.functions import ParametricFunction
 from ..mobject.geometry import Arrow
 from ..mobject.geometry import Line
 from ..mobject.number_line import NumberLine
-from ..mobject.svg.tex_mobject import TexMobject
+from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
@@ -22,13 +27,16 @@ class CoordinateSystem:
     Abstract class for Axes and NumberPlane
     """
 
-    CONFIG = {
-        "dimension": 2,
-        "x_min": -config["frame_x_radius"],
-        "x_max": config["frame_x_radius"],
-        "y_min": -config["frame_y_radius"],
-        "y_max": config["frame_y_radius"],
-    }
+    def __init__(self, dim=2):
+        self.dimension = dim
+        if not hasattr(self, "x_min"):
+            self.x_min = -config["frame_x_radius"]
+        if not hasattr(self, "x_max"):
+            self.x_max = config["frame_x_radius"]
+        if not hasattr(self, "y_min"):
+            self.y_min = -config["frame_y_radius"]
+        if not hasattr(self, "y_max"):
+            self.y_max = config["frame_y_radius"]
 
     def coords_to_point(self, *coords):
         raise Exception("Not implemented")
@@ -70,14 +78,15 @@ class CoordinateSystem:
         )
 
     def get_axis_label(self, label_tex, axis, edge, direction, buff=MED_SMALL_BUFF):
-        label = TexMobject(label_tex)
+        label = MathTex(label_tex)
         label.next_to(axis.get_edge_center(edge), direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
 
     def get_axis_labels(self, x_label_tex="x", y_label_tex="y"):
         self.axis_labels = VGroup(
-            self.get_x_axis_label(x_label_tex), self.get_y_axis_label(y_label_tex),
+            self.get_x_axis_label(x_label_tex),
+            self.get_y_axis_label(y_label_tex),
         )
         return self.axis_labels
 
@@ -127,16 +136,17 @@ class Axes(VGroup, CoordinateSystem):
             "exclude_zero_from_default_numbers": True,
         },
         "x_axis_config": {},
-        "y_axis_config": {"label_direction": LEFT,},
+        "y_axis_config": {"label_direction": LEFT},
         "center_point": ORIGIN,
     }
 
     def __init__(self, **kwargs):
+        CoordinateSystem.__init__(self, **kwargs)
         VGroup.__init__(self, **kwargs)
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
         self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
-        # Add as a separate group incase various other
+        # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
         self.axes = VGroup(self.x_axis, self.y_axis)
@@ -145,7 +155,9 @@ class Axes(VGroup, CoordinateSystem):
 
     def create_axis(self, min_val, max_val, axis_config):
         new_config = merge_dicts_recursively(
-            self.axis_config, {"x_min": min_val, "x_max": max_val}, axis_config,
+            self.axis_config,
+            {"x_min": min_val, "x_max": max_val},
+            axis_config,
         )
         return NumberLine(**new_config)
 
@@ -186,11 +198,6 @@ class Axes(VGroup, CoordinateSystem):
 
 class ThreeDAxes(Axes):
     CONFIG = {
-        "dimension": 3,
-        "x_min": -5.5,
-        "x_max": 5.5,
-        "y_min": -5.5,
-        "y_max": 5.5,
         "z_axis_config": {},
         "z_min": -3.5,
         "z_max": 3.5,
@@ -200,7 +207,12 @@ class ThreeDAxes(Axes):
     }
 
     def __init__(self, **kwargs):
+        self.x_min = -5.5
+        self.x_max = 5.5
+        self.y_min = -5.5
+        self.y_max = 5.5
         Axes.__init__(self, **kwargs)
+        self.dimension = 3
         z_axis = self.z_axis = self.create_axis(
             self.z_min, self.z_max, self.z_axis_config
         )
@@ -222,7 +234,10 @@ class ThreeDAxes(Axes):
     def set_axis_shading(self):
         def make_func(axis):
             vect = self.light_source
-            return lambda: (axis.get_edge_center(-vect), axis.get_edge_center(vect),)
+            return lambda: (
+                axis.get_edge_center(-vect),
+                axis.get_edge_center(vect),
+            )
 
         for axis in self:
             for submob in axis.family_members_with_points():
@@ -242,7 +257,7 @@ class NumberPlane(Axes):
             "label_direction": DR,
             "number_scale_val": 0.5,
         },
-        "y_axis_config": {"label_direction": DR,},
+        "y_axis_config": {"label_direction": DR},
         "background_line_style": {
             "stroke_color": BLUE_D,
             "stroke_width": 2,
@@ -272,15 +287,20 @@ class NumberPlane(Axes):
             self.faded_line_style = style
 
         self.background_lines, self.faded_lines = self.get_lines()
-        self.background_lines.set_style(**self.background_line_style,)
-        self.faded_lines.set_style(**self.faded_line_style,)
+        self.background_lines.set_style(
+            **self.background_line_style,
+        )
+        self.faded_lines.set_style(
+            **self.faded_line_style,
+        )
         self.add_to_back(
-            self.faded_lines, self.background_lines,
+            self.faded_lines,
+            self.background_lines,
         )
 
     def get_lines(self):
         """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
-        
+
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
@@ -292,10 +312,16 @@ class NumberPlane(Axes):
         y_freq = self.y_line_frequency
 
         x_lines1, x_lines2 = self.get_lines_parallel_to_axis(
-            x_axis, y_axis, x_freq, self.faded_line_ratio,
+            x_axis,
+            y_axis,
+            x_freq,
+            self.faded_line_ratio,
         )
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
-            y_axis, x_axis, y_freq, self.faded_line_ratio,
+            y_axis,
+            x_axis,
+            y_freq,
+            self.faded_line_ratio,
         )
         lines1 = VGroup(*x_lines1, *y_lines1)
         lines2 = VGroup(*x_lines2, *y_lines2)
@@ -313,9 +339,9 @@ class NumberPlane(Axes):
 
         axis_perpendicular_to : :class:`~.Line`
             The axis with which the lines will be perpendicular.
-        
+
         ratio_faded_lines : :class:`float`
-            The number of faded lines between each non-faded line. 
+            The number of faded lines between each non-faded line.
 
         freq : :class:`float`
             Frequency of non-faded lines (number of non-faded lines per graph unit).
@@ -323,7 +349,7 @@ class NumberPlane(Axes):
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
-            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.     
+            The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
         dense_freq = ratio_faded_lines
@@ -408,7 +434,8 @@ class ComplexPlane(NumberPlane):
                 axis = self.get_y_axis()
                 value = z.imag
                 kwargs = merge_dicts_recursively(
-                    kwargs, {"number_config": {"unit": "i"}},
+                    kwargs,
+                    {"number_config": {"unit": "i"}},
                 )
             else:
                 axis = self.get_x_axis()

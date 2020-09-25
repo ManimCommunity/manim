@@ -1,10 +1,15 @@
+"""Mobjects representing objects from probability theory and statistics."""
+
+__all__ = ["SampleSpace", "BarChart"]
+
+
 from ..constants import *
 from ..mobject.geometry import Line
 from ..mobject.geometry import Rectangle
 from ..mobject.mobject import Mobject
 from ..mobject.svg.brace import Brace
-from ..mobject.svg.tex_mobject import TexMobject
-from ..mobject.svg.tex_mobject import TextMobject
+from ..mobject.svg.tex_mobject import MathTex
+from ..mobject.svg.tex_mobject import Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import color_gradient
 from ..utils.iterables import tuplify
@@ -26,7 +31,7 @@ class SampleSpace(Rectangle):
 
     def add_title(self, title="Sample space", buff=MED_SMALL_BUFF):
         # TODO, should this really exist in SampleSpaceScene
-        title_mob = TextMobject(title)
+        title_mob = Tex(title)
         if title_mob.get_width() > self.get_width():
             title_mob.set_width(self.get_width())
         title_mob.next_to(self, UP, buff=buff)
@@ -83,7 +88,7 @@ class SampleSpace(Rectangle):
             if isinstance(label, Mobject):
                 label_mob = label
             else:
-                label_mob = TexMobject(label)
+                label_mob = MathTex(label)
                 label_mob.scale(self.default_label_scale_val)
             label_mob.next_to(brace, direction, buff)
 
@@ -176,7 +181,7 @@ class BarChart(VGroup):
         if self.label_y_axis:
             labels = VGroup()
             for tick, value in zip(ticks, values):
-                label = TexMobject(str(np.round(value, 2)))
+                label = MathTex(str(np.round(value, 2)))
                 label.set_height(self.y_axis_label_height)
                 label.next_to(tick, LEFT, SMALL_BUFF)
                 labels.add(label)
@@ -199,7 +204,7 @@ class BarChart(VGroup):
 
         bar_labels = VGroup()
         for bar, name in zip(bars, self.bar_names):
-            label = TexMobject(str(name))
+            label = MathTex(str(name))
             label.scale(self.bar_label_scale_val)
             label.next_to(bar, DOWN, SMALL_BUFF)
             bar_labels.add(label)
@@ -213,6 +218,3 @@ class BarChart(VGroup):
             bar_bottom = bar.get_bottom()
             bar.stretch_to_fit_height((value / self.max_value) * self.height)
             bar.move_to(bar_bottom, DOWN)
-
-    def copy(self):
-        return self.deepcopy()

@@ -1,6 +1,13 @@
+"""Mobjects representing numbers."""
+
+__all__ = ["DecimalNumber", "Integer", "Variable"]
+
+
 from ..constants import *
-from ..mobject.svg.tex_mobject import SingleStringTexMobject
-from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex, Tex
+from ..mobject.svg.text_mobject import Text
+from ..mobject.types.vectorized_mobject import VDict, VMobject
+from ..mobject.value_tracker import ValueTracker
 
 
 class DecimalNumber(VMobject):
@@ -33,18 +40,18 @@ class DecimalNumber(VMobject):
             else:
                 num_string = num_string[1:]
 
-        self.add(*[SingleStringTexMobject(char, **kwargs) for char in num_string])
+        self.add(*[SingleStringMathTex(char, **kwargs) for char in num_string])
 
         # Add non-numerical bits
         if self.show_ellipsis:
-            self.add(SingleStringTexMobject("\\dots"))
+            self.add(SingleStringMathTex("\\dots"))
 
         if num_string.startswith("-"):
             minus = self.submobjects[0]
             minus.next_to(self.submobjects[1], LEFT, buff=self.digit_to_digit_buff)
 
         if self.unit is not None:
-            self.unit_sign = SingleStringTexMobject(self.unit, color=self.color)
+            self.unit_sign = SingleStringMathTex(self.unit, color=self.color)
             self.add(self.unit_sign)
 
         self.arrange(buff=self.digit_to_digit_buff, aligned_edge=DOWN)
@@ -76,7 +83,11 @@ class DecimalNumber(VMobject):
         config = dict(
             [
                 (attr, getattr(self, attr))
-                for attr in ["include_sign", "group_with_commas", "num_decimal_places",]
+                for attr in [
+                    "include_sign",
+                    "group_with_commas",
+                    "num_decimal_places",
+                ]
             ]
         )
         config.update(kwargs)
@@ -136,3 +147,71 @@ class Integer(DecimalNumber):
 
     def get_value(self):
         return int(np.round(super().get_value()))
+
+
+class Variable(VMobject):
+    """A class for displaying text that continuously updates to reflect the value of a python variable.
+
+    Automatically adds the text for the label and the value when instantiated and added to the screen.
+
+    Parameters
+    ----------
+    var : Union[:class:`int`, :class:`float`]
+        The python variable you need to keep track of and display.
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`Text`]
+        The label for your variable, for example `x = ...`. To use math mode, for e.g.
+        subscripts, superscripts, etc. simply pass in a raw string.
+    var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
+        The class used for displaying the number. Defaults to :class:`DecimalNumber`.
+    num_decimal_places : :class:`int`, optional
+        The number of decimal places to display in your variable. Defaults to 2.
+        If `var_type` is an :class:`Integer`, this parameter is ignored.
+    kwargs : Any
+            Other arguments to be passed to `~.Mobject`.
+
+    Attributes
+    ----------
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`Text`]
+        The label for your variable, for example `x = ...`.
+    tracker : :class:`~.ValueTracker`
+        Useful in updating the value of your variable on-screen.
+    value : Union[:class:`DecimalNumber`, :class:`Integer`]
+        The tex for the value of your variable.
+
+    Examples
+    --------
+    Normal usage::
+        # DecimalNumber type
+        var = 0.5
+        on_screen_var = Variable(var, "var", num_decimal_places=3)
+        # Integer type
+        int_var = 0
+        on_screen_int_var = Variable(int_var, "int_var", var_type=Integer)
+        # Using math mode for the label
+        on_screen_int_var = Variable(int_var, "${a}_{i}$", var_type=Integer)
+
+    """
+
+    def __init__(
+        self, var, label, var_type=DecimalNumber, num_decimal_places=2, **kwargs
+    ):
+
+        self.label = MathTex(label) if isinstance(label, str) else label
+        equals = MathTex("=").next_to(self.label, RIGHT)
+        self.label.add(equals)
+
+        self.tracker = ValueTracker(var)
+
+        if var_type == DecimalNumber:
+            self.value = DecimalNumber(
+                self.tracker.get_value(), num_decimal_places=num_decimal_places
+            )
+        elif var_type == Integer:
+            self.value = Integer(self.tracker.get_value())
+
+        self.value.add_updater(lambda v: v.set_value(self.tracker.get_value())).next_to(
+            self.label, RIGHT
+        )
+
+        VMobject.__init__(self, **kwargs)
+        self.add(self.label, self.value)

@@ -1,7 +1,12 @@
+"""A scene suitable for rendering three-dimensional objects and animations."""
+
+__all__ = ["ThreeDScene", "SpecialThreeDScene"]
+
+
+from .. import config
 from ..animation.transform import ApplyMethod
 from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
-from ..config import config
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
 from ..mobject.three_dimensions import Sphere
@@ -260,15 +265,16 @@ class ThreeDScene(Scene):
 
 
 class SpecialThreeDScene(ThreeDScene):
-    """
-    This is basically ThreeDScene++ .
-    It has some extra configuration for
-    axes, spheres, lower quality etc.
+    """An extension of :class:`ThreeDScene` with more settings.
 
-    Some key differences are:
-        The camera shades applicable 3DMobjects by default,
-        except if rendering in low quality.
-        Some default params for Spheres and Axes have been added.
+    It has some extra configuration for axes, spheres,
+    and an override for low quality rendering. Further key differences
+    are:
+
+    * The camera shades applicable 3DMobjects by default,
+      except if rendering in low quality.
+    * Some default params for Spheres and Axes have been added.
+
     """
 
     CONFIG = {
@@ -299,7 +305,7 @@ class SpecialThreeDScene(ThreeDScene):
 
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
-        if self.camera_config["pixel_width"] == config["CAMERA_CONFIG"]["PIXEL_WIDTH"]:
+        if self.camera_config["pixel_width"] == config["pixel_width"]:
             config = {}
         else:
             config = self.low_quality_config
@@ -307,12 +313,12 @@ class SpecialThreeDScene(ThreeDScene):
         ThreeDScene.__init__(self, **config)
 
     def get_axes(self):
-        """
-        Returns a set of 3D Axes.
+        """Return a set of 3D axes.
 
         Returns
         -------
-        ThreeDAxes
+        :class:`.ThreeDAxes`
+            A set of 3D axes.
         """
         axes = ThreeDAxes(**self.three_d_axes_config)
         for axis in axes:
@@ -332,18 +338,16 @@ class SpecialThreeDScene(ThreeDScene):
 
     def get_sphere(self, **kwargs):
         """
-        Returns a sphere with the passed **kwargs
-        as properties.
+        Returns a sphere with the passed keyword arguments as properties.
 
         Parameters
         ----------
         **kwargs
-            Some valid kwargs are:
-                Any param of a Sphere or ParametricSurface.
+            Any valid parameter of :class:`.Sphere` or :class:`.ParametricSurface`.
 
         Returns
         -------
-        Sphere
+        :class:`.Sphere`
             The sphere object.
         """
         config = merge_dicts_recursively(self.sphere_config, kwargs)

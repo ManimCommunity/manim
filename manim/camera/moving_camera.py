@@ -1,5 +1,16 @@
+"""A camera able to move through a scene.
+
+.. SEEALSO::
+
+    :mod:`.moving_camera_scene`
+
+"""
+
+__all__ = ["CameraFrame", "MovingCamera"]
+
+
+from .. import config
 from ..camera.camera import Camera
-from ..config import config
 from ..constants import ORIGIN, WHITE
 from ..mobject.frame import ScreenRectangle
 from ..mobject.types.vectorized_mobject import VGroup
@@ -9,18 +20,23 @@ from ..utils.config_ops import digest_config
 # TODO, think about how to incorporate perspective
 class CameraFrame(VGroup):
     CONFIG = {
-        "width": config["frame_width"],
-        "height": config["frame_height"],
         "center": ORIGIN,
     }
 
     def __init__(self, **kwargs):
-        pass
+        VGroup.__init__(self, **kwargs)
+        self.width = config["frame_width"]
+        self.height = config["frame_height"]
 
 
 class MovingCamera(Camera):
     """
     Stays in line with the height, width and position of it's 'frame', which is a Rectangle
+
+    .. SEEALSO::
+
+        :class:`.MovingCameraScene`
+
     """
 
     CONFIG = {
@@ -38,13 +54,15 @@ class MovingCamera(Camera):
         if frame is None:
             frame = ScreenRectangle(height=config["frame_height"])
             frame.set_stroke(
-                self.default_frame_stroke_color, self.default_frame_stroke_width,
+                self.default_frame_stroke_color,
+                self.default_frame_stroke_width,
             )
         self.frame = frame
         Camera.__init__(self, **kwargs)
 
     # TODO, make these work for a rotated frame
-    def get_frame_height(self):
+    @property
+    def frame_height(self):
         """Returns the height of the frame.
 
         Returns
@@ -54,7 +72,8 @@ class MovingCamera(Camera):
         """
         return self.frame.get_height()
 
-    def get_frame_width(self):
+    @property
+    def frame_width(self):
         """Returns the width of the frame
 
         Returns
@@ -64,7 +83,8 @@ class MovingCamera(Camera):
         """
         return self.frame.get_width()
 
-    def get_frame_center(self):
+    @property
+    def frame_center(self):
         """Returns the centerpoint of the frame in cartesian coordinates.
 
         Returns
@@ -74,7 +94,8 @@ class MovingCamera(Camera):
         """
         return self.frame.get_center()
 
-    def set_frame_height(self, frame_height):
+    @frame_height.setter
+    def frame_height(self, frame_height):
         """Sets the height of the frame in MUnits.
 
         Parameters
@@ -84,7 +105,8 @@ class MovingCamera(Camera):
         """
         self.frame.stretch_to_fit_height(frame_height)
 
-    def set_frame_width(self, frame_width):
+    @frame_width.setter
+    def frame_width(self, frame_width):
         """Sets the width of the frame in MUnits.
 
         Parameters
@@ -94,7 +116,8 @@ class MovingCamera(Camera):
         """
         self.frame.stretch_to_fit_width(frame_width)
 
-    def set_frame_center(self, frame_center):
+    @frame_center.setter
+    def frame_center(self, frame_center):
         """Sets the centerpoint of the frame.
 
         Parameters

@@ -1,3 +1,13 @@
+"""Functions determining transformation paths between sets of points."""
+
+__all__ = [
+    "straight_path",
+    "path_along_arc",
+    "clockwise_path",
+    "counterclockwise_path",
+]
+
+
 import numpy as np
 
 from ..constants import OUT

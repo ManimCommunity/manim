@@ -1,3 +1,8 @@
+"""Animations related to rotation."""
+
+__all__ = ["Rotating", "Rotate"]
+
+
 from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..constants import OUT

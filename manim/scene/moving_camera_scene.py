@@ -1,3 +1,13 @@
+"""A scene whose camera can be moved around.
+
+.. SEEALSO::
+
+    :mod:`.moving_camera`
+
+"""
+
+__all__ = ["MovingCameraScene"]
+
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
 from ..utils.iterables import list_update
@@ -7,6 +17,10 @@ class MovingCameraScene(Scene):
     """
     This is a Scene, with special configurations and properties that
     make it suitable for cases where the camera must be moved around.
+
+    .. SEEALSO::
+
+        :class:`.MovingCamera`
     """
 
     CONFIG = {"camera_class": MovingCamera}

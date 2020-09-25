@@ -1,7 +1,27 @@
+"""Animations drawing attention to particular mobjects."""
+
+__all__ = [
+    "FocusOn",
+    "Indicate",
+    "Flash",
+    "CircleIndicate",
+    "ShowPassingFlash",
+    "ShowCreationThenDestruction",
+    "ShowCreationThenFadeOut",
+    "AnimationOnSurroundingRectangle",
+    "ShowPassingFlashAround",
+    "ShowCreationThenDestructionAround",
+    "ShowCreationThenFadeAround",
+    "ApplyWave",
+    "WiggleOutThenIn",
+    "TurnInsideOut",
+]
+
+
 import numpy as np
 
+from .. import config
 from ..constants import *
-from ..config import config
 from ..animation.animation import Animation
 from ..animation.movement import Homotopy
 from ..animation.composition import AnimationGroup
@@ -81,7 +101,9 @@ class Flash(AnimationGroup):
         self.lines = self.create_lines()
         animations = self.create_line_anims()
         super().__init__(
-            *animations, group=self.lines, **kwargs,
+            *animations,
+            group=self.lines,
+            **kwargs,
         )
 
     def create_lines(self):
@@ -104,7 +126,9 @@ class CircleIndicate(Indicate):
     CONFIG = {
         "rate_func": there_and_back,
         "remover": True,
-        "circle_config": {"color": YELLOW,},
+        "circle_config": {
+            "color": YELLOW,
+        },
     }
 
     def __init__(self, mobject, **kwargs):
@@ -176,7 +200,9 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         rect = self.get_rect()
         rect.add_updater(lambda r: r.move_to(mobject))
 
-        super().__init__(self.rect_animation(rect, **kwargs),)
+        super().__init__(
+            self.rect_animation(rect, **kwargs),
+        )
 
     def get_rect(self):
         return SurroundingRectangle(

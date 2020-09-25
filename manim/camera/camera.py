@@ -1,4 +1,9 @@
-from functools import reduce
+"A camera converts the mobjects contained in a Scene into an array of pixels."
+
+
+__all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
+
+
 import itertools as it
 import operator as op
 import time
@@ -9,9 +14,8 @@ from scipy.spatial.distance import pdist
 import cairo
 import numpy as np
 
+from .. import logger, config, camera_config
 from ..constants import *
-from ..config import config, camera_config
-from ..logger import logger
 from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.mobject import Mobject
 from ..mobject.types.point_cloud_mobject import PMobject
@@ -19,7 +23,6 @@ from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import color_to_int_rgba
 from ..utils.config_ops import digest_config
 from ..utils.images import get_full_raster_image_path
-from ..utils.iterables import batch_by_property
 from ..utils.iterables import list_difference_update
 from ..utils.iterables import remove_list_redundancies
 from ..utils.simple_functions import fdiv
@@ -28,35 +31,31 @@ from ..utils.space_ops import get_norm
 
 
 class Camera(object):
-    """
-    Base Camera class.
+    """Base camera class.
+
     This is the object which takes care of what exactly is displayed
     on screen at any given moment.
 
     Some important CONFIG values and local variables to note are:
 
-    self.background_image : str, optional
+    background_image : :class:`str`, optional
         The path to an image that should be the background image.
         If not set, the background is filled with `self.background_color`
 
-    self.pixel_height
+    pixel_height : :class:`int`, optional
+        The height of the scene in pixels.
+
     """
 
     CONFIG = {
         "background_image": None,
-        "pixel_height": config["pixel_height"],
-        "pixel_width": config["pixel_width"],
-        "frame_rate": config["frame_rate"],
         # Note: frame height and width will be resized to match
         # the pixel aspect ratio
-        "frame_height": config["frame_height"],
-        "frame_width": config["frame_width"],
         "frame_center": ORIGIN,
         "background_color": BLACK,
         "background_opacity": 1,
         # Points in vectorized mobjects with norm greater
         # than this value will be rescaled.
-        "max_allowable_norm": config["frame_width"],
         "image_mode": "RGBA",
         "n_channels": 4,
         "pixel_array_dtype": "uint8",
@@ -78,8 +77,40 @@ class Camera(object):
             Any local variables to be set.
         """
         digest_config(self, kwargs, locals())
+
+        # All of the following are set to EITHER the value passed via kwargs,
+        # OR the value stored in the global config dict at the time of
+        # _instance construction_.  Before, they were in the CONFIG dict, which
+        # is a class attribute and is defined at the time of _class
+        # definition_.  This did not allow for creating two Cameras with
+        # different configurations in the same session.
+        for attr in [
+            "pixel_height",
+            "pixel_width",
+            "frame_height",
+            "frame_width",
+            "frame_rate",
+        ]:
+            setattr(self, attr, kwargs.get(attr, config[attr]))
+
+        # This one is in the same boat as the above, but it doesn't have the
+        # same name as the corresponding key so it has to be handled on its own
+        self.max_allowable_norm = config["frame_width"]
+
         self.rgb_max_val = np.iinfo(self.pixel_array_dtype).max
         self.pixel_array_to_cairo_context = {}
+
+        # Contains the correct method to process a list of Mobjects of the
+        # corresponding class.  If a Mobject is not an instance of a class in
+        # this dict (or an instance of a class that inherits from a class in
+        # this dict), then it cannot be rendered.
+        self.display_funcs = {
+            VMobject: self.display_multiple_vectorized_mobjects,
+            PMobject: self.display_multiple_point_cloud_mobjects,
+            AbstractImageMobject: self.display_multiple_image_mobjects,
+            Mobject: lambda batch, pa: batch,  # Do nothing
+        }
+
         self.init_background()
         self.resize_frame_shape()
         self.reset()
@@ -90,6 +121,42 @@ class Camera(object):
         # to the aggdraw library
         self.canvas = None
         return copy.copy(self)
+
+    def type_or_raise(self, mobject):
+        """Return the type of mobject, if it is a type that can be rendered.
+
+        If `mobject` is an instance of a class that inherits from a class that
+        can be rendered, return the super class.  For example, an instance of a
+        Square is also an instance of VMobject, and these can be rendered.
+        Therefore, `type_or_raise(Square())` returns True.
+
+        Parameters
+        ----------
+        mobject : :class:`~.Mobject`
+            The object to take the type of.
+
+        Notes
+        -----
+        For a list of classes that can currently be rendered, see :meth:`display_funcs`.
+
+        Returns
+        -------
+        Type[:class:`~.Mobject`]
+            The type of mobjects, if it can be rendered.
+
+        Raises
+        ------
+        :exc:`TypeError`
+            When mobject is not an instance of a class that can be rendered.
+        """
+        # We have to check each type in turn because we are dealing with
+        # super classes.  For example, if square = Square(), then
+        # type(square) != VMobject, but isinstance(square, VMobject) == True.
+        for _type in self.display_funcs:
+            if isinstance(mobject, _type):
+                return _type
+        else:
+            raise TypeError(f"Displaying an object of class {_type} is not supported")
 
     def reset_pixel_shape(self, new_height, new_width):
         """This method resets the height and width
@@ -108,92 +175,6 @@ class Camera(object):
         self.resize_frame_shape()
         self.reset()
 
-    def get_pixel_height(self):
-        """Returns the height of the scene in
-        pixel at that moment.
-
-        Returns
-        -------
-        int
-            The height of the scene in pixels.
-        """
-        return self.pixel_height
-
-    def get_pixel_width(self):
-        """Returns the width of the scene in
-        pixels at that moment.
-
-        Returns
-        -------
-        int
-            The width of the scene in pixels.
-        """
-        return self.pixel_width
-
-    def get_frame_height(self):
-        """Returns the height of the frame
-        in MUnits. Default is 8.0
-
-        Returns
-        -------
-        float
-            The frame height
-        """
-        return self.frame_height
-
-    def get_frame_width(self):
-        """Returns the width of the frame
-        in MUnits.
-
-        Returns
-        -------
-        float
-            The frame width
-        """
-        return self.frame_width
-
-    def get_frame_center(self):
-        """Returns the absolute center of the frame as Cartesian
-        Coordinates with the unit MUnits.
-
-        Returns
-        -------
-        np.array
-            The array of x,y,z coordinates.
-        """
-        return self.frame_center
-
-    def set_frame_height(self, frame_height):
-        """Sets the frame height to the passed value.
-
-        Parameters
-        ----------
-        frame_height : int, float
-            The frame_height in MUnits.
-        """
-        self.frame_height = frame_height
-
-    def set_frame_width(self, frame_width):
-        """Sets the frame width to the passed value.
-
-        Parameters
-        ----------
-        frame_width : int, float
-            The frame_width in MUnits.
-        """
-        self.frame_width = frame_width
-
-    def set_frame_center(self, frame_center):
-        """Sets the center of the frame to the passed
-        cartesian coordinates.
-
-        Parameters
-        ----------
-        frame_center : np.array
-            The center of the frame.
-        """
-        self.frame_center = frame_center
-
     def resize_frame_shape(self, fixed_dimension=0):
         """
         Changes frame_shape to match the aspect ratio
@@ -207,17 +188,17 @@ class Camera(object):
             If 0, height is scaled with respect to width
             else, width is scaled with respect to height.
         """
-        pixel_height = self.get_pixel_height()
-        pixel_width = self.get_pixel_width()
-        frame_height = self.get_frame_height()
-        frame_width = self.get_frame_width()
+        pixel_height = self.pixel_height
+        pixel_width = self.pixel_width
+        frame_height = self.frame_height
+        frame_width = self.frame_width
         aspect_ratio = fdiv(pixel_width, pixel_height)
         if fixed_dimension == 0:
             frame_height = frame_width / aspect_ratio
         else:
             frame_width = aspect_ratio * frame_height
-        self.set_frame_height(frame_height)
-        self.set_frame_width(frame_width)
+        self.frame_height = frame_height
+        self.frame_width = frame_width
 
     def init_background(self):
         """Initialize the background.
@@ -225,8 +206,8 @@ class Camera(object):
         the image is set as background; else, the default
         background color fills the background.
         """
-        height = self.get_pixel_height()
-        width = self.get_pixel_width()
+        height = self.pixel_height
+        width = self.pixel_width
         if self.background_image is not None:
             path = get_full_raster_image_path(self.background_image)
             image = Image.open(path).convert(self.image_mode)
@@ -261,17 +242,6 @@ class Camera(object):
         if pixel_array is None:
             pixel_array = self.pixel_array
         return Image.fromarray(pixel_array, mode=self.image_mode)
-
-    def get_pixel_array(self):
-        """Returns the pixel array
-        of the current frame.
-
-        Returns
-        -------
-        np.array
-            The array of RGB values of each pixel.
-        """
-        return self.pixel_array
 
     def convert_pixel_array(self, pixel_array, convert_from_floats=False):
         """Converts a pixel array from values that have floats in then
@@ -414,7 +384,7 @@ class Camera(object):
         else:
             method = Mobject.get_family
         if self.use_z_index:
-            mobjects.sort(key=lambda m: m.z_index)
+            mobjects = sorted(mobjects, key=lambda m: m.z_index)
         return remove_list_redundancies(list(it.chain(*[method(m) for m in mobjects])))
 
     def get_mobjects_to_display(
@@ -439,7 +409,7 @@ class Camera(object):
         """
         if include_submobjects:
             mobjects = self.extract_mobject_family_members(
-                mobjects, only_those_with_points=True,
+                mobjects, only_those_with_points=True
             )
             if excluded_mobjects:
                 all_excluded = self.extract_mobject_family_members(excluded_mobjects)
@@ -460,9 +430,9 @@ class Camera(object):
         bool
             True if in frame, False otherwise.
         """
-        fc = self.get_frame_center()
-        fh = self.get_frame_height()
-        fw = self.get_frame_width()
+        fc = self.frame_center
+        fh = self.frame_height
+        fw = self.frame_width
         return not reduce(
             op.or_,
             [
@@ -478,34 +448,35 @@ class Camera(object):
     ):  # TODO Write better docstrings for this method.
         return self.capture_mobjects([mobject], **kwargs)
 
-    def capture_mobjects(
-        self, mobjects, **kwargs
-    ):  # TODO Write better docstrings for this method.
+    def capture_mobjects(self, mobjects, **kwargs):
+        """Capture mobjects by printing them on :attr:`pixel_array`.
+
+        This is the essential function that converts the contents of a Scene
+        into an array, which is then converted to an image or video.
+
+        Parameters
+        ----------
+        mobjects : :class:`~.Mobject`
+            Mobjects to capture.
+
+        kwargs : Any
+            Keyword arguments to be passed to :meth:`get_mobjects_to_display`.
+
+        Notes
+        -----
+        For a list of classes that can currently be rendered, see :meth:`display_funcs`.
+
+        """
+        # The mobjects will be processed in batches (or runs) of mobjects of
+        # the same type.  That is, if the list mobjects contains objects of
+        # types [VMobject, VMobject, VMobject, PMobject, PMobject, VMobject],
+        # then they will be captured in three batches: [VMobject, VMobject,
+        # VMobject], [PMobject, PMobject], and [VMobject].  This must be done
+        # without altering their order.  it.groupby computes exactly this
+        # partition while at the same time preserving order.
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
-
-        # Organize this list into batches of the same type, and
-        # apply corresponding function to those batches
-        type_func_pairs = [
-            (VMobject, self.display_multiple_vectorized_mobjects),
-            (PMobject, self.display_multiple_point_cloud_mobjects),
-            (AbstractImageMobject, self.display_multiple_image_mobjects),
-            (Mobject, lambda batch, pa: batch),  # Do nothing
-        ]
-
-        def get_mobject_type(mobject):
-            for mobject_type, func in type_func_pairs:
-                if isinstance(mobject, mobject_type):
-                    return mobject_type
-            raise Exception("Trying to display something which is not of type Mobject")
-
-        batch_type_pairs = batch_by_property(mobjects, get_mobject_type)
-
-        # Display in these batches
-        for batch, batch_type in batch_type_pairs:
-            # check what the type is, and call the appropriate function
-            for mobject_type, func in type_func_pairs:
-                if batch_type == mobject_type:
-                    func(batch, self.pixel_array)
+        for group_type, group in it.groupby(mobjects, self.type_or_raise):
+            self.display_funcs[group_type](list(group), self.pixel_array)
 
     # Methods associated with svg rendering
 
@@ -523,7 +494,7 @@ class Camera(object):
 
         Returns
         -------
-        Cairo.Context.Context
+        cairo.Context
             The cached cairo context.
         """
         return self.pixel_array_to_cairo_context.get(id(pixel_array), None)
@@ -535,7 +506,7 @@ class Camera(object):
         ----------
         pixel_array : np.array
             The pixel array to cache
-        ctx : Cairo.Context.Context
+        ctx : cairo.Context
             The context to cache it into.
         """
         self.pixel_array_to_cairo_context[id(pixel_array)] = ctx
@@ -559,11 +530,11 @@ class Camera(object):
         cached_ctx = self.get_cached_cairo_context(pixel_array)
         if cached_ctx:
             return cached_ctx
-        pw = self.get_pixel_width()
-        ph = self.get_pixel_height()
-        fw = self.get_frame_width()
-        fh = self.get_frame_height()
-        fc = self.get_frame_center()
+        pw = self.pixel_width
+        ph = self.pixel_height
+        fw = self.frame_width
+        fh = self.frame_height
+        fc = self.frame_center
         surface = cairo.ImageSurface.create_for_data(
             pixel_array, cairo.FORMAT_ARGB32, pw, ph
         )
@@ -594,12 +565,12 @@ class Camera(object):
         """
         if len(vmobjects) == 0:
             return
-        batch_file_pairs = batch_by_property(
+        batch_file_pairs = it.groupby(
             vmobjects, lambda vm: vm.get_background_image_file()
         )
-        for batch, file_name in batch_file_pairs:
+        for file_name, batch in batch_file_pairs:
             if file_name:
-                self.display_multiple_background_colored_vmobject(batch, pixel_array)
+                self.display_multiple_background_colored_vmobjects(batch, pixel_array)
             else:
                 self.display_multiple_non_background_colored_vmobjects(
                     batch, pixel_array
@@ -756,7 +727,7 @@ class Camera(object):
             *
             # This ensures lines have constant width
             # as you zoom in on them.
-            (self.get_frame_width() / self.frame_width)
+            (self.frame_width / self.frame_width)
         )
         ctx.stroke_preserve()
         return self
@@ -811,7 +782,7 @@ class Camera(object):
             setattr(self, bcvd, BackgroundColoredVMobjectDisplayer(self))
         return getattr(self, bcvd)
 
-    def display_multiple_background_colored_vmobject(self, cvmobjects, pixel_array):
+    def display_multiple_background_colored_vmobjects(self, cvmobjects, pixel_array):
         """Displays multiple vmobjects that have the same color as the background.
 
         Parameters
@@ -886,8 +857,8 @@ class Camera(object):
         pixel_coords = pixel_coords[on_screen_indices]
         rgbas = rgbas[on_screen_indices]
 
-        ph = self.get_pixel_height()
-        pw = self.get_pixel_width()
+        ph = self.pixel_height
+        pw = self.pixel_width
 
         flattener = np.array([1, pw], dtype="int")
         flattener = flattener.reshape((2, 1))
@@ -948,7 +919,7 @@ class Camera(object):
 
         # Paste into an image as large as the camear's pixel array
         full_image = Image.fromarray(
-            np.zeros((self.get_pixel_height(), self.get_pixel_width())), mode="RGBA"
+            np.zeros((self.pixel_height, self.pixel_width)), mode="RGBA"
         )
         new_ul_coords = center_coords - np.array(sub_image.size) / 2
         new_ul_coords = new_ul_coords.astype(int)
@@ -974,9 +945,7 @@ class Camera(object):
         new_array : np.array
             The new pixel array to overlay.
         """
-        self.overlay_PIL_image(
-            pixel_array, self.get_image(new_array),
-        )
+        self.overlay_PIL_image(pixel_array, self.get_image(new_array))
 
     def overlay_PIL_image(self, pixel_array, image):
         """Overlays a PIL image on the passed pixel array.
@@ -1036,13 +1005,13 @@ class Camera(object):
         self, mobject, points
     ):  # TODO: Write more detailed docstrings for this method.
         points = self.transform_points_pre_display(mobject, points)
-        shifted_points = points - self.get_frame_center()
+        shifted_points = points - self.frame_center
 
         result = np.zeros((len(points), 2))
-        pixel_height = self.get_pixel_height()
-        pixel_width = self.get_pixel_width()
-        frame_height = self.get_frame_height()
-        frame_width = self.get_frame_width()
+        pixel_height = self.pixel_height
+        pixel_width = self.pixel_width
+        frame_height = self.frame_height
+        frame_width = self.frame_width
         width_mult = pixel_width / frame_width
         width_add = pixel_width / 2
         height_mult = pixel_height / frame_height
@@ -1072,9 +1041,9 @@ class Camera(object):
             op.and_,
             [
                 pixel_coords[:, 0] >= 0,
-                pixel_coords[:, 0] < self.get_pixel_width(),
+                pixel_coords[:, 0] < self.pixel_width,
                 pixel_coords[:, 1] >= 0,
-                pixel_coords[:, 1] < self.get_pixel_height(),
+                pixel_coords[:, 1] < self.pixel_height,
             ],
         )
 
@@ -1092,9 +1061,9 @@ class Camera(object):
         """
         # TODO: This seems...unsystematic
         big_sum = op.add(
-            camera_config["default_pixel_height"], camera_config["default_pixel_width"],
+            camera_config["default_pixel_height"], camera_config["default_pixel_width"]
         )
-        this_sum = op.add(self.get_pixel_height(), self.get_pixel_width(),)
+        this_sum = op.add(self.pixel_height, self.pixel_width)
         factor = fdiv(big_sum, this_sum)
         return 1 + (thickness - 1) / factor
 
@@ -1145,14 +1114,14 @@ class Camera(object):
             The array of cartesian coordinates.
         """
         # These are in x, y order, to help me keep things straight
-        full_space_dims = np.array([self.get_frame_width(), self.get_frame_height()])
-        full_pixel_dims = np.array([self.get_pixel_width(), self.get_pixel_height()])
+        full_space_dims = np.array([self.frame_width, self.frame_height])
+        full_pixel_dims = np.array([self.pixel_width, self.pixel_height])
 
         # These are addressed in the same y, x order as in pixel_array, but the values in them
         # are listed in x, y order
-        uncentered_pixel_coords = np.indices(
-            [self.get_pixel_height(), self.get_pixel_width()]
-        )[::-1].transpose(1, 2, 0)
+        uncentered_pixel_coords = np.indices([self.pixel_height, self.pixel_width])[
+            ::-1
+        ].transpose(1, 2, 0)
         uncentered_space_coords = fdiv(
             uncentered_pixel_coords * full_space_dims, full_pixel_dims
         )
@@ -1182,7 +1151,7 @@ class BackgroundColoredVMobjectDisplayer(object):
         """
         self.camera = camera
         self.file_name_to_pixel_array_map = {}
-        self.pixel_array = np.array(camera.get_pixel_array())
+        self.pixel_array = np.array(camera.pixel_array)
         self.reset_pixel_array()
 
     def reset_pixel_array(self):
@@ -1272,7 +1241,7 @@ class BackgroundColoredVMobjectDisplayer(object):
         np.array
             The pixel array with the `cvmobjects` displayed.
         """
-        batch_image_file_pairs = batch_by_property(
+        batch_image_file_pairs = it.groupby(
             cvmobjects, lambda cv: cv.get_background_image_file()
         )
         curr_array = None
