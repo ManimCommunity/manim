@@ -1,6 +1,6 @@
 {
     "windows": {
         "sox": "sox-14.4.2-win32",
-        "ffmpeg": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2020-09-24-12-32/ffmpeg-N-99357-g14d6838638-win64-gpl.zip"
+        "ffmpeg": "https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-4.3.1-2020-09-16-full_build.zip"
     }
 }
