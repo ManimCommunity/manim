@@ -744,8 +744,7 @@ class RegularPolygon(Polygon):
 
 class ArcPolygon(VMobject):
     """
-    The ArcPolygon is what it says, a polygon, but made from arcs.
-    More versatile than the standard Polygon.
+    A more versatile polygon, made from arcs.
 
     Parameters
     ----------
@@ -760,11 +759,16 @@ class ArcPolygon(VMobject):
     [a,b][b,c][c,a]
     If they don't, the gaps will be filled in with straight lines.
 
-    ArcPolygon also doubles as a group for the input arcs.
-    That means these arcs can be drawn and seen separately.
-    If only the ArcPolygon itself is supposed to be visible,
-    make the arcs invisible (for example with "stroke_width": 0).
-    ArcPolygon.arcs can be used get values from these subarcs.
+    ArcPolygon doubles as a VGroup for the input arcs, so it stores
+    the passed arcs like a VGroup would, but also additionally uses the
+    arcs to generate new points for itself.
+    This is so that the ArcPolygon can be directly manipulated while
+    assuring that the stored arcs, accessible via ArcPolygon.arcs, still
+    return correct values.
+
+    Because arcs are stored like this, if only the generated ArcPolygon
+    itself is supposed to be visible, the passed arcs have to be made
+    invisible (for example with "stroke_width": 0).
     """
 
     def __init__(self, *arcs, **kwargs):
@@ -772,13 +776,15 @@ class ArcPolygon(VMobject):
             [isinstance(m, Arc) or isinstance(m, ArcBetweenPoints) for m in arcs]
         ):
             raise ValueError(
-                "All ArcPolygon submobjects must be of" "type Arc/ArcBetweenPoints"
+                "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints"
             )
         VMobject.__init__(self, **kwargs)
-        # Adding the arcs like this makes arcpolygon double as a group
+        # Adding the arcs like this makes ArcPolygon double as a VGroup.
+        # Also makes changes to the ArcPolygon, such as scaling, affect
+        # the arcs, so that their new values are usable.
         self.add(*arcs)
-        # This adding is also needed for this line and ArcPolygon.arcs
-        # to return the arcs as their values currently are
+        # This enables the use of ArcPolygon.arcs as a convenience
+        # because ArcPolygon[0] returns itself, not the first Arc.
         self.arcs = [*arcs]
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
@@ -879,17 +885,17 @@ class Tiling(VMobject):
     
     
     The tile prototype can be any Mobject (also groups) or a function.
-    The function format is function(x,y), returning a Mobject.
+    The function format is function(x,y), taking in the tile location
+    as x and y (int) and returns a Mobject to be used as a tile there.
     Using groups or functions allows the tiling to contain multiple
     different tiles or to simplify the following offset functions.
     
-    Next are two nested lists that determine how the tiles are arranged.
-    The functions are typically Mobject.shift and Mobject.rotate.
-    Each list has to contain sublists with Function/Value pairs.
+    Next are two nested lists that determine how
+    the tiles are arranged, x_offset and y_offset.
     More on this in the Examples section.
 
-    Last are two ranges: If both ranges are range(-1,1,1),
-    that would result in a square grid of 9 tiles.
+    Last are two ranges, x_range and y_range: If both ranges are
+    range(-1,1,1), that would result in a square grid of 9 tiles.
 
     A Tiling can be directly drawn like a VGroup.
     Tiling.tile_dictionary[x][y] can be used to access individual tiles,
@@ -897,9 +903,9 @@ class Tiling(VMobject):
     
     Examples
     --------
-    The nested lists determining arrangement need more explanation.
+    x_offset and y_offset examples:
     Example for a shift along the X-Axis, 1 in the positive direction:
-    [[Mobject.shift,[1,0,0]]]
+    x_offset=[[Mobject.shift,[1,0,0]]]
 
     The origin tile at [x0,y0] won't be moved, but the tile at [x1,y0]
     will be moved to [1,0,0]. Likewise the tile at [x4,y0] will be moved
@@ -909,9 +915,9 @@ class Tiling(VMobject):
     Example for a shift with simultaneous rotation:
     [[Mobject.shift,[1,0,0],Mobject.rotate,np.pi]]
 
-    This would move the tile at [x1,y0] to [1,0,0] and rotates it 180°.
+    This would move the tile at [x1,y0] to [1,0,0] and rotate it 180°.
     
-    When multiple sublists are passed, they are applied alternating.
+    When multiple sublists are passed, they are applied alternately.
     Example for alternating shifting and rotating:
     [[Mobject.shift,[1,0,0]],[Mobject.rotate,np.pi]]
 
@@ -999,12 +1005,83 @@ class Tiling(VMobject):
                     offset[i][0 + j * 2](
                         tile, magnitude * np.array(offset[i][1 + j * 2])
                     )
+                    
+class TilingMK2(VMobject):
+    def __init__(self, tile_function, x_range, y_range, tile_prototype=None **kwargs):
+        VMobject.__init__(self, **kwargs)
+        # Add one more to the ranges, so that a range(-1,1,1)
+        # also gives us 3 tiles, [-1,0,1] as opposed to 2 [-1,0]
+        self.x_range = range(x_range.start, x_range.stop + x_range.step, x_range.step)
+        self.y_range = range(y_range.start, y_range.stop + y_range.step, y_range.step)
+        self.x_offset = x_offset
+        self.y_offset = y_offset
 
+        # We need the tiles array for a VGroup, which in turn we need
+        # to draw the tiling and adjust it.
+        # Trying to draw the tiling directly will not properly work.
+        self.tile_prototype = tile_prototype
+        self.tile_dictionary = {}
+        self.tile_init_loop()
+
+    def tile_init_loop(self):
+        """
+        Loops through the ranges, creates the tiles by copying the
+        prototype, adds them to self and sorts them into the dictionary.
+        Calls apply_transforms to apply passed methods.
+        """
+        for x in self.x_range:
+            self.tile_dictionary[x] = {}
+            for y in self.y_range:
+                if tile_prototype==None:
+                    tile = self.tile_prototype(x, y).deepcopy()
+                else:
+                    tile = self.tile_prototype.deepcopy()
+                self.apply_transforms(x, y, tile)
+                self.add(tile)
+                self.tile_dictionary[x][y] = tile
+        # TODO: Once the config overhaul is far enough:
+        # Implement a way to apply kwargs to all tiles.
+        # The reason for this is that if multiple tilings
+        # are instantiated from one prototype, having a different basic
+        # tile setup is rather complicated now (set_fill etc).
+
+    def apply_transforms(self, x, y, tile):
+        """
+        Calls transform_tile once per dimension to position tiles.
+        Written like this to allow easy extending by Honeycomb.
+        """
+        self.transform_tile(x, self.x_offset, tile)
+        self.transform_tile(y, self.y_offset, tile)
+
+    def transform_tile(self, position, offset, tile):
+        """
+        This method computes and applies the offsets for the tiles,
+        in the given dimension.
+        multiplies inputs, which requires arrays to be numpy arrays.
+        """
+        # The number of different offsets the current axis has
+        offsets_nr = len(offset)
+        for i in range(offsets_nr):
+            for j in range(int(len(offset[i]) / 2)):
+                if position < 0:
+                    # Magnitude is calculated as the length of a range.
+                    # The range starts at 0, adjusting for the number
+                    # of different offset functions, stops at the target
+                    # position, and uses the amount of different
+                    # offset functions as the step.
+                    magnitude = len(range(-i, position, -offsets_nr)) * -1
+                    offset[-1 - i][0 + j * 2](
+                        tile, magnitude * np.array(offset[-1 - i][1 + j * 2])
+                    )
+                else:
+                    magnitude = len(range(i, position, offsets_nr))
+                    offset[i][0 + j * 2](
+                        tile, magnitude * np.array(offset[i][1 + j * 2])
+                    )
 
 class EdgeVertexGraph:
     """
     This class is for visual representation of graphs for graph theory.
-    (Not graphs of functions. Same term but entirely different things.)
 
     It's instantiated with a dictionary that represents the graph, and
     optionally which types of Mobject to use as vertices/edges and
@@ -1022,7 +1099,8 @@ class EdgeVertexGraph:
     The keys for the graph have to be of type int in ascending order,
     with each number denoting a vertex.
     The values are lists with 3 elements. A list of coordinates,
-    a list of connected vertices, and a configuration dictionary.
+    a list of connected vertices in int, pointing to the vertices
+    defined as the graph keys, and a configuration dictionary.
     The coordinates determine the position of the vertex.
     The list of connected vertices determines between which vertices
     edges are. For clarity it's possible to have an edge defined in both

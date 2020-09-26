@@ -141,11 +141,11 @@ class Prism(Cube):
 
 class Honeycomb(Tiling):
     """
-    Inherits from Tiling and works effectively the same, just adding
-    the third dimension.
+    Inherits from Tiling and works in effectively the same way,
+    just adding the third dimension.
     To achieve this __init__ and apply_transforms are extended,
     while tile_init_loop is overridden.
-    Since it's a 3D honeycomb also allows for tile_dictionary to be
+    Since it's 3D, Honeycomb also allows for tile_dictionary to be
     alternatively called as cell_dictionary.
     See Tiling for more details.
 

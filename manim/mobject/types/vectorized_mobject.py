@@ -861,15 +861,13 @@ class VMobject(Mobject):
         ------
         str ("CW" or "CCW")
         """
-        return shoelace(self.get_start_anchors(), False, True)
+        return shoelace_direction(self.get_start_anchors())
 
     def reverse_direction(self):
         """
         Reverts the point orientation, by inverting the point order.
         """
-        reversed_points = self.get_points()[::-1]
-        self.clear_points()
-        self.append_points(reversed_points)
+        self.points = self.points[::-1]
         return self
 
     def force_direction(self, target_direction):
@@ -882,7 +880,7 @@ class VMobject(Mobject):
         target_direction : str ("CW" or "CCW")
         """
         if not (target_direction == "CW" or target_direction == "CCW"):
-            raise ValueError('Invalid input for force_direction | Use "CW" or "CCW"')
+            raise ValueError('Invalid input for force_direction. Use "CW" or "CCW"')
         if not (self.get_direction() == target_direction):
             # Since we already assured the input is CW or CCW,
             # and the directions don't match, we just reverse

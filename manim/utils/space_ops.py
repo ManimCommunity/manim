@@ -223,17 +223,19 @@ def get_winding_number(points):
     return total_angle / TAU
 
 
-def shoelace(x_y, absoluteValue=False, orientation=True):
+def shoelace(x_y):
     x = x_y[:, 0]
     y = x_y[:, 1]
-    result = 0.5 * np.array(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-    if absoluteValue:
-        return abs(result)
-    else:
-        if orientation:
-            if result > 0:
-                return "CW"
-            else:
-                return "CCW"
+    area = 0.5 * np.array(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+    return area
+
+def shoelace_direction(x_y):
+    """
+    Uses the area determined by the shoelace method to determine whether
+    the input set of points is directed clockwise or counterclockwise.
+    """
+    area = shoelace(x_y)
+        if area > 0:
+            return "CW"
         else:
-            return result
+            return "CCW"
