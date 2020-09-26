@@ -44,6 +44,7 @@ pylint = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
+pylint = "*"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
