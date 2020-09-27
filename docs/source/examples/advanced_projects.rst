@@ -2,7 +2,6 @@ Advanced Projects
 =================================
 
 .. manim:: ExampleSineCurve
-    :quality: medium
 
     class ExampleSineCurve(Scene):
         def construct(self):

@@ -5,7 +5,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
 
 
 .. manim:: Plot1
-    :quality: medium
     :save_last_frame:
 
     class Plot1(GraphScene):
@@ -15,7 +14,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
             self.add(func_graph)
 
 .. manim:: Plot2yLabel
-    :quality: medium
     :save_last_frame:
 
     class Plot2yLabel(GraphScene):
@@ -34,7 +32,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
             self.add(dot)
 
 .. manim:: Plot3DataPoints
-    :quality: medium
     :save_last_frame:
 
     class Plot3DataPoints(GraphScene):
@@ -51,7 +48,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
                 self.add(dot)
 
 .. manim:: Plot3bGaussian
-    :quality: medium
     :save_last_frame:
 
     amp = 5
@@ -68,7 +64,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
             self.add(graph)
 
 .. manim:: Plot3cGaussian
-    :quality: medium
     :save_last_frame:
 
     class Plot3cGaussian(GraphScene):
@@ -84,7 +79,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
 
 
 .. manim:: Plot4SinCos
-    :quality: medium
     :save_last_frame:
 
     class Plot4SinCos(GraphScene):
@@ -120,7 +114,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
             self.add(func_graph, func_graph2, vert_line, graph_lab, graph_lab2, two_pi)
 
 .. manim:: Plot5Area
-    :quality: medium
     :save_last_frame:
 
     class Plot5Area(GraphScene):
@@ -144,7 +137,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
             self.add(curve1, curve2, line1, line2, area1, area2)
 
 .. manim:: Plot6HeatDiagram
-    :quality: medium
     :save_last_frame:
 
     class Plot6HeatDiagram(GraphScene):
@@ -178,7 +170,6 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
 The following example illustrates how to draw parametric function plots.
 
 .. manim:: ParamFunc1
-    :quality: medium
     :save_last_frame:
 
     class ParamFunc1(Scene):

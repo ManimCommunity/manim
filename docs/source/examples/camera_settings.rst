@@ -2,7 +2,6 @@ Camera Settings
 =================================
 
 .. manim:: Example1
-    :quality: medium
 
     class Example1(MovingCameraScene):
         def construct(self):
@@ -12,7 +11,6 @@ Camera Settings
             self.wait()
 
 .. manim:: Example2a
-    :quality: medium
 
     class Example2a(MovingCameraScene):
         def construct(self):
@@ -24,7 +22,6 @@ Camera Settings
             self.play(Restore(self.camera_frame))
 
 .. manim:: Example2b
-    :quality: medium
 
     class Example2b(MovingCameraScene):
         def construct(self):
@@ -36,7 +33,6 @@ Camera Settings
 
 
 .. manim:: Example3
-    :quality: medium
 
     class Example3(MovingCameraScene):
         def construct(self):
@@ -48,7 +44,6 @@ Camera Settings
             self.play(self.camera_frame.move_to, t)
 
 .. manim:: Example4
-    :quality: medium
 
     class Example4(MovingCameraScene):
         def construct(self):
@@ -65,7 +60,6 @@ Camera Settings
                       self.camera_frame.set_width,14)
 
 .. manim:: Example5
-    :quality: medium
 
     class Example5(GraphScene, MovingCameraScene):
         def setup(self):
@@ -88,7 +82,6 @@ Camera Settings
             self.wait()
 
 .. manim:: Example6
-    :quality: medium
 
     class Example6(GraphScene, MovingCameraScene):
         def setup(self):
@@ -123,7 +116,6 @@ Note: ZoomedScene is derived class of MovingCameraScene,
 so one can use all functionality that were used before in the MovingCameraScene examples.
 
 .. manim:: ExampleZoom1
-    :quality: medium
 
     class ExampleZoom1(ZoomedScene):
         def construct(self):
@@ -135,7 +127,6 @@ so one can use all functionality that were used before in the MovingCameraScene 
             self.play(dot.shift, LEFT)
 
 .. manim:: ExampleZoom2
-    :quality: medium
 
     class ExampleZoom2(ZoomedScene):
         CONFIG = {
@@ -161,7 +152,6 @@ so one can use all functionality that were used before in the MovingCameraScene 
 
 
 .. manim:: ExampleZoom3
-    :quality: medium
 
     class ExampleZoom3(ZoomedScene):
         CONFIG = {

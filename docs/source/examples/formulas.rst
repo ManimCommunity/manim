@@ -2,7 +2,6 @@ Formulas
 =================================
 
 .. manim:: Formula1
-    :quality: medium
     :save_last_frame:
 
     class Formula1(Scene):
@@ -13,7 +12,6 @@ Formulas
 
 
 .. manim:: MoveFrameBox
-    :quality: medium
 
     class MoveFrameBox(Scene):
         def construct(self):
@@ -34,7 +32,6 @@ Formulas
             self.wait()
 
 .. manim:: MoveBraces
-    :quality: medium
 
     class MoveBraces(Scene):
         def construct(self):

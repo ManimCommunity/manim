@@ -2,7 +2,6 @@ Text
 =================================
 
 .. manim:: Example1Text
-    :quality: medium
     :save_last_frame:
 
     class Example1Text(Scene):
@@ -11,7 +10,6 @@ Text
             self.add(text)
 
 .. manim:: Example2Text
-    :quality: medium
     :save_last_frame:
 
     class Example2Text(Scene):
@@ -21,7 +19,6 @@ Text
 
 
 .. manim:: Example3Text
-    :quality: medium
     :save_last_frame:
 
     class Example3Text(Scene):
@@ -31,7 +28,6 @@ Text
 
 
 .. manim:: Example4Text
-    :quality: medium
     :save_last_frame:
 
     class Example4Text(Scene):
@@ -40,7 +36,6 @@ Text
             self.add(text)
 
 .. manim:: Example5Text
-    :quality: medium
     :save_last_frame:
 
     class Example5Text(Scene):
@@ -49,7 +44,6 @@ Text
             self.add(text)
 
 .. manim:: Example5bText
-    :quality: medium
     :save_last_frame:
 
     class Example5bText(Scene):
@@ -58,7 +52,6 @@ Text
             self.add(text)
 
 .. manim:: Example6Text
-    :quality: medium
     :save_last_frame:
 
     class Example6Text(Scene):
@@ -67,7 +60,6 @@ Text
             self.add(text)
 
 .. manim:: Example7Text
-    :quality: medium
     :save_last_frame:
 
     class Example7Text(Scene):
@@ -76,7 +68,6 @@ Text
             self.add(text)
 
 .. manim:: Example8Text
-    :quality: medium
     :save_last_frame:
 
     class Example8Text(Scene):
@@ -85,7 +76,6 @@ Text
             self.add(text)
 
 .. manim:: Example9Text
-    :quality: medium
     :save_last_frame:
 
     class Example9Text(Scene):
@@ -94,7 +84,6 @@ Text
             self.add(text)
 
 .. manim:: Example10Text
-    :quality: medium
     :save_last_frame:
 
     class Example10Text(Scene):
@@ -103,7 +92,6 @@ Text
             self.add(text)
 
 .. manim:: Example11Text
-    :quality: medium
     :save_last_frame:
 
     class Example11Text(Scene):
@@ -112,7 +100,6 @@ Text
             self.add(text)
 
 .. manim:: Example12Text
-    :quality: medium
     :save_last_frame:
 
     class Example12Text(Scene):

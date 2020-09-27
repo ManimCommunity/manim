@@ -2,7 +2,6 @@ Shapes
 =================================
 
 .. manim:: Example1Shape
-    :quality: medium
     :save_last_frame:
 
     class Example1Shape(Scene):
@@ -18,7 +17,6 @@ Shapes
             self.wait(1)
 
 .. manim:: Example1ImageFromArray
-    :quality: medium
     :save_last_frame:
 
     class Example1ImageFromArray(Scene):
@@ -29,7 +27,6 @@ Shapes
             self.add(image)
 
 .. manim:: Example2ImageFromFile
-    :quality: medium
     :save_last_frame:
 
     class Example2ImageFromFile(Scene):

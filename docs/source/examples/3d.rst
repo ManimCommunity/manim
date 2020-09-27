@@ -2,7 +2,6 @@
 =================================
 
 .. manim:: Example3DNo1
-    :quality: medium
     :save_last_frame:
 
     class Example3DNo1(ThreeDScene):
@@ -20,7 +19,6 @@
             self.add(axes, sphere)
 
 .. manim:: Example3DNo2
-    :quality: medium
     :save_last_frame:
 
     class Example3DNo2(ThreeDScene):
@@ -39,7 +37,6 @@
             self.add(axes, sphere)
 
 .. manim:: Example3DNo3
-    :quality: medium
 
     class Example3DNo3(ThreeDScene):
         def construct(self):
@@ -54,7 +51,6 @@
             self.wait()
 
 .. manim:: Example3DNo4
-    :quality: medium
 
     class Example3DNo4(ThreeDScene):
         def construct(self):
@@ -67,7 +63,6 @@
             self.stop_3dillusion_camera_rotation()
 
 .. manim:: Example3DNo5
-    :quality: medium
     :save_last_frame:
 
     class Example3DNo5(ThreeDScene):

@@ -11,7 +11,6 @@ Updaters
 ##########
 
 .. manim:: Updater1Example
-    :quality: medium
 
     class Updater1Example(Scene):
         def construct(self):
@@ -24,7 +23,6 @@ Updaters
             self.wait(PI)
 
 .. manim:: Updater2Example
-    :quality: medium
 
     class Updater2Example(Scene):
         def construct(self):
@@ -44,7 +42,6 @@ Updaters
             self.wait(0.5)
 
 .. manim:: Example3
-    :quality: medium
 
     class Example3(Scene):
         def construct(self):
@@ -62,7 +59,6 @@ Updaters
             self.play(pointer_value.set_value, 3)
 
 .. manim:: Example4
-    :quality: medium
 
     class Example4(Scene):
         def construct(self):
@@ -82,7 +78,6 @@ Updaters
             self.wait()
 
 .. manim:: Example1ValTracker
-    :quality: medium
 
     class Example1ValTracker(Scene):
         def construct(self):
@@ -98,7 +93,6 @@ Updaters
             self.wait()
 
 .. manim:: Example2ValTracker
-    :quality: medium
 
     class Example2ValTracker(Scene):
         def construct(self):
