@@ -9,7 +9,6 @@ Examples
    examples/text
    examples/formulas
    examples/3d
-   examples/3d_fix
    examples/camera_settings
    examples/animations
    examples/neat_projects
