@@ -16,7 +16,7 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
 .. manim:: Plot2yLabelNumbers
     :save_last_frame:
 
-    class Plot2yLabel(GraphScene):
+    class Plot2yLabelNumbers(GraphScene):
         CONFIG = {
             "y_min": 0,
             "y_max": 100,
