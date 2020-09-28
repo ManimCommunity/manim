@@ -152,7 +152,7 @@ so one can use all functionality that were used before in the MovingCameraScene 
 
 
 .. manim:: ExampleZoom3
-
+    # contributed by TheoremofBeethoven, www.youtube.com/c/TheoremofBeethoven
     class ExampleZoom3(ZoomedScene):
         CONFIG = {
             "zoom_factor": 0.3,
