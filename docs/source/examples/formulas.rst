@@ -42,8 +42,8 @@ Formulas
                 "g(x)\\frac{d}{dx}f(x)"         #3
             )
             self.play(Write(text))
-            brace1 = Brace(text[1], UP, buff = SMALL_BUFF)
-            brace2 = Brace(text[3], UP, buff = SMALL_BUFF)
+            brace1 = Brace(text[1], UP, buff=SMALL_BUFF)
+            brace2 = Brace(text[3], UP, buff=SMALL_BUFF)
             t1 = brace1.get_text("$g'f$")
             t2 = brace2.get_text("$f'g$")
             self.play(

@@ -33,7 +33,7 @@ Advanced Projects
             ]
 
             for i in range(len(x_labels)):
-                x_labels[i].next_to(np.array([-1+2*i,0,0]), DOWN )
+                x_labels[i].next_to(np.array([-1 + 2*i, 0, 0]), DOWN)
                 self.add(x_labels[i])
 
         def show_circle(self):
