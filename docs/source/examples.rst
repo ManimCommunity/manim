@@ -1,7 +1,7 @@
 Examples
 ============
 
-Special thanks to @theoremofbeethoven ,heejin_park, leotrs and behackl for collecting these examples.
+Special thanks to @theoremofbeethoven ,heejin_park, leotrs and behackl and the manim community devs for collecting these examples.
 
 .. toctree::
 
