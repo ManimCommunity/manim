@@ -1,6 +1,8 @@
 Examples
 ============
 
+Special thanks to @theoremofbeethoven ,heejin_park, leotrs and behackl for collecting these examples.
+
 .. toctree::
 
    examples/shapes
