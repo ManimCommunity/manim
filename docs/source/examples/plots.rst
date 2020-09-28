@@ -25,7 +25,7 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
         }
 
         def construct(self):
-            self.setup_axes(animate=True)
+            self.setup_axes()
             dot = Dot().move_to(self.coords_to_point(PI / 2, 20))
             func_graph = self.get_graph(lambda x: 20 * np.sin(x))
             self.add(func_graph)
@@ -42,7 +42,7 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
 
         def construct(self):
             data = [1, 2, 2, 4, 4, 1, 3]
-            self.setup_axes(animate=True)
+            self.setup_axes()
             for time, dat in enumerate(data):
                 dot = Dot().move_to(self.coords_to_point(time, dat))
                 self.add(dot)
@@ -127,7 +127,7 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
             "x_labeled_nums" : [0,2,3]
         }
         def construct(self):
-            self.setup_axes(animate=False)
+            self.setup_axes()
             curve1 = self.get_graph(lambda x : 4*x-x**2, x_min=0,x_max=4)
             curve2 = self.get_graph(lambda x : 0.8*x**2-3*x+4, x_min=0,x_max=4)
             line1 = self.get_vertical_line_to_graph(2, curve1, DashedLine, color=YELLOW)
@@ -155,7 +155,7 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
         def construct(self):
             data = [20, 0, 0, -5]
             x = [0, 8, 38, 39]
-            self.setup_axes(animate=True)
+            self.setup_axes()
             dot_collection = VGroup()
             for time, val in enumerate(data):
                 dot = Dot().move_to(self.coords_to_point(x[time], val))
