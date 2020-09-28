@@ -31,7 +31,7 @@ Shapes
 
     class Example2ImageFromFile(Scene):
         def construct(self):
-            # these four lines, when you want to import an image from the web
+            # Use PIL when you want to import an image from the web
             import requests
             from PIL import Image
             img = Image.open(requests.get("https://raw.githubusercontent.com/ManimCommunity/manim/master/logo/cropped.png",
