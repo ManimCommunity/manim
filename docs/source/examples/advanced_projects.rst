@@ -4,6 +4,7 @@ Advanced Projects
 .. manim:: ExampleSineCurve
 
     class ExampleSineCurve(Scene):
+        # contributed by heejin_park, https://infograph.tistory.com/230 
         def construct(self):
             self.show_axis()
             self.show_circle()
