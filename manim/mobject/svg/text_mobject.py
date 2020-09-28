@@ -115,6 +115,11 @@ class Text(SVGMobject):
             self.line_spacing = self.size + self.size * 0.3
         else:
             self.line_spacing = self.size + self.size * self.line_spacing
+        if self.size > 800:
+            logger.warning(
+                "Using a font size larger than 800 can lead to render problems."
+                " See https://github.com/ManimCommunity/manim/pull/476 for details."
+            )
         file_name = self.text2svg()
         self.remove_last_M(file_name)
         SVGMobject.__init__(self, file_name, **config)
