@@ -79,7 +79,10 @@ class Brace(MathTex):
 
 
 class BraceLabel(VMobject):
-    CONFIG = {"label_constructor": MathTex, "label_scale": 1}
+    CONFIG = {
+        "label_constructor": MathTex,
+        "label_scale": 1,
+    }
 
     def __init__(self, obj, text, brace_direction=DOWN, **kwargs):
         VMobject.__init__(self, **kwargs)

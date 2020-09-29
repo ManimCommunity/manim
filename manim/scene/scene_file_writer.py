@@ -61,7 +61,10 @@ class SceneFileWriter(object):
             if file_writer_config["media_dir"] != "":
                 if not file_writer_config["custom_folders"]:
                     image_dir = guarantee_existence(
-                        os.path.join(file_writer_config["images_dir"], module_directory)
+                        os.path.join(
+                            file_writer_config["images_dir"],
+                            module_directory,
+                        )
                     )
                 else:
                     image_dir = guarantee_existence(file_writer_config["images_dir"])
@@ -94,7 +97,11 @@ class SceneFileWriter(object):
             )
             if not file_writer_config["custom_folders"]:
                 self.partial_movie_directory = guarantee_existence(
-                    os.path.join(movie_dir, "partial_movie_files", scene_name)
+                    os.path.join(
+                        movie_dir,
+                        "partial_movie_files",
+                        scene_name,
+                    )
                 )
             else:
                 self.partial_movie_directory = guarantee_existence(
@@ -257,7 +264,8 @@ class SceneFileWriter(object):
         diff = new_end - curr_end
         if diff > 0:
             segment = segment.append(
-                AudioSegment.silent(int(np.ceil(diff * 1000))), crossfade=0
+                AudioSegment.silent(int(np.ceil(diff * 1000))),
+                crossfade=0,
             )
         self.audio_segment = segment.overlay(
             new_segment,
@@ -426,9 +434,17 @@ class SceneFileWriter(object):
         if file_writer_config["movie_file_extension"] == ".mov":
             # This is if the background of the exported
             # video should be transparent.
-            command += ["-vcodec", "qtrle"]
+            command += [
+                "-vcodec",
+                "qtrle",
+            ]
         else:
-            command += ["-vcodec", "libx264", "-pix_fmt", "yuv420p"]
+            command += [
+                "-vcodec",
+                "libx264",
+                "-pix_fmt",
+                "yuv420p",
+            ]
         command += [temp_file_path]
         self.writing_process = subprocess.Popen(command, stdin=subprocess.PIPE)
 
@@ -440,7 +456,10 @@ class SceneFileWriter(object):
         """
         self.writing_process.stdin.close()
         self.writing_process.wait()
-        shutil.move(self.temp_partial_movie_file_path, self.partial_movie_file_path)
+        shutil.move(
+            self.temp_partial_movie_file_path,
+            self.partial_movie_file_path,
+        )
         logger.info(
             f"Animation {self.scene.num_plays} : Partial movie file written in %(path)s",
             {"path": {self.partial_movie_file_path}},
@@ -531,7 +550,10 @@ class SceneFileWriter(object):
             )
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
-            self.audio_segment.export(sound_file_path, bitrate="312k")
+            self.audio_segment.export(
+                sound_file_path,
+                bitrate="312k",
+            )
             temp_file_path = movie_file_path.replace(".", "_temp.")
             commands = [
                 FFMPEG_BIN,

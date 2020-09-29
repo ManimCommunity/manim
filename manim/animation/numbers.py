@@ -11,7 +11,9 @@ from ..utils.bezier import interpolate
 
 
 class ChangingDecimal(Animation):
-    CONFIG = {"suspend_mobject_updating": False}
+    CONFIG = {
+        "suspend_mobject_updating": False,
+    }
 
     def __init__(self, decimal_mob, number_update_func, **kwargs):
         self.check_validity_of_input(decimal_mob)

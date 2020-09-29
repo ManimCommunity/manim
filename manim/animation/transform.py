@@ -59,7 +59,10 @@ class Transform(Animation):
         elif self.path_arc == 0:
             self.path_func = straight_path
         else:
-            self.path_func = path_along_arc(self.path_arc, self.path_arc_axis)
+            self.path_func = path_along_arc(
+                self.path_arc,
+                self.path_arc_axis,
+            )
 
     def begin(self):
         # Use a copy of target_mobject for the align_data
@@ -108,7 +111,11 @@ class Transform(Animation):
         return zip(
             *[
                 mob.family_members_with_points()
-                for mob in [self.mobject, self.starting_mobject, self.target_copy]
+                for mob in [
+                    self.mobject,
+                    self.starting_mobject,
+                    self.target_copy,
+                ]
             ]
         )
 
@@ -118,7 +125,9 @@ class Transform(Animation):
 
 
 class ReplacementTransform(Transform):
-    CONFIG = {"replace_mobject_with_target_in_scene": True}
+    CONFIG = {
+        "replace_mobject_with_target_in_scene": True,
+    }
 
 
 class TransformFromCopy(Transform):
@@ -277,7 +286,9 @@ class ApplyComplexFunction(ApplyMethod):
 
 
 class CyclicReplace(Transform):
-    CONFIG = {"path_arc": 90 * DEGREES}
+    CONFIG = {
+        "path_arc": 90 * DEGREES,
+    }
 
     def __init__(self, *mobjects, **kwargs):
         self.group = Group(*mobjects)

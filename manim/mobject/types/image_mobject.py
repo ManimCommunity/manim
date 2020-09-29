@@ -21,7 +21,10 @@ class AbstractImageMobject(Mobject):
     Automatically filters out black pixels
     """
 
-    CONFIG = {"height": 2.0, "pixel_array_dtype": "uint8"}
+    CONFIG = {
+        "height": 2.0,
+        "pixel_array_dtype": "uint8",
+    }
 
     def get_pixel_array(self):
         raise Exception("Not implemented")
@@ -32,7 +35,13 @@ class AbstractImageMobject(Mobject):
 
     def reset_points(self):
         # Corresponding corners of image are fixed to these 3 points
-        self.points = np.array([UP + LEFT, UP + RIGHT, DOWN + LEFT])
+        self.points = np.array(
+            [
+                UP + LEFT,
+                UP + RIGHT,
+                DOWN + LEFT,
+            ]
+        )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
         self.stretch_to_fit_height(self.height)
@@ -40,7 +49,10 @@ class AbstractImageMobject(Mobject):
 
 
 class ImageMobject(AbstractImageMobject):
-    CONFIG = {"invert": False, "image_mode": "RGBA"}
+    CONFIG = {
+        "invert": False,
+        "image_mode": "RGBA",
+    }
 
     def __init__(self, filename_or_array, **kwargs):
         digest_config(self, kwargs)

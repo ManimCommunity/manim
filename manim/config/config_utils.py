@@ -200,7 +200,8 @@ def _parse_cli(arg_list, input=True):
 
         if only_manim or not _subcommand_name(ignore=["--help", "-h"]):
             parser.add_argument(
-                "file", help="path to file holding the python code for the scene"
+                "file",
+                help="path to file holding the python code for the scene",
             )
             parser.add_argument(
                 "scene_names",
@@ -236,7 +237,10 @@ def _parse_cli(arg_list, input=True):
         help="Show the output file in the File Browser",
     )
     parser.add_argument(
-        "--sound", action="store_const", const=True, help="Play a success/failure sound"
+        "--sound",
+        action="store_const",
+        const=True,
+        help="Play a success/failure sound",
     )
     parser.add_argument(
         "--leave_progress_bars",
@@ -298,13 +302,27 @@ def _parse_cli(arg_list, input=True):
         help="Log terminal output to file",
     )
     # The default value of the following is set in manim.cfg
-    parser.add_argument("-c", "--background_color", help="Specify background color")
-    parser.add_argument("--background_opacity", help="Specify background opacity")
     parser.add_argument(
-        "--media_dir", help="Directory to store media (including video files)"
+        "-c",
+        "--background_color",
+        help="Specify background color",
     )
-    parser.add_argument("--log_dir", help="Directory to store log files")
-    parser.add_argument("--tex_template", help="Specify a custom TeX template file")
+    parser.add_argument(
+        "--background_opacity",
+        help="Specify background opacity",
+    )
+    parser.add_argument(
+        "--media_dir",
+        help="Directory to store media (including video files)",
+    )
+    parser.add_argument(
+        "--log_dir",
+        help="Directory to store log files",
+    )
+    parser.add_argument(
+        "--tex_template",
+        help="Specify a custom TeX template file",
+    )
 
     # All of the following use (action="store_true"). This means that
     # they are by default False.  In contrast to the previous ones that
@@ -331,16 +349,28 @@ def _parse_cli(arg_list, input=True):
     # The following are mutually exclusive and each overrides
     # FRAME_RATE, PIXEL_HEIGHT, and PIXEL_WIDTH,
     parser.add_argument(
-        "-l", "--low_quality", action="store_true", help="Render at low quality"
+        "-l",
+        "--low_quality",
+        action="store_true",
+        help="Render at low quality",
     )
     parser.add_argument(
-        "-m", "--medium_quality", action="store_true", help="Render at medium quality"
+        "-m",
+        "--medium_quality",
+        action="store_true",
+        help="Render at medium quality",
     )
     parser.add_argument(
-        "-e", "--high_quality", action="store_true", help="Render at high quality"
+        "-e",
+        "--high_quality",
+        action="store_true",
+        help="Render at high quality",
     )
     parser.add_argument(
-        "-k", "--fourk_quality", action="store_true", help="Render at 4K quality"
+        "-k",
+        "--fourk_quality",
+        action="store_true",
+        help="Render at 4K quality",
     )
 
     # This overrides any of the above
@@ -362,7 +392,10 @@ def _parse_cli(arg_list, input=True):
     )
 
     # Specify the manim.cfg file
-    parser.add_argument("--config_file", help="Specify the configuration file")
+    parser.add_argument(
+        "--config_file",
+        help="Specify the configuration file",
+    )
 
     # Specify whether to use the custom folders
     parser.add_argument(
@@ -558,7 +591,9 @@ def _init_cfg_subcmd(subparsers):
     :class:`argparse.ArgumentParser`
         The parser that parser anything cfg subcommand related.
     """
-    cfg_related = subparsers.add_parser("cfg")
+    cfg_related = subparsers.add_parser(
+        "cfg",
+    )
     cfg_subparsers = cfg_related.add_subparsers(dest="cfg_subcommand")
 
     cfg_write_parser = cfg_subparsers.add_parser("write")

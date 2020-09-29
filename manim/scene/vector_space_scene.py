@@ -515,9 +515,16 @@ class LinearTransformationScene(VectorScene):
         "include_foreground_plane": True,
         "background_plane_kwargs": {
             "color": GREY,
-            "axis_config": {"stroke_color": LIGHT_GREY},
-            "axis_config": {"color": GREY},
-            "background_line_style": {"stroke_color": GREY, "stroke_width": 1},
+            "axis_config": {
+                "stroke_color": LIGHT_GREY,
+            },
+            "axis_config": {
+                "color": GREY,
+            },
+            "background_line_style": {
+                "stroke_color": GREY,
+                "stroke_width": 1,
+            },
         },
         "show_coordinates": False,
         "show_basis_vectors": True,
@@ -562,7 +569,8 @@ class LinearTransformationScene(VectorScene):
             self.add_transformable_mobject(self.plane)
         if self.show_basis_vectors:
             self.basis_vectors = self.get_basis_vectors(
-                i_hat_color=self.i_hat_color, j_hat_color=self.j_hat_color
+                i_hat_color=self.i_hat_color,
+                j_hat_color=self.j_hat_color,
             )
             self.moving_vectors += list(self.basis_vectors)
             self.i_hat, self.j_hat = self.basis_vectors

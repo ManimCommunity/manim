@@ -9,7 +9,10 @@ from manim.config.logger import logger
 
 def capture(command):
     proc = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf8"
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        encoding="utf8",
     )
     out, err = proc.communicate()
     return out, err, proc.returncode
@@ -47,7 +50,10 @@ def save_control_data_from_video(path_to_video, name):
     tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     path_control_data = os.path.join(tests_directory, "control_data", "videos_data")
     config_video = get_config_from_video(path_to_video)
-    data = {"name": name, "config": json.loads(config_video)["streams"][0]}
+    data = {
+        "name": name,
+        "config": json.loads(config_video)["streams"][0],
+    }
     path_saved = os.path.join(path_control_data, f"{name}.json")
     json.dump(data, open(path_saved, "w"), indent=4)
     logger.info(f"Data for {name} saved in {path_saved}")

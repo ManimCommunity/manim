@@ -1,6 +1,10 @@
 """Mobject representing highlighted source code listings."""
 
-__all__ = ["Code", "hilite_me", "insert_line_numbers_in_html"]
+__all__ = [
+    "Code",
+    "hilite_me",
+    "insert_line_numbers_in_html",
+]
 
 import html
 import os

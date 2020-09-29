@@ -65,7 +65,10 @@ class Scene(Container):
     def __init__(self, **kwargs):
         Container.__init__(self, **kwargs)
         self.camera = self.camera_class(**camera_config)
-        self.file_writer = SceneFileWriter(self, **file_writer_config)
+        self.file_writer = SceneFileWriter(
+            self,
+            **file_writer_config,
+        )
         self.play_hashes_list = []
         self.mobjects = []
         self.original_skipping_status = file_writer_config["skip_animations"]
@@ -196,7 +199,10 @@ class Scene(Container):
         if file_writer_config["skip_animations"] and not ignore_skipping:
             return
         if mobjects is None:
-            mobjects = list_update(self.mobjects, self.foreground_mobjects)
+            mobjects = list_update(
+                self.mobjects,
+                self.foreground_mobjects,
+            )
         if background is not None:
             self.camera.set_pixel_array(background)
         else:
@@ -713,7 +719,11 @@ class Scene(Container):
         list : list of animations with the parameters applied to them.
         """
         animations = []
-        state = {"curr_method": None, "last_method": None, "method_args": []}
+        state = {
+            "curr_method": None,
+            "last_method": None,
+            "method_args": [],
+        }
 
         def compile_method(state):
             if state["curr_method"] is None:

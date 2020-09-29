@@ -188,11 +188,15 @@ class DecimalMatrix(Matrix):
 
 
 class IntegerMatrix(Matrix):
-    CONFIG = {"element_to_mobject": Integer}
+    CONFIG = {
+        "element_to_mobject": Integer,
+    }
 
 
 class MobjectMatrix(Matrix):
-    CONFIG = {"element_to_mobject": lambda m: m}
+    CONFIG = {
+        "element_to_mobject": lambda m: m,
+    }
 
 
 def get_det_text(
