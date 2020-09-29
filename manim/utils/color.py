@@ -22,41 +22,49 @@ __all__ = [
     "BLUE_E",
     "BLUE_D",
     "BLUE_C",
+    "BLUE",
     "BLUE_B",
     "BLUE_A",
     "TEAL_E",
     "TEAL_D",
     "TEAL_C",
+    "TEAL",
     "TEAL_B",
     "TEAL_A",
     "GREEN_E",
     "GREEN_D",
     "GREEN_C",
+    "GREEN",
     "GREEN_B",
     "GREEN_A",
     "YELLOW_E",
     "YELLOW_D",
     "YELLOW_C",
+    "YELLOW",
     "YELLOW_B",
     "YELLOW_A",
     "GOLD_E",
     "GOLD_D",
     "GOLD_C",
+    "GOLD",
     "GOLD_B",
     "GOLD_A",
     "RED_E",
     "RED_D",
     "RED_C",
+    "RED",
     "RED_B",
     "RED_A",
     "MAROON_E",
     "MAROON_D",
     "MAROON_C",
+    "MAROON",
     "MAROON_B",
     "MAROON_A",
     "PURPLE_E",
     "PURPLE_D",
     "PURPLE_C",
+    "PURPLE",
     "PURPLE_B",
     "PURPLE_A",
     "WHITE",
@@ -82,7 +90,6 @@ import random
 from colour import Color
 import numpy as np
 
-from ..constants import COLOR_MAP
 from ..utils.bezier import interpolate
 from ..utils.simple_functions import clip_in_place
 from ..utils.space_ops import normalize
@@ -179,41 +186,49 @@ LIGHT_BROWN = Colors.dark_brown.value
 BLUE_E = Colors.blue_e.value
 BLUE_D = Colors.blue_d.value
 BLUE_C = Colors.blue_c.value
+BLUE =  Colors.blue.value
 BLUE_B = Colors.blue_b.value
 BLUE_A = Colors.blue_a.value
 TEAL_E = Colors.teal_e.value
 TEAL_D = Colors.teal_d.value
 TEAL_C = Colors.teal_c.value
+TEAL = Colors.teal.value
 TEAL_B = Colors.teal_b.value
 TEAL_A = Colors.teal_a.value
 GREEN_E = Colors.green_e.value
 GREEN_D = Colors.green_d.value
 GREEN_C = Colors.green_c.value
+GREEN = Colors.green.value
 GREEN_B = Colors.green_b.value
 GREEN_A = Colors.green_a.value
 YELLOW_E = Colors.yellow_e.value
 YELLOW_D = Colors.yellow_d.value
 YELLOW_C = Colors.yellow_c.value
+YELLOW = Colors.yellow.value
 YELLOW_B = Colors.yellow_b.value
 YELLOW_A = Colors.yellow_a.value
 GOLD_E = Colors.gold_e.value
 GOLD_D = Colors.gold_d.value
 GOLD_C = Colors.gold_c.value
+GOLD = Colors.gold.value
 GOLD_B = Colors.gold_b.value
 GOLD_A = Colors.gold_a.value
 RED_E = Colors.red_e.value
 RED_D = Colors.red_d.value
 RED_C = Colors.red_c.value
+RED = Colors.red.value
 RED_B = Colors.red_b.value
 RED_A = Colors.red_a.value
 MAROON_E = Colors.maroon_e.value
 MAROON_D = Colors.maroon_d.value
 MAROON_C = Colors.maroon_c.value
+MAROON = Colors.maroon.value
 MAROON_B = Colors.maroon_b.value
 MAROON_A = Colors.maroon_a.value
 PURPLE_E = Colors.purple_e.value
 PURPLE_D = Colors.purple_d.value
 PURPLE_C = Colors.purple_c.value
+PURPLE = Colors.purple.value
 PURPLE_B = Colors.purple_b.value
 PURPLE_A = Colors.purple_a.value
 WHITE = Colors.white.value
@@ -265,7 +280,7 @@ def hex_to_rgb(hex_code):
     hex_part = hex_code[1:]
     if len(hex_part) == 3:
         "".join([2 * c for c in hex_part])
-    return np.array([int(hex_part[i : i + 2], 16) / 255 for i in range(0, 6, 2)])
+    return np.array([int(hex_part[i: i + 2], 16) / 255 for i in range(0, 6, 2)])
 
 
 def invert_color(color):
