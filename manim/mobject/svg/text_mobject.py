@@ -299,7 +299,7 @@ class Text(SVGMobject):
 
         if self.font == "":
             if NOT_SETTING_FONT_MSG != "":
-                print(NOT_SETTING_FONT_MSG)
+                logger.warning(NOT_SETTING_FONT_MSG)
 
         dir_name = file_writer_config["text_dir"]
         if not os.path.exists(dir_name):
