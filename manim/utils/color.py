@@ -331,8 +331,9 @@ def random_bright_color():
 
 
 def random_color():
-    return random.choice(list(COLOR_MAP.values()))
-
+    import time
+    random.seed(time.time())
+    return random.choice([c.value for c in list(Colors)])
 
 def get_shaded_rgb(rgb, point, unit_normal_vect, light_source):
     to_sun = normalize(light_source - point)
