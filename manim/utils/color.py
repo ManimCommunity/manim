@@ -337,9 +337,6 @@ def random_bright_color():
 
 
 def random_color():
-    import time
-
-    random.seed(time.time())
     return random.choice([c.value for c in list(Colors)])
 
 
