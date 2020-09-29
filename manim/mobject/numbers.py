@@ -83,11 +83,7 @@ class DecimalNumber(VMobject):
         config = dict(
             [
                 (attr, getattr(self, attr))
-                for attr in [
-                    "include_sign",
-                    "group_with_commas",
-                    "num_decimal_places",
-                ]
+                for attr in ["include_sign", "group_with_commas", "num_decimal_places"]
             ]
         )
         config.update(kwargs)
@@ -141,9 +137,7 @@ class DecimalNumber(VMobject):
 
 
 class Integer(DecimalNumber):
-    CONFIG = {
-        "num_decimal_places": 0,
-    }
+    CONFIG = {"num_decimal_places": 0}
 
     def get_value(self):
         return int(np.round(super().get_value()))

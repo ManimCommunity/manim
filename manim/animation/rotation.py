@@ -32,10 +32,7 @@ class Rotating(Animation):
 
 
 class Rotate(Transform):
-    CONFIG = {
-        "about_point": None,
-        "about_edge": None,
-    }
+    CONFIG = {"about_point": None, "about_edge": None}
 
     def __init__(self, mobject, angle=PI, axis=OUT, **kwargs):
         if "path_arc" not in kwargs:

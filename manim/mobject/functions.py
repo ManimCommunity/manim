@@ -7,7 +7,7 @@ from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.config_ops import digest_config
-from ..utils.color import  YELLOW
+from ..utils.color import YELLOW
 
 import math
 
@@ -82,9 +82,7 @@ class ParametricFunction(VMobject):
 
 
 class FunctionGraph(ParametricFunction):
-    CONFIG = {
-        "color": YELLOW,
-    }
+    CONFIG = {"color": YELLOW}
 
     def __init__(self, function, **kwargs):
         digest_config(self, kwargs)

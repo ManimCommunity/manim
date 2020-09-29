@@ -42,13 +42,7 @@ class Mobject(Container):
 
     """
 
-    CONFIG = {
-        "color": WHITE,
-        "name": None,
-        "dim": 3,
-        "target": None,
-        "z_index": 0,
-    }
+    CONFIG = {"color": WHITE, "name": None, "dim": 3, "target": None, "z_index": 0}
 
     def __init__(self, **kwargs):
         Container.__init__(self, **kwargs)
@@ -607,10 +601,7 @@ class Mobject(Container):
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
-        self.scale(
-            get_norm(target_vect) / get_norm(curr_vect),
-            about_point=curr_start,
-        )
+        self.scale(get_norm(target_vect) / get_norm(curr_vect), about_point=curr_start)
         self.rotate(
             angle_of_vector(target_vect) - angle_of_vector(curr_vect),
             about_point=curr_start,
@@ -916,9 +907,7 @@ class Mobject(Container):
 
     def match_coord(self, mobject, dim, direction=ORIGIN):
         return self.set_coord(
-            mobject.get_coord(dim, direction),
-            dim=dim,
-            direction=direction,
+            mobject.get_coord(dim, direction), dim=dim, direction=direction
         )
 
     def match_x(self, mobject, direction=ORIGIN):

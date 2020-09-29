@@ -15,9 +15,7 @@ class UpdateFromFunc(Animation):
     on another simultaneously animated mobject
     """
 
-    CONFIG = {
-        "suspend_mobject_updating": False,
-    }
+    CONFIG = {"suspend_mobject_updating": False}
 
     def __init__(self, mobject, update_function, **kwargs):
         self.update_function = update_function
@@ -35,10 +33,7 @@ class UpdateFromAlphaFunc(UpdateFromFunc):
 class MaintainPositionRelativeTo(Animation):
     def __init__(self, mobject, tracked_mobject, **kwargs):
         self.tracked_mobject = tracked_mobject
-        self.diff = op.sub(
-            mobject.get_center(),
-            tracked_mobject.get_center(),
-        )
+        self.diff = op.sub(mobject.get_center(), tracked_mobject.get_center())
         super().__init__(mobject, **kwargs)
 
     def interpolate_mobject(self, alpha):

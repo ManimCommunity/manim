@@ -85,10 +85,7 @@ class ZoomedScene(MovingCameraScene):
         if animate:
             self.play(self.get_zoom_in_animation())
             self.play(self.get_zoomed_display_pop_out_animation())
-        self.add_foreground_mobjects(
-            self.zoomed_camera.frame,
-            self.zoomed_display,
-        )
+        self.add_foreground_mobjects(self.zoomed_camera.frame, self.zoomed_display)
 
     def get_zoom_in_animation(self, run_time=2, **kwargs):
         """

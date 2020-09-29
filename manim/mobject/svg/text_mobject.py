@@ -326,9 +326,7 @@ class Text(SVGMobject):
 
 # Following class is just a Little implementation of upcomming feautures. Ignore it for now.
 class TextWithBackground(Text):
-    CONFIG = {
-        "background_color": BLACK,
-    }
+    CONFIG = {"background_color": BLACK}
 
     def __init__(self, text, **config):
         Text.__init__(self, text, **config)
@@ -425,10 +423,7 @@ class Paragraph(VGroup):
 
     """
 
-    CONFIG = {
-        "line_spacing": -1,
-        "alignment": None,
-    }
+    CONFIG = {"line_spacing": -1, "alignment": None}
 
     def __init__(self, *text, **config):
         VGroup.__init__(self, **config)

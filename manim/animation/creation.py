@@ -41,9 +41,7 @@ class ShowPartial(Animation):
 
 
 class ShowCreation(ShowPartial):
-    CONFIG = {
-        "lag_ratio": 1,
-    }
+    CONFIG = {"lag_ratio": 1}
 
     def get_bounds(self, alpha):
         return (0, alpha)
@@ -127,10 +125,7 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
-    CONFIG = {
-        "suspend_mobject_updating": False,
-        "int_func": np.floor,
-    }
+    CONFIG = {"suspend_mobject_updating": False, "int_func": np.floor}
 
     def __init__(self, group, **kwargs):
         self.all_submobs = list(group.submobjects)
@@ -167,9 +162,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
 
 class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
-    CONFIG = {
-        "int_func": np.ceil,
-    }
+    CONFIG = {"int_func": np.ceil}
 
     def __init__(self, group, **kwargs):
         new_group = Group(*group)

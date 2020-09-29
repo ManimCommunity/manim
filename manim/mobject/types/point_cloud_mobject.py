@@ -15,9 +15,7 @@ from ...utils.space_ops import get_norm
 
 
 class PMobject(Mobject):
-    CONFIG = {
-        "stroke_width": DEFAULT_STROKE_WIDTH,
-    }
+    CONFIG = {"stroke_width": DEFAULT_STROKE_WIDTH}
 
     def reset_points(self):
         self.rgbas = np.zeros((0, 4))
@@ -162,11 +160,7 @@ class PMobject(Mobject):
     def interpolate_color(self, mobject1, mobject2, alpha):
         self.rgbas = interpolate(mobject1.rgbas, mobject2.rgbas, alpha)
         self.set_stroke_width(
-            interpolate(
-                mobject1.get_stroke_width(),
-                mobject2.get_stroke_width(),
-                alpha,
-            )
+            interpolate(mobject1.get_stroke_width(), mobject2.get_stroke_width(), alpha)
         )
         return self
 
@@ -180,9 +174,7 @@ class PMobject(Mobject):
 
 # TODO, Make the two implementations bellow non-redundant
 class Mobject1D(PMobject):
-    CONFIG = {
-        "density": DEFAULT_POINT_DENSITY_1D,
-    }
+    CONFIG = {"density": DEFAULT_POINT_DENSITY_1D}
 
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
@@ -201,9 +193,7 @@ class Mobject1D(PMobject):
 
 
 class Mobject2D(PMobject):
-    CONFIG = {
-        "density": DEFAULT_POINT_DENSITY_2D,
-    }
+    CONFIG = {"density": DEFAULT_POINT_DENSITY_2D}
 
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
@@ -242,9 +232,7 @@ class PointCloudDot(Mobject1D):
 
 
 class Point(PMobject):
-    CONFIG = {
-        "color": BLACK,
-    }
+    CONFIG = {"color": BLACK}
 
     def __init__(self, location=ORIGIN, **kwargs):
         PMobject.__init__(self, **kwargs)

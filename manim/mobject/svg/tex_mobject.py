@@ -145,11 +145,7 @@ class SingleStringMathTex(SVGMobject):
 
 
 class MathTex(SingleStringMathTex):
-    CONFIG = {
-        "arg_separator": " ",
-        "substrings_to_isolate": [],
-        "tex_to_color_map": {},
-    }
+    CONFIG = {"arg_separator": " ", "substrings_to_isolate": [], "tex_to_color_map": {}}
 
     def __init__(self, *tex_strings, **kwargs):
         digest_config(self, kwargs)
@@ -254,11 +250,7 @@ class MathTex(SingleStringMathTex):
 
 
 class Tex(MathTex):
-    CONFIG = {
-        "alignment": "\\centering",
-        "arg_separator": "",
-        "type": "text",
-    }
+    CONFIG = {"alignment": "\\centering", "arg_separator": "", "type": "text"}
 
 
 class BulletedList(Tex):

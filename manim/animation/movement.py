@@ -14,10 +14,7 @@ from ..utils.rate_functions import linear
 
 
 class Homotopy(Animation):
-    CONFIG = {
-        "run_time": 3,
-        "apply_function_kwargs": {},
-    }
+    CONFIG = {"run_time": 3, "apply_function_kwargs": {}}
 
     def __init__(self, homotopy, mobject, **kwargs):
         """
@@ -57,11 +54,7 @@ class ComplexHomotopy(Homotopy):
 
 
 class PhaseFlow(Animation):
-    CONFIG = {
-        "virtual_time": 1,
-        "rate_func": linear,
-        "suspend_mobject_updating": False,
-    }
+    CONFIG = {"virtual_time": 1, "rate_func": linear, "suspend_mobject_updating": False}
 
     def __init__(self, function, mobject, **kwargs):
         self.function = function
@@ -75,9 +68,7 @@ class PhaseFlow(Animation):
 
 
 class MoveAlongPath(Animation):
-    CONFIG = {
-        "suspend_mobject_updating": False,
-    }
+    CONFIG = {"suspend_mobject_updating": False}
 
     def __init__(self, mobject, path, **kwargs):
         self.path = path

@@ -4,10 +4,7 @@ NEW_BLUE = "#68a8e1"
 
 
 class Thumbnail(GraphScene):
-    CONFIG = {
-        "y_max": 8,
-        "y_axis_height": 5,
-    }
+    CONFIG = {"y_max": 8, "y_axis_height": 5}
 
     def construct(self):
         self.show_function_graph()
@@ -98,7 +95,7 @@ class Thumbnail(GraphScene):
         graph_dot_p2.move_to(get_graph_point(input_tracker_p2))
 
         #
-        self.play(ShowCreation(graph),)
+        self.play(ShowCreation(graph))
         # Animacion del punto a
         self.add_foreground_mobject(graph_dot_p1)
         self.add_foreground_mobject(graph_dot_p2)
@@ -150,16 +147,11 @@ class Thumbnail(GraphScene):
         )
 
         self.add(
-            input_triangle_p2, graph_dot_p2, v_line_p2, h_line_p2, output_triangle_p2,
+            input_triangle_p2, graph_dot_p2, v_line_p2, h_line_p2, output_triangle_p2
         )
         self.play(FadeIn(grupo_secante))
 
-        kwargs = {
-            "x_min": 4,
-            "x_max": 9,
-            "fill_opacity": 0.75,
-            "stroke_width": 0.25,
-        }
+        kwargs = {"x_min": 4, "x_max": 9, "fill_opacity": 0.75, "stroke_width": 0.25}
         self.graph = graph
         iteraciones = 6
 

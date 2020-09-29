@@ -44,12 +44,7 @@ from ..utils.color import GREY, YELLOW
 
 
 class FocusOn(Transform):
-    CONFIG = {
-        "opacity": 0.2,
-        "color": GREY,
-        "run_time": 2,
-        "remover": True,
-    }
+    CONFIG = {"opacity": 0.2, "color": GREY, "run_time": 2, "remover": True}
 
     def __init__(self, focus_point, **kwargs):
         self.focus_point = focus_point
@@ -73,11 +68,7 @@ class FocusOn(Transform):
 
 
 class Indicate(Transform):
-    CONFIG = {
-        "rate_func": there_and_back,
-        "scale_factor": 1.2,
-        "color": YELLOW,
-    }
+    CONFIG = {"rate_func": there_and_back, "scale_factor": 1.2, "color": YELLOW}
 
     def create_target(self):
         target = self.mobject.copy()
@@ -101,11 +92,7 @@ class Flash(AnimationGroup):
         digest_config(self, kwargs)
         self.lines = self.create_lines()
         animations = self.create_line_anims()
-        super().__init__(
-            *animations,
-            group=self.lines,
-            **kwargs,
-        )
+        super().__init__(*animations, group=self.lines, **kwargs)
 
     def create_lines(self):
         lines = VGroup()
@@ -127,9 +114,7 @@ class CircleIndicate(Indicate):
     CONFIG = {
         "rate_func": there_and_back,
         "remover": True,
-        "circle_config": {
-            "color": YELLOW,
-        },
+        "circle_config": {"color": YELLOW},
     }
 
     def __init__(self, mobject, **kwargs):
@@ -148,10 +133,7 @@ class CircleIndicate(Indicate):
 
 
 class ShowPassingFlash(ShowPartial):
-    CONFIG = {
-        "time_width": 0.1,
-        "remover": True,
-    }
+    CONFIG = {"time_width": 0.1, "remover": True}
 
     def get_bounds(self, alpha):
         tw = self.time_width
@@ -168,16 +150,11 @@ class ShowPassingFlash(ShowPartial):
 
 
 class ShowCreationThenDestruction(ShowPassingFlash):
-    CONFIG = {
-        "time_width": 2.0,
-        "run_time": 1,
-    }
+    CONFIG = {"time_width": 2.0, "run_time": 1}
 
 
 class ShowCreationThenFadeOut(Succession):
-    CONFIG = {
-        "remover": True,
-    }
+    CONFIG = {"remover": True}
 
     def __init__(self, mobject, **kwargs):
         super().__init__(ShowCreation(mobject), FadeOut(mobject), **kwargs)
@@ -201,9 +178,7 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         rect = self.get_rect()
         rect.add_updater(lambda r: r.move_to(mobject))
 
-        super().__init__(
-            self.rect_animation(rect, **kwargs),
-        )
+        super().__init__(self.rect_animation(rect, **kwargs))
 
     def get_rect(self):
         return SurroundingRectangle(
@@ -224,11 +199,7 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
 
 
 class ApplyWave(Homotopy):
-    CONFIG = {
-        "direction": UP,
-        "amplitude": 0.2,
-        "run_time": 1,
-    }
+    CONFIG = {"direction": UP, "amplitude": 0.2, "run_time": 1}
 
     def __init__(self, mobject, **kwargs):
         digest_config(self, kwargs, locals())
@@ -276,9 +247,7 @@ class WiggleOutThenIn(Animation):
 
 
 class TurnInsideOut(Transform):
-    CONFIG = {
-        "path_arc": TAU / 4,
-    }
+    CONFIG = {"path_arc": TAU / 4}
 
     def create_target(self):
         return self.mobject.copy().reverse_points()

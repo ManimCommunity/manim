@@ -13,10 +13,7 @@ from ..utils.config_ops import digest_config
 
 
 class SurroundingRectangle(Rectangle):
-    CONFIG = {
-        "color": YELLOW,
-        "buff": SMALL_BUFF,
-    }
+    CONFIG = {"color": YELLOW, "buff": SMALL_BUFF}
 
     def __init__(self, mobject, **kwargs):
         digest_config(self, kwargs)
@@ -66,25 +63,18 @@ class BackgroundRectangle(SurroundingRectangle):
 
 
 class Cross(VGroup):
-    CONFIG = {
-        "stroke_color": RED,
-        "stroke_width": 6,
-    }
+    CONFIG = {"stroke_color": RED, "stroke_width": 6}
 
     def __init__(self, mobject, **kwargs):
         VGroup.__init__(
-            self,
-            Line(UP + LEFT, DOWN + RIGHT),
-            Line(UP + RIGHT, DOWN + LEFT),
+            self, Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT)
         )
         self.replace(mobject, stretch=True)
         self.set_stroke(self.stroke_color, self.stroke_width)
 
 
 class Underline(Line):
-    CONFIG = {
-        "buff": SMALL_BUFF,
-    }
+    CONFIG = {"buff": SMALL_BUFF}
 
     def __init__(self, mobject, **kwargs):
         super().__init__(LEFT, RIGHT, **kwargs)

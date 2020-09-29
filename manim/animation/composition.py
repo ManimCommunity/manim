@@ -100,9 +100,7 @@ class AnimationGroup(Animation):
 
 
 class Succession(AnimationGroup):
-    CONFIG = {
-        "lag_ratio": 1,
-    }
+    CONFIG = {"lag_ratio": 1}
 
     def begin(self):
         assert len(self.animations) > 0
@@ -127,15 +125,11 @@ class Succession(AnimationGroup):
 
 
 class LaggedStart(AnimationGroup):
-    CONFIG = {
-        "lag_ratio": DEFAULT_LAGGED_START_LAG_RATIO,
-    }
+    CONFIG = {"lag_ratio": DEFAULT_LAGGED_START_LAG_RATIO}
 
 
 class LaggedStartMap(LaggedStart):
-    CONFIG = {
-        "run_time": 2,
-    }
+    CONFIG = {"run_time": 2}
 
     def __init__(self, AnimationClass, mobject, arg_creator=None, **kwargs):
         args_list = []

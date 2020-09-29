@@ -87,8 +87,7 @@ class CoordinateSystem:
 
     def get_axis_labels(self, x_label_tex="x", y_label_tex="y"):
         self.axis_labels = VGroup(
-            self.get_x_axis_label(x_label_tex),
-            self.get_y_axis_label(y_label_tex),
+            self.get_x_axis_label(x_label_tex), self.get_y_axis_label(y_label_tex)
         )
         return self.axis_labels
 
@@ -157,9 +156,7 @@ class Axes(VGroup, CoordinateSystem):
 
     def create_axis(self, min_val, max_val, axis_config):
         new_config = merge_dicts_recursively(
-            self.axis_config,
-            {"x_min": min_val, "x_max": max_val},
-            axis_config,
+            self.axis_config, {"x_min": min_val, "x_max": max_val}, axis_config
         )
         return NumberLine(**new_config)
 
@@ -236,10 +233,7 @@ class ThreeDAxes(Axes):
     def set_axis_shading(self):
         def make_func(axis):
             vect = self.light_source
-            return lambda: (
-                axis.get_edge_center(-vect),
-                axis.get_edge_center(vect),
-            )
+            return lambda: (axis.get_edge_center(-vect), axis.get_edge_center(vect))
 
         for axis in self:
             for submob in axis.family_members_with_points():
@@ -289,16 +283,9 @@ class NumberPlane(Axes):
             self.faded_line_style = style
 
         self.background_lines, self.faded_lines = self.get_lines()
-        self.background_lines.set_style(
-            **self.background_line_style,
-        )
-        self.faded_lines.set_style(
-            **self.faded_line_style,
-        )
-        self.add_to_back(
-            self.faded_lines,
-            self.background_lines,
-        )
+        self.background_lines.set_style(**self.background_line_style)
+        self.faded_lines.set_style(**self.faded_line_style)
+        self.add_to_back(self.faded_lines, self.background_lines)
 
     def get_lines(self):
         """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
@@ -314,16 +301,10 @@ class NumberPlane(Axes):
         y_freq = self.y_line_frequency
 
         x_lines1, x_lines2 = self.get_lines_parallel_to_axis(
-            x_axis,
-            y_axis,
-            x_freq,
-            self.faded_line_ratio,
+            x_axis, y_axis, x_freq, self.faded_line_ratio
         )
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
-            y_axis,
-            x_axis,
-            y_freq,
-            self.faded_line_ratio,
+            y_axis, x_axis, y_freq, self.faded_line_ratio
         )
         lines1 = VGroup(*x_lines1, *y_lines1)
         lines2 = VGroup(*x_lines2, *y_lines2)
@@ -400,10 +381,7 @@ class NumberPlane(Axes):
 
 
 class ComplexPlane(NumberPlane):
-    CONFIG = {
-        "color": BLUE,
-        "line_frequency": 1,
-    }
+    CONFIG = {"color": BLUE, "line_frequency": 1}
 
     def number_to_point(self, number):
         number = complex(number)
@@ -436,8 +414,7 @@ class ComplexPlane(NumberPlane):
                 axis = self.get_y_axis()
                 value = z.imag
                 kwargs = merge_dicts_recursively(
-                    kwargs,
-                    {"number_config": {"unit": "i"}},
+                    kwargs, {"number_config": {"unit": "i"}}
                 )
             else:
                 axis = self.get_x_axis()

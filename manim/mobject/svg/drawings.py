@@ -55,7 +55,19 @@ from ...utils.rate_functions import linear
 from ...utils.space_ops import angle_of_vector
 from ...utils.space_ops import complex_to_R3
 from ...utils.space_ops import rotate_vector
-from ...utils.color import YELLOW, WHITE, DARK_GREY, MAROON_B, PURPLE, GREEN, BLACK, LIGHT_GREY, GREY, BLUE_B, BLUE_D
+from ...utils.color import (
+    YELLOW,
+    WHITE,
+    DARK_GREY,
+    MAROON_B,
+    PURPLE,
+    GREEN,
+    BLACK,
+    LIGHT_GREY,
+    GREY,
+    BLUE_B,
+    BLUE_D,
+)
 
 
 class Lightbulb(SVGMobject):
@@ -161,10 +173,7 @@ class Speedometer(VMobject):
 
 
 class AoPSLogo(SVGMobject):
-    CONFIG = {
-        "file_name": "aops_logo",
-        "height": 1.5,
-    }
+    CONFIG = {"file_name": "aops_logo", "height": 1.5}
 
     def __init__(self, **kwargs):
         SVGMobject.__init__(self, **kwargs)
@@ -217,11 +226,7 @@ class Laptop(VGroup):
         "keyboard_width_to_body_width": 0.9,
         "keyboard_height_to_body_height": 0.5,
         "screen_width_to_screen_plate_width": 0.9,
-        "key_color_kwargs": {
-            "stroke_width": 0,
-            "fill_color": BLACK,
-            "fill_opacity": 1,
-        },
+        "key_color_kwargs": {"stroke_width": 0, "fill_color": BLACK, "fill_opacity": 1},
         "fill_opacity": 1,
         "stroke_width": 0,
         "body_color": LIGHT_GREY,
@@ -248,21 +253,17 @@ class Laptop(VGroup):
             ]
         ).arrange(DOWN, buff=MED_SMALL_BUFF)
         keyboard.stretch_to_fit_width(
-            self.keyboard_width_to_body_width * body.get_width(),
+            self.keyboard_width_to_body_width * body.get_width()
         )
         keyboard.stretch_to_fit_height(
-            self.keyboard_height_to_body_height * body.get_height(),
+            self.keyboard_height_to_body_height * body.get_height()
         )
         keyboard.next_to(body, OUT, buff=0.1 * SMALL_BUFF)
         keyboard.shift(MED_SMALL_BUFF * UP)
         body.add(keyboard)
 
         screen_plate.stretch(self.screen_thickness / self.body_dimensions[2], dim=2)
-        screen = Rectangle(
-            stroke_width=0,
-            fill_color=BLACK,
-            fill_opacity=1,
-        )
+        screen = Rectangle(stroke_width=0, fill_color=BLACK, fill_opacity=1)
         screen.replace(screen_plate, stretch=True)
         screen.scale_in_place(self.screen_width_to_screen_plate_width)
         screen.next_to(screen_plate, OUT, buff=0.1 * SMALL_BUFF)
@@ -304,9 +305,7 @@ class PatreonLogo(SVGMobject):
 
 
 class VideoIcon(SVGMobject):
-    CONFIG = {
-        "file_name": "video_icon",
-    }
+    CONFIG = {"file_name": "video_icon"}
 
     def __init__(self, **kwargs):
         SVGMobject.__init__(self, **kwargs)
@@ -318,10 +317,7 @@ class VideoIcon(SVGMobject):
 
 
 class VideoSeries(VGroup):
-    CONFIG = {
-        "num_videos": 11,
-        "gradient_colors": [BLUE_B, BLUE_D],
-    }
+    CONFIG = {"num_videos": 11, "gradient_colors": [BLUE_B, BLUE_D]}
 
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
@@ -370,11 +366,7 @@ class Clock(VGroup):
 
 
 class ClockPassesTime(Animation):
-    CONFIG = {
-        "run_time": 5,
-        "hours_passed": 12,
-        "rate_func": linear,
-    }
+    CONFIG = {"run_time": 5, "hours_passed": 12, "rate_func": linear}
 
     def __init__(self, clock, **kwargs):
         digest_config(self, kwargs)
@@ -501,9 +493,7 @@ class DoubleSpeechBubble(Bubble):
 
 
 class ThoughtBubble(Bubble):
-    CONFIG = {
-        "file_name": "Bubbles_thought.svg",
-    }
+    CONFIG = {"file_name": "Bubbles_thought.svg"}
 
     def __init__(self, **kwargs):
         Bubble.__init__(self, **kwargs)
@@ -591,19 +581,12 @@ class Car(SVGMobject):
 
 
 class VectorizedEarth(SVGMobject):
-    CONFIG = {
-        "file_name": "earth",
-        "height": 1.5,
-        "fill_color": BLACK,
-    }
+    CONFIG = {"file_name": "earth", "height": 1.5, "fill_color": BLACK}
 
     def __init__(self, **kwargs):
         SVGMobject.__init__(self, **kwargs)
         circle = Circle(
-            stroke_width=3,
-            stroke_color=GREEN,
-            fill_opacity=1,
-            fill_color=BLUE_C,
+            stroke_width=3, stroke_color=GREEN, fill_opacity=1, fill_color=BLUE_C
         )
         circle.replace(self)
         self.add_to_back(circle)
@@ -615,18 +598,8 @@ class Logo(VMobject):
         "outer_radius": 2.0,
         "iris_background_blue": "#74C0E3",
         "iris_background_brown": "#8C6239",
-        "blue_spike_colors": [
-            "#528EA3",
-            "#3E6576",
-            "#224C5B",
-            BLACK,
-        ],
-        "brown_spike_colors": [
-            "#754C24",
-            "#603813",
-            "#42210b",
-            BLACK,
-        ],
+        "blue_spike_colors": ["#528EA3", "#3E6576", "#224C5B", BLACK],
+        "brown_spike_colors": ["#754C24", "#603813", "#42210b", BLACK],
         "n_spike_layers": 4,
         "n_spikes": 28,
         "spike_angle": TAU / 28,
@@ -657,19 +630,13 @@ class Logo(VMobject):
             fill_opacity=1,
             stroke_width=0,
         )
-        self.iris_background = VGroup(
-            blue_iris_back,
-            brown_iris_back,
-        )
+        self.iris_background = VGroup(blue_iris_back, brown_iris_back)
         self.add(self.iris_background)
 
     def add_spikes(self):
         layers = VGroup()
         radii = np.linspace(
-            self.outer_radius,
-            self.pupil_radius,
-            self.n_spike_layers,
-            endpoint=False,
+            self.outer_radius, self.pupil_radius, self.n_spike_layers, endpoint=False
         )
         radii[:2] = radii[1::-1]  # Swap first two
         if self.n_spike_layers > 2:
@@ -686,10 +653,7 @@ class Logo(VMobject):
                     fill_opacity=1,
                     stroke_width=0,
                 )
-                for vertex3 in (
-                    half_base * LEFT,
-                    ORIGIN,
-                )
+                for vertex3 in (half_base * LEFT, ORIGIN)
             ]
             left_half_triangle = right_half_triangle.copy()
             left_half_triangle.flip(UP, about_point=ORIGIN)
@@ -707,14 +671,8 @@ class Logo(VMobject):
             else:
                 half_spikes = [
                     right_half_triangle.copy(),
-                    left_half_triangle.copy().rotate(
-                        90 * DEGREES,
-                        about_point=ORIGIN,
-                    ),
-                    right_half_triangle.copy().rotate(
-                        90 * DEGREES,
-                        about_point=ORIGIN,
-                    ),
+                    left_half_triangle.copy().rotate(90 * DEGREES, about_point=ORIGIN),
+                    right_half_triangle.copy().rotate(90 * DEGREES, about_point=ORIGIN),
                     left_half_triangle.copy(),
                 ]
                 layer = VGroup(
@@ -862,12 +820,7 @@ class PlayingCard(VGroup):
         if value not in self.possible_values:
             raise Exception("Invalid card value")
 
-        face_card_to_value = {
-            "J": 11,
-            "Q": 12,
-            "K": 13,
-            "A": 14,
-        }
+        face_card_to_value = {"J": 11, "Q": 12, "K": 13, "A": 14}
         try:
             self.numerical_value = int(value)
         except:
@@ -905,25 +858,9 @@ class PlayingCard(VGroup):
 
     def get_number_design(self, value, symbol):
         num = int(value)
-        n_rows = {
-            2: 2,
-            3: 3,
-            4: 2,
-            5: 2,
-            6: 3,
-            7: 3,
-            8: 3,
-            9: 4,
-            10: 4,
-        }[num]
+        n_rows = {2: 2, 3: 3, 4: 2, 5: 2, 6: 3, 7: 3, 8: 3, 9: 4, 10: 4}[num]
         n_cols = 1 if num in [2, 3] else 2
-        insertion_indices = {
-            5: [0],
-            7: [0],
-            8: [0, 1],
-            9: [1],
-            10: [0, 2],
-        }.get(num, [])
+        insertion_indices = {5: [0], 7: [0], 8: [0, 1], 9: [1], 10: [0, 2]}.get(num, [])
 
         top = self.get_top() + symbol.get_height() * DOWN
         bottom = self.get_bottom() + symbol.get_height() * UP
