@@ -254,6 +254,17 @@ class MathTex(SingleStringMathTex):
 
 
 class Tex(MathTex):
+    r"""A string compiled with LaTeX in normal mode.
+
+    TESTS
+    -----
+
+    Check whether writing a LaTeX string works::
+
+        >>> Tex("The horse does not eat cucumber salad.")
+        <manim.mobject.svg.tex_mobject.Tex object at ...>
+
+    """
     CONFIG = {
         "alignment": "\\centering",
         "arg_separator": "",

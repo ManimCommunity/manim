@@ -77,6 +77,14 @@ class Text(SVGMobject):
         `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
         :meth:`remove_invisible_chars` to resolve this issue.
 
+    TESTS
+    -----
+
+    Check whether writing text works::
+
+        >>> Text("The horse does not eat cucumber salad.")
+        <manim.mobject.svg.text_mobject.Text object at ...>
+
     """
 
     CONFIG = {
