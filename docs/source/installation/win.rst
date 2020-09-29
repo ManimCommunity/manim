@@ -77,15 +77,16 @@ Sox installation (optional)
 
 LaTeX Installation
 ******************
-You can install latex by either of the two methods below. MiKTex is very large (2 GB) while TinyTex is small  (500Mb).
+You can install latex by either of the two methods below. MiKTex is very large (2 GB) while ManimLaTeX is small  (500Mb).
 
 Using a custom distribution for Manim based on Texlive
 ------------------------------------------------------
 
-This is smallest latex distribution just enough to run Manim. Extra latex packages for fonts can be
+This is the smallest latex distribution just enough to run Manim. Extra latex packages for fonts can be
 installed using ``tlmgr``. See https://www.tug.org/texlive/tlmgr.html for more information.
 
 1. Install chocolatey if you haven't already.
+
 2. Run the following command
 
    .. code-block:: powershell
