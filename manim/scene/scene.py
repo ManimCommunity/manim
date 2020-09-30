@@ -812,7 +812,8 @@ class Scene(Container):
             if file_writer_config["skip_animations"]:
                 logger.debug(f"Skipping animation {self.num_plays}")
                 func(self, *args, **kwargs)
-                # If the animation is skipped, we mark its has as None. When sceneFileWriter will start combining partial movie files, it won't take into account None hashes.
+                # If the animation is skipped, we mark its hash as None.
+                # When sceneFileWriter will start combining partial movie files, it won't take into account None hashes.
                 self.animations_hashes.append(None)
                 self.file_writer.add_partial_movie_file(None)
                 return
