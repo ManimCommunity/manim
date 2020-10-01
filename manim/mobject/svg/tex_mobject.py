@@ -48,10 +48,9 @@ class SingleStringMathTex(SVGMobject):
         "organize_left_to_right": False,
         "alignment": "",
         "type": "tex",
-        "template": None,
     }
 
-    def __init__(self, tex_string, **kwargs):
+    def __init__(self, tex_string, template = None, **kwargs):
         digest_config(self, kwargs)
         if self.template is None:
             self.template = kwargs.get("tex_template", config["tex_template"])
