@@ -126,7 +126,7 @@ def dvi_to_svg(
             '"{}"'.format(dvi_file),
             "-n",
             "-v 0",
-            "-o " + '"{}"'.format(result),
+            "-o " + f'"{result}"',
             ">",
             os.devnull,
         ]
