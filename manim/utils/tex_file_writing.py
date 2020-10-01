@@ -50,7 +50,7 @@ def tex_compilation_command(compiler, tex_file, tex_dir):
         commands = [
             compiler["command"],
             "-interaction=batchmode",
-            '-output-format="' + compiler["output_format"][1:] + '"',
+            f'-output-format="{compiler["output_format"][1:]}"',
             "-halt-on-error",
             '-output-directory="{}"'.format(tex_dir),
             '"{}"'.format(tex_file),
