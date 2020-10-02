@@ -119,8 +119,8 @@ class Animation(object):
         keep many old scenes from breaking
         """
         logger.warning(
-             "animation.update() has been deprecated. "
-             "Please use animation.interpolate() instead."
+            "animation.update() has been deprecated. "
+            "Please use animation.interpolate() instead."
         )
         self.interpolate(alpha)
 
