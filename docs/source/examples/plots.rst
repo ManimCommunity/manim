@@ -160,12 +160,10 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
             self.add(l1, l2, l3)
 
 
-The following example illustrates how to draw parametric function plots, which does not use `GraphScene`
-
-.. manim:: ParamFunc1
+.. manim:: ParametricFunctionWithoutGraphScene
     :save_last_frame:
 
-    class ParamFunc1(Scene):
+    class ParametricFunctionWithoutGraphScene(Scene):
         def func(self, t):
             return np.array((np.sin(2 * t), np.sin(3 * t), 0))
 
