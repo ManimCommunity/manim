@@ -132,6 +132,14 @@ class Mobject(Container):
         if self in mobjects:
             raise ValueError("Mobject cannot contain self")
         self.submobjects = list_update(self.submobjects, mobjects)
+        
+        # This will introduce another use_z_index flag
+        # There may be better solutions
+        # But for now, this is the easiest solution
+        if self.use_z_index:
+            self.submobjects = sorted(self.submobjects,
+                key=lambda m: m.z_index)
+        
         return self
 
     def add_to_back(self, *mobjects):
