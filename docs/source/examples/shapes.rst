@@ -1,4 +1,4 @@
-Shapes
+Shapes & Images
 =================================
 
 .. manim:: Example1Shape
