@@ -33,7 +33,6 @@ scipy = "*"
 tqdm = "*"
 pydub = "*"
 pygments = "*"
-pyreadline = { version = "*", markers = "sys_platform == 'win32'" }
 rich = ">=4.2.1"
 pycairo = [
 	{ version = "^1.19", markers = "sys_platform != 'win32'"},
@@ -42,6 +41,7 @@ pycairo = [
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
+pylint = "*"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
