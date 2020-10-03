@@ -932,7 +932,7 @@ class Scene(Container):
         for t in self.get_animation_time_progression(self.animations):
             self.update_animation_to_time(t)
             self.update_frame(self.moving_mobjects, self.static_image)
-            self.add_frames(self.get_frame())
+            self.add_frame(self.get_frame())
 
     def update_animation_to_time(self, t):
         """
@@ -1106,7 +1106,7 @@ class Scene(Container):
             for t in time_progression:
                 self.update_animation_to_time(t)
                 self.update_frame()
-                self.add_frames(self.get_frame())
+                self.add_frame(self.get_frame())
                 if stop_condition is not None and stop_condition():
                     time_progression.close()
                     break
@@ -1116,7 +1116,7 @@ class Scene(Container):
         else:
             self.update_frame()
             dt = 1 / self.camera.frame_rate
-            self.add_frames(self.get_frame(), num_frames=int(duration / dt))
+            self.add_frame(self.get_frame(), num_frames=int(duration / dt))
         return self
 
     def wait_until(self, stop_condition, max_time=60):
@@ -1166,7 +1166,7 @@ class Scene(Container):
             file_writer_config["skip_animations"] = self.original_skipping_status
         return self
 
-    def add_frames(self, frame, num_frames=1):
+    def add_frame(self, frame, num_frames=1):
         """
         Adds a frame to the video_file_stream
 

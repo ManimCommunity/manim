@@ -97,7 +97,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 selected_scene.moving_mobjects,
                 selected_scene.static_image,
             )
-            serialized_mobject_list, duration = selected_scene.add_frames(
+            serialized_mobject_list, duration = selected_scene.add_frame(
                 selected_scene.get_frame()
             )
             resp = list_to_frame_response(
@@ -111,7 +111,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 # the same way Scene.play does
                 selected_scene.update_animation_to_time(time)
                 selected_scene.update_frame()
-                serialized_mobject_list, duration = selected_scene.add_frames(
+                serialized_mobject_list, duration = selected_scene.add_frame(
                     selected_scene.get_frame()
                 )
                 frame_response = list_to_frame_response(
@@ -131,7 +131,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             else:
                 selected_scene.update_frame()
                 dt = 1 / selected_scene.camera.frame_rate
-                serialized_mobject_list, duration = selected_scene.add_frames(
+                serialized_mobject_list, duration = selected_scene.add_frame(
                     selected_scene.get_frame(),
                     num_frames=int(selected_scene.duration / dt),
                 )

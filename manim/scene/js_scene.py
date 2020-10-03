@@ -128,7 +128,7 @@ class JsScene(scene.Scene):
                     logger.error(e)
             self.animation_finished.wait()
 
-    def add_frames(self, serialized_frame, num_frames=1):
+    def add_frame(self, serialized_frame, num_frames=1):
         dt = 1 / self.camera.frame_rate
         self.increment_time(num_frames * dt)
         if num_frames != 1:
