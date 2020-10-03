@@ -210,29 +210,28 @@ class VMobject(Mobject):
             self.color_using_background_image(background_image_file)
         return self
 
-    def get_simple_style(self):
-        return {
-            "fill_color": colour.rgb2hex(self.get_fill_color().get_rgb()),
-            "fill_opacity": self.get_fill_opacity(),
-            "stroke_color": colour.rgb2hex(self.get_stroke_color().get_rgb()),
-            "stroke_width": self.get_stroke_width(),
+    def get_style(self, simple=False):
+        ret = {
             "stroke_opacity": self.get_stroke_opacity(),
+            "stroke_width": self.get_stroke_width(),
         }
 
-    def get_style(self):
-        return {
-            "fill_color": self.get_fill_colors(),
-            "fill_opacity": self.get_fill_opacities(),
-            "stroke_color": self.get_stroke_colors(),
-            "stroke_width": self.get_stroke_width(),
-            "stroke_opacity": self.get_stroke_opacity(),
-            "background_stroke_color": self.get_stroke_colors(background=True),
-            "background_stroke_width": self.get_stroke_width(background=True),
-            "background_stroke_opacity": self.get_stroke_opacity(background=True),
-            "sheen_factor": self.get_sheen_factor(),
-            "sheen_direction": self.get_sheen_direction(),
-            "background_image_file": self.get_background_image_file(),
-        }
+        if simple:
+            ret["fill_color"] = colour.rgb2hex(self.get_fill_color().get_rgb())
+            ret["fill_opacity"] = self.get_fill_opacity()
+            ret["stroke_color"] = colour.rgb2hex(self.get_stroke_color().get_rgb())
+        else:
+            ret["fill_color"] = self.get_fill_colors()
+            ret["fill_opacity"] = self.get_fill_opacities()
+            ret["stroke_color"] = self.get_stroke_colors()
+            ret["background_stroke_color"] = self.get_stroke_colors(background=True)
+            ret["background_stroke_width"] = self.get_stroke_width(background=True)
+            ret["background_stroke_opacity"] = self.get_stroke_opacity(background=True)
+            ret["sheen_factor"] = self.get_sheen_factor()
+            ret["sheen_direction"] = self.get_sheen_direction()
+            ret["background_image_file"] = self.get_background_image_file()
+
+        return ret
 
     def match_style(self, vmobject, family=True):
         self.set_style(**vmobject.get_style(), family=False)

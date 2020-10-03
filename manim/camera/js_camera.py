@@ -19,7 +19,7 @@ class JsCamera(Camera):
             self.serialized_frame.append(
                 {
                     "points": vmobject.points.tolist(),
-                    "style": vmobject.get_simple_style(),
+                    "style": vmobject.get_style(simple=True),
                     "id": id(vmobject),
                     "needs_redraw": needs_redraw,
                 }
