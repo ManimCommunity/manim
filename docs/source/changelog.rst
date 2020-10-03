@@ -32,7 +32,7 @@ Command line
 #. Re-implement GIF export with the :code:`-i` flag (using this flag outputs ONLY a .gif file, and no .mp4 file)
 #. Added a :code:`--verbose` flag
 #. You can save the logs to a file by using :code:`--log_to_file`
-#. Read :code:`tex_template` from config file (or :code:`None`) if not specified by :code:`--tex_template`.
+#. Read :code:`tex_template` from config file if not specified by :code:`--tex_template`.
 
 
 Config system
