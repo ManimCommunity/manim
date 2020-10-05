@@ -87,13 +87,14 @@ def _parse_config(config_parser, args):
     # Handle the *_quality flags.  These determine the section to read
     # and are stored in 'camera_config'.  Note the highest resolution
     # passed as argument will be used.
-    for flag in ["fourk_quality", "high_quality", "medium_quality", "low_quality"]:
-        if getattr(args, flag):
-            section = config_parser[flag]
+    for quality in qualities.keys():
+        if getattr(args, quality) or (hasattr(args, 'q') and args.q == qualities[quality]):
+            section = config_parser[quality]
             break
     else:
         section = config_parser["CLI"]
-    config = {opt: section.getint(opt) for opt in config_parser[flag]}
+    config = {opt: section.getint(opt) for opt in config_parser[quality]}
+
 
     config["default_pixel_height"] = default.getint("pixel_height")
     config["default_pixel_width"] = default.getint("pixel_width")

@@ -349,6 +349,12 @@ def _parse_cli(arg_list, input=True):
     # The following are mutually exclusive and each overrides
     # FRAME_RATE, PIXEL_HEIGHT, and PIXEL_WIDTH,
     parser.add_argument(
+        "-q",
+        "--quality",
+        choices=["k", "h", "m", "l"],
+        help="Render at specific quality, short form of the --*_quality flags"
+    )
+    parser.add_argument(
         "-l",
         "--low_quality",
         action="store_true",
