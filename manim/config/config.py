@@ -16,7 +16,7 @@ from contextlib import contextmanager
 import colour
 
 from .. import constants
-from .config_utils import _run_config, _init_dirs, _from_command_line
+from .config_utils import _determine_quality, _run_config, _init_dirs, _from_command_line
 
 from .logger import set_rich_logger, set_file_logger, logger
 from ..utils.tex import TexTemplate, TexTemplateFromFile
@@ -80,14 +80,11 @@ def _parse_config(config_parser, args):
     # Handle the *_quality flags.  These determine the section to read
     # and are stored in 'camera_config'.  Note the highest resolution
     # passed as argument will be used.
-    for quality in constants.QUALITIES.keys():
-        if getattr(args, quality) or (hasattr(args, 'quality') and args.quality == constants.QUALITIES[quality]):
-            section = config_parser[quality]
-            break
-    else:
-        section = config_parser["CLI"]
-    config = {opt: section.getint(opt) for opt in config_parser[quality]}
+    quality = _determine_quality(args)
+    section = config_parser[quality if quality != "production" else "CLI"]
 
+    # Loop over low quality for the keys, could be any quality really
+    config = {opt: section.getint(opt) for opt in config_parser['low_quality']}
 
     config["default_pixel_height"] = default.getint("pixel_height")
     config["default_pixel_width"] = default.getint("pixel_width")

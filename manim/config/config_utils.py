@@ -626,3 +626,10 @@ def _init_cfg_subcmd(subparsers):
     cfg_export_parser.add_argument("--dir", default=os.getcwd())
 
     return cfg_related
+
+
+def _determine_quality(args):
+    for quality in constants.QUALITIES.keys():
+        if getattr(args, quality) or (hasattr(args, 'quality') and args.quality == constants.QUALITIES[quality]):
+            return quality
+    return "production"
