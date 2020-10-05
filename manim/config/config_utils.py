@@ -20,10 +20,7 @@ import configparser
 import os
 import sys
 
-import colour
-
 from .. import constants
-from ..utils.tex import TexTemplate, TexTemplateFromFile
 
 
 def _parse_file_writer_config(config_parser, args):
@@ -375,6 +372,28 @@ def _parse_cli(arg_list, input=True):
         help="Render at 4K quality",
     )
 
+    # Deprecated quality flags
+    parser.add_argument(
+        "-l",
+        action="store_true",
+        help="DEPRECATED: USE -ql or --quality l",
+    )
+    parser.add_argument(
+        "-m",
+        action="store_true",
+        help="DEPRECATED: USE -qm or --quality m",
+    )
+    parser.add_argument(
+        "-e",
+        action="store_true",
+        help="DEPRECATED: USE -qh or --quality h",
+    )
+    parser.add_argument(
+        "-k",
+        action="store_true",
+        help="DEPRECATED: USE -qk or --quality k",
+    )
+
     # This overrides any of the above
     parser.add_argument(
         "-r",
@@ -629,9 +648,24 @@ def _init_cfg_subcmd(subparsers):
 
 
 def _determine_quality(args):
+    old_qualities = {
+        "k": "fourk_quality",
+        "e": "high_quality",
+        "m": "medium_quality",
+        "l": "low_quality",
+    }
+
     for quality in constants.QUALITIES.keys():
         if getattr(args, quality) or (
             hasattr(args, "quality") and args.quality == constants.QUALITIES[quality]
         ):
             return quality
+
+    for quality in old_qualities.keys():
+        if getattr(args, quality):
+            print(
+                f"WARNING: Option -{quality} is deprecated please use the --quality/-q flag."
+            )
+            return old_qualities[quality]
+
     return "production"
