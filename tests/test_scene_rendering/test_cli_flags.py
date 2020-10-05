@@ -38,7 +38,7 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "manim",
         simple_scenes_path,
         scene_name,
-        "-l",
+        "-ql",
         "--media_dir",
         str(tmp_path),
     ]
