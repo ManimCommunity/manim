@@ -88,7 +88,7 @@ def _parse_config(config_parser, args):
     # and are stored in 'camera_config'.  Note the highest resolution
     # passed as argument will be used.
     for quality in qualities.keys():
-        if getattr(args, quality) or (hasattr(args, 'q') and args.q == qualities[quality]):
+        if getattr(args, quality) or (hasattr(args, 'quality') and args.quality == qualities[quality]):
             section = config_parser[quality]
             break
     else:
