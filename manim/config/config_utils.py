@@ -380,7 +380,7 @@ def _parse_cli(arg_list, input=True):
         "-r",
         "--resolution",
         help='Resolution, passed as "height,width". '
-        "Overrides the -l, -m, -e, and -k flags, if present",
+        "Overrides any quality flags, if present",
     )
 
     # This sets FROM_ANIMATION_NUMBER and UPTO_ANIMATION_NUMBER
