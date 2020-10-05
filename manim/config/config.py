@@ -26,13 +26,6 @@ __all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
 
 config = None
 
-qualities = {
-    'fourk_quality': 'k',
-    'high_quality': 'h',
-    'medium_quality': 'm',
-    'low_quality': 'l'
-}
-
 
 @contextmanager
 def tempconfig(temp):
@@ -87,8 +80,8 @@ def _parse_config(config_parser, args):
     # Handle the *_quality flags.  These determine the section to read
     # and are stored in 'camera_config'.  Note the highest resolution
     # passed as argument will be used.
-    for quality in qualities.keys():
-        if getattr(args, quality) or (hasattr(args, 'quality') and args.quality == qualities[quality]):
+    for quality in constants.QUALITIES.keys():
+        if getattr(args, quality) or (hasattr(args, 'quality') and args.quality == constants.QUALITIES[quality]):
             section = config_parser[quality]
             break
     else:

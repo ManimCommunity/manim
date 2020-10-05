@@ -351,7 +351,7 @@ def _parse_cli(arg_list, input=True):
     parser.add_argument(
         "-q",
         "--quality",
-        choices=["k", "h", "m", "l"],
+        choices=constants.QUALITIES.values(),
         help="Render at specific quality, short form of the --*_quality flags"
     )
     parser.add_argument(
