@@ -355,25 +355,21 @@ def _parse_cli(arg_list, input=True):
         help="Render at specific quality, short form of the --*_quality flags"
     )
     parser.add_argument(
-        "-l",
         "--low_quality",
         action="store_true",
         help="Render at low quality",
     )
     parser.add_argument(
-        "-m",
         "--medium_quality",
         action="store_true",
         help="Render at medium quality",
     )
     parser.add_argument(
-        "-e",
         "--high_quality",
         action="store_true",
         help="Render at high quality",
     )
     parser.add_argument(
-        "-k",
         "--fourk_quality",
         action="store_true",
         help="Render at 4K quality",
