@@ -352,7 +352,7 @@ def _parse_cli(arg_list, input=True):
         "-q",
         "--quality",
         choices=constants.QUALITIES.values(),
-        help="Render at specific quality, short form of the --*_quality flags"
+        help="Render at specific quality, short form of the --*_quality flags",
     )
     parser.add_argument(
         "--low_quality",
@@ -630,6 +630,8 @@ def _init_cfg_subcmd(subparsers):
 
 def _determine_quality(args):
     for quality in constants.QUALITIES.keys():
-        if getattr(args, quality) or (hasattr(args, 'quality') and args.quality == constants.QUALITIES[quality]):
+        if getattr(args, quality) or (
+            hasattr(args, "quality") and args.quality == constants.QUALITIES[quality]
+        ):
             return quality
     return "production"
