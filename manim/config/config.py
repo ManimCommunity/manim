@@ -26,6 +26,13 @@ __all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
 
 config = None
 
+qualities = {
+    'fourk_quality': 'k',
+    'high_quality': 'h',
+    'medium_quality': 'm',
+    'low_quality': 'l'
+}
+
 
 @contextmanager
 def tempconfig(temp):
