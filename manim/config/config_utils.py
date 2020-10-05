@@ -17,6 +17,7 @@ __all__ = [
 
 import argparse
 import configparser
+import logging
 import os
 import sys
 
@@ -663,8 +664,8 @@ def _determine_quality(args):
 
     for quality in old_qualities.keys():
         if getattr(args, quality):
-            print(
-                f"WARNING: Option -{quality} is deprecated please use the --quality/-q flag."
+            logging.getLogger("manim").warning(
+                f"Option -{quality} is deprecated please use the --quality/-q flag."
             )
             return old_qualities[quality]
 
