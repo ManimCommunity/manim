@@ -129,8 +129,8 @@ JS_RENDERER_INFO = (
 
 # Video qualities
 QUALITIES = {
-    'fourk_quality': 'k',
-    'high_quality': 'h',
-    'medium_quality': 'm',
-    'low_quality': 'l'
+    "fourk_quality": "k",
+    "high_quality": "h",
+    "medium_quality": "m",
+    "low_quality": "l",
 }
