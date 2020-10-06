@@ -155,6 +155,8 @@ def _parse_config(config_parser, args):
 
 args, config_parser, file_writer_config, successfully_read_files = _run_config()
 logger.setLevel(file_writer_config["verbosity"])
+set_rich_logger(config_parser["logger"], file_writer_config["verbosity"])
+
 if _from_command_line():
     logger.debug(
         f"Read configuration files: {[os.path.abspath(cfgfile) for cfgfile in successfully_read_files]}"
@@ -166,8 +168,6 @@ if config["use_js_renderer"]:
     file_writer_config["disable_caching"] = True
 camera_config = config
 
-# Set the different loggers
-set_rich_logger(config_parser["logger"], file_writer_config["verbosity"])
 if file_writer_config["log_to_file"]:
     # IMPORTANT note about file name : The log file name will be the scene_name get from the args (contained in file_writer_config). So it can differ from the real name of the scene.
     log_file_path = os.path.join(
