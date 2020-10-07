@@ -38,6 +38,16 @@ class TexSymbol(VMobjectFromSVGPathstring):
 
 
 class SingleStringMathTex(SVGMobject):
+    """Elementary building block for rendering text with LaTeX.
+
+    Tests
+    -----
+    Check that creating a :class:`~.SingleStringMathTex` object works::
+
+        >>> SingleStringMathTex('Test')
+        SingleStringMathTex('Test')
+    """
+
     CONFIG = {
         "stroke_width": 0,
         "fill_opacity": 1.0,
@@ -60,6 +70,9 @@ class SingleStringMathTex(SVGMobject):
             self.scale(TEX_MOB_SCALE_FACTOR)
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
+
+    def __repr__(self):
+        return f"{type(self).__name__}({repr(self.tex_string)})"
 
     def get_modified_expression(self, tex_string):
         result = self.alignment + " " + tex_string
@@ -145,6 +158,16 @@ class SingleStringMathTex(SVGMobject):
 
 
 class MathTex(SingleStringMathTex):
+    """A string compiled with LaTeX in math mode.
+
+    Tests
+    -----
+    Check that creating a :cls:`~.MathTex` works::
+
+        >>> MathTex('a^2 + b^2 = c^2')
+        MathTex('a^2 + b^2 = c^2')
+    """
+
     CONFIG = {
         "arg_separator": " ",
         "substrings_to_isolate": [],
@@ -256,15 +279,16 @@ class MathTex(SingleStringMathTex):
 class Tex(MathTex):
     r"""A string compiled with LaTeX in normal mode.
 
-    TESTS
+    Tests
     -----
 
     Check whether writing a LaTeX string works::
 
-        >>> Tex("The horse does not eat cucumber salad.")
-        <manim.mobject.svg.tex_mobject.Tex object at ...>
+        >>> Tex('The horse does not eat cucumber salad.')
+        Tex('The horse does not eat cucumber salad.')
 
     """
+
     CONFIG = {
         "alignment": "\\centering",
         "arg_separator": "",

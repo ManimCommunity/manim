@@ -77,13 +77,13 @@ class Text(SVGMobject):
         `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
         :meth:`remove_invisible_chars` to resolve this issue.
 
-    TESTS
+    Tests
     -----
 
     Check whether writing text works::
 
-        >>> Text("The horse does not eat cucumber salad.")
-        <manim.mobject.svg.text_mobject.Text object at ...>
+        >>> Text('The horse does not eat cucumber salad.')
+        Text('The horse does not eat cucumber salad.')
 
     """
 
@@ -156,6 +156,9 @@ class Text(SVGMobject):
         # anti-aliasing
         if self.height is None and self.width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
+
+    def __repr__(self):
+        return f"Text({repr(self.original_text)})"
 
     def gen_chars(self):
         chars = VGroup()
