@@ -15,7 +15,7 @@ Formulas
 
     class MoveFrameBox(Scene):
         def construct(self):
-            text=TexMobject(
+            text=MathTex(
                 "\\frac{d}{dx}f(x)g(x)=","f(x)\\frac{d}{dx}g(x)","+",
                 "g(x)\\frac{d}{dx}f(x)"
             )
@@ -35,7 +35,7 @@ Formulas
 
     class MoveBraces(Scene):
         def construct(self):
-            text=TexMobject(
+            text=MathTex(
                 "\\frac{d}{dx}f(x)g(x)=",       #0
                 "f(x)\\frac{d}{dx}g(x)",        #1
                 "+",                            #2
