@@ -162,7 +162,7 @@ class MathTex(SingleStringMathTex):
 
     Tests
     -----
-    Check that creating a :cls:`~.MathTex` works::
+    Check that creating a :class:`~.MathTex` works::
 
         >>> MathTex('a^2 + b^2 = c^2')
         MathTex('a^2 + b^2 = c^2')
