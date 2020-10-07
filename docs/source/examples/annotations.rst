@@ -32,6 +32,7 @@ Annotations
     :quality: medium
     :save_last_frame:
 
+    from manim.mobject.geometry import ArrowTriangleTip, ArrowSquareTip, ArrowCircleTip
     class ExampleArrow2(Scene):
         def construct(self):
             a11 = Arrow(np.array([-2, 3, 0]), np.array([2, 3, 0]))
