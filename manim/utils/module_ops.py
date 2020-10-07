@@ -4,9 +4,9 @@ from ..config.logger import logger, console
 import importlib.util
 import inspect
 import os
+import re
 import sys
 import types
-import re
 
 
 def get_module(file_name):
