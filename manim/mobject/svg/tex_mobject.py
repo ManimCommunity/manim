@@ -152,7 +152,7 @@ class SingleStringMathTex(SVGMobject):
 
 
 class MathTex(SingleStringMathTex):
-    """"
+    """ "
     Example:
     .. manim:: Formula1
         :save_last_frame:
@@ -163,6 +163,7 @@ class MathTex(SingleStringMathTex):
                 self.add(t)
                 self.wait(1)
     """
+
     CONFIG = {
         "arg_separator": " ",
         "substrings_to_isolate": [],
