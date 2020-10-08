@@ -255,8 +255,8 @@ class Arc(TipableVMobject):
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
                 for a in np.linspace(
-                self.start_angle, self.start_angle + self.angle, self.num_components
-            )
+                    self.start_angle, self.start_angle + self.angle, self.num_components
+                )
             ]
         )
         # Figure out which control points will give the
@@ -393,17 +393,54 @@ class Dot(Circle):
 
 
 class SmallDot(Dot):
+    """
+    A dot with small radius
+    """
+
     CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
 
 
 class AnnotationDot(Dot):
-    CONFIG = {"radius": DEFAULT_DOT_RADIUS * 1.3, "stroke_width": 5, "stroke_color": WHITE, "fill_color": BLUE}
+    """
+    A dot with bigger radius and bold stroke to annotate scenes.
+    """
+
+    CONFIG = {
+        "radius": DEFAULT_DOT_RADIUS * 1.3,
+        "stroke_width": 5,
+        "stroke_color": WHITE,
+        "fill_color": BLUE,
+    }
 
 
 class LabeledDot(Mobject):
+    """
+    A Dot that has a label in its middle
+    Example
+    --------
+    .. manim:: ExampleAnnotationDot
+        :save_last_frame:
+
+        class ExampleAnnotationDot(Scene):
+            def construct(self):
+                sq = Square(fill_color=RED, fill_opacity=1)
+                self.add(sq)
+                dot1 = LabeledDot(42)
+                dot2 = LabeledDot("a")
+                dot3 = LabeledDot("ii")
+                dot4 = LabeledDot("3")
+                dot1.next_to(sq, UL)
+                dot2.next_to(sq, UR)
+                dot3.next_to(sq, DL)
+                dot4.next_to(sq, DR)
+                self.add(dot1, dot2, dot3, dot4)
+                self.wait(1)
+    """
+
     def __init__(self, label_string, **kwargs):
         Mobject.__init__(self, **kwargs)
         from manim import MathTex
+
         labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
         self.add(labled_dot)
 
