@@ -833,7 +833,7 @@ class Scene(Container):
             self.animations_hashes.append(hash_play)
             self.file_writer.add_partial_movie_file(hash_play)
             logger.debug(
-                "Animations hashes list of the scene : (concatened to 5) %(h)s",
+                "List of the first few animation hashes of the scene: %(h)s",
                 {"h": str(self.animations_hashes[:5])},
             )
             func(self, *args, **kwargs)
