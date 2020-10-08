@@ -18,6 +18,8 @@ from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
+from ..utils.color import LIGHT_GREY, WHITE, BLUE_D, BLUE
+
 
 # TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene
 
@@ -141,7 +143,7 @@ class Axes(VGroup, CoordinateSystem):
     }
 
     def __init__(self, **kwargs):
-        CoordinateSystem.__init__(self, **kwargs)
+        CoordinateSystem.__init__(self)
         VGroup.__init__(self, **kwargs)
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)

@@ -56,6 +56,7 @@ from .mobject.vector_field import *
 from .scene.graph_scene import *
 from .scene.moving_camera_scene import *
 from .scene.reconfigurable_scene import *
+from .scene.js_scene import *
 from .scene.scene import *
 from .scene.sample_space_scene import *
 from .scene.three_d_scene import *
@@ -65,6 +66,7 @@ from .scene.scene_file_writer import *
 
 from .utils.bezier import *
 from .utils.color import *
+from .utils import color as color
 from .utils.config_ops import *
 from .utils.debug import *
 from .utils.images import *

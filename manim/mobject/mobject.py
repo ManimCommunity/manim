@@ -18,7 +18,7 @@ import numpy as np
 from .. import config, file_writer_config
 from ..constants import *
 from ..container import Container
-from ..utils.color import color_gradient
+from ..utils.color import color_gradient, WHITE, BLACK, YELLOW_C
 from ..utils.color import interpolate_color
 from ..utils.iterables import list_update
 from ..utils.iterables import remove_list_redundancies
@@ -52,6 +52,7 @@ class Mobject(Container):
 
     def __init__(self, **kwargs):
         Container.__init__(self, **kwargs)
+        self.point_hash = None
         self.submobjects = []
         self.color = Color(self.color)
         if self.name is None:
@@ -62,7 +63,7 @@ class Mobject(Container):
         self.generate_points()
         self.init_colors()
 
-    def __str__(self):
+    def __repr__(self):
         return str(self.name)
 
     def reset_points(self):

@@ -19,8 +19,6 @@ New Features
 Command line
 ^^^^^^^^^^^^
 
-#. Add 4k rendering option with the :code:`-k` option
-#. High quality rendering has gotten its own short argument (:code:`-e`)
 #. Output of 'manim --help' has been improved
 #. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol` prints
 #. Added a flag :code:`--dry_run`, which doesn’t write any media
@@ -32,6 +30,10 @@ Command line
 #. Re-implement GIF export with the :code:`-i` flag (using this flag outputs ONLY a .gif file, and no .mp4 file)
 #. Added a :code:`--verbose` flag
 #. You can save the logs to a file by using :code:`--log_to_file`
+#. Read :code:`tex_template` from config file if not specified by :code:`--tex_template`.
+#. Add experimental javascript rendering with :code:`--use_js_renderer`
+#. Add :code:`-q/--quality [k|p|h|m|l]` flag and removed :code:`-m/-l` flags.
+#. Removed :code:`--sound` flag
 
 
 Config system
@@ -60,7 +62,10 @@ Mobjects, Scenes, and Animations
 #. The :code:`Container` class has been made into an AbstractBaseClass, i.e. in cannot be instantiated.  Instead, use one of its children classes
 #. The ``TextMobject`` and ``TexMobject`` objects have been deprecated, due to their confusing names, in favour of ``Tex`` and ``MathTex``. You can still, however, continue to use ``TextMobject`` and ``TexMobject``, albeit with Deprecation Warnings constantly reminding you to switch.
 #. Add a :code:`Variable` class for displaying text that continuously updates to reflect the value of a python variable.
-
+#. The ``Tex`` and ``MathTex`` objects allow you to specify a custom TexTemplate using the ``template`` keyword argument.
+#. :code:`VGroup` now supports printing the class names of contained mobjects and :code:`VDict` supports printing the internal dict of mobjects
+#. :code:`Scene` now renders when :code:`Scene.render()` is called rather than upon instantiation.
+#. :code:`ValueTracker` now supports increment using the `+=` operator (in addition to the already existing `increment_value` method)
 
 
 Documentation
@@ -92,6 +97,7 @@ Of interest to developers
 #. Added logging tests tools.
 #. Added ability to save logs in json
 #. Move to Poetry.
+#. Colors have moved to an Enum
 
 Other Changes
 --------------

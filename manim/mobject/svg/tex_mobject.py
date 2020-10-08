@@ -26,6 +26,7 @@ from ...mobject.types.vectorized_mobject import VectorizedPoint
 from ...utils.config_ops import digest_config
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
+from ...utils.color import BLACK
 
 TEX_MOB_SCALE_FACTOR = 0.05
 
@@ -47,13 +48,20 @@ class SingleStringMathTex(SVGMobject):
         "organize_left_to_right": False,
         "alignment": "",
         "type": "tex",
+        "template": None,
     }
 
     def __init__(self, tex_string, **kwargs):
         digest_config(self, kwargs)
+        if self.template is None:
+            self.template = kwargs.get("tex_template", config["tex_template"])
         assert isinstance(tex_string, str)
         self.tex_string = tex_string
-        file_name = tex_to_svg_file(self.get_modified_expression(tex_string), self.type)
+        file_name = tex_to_svg_file(
+            self.get_modified_expression(tex_string),
+            self.type,
+            tex_template=self.template,
+        )
         SVGMobject.__init__(self, file_name=file_name, **kwargs)
         if self.height is None:
             self.scale(TEX_MOB_SCALE_FACTOR)
@@ -157,7 +165,9 @@ class MathTex(SingleStringMathTex):
         SingleStringMathTex.__init__(
             self, self.arg_separator.join(tex_strings), **kwargs
         )
-        self.break_up_by_substrings()
+        config = dict(self.CONFIG)
+        config.update(kwargs)
+        self.break_up_by_substrings(config)
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
         if self.organize_left_to_right:
@@ -176,7 +186,7 @@ class MathTex(SingleStringMathTex):
         split_list = [s for s in split_list if s != ""]
         return split_list
 
-    def break_up_by_substrings(self):
+    def break_up_by_substrings(self, config):
         """
         Reorganize existing submojects one layer
         deeper based on the structure of tex_strings (as a list
@@ -184,8 +194,6 @@ class MathTex(SingleStringMathTex):
         """
         new_submobjects = []
         curr_index = 0
-        config = dict(self.CONFIG)
-        config["alignment"] = ""
         for tex_string in self.tex_strings:
             sub_tex_mob = SingleStringMathTex(tex_string, **config)
             num_submobs = len(sub_tex_mob.submobjects)
@@ -333,7 +341,7 @@ class Title(Tex):
 class TexMobject(MathTex):
     def __init__(self, *tex_strings, **kwargs):
         logger.warning(
-            "TexMobject has been deprecated (due to its confusing name)"
+            "TexMobject has been deprecated (due to its confusing name) "
             "in favour of MathTex. Please use MathTex instead!"
         )
         MathTex.__init__(self, *tex_strings, **kwargs)
@@ -342,7 +350,7 @@ class TexMobject(MathTex):
 class TextMobject(Tex):
     def __init__(self, *text_parts, **kwargs):
         logger.warning(
-            "TextMobject has been deprecated (due to its confusing name)"
+            "TextMobject has been deprecated (due to its confusing name) "
             "in favour of Tex. Please use Tex instead!"
         )
         Tex.__init__(self, *text_parts, **kwargs)
