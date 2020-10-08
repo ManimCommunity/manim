@@ -152,6 +152,17 @@ class SingleStringMathTex(SVGMobject):
 
 
 class MathTex(SingleStringMathTex):
+    """"
+    Example:
+    .. manim:: Formula1
+        :save_last_frame:
+
+        class Formula1(Scene):
+            def construct(self):
+                t = MathTex(r"\int_a^b f'(x) dx = f(b)- f(a)")
+                self.add(t)
+                self.wait(1)
+    """
     CONFIG = {
         "arg_separator": " ",
         "substrings_to_isolate": [],

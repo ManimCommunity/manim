@@ -1,14 +1,7 @@
 Formulas
 =================================
 
-.. manim:: Formula1
-    :save_last_frame:
 
-    class Formula1(Scene):
-        def construct(self):
-            t = MathTex(r"\int_a^b f'(x) dx = f(b)- f(a)")
-            self.add(t)
-            self.wait(1)
 
 
 .. manim:: MoveFrameBox
