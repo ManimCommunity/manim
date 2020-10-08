@@ -90,7 +90,7 @@ class Text(SVGMobject):
                 text2 = Text('Hello world', gradient=(BLUE, GREEN)).scale(3).next_to(text1, DOWN)
                 self.add(text1, text2)
 
-    ..manim:: TextItalicAndBoldExample
+    .. manim:: TextItalicAndBoldExample
         :save_last_frame:
 
         class TextItalicAndBoldExample(Scene):
@@ -101,6 +101,20 @@ class Text(SVGMobject):
                 text3 = Text('Hello world', t2w={'world':BOLD}).scale(3).to_edge(DOWN)
                 self.add(text0,text1, text2,text3)
 
+    .. manim:: TextMoreCustomization
+            :save_last_frame:
+
+            class TextMoreCustomization(Scene):
+                def construct(self):
+                    text0 = Text('Hello\nWorld', lsh=1.4).scale(3).to_edge(UP)
+                    text1 = Text(
+                        'Google',
+                        t2c={'[:1]': '#3174f0', '[1:2]': '#e53125',
+                             '[2:3]': '#fbb003', '[3:4]': '#3174f0',
+                             '[4:5]': '#269a43', '[5:]': '#e53125'}, size=1.2).scale(3) \
+                        .to_edge(DOWN)
+
+                    self.add(text0, text1)
 
     .. WARNING::
 
