@@ -95,11 +95,13 @@ class Text(SVGMobject):
 
         class TextItalicAndBoldExample(Scene):
             def construct(self):
-                text0 = Text('Hello world', slant=ITALIC).scale(3).to_edge(UP)
-                text1 = Text('Hello world', t2s={'world':ITALIC}).scale(3).shift(UP)
-                text2 = Text('Hello world', weight=BOLD).scale(3).shift(DOWN)
-                text3 = Text('Hello world', t2w={'world':BOLD}).scale(3).to_edge(DOWN)
+                text0 = Text('Hello world', slant=ITALIC)
+                text1 = Text('Hello world', t2s={'world':ITALIC})
+                text2 = Text('Hello world', weight=BOLD)
+                text3 = Text('Hello world', t2w={'world':BOLD})
                 self.add(text0,text1, text2,text3)
+                for i,mobj in enumerate(self.mobjects):
+                    mobj.shift(DOWN*(i-1))
 
 
     .. manim:: TextMoreCustomization
@@ -178,9 +180,9 @@ class Text(SVGMobject):
             for index, point in enumerate(points):
                 each.append_points([point])
                 if (
-                        index != len(points) - 1
-                        and (index + 1) % nppc == 0
-                        and any(point != points[index + 1])
+                    index != len(points) - 1
+                    and (index + 1) % nppc == 0
+                    and any(point != points[index + 1])
                 ):
                     each.add_line_to(last)
                     last = points[index + 1]
@@ -200,9 +202,9 @@ class Text(SVGMobject):
         submobjects_char_index = 0
         for char_index in range(self.text.__len__()):
             if (
-                    self.text[char_index] == " "
-                    or self.text[char_index] == "\t"
-                    or self.text[char_index] == "\n"
+                self.text[char_index] == " "
+                or self.text[char_index] == "\t"
+                or self.text[char_index] == "\n"
             ):
                 space = Dot(redius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
@@ -489,9 +491,9 @@ class Paragraph(VGroup):
         for line_index in range(lines_str_list.__len__()):
             chars_lines_text_list.add(
                 self.lines_text[
-                char_index_counter : char_index_counter
-                                     + lines_str_list[line_index].__len__()
-                                     + 1
+                    char_index_counter : char_index_counter
+                    + lines_str_list[line_index].__len__()
+                    + 1
                 ]
             )
             char_index_counter += lines_str_list[line_index].__len__() + 1
@@ -532,10 +534,10 @@ class Paragraph(VGroup):
             chars.add(VGroup())
             chars[line_no].add(
                 *self.lines_text.chars[
-                 char_index_counter : char_index_counter
-                                      + lines_str_list[line_no].__len__()
-                                      + 1
-                 ]
+                    char_index_counter : char_index_counter
+                    + lines_str_list[line_no].__len__()
+                    + 1
+                ]
             )
             char_index_counter += lines_str_list[line_no].__len__() + 1
         return chars
@@ -608,7 +610,7 @@ class Paragraph(VGroup):
                         self.get_right()[0] - self[line_no].get_width() / 2,
                         self[line_no].get_center()[1],
                         0,
-                        ]
+                    ]
                 )
             )
         elif self.lines[1][line_no] == "left":
@@ -618,6 +620,6 @@ class Paragraph(VGroup):
                         self.get_left()[0] + self[line_no].get_width() / 2,
                         self[line_no].get_center()[1],
                         0,
-                        ]
+                    ]
                 )
             )
