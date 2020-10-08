@@ -90,6 +90,17 @@ class Text(SVGMobject):
                 text2 = Text('Hello world', gradient=(BLUE, GREEN)).scale(3).next_to(text1, DOWN)
                 self.add(text1, text2)
 
+    ..manim:: TextItalicAndBoldExample
+        :save_last_frame:
+
+        class TextItalicAndBoldExample(Scene):
+            def construct(self):
+                text0 = Text('Hello world', slant=ITALIC).scale(3).to_edge(UP)
+                text1 = Text('Hello world', t2s={'world':ITALIC}).scale(3).shift(UP)
+                text2 = Text('Hello world', weight=BOLD).scale(3).shift(DOWN)
+                text3 = Text('Hello world', t2w={'world':BOLD}).scale(3).to_edge(DOWN)
+                self.add(text0,text1, text2,text3)
+
 
     .. WARNING::
 
