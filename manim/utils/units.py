@@ -28,7 +28,7 @@ class Unit():
         elif self._unit == PIXELS:
             return self._value / _size_from_dimension(dim, True) * _size_from_dimension(dim)
         elif self._unit == PERCENT:
-            return self._value * _size_from_dimension(dim)
+            return self._value / 100 * _size_from_dimension(dim)
         else:
             raise ValueError("Unsupported unit.")
 
