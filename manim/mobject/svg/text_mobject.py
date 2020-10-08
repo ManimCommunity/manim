@@ -77,6 +77,13 @@ class Text(SVGMobject):
         `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
         :meth:`remove_invisible_chars` to resolve this issue.
 
+    .. manim:: Example1Text
+
+            class Example1Text(Scene):
+                def construct(self):
+                    text = Text('Hello world').scale(3)
+                    self.add(text)
+
     """
 
     CONFIG = {
