@@ -78,6 +78,7 @@ class Text(SVGMobject):
         :meth:`remove_invisible_chars` to resolve this issue.
 
     .. manim:: Example1Text
+        :save_last_frame:
 
             class Example1Text(Scene):
                 def construct(self):
