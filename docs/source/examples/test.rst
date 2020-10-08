@@ -2,43 +2,48 @@ Test
 =================================
 
 
-.. manim:: Updater1Example
+.. manim:: Example1
     :quality: medium
 
-    class Updater1Example(Scene):
+    class Example1(Scene):
         def construct(self):
-            def my_rotation_updater(mobj,dt):
-                mobj.rotate_about_origin(0.1)
-            line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
-            line_moving = Line(ORIGIN, LEFT).set_color(BLUE)
-            line_moving.add_updater(my_rotation_updater)
-            self.add(line_reference, line_moving)
+            def my_updater(mobj,dt):
+                mobj.shift(UP*0.01)
+            circ_reference = Circle().set_color(WHITE)
+            tri = Triangle().set_color(RED)
+            self.add(circ_reference, tri)
+            self.wait(0.5)
+            tri.add_updater(my_updater)
             self.wait(2)
 
-.. manim:: Updater2Example
+.. manim:: Example2
     :quality: medium
 
-    class Updater2Example(Scene):
+    class Example2(Scene):
         def construct(self):
-            def my_rotation_updater(mobj):
-                mobj.rotate_about_origin(0.1)
-            line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
-            line_moving = Line(ORIGIN, LEFT).set_color(BLUE)
-            line_moving.add_updater(my_rotation_updater)
-            self.add(line_reference, line_moving)
+            def my_updater(mobj):
+                mobj.shift(UP*0.01)
+            circ_reference = Circle().set_color(WHITE)
+            tri = Triangle().set_color(RED)
+            self.add(circ_reference, tri)
+            self.wait(0.5)
+            tri.add_updater(my_updater)
             self.wait(2)
 
 
-.. manim:: Updater3Example
+.. manim:: Example3
     :quality: medium
 
-    class Updater3Example(Scene):
-        def construct(self):
-            v_tracker = ValueTracker(0)
-            def my_rotation_updater(mobj):
-                mobj.rotate_about_origin(0.1)
-            line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
-            line_moving = Line(ORIGIN, LEFT).set_color(BLUE)
-            line_moving.add_updater(my_rotation_updater)
-            self.add(line_reference, line_moving)
-            self.play(v_tracker.increment_value, 1 , run_time=2)
+    class Example3(Scene):
+    def construct(self):
+        v_tracker = ValueTracker(0)
+        def my_updater(mobj):
+            mobj.shift(UP*0.01)
+        circ_reference = Circle().set_color(WHITE)
+        tri = Triangle().set_color(RED)
+        self.add(circ_reference, tri)
+        self.wait(0.5)
+        tri.add_updater(my_updater)
+        self.play(v_tracker.increment_value, 1 , run_time=2)
+
+
