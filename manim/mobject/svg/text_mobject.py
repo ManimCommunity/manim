@@ -71,11 +71,57 @@ class Text(SVGMobject):
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
 
+    Examples
+    --------
+    .. manim:: Example1Text
+        :save_last_frame:
+
+        class Example1Text(Scene):
+            def construct(self):
+                text = Text('Hello world').scale(3)
+                self.add(text)
+
+    .. manim:: TextColorExample
+        :save_last_frame:
+
+        class TextColorExample(Scene):
+            def construct(self):
+                text1 = Text('Hello world', color=BLUE).scale(3)
+                text2 = Text('Hello world', gradient=(BLUE, GREEN)).scale(3).next_to(text1, DOWN)
+                self.add(text1, text2)
+
+    .. manim:: TextItalicAndBoldExample
+        :save_last_frame:
+
+        class TextItalicAndBoldExample(Scene):
+            def construct(self):
+                text0 = Text('Hello world', slant=ITALIC).scale(3).to_edge(UP)
+                text1 = Text('Hello world', t2s={'world':ITALIC}).scale(3).shift(UP)
+                text2 = Text('Hello world', weight=BOLD).scale(3).shift(DOWN)
+                text3 = Text('Hello world', t2w={'world':BOLD}).scale(3).to_edge(DOWN)
+                self.add(text0,text1, text2,text3)
+
+
+    .. manim:: TextMoreCustomization
+            :save_last_frame:
+
+            class TextMoreCustomization(Scene):
+                def construct(self):
+                    text1 = Text(
+                        'Google',
+                        t2c={'[:1]': '#3174f0', '[1:2]': '#e53125',
+                             '[2:3]': '#fbb003', '[3:4]': '#3174f0',
+                             '[4:5]': '#269a43', '[5:]': '#e53125'}, size=1.2).scale(3)
+                    self.add(text1)
+
     .. WARNING::
 
         Using a :class:`.Transform` on text with leading whitespace can look
         `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
         :meth:`remove_invisible_chars` to resolve this issue.
+
+
+
 
     """
 
@@ -132,9 +178,9 @@ class Text(SVGMobject):
             for index, point in enumerate(points):
                 each.append_points([point])
                 if (
-                    index != len(points) - 1
-                    and (index + 1) % nppc == 0
-                    and any(point != points[index + 1])
+                        index != len(points) - 1
+                        and (index + 1) % nppc == 0
+                        and any(point != points[index + 1])
                 ):
                     each.add_line_to(last)
                     last = points[index + 1]
@@ -154,9 +200,9 @@ class Text(SVGMobject):
         submobjects_char_index = 0
         for char_index in range(self.text.__len__()):
             if (
-                self.text[char_index] == " "
-                or self.text[char_index] == "\t"
-                or self.text[char_index] == "\n"
+                    self.text[char_index] == " "
+                    or self.text[char_index] == "\t"
+                    or self.text[char_index] == "\n"
             ):
                 space = Dot(redius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
@@ -443,9 +489,9 @@ class Paragraph(VGroup):
         for line_index in range(lines_str_list.__len__()):
             chars_lines_text_list.add(
                 self.lines_text[
-                    char_index_counter : char_index_counter
-                    + lines_str_list[line_index].__len__()
-                    + 1
+                char_index_counter : char_index_counter
+                                     + lines_str_list[line_index].__len__()
+                                     + 1
                 ]
             )
             char_index_counter += lines_str_list[line_index].__len__() + 1
@@ -486,10 +532,10 @@ class Paragraph(VGroup):
             chars.add(VGroup())
             chars[line_no].add(
                 *self.lines_text.chars[
-                    char_index_counter : char_index_counter
-                    + lines_str_list[line_no].__len__()
-                    + 1
-                ]
+                 char_index_counter : char_index_counter
+                                      + lines_str_list[line_no].__len__()
+                                      + 1
+                 ]
             )
             char_index_counter += lines_str_list[line_no].__len__() + 1
         return chars
@@ -562,7 +608,7 @@ class Paragraph(VGroup):
                         self.get_right()[0] - self[line_no].get_width() / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
+                        ]
                 )
             )
         elif self.lines[1][line_no] == "left":
@@ -572,6 +618,6 @@ class Paragraph(VGroup):
                         self.get_left()[0] + self[line_no].get_width() / 2,
                         self[line_no].get_center()[1],
                         0,
-                    ]
+                        ]
                 )
             )
