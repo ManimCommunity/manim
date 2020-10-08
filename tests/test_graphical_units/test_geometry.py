@@ -54,6 +54,23 @@ class DotTest(Scene):
         self.play(Animation(dot))
 
 
+class AnnotationDotTest(Scene):
+    def construct(self):
+        adot = AnnotationDot()
+        self.play(Animation(adot))
+
+
+class LabeledDotTest(Scene):
+    def construct(self):
+        dot1 = LabeledDot(42)
+        dot2 = LabeledDot("a")
+        dot3 = LabeledDot("ii")
+        dot4 = LabeledDot("3")
+        self.add(dot1, dot2, dot3, dot4)
+        for i, mobj in enumerate(self.mobjects):
+            mobj.shift(DOWN * (i - 1))
+
+
 class EllipseTest(Scene):
     def construct(self):
         e = Ellipse()
