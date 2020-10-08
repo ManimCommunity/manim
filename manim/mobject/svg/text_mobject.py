@@ -80,10 +80,11 @@ class Text(SVGMobject):
     .. manim:: Example1Text
         :save_last_frame:
 
-            class Example1Text(Scene):
-                def construct(self):
-                    text = Text('Hello world').scale(3)
-                    self.add(text)
+        class Example1Text(Scene):
+            def construct(self):
+                text = Text('Hello world').scale(3)
+                self.add(text)
+
 
     """
 
