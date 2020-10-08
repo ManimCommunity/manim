@@ -1,6 +1,5 @@
 """Mobjects that are simple geometric shapes."""
 
-
 __all__ = [
     "TipableVMobject",
     "Arc",
@@ -33,7 +32,6 @@ __all__ = [
     "RoundedRectangle",
 ]
 
-
 import warnings
 import numpy as np
 import math
@@ -54,7 +52,7 @@ from ..utils.space_ops import line_intersection
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import normalize
 from ..utils.space_ops import rotate_vector
-from ..utils.color import RED, WHITE, BLUE
+from ..utils.color import *
 
 DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04
@@ -257,8 +255,8 @@ class Arc(TipableVMobject):
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
                 for a in np.linspace(
-                    self.start_angle, self.start_angle + self.angle, self.num_components
-                )
+                self.start_angle, self.start_angle + self.angle, self.num_components
+            )
             ]
         )
         # Figure out which control points will give the
@@ -398,20 +396,14 @@ class SmallDot(Dot):
     CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
 
 
-class AnnotationDot(VMobject):
-    def __init__(self, color=BLUE):
-        VMobject.__init__(self)
-        surrounding_dot = Dot().scale(1.3).set_fill(color=WHITE).set_z_index(-1)
-        innerdot = Dot().set_color(color)
-        annotation_dot = VGroup(surrounding_dot, innerdot)
-        self.add(annotation_dot)
+class AnnotationDot(Dot):
+    CONFIG = {"radius": DEFAULT_DOT_RADIUS * 1.3, "stroke_width": 5, "stroke_color": WHITE, "fill_color": BLUE}
 
 
 class LabeledDot(Mobject):
-    def __init__(self, label_string):
-        Mobject.__init__(self)
+    def __init__(self, label_string, **kwargs):
+        Mobject.__init__(self, **kwargs)
         from manim import MathTex
-
         labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
         self.add(labled_dot)
 
