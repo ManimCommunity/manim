@@ -416,8 +416,10 @@ class AnnotationDot(Dot):
 class LabeledDot(Mobject):
     """
     A Dot that has a label in its middle
+
     Example
     --------
+
     .. manim:: ExampleAnnotationDot
         :save_last_frame:
 
