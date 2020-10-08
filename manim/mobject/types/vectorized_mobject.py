@@ -1098,7 +1098,7 @@ class VDict(VMobject):
         Examples
         --------
         Normal usage::
-        
+
             square_obj = Square()
             self.add_key_value_pair('s', square_obj)
 
