@@ -101,6 +101,7 @@ class Text(SVGMobject):
                 text3 = Text('Hello world', t2w={'world':BOLD}).scale(3).to_edge(DOWN)
                 self.add(text0,text1, text2,text3)
 
+
     .. manim:: TextMoreCustomization
             :save_last_frame:
 
