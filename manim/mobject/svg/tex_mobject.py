@@ -152,8 +152,9 @@ class SingleStringMathTex(SVGMobject):
 
 
 class MathTex(SingleStringMathTex):
-    """ "
-    Example:
+    """Some
+    Examples
+    --------
     .. manim:: Formula1
         :save_last_frame:
 
