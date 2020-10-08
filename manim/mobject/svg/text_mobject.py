@@ -106,7 +106,6 @@ class Text(SVGMobject):
 
             class TextMoreCustomization(Scene):
                 def construct(self):
-                    text0 = Text('Hello\nWorld', lsh=1.4).scale(3).to_edge(UP)
                     text1 = Text(
                         'Google',
                         t2c={'[:1]': '#3174f0', '[1:2]': '#e53125',
@@ -114,7 +113,7 @@ class Text(SVGMobject):
                              '[4:5]': '#269a43', '[5:]': '#e53125'}, size=1.2).scale(3) \
                         .to_edge(DOWN)
 
-                    self.add(text0, text1)
+                    self.add(text1)
 
     .. WARNING::
 
