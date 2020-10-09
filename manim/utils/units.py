@@ -20,9 +20,13 @@ def _is_dimensional(value):
 
 
 class Unit:
-    def __init__(self, value, converter):
+    def __init__(self, value):
         self._value = value
-        self._converter = converter
+        self._converter = lambda val, dim: val
+
+    @property
+    def value(self):
+        return self._value
 
     def convert(self, dim=None):
         if dim:
