@@ -1,10 +1,8 @@
 from functools import wraps
 
-from ..config import config
+import numpy as np
 
-PERCENT = "%"
-PIXELS = "px"
-MUNIT = "m"
+from ..config import config
 
 
 def _size_from_dimension(dim=0, pixels=False):
@@ -17,20 +15,47 @@ def _size_from_dimension(dim=0, pixels=False):
         raise ValueError("Dimension not supported.")
 
 
-class Unit():
-    def __init__(self, value, unit=None):
-        self._value = value
-        self._unit = unit
+def _is_dimensional(value):
+    return isinstance(value, np.ndarray) and value.shape[0] <= 3
 
-    def value(self, dim=0):
-        if not self._unit or self._unit == MUNIT:
-            return self._value
-        elif self._unit == PIXELS:
-            return self._value / _size_from_dimension(dim, True) * _size_from_dimension(dim)
-        elif self._unit == PERCENT:
-            return self._value / 100 * _size_from_dimension(dim)
+
+class Unit:
+    def __init__(self, value, converter):
+        self._value = value
+        self._converter = converter
+
+    def convert(self, dim=None):
+        if dim:
+            return self._converter(self._value, dim=dim)
+        elif _is_dimensional(self._value):
+            return_value = self._value
+
+            for i in range(0, return_value.shape[0]):
+                return_value[i] = self._converter(return_value[i], i)
+            return return_value
         else:
-            raise ValueError("Unsupported unit.")
+            raise ValueError("Unable to determine dimension.")
+
+
+class MUnit(Unit):
+    def __init__(self, value):
+        super(MUnit, self).__init__(value)
+
+
+class PixelUnit(Unit):
+    def __init__(self, value):
+        super(PixelUnit, self).__init__(value)
+        self._converter = (
+            lambda val, dim: val
+            / _size_from_dimension(dim, True)
+            * _size_from_dimension(dim)
+        )
+
+
+class PercentUnit(Unit):
+    def __init__(self, value):
+        super(PercentUnit, self).__init__(value)
+        self._converter = lambda val, dim: val / 100 * _size_from_dimension(dim)
 
 
 def accepts_unit(f):
