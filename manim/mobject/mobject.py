@@ -52,6 +52,7 @@ class Mobject(Container):
 
     def __init__(self, **kwargs):
         Container.__init__(self, **kwargs)
+        self.point_hash = None
         self.submobjects = []
         self.color = Color(self.color)
         if self.name is None:
@@ -62,7 +63,7 @@ class Mobject(Container):
         self.generate_points()
         self.init_colors()
 
-    def __str__(self):
+    def __repr__(self):
         return str(self.name)
 
     def reset_points(self):

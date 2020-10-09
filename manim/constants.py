@@ -29,11 +29,23 @@ NO_SCENE_MESSAGE = """
    There are no scenes inside that module
 """
 
-# Cairo stuff
+# Cairo and Pango stuff
 NORMAL = "NORMAL"
 ITALIC = "ITALIC"
 OBLIQUE = "OBLIQUE"
 BOLD = "BOLD"
+# Only for Pango from below
+THIN = "THIN"
+ULTRALIGHT = "ULTRALIGHT"
+LIGHT = "LIGHT"
+SEMILIGHT = "SEMILIGHT"
+BOOK = "BOOK"
+MEDIUM = "MEDIUM"
+SEMIBOLD = "SEMIBOLD"
+ULTRABOLD = "ULTRABOLD"
+HEAVY = "HEAVY"
+ULTRAHEAVY = "ULTRAHEAVY"
+
 
 # Geometry: directions
 ORIGIN = np.array((0.0, 0.0, 0.0))
@@ -120,3 +132,21 @@ FFMPEG_VERBOSITY_MAP = {
     "CRITICAL": "fatal",
 }
 VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
+JS_RENDERER_INFO = (
+    "The Electron frontend to Manim is hosted at "
+    "https://github.com/ManimCommunity/manim-renderer. After cloning and building it, "
+    "you can either start it prior to running Manim or specify the path to the "
+    "executable with the --js_renderer_path flag."
+)
+
+# Video qualities
+QUALITIES = {
+    "fourk_quality": "k",
+    "production_quality": "p",
+    "high_quality": "h",
+    "medium_quality": "m",
+    "low_quality": "l",
+}
+
+DEFAULT_QUALITY = "production_quality"
+DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]

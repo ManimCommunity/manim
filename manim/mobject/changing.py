@@ -7,7 +7,7 @@ from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.rate_functions import smooth
 from ..utils.space_ops import get_norm
-from ..utils.color import  BLUE_D, BLUE_B, BLUE_E, GREY_BROWN, WHITE
+from ..utils.color import BLUE_D, BLUE_B, BLUE_E, GREY_BROWN, WHITE
 
 
 class AnimatedBoundary(VGroup):
@@ -16,7 +16,6 @@ class AnimatedBoundary(VGroup):
     Examples
     --------
     .. manim:: AnimatedBoundaryExample
-        :quality: low
 
         class AnimatedBoundaryExample(Scene):
             def construct(self):
@@ -89,7 +88,6 @@ class TracedPath(VMobject):
     Examples
     --------
     .. manim:: TracedPathExample
-        :quality: low
 
         class TracedPathExample(Scene):
             def construct(self):
