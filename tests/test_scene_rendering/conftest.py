@@ -1,15 +1,15 @@
 import pytest
-import os
 
+from pathlib import Path
 
 from manim import file_writer_config
 
 
 @pytest.fixture
 def manim_cfg_file():
-    return os.path.join(os.path.dirname(__file__), "manim.cfg")
+    return Path(__file__).parent.joinpath("manim.cfg")
 
 
 @pytest.fixture
 def simple_scenes_path():
-    return os.path.join(os.path.dirname(__file__), "simple_scenes.py")
+    return Path(__file__).parent.joinpath("simple_scenes.py")
