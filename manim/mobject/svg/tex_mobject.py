@@ -156,7 +156,7 @@ class MathTex(SingleStringMathTex):
     A class for displaying mathematical formulas with Latex syntax.
 
 
-    Some Examples
+    Examples
     --------
     .. manim:: Formula1
         :save_last_frame:
