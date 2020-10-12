@@ -33,7 +33,7 @@ Annotations
     :save_last_frame:
 
     from manim.mobject.geometry import ArrowTriangleTip, ArrowSquareTip, ArrowCircleTip
-    class ExampleArrow2(Scene):
+    class ExampleArrowTips(Scene):
         def construct(self):
             a00 = Arrow(start=[-2, 3, 0], end=[2, 3, 0], color=YELLOW)
             a11 = Arrow(start=[-2, 2, 0], end=[2, 2, 0], tip_shape=ArrowTriangleTip)
