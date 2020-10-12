@@ -880,7 +880,7 @@ class Text(CairoText):
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
 
-        Examples
+    Examples
     --------
     .. manim:: Example1Text
         :save_last_frame:
