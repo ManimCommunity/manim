@@ -558,6 +558,14 @@ class PangoText(SVGMobject):
                 self.play(Write(morning))
                 self.wait(2)
 
+    Tests
+    -----
+
+    Check that the creation of :class:`~.PangoText` works::
+
+        >>> PangoText('The horse does not eat cucumber salad.')
+        Text('The horse does not eat cucumber salad.')
+
     .. WARNING::
 
         Using a :class:`.Transform` on text with leading whitespace can look
@@ -634,6 +642,9 @@ class PangoText(SVGMobject):
         # anti-aliasing
         if self.height is None and self.width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
+
+    def __repr__(self):
+        return f"Text({repr(self.original_text)})"
 
     def remove_last_M(self, file_name: str):  # pylint: disable=invalid-name
         """Internally used. Use to format the rendered SVG files."""
