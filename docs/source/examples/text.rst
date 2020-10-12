@@ -9,7 +9,6 @@ Text
             text = Text('Hello world').scale(3)
             self.add(text)
 
+This is an example that illustrates how to use the :class:`~.Text` class.
 
-`Text` works also with other languages like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
-Be sure you have the font that supports those languages!
-
+In case you want to use other alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`, you can have a look at :class:`~.PangoText` 
