@@ -13,6 +13,7 @@ from manim import *
 # Use -n <number> to skip ahead to the n'th animation of a scene.
 # Use -r <number> to specify a resolution (for example, -r 1080
 # for a 1920x1080 video)
+from manim.utils.units import PercentUnit, PixelUnit
 
 
 class OpeningManimExample(Scene):
@@ -235,4 +236,25 @@ class VariableExample(Scene):
             on_screen_int_var, DOWN
         )
         self.play(Write(on_screen_subscript_var))
+        self.wait()
+
+
+class UnitDot(Scene):
+    def construct(self):
+        path = VMobject()
+        dot = Dot()
+        path.set_points_as_corners([dot.get_center(), dot.get_center()])
+
+        def update_path(path):
+            previus_path = path.copy()
+            previus_path.add_points_as_corners([dot.get_center()])
+            path.become(previus_path)
+
+        path.add_updater(update_path)
+        self.add(path, dot)
+        self.play(Rotating(dot, radians=PI, about_point=RIGHT, run_time=2))
+        self.wait()
+
+        self.play(dot.shift, PercentUnit(25 * UP))
+        self.play(dot.shift, PixelUnit(100 * LEFT))
         self.wait()
