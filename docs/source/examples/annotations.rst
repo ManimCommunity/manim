@@ -28,7 +28,7 @@ Annotations
             tip_text = TextMobject('(2, 2)').next_to(arrow.get_end(), RIGHT)
             self.add(numberplane, dot, arrow, origin_text, tip_text)
 
-.. manim:: ExampleArrow2
+.. manim:: ExampleArrowTips
     :quality: medium
     :save_last_frame:
 
