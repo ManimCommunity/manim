@@ -86,7 +86,7 @@ def _parse_config(config_parser, args):
     # and are stored in 'camera_config'.  Note the highest resolution
     # passed as argument will be used.
     quality = _determine_quality(args)
-    section = config_parser[quality if quality != "production" else "CLI"]
+    section = config_parser[quality if quality != constants.DEFAULT_QUALITY else "CLI"]
 
     # Loop over low quality for the keys, could be any quality really
     config = {opt: section.getint(opt) for opt in config_parser["low_quality"]}
@@ -135,8 +135,11 @@ def _parse_config(config_parser, args):
     config["left_side"] = config["frame_x_radius"] * constants.LEFT
     config["right_side"] = config["frame_x_radius"] * constants.RIGHT
 
-    # Handle the --tex_template flag.  Note we accept None if the flag is absent
-    tex_fn = os.path.expanduser(args.tex_template) if args.tex_template else None
+    # Handle the --tex_template flag, if the flag is absent read it from the config.
+    if args.tex_template:
+        tex_fn = os.path.expanduser(args.tex_template)
+    else:
+        tex_fn = default["tex_template"] if default["tex_template"] != "" else None
 
     if tex_fn is not None and not os.access(tex_fn, os.R_OK):
         # custom template not available, fallback to default
