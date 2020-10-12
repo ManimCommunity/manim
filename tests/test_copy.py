@@ -24,7 +24,7 @@ def test_bracelabel_copy(tmp_path):
     file_writer_config["text_dir"] = mediadir.joinpath("Text")
     file_writer_config["tex_dir"] = mediadir.joinpath("Tex")
     for el in ["text_dir", "tex_dir"]:
-        file_writer_config[el].mkdir()
+        file_writer_config[el].mkdir(parents=True)
 
     # Before the refactoring of Mobject.copy(), the class BraceLabel was the
     # only one to have a non-trivial definition of copy.  Here we test that it
