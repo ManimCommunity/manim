@@ -35,20 +35,18 @@ Annotations
     from manim.mobject.geometry import ArrowTriangleTip, ArrowSquareTip, ArrowCircleTip
     class ExampleArrow2(Scene):
         def construct(self):
-            a11 = Arrow(np.array([-2, 3, 0]), np.array([2, 3, 0]))
-            a12 = Arrow(np.array([-2, 2, 0]), np.array([2, 2, 0]),
+            a00 = Arrow(start=[-2, 3, 0], end=[2, 3, 0], color=YELLOW)
+            a11 = Arrow(start=[-2, 2, 0], end=[2, 2, 0], tip_shape=ArrowTriangleTip)
+            a12 = Arrow(start=[-2, 1, 0], end=[2, 1, 0],
                         tip_shape=ArrowTriangleTip,
-                        tip_style={'fill_opacity': 0, 'stroke_width': 3})
-            a21 = Arrow(np.array([-2, 1, 0]), np.array([2, 1, 0]), tip_shape=ArrowSquareTip)
-            a22 = Arrow(np.array([-2, 0, 0]), np.array([2, 0, 0]), tip_shape=ArrowSquareTip,
-                        tip_style={'fill_opacity': 0, 'stroke_width': 3})
-            a31 = Arrow(np.array([-2, -1, 0]), np.array([2, -1, 0]), tip_shape=ArrowCircleTip)
-            a32 = Arrow(np.array([-2, -2, 0]), np.array([2, -2, 0]), tip_shape=ArrowCircleTip,
-                        tip_style={'fill_opacity': 0, 'stroke_width': 3})
-            self.add(a11, a12, a21, a22, a31, a32)
+                        tip_style={'fill_opacity': 1, 'stroke_width': 3})
+            a21 = Arrow(start=[-2, 0, 0], end=[2, 0, 0], tip_shape=ArrowSquareTip)
+            a22 = Arrow([-2, -1, 0], [2, -1, 0], tip_shape=ArrowSquareTip,
+                        tip_style={'fill_opacity': 1, 'stroke_width': 3})
+            a31 = Arrow([-2, -2, 0], [2, -2, 0], tip_shape=ArrowCircleTip)
+            a32 = Arrow([-2, -3, 0], [2, -3, 0], tip_shape=ArrowCircleTip,
+                        tip_style={'fill_opacity': 1, 'stroke_width': 3})
             b11 = a11.copy().scale(0.5, scale_tips=True).next_to(a11, RIGHT)
             b12 = a12.copy().scale(0.5, scale_tips=True).next_to(a12, RIGHT)
             b21 = a21.copy().scale(0.5, scale_tips=True).next_to(a21, RIGHT)
-
-            self.add(b11, b12, b21)
-            self.wait(1)
+            self.add(a00, a11, a12, a21, a22, a31, a32, b11, b12, b21)

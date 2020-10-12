@@ -152,8 +152,11 @@ class SingleStringMathTex(SVGMobject):
 
 
 class MathTex(SingleStringMathTex):
-    """Some
-    Examples
+    """
+    A class for displaying mathematical formulas with Latex syntax.
+
+
+    Some Examples
     --------
     .. manim:: Formula1
         :save_last_frame:
