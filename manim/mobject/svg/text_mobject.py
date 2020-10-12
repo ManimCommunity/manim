@@ -582,7 +582,7 @@ class Paragraph(VGroup):
 
 
 class PangoText(SVGMobject):
-    """Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
     PangoText objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
