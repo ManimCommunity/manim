@@ -167,12 +167,23 @@ class SingleStringMathTex(SVGMobject):
 class MathTex(SingleStringMathTex):
     """A string compiled with LaTeX in math mode.
 
+    Examples
+    --------
+    .. manim:: Formula
+        :save_last_frame:
+
+        class Formula(Scene):
+            def construct(self):
+                t = MathTex(r"\int_a^b f'(x) dx = f(b)- f(a)")
+                self.add(t)
+
     Tests
     -----
     Check that creating a :class:`~.MathTex` works::
 
         >>> MathTex('a^2 + b^2 = c^2')
         MathTex('a^2 + b^2 = c^2')
+
     """
 
     CONFIG = {
