@@ -32,20 +32,17 @@ Annotations
     :quality: medium
     :save_last_frame:
 
-    from manim.mobject.geometry import ArrowTriangleTip, ArrowSquareTip, ArrowCircleTip
+    from manim.mobject.geometry import ArrowTriangleTip, ArrowSquareTip, ArrowSquareFilledTip,\
+                                       ArrowCircleTip, ArrowCircleFilledTip
     class ExampleArrowTips(Scene):
         def construct(self):
             a00 = Arrow(start=[-2, 3, 0], end=[2, 3, 0], color=YELLOW)
             a11 = Arrow(start=[-2, 2, 0], end=[2, 2, 0], tip_shape=ArrowTriangleTip)
-            a12 = Arrow(start=[-2, 1, 0], end=[2, 1, 0],
-                        tip_shape=ArrowTriangleTip,
-                        tip_style={'fill_opacity': 1, 'stroke_width': 3})
+            a12 = Arrow(start=[-2, 1, 0], end=[2, 1, 0])
             a21 = Arrow(start=[-2, 0, 0], end=[2, 0, 0], tip_shape=ArrowSquareTip)
-            a22 = Arrow([-2, -1, 0], [2, -1, 0], tip_shape=ArrowSquareTip,
-                        tip_style={'fill_opacity': 1, 'stroke_width': 3})
+            a22 = Arrow([-2, -1, 0], [2, -1, 0], tip_shape=ArrowSquareFilledTip)
             a31 = Arrow([-2, -2, 0], [2, -2, 0], tip_shape=ArrowCircleTip)
-            a32 = Arrow([-2, -3, 0], [2, -3, 0], tip_shape=ArrowCircleTip,
-                        tip_style={'fill_opacity': 1, 'stroke_width': 3})
+            a32 = Arrow([-2, -3, 0], [2, -3, 0], tip_shape=ArrowCircleFilledTip)
             b11 = a11.copy().scale(0.5, scale_tips=True).next_to(a11, RIGHT)
             b12 = a12.copy().scale(0.5, scale_tips=True).next_to(a12, RIGHT)
             b21 = a21.copy().scale(0.5, scale_tips=True).next_to(a21, RIGHT)
