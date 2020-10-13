@@ -1,23 +1,23 @@
 import copy
-import logging
 from functools import wraps
 
 import numpy as np
 
-from ..config import config
+from ..config import config as global_config
 
 
-def _size_from_dimension(dim=0, pixels=False):
-    if dim == 0:
+def _size_from_dimension(
+    dim=0, pixels=False, config=global_config, treat_dim2_as_dim0=True
+):
+    if dim == 0 or (dim == 2 and treat_dim2_as_dim0):
         return config["frame_width"] if not pixels else config["pixel_width"]
     elif dim == 1:
         return config["frame_height"] if not pixels else config["pixel_height"]
     else:
         # TODO: determine size in z-direction
-        logging.getLogger("manim").warning(
-            f"Z-direction is not supported for units - returning size of x-dimension."
+        raise ValueError(
+            f"Z-direction is not supported for units - set treat_dim2_as_dim0 or use do not use z-dim in a unit."
         )
-        return config["frame_width"] if not pixels else config["pixel_width"]
 
 
 def _is_dimensional(value):
@@ -27,7 +27,7 @@ def _is_dimensional(value):
 class Unit:
     def __init__(self, value):
         self._value = value
-        self._converter = lambda val, dim: val
+        self._converter = lambda val, dim, config: val
 
     @property
     def value(self):
@@ -37,14 +37,14 @@ class Unit:
     def converter(self):
         return self._converter
 
-    def convert(self, dim=None):
+    def convert(self, dim=None, config=global_config):
         if dim:
-            return self.converter(self.value, dim=dim)
+            return self.converter(self.value, dim, config)
         elif _is_dimensional(self.value):
             return_value = self.value
 
             for i in range(0, return_value.shape[0]):
-                return_value[i] = self.converter(return_value[i], i)
+                return_value[i] = self.converter(return_value[i], i, config)
             return return_value
         else:
             raise ValueError("Unable to determine dimension.")
@@ -59,26 +59,28 @@ class PixelUnit(Unit):
     def __init__(self, value):
         super(PixelUnit, self).__init__(value)
         self._converter = (
-            lambda val, dim: val
-            / _size_from_dimension(dim, True)
-            * _size_from_dimension(dim)
+            lambda val, dim, config: val
+            / _size_from_dimension(dim, True, config)
+            * _size_from_dimension(dim, config=config)
         )
 
 
 class PercentUnit(Unit):
     def __init__(self, value):
         super(PercentUnit, self).__init__(value)
-        self._converter = lambda val, dim: val / 100 * _size_from_dimension(dim)
+        self._converter = (
+            lambda val, dim, config: val / 100 * _size_from_dimension(dim, config)
+        )
 
 
-def handle_units(f, dim=None):
+def handle_units(f, dim=None, config=global_config):
     @wraps(f)
     def wrapper(*args, **kwargs):
         # TODO figure what to do when dim=None, preferable determine the dim.
         return f(
-            *[v.convert(dim) if isinstance(v, Unit) else v for v in args],
+            *[v.convert(dim, config) if isinstance(v, Unit) else v for v in args],
             **{
-                k: v.convert(dim) if isinstance(v, Unit) else v
+                k: v.convert(dim, config) if isinstance(v, Unit) else v
                 for k, v in kwargs.items()
             },
         )
