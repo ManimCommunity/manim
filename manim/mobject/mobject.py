@@ -30,7 +30,7 @@ from ..utils.space_ops import rotation_matrix
 
 
 # TODO: Explain array_attrs
-from ..utils.units import accepts_unit
+from ..utils.units import handle_units
 
 
 class Mobject(Container):
@@ -293,7 +293,7 @@ class Mobject(Container):
         for mob in self.family_members_with_points():
             func(mob)
 
-    @accepts_unit
+    @handle_units
     def shift(self, *vectors):
         total_vector = reduce(op.add, vectors)
         for mob in self.family_members_with_points():

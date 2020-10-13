@@ -71,7 +71,7 @@ class PercentUnit(Unit):
         self._converter = lambda val, dim: val / 100 * _size_from_dimension(dim)
 
 
-def accepts_unit(f, dim=None):
+def handle_units(f, dim=None):
     @wraps(f)
     def wrapper(*args, **kwargs):
         # TODO figure what to do when dim=None, preferable determine the dim.
@@ -80,7 +80,7 @@ def accepts_unit(f, dim=None):
             **{
                 k: v.convert(dim) if isinstance(v, Unit) else v
                 for k, v in kwargs.items()
-            }
+            },
         )
 
     return wrapper
