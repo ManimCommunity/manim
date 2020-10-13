@@ -702,6 +702,7 @@ class Scene(Container):
 
         return animations
 
+<<<<<<< HEAD
     def begin_animations(self, animations):
         """
         This method begins the list of animations that is passed,
@@ -746,6 +747,8 @@ class Scene(Container):
             animation.interpolate(alpha)
         self.update_mobjects(dt)
 
+=======
+>>>>>>> d204903f... Remove Scene.begin_animations()
     def finish_animations(self, animations):
         """
         This function cleans up after the end
@@ -759,7 +762,8 @@ class Scene(Container):
         for animation in animations:
             animation.finish()
             animation.clean_up_from_scene(self)
-        # TODO: This is only used in one place and should probably be removed.
+        # TODO: This method is only called in one place; it should probably be
+        # removed.
         self.mobjects_from_last_animation = [anim.mobject for anim in animations]
         if file_writer_config["skip_animations"]:
             # TODO, run this call in for each animation?
@@ -787,8 +791,14 @@ class Scene(Container):
         if len(args) == 0:
             warnings.warn("Called Scene.play with no animations")
             return
+<<<<<<< HEAD
         self.animations = self.compile_play_args_to_animation_list(*args, **kwargs)
         self.begin_animations(self.animations)
+=======
+        animations = self.compile_play_args_to_animation_list(*args, **kwargs)
+        for animation in animations:
+            animation.begin()
+>>>>>>> d204903f... Remove Scene.begin_animations()
 
         # Paint all non-moving objects onto the screen, so they don't
         # have to be rendered every frame
