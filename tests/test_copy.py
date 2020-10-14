@@ -20,7 +20,7 @@ def test_bracelabel_copy(tmp_path):
     # For this test to work, we need to tweak some folders temporarily
     original_text_dir = file_writer_config["text_dir"]
     original_tex_dir = file_writer_config["tex_dir"]
-    mediadir = Path(tmp_path).joinpath("deepcopy")
+    mediadir = Path(tmp_path) / "deepcopy"
     file_writer_config["text_dir"] = str(mediadir.joinpath("Text"))
     file_writer_config["tex_dir"] = str(mediadir.joinpath("Tex"))
     for el in ["text_dir", "tex_dir"]:
