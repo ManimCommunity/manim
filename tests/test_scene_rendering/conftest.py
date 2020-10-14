@@ -12,4 +12,4 @@ def manim_cfg_file():
 
 @pytest.fixture
 def simple_scenes_path():
-    return str(Path(__file__).parent.joinpath("simple_scenes.py"))
+    return str(Path(__file__).parent / "simple_scenes.py")
