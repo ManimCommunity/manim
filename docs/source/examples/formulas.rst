@@ -9,8 +9,8 @@ Formulas
     class MoveFrameBox(Scene):
         def construct(self):
             text=MathTex(
-                "\\frac{d}{dx}f(x)g(x)=","f(x)\\frac{d}{dx}g(x)","+",
-                "g(x)\\frac{d}{dx}f(x)"
+                "\frac{d}{dx}f(x)g(x)=","f(x)\frac{d}{dx}g(x)","+",
+                "g(x)\frac{d}{dx}f(x)"
             )
             self.play(Write(text))
             framebox1 = SurroundingRectangle(text[1], buff = .1)

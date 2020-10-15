@@ -9,7 +9,7 @@ Text
             text = Text('Hello world').scale(3)
             self.add(text)
 
-..manim:: InCodeTexTemplateExample
+.. manim:: InCodeTexTemplateExample
     :save_last_frame:
 
     class InCodeTexTemplateExample(Scene):
