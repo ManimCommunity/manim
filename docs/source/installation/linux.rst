@@ -58,13 +58,9 @@ To install cairo:
 
   sudo dnf install cairo-devel
 
-To install ffmpeg:
+To install ffmpeg, you have add RPMfusion repository (If it's not already added):
 
-Add RPMfusion repository if it's not already added:
-
-.. code-block:: bash
-
-   sudo dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+https://rpmfusion.org/Configuration/
 
 Install ffmpeg from RPMfusion repository:
 
