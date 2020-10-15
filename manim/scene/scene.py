@@ -530,7 +530,7 @@ class Scene(Container):
                 return mobjects[i:]
         return []
 
-    def get_moving_and_stationary_mobjects(self, animations):
+    def get_moving_and_static_mobjects(self, animations):
         moving_mobjects = self.get_moving_mobjects(*animations)
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
@@ -542,10 +542,10 @@ class Scene(Container):
             moving_mobjects,
             use_z_index=self.renderer.camera.use_z_index,
         )
-        stationary_mobjects = list_difference_update(
+        static_mobjects = list_difference_update(
             all_mobject_families, all_moving_mobject_families
         )
-        return all_moving_mobject_families, stationary_mobjects
+        return all_moving_mobject_families, static_mobjects
 
     def get_time_progression(
         self, run_time, n_iterations=None, override_skip_animations=False
@@ -730,11 +730,11 @@ class Scene(Container):
             list of animations to finish.
         """
 
-    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-        self.renderer.wait(self, duration=duration, stop_condition=stop_condition)
-
     def play(self, *args, **kwargs):
         self.renderer.play(self, *args, **kwargs)
+
+    def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
+        self.renderer.wait(self, duration=duration, stop_condition=stop_condition)
 
     def play_internal(self, *args, **kwargs):
         """
@@ -745,7 +745,8 @@ class Scene(Container):
         Parameters
         ----------
         *args : Animation or mobject with mobject method and params
-        **kwargs : named parameters affecting what was passed in *args e.g run_time, lag_ratio etc.
+        **kwargs : named parameters affecting what was passed in *args e.g
+            run_time, lag_ratio etc.
         """
         if len(args) == 0:
             warnings.warn("Called Scene.play with no animations")
@@ -757,11 +758,10 @@ class Scene(Container):
 
         # Paint all non-moving objects onto the screen, so they don't
         # have to be rendered every frame
-        moving_mobjects, stationary_mobjects = self.get_moving_and_stationary_mobjects(
+        moving_mobjects, static_mobjects = self.get_moving_and_static_mobjects(
             animations
         )
-        self.renderer.update_frame(self, mobjects=stationary_mobjects)
-        self.static_image = self.renderer.get_frame()
+        self.renderer.save_static_mobject_data(self, static_mobjects)
 
         last_t = 0
         for t in self.get_animation_time_progression(animations):
@@ -772,7 +772,7 @@ class Scene(Container):
                 alpha = t / animation.run_time
                 animation.interpolate(alpha)
             self.update_mobjects(dt)
-            self.renderer.update_frame(self, moving_mobjects, self.static_image)
+            self.renderer.update_frame(self, moving_mobjects)
             self.renderer.add_frame(self.renderer.get_frame())
 
         for animation in animations:
