@@ -27,7 +27,8 @@ Formulas
 .. manim:: MoveBraces
 
     class MoveBraces(Scene):
-        def construct(self):
+        def construct(self):                             movie file written in {'/h
+
             text=MathTex(
                 "\\frac{d}{dx} f(x)g(x)=",       #0
                 "f(x)\\frac{d}{dx} g(x)",        #1
