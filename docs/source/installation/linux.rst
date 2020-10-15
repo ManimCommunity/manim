@@ -58,7 +58,7 @@ To install cairo:
 
   sudo dnf install cairo-devel
 
-To install ffmpeg, you have to add RPMfusion repository (If it's not already added):
+To install ffmpeg, you have to add RPMfusion repository (If it's not already added). Please follow the instructions for your specific distribution in the following URL:
 
 https://rpmfusion.org/Configuration/
 
