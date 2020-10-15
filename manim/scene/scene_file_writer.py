@@ -548,7 +548,7 @@ class SceneFileWriter(object):
         try:
             subprocess.check_call(commands)
         except subprocess.CalledProcessError as exc:
-            logger.error(f'FFMPEG returned with code {exc.returncode}')
+            logger.error(f"FFMPEG returned with code {exc.returncode}")
             raise exc
 
         if self.includes_sound:
