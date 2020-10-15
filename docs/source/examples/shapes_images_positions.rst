@@ -16,6 +16,18 @@ Shapes, Images and Positions
             self.add(d, c, s, t)
             self.wait(1)
 
+.. manim:: InterpolationExample
+    :save_last_frame:
+
+    class InterpolationExample(Scene):
+        def construct(self):
+            dot = Dot()
+            dot2 = Dot().shift(LEFT)
+            dot3 = VMobject().interpolate(dot, dot2, alpha=0.4)
+            self.add(dot, dot2, dot3)
+            self.wait(2)
+
+
 .. manim:: Example1ImageFromArray
     :save_last_frame:
 
