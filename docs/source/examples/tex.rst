@@ -67,7 +67,7 @@ This is very similarly to the Text class. For example, the `color` keyword chang
 Extra LaTeX Packages
 +++++++++++++++++++++
 Some commands require special packages to be loaded into the TeX template. For example, 
-to use the `mathscr` script, we need to add the `mathrsfs` package. Since this package isn't loaded
+to use the ``mathscr`` script, we need to add the ``mathrsfs`` package. Since this package isn't loaded
 into manim's tex template by default, we add it manually:
 
 .. manim:: Example3LaTeX
