@@ -1070,7 +1070,12 @@ class ArrowCircleTip(ArrowTip, Circle):
 
 class ArrowCircleFilledTip(ArrowFilledTip, ArrowCircleTip):
     r"""Circular arrow tip with filled tip."""
-    pass
+    @property
+    def tip_point(self):
+        return self.get_center()
+    
+    def get_start(self):
+        return self.get_center()
 
 
 class ArrowSquareTip(ArrowTip, Square):
