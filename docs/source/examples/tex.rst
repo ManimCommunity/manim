@@ -43,7 +43,7 @@ insert regular text:
 
 LaTeX commands and keyword arguments
 +++++++++++++++++++++++++++++++++++++
-We can use any standard LaTeX commands in the AMS maths packages. For example the `mathtt` text type.
+We can use any standard LaTeX commands in the AMS maths packages. For example the ``mathtt`` text type.
 
 .. manim:: Example2LaTeX
     :save_last_frame:
