@@ -56,10 +56,10 @@ We can use any standard LaTeX commands in the AMS maths packages. For example th
 On the manim side, the TeX class also accepts attributes to change the appearance of the output. 
 This is very similarly to the Text class. For example, the `color` keyword changes the color of the TeX mobject:
 
-.. manim:: Example2LaTeX
+.. manim:: Example2bLaTeX
     :save_last_frame:
 
-    class Example2LaTeX(Scene):
+    class Example2bLaTeX(Scene):
         def construct(self):
             tex = Tex(r'Hello \LaTeX', color=BLUE).scale(3)
             self.add(tex)
@@ -84,14 +84,14 @@ Substrings and parts
 +++++++++++++++++++++
 The TeX mobject can accept multiple strings as arguments. Afterwards you can refer to the individual
 parts either by their index (like `tex[1]`), or you can look them up by (parts of) the tex code like
-in this example where we set the color of the `\bigstar` using `set_color_by_tex()`:
+in this example where we set the color of the `\\bigstar` using `set_color_by_tex()`:
 
 .. manim:: Example4LaTeX
     :save_last_frame:
 
     class Example4LaTeX(Scene):
         def construct(self):
-            tex = Tex('Hello', '$\\bigstar$', '\LaTeX').scale(3)
+            tex = Tex('Hello', r'$\bigstar$', r'\LaTeX').scale(3)
             tex.set_color_by_tex('igsta', RED)
             self.add(tex)
 
@@ -107,7 +107,7 @@ in maths mode:
 
     class Example5LaTeX(Scene):
         def construct(self):
-            tex = Tex(r'f: A \rightarrow B', tex_template=TexFontTemplates.french_cursive).scale(3)
+            tex = Tex(r'$f: A \rightarrow B$', tex_template=TexFontTemplates.french_cursive).scale(3)
             self.add(tex)
 
 Manim also has a `TexTemplateLibrary` containing the TeX templates used by 3Blue1Brown. One example 
@@ -120,7 +120,7 @@ need `Tex()` at all, and should use `Text()` or `PangoText()` instead.
 
     class Example6LaTeX(Scene):
         def construct(self):
-            tex = Tex('Hello 你好 \LaTeX', tex_template=TexTemplateLibrary.ctex).scale(3)
+            tex = Tex('Hello 你好 \\LaTeX', tex_template=TexTemplateLibrary.ctex).scale(3)
             self.add(tex)
 
 
