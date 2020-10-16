@@ -1066,16 +1066,17 @@ class ArrowCircleTip(ArrowTip, Circle):
         Circle.__init__(self, **kwargs)
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
-
-
-class ArrowCircleFilledTip(ArrowFilledTip, ArrowCircleTip):
-    r"""Circular arrow tip with filled tip."""
     @property
     def tip_point(self):
         return self.get_center()
     
     def get_start(self):
         return self.get_center()
+
+
+class ArrowCircleFilledTip(ArrowFilledTip, ArrowCircleTip):
+    r"""Circular arrow tip with filled tip."""
+    pass
 
 
 class ArrowSquareTip(ArrowTip, Square):
