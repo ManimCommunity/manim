@@ -173,8 +173,8 @@ class ManimDirective(Directive):
         # same config will be used for the next scene.  For this reason, we
         # have to make sure to restore the original config after each scene.
         save_config_code = [
-            'original_config = copy.deepcopy(config)',
-            'original_fw_config = copy.deepcopy(file_writer_config)',
+            "original_config = copy.deepcopy(config)",
+            "original_fw_config = copy.deepcopy(file_writer_config)",
         ]
         file_writer_config_code = [
             f'config["frame_rate"] = {frame_rate}',
@@ -190,12 +190,12 @@ class ManimDirective(Directive):
             f'file_writer_config["output_file"] = "{output_file}"',
         ]
         file_writer_config_code.append(
-            'file_writer_config["write_to_movie"] = ' +
-            ('False' if save_last_frame else 'True')
+            'file_writer_config["write_to_movie"] = '
+            + ("False" if save_last_frame else "True")
         )
         restore_config_code = [
-            'config = original_config',
-            'file_writer_config = original_fw_config',
+            "config = original_config",
+            "file_writer_config = original_fw_config",
         ]
 
         user_code = self.content
