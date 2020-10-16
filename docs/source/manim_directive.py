@@ -168,6 +168,11 @@ class ManimDirective(Directive):
         video_dir = os.path.join(media_dir, "videos")
         output_file = f"{clsname}-{classnamedict[clsname]}"
 
+        # Important: note that all scenes are being rendered on the same python
+        # interpreter.  That means that each time we change the config, the
+        # same config will be used for the next scene.  For this reason, we
+        # have to make sure to set all relevant config options before each time
+        # we render any example scene.
         file_writer_config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
@@ -181,6 +186,10 @@ class ManimDirective(Directive):
             f'file_writer_config["save_as_gif"] = {save_as_gif}',
             f'file_writer_config["output_file"] = "{output_file}"',
         ]
+        file_writer_config_code.append(
+            'file_writer_config["write_to_movie"] = '
+            + 'False' if save_last_frame else 'True'
+        )
 
         user_code = self.content
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
