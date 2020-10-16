@@ -110,7 +110,7 @@ in maths mode:
             tex = Tex(r'$f: A \rightarrow B$', tex_template=TexFontTemplates.french_cursive).scale(3)
             self.add(tex)
 
-Manim also has a `TexTemplateLibrary` containing the TeX templates used by 3Blue1Brown. One example 
+Manim also has a ``TexTemplateLibrary`` containing the TeX templates used by 3Blue1Brown. One example 
 is the ctex template, used for typesetting Chinese. For this to work, the ctex LaTeX package
 must be installed on your system. Furthermore, if you are only typesetting Text, you probably do not
 need `Tex()` at all, and should use `Text()` or `PangoText()` instead. 
