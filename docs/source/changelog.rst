@@ -109,27 +109,3 @@ Other Changes
 #. Global dir variable handling has been removed. Instead :code:`initialize_directories`, if needed, overrides the values from the cfg files at runtime.
 
 
-
-If you were using the manim3b1b before, here is a script to replace the import statements for manimce and translate "TexMobject" to "MathTex" for you.
-.. python :
-    from pathlib import Path
-
-    example_dict = Path.cwd() 
-    all_py_files = example_dict.rglob('*.py')
-
-    text_to_search = "from manimlib.imports import *"
-    replacement_text = "from manim import *"
-
-    for py_file in all_py_files:
-        text = py_file.read_text()
-        text = text.replace(text_to_search, replacement_text)
-        py_file.write_text(text)
-        print(py_file)
-
-    text_to_search = "TexMobject"
-    replacement_text = "MathTex"
-
-    for py_file in all_py_files:
-        text = py_file.read_text()
-        text = text.replace(text_to_search, replacement_text)
-        py_file.write_text(text)
