@@ -169,10 +169,13 @@ class ManimDirective(Directive):
         output_file = f"{clsname}-{classnamedict[clsname]}"
 
         # Important: note that all scenes are being rendered on the same python
-        # interpreter.  That means that each time we change the config, the
+        # interpreter.  That means that each time we change the config, that
         # same config will be used for the next scene.  For this reason, we
-        # have to make sure to set all relevant config options before each time
-        # we render any example scene.
+        # have to make sure to restore the original config after each scene.
+        save_config_code = [
+            'original_config = copy.deepcopy(config)',
+            'original_fw_config = copy.deepcopy(file_writer_config)',
+        ]
         file_writer_config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
@@ -187,9 +190,13 @@ class ManimDirective(Directive):
             f'file_writer_config["output_file"] = "{output_file}"',
         ]
         file_writer_config_code.append(
-            'file_writer_config["write_to_movie"] = '
-            + 'False' if save_last_frame else 'True'
+            'file_writer_config["write_to_movie"] = ' +
+            ('False' if save_last_frame else 'True')
         )
+        restore_config_code = [
+            'config = original_config',
+            'file_writer_config = original_fw_config',
+        ]
 
         user_code = self.content
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
@@ -199,9 +206,12 @@ class ManimDirective(Directive):
 
         code = [
             "from manim import *",
+            f"logger.info('rendering {clsname}')",
+            *save_config_code,
             *file_writer_config_code,
             *user_code,
             f"{clsname}().render()",
+            *restore_config_code,
         ]
         exec("\n".join(code), globals())
 
