@@ -14,6 +14,7 @@ from manim import *
 # for a 1920x1080 video)
 
 from manim import *
+
 # To watch one of these scenes, run the following:
 # python --quality m manim example_scenes.py SquareToCircle -p
 #
