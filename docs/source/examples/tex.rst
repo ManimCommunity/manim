@@ -54,7 +54,7 @@ We can use any standard LaTeX commands in the AMS maths packages. For example th
             self.add(tex)
 
 On the manim side, the :class:`~.Tex` class also accepts attributes to change the appearance of the output. 
-This is very similarly to the Text class. For example, the `color` keyword changes the color of the TeX mobject:
+This is very similar to the :class:`~.Text` class. For example, the ``color`` keyword changes the color of the TeX mobject:
 
 .. manim:: Example2bLaTeX
     :save_last_frame:
