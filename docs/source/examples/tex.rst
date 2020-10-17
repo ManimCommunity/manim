@@ -99,7 +99,7 @@ LaTeX Maths Fonts - The Template Library
 ++++++++++++++++++++++++++++++++++++++++++++
 Changing fonts in LaTeX when typesetting mathematical formulae is a little bit more tricky than 
 with regular text. It requires changing the template that is used to compile the tex code.
-Manim comes with a collection of `TexFontTemplates` ready for you to use. These templates will all work
+Manim comes with a collection of :class:`~.TexFontTemplates` ready for you to use. These templates will all work
 in maths mode:
 
 .. manim:: Example5LaTeX
