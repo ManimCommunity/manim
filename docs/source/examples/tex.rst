@@ -126,7 +126,7 @@ need :class:`~.Tex` at all, and should use :class:`~.Text` or :class:`~.PangoTex
 
 Aligning formulae
 ++++++++++++++++++
-A `MathTex()` mobject is typeset in the LaTeX  "align" environment. This means you can use the `"&"` alignement
+A :class:`~.MathTex` mobject is typeset in the LaTeX  ``align*`` environment. This means you can use the ``&`` alignment
 character when typesetting multiline formulae:
 
 .. manim:: Example7LaTeX
