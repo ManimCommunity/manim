@@ -797,9 +797,6 @@ class Scene(Container):
                 if stop_condition is not None and stop_condition():
                     time_progression.close()
                     break
-        elif self.skip_animations:
-            # Do nothing
-            return self
         else:
             self.renderer.update_frame(self)
             dt = 1 / self.renderer.camera.frame_rate
