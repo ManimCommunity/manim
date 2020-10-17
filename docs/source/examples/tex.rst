@@ -30,7 +30,7 @@ Anything enclosed in ``$`` signs is interpreted as maths-mode:
             tex = Tex(r'$\xrightarrow{Hello}$ \LaTeX').scale(3)
             self.add(tex)
 
-Whereas in a ``MathTex()`` mobject everything is math-mode by default and you would use ``\\text{}`` to
+Whereas in a :class:`~.MathTex` mobject everything is math-mode by default and you would use ``\text{}`` to
 insert regular text:
 
 .. manim:: Example1bLaTeX
