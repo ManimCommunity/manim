@@ -628,7 +628,8 @@ class Scene(Container):
         ProgressDisplay
             The CommandLine Progress Bar.
         """
-        time_progression = self.get_time_progression(self.run_time)
+        run_time = self.get_run_time(animations)
+        time_progression = self.get_time_progression(run_time)
         time_progression.set_description(
             "".join(
                 [
@@ -781,17 +782,18 @@ class Scene(Container):
 
     def wait_internal(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         self.update_mobjects(dt=0)  # Any problems with this?
-        self.animations = []
         self.duration = duration
         self.stop_condition = stop_condition
-        self.last_t = 0
+        last_t = 0
 
         if self.should_update_mobjects():
             time_progression = self.get_wait_time_progression(duration, stop_condition)
             # TODO, be smart about setting a static image
             # the same way Scene.play does
             for t in time_progression:
-                self.update_animation_to_time(t)
+                dt = t - last_t
+                last_t = t
+                self.update_mobjects(dt)
                 self.renderer.update_frame(self)
                 self.renderer.add_frame(self.renderer.get_frame())
                 if stop_condition is not None and stop_condition():
