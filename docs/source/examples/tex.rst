@@ -3,7 +3,7 @@ LaTeX
 
 The Tex() mobject
 +++++++++++++++++++
-Just as you can use ``Text()`` to add text to your videos, you can use ``Tex()`` to insert LaTeX.
+Just as you can use :class:`~.Text` to add text to your videos, you can use :class:`~.Tex` to insert LaTeX.
 
 .. manim:: ExampleLaTeX
     :save_last_frame:
