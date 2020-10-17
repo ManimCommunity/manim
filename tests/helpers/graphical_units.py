@@ -47,6 +47,11 @@ def set_test_scene(scene_object, module_name):
         tests_directory, "control_data", "graphical_units_data"
     )
     print(path_control_data)
+    image_without_alpha = data[:, :, :3]
+    if (
+        sum(sum(sum(image_without_alpha)))
+    ) == 0:  # adds all color channels in 2 dimensions, and checks if the image is empty.
+        raise Warning("The image is empty, something went wrong")
     path = os.path.join(path_control_data, module_name)
     if not os.path.isdir(path):
         os.makedirs(path)
