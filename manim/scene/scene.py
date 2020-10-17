@@ -733,6 +733,7 @@ class Scene(Container):
         if len(args) == 0:
             warnings.warn("Called Scene.play with no animations")
             return
+
         animations = self.compile_play_args_to_animation_list(*args, **kwargs)
         for animation in animations:
             animation.begin()
@@ -742,10 +743,25 @@ class Scene(Container):
         self.moving_mobjects = self.get_moving_mobjects(*self.animations)
         self.renderer.update_frame(self, excluded_mobjects=self.moving_mobjects)
         self.static_image = self.renderer.get_frame()
+<<<<<<< HEAD
         self.last_t = 0
         self.run_time = self.get_run_time(self.animations)
 
         self.progress_through_animations()
+=======
+
+        last_t = 0
+        for t in self.get_animation_time_progression(animations):
+            dt = t - last_t
+            last_t = t
+            for animation in animations:
+                animation.update_mobjects(dt)
+                alpha = t / animation.run_time
+                animation.interpolate(alpha)
+            self.update_mobjects(dt)
+            self.renderer.update_frame(self, self.moving_mobjects, self.static_image)
+            self.renderer.add_frame(self.renderer.get_frame())
+>>>>>>> 19dde3c6... Remove Scene.clean_up_animations(), which was unused
 
         for animation in animations:
             animation.finish()
@@ -778,27 +794,6 @@ class Scene(Container):
             self.renderer.add_frame(
                 self.renderer.get_frame(), num_frames=int(duration / dt)
             )
-        return self
-
-    def clean_up_animations(self, *animations):
-        """
-        This method cleans up and removes from the
-        scene all the animations that were passed
-
-        Parameters
-        ----------
-        *animations : Animation
-            Animation to clean up.
-
-        Returns
-        -------
-        Scene
-            The scene with the animations
-            cleaned up.
-
-        """
-        for animation in animations:
-            animation.clean_up_from_scene(self)
         return self
 
     def get_wait_time_progression(self, duration, stop_condition):
