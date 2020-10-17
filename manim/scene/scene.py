@@ -720,17 +720,6 @@ class Scene(Container):
 
         return animations
 
-    def finish_animations(self, animations):
-        """
-        This function cleans up after the end
-        of each animation in the passed list.
-
-        Parameters
-        ----------
-        animations : list
-            list of animations to finish.
-        """
-
     def play(self, *args, **kwargs):
         self.renderer.play(self, *args, **kwargs)
 
