@@ -129,3 +129,5 @@ class UpdatersExample(Scene):
             run_time=5,
         )
         self.wait()
+        
+# See many more examples at https://manimce.readthedocs.io/en/latest/examples.html
