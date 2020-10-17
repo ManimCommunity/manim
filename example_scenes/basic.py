@@ -46,6 +46,7 @@ class WarpSquare(Scene):
         )
         self.wait()
 
+
 class WriteStuff(Scene):
     def construct(self):
         example_text = Tex("This is a some text", tex_to_color_map={"text": YELLOW})
@@ -81,5 +82,6 @@ class UpdatersExample(Scene):
             run_time=5,
         )
         self.wait()
+
 
 # See many more examples at https://manimce.readthedocs.io/en/latest/examples.html
