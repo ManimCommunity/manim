@@ -20,7 +20,7 @@ been to write `\\\\` as in Tex('\\\\LaTeX').
 
 The MathTex() mobject
 ++++++++++++++++++++++
-Anything enclosed in `\$` signs is interpreted as maths-mode:
+Anything enclosed in ``$`` signs is interpreted as maths-mode:
 
 .. manim:: Example1LaTeX
     :save_last_frame:
