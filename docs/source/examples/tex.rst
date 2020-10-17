@@ -113,7 +113,7 @@ in maths mode:
 Manim also has a :class:`~.TexTemplateLibrary` containing the TeX templates used by 3Blue1Brown. One example 
 is the ctex template, used for typesetting Chinese. For this to work, the ctex LaTeX package
 must be installed on your system. Furthermore, if you are only typesetting Text, you probably do not
-need `Tex()` at all, and should use `Text()` or `PangoText()` instead. 
+need :class:`~.Tex` at all, and should use :class:`~.Text` or :class:`~.PangoText` instead. 
 
 .. manim:: Example6LaTeX
     :save_last_frame:
