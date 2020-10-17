@@ -21,7 +21,7 @@ from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
-from ..utils.iterables import list_update
+from ..utils.iterables import list_update, list_difference_update
 from ..utils.hashing import get_hash_from_play_call, get_hash_from_wait_call
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
