@@ -84,7 +84,7 @@ Substrings and parts
 +++++++++++++++++++++
 The TeX mobject can accept multiple strings as arguments. Afterwards you can refer to the individual
 parts either by their index (like `tex[1]`), or you can look them up by (parts of) the tex code like
-in this example where we set the color of the `\\bigstar` using `set_color_by_tex()`:
+in this example where we set the color of the ``\bigstar`` using :func:`~.set_color_by_tex`:
 
 .. manim:: Example4LaTeX
     :save_last_frame:
