@@ -54,7 +54,7 @@ As soon as you have found the library, try (on Mac OS or Linux)
 
 or (on Windows)  
 
-.. code-block:: bash
+.. code-block:: cmd
 
   set LIBS=<path to your library including the file name>
   dvisvgm -l
