@@ -14,6 +14,8 @@ uses. Which can be done by running:
   fmtutil -sys --all
 
 
+.. _dvisvgm-troubleshoot:
+  
 Installation does not support converting PDF to SVG?
 ----------------------------------------------------
 
@@ -70,4 +72,6 @@ As a last check, you can run
 
 while still having ``LIBGS`` set to the correct path, of course. If ``dvisvgm`` can find your Ghostscript installation, it will be shown in the output together with the version number.
   
-If you do not have the necessary library on your system, please refer to your operating system's documentation in order to find out where you can get it and how you have to install it. 
+If you do not have the necessary library on your system, please refer to your operating system's documentation in order to find out where you can get it and how you have to install it.
+
+If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvisvgm.de/FAQ/>`_.
