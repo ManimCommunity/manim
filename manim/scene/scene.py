@@ -531,19 +531,19 @@ class Scene(Container):
         return []
 
     def get_moving_and_static_mobjects(self, animations):
-        moving_mobjects = self.get_moving_mobjects(*animations)
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
             all_mobjects,
             use_z_index=self.renderer.camera.use_z_index,
             only_those_with_points=True,
         )
+        moving_mobjects = self.get_moving_mobjects(*animations)
         all_moving_mobject_families = extract_mobject_family_members(
             moving_mobjects,
             use_z_index=self.renderer.camera.use_z_index,
         )
-        static_mobjects = list_difference_update(
-            all_mobject_families, all_moving_mobject_families
+        static_mobjects = filter(
+            lambda m: m not in all_moving_mobject_families, all_mobject_families
         )
         return all_moving_mobject_families, static_mobjects
 
