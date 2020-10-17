@@ -21,7 +21,7 @@ from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
-from ..utils.iterables import list_update
+from ..utils.iterables import list_update, list_difference_update
 from ..utils.hashing import get_hash_from_play_call, get_hash_from_wait_call
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
@@ -530,6 +530,23 @@ class Scene(Container):
                 return mobjects[i:]
         return []
 
+    def get_moving_and_stationary_mobjects(self, animations):
+        moving_mobjects = self.get_moving_mobjects(*animations)
+        all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
+        all_mobject_families = extract_mobject_family_members(
+            all_mobjects,
+            use_z_index=self.renderer.camera.use_z_index,
+            only_those_with_points=True,
+        )
+        all_moving_mobject_families = extract_mobject_family_members(
+            moving_mobjects,
+            use_z_index=self.renderer.camera.use_z_index,
+        )
+        stationary_mobjects = list_difference_update(
+            all_mobject_families, all_moving_mobject_families
+        )
+        return all_moving_mobject_families, stationary_mobjects
+
     def get_time_progression(
         self, run_time, n_iterations=None, override_skip_animations=False
     ):
@@ -740,15 +757,11 @@ class Scene(Container):
 
         # Paint all non-moving objects onto the screen, so they don't
         # have to be rendered every frame
-        self.moving_mobjects = self.get_moving_mobjects(*self.animations)
-        self.renderer.update_frame(self, excluded_mobjects=self.moving_mobjects)
+        moving_mobjects, stationary_mobjects = self.get_moving_and_stationary_mobjects(
+            animations
+        )
+        self.renderer.update_frame(self, mobjects=stationary_mobjects)
         self.static_image = self.renderer.get_frame()
-<<<<<<< HEAD
-        self.last_t = 0
-        self.run_time = self.get_run_time(self.animations)
-
-        self.progress_through_animations()
-=======
 
         last_t = 0
         for t in self.get_animation_time_progression(animations):
@@ -759,9 +772,8 @@ class Scene(Container):
                 alpha = t / animation.run_time
                 animation.interpolate(alpha)
             self.update_mobjects(dt)
-            self.renderer.update_frame(self, self.moving_mobjects, self.static_image)
+            self.renderer.update_frame(self, moving_mobjects, self.static_image)
             self.renderer.add_frame(self.renderer.get_frame())
->>>>>>> 19dde3c6... Remove Scene.clean_up_animations(), which was unused
 
         for animation in animations:
             animation.finish()
