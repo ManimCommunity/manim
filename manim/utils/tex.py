@@ -191,7 +191,7 @@ class TexTemplate:
         if environment[0:6] == r"\begin":
             environment = environment[6:]
 
-        # If environment begins with { strip it from environment and add it to begin and end
+        # If environment begins with { strip it
         if environment[0] == r"{":
             environment = environment[1:]
 
