@@ -131,6 +131,7 @@ class TexTemplate:
 
     def add_to_preamble(self, txt, prepend=False):
         """Adds stuff to the TeX template's preamble (e.g. definitions, packages). Text can be inserted at the beginning or at the end of the preamble.
+
         Parameters
         ----------
         txt : :class:`string`
@@ -171,8 +172,8 @@ class TexTemplate:
         return self.body.replace(self.placeholder_text, expression)
 
     def _texcode_for_environment(self, environment):
-        """Processes the tex_environment string to return the correct ``\begin{environment}[extra]{extra}`` and
-        ``\end{environment}`` strings
+        """Processes the tex_environment string to return the correct ``\\begin{environment}[extra]{extra}`` and
+        ``\\end{environment}`` strings
 
         Parameters
         ----------
@@ -184,7 +185,7 @@ class TexTemplate:
         -------
         :class:`str` :class:`str`
             A pair of strings representing the opening and closing of the tex environment, e.g.
-            ``\begin{tabular}{cccl}`` and ``\end{tabular}``
+            ``\\begin{tabular}{cccl}`` and ``\\end{tabular}``
         """
 
         # If the environment starts with \begin, remove it
