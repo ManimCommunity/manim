@@ -14,7 +14,7 @@ from tqdm import tqdm as ProgressDisplay
 import numpy as np
 
 from .. import camera_config, file_writer_config, logger
-from ..animation.animation import Animation
+from ..animation.animation import Animation, Wait
 from ..animation.transform import MoveToTarget, ApplyMethod
 from ..camera.camera import Camera
 from ..constants import *
@@ -255,7 +255,7 @@ class Scene(Container):
             # Anything animated that's not already in the
             # scene gets added to the scene
             mob = animation.mobject
-            if mob not in curr_mobjects:
+            if mob is not None and mob not in curr_mobjects:
                 self.add(mob)
                 curr_mobjects += mob.get_family()
 
@@ -724,7 +724,7 @@ class Scene(Container):
         self.renderer.play(self, *args, **kwargs)
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-        self.renderer.wait(self, duration=duration, stop_condition=stop_condition)
+        self.play(Wait(duration=duration, stop_condition=stop_condition))
 
     def play_internal(self, *args, **kwargs):
         """
@@ -743,6 +743,10 @@ class Scene(Container):
             return
 
         animations = self.compile_play_args_to_animation_list(*args, **kwargs)
+
+        if len(animations) == 1 and isinstance(animations[0], Wait):
+            return self.wait_internal()
+
         for animation in animations:
             animation.begin()
 
