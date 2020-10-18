@@ -68,6 +68,7 @@ Mobjects, Scenes, and Animations
 #. :code:`Scene` now renders when :code:`Scene.render()` is called rather than upon instantiation.
 #. :code:`ValueTracker` now supports increment using the `+=` operator (in addition to the already existing `increment_value` method)
 #. Add :class:`PangoText` for rendering texts using Pango.
+#. The ``alignment`` attribute to Tex and MathTex has been removed in favour of ``tex_environment``.
 
 
 Documentation
