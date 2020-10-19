@@ -552,7 +552,7 @@ socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
 [[package]]
 name = "rich"
-version = "9.0.0"
+version = "6.2.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
@@ -782,7 +782,7 @@ testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "874ffc574ba3f86de98baba35d310481d057da58f3bb78e5b4317e3aa05a1565"
+content-hash = "b0cb1de3aec59c3c45c9d59efcd249f9c003e455e3bb13eb8eed47f673bce0cb"
 
 [metadata.files]
 alabaster = [
@@ -1241,8 +1241,8 @@ requests = [
     {file = "requests-2.24.0.tar.gz", hash = "sha256:b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b"},
 ]
 rich = [
-    {file = "rich-9.0.0-py3-none-any.whl", hash = "sha256:c51c9f10250bb5d2db3ca7f89db2c581807dea37a1a5428b03af1bc043f29df0"},
-    {file = "rich-9.0.0.tar.gz", hash = "sha256:7d3b7293ca0eb521b971370ff0d817fedca86ce945a361d0f0d70bc0182eb075"},
+    {file = "rich-6.2.0-py3-none-any.whl", hash = "sha256:fa55d5d6ba9a0df1f1c95518891b57b13f1d45548a9a198a87b093fceee513ec"},
+    {file = "rich-6.2.0.tar.gz", hash = "sha256:f99c877277906e1ff83b135c564920590ba31188f424dcdb5d1cae652a519b4b"},
 ]
 scipy = [
     {file = "scipy-1.5.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:f574558f1b774864516f3c3fe072ebc90a29186f49b720f60ed339294b7f32ac"},
