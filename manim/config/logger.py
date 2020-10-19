@@ -109,8 +109,8 @@ def set_file_logger(log_file_path):
     file_handler.setFormatter(JSONFormatter())
     global logger
     logger.addHandler(file_handler)
-#from .config import file_writer_config
-#file_writer_config["verbose"]
+
+
 logger = logging.getLogger("manim")
 # The console is set to None as it will be changed by set_rich_logger.
 console = None
