@@ -173,17 +173,17 @@ class Wait(Animation):
         self.mobject = None
         self.stop_condition = stop_condition
 
-    # def begin(self):
-    #     pass
+    def begin(self):
+        pass
 
-    # def finish(self):
-    #     pass
+    def finish(self):
+        pass
 
-    # def clean_up_from_scene(self, scene):
-    #     pass
+    def clean_up_from_scene(self, scene):
+        pass
 
-    # def update_mobjects(self, dt):
-    #     pass
+    def update_mobjects(self, dt):
+        pass
 
-    # def interpolate(self, alpha):
-    #     pass
+    def interpolate(self, alpha):
+        pass
