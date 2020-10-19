@@ -1,5 +1,33 @@
+Text and LaTeX
+===============
+
+
+Text
+--------------
+The simplest way to add text to you animation is to use the :class:`~.Text` class. It uses the Cairo library to render text.
+A newer addition to manim is the :class:`~.PangoText` class, which uses the Pango library.
+
+The Text() mobject
++++++++++++++++++++
+
+.. manim:: Example1Text
+    :save_last_frame:
+
+    class Example1Text(Scene):
+        def construct(self):
+            text = Text('Hello world').scale(3)
+            self.add(text)
+
+For more examples, see: :class:`~.Text`.
+
+The PangoText() mobject
++++++++++++++++++++++++
+
+The :class:`~.PangoText` mobject uses the Pango library to render text. Use this whenever you want to use non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
+
+
 LaTeX
-=================================
+-------------------
 
 The Tex() mobject
 +++++++++++++++++++
