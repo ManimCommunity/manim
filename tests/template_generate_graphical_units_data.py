@@ -6,6 +6,7 @@ from tests.helpers.graphical_units import set_test_scene
 # still available for others :)
 # More about graphical unit tests: https://github.com/ManimCommunity/manim/wiki/Testing#graphical-unit-test
 
+
 class YourClassHere(Scene):
     def construct(self):
         circle = Circle()
@@ -15,5 +16,3 @@ class YourClassHere(Scene):
 set_test_scene(
     YourClassHere, "<module_name>"
 )  # <module_name> can be e.g.  "geometry" or "movements"
-
-
