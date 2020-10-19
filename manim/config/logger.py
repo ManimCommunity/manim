@@ -15,7 +15,7 @@ import logging
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.theme import Theme
-import rich
+from rich.traceback import install
 from rich import print as printf
 from rich import errors, color
 import json
@@ -114,7 +114,7 @@ def set_file_logger(log_file_path):
 logger = logging.getLogger("manim")
 # The console is set to None as it will be changed by set_rich_logger.
 console = None
-rich.traceback.install()
+install()
 # TODO : This is only temporary to keep the terminal output clean when working with ImageMobject and matplotlib plots
 logging.getLogger("PIL").setLevel(logging.INFO)
 logging.getLogger("matplotlib").setLevel(logging.INFO)
