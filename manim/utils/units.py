@@ -1,4 +1,5 @@
 import copy
+import operator
 from functools import wraps
 
 import numpy as np
@@ -48,6 +49,47 @@ class Unit:
             return return_value
         else:
             raise ValueError("Unable to determine dimension.")
+
+    def apply_operator(self, other, op):
+        if issubclass(type(other), Unit):
+            if isinstance(other, type(self)):
+                # Create and return a new instance
+                return type(self)(op(self.value, other.value))
+            else:
+                # For now lets not bother with operators on different units
+                raise NotImplementedError
+        # Create and return a new instance
+        return type(self)(op(self.value, other))
+
+    def __add__(self, other):
+        return self.apply_operator(other, operator.add)
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __floordiv__(self, other):
+        return self.apply_operator(other, operator.floordiv)
+
+    def __rfloordiv__(self, other):
+        return self.__floordiv__(other)
+
+    def __mul__(self, other):
+        return self.apply_operator(other, operator.mul)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __sub__(self, other):
+        return self.apply_operator(other, operator.sub)
+
+    def __rsub__(self, other):
+        return self.__sub__(other)
+
+    def __truediv__(self, other):
+        return self.apply_operator(other, operator.truediv)
+
+    def __rtruediv__(self, other):
+        return self.__truediv__(other)
 
 
 class MUnit(Unit):
