@@ -109,7 +109,7 @@ class GraphScene(Scene):
         )
 
         x_axis = NumberLine(**self.x_axis_config)
-        x_axis.shift(self.graph_origin - x_axis.number_to_point(0))
+        x_axis.shift(self.graph_origin - x_axis.number_to_point(self.x_min))
         if len(self.x_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.x_labeled_nums = [x for x in self.x_labeled_nums if x != 0]
@@ -151,8 +151,8 @@ class GraphScene(Scene):
         )
 
         y_axis = NumberLine(**self.y_axis_config)
-        y_axis.shift(self.graph_origin - y_axis.number_to_point(0))
-        y_axis.rotate(np.pi / 2, about_point=y_axis.number_to_point(0))
+        y_axis.shift(self.graph_origin - y_axis.number_to_point(self.y_min))
+        y_axis.rotate(np.pi / 2, about_point=y_axis.number_to_point(self.y_min))
         if len(self.y_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.y_labeled_nums = [y for y in self.y_labeled_nums if y != 0]
