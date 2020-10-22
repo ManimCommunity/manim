@@ -427,10 +427,10 @@ class LabeledDot(Mobject):
             def construct(self):
                 sq = Square(fill_color=RED, fill_opacity=1)
                 self.add(sq)
-                dot1 = LabeledDot(42)
-                dot2 = LabeledDot("a")
-                dot3 = LabeledDot("ii")
-                dot4 = LabeledDot("3")
+                dot1 = LabeledDot(42,var_type= Tex)
+                dot2 = LabeledDot("a", var_type= MathTex)
+                dot3 = LabeledDot("ii",var_type= MathTex)
+                dot4 = LabeledDot("3",var_type= MathTex)
                 dot1.next_to(sq, UL)
                 dot2.next_to(sq, UR)
                 dot3.next_to(sq, DL)
@@ -439,11 +439,17 @@ class LabeledDot(Mobject):
                 self.wait(1)
     """
 
-    def __init__(self, label_string, **kwargs):
+    def __init__(self, label_string, var_type, **kwargs):
         Mobject.__init__(self, **kwargs)
         from manim import MathTex
+        from manim import Tex
 
-        labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
+        if var_type == MathTex:
+            labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
+
+        if var_type == Tex:
+            labled_dot = Tex(r"{\large \textcircled{\small %s}} " % label_string)
+
         self.add(labled_dot)
 
 
