@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/ManimCommunity/manim/master/logo/banner.png" />
+    <img src="https://raw.githubusercontent.com/ManimCommunity/manim/master/logo/cropped.png" />
     <br />
     <br />
     <img src="https://img.shields.io/badge/license-MIT-red.svg?style=flat" alt="MIT License" src="http://choosealicense.com/licenses/mit/" />
