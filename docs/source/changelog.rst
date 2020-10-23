@@ -4,6 +4,7 @@ Changelog
 
 
 manimce-v0.2.0-dev
+==================
 
 :Date: TBD
 
