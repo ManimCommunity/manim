@@ -4,7 +4,6 @@ Changelog
 
 
 manimce-v0.2.0-dev
-==================
 
 :Date: TBD
 
@@ -27,7 +26,7 @@ Mobjects, Scenes, and Animations
 manimce-v0.1.0-dev
 ==================
 
-:Date: 22 October 2020
+:Date: October 21, 2020
 
 This is the first release of manimce after forking from 3b1b/manim.  As such,
 developers have focused on cleaning up and refactoring the codebase while still
