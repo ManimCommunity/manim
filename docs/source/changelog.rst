@@ -3,7 +3,7 @@ Changelog
 *********
 
 
-manimce-v0.2.0-dev
+v0.2.0
 ==================
 
 :Date: TBD
@@ -24,7 +24,7 @@ Mobjects, Scenes, and Animations
 
 
 
-manimce-v0.1.0-dev
+v0.1.0
 ==================
 
 :Date: October 21, 2020
