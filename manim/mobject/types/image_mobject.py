@@ -22,7 +22,6 @@ class AbstractImageMobject(Mobject):
     """
 
     CONFIG = {
-        "height": 2.0,
         "pixel_array_dtype": "uint8",
     }
 
@@ -40,10 +39,13 @@ class AbstractImageMobject(Mobject):
                 UP + LEFT,
                 UP + RIGHT,
                 DOWN + LEFT,
-            ]
+                ]
         )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
+        resolution_of_final_video = 1080
+        self.height = h  / resolution_of_final_video * 8.0
+
         self.stretch_to_fit_height(self.height)
         self.stretch_to_fit_width(self.height * w / h)
 
@@ -54,7 +56,7 @@ class ImageMobject(AbstractImageMobject):
         "image_mode": "RGBA",
     }
 
-    def __init__(self, filename_or_array, **kwargs):
+    def __init__(self, filename_or_array, resolution_of_final_video=1080 , **kwargs):
         digest_config(self, kwargs)
         if isinstance(filename_or_array, str):
             path = get_full_raster_image_path(filename_or_array)
