@@ -183,7 +183,7 @@ class TexTemplate:
 
         Returns
         -------
-        :class:`str` :class:`str`
+        Tuple[:class:`str`, :class:`str`]
             A pair of strings representing the opening and closing of the tex environment, e.g.
             ``\\begin{tabular}{cccl}`` and ``\\end{tabular}``
         """
