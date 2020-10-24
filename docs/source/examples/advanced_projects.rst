@@ -2,7 +2,7 @@ Advanced Projects
 =================================
 
 .. manim:: OpeningManimExample
-    :seealso_classes: Tex MathTex NumberPlane
+    :ref_classes: Tex MathTex NumberPlane
 
     class OpeningManimExample(Scene):
         def construct(self):
