@@ -439,16 +439,11 @@ class LabeledDot(Mobject):
                 self.wait(1)
     """
 
-    def __init__(self, label_string, var_type, **kwargs):
+    def __init__(self, label_string, **kwargs):
         Mobject.__init__(self, **kwargs)
         from manim import MathTex
-        from manim import Tex
 
-        if var_type == MathTex:
-            labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
-
-        if var_type == Tex:
-            labled_dot = Tex(r"{\large \textcircled{\small %s}} " % label_string)
+        labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
 
         self.add(labled_dot)
 
