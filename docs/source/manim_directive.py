@@ -68,7 +68,6 @@ directive:
 
 """
 from docutils.parsers.rst import directives, Directive
-from docutils.parsers.rst.directives.images import Image
 
 import jinja2
 import os
