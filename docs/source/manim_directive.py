@@ -21,6 +21,7 @@ As a second application, the directive can also be used to
 render scenes that are defined within doctests, for example::
 
     .. manim:: DirectiveDoctestExample
+        :ref_classes: Dot
 
         >>> dot = Dot(color=RED)
         >>> dot.color
@@ -58,13 +59,13 @@ directive:
         an image representing the last frame of the scene will
         be rendered and displayed, instead of a video.
 
-    seealso_classes
+    ref_classes
         A list of classes, separated by spaces, that is
-        rendered in a SEEALSO block after the source code.
+        rendered in a reference block after the source code.
 
-    seealso_functions
+    ref_functions
         A list of functions and methods, separated by spaces,
-        that is rendered in a SEEALSO block after the source code.
+        that is rendered in a reference block after the source code.
 
 """
 from docutils.parsers.rst import directives, Directive
@@ -112,8 +113,8 @@ class ManimDirective(Directive):
         ),
         "save_as_gif": bool,
         "save_last_frame": bool,
-        "seealso_classes": lambda arg: process_name_list(arg, "class"),
-        "seealso_functions": lambda arg: process_name_list(arg, "func"),
+        "ref_classes": lambda arg: process_name_list(arg, "class"),
+        "ref_functions": lambda arg: process_name_list(arg, "func"),
     }
     final_argument_whitespace = True
 
@@ -132,13 +133,17 @@ class ManimDirective(Directive):
         save_as_gif = "save_as_gif" in self.options
         save_last_frame = "save_last_frame" in self.options
         assert not (save_as_gif and save_last_frame)
-        if "seealso_classes" in self.options or "seealso_functions" in self.options:
-            seealso_classes = self.options.get("seealso_classes", [])
-            seealso_functions = self.options.get("seealso_functions", [])
-            seealso_content = seealso_classes + seealso_functions
-            seealso_block = f".. seealso::\n\n    {' '.join(seealso_content)}"
+        if "ref_classes" in self.options or "ref_functions" in self.options:
+            ref_classes = self.options.get("ref_classes", [])
+            ref_functions = self.options.get("ref_functions", [])
+            ref_content = ref_classes + ref_functions
+            ref_block = f"""
+.. admonition:: Example References
+    :class: example-reference
+
+    {' '.join(ref_content)}"""
         else:
-            seealso_block = ""
+            ref_block = ""
 
         frame_rate = 30
         pixel_height = 480
@@ -252,7 +257,7 @@ class ManimDirective(Directive):
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
             source_block=source_block,
-            seealso_block=seealso_block,
+            ref_block=ref_block,
         )
         state_machine.insert_input(
             rendered_template.split("\n"), source=document.attributes["source"]
@@ -280,7 +285,7 @@ TEMPLATE = r"""
     <div class="manim-example">
 
 {{ source_block }}
-{{ seealso_block }}
+{{ ref_block }}
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
