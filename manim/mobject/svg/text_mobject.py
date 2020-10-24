@@ -622,6 +622,10 @@ class Text(SVGMobject):
     }
 
     def __init__(self, text: str, **config):  # pylint: disable=redefined-outer-name
+        logger.info(
+            "Text now uses Pango for rendering. "
+            "In case of problems, the old implementation is available as CairoText."
+        )
         self.full2short(config)
         digest_config(self, config)
         self.original_text = text
