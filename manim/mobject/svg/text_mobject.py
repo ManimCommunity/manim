@@ -533,10 +533,10 @@ class Paragraph(VGroup):
             )
 
 
-class PangoText(SVGMobject):
+class Text(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
-    PangoText objects behave like a :class:`.VGroup`-like iterable of all characters
+    Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
 
     Parameters
@@ -546,7 +546,7 @@ class PangoText(SVGMobject):
 
     Returns
     -------
-    :class:`PangoText`
+    :class:`Text`
         The mobject like :class:`.VGroup`.
 
     Examples
@@ -556,17 +556,17 @@ class PangoText(SVGMobject):
 
         class MultipleFonts(Scene):
             def construct(self):
-                morning = PangoText("வணக்கம்", font="sans-serif")
-                chin = PangoText(
+                morning = Text("வணக்கம்", font="sans-serif")
+                chin = Text(
                     "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
                 )  # works same as ``Text``.
-                mess = PangoText("Multi-Language", style=BOLD)
-                russ = PangoText("Здравствуйте मस नम म ", font="sans-serif")
-                hin = PangoText("नमस्ते", font="sans-serif")
-                arb = PangoText(
+                mess = Text("Multi-Language", style=BOLD)
+                russ = Text("Здравствуйте मस नम म ", font="sans-serif")
+                hin = Text("नमस्ते", font="sans-serif")
+                arb = Text(
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
-                japanese = PangoText("臂猿「黛比」帶著孩子", font="sans-serif")
+                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
                 self.add(morning,chin,mess,russ,hin,arb,japanese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
@@ -577,16 +577,16 @@ class PangoText(SVGMobject):
 
         class PangoRender(Scene):
             def construct(self):
-                morning = PangoText("வணக்கம்", font="sans-serif")
+                morning = Text("வணக்கம்", font="sans-serif")
                 self.play(Write(morning))
                 self.wait(2)
 
     Tests
     -----
 
-    Check that the creation of :class:`~.PangoText` works::
+    Check that the creation of :class:`~.Text` works::
 
-        >>> PangoText('The horse does not eat cucumber salad.')
+        >>> Text('The horse does not eat cucumber salad.')
         Text('The horse does not eat cucumber salad.')
 
     .. WARNING::
