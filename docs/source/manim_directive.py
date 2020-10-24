@@ -58,6 +58,14 @@ directive:
         an image representing the last frame of the scene will
         be rendered and displayed, instead of a video.
 
+    seealso_classes
+        A list of classes, separated by spaces, that is
+        rendered in a SEEALSO block after the source code.
+
+    seealso_functions
+        A list of functions and methods, separated by spaces,
+        that is rendered in a SEEALSO block after the source code.
+
 """
 from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.images import Image
@@ -65,10 +73,28 @@ from docutils.parsers.rst.directives.images import Image
 import jinja2
 import os
 from os.path import relpath
+from typing import List
 
 import shutil
 
 classnamedict = {}
+
+
+def process_name_list(option_input: str, reference_type: str) -> List[str]:
+    r"""Reformats a string of space separated class names
+    as a list of strings containing valid Sphinx references.
+
+    TESTS
+    -----
+
+    ::
+
+        >>> process_name_list("Tex TexTemplate", "class")
+        [":class:`~.Tex`", ":class:`~.TexTemplate`"]
+        >>> process_name_list("Scene.play Mobject.rotate", "func")
+        [":func:`~.Scene.play`", ":func:`~.Mobject.rotate`"]
+    """
+    return [f":{reference_type}:`~.{name}`" for name in option_input.split()]
 
 
 class ManimDirective(Directive):
@@ -87,6 +113,8 @@ class ManimDirective(Directive):
         ),
         "save_as_gif": bool,
         "save_last_frame": bool,
+        "seealso_classes": lambda arg: process_name_list(arg, "class"),
+        "seealso_functions": lambda arg: process_name_list(arg, "func"),
     }
     final_argument_whitespace = True
 
@@ -105,6 +133,13 @@ class ManimDirective(Directive):
         save_as_gif = "save_as_gif" in self.options
         save_last_frame = "save_last_frame" in self.options
         assert not (save_as_gif and save_last_frame)
+        if "seealso_classes" in self.options or "seealso_functions" in self.options:
+            seealso_classes = self.options.get("seealso_classes", [])
+            seealso_functions = self.options.get("seealso_functions", [])
+            seealso_content = seealso_classes + seealso_functions
+            seealso_block = f".. seealso::\n\n    {' '.join(seealso_content)}"
+        else:
+            seealso_block = ""
 
         frame_rate = 30
         pixel_height = 480
@@ -218,6 +253,7 @@ class ManimDirective(Directive):
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
             source_block=source_block,
+            seealso_block=seealso_block,
         )
         state_machine.insert_input(
             rendered_template.split("\n"), source=document.attributes["source"]
@@ -245,6 +281,7 @@ TEMPLATE = r"""
     <div class="manim-example">
 
 {{ source_block }}
+{{ seealso_block }}
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
