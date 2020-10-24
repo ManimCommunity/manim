@@ -29,7 +29,6 @@ Mathematical Objects
    ~mobject.numbers
    ~mobject.probability
    ~mobject.shape_matchers
-   ~mobject.three_d_shading_utils
    ~mobject.three_d_utils
    ~mobject.three_dimensions
    ~mobject.value_tracker
@@ -132,11 +131,3 @@ Other modules
    _config
    constants
    container
-
-
-.. This is here so that sphinx doesn't complain about changelog.rst not being
-   included in any toctree
-.. toctree::
-   :hidden:
-
-   changelog
