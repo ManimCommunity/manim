@@ -1,6 +1,6 @@
 """Mobjects used for displaying (non-LaTeX) text."""
 
-__all__ = ["Text", "Paragraph", "PangoText", "CairoText"]
+__all__ = ["Text", "Paragraph", "CairoText"]
 
 
 import copy
