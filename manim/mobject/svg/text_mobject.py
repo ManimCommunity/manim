@@ -923,4 +923,3 @@ class Text(SVGMobject):
             offset_x += layout.get_extents()[0].x
         surface.finish()
         return file_name
-
