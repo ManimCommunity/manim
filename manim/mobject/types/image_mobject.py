@@ -43,8 +43,8 @@ class AbstractImageMobject(Mobject):
         )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
-        resolution_of_final_video = 1080
-        self.height = h / resolution_of_final_video * 8.0
+        scale_to_resolution = 1080
+        self.height = h / scale_to_resolution * 8.0
 
         self.stretch_to_fit_height(self.height)
         self.stretch_to_fit_width(self.height * w / h)
@@ -56,7 +56,7 @@ class ImageMobject(AbstractImageMobject):
         "image_mode": "RGBA",
     }
 
-    def __init__(self, filename_or_array, resolution_of_final_video=1080, **kwargs):
+    def __init__(self, filename_or_array, scale_to_resolution=1080, **kwargs):
         digest_config(self, kwargs)
         if isinstance(filename_or_array, str):
             path = get_full_raster_image_path(filename_or_array)
@@ -67,7 +67,7 @@ class ImageMobject(AbstractImageMobject):
         self.change_to_rgba_array()
         if self.invert:
             self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
-        AbstractImageMobject.__init__(self, **kwargs)
+        AbstractImageMobject.__init__(self,scale_to_resolution, **kwargs)
 
     def change_to_rgba_array(self):
         pa = self.pixel_array
