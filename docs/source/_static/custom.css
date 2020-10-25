@@ -78,6 +78,7 @@ div.highlight pre {
 .manim-video {
     width: 100%;
     padding: 8px 0;
+    outline: 0;
 }
 
 .manim-example {
