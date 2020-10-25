@@ -459,7 +459,9 @@ class LabeledDot(Dot):
             rendered_label = label
 
         if radius is None:
-            radius = 0.1 + max(rendered_label.get_width(), rendered_label.get_height()) / 2
+            radius = (
+                0.1 + max(rendered_label.get_width(), rendered_label.get_height()) / 2
+            )
         Dot.__init__(self, radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
         self.add(rendered_label)
