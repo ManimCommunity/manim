@@ -418,10 +418,10 @@ class LabeledDot(Dot):
 
     Parameters
     ----------
-    label : Union[:class:`str`, :class:`SingleStringMathTex`, :class:`Text`, :class:`Tex`]
-        The label of the :class:`Dot`. This is rendered as :class:`MathTex`
+    label : Union[:class:`str`, :class:`~.SingleStringMathTex`, :class:`~.Text`, :class:`~.Tex`]
+        The label of the :class:`Dot`. This is rendered as :class:`~.MathTex`
         by default (i.e., when passing a :class:`str`), but other classes
-        representing rendered strings like :class:`Text` or :class:`Tex`
+        representing rendered strings like :class:`~.Text` or :class:`~.Tex`
         can be passed as well.
 
     radius : :class:`float`
