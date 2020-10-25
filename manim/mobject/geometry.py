@@ -454,7 +454,7 @@ class LabeledDot(Dot):
         if isinstance(label, str):
             from manim import MathTex
 
-            rendered_label = MathTex(label)
+            rendered_label = MathTex(label, color=BLACK)
         else:
             rendered_label = label
 
