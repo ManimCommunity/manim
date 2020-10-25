@@ -29,6 +29,7 @@ class AbstractImageMobject(Mobject):
     def __init__(self, scale_to_resolution, **kwargs):
         digest_config(self, kwargs)
         self.scale_to_resolution = scale_to_resolution
+
         Mobject.__init__(self, **kwargs)
 
     def get_pixel_array(self):
@@ -49,8 +50,10 @@ class AbstractImageMobject(Mobject):
         )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
-        self.height = h / self.scale_to_resolution * config["frame_height"]
-
+        if self.scale_to_resolution != False:
+            self.height = h / self.scale_to_resolution * config["frame_height"]
+        else:
+            self.height = 3  ## this is the case for ImageMobjectFromCamera
         self.stretch_to_fit_height(self.height)
         self.stretch_to_fit_width(self.height * w / h)
 
@@ -137,7 +140,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(self, camera, **kwargs):
         self.camera = camera
         self.pixel_array = self.camera.pixel_array
-        AbstractImageMobject.__init__(self, **kwargs)
+        AbstractImageMobject.__init__(self, scale_to_resolution=False, **kwargs)
 
     # TODO: Get rid of this.
     def get_pixel_array(self):
