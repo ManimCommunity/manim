@@ -111,6 +111,14 @@ class ApplyMatrixTest(Scene):
         self.play(ApplyMatrix(matrice, square))
 
 
+class BecomeMethodWithTextTest(Scene):
+    def construct(self):
+        annotation = Text("Fade In", height=0.8)
+        annotation.become(Text("Fade Out", height=0.8))
+        self.add(annotation)
+        self.wait()
+
+
 class CyclicReplaceTest(Scene):
     def construct(self):
         square = Square()
