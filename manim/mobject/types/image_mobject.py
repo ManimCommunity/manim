@@ -7,6 +7,7 @@ import numpy as np
 
 from PIL import Image
 
+from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.shape_matchers import SurroundingRectangle
@@ -24,6 +25,11 @@ class AbstractImageMobject(Mobject):
     CONFIG = {
         "pixel_array_dtype": "uint8",
     }
+
+    def __init__(self, scale_to_resolution, **kwargs):
+        digest_config(self, kwargs)
+        self.scale_to_resolution = scale_to_resolution
+        Mobject.__init__(self, **kwargs)
 
     def get_pixel_array(self):
         raise NotImplementedError()
@@ -43,8 +49,7 @@ class AbstractImageMobject(Mobject):
         )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
-        scale_to_resolution = 1080
-        self.height = h / scale_to_resolution * 8.0
+        self.height = h / self.scale_to_resolution * config["frame_height"]
 
         self.stretch_to_fit_height(self.height)
         self.stretch_to_fit_width(self.height * w / h)
@@ -67,7 +72,7 @@ class ImageMobject(AbstractImageMobject):
         self.change_to_rgba_array()
         if self.invert:
             self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
-        AbstractImageMobject.__init__(self,scale_to_resolution, **kwargs)
+        AbstractImageMobject.__init__(self, scale_to_resolution, **kwargs)
 
     def change_to_rgba_array(self):
         pa = self.pixel_array
