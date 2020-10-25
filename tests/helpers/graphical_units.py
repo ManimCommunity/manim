@@ -3,6 +3,7 @@
 
 import os
 import tempfile
+from pathlib import Path
 import numpy as np
 
 from manim import config, file_writer_config, logger
@@ -35,9 +36,9 @@ def set_test_scene(scene_object, module_name):
     config["frame_rate"] = 15
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        os.makedirs(os.path.join(tmpdir, "tex"))
-        file_writer_config["text_dir"] = os.path.join(tmpdir, "text")
-        file_writer_config["tex_dir"] = os.path.join(tmpdir, "tex")
+        os.makedirs(Path(tmpdir) / "tex")
+        file_writer_config["text_dir"] = Path(tmpdir) / "text"
+        file_writer_config["tex_dir"] = Path(tmpdir) / "tex"
         scene = scene_object()
         scene.render()
         data = scene.renderer.get_frame()
@@ -47,11 +48,10 @@ def set_test_scene(scene_object, module_name):
     ), f"Control data generated for {str(scene)} only contains empty pixels."
     assert data.shape == (480, 854, 4)
     tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path_control_data = os.path.join(
-        tests_directory, "control_data", "graphical_units_data"
+    path_control_data = (
+        Path(tmpdir) / tests_directory / "control_data" / "graphical_units_data"
     )
-    path = os.path.join(path_control_data, module_name)
-    if not os.path.isdir(path):
-        os.makedirs(path)
-    np.save(os.path.join(path, str(scene)), data)
+    path = Path(path_control_data) / module_name
+    path.mkdir(exist_ok=True)
+    np.save(Path(path) / str(scene), data)
     logger.info(f"Test data for {str(scene)} saved in {path}\n")

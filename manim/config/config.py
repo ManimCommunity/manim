@@ -12,6 +12,7 @@ __all__ = ["file_writer_config", "config", "camera_config", "tempconfig"]
 import os
 import sys
 from contextlib import contextmanager
+from pathlib import Path
 
 import colour
 
@@ -182,9 +183,6 @@ if file_writer_config["log_to_file"]:
         if scene_name_suffix
         else f"{scene_file_name}.log"
     )
-    log_file_path = os.path.join(
-        file_writer_config["log_dir"],
-        log_file_name,
-    )
+    log_file_path = Path(file_writer_config["log_dir"]) / log_file_name
     set_file_logger(log_file_path)
     logger.info("Log file will be saved in %(logpath)s", {"logpath": log_file_path})
