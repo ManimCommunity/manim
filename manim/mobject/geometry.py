@@ -413,24 +413,35 @@ class AnnotationDot(Dot):
     }
 
 
-class LabeledDot(Mobject):
-    """
-    A Dot that has a label in its middle
+class LabeledDot(Dot):
+    """A :class:`Dot` containing a label in its center.
 
-    Example
+    Parameters
+    ----------
+    label : Union[:class:`str`, :class:`SingleStringMathTex`, :class:`Text`, :class:`Tex`]
+        The label of the :class:`Dot`. This is rendered as :class:`MathTex`
+        by default (i.e., when passing a :class:`str`), but other classes
+        representing rendered strings like :class:`Text` or :class:`Tex`
+        can be passed as well.
+
+    radius : :class:`float`
+        The radius of the :class:`Dot`. If ``None`` (the default), the radius
+        is calculated based on the size of the ``label``.
+
+    Examples
     --------
 
-    .. manim:: ExampleAnnotationDot
+    .. manim:: SeveralAnnotationDots
         :save_last_frame:
 
-        class ExampleAnnotationDot(Scene):
+        class SeveralAnnotationDots(Scene):
             def construct(self):
                 sq = Square(fill_color=RED, fill_opacity=1)
                 self.add(sq)
-                dot1 = LabeledDot(42,var_type= Tex)
-                dot2 = LabeledDot("a", var_type= MathTex)
-                dot3 = LabeledDot("ii",var_type= MathTex)
-                dot4 = LabeledDot("3",var_type= MathTex)
+                dot1 = LabeledDot(Tex("42"))
+                dot2 = LabeledDot(MathTex("a"))
+                dot3 = LabeledDot(Text("ii", color=RED))
+                dot4 = LabeledDot("3")
                 dot1.next_to(sq, UL)
                 dot2.next_to(sq, UR)
                 dot3.next_to(sq, DL)
@@ -439,13 +450,19 @@ class LabeledDot(Mobject):
                 self.wait(1)
     """
 
-    def __init__(self, label_string, **kwargs):
-        Mobject.__init__(self, **kwargs)
-        from manim import MathTex
+    def __init__(self, label, radius=None, **kwargs) -> None:
+        if isinstance(label, str):
+            from manim import MathTex
 
-        labled_dot = MathTex(r"{\large \textcircled{\small %s}} " % label_string)
+            rendered_label = MathTex(label)
+        else:
+            rendered_label = label
 
-        self.add(labled_dot)
+        if radius is None:
+            radius = 0.1 + max(rendered_label.get_width(), rendered_label.get_height()) / 2
+        Dot.__init__(self, radius=radius, **kwargs)
+        rendered_label.move_to(self.get_center())
+        self.add(rendered_label)
 
 
 class Ellipse(Circle):
