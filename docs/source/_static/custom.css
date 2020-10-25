@@ -3,11 +3,15 @@ td {
 }
 
 a {
-    color: #e07a5f;
+    color: #b0604b;
 }
 
 a:hover {
-    color: #efc0b3;
+    color: #ad9088;
+}
+
+p {
+    color: #353535;
 }
 
 .sidebar-toc ul li a:hover {
@@ -49,8 +53,8 @@ div.highlight pre {
     display: flex;
     align-items: center;
     background-image: none;
-    color: #e07a5f;
-    border-color: #e07a5f;
+    color: #b0604b;
+    border-color: #b0604b;
 }
 
 .footer-relations .pull-left a.btn.btn-default::before {
@@ -69,9 +73,9 @@ div.highlight pre {
 
 .footer-relations a.btn.btn-default:hover {
     background-image: none;
-    background-color: #e07a5f;
+    background-color: #b0604b;
     color: #fff;
-    border-color: #e07a5f;
+    border-color: #b0604b;
     transition: all 0.3s ease;
     text-shadow: none;
 }
