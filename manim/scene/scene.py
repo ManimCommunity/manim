@@ -627,25 +627,25 @@ class Scene(Container):
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
 
-        Returns a CommandLine ProgressBar whose fill_time
-        is dependent on the run_time of an animation,
+        Returns a CommandLine ProgressBar whose ``fill_time``
+        is dependent on the ``run_time`` of an animation,
         the iterations to perform in that animation
         and a bool saying whether or not to consider
         the skipped animations.
 
         Parameters
         ----------
-        run_time: float
-            The run_time of the animation.
+        run_time : float
+            The ``run_time`` of the animation.
 
-        n_iterations: int, optional
+        n_iterations : int, optional
             The number of iterations in the animation.
 
-        override_skip_animations: bool, optional
+        override_skip_animations : bool, optional
             Whether or not to show skipped animations in the progress bar.
 
         Returns
-        ------
+        -------
         ProgressDisplay
             The CommandLine Progress Bar.
         """
@@ -668,18 +668,18 @@ class Scene(Container):
         You will hardly use this when making your own animations.
         This method is for Manim's internal use.
 
-        Uses get_time_progression to obtaina
-        CommandLine ProgressBar whose fill_time is
+        Uses :func:`~.get_time_progression` to obtain a
+        CommandLine ProgressBar whose ``fill_time`` is
         dependent on the qualities of the passed Animation,
 
         Parameters
         ----------
-        animations : list of Animation
+        animations : List[:class:`~.Animation`, ...]
             The list of animations to get
             the time progression for.
 
         Returns
-        ------
+        -------
         ProgressDisplay
             The CommandLine Progress Bar.
         """
@@ -703,7 +703,7 @@ class Scene(Container):
 
         Parameters
         ----------
-        duration: int or float
+        duration : int or float
             duration of wait time
 
         stop_condition : function
@@ -737,14 +737,14 @@ class Scene(Container):
 
         Parameters
         ----------
-        animations: list of Animation
+        animations : List[:class:`Animation`, ...]
             A list of the animations whose total
-            run_time is to be calculated.
+            ``run_time`` is to be calculated.
 
         Returns
-        ------
+        -------
         float
-            The total run_time of all of the animations in the list.
+            The total ``run_time`` of all of the animations in the list.
         """
 
         return np.max([animation.run_time for animation in animations])
