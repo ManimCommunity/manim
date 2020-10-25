@@ -42,6 +42,7 @@ div.highlight {
 
 div.highlight pre {
     background-color: inherit;
+    border-color: #525893;
 }
 
 .footer-relations a.btn.btn-default {
