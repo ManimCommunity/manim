@@ -37,8 +37,8 @@ def set_test_scene(scene_object, module_name):
 
     with tempfile.TemporaryDirectory() as tmpdir:
         os.makedirs(Path(tmpdir) / "tex")
-        file_writer_config["text_dir"] = Path(tmpdir) / "text"
-        file_writer_config["tex_dir"] = Path(tmpdir) / "tex"
+        file_writer_config["text_dir"] = str(Path(tmpdir) / "text")
+        file_writer_config["tex_dir"] = str(Path(tmpdir) / "tex")
         scene = scene_object()
         scene.render()
         data = scene.renderer.get_frame()
