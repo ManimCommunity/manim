@@ -638,6 +638,11 @@ class PangoText(SVGMobject):
             self.line_spacing = self.size + self.size * 0.3
         else:
             self.line_spacing = self.size + self.size * self.line_spacing
+        if self.size > 800:
+            logger.warning(
+                "Using a font size larger than 800 can lead to render problems."
+                " See https://github.com/ManimCommunity/manim/pull/476 for details."
+            )
         file_name = self.text2svg()
         self.remove_last_M(file_name)
         SVGMobject.__init__(self, file_name, **config)
@@ -845,7 +850,7 @@ class PangoText(SVGMobject):
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
             return file_name
-        surface = cairocffi.SVGSurface(file_name, 600, 400)
+        surface = cairocffi.SVGSurface(file_name, len(self.text) * size, 400)
         context = cairocffi.Context(surface)
         context.move_to(START_X, START_Y)
         settings = self.text2settings()
