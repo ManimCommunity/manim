@@ -431,10 +431,10 @@ class LabeledDot(Dot):
     Examples
     --------
 
-    .. manim:: SeveralAnnotationDots
+    .. manim:: SeveralLabeledDots
         :save_last_frame:
 
-        class SeveralAnnotationDots(Scene):
+        class SeveralLabeledDots(Scene):
             def construct(self):
                 sq = Square(fill_color=RED, fill_opacity=1)
                 self.add(sq)
