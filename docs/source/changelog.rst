@@ -2,10 +2,32 @@
 Changelog
 *********
 
-manimce-v1.0.0-dev
+
+v0.2.0
 ==================
 
 :Date: TBD
+
+Changes since Manim Community release v0.1.0
+
+
+
+Mobjects, Scenes, and Animations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. The ``alignment`` attribute to Tex and MathTex has been removed in favour of ``tex_environment``.
+
+
+
+
+
+
+
+
+v0.1.0
+==================
+
+:Date: October 21, 2020
 
 This is the first release of manimce after forking from 3b1b/manim.  As such,
 developers have focused on cleaning up and refactoring the codebase while still
@@ -19,10 +41,8 @@ New Features
 Command line
 ^^^^^^^^^^^^
 
-#. Add 4k rendering option with the :code:`-k` option
-#. High quality rendering has gotten its own short argument (:code:`-e`)
 #. Output of 'manim --help' has been improved
-#. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol` prints
+#. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol' prints
 #. Added a flag :code:`--dry_run`, which doesn’t write any media
 #. Allow for running manim with :code:`python3 -m manim`
 #. Refactored Tex Template management. You can now use custom templates with command line args using :code:`--tex_template`!
@@ -32,6 +52,10 @@ Command line
 #. Re-implement GIF export with the :code:`-i` flag (using this flag outputs ONLY a .gif file, and no .mp4 file)
 #. Added a :code:`--verbose` flag
 #. You can save the logs to a file by using :code:`--log_to_file`
+#. Read :code:`tex_template` from config file if not specified by :code:`--tex_template`.
+#. Add experimental javascript rendering with :code:`--use_js_renderer`
+#. Add :code:`-q/--quality [k|p|h|m|l]` flag and removed :code:`-m/-l` flags.
+#. Removed :code:`--sound` flag
 
 
 Config system
@@ -40,6 +64,16 @@ Config system
 #. Implement a :code:`manim.cfg` config file system, that consolidates the global configuration, the command line argument parsing, and some of the constants defined in :code:`constants.py`
 #. Added utilities for manipulating Manim’s :code:`.cfg` files.
 #. Added a subcommand structure for easier use of utilities managing :code:`.cfg` files
+#. Also some variables have been moved from ``constants.py`` to the new config system:
+
+    #. ``FRAME_HEIGHT`` to ``config["frame_width"]``
+    #. ``TOP`` to ``config["frame_height"] / 2 * UP``
+    #. ``BOTTOM`` to ``config["frame_height"] / 2 * DOWN``
+    #. ``LEFT_SIDE`` to ``config["frame_width"] / 2 * LEFT``
+    #. ``RIGHT_SIDE`` to ``config["frame_width"] / 2 * RIGHT``
+    #. ``self.camera.frame_rate`` to ``config["frame_rate"]``
+
+
 
 
 Mobjects, Scenes, and Animations
@@ -48,6 +82,7 @@ Mobjects, Scenes, and Animations
 #. Add customizable left and right bracket for :code:`Matrix` mobject and :code:`set_row_colors` method for matrix mobject
 #. Add :code:`AddTeXLetterByLetter` animation
 #. Enhanced GraphScene
+
     #. You can now add arrow tips to axes
     #. extend axes a bit at the start and/or end
     #. have invisible axes
@@ -60,7 +95,12 @@ Mobjects, Scenes, and Animations
 #. The :code:`Container` class has been made into an AbstractBaseClass, i.e. in cannot be instantiated.  Instead, use one of its children classes
 #. The ``TextMobject`` and ``TexMobject`` objects have been deprecated, due to their confusing names, in favour of ``Tex`` and ``MathTex``. You can still, however, continue to use ``TextMobject`` and ``TexMobject``, albeit with Deprecation Warnings constantly reminding you to switch.
 #. Add a :code:`Variable` class for displaying text that continuously updates to reflect the value of a python variable.
-
+#. The ``Tex`` and ``MathTex`` objects allow you to specify a custom TexTemplate using the ``template`` keyword argument.
+#. :code:`VGroup` now supports printing the class names of contained mobjects and :code:`VDict` supports printing the internal dict of mobjects
+#. Add all the standard easing functions
+#. :code:`Scene` now renders when :code:`Scene.render()` is called rather than upon instantiation.
+#. :code:`ValueTracker` now supports increment using the `+=` operator (in addition to the already existing `increment_value` method)
+#. Add :class:`PangoText` for rendering texts using Pango.
 
 
 Documentation
@@ -92,6 +132,7 @@ Of interest to developers
 #. Added logging tests tools.
 #. Added ability to save logs in json
 #. Move to Poetry.
+#. Colors have moved to an Enum
 
 Other Changes
 --------------
@@ -99,3 +140,6 @@ Other Changes
 #. Rename package from manimlib to manim
 #. Move all imports to :code:`__init__`, so :code:`from manim import *` replaces :code:`from manimlib.imports import *`
 #. Global dir variable handling has been removed. Instead :code:`initialize_directories`, if needed, overrides the values from the cfg files at runtime.
+
+
+
