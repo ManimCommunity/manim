@@ -119,10 +119,13 @@ div.highlight pre {
 
 .manim-example .admonition {
     margin-top: 0;
+    padding: 12px 20px;
 }
 
 .manim-example .admonition-title {
     font-size: 14px;
+    font-weight: 500;
+    color: white;
 }
 
 .manim-example .example-reference {
