@@ -7,6 +7,18 @@ import numpy as np
 from ..config import config as global_config
 
 
+def percent_to_munit(val, dim, config):
+    return val / 100 * _size_from_dimension(dim, config=config)
+
+
+def pixels_to_munit(val, dim, config):
+    return (
+        val
+        / _size_from_dimension(dim, True, config=config)
+        * _size_from_dimension(dim, config=config)
+    )
+
+
 def _size_from_dimension(
     dim=0, pixels=False, config=global_config, treat_dim2_as_dim0=True
 ):
@@ -100,19 +112,13 @@ class MUnit(Unit):
 class PixelUnit(Unit):
     def __init__(self, value):
         super(PixelUnit, self).__init__(value)
-        self._converter = (
-            lambda val, dim, config: val
-            / _size_from_dimension(dim, True, config)
-            * _size_from_dimension(dim, config=config)
-        )
+        self._converter = pixels_to_munit
 
 
 class PercentUnit(Unit):
     def __init__(self, value):
         super(PercentUnit, self).__init__(value)
-        self._converter = (
-            lambda val, dim, config: val / 100 * _size_from_dimension(dim, config)
-        )
+        self._converter = percent_to_munit
 
 
 def handle_units(f, dim=None, config=global_config):
