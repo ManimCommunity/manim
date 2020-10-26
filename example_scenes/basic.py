@@ -241,20 +241,16 @@ class VariableExample(Scene):
 
 class UnitDot(Scene):
     def construct(self):
-        path = VMobject()
-        dot = Dot()
-        path.set_points_as_corners([dot.get_center(), dot.get_center()])
+        dot1 = Dot(radius=0.2, color=RED).to_edge(DOWN)
+        dot2 = Dot(radius=0.2, color=BLUE).to_edge(DOWN).shift(RIGHT)
+        dot3 = Dot(radius=0.2, color=GREEN).to_edge(DOWN).shift(2 * RIGHT)
+        dot4 = Dot(radius=0.2, color=YELLOW)
 
-        def update_path(path):
-            previus_path = path.copy()
-            previus_path.add_points_as_corners([dot.get_center()])
-            path.become(previus_path)
+        self.add(dot1, dot2, dot3, dot4)
 
-        path.add_updater(update_path)
-        self.add(path, dot)
-        self.play(Rotating(dot, radians=PI, about_point=RIGHT, run_time=2))
-        self.wait()
+        self.play(dot1.shift, PercentUnit(80 * UP))
+        self.play(dot2.shift, PercentUnit(50 * UP))
+        self.play(dot3.shift, PixelUnit(400 * UP))
+        self.play(dot3.shift, PixelUnit(100 * RIGHT))
 
-        self.play(dot.shift, PercentUnit(25 * UP))
-        self.play(dot.shift, PixelUnit(100 * LEFT))
         self.wait()
