@@ -61,7 +61,7 @@ class ThreeDScene(Scene):
         if gamma is not None:
             self.renderer.camera.set_gamma(gamma)
 
-    def begin_ambient_camera_rotation(self, rate=0.02):
+    def begin_ambient_camera_rotation(self, rate=0.02, about="theta"):
         """
         This method begins an ambient rotation of the camera about the Z_AXIS,
         in the anticlockwise direction
@@ -71,20 +71,36 @@ class ThreeDScene(Scene):
         rate : int or float, optional
             The rate at which the camera should rotate about the Z_AXIS.
             Negative rate means clockwise rotation.
+        about: (str)
+            one of 3 options: ["theta", "phi", "gamma"]. defaults to theta.
         """
         # TODO, use a ValueTracker for rate, so that it
         # can begin and end smoothly
-        self.renderer.camera.theta_tracker.add_updater(
+        if about == "phi":
+            x = self.renderer.camera.phi_tracker
+        elif about == "gamme":
+            x = self.renderer.camera.gamma_tracker
+        else:
+            x = self.renderer.camera.theta_tracker
+
+        x.add_updater(
             lambda m, dt: m.increment_value(rate * dt)
         )
-        self.add(self.renderer.camera.theta_tracker)
+        self.add(x)
 
-    def stop_ambient_camera_rotation(self):
+    def stop_ambient_camera_rotation(self, about="theta"):
         """
         This method stops all ambient camera rotation.
         """
-        self.renderer.camera.theta_tracker.clear_updaters()
-        self.remove(self.renderer.camera.theta_tracker)
+        if about == "phi":
+            x = self.renderer.camera.phi_tracker
+        elif about == "gamme":
+            x = self.renderer.camera.gamma_tracker
+        else:
+            x = self.renderer.camera.theta_tracker
+
+        x.clear_updaters()
+        self.remove(x)
 
     def begin_3dillusion_camera_rotation(
         self, rate=1, origin_theta=-60 * DEGREES, origin_phi=75 * DEGREES
