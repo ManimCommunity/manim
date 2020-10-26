@@ -15,10 +15,10 @@ def set_test_scene(scene_object, module_name):
     Parameters
     ----------
     scene_object : :class:`~.Scene`
-        The scene with wich we want to set up a new test.
+        The scene with which we want to set up a new test.
     module_name : :class:`str`
-        The name of the module in which the functionnality tested is contained. For example, 'Write' is contained in the module 'creation'. This will be used in the folder architecture
-        of '/tests_data'.
+        The name of the module in which the functionality tested is contained. For example, ``Write`` is contained in the module ``creation``. This will be used in the folder architecture
+        of ``/tests_data``.
 
     Examples
     --------
