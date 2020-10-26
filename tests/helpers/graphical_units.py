@@ -53,5 +53,5 @@ def set_test_scene(scene_object, module_name):
     path = os.path.join(path_control_data, module_name)
     if not os.path.isdir(path):
         os.makedirs(path)
-    np.save(os.path.join(path, str(scene)), data)
+    np.savez_compressed(os.path.join(path, str(scene)), frame_data=data)
     logger.info(f"Test data for {str(scene)} saved in {path}\n")
