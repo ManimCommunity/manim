@@ -21,7 +21,7 @@ from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
-from ..utils.iterables import list_update
+from ..utils.iterables import list_update, list_difference_update
 from ..utils.hashing import get_hash_from_play_call, get_hash_from_wait_call
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
@@ -524,7 +524,8 @@ class Scene(Container):
                 return mobjects[i:]
         return []
 
-    def get_moving_and_static_mobjects(self, animations):
+    def get_moving_and_stationary_mobjects(self, animations):
+        moving_mobjects = self.get_moving_mobjects(*animations)
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
             all_mobjects,
@@ -536,10 +537,10 @@ class Scene(Container):
             moving_mobjects,
             use_z_index=self.renderer.camera.use_z_index,
         )
-        static_mobjects = filter(
-            lambda m: m not in all_moving_mobject_families, all_mobject_families
+        stationary_mobjects = list_difference_update(
+            all_mobject_families, all_moving_mobject_families
         )
-        return all_moving_mobject_families, static_mobjects
+        return all_moving_mobject_families, stationary_mobjects
 
     def compile_play_args_to_animation_list(self, *args, **kwargs):
         """
@@ -801,20 +802,22 @@ class Scene(Container):
         duration = None
         stop_condition = None
         time_progression = None
-        if not (len(animations) == 1 and isinstance(animations[0], Wait)):
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            moving_mobjects, static_mobjects = self.get_moving_and_static_mobjects(
-                animations
-            )
-            self.renderer.save_static_mobject_data(self, static_mobjects)
-            time_progression = self.get_animation_time_progression(animations)
         if len(animations) == 1 and isinstance(animations[0], Wait):
             # TODO, be smart about setting a static image
             # the same way Scene.play does
             duration = animations[0].duration
             stop_condition = animations[0].stop_condition
             time_progression = self.get_wait_time_progression(duration, stop_condition)
+        else:
+            # Paint all non-moving objects onto the screen, so they don't
+            # have to be rendered every frame
+            (
+                moving_mobjects,
+                stationary_mobjects,
+            ) = self.get_moving_and_stationary_mobjects(animations)
+            self.renderer.update_frame(self, mobjects=stationary_mobjects)
+            self.static_image = self.renderer.get_frame()
+            time_progression = self.get_animation_time_progression(animations)
 
         for animation in animations:
             animation.begin()
@@ -828,7 +831,7 @@ class Scene(Container):
                 alpha = t / animation.run_time
                 animation.interpolate(alpha)
             self.update_mobjects(dt)
-            self.renderer.update_frame(self, moving_mobjects)
+            self.renderer.update_frame(self, moving_mobjects, self.static_image)
             self.renderer.add_frame(self.renderer.get_frame())
             if stop_condition is not None and stop_condition():
                 time_progression.close()
