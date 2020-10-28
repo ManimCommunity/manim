@@ -807,6 +807,7 @@ class Scene(Container):
             # the same way Scene.play does
             duration = animations[0].duration
             stop_condition = animations[0].stop_condition
+            self.static_image = None
             time_progression = self.get_wait_time_progression(duration, stop_condition)
         else:
             # Paint all non-moving objects onto the screen, so they don't
