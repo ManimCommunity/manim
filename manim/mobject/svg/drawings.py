@@ -28,6 +28,7 @@ __all__ = [
 
 
 import itertools as it
+from pathlib import Path
 import string
 
 from ... import config
@@ -430,7 +431,7 @@ class Bubble(SVGMobject):
         try:
             SVGMobject.__init__(self, **kwargs)
         except IOError as err:
-            self.file_name = os.path.join(FILE_DIR, self.file_name)
+            self.file_name = Path(FILE_DIR) / self.file_name
             SVGMobject.__init__(self, **kwargs)
         self.center()
         self.stretch_to_fit_height(self.height)

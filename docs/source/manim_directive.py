@@ -188,7 +188,7 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block)
 
-        # NOTE: skips directory creation in case path already exists 
+        # NOTE: skips directory creation in case path already exists
         # due to exists_ok param
         media_dir = Path(setup.confdir) / "media"
         media_dir.mkdir(parents=True, exist_ok=True)

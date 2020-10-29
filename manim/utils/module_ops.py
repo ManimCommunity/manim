@@ -4,6 +4,7 @@ from .. import logger, console
 import importlib.util
 import inspect
 import os
+from pathlib import Path
 import sys
 import types
 import re
@@ -29,7 +30,7 @@ def get_module(file_name):
             logger.error(f"Failed to render scene: {str(e)}")
             sys.exit(2)
     else:
-        if os.path.exists(file_name):
+        if Path(file_name).exists():
             if file_name[-3:] != ".py":
                 raise ValueError(f"{file_name} is not a valid Manim python script.")
             module_name = file_name[:-3].replace(os.sep, ".").split(".")[-1]
