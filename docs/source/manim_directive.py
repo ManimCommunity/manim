@@ -72,7 +72,7 @@ from docutils.parsers.rst import directives, Directive
 
 import jinja2
 import os
-from os.path import relpath
+from pathlib import Path
 from typing import List
 
 import shutil
@@ -174,16 +174,12 @@ class ManimDirective(Directive):
         document = state_machine.document
 
         source_file_name = document.attributes["source"]
-        source_rel_name = relpath(source_file_name, setup.confdir)
-        source_rel_dir = os.path.dirname(source_rel_name)
-        while source_rel_dir.startswith(os.path.sep):
-            source_rel_dir = source_rel_dir[1:]
+        source_rel_name = Path(source_file_name).relative_to(setup.confdir)
+        source_rel_dir = source_rel_name.resolve().parent
 
-        dest_dir = os.path.abspath(
-            os.path.join(setup.app.builder.outdir, source_rel_dir)
-        )
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
+        dest_dir = (Path(setup.app.builder.outdir) / source_rel_dir).absolute
+        if not dest_dir.exists():
+            dest_dir.mkdir(parents=True)
 
         source_block = [
             ".. code-block:: python",
@@ -192,19 +188,21 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block)
 
-        media_dir = os.path.join(setup.confdir, "media")
-        if not os.path.exists(media_dir):
-            os.mkdir(media_dir)
-        images_dir = os.path.join(media_dir, "images")
-        if not os.path.exists(images_dir):
-            os.mkdir(images_dir)
-        tex_dir = os.path.join(media_dir, "tex")
-        if not os.path.exists(tex_dir):
-            os.mkdir(tex_dir)
-        text_dir = os.path.join(media_dir, "text")
-        if not os.path.exists(text_dir):
-            os.mkdir(text_dir)
-        video_dir = os.path.join(media_dir, "videos")
+        # NOTE: skips directory creation in case path already exists 
+        # due to exists_ok param
+        media_dir = Path(setup.confdir) / "media"
+        media_dir.mkdir(parents=True, exist_ok=True)
+
+        images_dir = Path(media_dir) / "images"
+        images_dir.exists(parents=True, exists_ok=True)
+
+        tex_dir = media_dir / "tex"
+        tex_dir.mkdir(parents=True, exists_ok=True)
+
+        text_dir = media_dir / "text"
+        tex_dir.exists(parents=True, exists_ok=True)
+
+        video_dir = media_dir / "videos"
         output_file = f"{clsname}-{classnamedict[clsname]}"
 
         file_writer_config_code = [
@@ -238,22 +236,22 @@ class ManimDirective(Directive):
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f"{output_file}.mp4"
-            filesrc = os.path.join(video_dir, qualitydir, filename)
-            destfile = os.path.join(dest_dir, filename)
+            filesrc = Path(video_dir) / qualitydir / filename
+            destfile = Path(dest_dir) / filename
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
-            filesrc = os.path.join(video_dir, qualitydir, filename)
+            filesrc = Path(video_dir) / qualitydir / filename
         elif save_last_frame:
             filename = f"{output_file}.png"
-            filesrc = os.path.join(images_dir, filename)
+            filesrc = Path(images_dir) / filename
         else:
             raise ValueError("Invalid combination of render flags received.")
 
         rendered_template = jinja2.Template(TEMPLATE).render(
             clsname=clsname,
             hide_source=hide_source,
-            filesrc_rel=os.path.relpath(filesrc, setup.confdir),
+            filesrc_rel=Path(filesrc).relative_to(setup.confdir),
             output_file=output_file,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
