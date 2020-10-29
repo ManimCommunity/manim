@@ -13,7 +13,6 @@
 import os
 import subprocess
 import sys
-import Pathlib
 from distutils.sysconfig import get_python_lib
 
 
