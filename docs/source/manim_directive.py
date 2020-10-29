@@ -177,7 +177,7 @@ class ManimDirective(Directive):
         source_rel_name = Path(source_file_name).relative_to(setup.confdir)
         source_rel_dir = source_rel_name.resolve().parent
 
-        dest_dir = (Path(setup.app.builder.outdir) / source_rel_dir)
+        dest_dir = Path(setup.app.builder.outdir) / source_rel_dir
         if not dest_dir.exists():
             dest_dir.mkdir(parents=True)
 
