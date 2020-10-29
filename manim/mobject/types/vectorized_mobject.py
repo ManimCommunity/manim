@@ -881,7 +881,7 @@ class VMobject(Mobject):
         """
         if not (target_direction == "CW" or target_direction == "CCW"):
             raise ValueError('Invalid input for force_direction. Use "CW" or "CCW"')
-        if not (self.get_direction() == target_direction):
+        if self.get_direction() != target_direction:
             # Since we already assured the input is CW or CCW,
             # and the directions don't match, we just reverse
             self.reverse_direction()
