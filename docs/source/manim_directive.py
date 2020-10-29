@@ -194,13 +194,13 @@ class ManimDirective(Directive):
         media_dir.mkdir(parents=True, exist_ok=True)
 
         images_dir = Path(media_dir) / "images"
-        images_dir.exists(parents=True, exists_ok=True)
+        images_dir.mkdir(parents=True, exists_ok=True)
 
         tex_dir = media_dir / "tex"
         tex_dir.mkdir(parents=True, exists_ok=True)
 
         text_dir = media_dir / "text"
-        tex_dir.exists(parents=True, exists_ok=True)
+        tex_dir.mkdir(parents=True, exists_ok=True)
 
         video_dir = media_dir / "videos"
         output_file = f"{clsname}-{classnamedict[clsname]}"
