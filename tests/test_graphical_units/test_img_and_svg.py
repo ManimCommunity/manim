@@ -6,7 +6,7 @@ from manim import *
 from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
-@pytest.mark.skipif(sys.platform == 'win32',
+@pytest.mark.skipif(sys.platform != 'linux',
                     reason="does not run on windows")
 class ImageMobjectTest(Scene):
     def construct(self):
