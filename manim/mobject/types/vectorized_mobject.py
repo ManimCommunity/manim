@@ -859,7 +859,8 @@ class VMobject(Mobject):
 
         Returns
         ------
-        str ("CW" or "CCW")
+        :class:`str`
+            Either `"CW"` or `"CCW"`.
         """
         return shoelace_direction(self.get_start_anchors())
 
@@ -882,9 +883,10 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        target_direction : str ("CW" or "CCW")
+        target_direction : :class:`str`
+            Either `"CW"` or `"CCW"`.
         """
-        if not (target_direction == "CW" or target_direction == "CCW"):
+        if target_direction not in ("CW", "CCW"):
             raise ValueError('Invalid input for force_direction. Use "CW" or "CCW"')
         if self.get_direction() != target_direction:
             # Since we already assured the input is CW or CCW,
