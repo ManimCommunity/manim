@@ -2,6 +2,7 @@
 
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
+import pathlib
 
 import numpy as np
 
@@ -15,6 +16,7 @@ from ...utils.bezier import interpolate
 from ...utils.color import color_to_int_rgb, WHITE
 from ...utils.config_ops import digest_config
 from ...utils.images import get_full_raster_image_path
+from manim.constants import QUALITIES, DEFAULT_QUALITY
 
 
 class AbstractImageMobject(Mobject):
@@ -80,9 +82,10 @@ class ImageMobject(AbstractImageMobject):
         "image_mode": "RGBA",
     }
 
-    def __init__(self, filename_or_array, scale_to_resolution=1080, **kwargs):
+
+    def __init__(self, filename_or_array, scale_to_resolution=QUALITIES[DEFAULT_QUALITY]["pixel_height"], **kwargs):
         digest_config(self, kwargs)
-        if isinstance(filename_or_array, str):
+        if isinstance(filename_or_array,  (str, pathlib.PurePath)):
             path = get_full_raster_image_path(filename_or_array)
             image = Image.open(path).convert(self.image_mode)
             self.pixel_array = np.array(image)
