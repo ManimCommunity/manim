@@ -20,6 +20,7 @@ from ...utils.module_ops import (
 )
 from ... import logger
 from ...constants import JS_RENDERER_INFO
+from ...renderer.js_renderer import JsRenderer
 
 
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
@@ -29,7 +30,8 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
     def __init__(self, server, scene_class):
         self.server = server
         self.keyframes = []
-        self.scene = scene_class(self)
+        self.renderer = JsRenderer(self)
+        self.scene = scene_class(self.renderer)
         self.scene_thread = threading.Thread(
             target=lambda s: s.render(), args=(self.scene,)
         )
@@ -50,7 +52,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             try:
                 stub.NewScene(request)
             except grpc._channel._InactiveRpcError:
-                logger.warning(f"No frontend was detected at localhost:50052.")
+                logger.warning("No frontend was detected at localhost:50052.")
                 try:
                     sp.Popen(config["js_renderer_path"])
                 except PermissionError:

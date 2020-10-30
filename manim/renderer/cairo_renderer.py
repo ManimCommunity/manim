@@ -77,7 +77,7 @@ class CairoRenderer:
         self.num_plays = 0
         self.time = 0
 
-    def init(self, scene):
+    def init_scene(self, scene):
         self.file_writer = SceneFileWriter(
             self,
             self.video_quality_config,
@@ -200,7 +200,7 @@ class CairoRenderer:
             config["skip_animations"] = self.original_skipping_status
         return self
 
-    def finish(self, scene):
+    def scene_finished(self, scene):
         config["skip_animations"] = False
         self.file_writer.finish()
         if config["save_last_frame"]:
