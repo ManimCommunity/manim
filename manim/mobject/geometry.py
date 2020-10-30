@@ -236,17 +236,16 @@ class Arc(TipableVMobject):
     """A circular arc."""
 
     CONFIG = {
-        "radius": 1.0,
         "num_components": 9,
-        "anchors_span_full_range": True,
         "arc_center": ORIGIN,
     }
 
-    def __init__(self, start_angle=0, angle=TAU / 4, **kwargs):
+    def __init__(self, start_angle=0, angle=TAU / 4, radius=1.0, **kwargs):
+        self.radius = radius
         self.start_angle = start_angle
         self.angle = angle
         self._failed_to_get_center = False
-        VMobject.__init__(self, **kwargs)
+        VMobject.__init__(self, radius=radius, **kwargs)
 
     def generate_points(self):
         self.set_pre_positioned_points()
@@ -320,9 +319,7 @@ class Arc(TipableVMobject):
 
 
 class ArcBetweenPoints(Arc):
-    """
-    Inherits from Arc and additionally takes 2 points between which the arc is spanned.
-    """
+    """Circle arc spanning two points."""
 
     def __init__(self, start, end, angle=TAU / 4, radius=None, **kwargs):
         if radius is not None:
@@ -340,12 +337,10 @@ class ArcBetweenPoints(Arc):
                 )
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
+            Arc.__init__(self, angle=angle, radius=radius, **kwargs)
+        else:
+            Arc.__init__(self, angle=angle, radius=1.0, **kwargs)
 
-        Arc.__init__(
-            self,
-            angle=angle,
-            **kwargs,
-        )
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
@@ -376,8 +371,6 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
-    CONFIG = {"close_new_points": True, "anchors_span_full_range": False}
-
     def __init__(self, color=RED, **kwargs):
         Arc.__init__(self, 0, TAU, color=color, **kwargs)
 
@@ -399,42 +392,38 @@ class Circle(Arc):
 
 class Dot(Circle):
     CONFIG = {
-        "radius": DEFAULT_DOT_RADIUS,
         "stroke_width": 0,
         "fill_opacity": 1.0,
     }
 
-    def __init__(self, point=ORIGIN, color=WHITE, **kwargs):
-        Circle.__init__(self, arc_center=point, color=color, **kwargs)
+    def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
+        Circle.__init__(self, arc_center=point, radius=radius, color=color, **kwargs)
 
 
 class SmallDot(Dot):
-    CONFIG = {
-        "radius": DEFAULT_SMALL_DOT_RADIUS,
-    }
+    def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
+        Circle.__init__(self, radius=radius, **kwargs)
 
 
 class Ellipse(Circle):
-    CONFIG = {"width": 2, "height": 1}
-
-    def __init__(self, **kwargs):
-        Circle.__init__(self, **kwargs)
-        self.set_width(self.width, stretch=True)
-        self.set_height(self.height, stretch=True)
+    def __init__(self, width=2.0, height=1.0, **kwargs):
+        self.width = width
+        self.height = height
+        Circle.__init__(self, width=width, height=height, **kwargs)
+        self.set_width(width, stretch=True)
+        self.set_height(height, stretch=True)
 
 
 class AnnularSector(Arc):
     CONFIG = {
-        "inner_radius": 1,
-        "outer_radius": 2,
         "angle": TAU / 4,
         "start_angle": 0,
         "fill_opacity": 1,
         "stroke_width": 0,
     }
 
-    def __init__(self, color=WHITE, **kwargs):
-        Arc.__init__(self, color=color, **kwargs)
+    def __init__(self, outer_radius=2.0, inner_radius=1.0, color=WHITE, **kwargs):
+        Arc.__init__(self, outer_radius=outer_radius, inner_radius=inner_radius, color=color, **kwargs)
 
     def generate_points(self):
         inner_arc, outer_arc = [
@@ -454,20 +443,30 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    CONFIG = {"outer_radius": 1, "inner_radius": 0}
+    def __init__(self, outer_radius=1.0, inner_radius=0.0, color=WHITE, **kwargs):
+        AnnularSector.__init__(
+            self,
+            outer_radius=outer_radius,
+            inner_radius=inner_radius,
+            color=color,
+            **kwargs
+        )
 
 
 class Annulus(Circle):
     CONFIG = {
-        "inner_radius": 1,
-        "outer_radius": 2,
         "fill_opacity": 1,
         "stroke_width": 0,
-        "mark_paths_closed": False,
     }
 
-    def __init__(self, color=WHITE, **kwargs):
-        Circle.__init__(self, color=color, **kwargs)
+    def __init__(self, outer_radius=2.0, inner_radius=1.0, color=WHITE, **kwargs):
+        Circle.__init__(
+            self,
+            outer_radius=outer_radius,
+            inner_radius=inner_radius,
+            color=color,
+            **kwargs
+        )
 
     def generate_points(self):
         self.radius = self.outer_radius
@@ -748,14 +747,12 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
-    CONFIG = {
-        "buff": 0,
-    }
 
-    def __init__(self, direction=RIGHT, **kwargs):
+    def __init__(self, direction=RIGHT, buff=0, **kwargs):
+        self.buff = buff
         if len(direction) == 2:
             direction = np.append(np.array(direction), 0)
-        Arrow.__init__(self, ORIGIN, direction, **kwargs)
+        Arrow.__init__(self, ORIGIN, direction, buff=buff, **kwargs)
 
 
 class DoubleArrow(Arrow):
@@ -776,7 +773,6 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
-
     def __init__(self, *vertices, color=BLUE, **kwargs):
         VMobject.__init__(self, color=color, **kwargs)
         self.set_points_as_corners([*vertices, vertices[0]])
@@ -820,11 +816,8 @@ class Polygon(VMobject):
 
 
 class RegularPolygon(Polygon):
-    CONFIG = {
-        "start_angle": None,
-    }
-
-    def __init__(self, n=6, **kwargs):
+    def __init__(self, n=6, start_angle=None, **kwargs):
+        self.start_angle = start_angle
         digest_config(self, kwargs, locals())
         if self.start_angle is None:
             if n % 2 == 0:
@@ -842,19 +835,16 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
-    CONFIG = {
-        "mark_paths_closed": True,
-        "close_new_points": True,
-    }
 
     def __init__(self, height=2.0, width=4.0, color=WHITE, **kwargs):
-        Polygon.__init__(self, UL, UR, DR, DL, height=height, width=width, color=color, **kwargs)
+        Polygon.__init__(
+            self, UL, UR, DR, DL, height=height, width=width, color=color, **kwargs
+        )
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
 
 class Square(Rectangle):
-
     def __init__(self, side_length=2.0, **kwargs):
         self.side_length = side_length
         Rectangle.__init__(
@@ -863,7 +853,6 @@ class Square(Rectangle):
 
 
 class RoundedRectangle(Rectangle):
-
     def __init__(self, corner_radius=0.5, **kwargs):
         Rectangle.__init__(self, corner_radius=corner_radius, **kwargs)
         self.round_corners(corner_radius)

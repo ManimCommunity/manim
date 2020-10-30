@@ -34,8 +34,6 @@ from ...utils.space_ops import get_norm
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
 # - Change sub_path idea accordingly
-# - No more mark_paths_closed, instead have the camera test
-#   if last point in close to first point
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
 
@@ -59,9 +57,6 @@ class VMobject(Mobject):
         # secondary color in the direction of sheen_direction.
         "sheen_factor": 0.0,
         "sheen_direction": UL,
-        # Indicates that it will not be displayed, but
-        # that it should count in parent mobject's path
-        "close_new_points": False,
         "pre_function_handle_to_anchor_scale_factor": 0.01,
         "make_smooth_after_applying_functions": False,
         "background_image_file": None,

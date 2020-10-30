@@ -42,14 +42,7 @@ class Mobject(Container):
 
     """
 
-    def __init__(
-            self,
-            color=WHITE,
-            name=None,
-            dim=3,
-            target=None,
-            z_index=0,
-            **kwargs):
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
         self.color = color
         self.name = name
         self.dim = dim
