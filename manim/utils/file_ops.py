@@ -32,8 +32,7 @@ def guarantee_existence(path):
 def seek_full_path_from_defaults(file_name, default_dir, extensions):
     possible_paths = [file_name]
     possible_paths += [
-        Path(default_dir)/ f"{file_name}{extension}"
-        for extension in ["", *extensions]
+        Path(default_dir) / f"{file_name}{extension}" for extension in ["", *extensions]
     ]
     for path in possible_paths:
         if os.path.exists(path):
