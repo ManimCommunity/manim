@@ -196,7 +196,7 @@ class Mobject(Container):
 
     def save_image(self, name=None):
         self.get_image().save(
-            Path(config["video_dir"]).joinpath((name or str(self)) + ".png")
+            Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
     def copy(self):
