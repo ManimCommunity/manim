@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import pytest
@@ -5,7 +6,8 @@ from manim import *
 from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
-
+@pytest.mark.skipif(sys.platform == 'win64',
+                    reason="does not run on windows")
 class ImageMobjectTest(Scene):
     def construct(self):
         pa = Path.cwd()
