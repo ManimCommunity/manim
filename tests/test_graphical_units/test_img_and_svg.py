@@ -9,7 +9,10 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 class ImageMobjectTest(Scene):
     def construct(self):
         pa = Path.cwd()
-        file_path = pa / "resource_of_imgs_and_svg_for_tests/tree_img640×351.jpg"
+        file_path = (
+            pa
+            / "tests/test_graphical_units/resource_of_imgs_and_svg_for_tests/tree_img640×351.jpg"
+        )
         im1 = ImageMobject(file_path).shift(4 * LEFT + UP)
         im2 = ImageMobject(file_path, scale_to_resolution=1080).shift(
             4 * LEFT + 2 * DOWN
