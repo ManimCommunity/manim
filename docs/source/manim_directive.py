@@ -207,18 +207,18 @@ class ManimDirective(Directive):
         video_dir = os.path.join(media_dir, "videos")
         output_file = f"{clsname}-{classnamedict[clsname]}"
 
-        file_writer_config_code = [
+        config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
             f'config["pixel_width"] = {pixel_width}',
-            f'file_writer_config["media_dir"] = r"{media_dir}"',
-            f'file_writer_config["images_dir"] = r"{images_dir}"',
-            f'file_writer_config["tex_dir"] = r"{tex_dir}"',
-            f'file_writer_config["text_dir"] = r"{text_dir}"',
-            f'file_writer_config["video_dir"] = r"{video_dir}"',
-            f'file_writer_config["save_last_frame"] = {save_last_frame}',
-            f'file_writer_config["save_as_gif"] = {save_as_gif}',
-            f'file_writer_config["output_file"] = r"{output_file}"',
+            f'config["media_dir"] = r"{media_dir}"',
+            f'config["images_dir"] = r"{images_dir}"',
+            f'config["tex_dir"] = r"{tex_dir}"',
+            f'config["text_dir"] = r"{text_dir}"',
+            f'config["video_dir"] = r"{video_dir}"',
+            f'config["save_last_frame"] = {save_last_frame}',
+            f'config["save_as_gif"] = {save_as_gif}',
+            f'config["output_file"] = r"{output_file}"',
         ]
 
         user_code = self.content
@@ -229,7 +229,7 @@ class ManimDirective(Directive):
 
         code = [
             "from manim import *",
-            *file_writer_config_code,
+            *config_code,
             *user_code,
             f"{clsname}().render()",
         ]
@@ -251,6 +251,7 @@ class ManimDirective(Directive):
             raise ValueError("Invalid combination of render flags received.")
 
         rendered_template = jinja2.Template(TEMPLATE).render(
+            clsname=clsname,
             hide_source=hide_source,
             filesrc_rel=os.path.relpath(filesrc, setup.confdir),
             output_file=output_file,
@@ -284,8 +285,6 @@ TEMPLATE = r"""
 
     <div class="manim-example">
 
-{{ source_block }}
-{{ ref_block }}
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
@@ -299,10 +298,16 @@ TEMPLATE = r"""
 .. image:: /{{ filesrc_rel }}
     :align: center
 {% endif %}
-
 {% if not hide_source %}
 .. raw:: html
 
-    </div>
+    <div class="example-header">{{ clsname }}</div>
+
+{{ source_block }}
+{{ ref_block }}
 {% endif %}
+
+.. raw:: html
+
+    </div>
 """
