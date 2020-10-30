@@ -17,7 +17,7 @@ class ImageMobjectTest(Scene):
         im2 = ImageMobject(file_path, scale_to_resolution=1080).shift(
             4 * LEFT + 2 * DOWN
         )
-        im3 = ImageMobject(file_path, scale_to_resolution=720).shift(4 * RIGHT)
+        im3 = ImageMobject(file_path, scale_to_resolution=540).shift(4 * RIGHT)
         self.add(im1, im2, im3)
         self.wait(1)
 
