@@ -376,10 +376,10 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
-    CONFIG = {"color": RED, "close_new_points": True, "anchors_span_full_range": False}
+    CONFIG = {"close_new_points": True, "anchors_span_full_range": False}
 
-    def __init__(self, **kwargs):
-        Arc.__init__(self, 0, TAU, **kwargs)
+    def __init__(self, color=RED, **kwargs):
+        Arc.__init__(self, 0, TAU, color=color, **kwargs)
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
         # Ignores dim_to_match and stretch; result will always be a circle
@@ -402,11 +402,10 @@ class Dot(Circle):
         "radius": DEFAULT_DOT_RADIUS,
         "stroke_width": 0,
         "fill_opacity": 1.0,
-        "color": WHITE,
     }
 
-    def __init__(self, point=ORIGIN, **kwargs):
-        Circle.__init__(self, arc_center=point, **kwargs)
+    def __init__(self, point=ORIGIN, color=WHITE, **kwargs):
+        Circle.__init__(self, arc_center=point, color=color, **kwargs)
 
 
 class SmallDot(Dot):
@@ -432,8 +431,10 @@ class AnnularSector(Arc):
         "start_angle": 0,
         "fill_opacity": 1,
         "stroke_width": 0,
-        "color": WHITE,
     }
+
+    def __init__(self, color=WHITE, **kwargs):
+        Arc.__init__(self, color=color, **kwargs)
 
     def generate_points(self):
         inner_arc, outer_arc = [
@@ -462,9 +463,11 @@ class Annulus(Circle):
         "outer_radius": 2,
         "fill_opacity": 1,
         "stroke_width": 0,
-        "color": WHITE,
         "mark_paths_closed": False,
     }
+
+    def __init__(self, color=WHITE, **kwargs):
+        Circle.__init__(self, color=color, **kwargs)
 
     def generate_points(self):
         self.radius = self.outer_radius
@@ -773,12 +776,9 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
-    CONFIG = {
-        "color": BLUE,
-    }
 
-    def __init__(self, *vertices, **kwargs):
-        VMobject.__init__(self, **kwargs)
+    def __init__(self, *vertices, color=BLUE, **kwargs):
+        VMobject.__init__(self, color=color, **kwargs)
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
@@ -843,15 +843,14 @@ class Triangle(RegularPolygon):
 
 class Rectangle(Polygon):
     CONFIG = {
-        "color": WHITE,
         "height": 2.0,
         "width": 4.0,
         "mark_paths_closed": True,
         "close_new_points": True,
     }
 
-    def __init__(self, **kwargs):
-        Polygon.__init__(self, UL, UR, DR, DL, **kwargs)
+    def __init__(self, color=WHITE, **kwargs):
+        Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
