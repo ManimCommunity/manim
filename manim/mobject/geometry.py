@@ -843,38 +843,30 @@ class Triangle(RegularPolygon):
 
 class Rectangle(Polygon):
     CONFIG = {
-        "height": 2.0,
-        "width": 4.0,
         "mark_paths_closed": True,
         "close_new_points": True,
     }
 
-    def __init__(self, color=WHITE, **kwargs):
-        Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
+    def __init__(self, height=2.0, width=4.0, color=WHITE, **kwargs):
+        Polygon.__init__(self, UL, UR, DR, DL, height=height, width=width, color=color, **kwargs)
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
 
 class Square(Rectangle):
-    CONFIG = {
-        "side_length": 2.0,
-    }
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, side_length=2.0, **kwargs):
+        self.side_length = side_length
         Rectangle.__init__(
             self, height=self.side_length, width=self.side_length, **kwargs
         )
 
 
 class RoundedRectangle(Rectangle):
-    CONFIG = {
-        "corner_radius": 0.5,
-    }
 
-    def __init__(self, **kwargs):
-        Rectangle.__init__(self, **kwargs)
-        self.round_corners(self.corner_radius)
+    def __init__(self, corner_radius=0.5, **kwargs):
+        Rectangle.__init__(self, corner_radius=corner_radius, **kwargs)
+        self.round_corners(corner_radius)
 
 
 class ArrowTip(VMobject):
