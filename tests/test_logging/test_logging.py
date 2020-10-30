@@ -1,7 +1,4 @@
-import subprocess
 import os
-import sys
-import pytest
 import re
 
 from ..utils.commands import capture
@@ -46,7 +43,7 @@ def test_logging_when_scene_is_not_specified(tmp_path, python_version):
         "-m",
         "manim",
         path_basic_scene,
-        "-l",
+        "-ql",
         "--log_to_file",
         "-v",
         "DEBUG",

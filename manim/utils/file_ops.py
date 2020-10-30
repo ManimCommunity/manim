@@ -11,16 +11,14 @@ __all__ = [
 
 import os
 import platform
-import numpy as np
 import time
-import re
 import subprocess as sp
+from pathlib import Path
 
 
 def add_extension_if_not_present(file_name, extension):
-    # This could conceivably be smarter about handling existing differing extensions
-    if file_name[-len(extension) :] != extension:
-        return file_name + extension
+    if file_name.suffix != extension:
+        return file_name.with_suffix(extension)
     else:
         return file_name
 
@@ -40,7 +38,10 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
     for path in possible_paths:
         if os.path.exists(path):
             return path
-    raise IOError("File {} not Found".format(file_name))
+    error = "From: {}, could not find {} at either of these locations: {}".format(
+        os.getcwd(), self.file_name, possible_paths
+    )
+    raise IOError(error)
 
 
 def modify_atime(file_path):
