@@ -42,15 +42,19 @@ class Mobject(Container):
 
     """
 
-    CONFIG = {
-        "color": WHITE,
-        "name": None,
-        "dim": 3,
-        "target": None,
-        "z_index": 0,
-    }
-
-    def __init__(self, **kwargs):
+    def __init__(
+            self,
+            color=WHITE,
+            name=None,
+            dim=3,
+            target=None,
+            z_index=0,
+            **kwargs):
+        self.color = color
+        self.name = name
+        self.dim = dim
+        self.target = target
+        self.z_index = z_index
         Container.__init__(self, **kwargs)
         self.point_hash = None
         self.submobjects = []
