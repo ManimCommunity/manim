@@ -50,7 +50,7 @@ class AbstractImageMobject(Mobject):
         )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
-        if self.scale_to_resolution != False:
+        if self.scale_to_resolution is not False:
             self.height = h / self.scale_to_resolution * config["frame_height"]
         else:
             self.height = 3  ## this is the case for ImageMobjectFromCamera
