@@ -866,6 +866,11 @@ class VMobject(Mobject):
     def reverse_direction(self):
         """
         Reverts the point orientation, by inverting the point order.
+        
+        Returns
+        --------
+        :class:`VMobject`
+            Returns self.
         """
         self.points = self.points[::-1]
         return self
