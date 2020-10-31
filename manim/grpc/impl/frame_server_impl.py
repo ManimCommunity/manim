@@ -35,14 +35,6 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         self.scene_thread = threading.Thread(
             target=lambda s: s.render(), args=(self.scene,)
         )
-        self.previous_frame_animation_index = None
-        self.scene_finished = False
-
-        path = "./example_scenes/basic.py"
-        event_handler = UpdateFrontendHandler(self)
-        observer = Observer()
-        observer.schedule(event_handler, path)
-        observer.start()
 
         # If a javascript renderer is running, notify it of the scene being served. If
         # not, spawn one and it will request the scene when it starts.

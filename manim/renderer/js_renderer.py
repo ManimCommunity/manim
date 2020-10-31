@@ -1,8 +1,4 @@
 import copy
-import grpc
-from ..grpc.gen import renderserver_pb2
-from ..grpc.gen import renderserver_pb2_grpc
-from .. import logger
 
 
 class JsRenderer:
@@ -26,11 +22,19 @@ class JsRenderer:
         self,
         scene,
         mobjects=None,
-        background=None,
         include_submobjects=True,
         ignore_skipping=True,
         **kwargs,
     ):
+        pass
+
+    def save_static_frame_data(self, scene, static_mobjects):
+        pass
+
+    def add_frame(self, frame, num_frames=1):
+        pass
+
+    def get_frame(self):
         pass
 
 

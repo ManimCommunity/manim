@@ -869,7 +869,7 @@ class Scene(Container):
             # the same way Scene.play does
             duration = animations[0].duration
             stop_condition = animations[0].stop_condition
-            self.static_image = None
+            self.renderer.static_image = None
             time_progression = self.get_wait_time_progression(duration, stop_condition)
         else:
             # Paint all non-moving objects onto the screen, so they don't
@@ -878,8 +878,7 @@ class Scene(Container):
                 moving_mobjects,
                 stationary_mobjects,
             ) = self.get_moving_and_stationary_mobjects(animations)
-            self.renderer.update_frame(self, mobjects=stationary_mobjects)
-            self.static_image = self.renderer.get_frame()
+            self.renderer.save_static_frame_data(self, stationary_mobjects)
             time_progression = self.get_animation_time_progression(animations)
 
         for animation in animations:
@@ -894,7 +893,7 @@ class Scene(Container):
                 alpha = t / animation.run_time
                 animation.interpolate(alpha)
             self.update_mobjects(dt)
-            self.renderer.update_frame(self, moving_mobjects, self.static_image)
+            self.renderer.update_frame(self, moving_mobjects)
             self.renderer.add_frame(self.renderer.get_frame())
             if stop_condition is not None and stop_condition():
                 time_progression.close()
@@ -903,6 +902,7 @@ class Scene(Container):
         for animation in animations:
             animation.finish()
             animation.clean_up_from_scene(self)
+        self.renderer.static_image = None
 
     def add_static_frames(self, duration):
         self.renderer.update_frame(self)
