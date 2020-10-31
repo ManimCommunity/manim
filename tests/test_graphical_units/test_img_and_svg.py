@@ -8,14 +8,14 @@ from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 
-class SVGMobjectTest(Scene):
+class ImageMobjectTest(Scene):
     def construct(self):
         path = (
             get_project_root()
-            / "tests/test_graphical_units/img_svg_resources/weight.svg"
+            / "tests/test_graphical_units/img_svg_resources/pumpkin1920×1080.png"
         )
-        svg_obj = SVGMobject(str(path))
-        self.add(svg_obj)
+        imgobj = ImageMobject(str(path))
+        self.add(imgobj)
         self.wait()
 
 
@@ -23,7 +23,7 @@ class ImageMobjectTest(Scene):
     def construct(self):
         path = (
             get_project_root()
-            / "tests/test_graphical_units/img_svg_resources/tree_img640×351.jpg"
+            / "tests/test_graphical_units/img_svg_resources/pumpkin1920×1280.jpg"
         )
         imgobj = ImageMobject(str(path))
         self.add(imgobj)
