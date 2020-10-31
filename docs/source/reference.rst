@@ -97,6 +97,19 @@ Cameras
    ~camera.three_d_camera
 
 
+*************
+Configuration
+*************
+
+.. autosummary::
+   :toctree: reference
+
+   ~_config
+   ~_config.utils
+   ~_config.main_utils
+   ~_config.logger_utils
+
+
 *********
 Utilities
 *********
@@ -128,7 +141,5 @@ Other modules
 .. autosummary::
    :toctree: reference
 
-   _config
-   _config.utils
    constants
    container
