@@ -19,7 +19,7 @@ class SVGMobjectTest(Scene):
         self.wait()
 
 
-# # class ImageMobjectTest(Scene):
+# # class ImageMobjectTest(Scene): # Still work in progress
 # #     def construct(self):
 #         pa = Path.cwd()
 #         file_path = pa / "tests/test_graphical_units/resource_of_imgs_and_svg_for_tests/tree_img640×351.jpg"
