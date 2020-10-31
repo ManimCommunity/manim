@@ -31,6 +31,7 @@ def config_file_paths():
     folder_wide = Path("manim.cfg")
     return [library_wide, user_wide, folder_wide]
 
+
 def get_project_root() -> Path:
     return Path(__file__).parent.parent.parent
 
