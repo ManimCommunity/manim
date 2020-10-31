@@ -229,7 +229,7 @@ class ManimDirective(Directive):
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
-            filesrc = os.path.join(video_dir, qualitydir, filename)
+            filesrc = config.get_dir("video_dir") / filename
         elif save_last_frame:
             filename = f"{output_file}.png"
             filesrc = config.get_dir("images_dir") / filename
