@@ -100,11 +100,13 @@ div.highlight pre {
     margin-bottom: 0;
 }
 
-.example-header {
+h5.example-header {
     font-size: 18px;
     font-weight: bold;
     padding: 8px 16px;
     color: white;
+    margin: 0;
+    font-family: inherit;
 }
 
 .manim-example .highlight {
