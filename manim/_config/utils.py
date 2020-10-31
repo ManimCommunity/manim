@@ -245,6 +245,7 @@ class ManimConfig(MutableMapping):
     """
 
     _OPTS = {
+        "assets_dir",
         "background_color",
         "background_opacity",
         "custom_folders",
@@ -523,6 +524,7 @@ class ManimConfig(MutableMapping):
 
         # str keys
         for key in [
+            "assets_dir",
             "verbosity",
             "media_dir",
             "log_dir",
@@ -625,6 +627,7 @@ class ManimConfig(MutableMapping):
 
         for key in [
             "media_dir",  # always set this one first
+            "assets_dir",
             "log_dir",
             "log_to_file",  # always set this one last
         ]:
@@ -667,6 +670,7 @@ class ManimConfig(MutableMapping):
         # Handle --custom_folders
         if args.custom_folders:
             for opt in [
+                "assets_dir",
                 "media_dir",
                 "video_dir",
                 "images_dir",
@@ -1153,6 +1157,7 @@ class ManimConfig(MutableMapping):
 
         """
         dirs = [
+            "assets_dir",
             "media_dir",
             "video_dir",
             "images_dir",
@@ -1194,6 +1199,12 @@ class ManimConfig(MutableMapping):
             self._d.__setitem__(key, str(val))
         else:
             self._d.__setitem__(key, val)
+
+    assets_dir = property(
+        lambda self: self._d["assets_dir"],
+        lambda self, val: self._set_dir("assets_dir", val),
+        doc="Directory to locate video assets.",
+    )
 
     log_dir = property(
         lambda self: self._d["log_dir"],
