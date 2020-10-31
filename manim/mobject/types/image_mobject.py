@@ -27,8 +27,8 @@ class AbstractImageMobject(Mobject):
     ----------
     scale_to_resolution : :class:`int`
         At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
-        This is a custom parameter of ImageMobject so that rendering a scene with the `--quality low` flag for faster rendering and testing won't effect the position of the image on the screen.
-        Calculated by `height = image_height / scale_to_resolution * config["frame_height"]`
+        This is a custom parameter of ImageMobject so that rendering a scene with the ``--quality low`` flag for faster rendering and testing won't effect the position of the image on the screen.
+        Calculated by ``height = image_height / scale_to_resolution * config["frame_height"]``
     """
 
     CONFIG = {
@@ -61,6 +61,13 @@ class AbstractImageMobject(Mobject):
         h, w = self.get_pixel_array().shape[:2]
         if self.scale_to_resolution:
             self.height = h / self.scale_to_resolution * config["frame_height"]
+            print(h)
+            print(w)
+            print(self.scale_to_resolution)
+            print(config["frame_height"])
+            print(config["frame_width"])
+            print(self.height)
+            print(self.height * w / h)
         else:
             self.height = 3  ## this is the case for ImageMobjectFromCamera
         self.stretch_to_fit_height(self.height)
@@ -74,8 +81,8 @@ class ImageMobject(AbstractImageMobject):
         ----------
         scale_to_resolution : :class:`int`
             At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
-            This is a custom parameter of ImageMobject so that rendering a scene with the `--quality low` flag for faster rendering and testing won't effect the position of the image on the screen.
-            Calculated by `height = image_height / scale_to_resolution * config["frame_height"]`
+            This is a custom parameter of ImageMobject so that rendering a scene with the ``--quality low`` flag for faster rendering and testing won't effect the position of the image on the screen.
+            Calculated by ``height = image_height / scale_to_resolution * config["frame_height"]``
 
 
 
