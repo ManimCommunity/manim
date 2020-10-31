@@ -280,7 +280,4 @@ def shoelace_direction(x_y):
         Either `"CW"` or `"CCW"`.
     """
     area = shoelace(x_y)
-    if area > 0:
-        return "CW"
-    else:
-        return "CCW"
+   return "CW" if area > 0 else "CCW"
