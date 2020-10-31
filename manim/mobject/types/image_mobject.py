@@ -61,13 +61,6 @@ class AbstractImageMobject(Mobject):
         h, w = self.get_pixel_array().shape[:2]
         if self.scale_to_resolution:
             self.height = h / self.scale_to_resolution * config["frame_height"]
-            print(h)
-            print(w)
-            print(self.scale_to_resolution)
-            print(config["frame_height"])
-            print(config["frame_width"])
-            print(self.height)
-            print(self.height * w / h)
         else:
             self.height = 3  ## this is the case for ImageMobjectFromCamera
         self.stretch_to_fit_height(self.height)
