@@ -27,7 +27,11 @@ class ArrowTest(Scene):
     def construct(self):
         a = Arrow()
         self.play(Animation(a))
-        b = Arrow(color=RED, stroke_width=12, end=2*LEFT, start=2*RIGHT).scale(2).shift(UP)
+        b = (
+            Arrow(color=RED, stroke_width=12, end=2 * LEFT, start=2 * RIGHT)
+            .scale(2)
+            .shift(UP)
+        )
         self.play(Animation(b))
 
 
@@ -114,7 +118,7 @@ class DashedLineTest(Scene):
 
 class CustomDashedLineTest(Scene):
     def construct(self):
-        a = DashedLine(end=2*DOWN, start=2*UP, dash_length=0.5)
+        a = DashedLine(end=2 * DOWN, start=2 * UP, dash_length=0.5)
         self.play(Animation(a))
 
 

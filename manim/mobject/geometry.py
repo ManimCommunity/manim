@@ -233,20 +233,27 @@ class Arc(TipableVMobject):
     """A circular arc."""
 
     def __init__(
-            self,
-            num_components=9,
-            arc_center=ORIGIN,
-            start_angle=0,
-            angle=TAU/4,
-            radius=1.0,
-            **kwargs):
+        self,
+        num_components=9,
+        arc_center=ORIGIN,
+        start_angle=0,
+        angle=TAU / 4,
+        radius=1.0,
+        **kwargs
+    ):
         self.num_components = num_components
         self.arc_center = arc_center
         self.radius = radius
         self.start_angle = start_angle
         self.angle = angle
         self._failed_to_get_center = False
-        VMobject.__init__(self, num_components=num_components, arc_center=arc_center, radius=radius, **kwargs)
+        VMobject.__init__(
+            self,
+            num_components=num_components,
+            arc_center=arc_center,
+            radius=radius,
+            **kwargs
+        )
 
     def generate_points(self):
         self.set_pre_positioned_points()
@@ -546,7 +553,6 @@ class Annulus(Circle):
 
 
 class Line(TipableVMobject):
-
     def __init__(self, start=LEFT, end=RIGHT, path_arc=None, buff=0, **kwargs):
         self.path_arc = path_arc
         self.buff = buff
@@ -641,13 +647,12 @@ class Line(TipableVMobject):
 
 
 class DashedLine(Line):
-
     def __init__(
-            self,
-            dash_length=DEFAULT_DASH_LENGTH,
-            dash_spacing=None,
-            positive_space_ratio=0.5,
-            **kwargs
+        self,
+        dash_length=DEFAULT_DASH_LENGTH,
+        dash_spacing=None,
+        positive_space_ratio=0.5,
+        **kwargs
     ):
         self.dash_length = dash_length
         self.dash_spacing = dash_spacing
@@ -691,7 +696,6 @@ class DashedLine(Line):
 
 
 class TangentLine(Line):
-
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
         self.length = length
         self.d_alpha = d_alpha
@@ -706,7 +710,6 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
-
     def __init__(self, width=0.2, angle=0, **kwargs):
         self.width = width
         self.angle = angle
@@ -717,15 +720,15 @@ class Elbow(VMobject):
 
 
 class Arrow(Line):
-
     def __init__(
-            self,
-            stroke_width=6,
-            buff=MED_SMALL_BUFF,
-            preserve_tip_size_when_scaling=True,
-            max_stroke_width_to_length_ratio=5,
-            max_tip_length_to_length_ratio=0.25,
-            **kwargs):
+        self,
+        stroke_width=6,
+        buff=MED_SMALL_BUFF,
+        preserve_tip_size_when_scaling=True,
+        max_stroke_width_to_length_ratio=5,
+        max_tip_length_to_length_ratio=0.25,
+        **kwargs
+    ):
         self.preserve_tip_size_when_scaling = preserve_tip_size_when_scaling
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
