@@ -22,7 +22,7 @@ logger, console = make_logger(parser["logger"], parser["CLI"]["verbosity"])
 logging.getLogger("PIL").setLevel(logging.INFO)
 logging.getLogger("matplotlib").setLevel(logging.INFO)
 
-config = ManimConfig(parser)
+config = ManimConfig().digest_parser(parser)
 frame = ManimFrame(config)
 
 

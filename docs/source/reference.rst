@@ -129,5 +129,6 @@ Other modules
    :toctree: reference
 
    _config
+   _config.utils
    constants
    container
