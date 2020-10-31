@@ -1,6 +1,6 @@
 from manim import constants
-from manim.config.main_utils import parse_args
-from manim.config.utils import determine_quality
+from manim._config.main_utils import parse_args
+from manim._config.utils import determine_quality
 
 
 def test_quality_flags():
