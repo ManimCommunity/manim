@@ -18,15 +18,17 @@ class SVGMobjectTest(Scene):
         self.add(svg_obj)
         self.wait()
 
+
 class ImageMobjectTest(Scene):
     def construct(self):
         path = (
-                get_project_root()
-                / "tests/test_graphical_units/img_svg_resources/tree_img640×351.jpg"
+            get_project_root()
+            / "tests/test_graphical_units/img_svg_resources/tree_img640×351.jpg"
         )
         imgobj = ImageMobject(str(path))
         self.add(imgobj)
         self.wait()
+
 
 # # class ImageMobjectTest(Scene): # Still work in progress
 # #     def construct(self):
