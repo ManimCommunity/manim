@@ -30,20 +30,21 @@ class ImageMobjectTest(Scene):
         self.wait()
 
 
-# # class ImageMobjectTest(Scene): # Still work in progress
-# #     def construct(self):
-#         pa = Path.cwd()
-#         file_path = pa / "tests/test_graphical_units/resource_of_imgs_and_svg_for_tests/tree_img640×351.jpg"
-#
-# #         im1 = ImageMobject(file_path).shift(4 * LEFT + UP)
-# #         im2 = ImageMobject(file_path, scale_to_resolution=1080).shift(
-# #             4 * LEFT + 2 * DOWN
-# #         )
-# #         im3 = ImageMobject(file_path, scale_to_resolution=540).shift(4 * RIGHT)
-# #         self.add(im1, im2, im3)
-# #         self.wait(1)
-#
-#
+class ImageMobjectTest2(Scene):
+    def construct(self):
+        file_path = (
+            get_project_root()
+            / "tests/test_graphical_units/img_svg_resources/tree_img_640x351.png"
+        )
+        im1 = ImageMobject(file_path).shift(4 * LEFT + UP)
+        im2 = ImageMobject(file_path, scale_to_resolution=1080).shift(
+            4 * LEFT + 2 * DOWN
+        )
+        im3 = ImageMobject(file_path, scale_to_resolution=540).shift(4 * RIGHT)
+        self.add(im1, im2, im3)
+        self.wait(1)
+
+
 MODULE_NAME = "img_and_svg"
 
 
