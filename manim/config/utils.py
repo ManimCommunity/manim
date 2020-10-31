@@ -734,6 +734,7 @@ class ManimConfig(MutableMapping):
         self._d["use_js_renderer"] = val
         if val:
             self["disable_caching"] = True
+            self["skip_animations"] = True
 
     js_renderer_path = property(
         lambda self: self._d["js_renderer_path"],

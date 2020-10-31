@@ -20,13 +20,18 @@ class JsRenderer:
     def play(self, scene, *args, **kwargs):
         self.num_plays += 1
         self.frame_server.keyframes.append(copy.deepcopy(scene))
+        scene.play_internal(*args, **kwargs)
 
-        with grpc.insecure_channel("localhost:50052") as channel:
-            stub = renderserver_pb2_grpc.RenderServerStub(channel)
-            try:
-                stub.AnimationStatus(renderserver_pb2.EmptyRequest())
-            except grpc._channel._InactiveRpcError as e:
-                logger.error(e)
+    def update_frame(  # TODO Description in Docstring
+        self,
+        scene,
+        mobjects=None,
+        background=None,
+        include_submobjects=True,
+        ignore_skipping=True,
+        **kwargs,
+    ):
+        pass
 
 
 class JsCamera:
