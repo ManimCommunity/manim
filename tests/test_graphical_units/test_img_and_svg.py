@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 from manim import *
-from manim.config.utils import get_project_root
+from ..helpers.path_utils import get_project_root
 from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
