@@ -21,17 +21,6 @@ class SVGMobjectTest(Scene):
 
 class ImageMobjectTest(Scene):
     def construct(self):
-        path = (
-            get_project_root()
-            / "tests/test_graphical_units/img_svg_resources/pumpkin1920×1080.png"
-        )
-        imgobj = ImageMobject(str(path))
-        self.add(imgobj)
-        self.wait()
-
-
-class ImageMobjectTest2(Scene):
-    def construct(self):
         file_path = (
             get_project_root()
             / "tests/test_graphical_units/img_svg_resources/tree_img_640x351.png"
