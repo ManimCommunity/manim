@@ -22,6 +22,13 @@ from manim.constants import QUALITIES, DEFAULT_QUALITY
 class AbstractImageMobject(Mobject):
     """
     Automatically filters out black pixels
+
+    Parameters
+    ----------
+    scale_to_resolution : :class:`int`
+        At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
+        This is a custom parameter of ImageMobject so that rendering a scene with the `--quality low` flag for faster rendering and testing won't effect the position of the image on the screen.
+        Calculated by `height = image_height / scale_to_resolution * config["frame_height"]`
     """
 
     CONFIG = {
@@ -62,6 +69,15 @@ class AbstractImageMobject(Mobject):
 
 class ImageMobject(AbstractImageMobject):
     """Displays an Image from a numpy array or a file.
+
+    Parameters
+        ----------
+        scale_to_resolution : :class:`int`
+            At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
+            This is a custom parameter of ImageMobject so that rendering a scene with the `--quality low` flag for faster rendering and testing won't effect the position of the image on the screen.
+            Calculated by `height = image_height / scale_to_resolution * config["frame_height"]`
+
+
 
     Example
     -------
