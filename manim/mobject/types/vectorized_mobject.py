@@ -881,8 +881,7 @@ class VMobject(Mobject):
         return vmob
 
     def get_direction(self):
-        """
-        Uses shoelace in space_ops.py to calculate the direction.
+        """Uses :func:`~.space_ops.shoelace_direction` to calculate the direction.
         The direction of points determines in which direction the
         object is drawn, clockwise or counterclockwise.
 
@@ -894,8 +893,7 @@ class VMobject(Mobject):
         return shoelace_direction(self.get_start_anchors())
 
     def reverse_direction(self):
-        """
-        Reverts the point direction by inverting the point order.
+        """Reverts the point direction by inverting the point order.
 
         Returns
         -------
@@ -906,8 +904,7 @@ class VMobject(Mobject):
         return self
 
     def force_direction(self, target_direction):
-        """
-        Makes sure that points are either directed clockwise or
+        """Makes sure that points are either directed clockwise or
         counterclockwise.
 
         Parameters

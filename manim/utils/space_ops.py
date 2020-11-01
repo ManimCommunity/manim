@@ -255,8 +255,7 @@ def get_winding_number(points):
 
 
 def shoelace(x_y):
-    """
-    2D implementation of the shoelace formula.
+    """2D implementation of the shoelace formula.
 
     Returns
     -------
