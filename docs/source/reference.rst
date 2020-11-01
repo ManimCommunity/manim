@@ -10,9 +10,9 @@ the :doc:`changelog`.
 
 .. currentmodule:: manim
 
-********************
-Mathematical Objects
-********************
+********
+Mobjects
+********
 
 .. autosummary::
    :toctree: reference
@@ -128,6 +128,6 @@ Other modules
 .. autosummary::
    :toctree: reference
 
-   _config
+   config
    constants
    container
