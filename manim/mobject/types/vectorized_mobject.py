@@ -910,7 +910,7 @@ class VMobject(Mobject):
         Parameters
         ----------
         target_direction : :class:`str`
-            Either `"CW"` or `"CCW"`.
+            Either ``"CW"`` or ``"CCW"``.
         """
         if target_direction not in ("CW", "CCW"):
             raise ValueError('Invalid input for force_direction. Use "CW" or "CCW"')

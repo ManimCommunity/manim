@@ -276,7 +276,7 @@ def shoelace_direction(x_y):
     Returns
     -------
     :class:`str`
-        Either `"CW"` or `"CCW"`.
+        Either ``"CW"`` or ``"CCW"``.
     """
     area = shoelace(x_y)
     return "CW" if area > 0 else "CCW"
