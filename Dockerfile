@@ -75,5 +75,8 @@ CMD ["/bin/bash"]
 # build with:
 # docker build --label="manimce" --tag="manimce" .
 
-# test with:
+# test option 1 with:
+# docker run --rm -it manimce "apt install -y wget && wget 'https://raw.githubusercontent.com/ManimCommunity/manim/master/example_scenes/basic.py' && python -m manim basic.py SquareToCircle --low_quality -s && echo yay || echo nay"
+
+# test the other options with:
 # docker run --rm -it manimce "python -m manim example_scenes/basic.py SquareToCircle --low_quality -s > /dev/null 2>&1 && echo yay || echo nay"
