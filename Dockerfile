@@ -74,3 +74,6 @@ CMD ["/bin/bash"]
 
 # build with:
 # docker build --label="manimce" --tag="manimce" .
+
+# test with:
+# docker run --rm -it manimce "python -m manim example_scenes/basic.py SquareToCircle --low_quality -s > /dev/null 2>&1 && echo yay || echo nay"
