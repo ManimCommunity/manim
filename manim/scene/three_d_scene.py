@@ -83,9 +83,7 @@ class ThreeDScene(Scene):
         else:
             x = self.renderer.camera.theta_tracker
 
-        x.add_updater(
-            lambda m, dt: m.increment_value(rate * dt)
-        )
+        x.add_updater(lambda m, dt: m.increment_value(rate * dt))
         self.add(x)
 
     def stop_ambient_camera_rotation(self, about="theta"):
