@@ -885,6 +885,13 @@ class VMobject(Mobject):
         The direction of points determines in which direction the
         object is drawn, clockwise or counterclockwise.
 
+        Examples
+        --------
+        The default direction of a :class:`~.Circle` is counterclockwise::
+        
+        >>> from manim import Circle
+        >>> Circle().get_direction()
+        "CCW"
         Returns
         -------
         :class:`str`
