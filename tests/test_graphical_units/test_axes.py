@@ -3,7 +3,9 @@ import pytest
 from manim import *
 from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
-#from ..helpers.graphical_units import set_test_scene
+
+# from ..helpers.graphical_units import set_test_scene
+
 
 class AxesTest(GraphScene):
     CONFIG = {
@@ -12,8 +14,8 @@ class AxesTest(GraphScene):
         "y_min": -3,
         "y_max": 2,
         "x_axis_config": {
-            "add_start": .5,
-            "add_end": .5,
+            "add_start": 0.5,
+            "add_end": 0.5,
             "include_tip": True,
         },
         "y_axis_config": {
@@ -41,4 +43,5 @@ MODULE_NAME = "graph"
 def test_scene(scene_to_test, tmpdir, show_diff):
     GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
 
-#set_test_scene(AxesTest, "graph")
+
+# set_test_scene(AxesTest, "graph")
