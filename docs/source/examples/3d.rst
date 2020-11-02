@@ -18,7 +18,7 @@
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
-.. manim:: ThreeDSphere
+.. manim:: ThreeDCone
     :save_last_frame:
 
     class ThreeDCone(ThreeDScene):
@@ -33,7 +33,7 @@
             self.add(axes, cone)
             self.wait()
 
-.. manim:: ThreeDSphere
+.. manim:: ThreeDArrow
     :save_last_frame:
 
     class ThreeDArrow(ThreeDScene):
@@ -49,7 +49,7 @@
             self.add(axes, arrow)
             self.wait()
 
-.. manim:: ThreeDSphere
+.. manim:: ThreeDParaboloid
     :save_last_frame:
 
     class ThreeDParaboloid(ThreeDScene):
