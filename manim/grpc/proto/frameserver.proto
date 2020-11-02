@@ -14,8 +14,7 @@ service FrameServer {
 }
 
 message FrameRequest {
-    int64 animation_index = 1;
-    float animation_offset = 2;
+    float scene_offset = 1;
 }
 
 message Style {

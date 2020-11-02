@@ -89,7 +89,8 @@ class CairoRenderer:
     @handle_caching_play
     @handle_play_like_call
     def play(self, scene, *args, **kwargs):
-        scene.play_internal(*args, **kwargs)
+        if scene.compile_animation_data(*args, **kwargs):
+            scene.play_internal()
 
     def update_frame(  # TODO Description in Docstring
         self,
@@ -130,6 +131,10 @@ class CairoRenderer:
 
         kwargs["include_submobjects"] = include_submobjects
         self.camera.capture_mobjects(mobjects, **kwargs)
+
+    def render(self, moving_mobjects):
+        self.update_frame(self, moving_mobjects)
+        self.add_frame(self.get_frame())
 
     def get_frame(self):
         """

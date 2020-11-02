@@ -54,17 +54,24 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
         self.scene_thread.start()
 
-    def signal_pending_animation(self, animation_index):
-        self.scene.start_animation = animation_index
-        self.scene.animation_finished.set()
-        return frameserver_pb2.FrameResponse(frame_pending=True)
-
     def GetFrameAtTime(self, request, context):
-        selected_scene = None
-        if self.animation_index_is_cached(request.animation_index):
-            selected_scene = self.keyframes[request.animation_index]
-        else:
-            return self.signal_pending_animation(request.animation_index)
+        requested_scene_index = 0
+        requested_scene = self.keyframes[requested_scene_index]
+        cumulative_time = requested_scene.duration
+        while cumulative_time < request.scene_offset:
+            requested_scene_index += 1
+            requested_scene = self.keyframes[requested_scene_index]
+            cumulative_time += requested_scene.duration
+
+        cumulative_time_before_requested_scene = (
+            cumulative_time - requested_scene.duration
+        )
+        requested_scene_time_offset = (
+            request.scene_offset - cumulative_time_before_requested_scene
+        )
+        print(requested_scene_time_offset)
+        # TODO: IMPLEMENT THIS
+        requested_scene.update_to_time(requested_scene_time_offset)
 
         # play() uses run_time and wait() uses duration TODO: Fix this inconsistency.
         # TODO: What about animations without a fixed duration?

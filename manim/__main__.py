@@ -69,10 +69,13 @@ def main():
         module = get_module(config.get_dir("input_file"))
         all_scene_classes = get_scene_classes_from_module(module)
         scene_classes_to_render = get_scenes_to_render(all_scene_classes)
+
         for SceneClass in scene_classes_to_render:
             try:
                 if config["use_js_renderer"]:
-                    frame_server_impl.get(SceneClass).start()
+                    server = frame_server_impl.get(SceneClass)
+                    server.start()
+                    server.wait_for_termination()
                 else:
                     scene = SceneClass()
                     scene.render()

@@ -15,8 +15,14 @@ class JsRenderer:
 
     def play(self, scene, *args, **kwargs):
         self.num_plays += 1
-        self.frame_server.keyframes.append(copy.deepcopy(scene))
-        scene.play_internal(*args, **kwargs)
+        s = scene.compile_animation_data(*args, skip_rendering=True, **kwargs)
+        scene_copy = copy.deepcopy(scene)
+        scene_copy.renderer = self
+        self.frame_server.keyframes.append(scene_copy)
+        if s is None:
+            scene_copy.is_static = True
+        else:
+            scene.play_internal(skip_rendering=True)
 
     def update_frame(  # TODO Description in Docstring
         self,

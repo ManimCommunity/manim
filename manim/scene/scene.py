@@ -10,7 +10,7 @@ import warnings
 import platform
 import copy
 
-from tqdm import tqdm as ProgressDisplay
+from tqdm import tqdm
 import numpy as np
 
 from .. import config, logger
@@ -72,6 +72,13 @@ class Scene(Container):
 
     def __init__(self, renderer=None, **kwargs):
         Container.__init__(self, **kwargs)
+        self.animations = None
+        self.stop_condition = None
+        self.moving_mobjects = None
+        self.static_mobjects = None
+        self.time_progression = None
+        self.duration = None
+
         if renderer is None:
             self.renderer = CairoRenderer(camera_class=self.camera_class)
         else:
@@ -92,7 +99,7 @@ class Scene(Container):
         result = cls.__new__(cls)
         memo[id(self)] = result
         for k, v in self.__dict__.items():
-            if k in ["renderer"]:
+            if k in ["renderer", "time_progression"]:
                 continue
             if k == "camera_class":
                 setattr(result, k, v)
@@ -586,7 +593,7 @@ class Scene(Container):
                 return mobjects[i:]
         return []
 
-    def get_moving_and_stationary_mobjects(self, animations):
+    def get_moving_and_static_mobjects(self, animations):
         moving_mobjects = self.get_moving_mobjects(*animations)
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
@@ -599,10 +606,10 @@ class Scene(Container):
             moving_mobjects,
             use_z_index=self.renderer.camera.use_z_index,
         )
-        stationary_mobjects = list_difference_update(
+        static_mobjects = list_difference_update(
             all_mobject_families, all_moving_mobject_families
         )
-        return all_moving_mobject_families, stationary_mobjects
+        return all_moving_mobject_families, static_mobjects
 
     def compile_play_args_to_animation_list(self, *args, **kwargs):
         """
@@ -683,8 +690,35 @@ class Scene(Container):
 
         return animations
 
+    def get_animation_time_progression(self, animations, duration):
+        if len(animations) == 1 and isinstance(animations[0], Wait):
+            stop_condition = animations[0].stop_condition
+            if stop_condition is not None:
+                time_progression = self.get_time_progression(
+                    duration,
+                    "Waiting for {}".format(stop_condition.__name__),
+                    n_iterations=-1,  # So it doesn't show % progress
+                    override_skip_animations=True,
+                )
+            else:
+                time_progression = self.get_time_progression(
+                    duration, "Waiting {}".format(self.renderer.num_plays)
+                )
+        else:
+            time_progression = self.get_time_progression(
+                duration,
+                "".join(
+                    [
+                        "Animation {}: ".format(self.renderer.num_plays),
+                        str(animations[0]),
+                        (", etc." if len(animations) > 1 else ""),
+                    ]
+                ),
+            )
+        return time_progression
+
     def get_time_progression(
-        self, run_time, n_iterations=None, override_skip_animations=False
+        self, run_time, description, n_iterations=None, override_skip_animations=False
     ):
         """
         You will hardly use this when making your own animations.
@@ -709,7 +743,7 @@ class Scene(Container):
 
         Returns
         -------
-        ProgressDisplay
+        time_progression
             The CommandLine Progress Bar.
         """
         if config["skip_animations"] and not override_skip_animations:
@@ -717,81 +751,13 @@ class Scene(Container):
         else:
             step = 1 / self.renderer.camera.frame_rate
             times = np.arange(0, run_time, step)
-        time_progression = ProgressDisplay(
+        time_progression = tqdm(
             times,
             total=n_iterations,
             leave=config["leave_progress_bars"],
             ascii=True if platform.system() == "Windows" else None,
             disable=not config["progress_bar"],
         )
-        return time_progression
-
-    def get_animation_time_progression(self, animations):
-        """
-        You will hardly use this when making your own animations.
-        This method is for Manim's internal use.
-
-        Uses :func:`~.get_time_progression` to obtain a
-        CommandLine ProgressBar whose ``fill_time`` is
-        dependent on the qualities of the passed Animation,
-
-        Parameters
-        ----------
-        animations : List[:class:`~.Animation`, ...]
-            The list of animations to get
-            the time progression for.
-
-        Returns
-        -------
-        ProgressDisplay
-            The CommandLine Progress Bar.
-        """
-        run_time = self.get_run_time(animations)
-        time_progression = self.get_time_progression(run_time)
-        time_progression.set_description(
-            "".join(
-                [
-                    "Animation {}: ".format(self.renderer.num_plays),
-                    str(animations[0]),
-                    (", etc." if len(animations) > 1 else ""),
-                ]
-            )
-        )
-        return time_progression
-
-    def get_wait_time_progression(self, duration, stop_condition):
-        """
-        This method is used internally to obtain the CommandLine
-        Progressbar for when self.wait() is called in a scene.
-
-        Parameters
-        ----------
-        duration : int or float
-            duration of wait time
-
-        stop_condition : function
-            The function which determines whether to continue waiting.
-
-        Returns
-        -------
-        ProgressBar
-            The CommandLine ProgressBar of the wait time
-
-        """
-        if stop_condition is not None:
-            time_progression = self.get_time_progression(
-                duration,
-                n_iterations=-1,  # So it doesn't show % progress
-                override_skip_animations=True,
-            )
-            time_progression.set_description(
-                "Waiting for {}".format(stop_condition.__name__)
-            )
-        else:
-            time_progression = self.get_time_progression(duration)
-            time_progression.set_description(
-                "Waiting {}".format(self.renderer.num_plays)
-            )
         return time_progression
 
     def get_run_time(self, animations):
@@ -810,7 +776,14 @@ class Scene(Container):
             The total ``run_time`` of all of the animations in the list.
         """
 
-        return np.max([animation.run_time for animation in animations])
+        if len(animations) == 1 and isinstance(animations[0], Wait):
+            if animations[0].stop_condition is not None:
+                return 0
+            else:
+                return animations[0].duration
+
+        else:
+            return np.max([animation.run_time for animation in animations])
 
     def play(self, *args, **kwargs):
         self.renderer.play(self, *args, **kwargs)
@@ -834,7 +807,54 @@ class Scene(Container):
         """
         self.wait(max_time, stop_condition=stop_condition)
 
-    def play_internal(self, *args, **kwargs):
+    def compile_animation_data(self, *args, skip_rendering=False, **kwargs):
+        if len(args) == 0:
+            warnings.warn("Called Scene.play with no animations")
+            return None
+
+        self.animations = self.compile_play_args_to_animation_list(*args, **kwargs)
+
+        self.stop_condition = None
+        self.moving_mobjects = None
+        self.static_mobjects = None
+        if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
+            self.update_mobjects(dt=0)  # Any problems with this?
+            if self.should_update_mobjects():
+                # TODO, be smart about setting a static image
+                # the same way Scene.play does
+                self.renderer.static_image = None
+                self.stop_condition = self.animations[0].stop_condition
+            else:
+                if not skip_rendering:
+                    self.add_static_frames(self.animations[0].duration)
+                return None
+        else:
+            # Paint all non-moving objects onto the screen, so they don't
+            # have to be rendered every frame
+            (
+                self.moving_mobjects,
+                self.static_mobjects,
+            ) = self.get_moving_and_static_mobjects(self.animations)
+            self.renderer.save_static_frame_data(self, self.static_mobjects)
+
+        self.duration = self.get_run_time(self.animations)
+        self.time_progression = self.get_animation_time_progression(
+            self.animations, self.duration
+        )
+
+        for animation in self.animations:
+            animation.begin()
+
+        return self
+
+    def step_animation(self, t, dt):
+        for animation in self.animations:
+            animation.update_mobjects(dt)
+            alpha = t / animation.run_time
+            animation.interpolate(alpha)
+        self.update_mobjects(dt)
+
+    def play_internal(self, skip_rendering=False):
         """
         This method is used to prep the animations for rendering,
         apply the arguments and parameters required to them,
@@ -846,60 +866,18 @@ class Scene(Container):
         **kwargs : named parameters affecting what was passed in *args e.g
             run_time, lag_ratio etc.
         """
-        if len(args) == 0:
-            warnings.warn("Called Scene.play with no animations")
-            return
-
-        animations = self.compile_play_args_to_animation_list(*args, **kwargs)
-        if (
-            len(animations) == 1
-            and isinstance(animations[0], Wait)
-            and not self.should_update_mobjects()
-        ):
-            self.add_static_frames(animations[0].duration)
-            return
-
-        moving_mobjects = None
-        static_mobjects = None
-        duration = None
-        stop_condition = None
-        time_progression = None
-        if len(animations) == 1 and isinstance(animations[0], Wait):
-            # TODO, be smart about setting a static image
-            # the same way Scene.play does
-            duration = animations[0].duration
-            stop_condition = animations[0].stop_condition
-            self.renderer.static_image = None
-            time_progression = self.get_wait_time_progression(duration, stop_condition)
-        else:
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            (
-                moving_mobjects,
-                stationary_mobjects,
-            ) = self.get_moving_and_stationary_mobjects(animations)
-            self.renderer.save_static_frame_data(self, stationary_mobjects)
-            time_progression = self.get_animation_time_progression(animations)
-
-        for animation in animations:
-            animation.begin()
-
         last_t = 0
-        for t in time_progression:
+        for t in self.time_progression:
             dt = t - last_t
             last_t = t
-            for animation in animations:
-                animation.update_mobjects(dt)
-                alpha = t / animation.run_time
-                animation.interpolate(alpha)
-            self.update_mobjects(dt)
-            self.renderer.update_frame(self, moving_mobjects)
-            self.renderer.add_frame(self.renderer.get_frame())
-            if stop_condition is not None and stop_condition():
-                time_progression.close()
+            self.step_animation(t, dt)
+            if not skip_rendering:
+                self.renderer.render(self.moving_mobjects)
+            if self.stop_condition is not None and self.stop_condition():
+                self.time_progression.close()
                 break
 
-        for animation in animations:
+        for animation in self.animations:
             animation.finish()
             animation.clean_up_from_scene(self)
         self.renderer.static_image = None
