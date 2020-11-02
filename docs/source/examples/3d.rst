@@ -18,6 +18,53 @@
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
+.. manim:: ThreeDSphere
+    :save_last_frame:
+
+    class ThreeDCone(ThreeDScene):
+        def construct(self):
+            axes = ThreeDAxes()
+            cone = Cone(
+                base_radius=0.5,
+                direction=-Y_AXIS,
+                checkerboard_colors=[RED_D, RED_E], resolution=(15, 32)
+            )
+            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.add(axes, cone)
+            self.wait()
+
+.. manim:: ThreeDSphere
+    :save_last_frame:
+
+    class ThreeDArrow(ThreeDScene):
+        def construct(self):
+            axes = ThreeDAxes()
+            arrow = Arrow3d(
+                start=-X_AXIS,
+                end=2*X_AXIS,
+                checkerboard_colors=[RED_D, RED_E], resolution=(15, 32)
+            )
+            arrow.shift(1*Z_AXIS)
+            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.add(axes, arrow)
+            self.wait()
+
+.. manim:: ThreeDSphere
+    :save_last_frame:
+
+    class ThreeDParaboloid(ThreeDScene):
+        def construct(self):
+            axes = ThreeDAxes()
+            paraboloid = ParaboloidPolar(
+                r_max=1,
+                center_point= -Z_AXIS,
+            )
+
+            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.add(axes, paraboloid)
+            self.wait()
+
+
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
 
