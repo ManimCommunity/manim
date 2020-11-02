@@ -121,7 +121,6 @@ class GraphScene(Scene):
                 self.x_label_position,
                 buff=SMALL_BUFF,
             )
-            x_label.shift_onto_screen()
             x_axis.add(x_label)
             self.x_axis_label_mob = x_label
 
@@ -163,9 +162,7 @@ class GraphScene(Scene):
                 y_axis.get_corner(self.y_label_position),
                 self.y_label_position,
                 buff=SMALL_BUFF,
-                aligned_edge=-self.y_label_position,
             )
-            y_label.shift_onto_screen()
             y_axis.add(y_label)
             self.y_axis_label_mob = y_label
 
