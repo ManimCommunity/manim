@@ -891,7 +891,8 @@ class VMobject(Mobject):
         
         >>> from manim import Circle
         >>> Circle().get_direction()
-        "CCW"
+        'CCW'
+
         Returns
         -------
         :class:`str`
