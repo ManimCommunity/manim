@@ -1089,8 +1089,8 @@ class ManimConfig(MutableMapping):
             '{media_dir}/Tex'
             >>> config.media_dir
             './media'
-            >>> config.get_dir("tex_dir")
-            PosixPath('media/Tex')
+            >>> config.get_dir("tex_dir").as_posix()
+            'media/Tex'
 
         Resolving directories is done in a lazy way, at the last possible
         moment, to reflect any changes in other config options:
@@ -1098,8 +1098,8 @@ class ManimConfig(MutableMapping):
         .. code-block:: python
 
             >>> config.media_dir = 'my_media_dir'
-            >>> config.get_dir("tex_dir")
-            PosixPath('my_media_dir/Tex')
+            >>> config.get_dir("tex_dir").as_posix()
+            'my_media_dir/Tex'
 
         Some directories depend on information that is not available to
         :class:`ManimConfig`. For example, the default value of `video_dir`
@@ -1113,8 +1113,8 @@ class ManimConfig(MutableMapping):
             >>> config.get_dir("video_dir")
             Traceback (most recent call last):
             KeyError: 'video_dir {media_dir}/videos/{module_name}/{quality} requires the following keyword arguments: module_name'
-            >>> config.get_dir("video_dir", module_name="myfile")
-            PosixPath('my_media_dir/videos/myfile/1080p60')
+            >>> config.get_dir("video_dir", module_name="myfile").as_posix()
+            'my_media_dir/videos/myfile/1080p60'
 
         Note the quality does not need to be passed as keyword argument since
         :class:`ManimConfig` does store information about quality.
@@ -1130,8 +1130,8 @@ class ManimConfig(MutableMapping):
             >>> config.get_dir("partial_movie_dir")
             Traceback (most recent call last):
             KeyError: 'partial_movie_dir {video_dir}/partial_movie_files/{scene_name} requires the following keyword arguments: scene_name'
-            >>> config.get_dir("partial_movie_dir", module_name="myfile", scene_name="myscene")
-            PosixPath('my_media_dir/videos/myfile/1080p60/partial_movie_files/myscene')
+            >>> config.get_dir("partial_movie_dir", module_name="myfile", scene_name="myscene").as_posix()
+            'my_media_dir/videos/myfile/1080p60/partial_movie_files/myscene'
 
         Standard f-string syntax is used.  Arbitrary names can be used when
         defining directories, as long as the corresponding values are passed to
@@ -1143,11 +1143,11 @@ class ManimConfig(MutableMapping):
             >>> config.get_dir("media_dir")
             Traceback (most recent call last):
             KeyError: 'media_dir {dir1}/{dir2} requires the following keyword arguments: dir1'
-            >>> config.get_dir("media_dir", dir1='foo', dir2='bar')
-            PosixPath('foo/bar')
+            >>> config.get_dir("media_dir", dir1='foo', dir2='bar').as_posix()
+            'foo/bar'
             >>> config.media_dir = "./media"
-            >>> config.get_dir("media_dir")
-            PosixPath('media')
+            >>> config.get_dir("media_dir").as_posix()
+            'media'
 
         """
         dirs = [
