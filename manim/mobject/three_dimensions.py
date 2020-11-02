@@ -150,14 +150,9 @@ class Cone(ParametricSurface):
         "checkerboard_colors": False,
     }
     """
-               |\\
-               |_\\ <-- theta
-    height --> |  \\
-               |   \\ <-- r
-               |    \\
-               |     \\
-               --------
-               base_radius
+    A Cone can be defined using 2 parameters: its height, and its base radius.
+    The polar angle, theta, can be calculated using arctan(base_radius / height)
+    The spherical radius, r, can be calculated using the pythagorean theorem
     """
 
     def __init__(self, **kwargs):
@@ -186,10 +181,14 @@ class Cone(ParametricSurface):
         return PI - np.arctan(self.base_radius / self.height)
 
     def func(self, u, v):
-        """
-        u is r
-        v is phi
-        theta is available from self.theta
+        """Function to convert from spherical coordinates to cartesian.
+
+        Parameters
+        ---------
+        u : :class:`float`
+            the radius
+        v : :class:`float`
+            the azimuthal angle
         """
         r = u
         phi = v
@@ -257,7 +256,6 @@ class Arrow3d(VGroup):
     def __init__(self, start=LEFT, end=RIGHT, **kwargs):
         VGroup.__init__(self, **kwargs)
 
-        # TODO: inherit color
         self.line = Line(start, end)
         self.line.set_color(self.color)
 
@@ -317,7 +315,7 @@ class Cylinder(ParametricSurface):
         "height": 2,
         "direction": Z_AXIS,
         "center_point": ORIGIN,
-        # v will is the polar angle
+        # v will is the azimuthal angle
         "v_min": 0,
         "v_max": TAU,
     }
@@ -336,9 +334,14 @@ class Cylinder(ParametricSurface):
         self._rotate_to_direction()
 
     def func(self, u, v):
-        """
-        u is height
-        v is phi
+        """Function to convert from cylindrical coordinates to cartesian.
+
+        Parameters
+        ---------
+        u : :class:`float`
+            the height
+        v : :class:`float`
+            the azimuthal angle
         """
         height = u
         phi = v
@@ -369,7 +372,7 @@ class Cylinder(ParametricSurface):
         if x == 0:
             if y == 0:  # along the z axis
                 phi = 0
-            else:
+            else:  # along the x axis
                 phi = np.arctan(np.inf)
                 if y < 0:
                     phi += PI
