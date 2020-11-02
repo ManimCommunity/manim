@@ -76,12 +76,14 @@ class ThreeDScene(Scene):
         """
         # TODO, use a ValueTracker for rate, so that it
         # can begin and end smoothly
-        if about == "phi":
+        if about.lower() == "phi":
             x = self.renderer.camera.phi_tracker
-        elif about == "gamme":
+        elif about.lower() == "gamma":
             x = self.renderer.camera.gamma_tracker
-        else:
+        elif about.lower() == "theta":
             x = self.renderer.camera.theta_tracker
+        else:
+            raise ValueError("Invalid ambient rotation angle.")
 
         x.add_updater(lambda m, dt: m.increment_value(rate * dt))
         self.add(x)
@@ -90,12 +92,14 @@ class ThreeDScene(Scene):
         """
         This method stops all ambient camera rotation.
         """
-        if about == "phi":
+        if about.lower() == "phi":
             x = self.renderer.camera.phi_tracker
-        elif about == "gamme":
+        elif about.lower() == "gamma":
             x = self.renderer.camera.gamma_tracker
-        else:
+        elif about.lower() == "theta":
             x = self.renderer.camera.theta_tracker
+        else:
+            raise ValueError("Invalid ambient rotation angle.")
 
         x.clear_updaters()
         self.remove(x)
