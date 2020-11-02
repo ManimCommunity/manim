@@ -10,7 +10,7 @@ class AxesTest(GraphScene):
         "x_min": -5,
         "x_max": 5,
         "y_min": -3,
-        "y_max": 2,
+        "y_max": 3,
         "x_axis_config": {
             "add_start": 0.5,
             "add_end": 0.5,
