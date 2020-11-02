@@ -152,7 +152,18 @@ class Cone(ParametricSurface):
     """
     A Cone can be defined using 2 parameters: its height, and its base radius.
     The polar angle, theta, can be calculated using arctan(base_radius / height)
-    The spherical radius, r, can be calculated using the pythagorean theorem
+    The spherical radius, r, can be calculated using the pythagorean theorem.
+
+    .. code-block::
+
+                   |\\
+                   |_\\ <-- theta
+        height --> |  \\
+                   |   \\ <-- r
+                   |    \\
+                   |     \\
+                   --------
+                   base_radius
     """
 
     def __init__(self, **kwargs):
