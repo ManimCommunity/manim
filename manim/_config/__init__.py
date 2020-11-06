@@ -50,10 +50,13 @@ def tempconfig(temp):
 
     .. code-block:: python
 
-       config['frame_height'] == 8            # -> True
-       with tempconfig({'frame_width': 100}):
-           config['frame_height'] == 100      # -> True
-       config['frame_height'] == 8            # -> True
+       >>> config['frame_height']
+       8.0
+       >>> with tempconfig({'frame_height': 100.0}):
+       ...     print(config['frame_height'])
+       100.0
+       >>> config['frame_height']
+       8.0
 
     """
     global config
