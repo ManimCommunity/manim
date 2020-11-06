@@ -81,6 +81,7 @@ right after it's done rendering.
 .. note:: The ``-p`` flag does not change any properties of the global
           ``config`` dict.  The ``-p`` flag is only a command line convenience.
 
+
 Examples
 ========
 
