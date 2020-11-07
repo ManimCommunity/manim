@@ -1,4 +1,4 @@
-"""Utilities called from __main__.py to interact with the config."""
+"""Utilities called from ``__main__.py`` to interact with the config."""
 
 import os
 import sys
