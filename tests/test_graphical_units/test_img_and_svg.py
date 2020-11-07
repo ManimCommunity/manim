@@ -7,6 +7,8 @@ from ..helpers.path_utils import get_project_root
 from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
+# Tests for the modules image_mobject and svg_mobject
+
 
 class SVGMobjectTest(Scene):
     def construct(self):
