@@ -6,6 +6,8 @@ height/width, frame rate), output (e.g. directories, logging), styling
 (e.g. background color, transparency), and general behavior (e.g. writing a
 movie vs writing a single frame).
 
+See :doc:`tutorials/configuration` for an introduction to Manim's configuration system.
+
 """
 
 import os
@@ -25,9 +27,9 @@ from .logger_utils import set_file_logger
 
 
 def config_file_paths():
-    """The paths where .cfg files will be searched for.
+    """The paths where ``.cfg`` files will be searched for.
 
-    When manim is first imported, it processes any .cfg files it finds.  This
+    When manim is first imported, it processes any ``.cfg`` files it finds.  This
     function returns the locations in which these files are searched for.  In
     ascending order of precedence, these are: the library-wide config file, the
     user-wide config file, and the folder-wide config file.
@@ -45,7 +47,7 @@ def config_file_paths():
     Returns
     -------
     List[:class:`Path`]
-        List of paths which may contain .cfg files, in ascending order of
+        List of paths which may contain ``.cfg`` files, in ascending order of
         precedence.
 
     See Also
@@ -68,7 +70,7 @@ def config_file_paths():
 
 
 def make_config_parser(custom_file=None):
-    """Make a :class:`ConfigParser` object and load any .cfg files.
+    """Make a :class:`ConfigParser` object and load any ``.cfg`` files.
 
     The user-wide file, if it exists, overrides the library-wide file.  The
     folder-wide file, if it exists, overrides the other two.
@@ -198,7 +200,7 @@ class ManimConfig(MutableMapping):
        [CLI]
        background_color = WHITE
 
-    In order to have this .cfg file apply to a manim scene, it needs to be
+    In order to have this ``.cfg`` file apply to a manim scene, it needs to be
     placed in the same directory as the script,
 
     .. code-block:: bash
@@ -213,10 +215,10 @@ class ManimConfig(MutableMapping):
 
         manim scene.py
 
-    the background of the scene will be set to WHITE.  This applies regardless
+    the background of the scene will be set to ``WHITE``.  This applies regardless
     of where the manim command is invoked from.
 
-    Command line arguments override .cfg files.  In the previous example,
+    Command line arguments override ``.cfg`` files.  In the previous example,
     executing
 
     .. code-block:: bash
@@ -445,9 +447,9 @@ class ManimConfig(MutableMapping):
         Parameters
         ----------
         parser : :class:`ConfigParser`
-            An object reflecting the contents of one or many .cfg files.  In
+            An object reflecting the contents of one or many ``.cfg`` files.  In
             particular, it may reflect the contents of mulitple files that have
-            been parsed in a cascading fasion.
+            been parsed in a cascading fashion.
 
         Returns
         -------
@@ -456,15 +458,15 @@ class ManimConfig(MutableMapping):
 
         See Also
         --------
-        :func:`make_config_parser`, :meth:`~ManimConfig.digest_file`,
-        :meth:`~ManimConfig.digest_args`,
+        :func:`make_config_parser`, :meth:`~.ManimConfig.digest_file`,
+        :meth:`~.ManimConfig.digest_args`,
 
         Notes
         -----
-        If there are multiple .cfg files to process, it is always more
+        If there are multiple ``.cfg`` files to process, it is always more
         efficient to parse them into a single :class:`ConfigParser` object
         first, and then call this function once (instead of calling
-        :meth:`~ManimConfig.digest_file` multiple times).
+        :meth:`~.ManimConfig.digest_file` multiple times).
 
         Examples
         --------
@@ -573,12 +575,12 @@ class ManimConfig(MutableMapping):
 
         See Also
         --------
-        :func:`.main_utils.parse_args()`, :meth:`~ManimConfig.digest_parser`,
-        :meth:`~ManimConfig.digest_file`
+        :func:`.main_utils.parse_args()`, :meth:`~.ManimConfig.digest_parser`,
+        :meth:`~.ManimConfig.digest_file`
 
         Notes
         -----
-        If ``args.config_file`` is non-null, ManimConfig tries to digest the
+        If ``args.config_file`` is a non-empty string, ``ManimConfig`` tries to digest the
         contents of said file with :meth:`~ManimConfig.digest_file` before
         digesting any other CLI arguments.
 
@@ -681,16 +683,16 @@ class ManimConfig(MutableMapping):
         return self
 
     def digest_file(self, filename):
-        """Process the config options present in a .cfg file.
+        """Process the config options present in a ``.cfg`` file.
 
-        This method processes a single .cfg file, whereas
+        This method processes a single ``.cfg`` file, whereas
         :meth:`~ManimConfig.digest_parser` can process arbitrary parsers, built
-        perhaps from multiple .cfg files.
+        perhaps from multiple ``.cfg`` files.
 
         Parameters
         ----------
         filename : :class:`str`
-            Path to the .cfg file.
+            Path to the ``.cfg`` file.
 
         Returns
         -------
@@ -704,7 +706,7 @@ class ManimConfig(MutableMapping):
 
         Notes
         -----
-        If there are multiple .cfg files to process, it is always more
+        If there are multiple ``.cfg`` files to process, it is always more
         efficient to parse them into a single :class:`ConfigParser` object
         first and digesting them with one call to
         :meth:`~ManimConfig.digest_parser`, instead of calling this method
@@ -1050,7 +1052,7 @@ class ManimConfig(MutableMapping):
         ----------
         key : :class:`str`
             The config option to be resolved.  Must be an option ending in
-            '_dir', for example 'media_dir' or 'video_dir'.
+            ``'_dir'``, for example ``'media_dir'`` or ``'video_dir'``.
 
         kwargs : :class:`str`
             Any strings to be used when resolving the directory.
@@ -1059,7 +1061,7 @@ class ManimConfig(MutableMapping):
         -------
         :class:`pathlib.Path`
             Path to the requested directory.  If the path resolves to the empty
-            string, return None instead.
+            string, return ``None`` instead.
 
         Raises
         ------
@@ -1078,7 +1080,7 @@ class ManimConfig(MutableMapping):
         Examples
         --------
 
-        The value of ``config.tex_dir`` is ``{media_dir}/Tex`` by default,
+        The value of ``config.tex_dir`` is ``'{media_dir}/Tex'`` by default,
         i.e. it is a subfolder of wherever ``config.media_dir`` is located.  In
         order to get the *actual* directory, use :meth:`~ManimConfig.get_dir`.
 
