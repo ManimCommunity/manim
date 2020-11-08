@@ -473,6 +473,26 @@ class Mobject(Container):
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
     ):
+        """Move this mobject next to another mobject or coordinate.
+
+        Examples
+        --------
+
+        .. manim:: GeometricShapes
+            :save_last_frame:
+
+            class GeometricShapes(Scene):
+                def construct(self):
+                    d = Dot()
+                    c = Circle()
+                    s = Square()
+                    t = Triangle()
+                    d.next_to(c, RIGHT)
+                    s.next_to(c, LEFT)
+                    t.next_to(c, DOWN)
+                    self.add(d, c, s, t)
+
+        """
         if isinstance(mobject_or_point, Mobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
@@ -1115,9 +1135,25 @@ class Mobject(Container):
         return submob.copy()
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
-        """
-        Turns self into an interpolation between mobject1
-        and mobject2.
+        """Turns this mobject into an interpolation between ``mobject1``
+        and ``mobject2``.
+
+        Examples
+        --------
+
+        .. manim:: DotInterpolation
+            :save_last_frame:
+
+            class DotInterpolation(Scene):
+                def construct(self):
+                    dotL = Dot(color=DARK_GREY)
+                    dotL.shift(2 * RIGHT)
+                    dotR = Dot(color=WHITE)
+                    dotR.shift(2 * LEFT)
+
+                    dotMiddle = VMobject().interpolate(dotL, dotR, alpha=0.3)
+
+                    self.add(dotL, dotR, dotMiddle)
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)

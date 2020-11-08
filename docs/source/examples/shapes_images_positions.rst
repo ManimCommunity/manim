@@ -1,36 +1,5 @@
 Shapes, Images and Positions
-=================================
-.. manim:: ShowScreenResolution
-    :save_last_frame:
-
-    class ShowScreenResolution(Scene):
-        def construct(self):
-            pixel_height = config["pixel_height"]  #  1080 is default
-            pixel_width = config["pixel_width"]  # 1920 is default
-            frame_width = config["frame_width"]
-            frame_height = config["frame_height"]
-            self.add(Dot())
-            d1 = Line(frame_width * LEFT / 2, frame_width * RIGHT / 2).to_edge(DOWN)
-            self.add(d1)
-            self.add(Tex(str(pixel_width)).next_to(d1, UP))
-            d2 = Line(frame_height * UP / 2, frame_height * DOWN / 2).to_edge(LEFT)
-            self.add(d2)
-            self.add(Tex(str(pixel_height)).next_to(d2, RIGHT))
-
-
-.. manim:: GeometricShapes
-    :save_last_frame:
-
-    class GeometricShapes(Scene):
-        def construct(self):
-            d = Dot()
-            c = Circle()
-            s = Square()
-            t = Triangle()
-            d.next_to(c, RIGHT)
-            s.next_to(c, LEFT)
-            t.next_to(c, DOWN)
-            self.add(d, c, s, t)
+============================
 
 .. manim:: PointMovingOnShapes
 
@@ -51,50 +20,6 @@ Shapes, Images and Positions
             self.wait()
 
 
-.. manim:: GradientImageFromArray
-    :save_last_frame:
-
-    class GradientImageFromArray(Scene):
-        def construct(self):
-            n = 256
-            imageArray = np.uint8(
-                [[i * 256 / n for i in range(0, n)] for _ in range(0, n)]
-            )
-            image = ImageMobject(imageArray).scale(2)
-            self.add(image)
-
-
-.. manim:: ArcShapeIris
-    :save_last_frame:
-
-    class ArcShapeIris(Scene):
-        def construct(self):
-            colors = [DARK_BLUE, DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
-            radius = [1 + rad * 0.1 for rad in range(len(colors))]
-
-            circles_group = VGroup()
-
-            # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
-            circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
-                                for rad, col in zip(radius, colors)])
-            self.add(circles_group)
-
-
-.. manim:: DotInterpolation
-    :save_last_frame:
-
-    class DotInterpolation(Scene):
-        def construct(self):
-            dotL = Dot(color=DARK_GREY)
-            dotL.shift(2 * RIGHT)
-            dotR = Dot(color=WHITE)
-            dotR.shift(2 * LEFT)
-
-            dotMiddle = VMobject().interpolate(dotL, dotR, alpha=0.3)
-
-            self.add(dotL, dotR, dotMiddle)
-
-
 .. manim:: MovingAround
 
     class MovingAround(Scene):
@@ -105,33 +30,6 @@ Shapes, Images and Positions
             self.play(square.set_fill, ORANGE)
             self.play(square.scale, 0.3)
             self.play(square.rotate, 0.4)
-
-
-.. manim:: TextAlignement
-    :save_last_frame:
-
-    class TextAlignement(Scene):
-        def construct(self):
-            title = Text("K-means clustering and Logistic Regression", color=WHITE)
-            title.scale_in_place(0.75)
-            self.add(title.to_edge(UP))
-
-            t1 = Text("1. Measuring").set_color(WHITE)
-            t1.next_to(ORIGIN, direction=RIGHT, aligned_edge=UP)
-
-            t2 = Text("2. Clustering").set_color(WHITE)
-            t2.next_to(t1, direction=DOWN, aligned_edge=LEFT)
-
-            t3 = Text("3. Regression").set_color(WHITE)
-            t3.next_to(t2, direction=DOWN, aligned_edge=LEFT)
-
-            t4 = Text("4. Prediction").set_color(WHITE)
-            t4.next_to(t3, direction=DOWN, aligned_edge=LEFT)
-
-            x = VGroup(t1, t2, t3, t4).scale_in_place(0.7)
-            x.set_opacity(0.5)
-            x.submobjects[1].set_opacity(1)
-            self.add(x)
 
 
 .. manim:: BezierSpline
@@ -213,4 +111,3 @@ Shapes, Images and Positions
 
             mobjects.scale(2)
             self.add(mobjects)
-

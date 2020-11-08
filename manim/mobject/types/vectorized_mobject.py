@@ -881,6 +881,31 @@ class VMobject(Mobject):
 
 
 class VGroup(VMobject):
+    """A group of vectorized mobjects.
+
+    This can be used to group multiple :class:`~.VMobject` instances together
+    in order to scale, move, ... them together.
+
+    Examples
+    --------
+
+    .. manim:: ArcShapeIris
+        :save_last_frame:
+
+        class ArcShapeIris(Scene):
+            def construct(self):
+                colors = [DARK_BLUE, DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
+                radius = [1 + rad * 0.1 for rad in range(len(colors))]
+
+                circles_group = VGroup()
+
+                # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
+                circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
+                                    for rad, col in zip(radius, colors)])
+                self.add(circles_group)
+
+    """
+
     def __init__(self, *vmobjects, **kwargs):
         VMobject.__init__(self, **kwargs)
         self.add(*vmobjects)
