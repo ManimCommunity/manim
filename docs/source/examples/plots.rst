@@ -1,83 +1,7 @@
-Plotting with manim
-=================================
+Plotting with Manim
+===================
 
 Examples to illustrate the use of :class:`.GraphScene` in manim.
-
-
-.. manim:: FunctionPlot
-    :save_last_frame:
-
-    class FunctionPlot(GraphScene):
-        def construct(self):
-            self.setup_axes()
-            func_graph=self.get_graph(lambda x: np.sin(x))
-            self.add(func_graph)
-
-.. manim:: FunctionPlotWithLabbeledYAxe
-    :save_last_frame:
-
-    class FunctionPlotWithLabbeledYAxe(GraphScene):
-        CONFIG = {
-            "y_min": 0,
-            "y_max": 100,
-            "y_axis_config": {"tick_frequency": 10},
-            "y_labeled_nums": np.arange(0, 100, 10)
-        }
-
-        def construct(self):
-            self.setup_axes()
-            dot = Dot().move_to(self.coords_to_point(PI / 2, 20))
-            func_graph = self.get_graph(lambda x: 20 * np.sin(x))
-            self.add(dot,func_graph)
-
-.. manim:: SequencePlot
-    :save_last_frame:
-
-    class SequencePlot(GraphScene):
-        CONFIG = {
-            "y_axis_label": r"Concentration [\%]",
-            "x_axis_label": "Time [s]",
-            }
-
-        def construct(self):
-            data = [1, 2, 2, 4, 4, 1, 3]
-            self.setup_axes()
-            for time, dat in enumerate(data):
-                dot = Dot().move_to(self.coords_to_point(time, dat))
-                self.add(dot)
-
-.. manim:: GaussianFunctionPlot1
-    :save_last_frame:
-
-    amp = 5
-    mu = 3
-    sig = 1
-
-    def gaussian(x):
-        return amp * np.exp((-1 / 2 * ((x - mu) / sig) ** 2))
-
-    class GaussianFunctionPlot1(GraphScene):
-        def construct(self):
-            self.setup_axes()
-            graph = self.get_graph(gaussian, x_min=-1, x_max=10)
-            graph.set_stroke(width=5)
-            self.add(graph)
-
-.. manim:: GaussianFunctionPlot2
-    :save_last_frame:
-
-    class GaussianFunctionPlot2(GraphScene):
-        def construct(self):
-            def gaussian(x):
-                amp = 5
-                mu = 3
-                sig = 1
-                return amp * np.exp((-1 / 2 * ((x - mu) / sig) ** 2))
-            self.setup_axes()
-            graph = self.get_graph(gaussian, x_min=-1, x_max=10)
-            graph.set_style(stroke_width=5, stroke_color=GREEN)
-            self.add(graph)
-
 
 .. manim:: SinAndCosFunctionPlot
     :save_last_frame:
@@ -160,14 +84,3 @@ Examples to illustrate the use of :class:`.GraphScene` in manim.
             l3 = Line(dot_collection[2].get_center(), dot_collection[3].get_center())
             self.add(l1, l2, l3)
 
-
-.. manim:: ParametricFunctionWithoutGraphScene
-    :save_last_frame:
-
-    class ParametricFunctionWithoutGraphScene(Scene):
-        def func(self, t):
-            return np.array((np.sin(2 * t), np.sin(3 * t), 0))
-
-        def construct(self):
-            func = ParametricFunction(self.func, t_max = TAU, fill_opacity=0).set_color(RED)
-            self.add(func.scale(3))
