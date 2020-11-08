@@ -219,6 +219,7 @@ class ApplyPointwiseFunction(ApplyMethod):
                 self.wait()
 
     """
+
     CONFIG = {"run_time": DEFAULT_POINTWISE_FUNCTION_RUN_TIME}
 
     def __init__(self, function, mobject, **kwargs):

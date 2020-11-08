@@ -39,6 +39,7 @@ class DecimalNumber(VMobject):
                 self.wait()
 
     """
+
     CONFIG = {
         "num_decimal_places": 2,
         "include_sign": False,

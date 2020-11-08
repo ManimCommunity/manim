@@ -46,6 +46,7 @@ class ParametricFunction(VMobject):
                 self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
                 self.wait()
     """
+
     CONFIG = {
         "t_min": 0,
         "t_max": 1,

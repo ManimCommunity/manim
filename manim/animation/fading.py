@@ -54,6 +54,7 @@ class FadeOut(Transform):
                 self.wait()
 
     """
+
     CONFIG = {
         "remover": True,
         "lag_ratio": DEFAULT_FADE_LAG_RATIO,
