@@ -7,7 +7,6 @@ RUN apt-get update -q \
         git \
         libcairo2-dev \
         libffi-dev \
-        libpango1.0-dev \
         pkg-config \
         wget
 
