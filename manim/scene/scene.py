@@ -78,6 +78,7 @@ class Scene(Container):
         self.static_mobjects = None
         self.time_progression = None
         self.duration = None
+        self.last_t = None
 
         if renderer is None:
             self.renderer = CairoRenderer(camera_class=self.camera_class)
@@ -847,13 +848,6 @@ class Scene(Container):
 
         return self
 
-    def step_animation(self, t, dt):
-        for animation in self.animations:
-            animation.update_mobjects(dt)
-            alpha = t / animation.run_time
-            animation.interpolate(alpha)
-        self.update_mobjects(dt)
-
     def play_internal(self, skip_rendering=False):
         """
         This method is used to prep the animations for rendering,
@@ -866,11 +860,9 @@ class Scene(Container):
         **kwargs : named parameters affecting what was passed in *args e.g
             run_time, lag_ratio etc.
         """
-        last_t = 0
+        self.last_t = 0
         for t in self.time_progression:
-            dt = t - last_t
-            last_t = t
-            self.step_animation(t, dt)
+            self.update_to_time(t)
             if not skip_rendering:
                 self.renderer.render(self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():
@@ -881,6 +873,15 @@ class Scene(Container):
             animation.finish()
             animation.clean_up_from_scene(self)
         self.renderer.static_image = None
+
+    def update_to_time(self, t):
+        dt = t - self.last_t
+        self.last_t = t
+        for animation in self.animations:
+            animation.update_mobjects(dt)
+            alpha = t / animation.run_time
+            animation.interpolate(alpha)
+        self.update_mobjects(dt)
 
     def add_static_frames(self, duration):
         self.renderer.update_frame(self)

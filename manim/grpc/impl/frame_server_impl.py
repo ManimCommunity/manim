@@ -73,72 +73,72 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         # TODO: IMPLEMENT THIS
         requested_scene.update_to_time(requested_scene_time_offset)
 
-        # play() uses run_time and wait() uses duration TODO: Fix this inconsistency.
-        # TODO: What about animations without a fixed duration?
-        duration = (
-            selected_scene.run_time
-            if selected_scene.animations
-            else selected_scene.duration
-        )
+        # # play() uses run_time and wait() uses duration TODO: Fix this inconsistency.
+        # # TODO: What about animations without a fixed duration?
+        # duration = (
+        #     selected_scene.run_time
+        #     if selected_scene.animations
+        #     else selected_scene.duration
+        # )
 
-        if request.animation_offset > duration:
-            if self.animation_index_is_cached(request.animation_index + 1):
-                # TODO: Clone scenes to allow reuse.
-                selected_scene = self.keyframes[request.animation_index + 1]
-            else:
-                return self.signal_pending_animation(request.animation_index + 1)
+        # if request.animation_offset > duration:
+        #     if self.animation_index_is_cached(request.animation_index + 1):
+        #         # TODO: Clone scenes to allow reuse.
+        #         selected_scene = self.keyframes[request.animation_index + 1]
+        #     else:
+        #         return self.signal_pending_animation(request.animation_index + 1)
 
-        setattr(selected_scene, "camera", self.scene.camera)
+        # setattr(selected_scene, "camera", self.scene.camera)
 
-        if selected_scene.animations:
-            # This is a call to play().
-            selected_scene.update_animation_to_time(request.animation_offset)
-            selected_scene.update_frame(
-                selected_scene.moving_mobjects,
-                selected_scene.static_image,
-            )
-            serialized_mobject_list, duration = selected_scene.add_frame(
-                selected_scene.renderer.get_frame()
-            )
-            resp = list_to_frame_response(
-                selected_scene, duration, serialized_mobject_list
-            )
-            return resp
-        else:
-            # This is a call to wait().
-            if selected_scene.should_update_mobjects():
-                # TODO, be smart about setting a static image
-                # the same way Scene.play does
-                selected_scene.update_animation_to_time(time)
-                selected_scene.update_frame()
-                serialized_mobject_list, duration = selected_scene.add_frame(
-                    selected_scene.get_frame()
-                )
-                frame_response = list_to_frame_response(
-                    selected_scene, duration, serialized_mobject_list
-                )
-                if (
-                    selected_scene.stop_condition is not None
-                    and selected_scene.stop_condition()
-                ):
-                    selected_scene.animation_finished.set()
-                    frame_response.frame_pending = True
-                    selected_scene.renderer_waiting = True
-                return frame_response
-            elif selected_scene.skip_animations:
-                # Do nothing
-                return
-            else:
-                selected_scene.update_frame()
-                dt = 1 / selected_scene.camera.frame_rate
-                serialized_mobject_list, duration = selected_scene.add_frame(
-                    selected_scene.get_frame(),
-                    num_frames=int(selected_scene.duration / dt),
-                )
-                resp = list_to_frame_response(
-                    selected_scene, duration, serialized_mobject_list
-                )
-                return resp
+        # if selected_scene.animations:
+        #     # This is a call to play().
+        #     selected_scene.update_animation_to_time(request.animation_offset)
+        #     selected_scene.update_frame(
+        #         selected_scene.moving_mobjects,
+        #         selected_scene.static_image,
+        #     )
+        #     serialized_mobject_list, duration = selected_scene.add_frame(
+        #         selected_scene.renderer.get_frame()
+        #     )
+        #     resp = list_to_frame_response(
+        #         selected_scene, duration, serialized_mobject_list
+        #     )
+        #     return resp
+        # else:
+        #     # This is a call to wait().
+        #     if selected_scene.should_update_mobjects():
+        #         # TODO, be smart about setting a static image
+        #         # the same way Scene.play does
+        #         selected_scene.update_animation_to_time(time)
+        #         selected_scene.update_frame()
+        #         serialized_mobject_list, duration = selected_scene.add_frame(
+        #             selected_scene.get_frame()
+        #         )
+        #         frame_response = list_to_frame_response(
+        #             selected_scene, duration, serialized_mobject_list
+        #         )
+        #         if (
+        #             selected_scene.stop_condition is not None
+        #             and selected_scene.stop_condition()
+        #         ):
+        #             selected_scene.animation_finished.set()
+        #             frame_response.frame_pending = True
+        #             selected_scene.renderer_waiting = True
+        #         return frame_response
+        #     elif selected_scene.skip_animations:
+        #         # Do nothing
+        #         return
+        #     else:
+        #         selected_scene.update_frame()
+        #         dt = 1 / selected_scene.camera.frame_rate
+        #         serialized_mobject_list, duration = selected_scene.add_frame(
+        #             selected_scene.get_frame(),
+        #             num_frames=int(selected_scene.duration / dt),
+        #         )
+        #         resp = list_to_frame_response(
+        #             selected_scene, duration, serialized_mobject_list
+        #         )
+        #         return resp
 
     def RendererStatus(self, request, context):
         response = frameserver_pb2.RendererStatusResponse()
