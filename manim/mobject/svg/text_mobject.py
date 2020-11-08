@@ -1,5 +1,19 @@
 """Mobjects used for displaying (non-LaTeX) text.
 
+The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
+With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
+
+Examples
+--------
+
+.. manim:: HelloWorld
+    :save_last_frame:
+
+    class HelloWorld(Scene):
+        def construct(self):
+            text = Text('Hello world').scale(3)
+            self.add(text)
+
 .. manim:: TextAlignement
     :save_last_frame:
 
