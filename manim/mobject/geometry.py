@@ -1,4 +1,4 @@
-"""Mobjects that are simple geometric shapes.
+r"""Mobjects that are simple geometric shapes.
 
 Examples
 --------
