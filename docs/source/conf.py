@@ -56,11 +56,17 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
+    "sphinx.ext.extlinks",
+    "sphinxext.opengraph",
     "manim_directive",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
+
+# controls whether functions documented by the autofunction directive
+# appear with their full module names
+add_module_names = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -97,3 +103,14 @@ html_static_path = ["_static"]
 
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
+
+# external links
+extlinks = {
+    "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "issue "),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "pull request "),
+}
+
+# opengraph settings
+ogp_image = "https://www.manim.community/logo.png"
+ogp_site_name = "Manim Community | Documentation"
+ogp_site_url = "https://docs.manim.community/"
