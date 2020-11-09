@@ -627,7 +627,6 @@ class ManimConfig(MutableMapping):
 
         for key in [
             "media_dir",  # always set this one first
-            "assets_dir",
             "log_dir",
             "log_to_file",  # always set this one last
         ]:
@@ -670,7 +669,6 @@ class ManimConfig(MutableMapping):
         # Handle --custom_folders
         if args.custom_folders:
             for opt in [
-                "assets_dir",
                 "media_dir",
                 "video_dir",
                 "images_dir",
