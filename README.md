@@ -64,13 +64,13 @@ manim example.py SquareToCircle -p -ql
 ```
 
 You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
-[GitHub repository](https://github.com/ManimCommunity/manim/tree/master/example_scenes). You can also visit the [official gallery](https://manimce.readthedocs.io/en/latest/examples.html) for more advanced examples.
+[GitHub repository](master/example_scenes). You can also visit the [official gallery](https://manimce.readthedocs.io/en/latest/examples.html) for more advanced examples.
 
 ## Command line arguments
 
 The general usage of manim is as follows:
 
-![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/master/docs/source/_static/command.png)
+![manim-illustration](docs/source/_static/command.png)
 
 The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-ql` flag is for a faster rendering at a lower quality.
 
