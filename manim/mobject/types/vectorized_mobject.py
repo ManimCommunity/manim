@@ -907,6 +907,20 @@ class VMobject(Mobject):
         -------
         :class:`VMobject`
             Returns self.
+
+        Examples
+        --------
+
+        .. manim:: ChangeOfDirection
+
+            class ChangeOfDirection(Scene):
+                def construct(self):
+                    circ_ccw = Circle()
+                    circ_ccw.shift(LEFT)
+                    circ_cw = Circle()
+                    circ_cw.shift(RIGHT).reverse_direction()
+
+                    self.play(ShowCreation(circ_ccw), ShowCreation(circ_cw))
         """
         self.points = self.points[::-1]
         return self
