@@ -910,17 +910,16 @@ class VMobject(Mobject):
 
         Examples
         --------
-
         .. manim:: ChangeOfDirection
-
             class ChangeOfDirection(Scene):
                 def construct(self):
-                    circ_ccw = Circle()
-                    circ_ccw.shift(LEFT)
-                    circ_cw = Circle()
-                    circ_cw.shift(RIGHT).reverse_direction()
+                    ccw = RegularPolygon(5)
+                    ccw.shift(LEFT).rotate
+                    cw = RegularPolygon(5)
+                    cw.shift(RIGHT).reverse_direction()
 
-                    self.play(ShowCreation(circ_ccw), ShowCreation(circ_cw))
+                    self.play(ShowCreation(ccw), ShowCreation(cw),
+                    run_time=4)
         """
         self.points = self.points[::-1]
         return self
