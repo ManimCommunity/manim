@@ -911,6 +911,7 @@ class VMobject(Mobject):
         Examples
         --------
         .. manim:: ChangeOfDirection
+        
             class ChangeOfDirection(Scene):
                 def construct(self):
                     ccw = RegularPolygon(5)
