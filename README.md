@@ -29,7 +29,7 @@
 
 ## Installation
 
-`manim` requires a few dependencies that must be installed prior to using it. Please visit the [documentation](https://manimce.readthedocs.io/en/latest/installation.html) and follow the appropriate instructions for your operating system.
+Manim requires a few dependencies that must be installed prior to using it. Please visit the [documentation](https://manimce.readthedocs.io/en/latest/installation.html) and follow the appropriate instructions for your operating system.
 
 Once the dependencies have been installed, run the following in a terminal window:
 
@@ -39,7 +39,7 @@ pip install manimce
 
 ## Usage
 
-`manim` is an extremely versatile package. The following is an example `Scene` you can construct:
+Manim is an extremely versatile package. The following is an example `Scene` you can construct:
 
 ```python
 from manim import *
@@ -68,11 +68,11 @@ You should see your native video player program pop up and play a simple scene i
 
 ## Command line arguments
 
-The general usage of `manim` is as follows:
+The general usage of manim is as follows:
 
 ![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/master/readme-assets/command.png)
 
-The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-l` flag is for a faster rendering at a lower quality.
+The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-ql` flag is for a faster rendering at a lower quality.
 
 Some other useful flags include:
 
@@ -88,8 +88,8 @@ Documentation is in progress at [ReadTheDocs](https://manimce.readthedocs.io/en/
 
 ## Help with Manim
 
-If you need help installing or using Manim, feel free to reach out to our [Reddit Community](https://www.reddit.com/r/manim) or [Discord
-Server](https://discord.gg/mMRrZQW). If you would like to submit bug report or feature request, please open an issue.
+If you need help installing or using Manim, feel free to reach out to our [Discord
+Server](https://discord.gg/mMRrZQW) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit bug report or feature request, please open an issue.
 
 ## Contributing
 
