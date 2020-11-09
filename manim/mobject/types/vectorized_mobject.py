@@ -888,7 +888,7 @@ class VMobject(Mobject):
         Examples
         --------
         The default direction of a :class:`~.Circle` is counterclockwise::
-        
+
         >>> from manim import Circle
         >>> Circle().get_direction()
         'CCW'
