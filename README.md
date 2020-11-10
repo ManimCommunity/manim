@@ -71,7 +71,7 @@ You should see your native video player program pop up and play a simple scene i
 
 The general usage of manim is as follows:
 
-![manim-illustration](docs/source/_static/command.png)
+![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/master/docs/source/_static/command.png)
 
 The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-ql` flag is for a faster rendering at a lower quality.
 
