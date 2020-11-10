@@ -20,7 +20,7 @@ Mobjects, Scenes, and Animations
 #. **New**: Variations of :class:`~.Dot` have been added as :class:`~.AnnotationDot`
    (a bigger dot with bolder stroke) and :class:`~.LabeledDot` (a dot containing a
    label).
-
+#. Scene.set_variables_as_attrs has been removed :pr:`692`.
 
 
 
@@ -142,6 +142,3 @@ Other Changes
 #. Rename package from manimlib to manim
 #. Move all imports to :code:`__init__`, so :code:`from manim import *` replaces :code:`from manimlib.imports import *`
 #. Global dir variable handling has been removed. Instead :code:`initialize_directories`, if needed, overrides the values from the cfg files at runtime.
-
-
-
