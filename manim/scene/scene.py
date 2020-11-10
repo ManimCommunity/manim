@@ -67,7 +67,7 @@ class Scene(Container):
         if renderer is None:
             self.renderer = CairoRenderer(
                 camera_class=self.camera_class,
-                skip_animations=kwargs.get('skip_animations', False)
+                skip_animations=kwargs.get("skip_animations", False),
             )
         else:
             self.renderer = renderer
