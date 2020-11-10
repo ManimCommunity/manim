@@ -19,30 +19,34 @@ from ...utils.space_ops import get_norm
 
 class Brace(MathTex):
     """Takes a mobject and draws a brace adjacent to it.
+    
     Passing a direction vector determines the direction from which the
     brace is drawn. By default it is drawn from below.
 
     Parameters
     ----------
     mobject : :class:`~.Mobject`
-        The mobject adjacent to which the brace is placed
+        The mobject adjacent to which the brace is placed.
     direction : Optional[Union[:class:`list`,
     :class:`numpy.array`]], optional
         The direction from which the brace faces the mobject.
 
+    See Also
+    --------
+    :class:`BraceBetweenPoints`
+
     Examples
     --------
-        .. manim:: BraceExample
+    .. manim:: BraceExample
 
-            class BraceExample(Scene):
-                def construct(self):
-                    circle = Circle()
-                    brace = Brace(circle,direction=RIGHT)
-                    self.play(ShowCreation(circle))
-                    self.play(ShowCreation(brace))
-                    self.wait(2)
+        class BraceExample(Scene):
+            def construct(self):
+                circle = Circle()
+                brace = Brace(circle, direction=RIGHT)
+                self.play(ShowCreation(circle))
+                self.play(ShowCreation(brace))
+                
     """
-
     CONFIG = {
         "buff": 0.2,
         "width_multiplier": 2,
