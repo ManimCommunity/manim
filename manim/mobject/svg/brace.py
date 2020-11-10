@@ -187,7 +187,7 @@ class BraceBetweeenPoints(Brace):
                     p1 = [0,0,0]
                     p2 = [1,2,0]
                     brace = BraceBetweeenPoints(p1,p2)
-                    self.play(ShowCreation(NumperPlane()))
+                    self.play(ShowCreation(NumberPlane()))
                     self.play(ShowCreation(brace))
                     self.wait(2)
     """
