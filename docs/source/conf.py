@@ -76,6 +76,12 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# -- Options for internationalization ----------------------------------------
+# Set the destination directory of the localized po files
+locale_dirs = ["../i18n/"]
+
+# Splits the text in more pot files.
+gettext_compact = False
 
 # -- Options for HTML output -------------------------------------------------
 

@@ -193,6 +193,10 @@ This is not an indictment of your work, but rather a strong signal that the
 community wants to merge your changes! Overall, in order for your PR to be merged
 at least two approving code reviews from core community developers are required.
 
+Internationalization
+====================
+If you want to translate the program, create a transifex account
+
 
 Further useful guidelines
 =========================
