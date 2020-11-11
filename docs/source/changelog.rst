@@ -2,10 +2,49 @@
 Changelog
 *********
 
-manimce-v1.0.0-dev
+
+v0.2.0
 ==================
 
 :Date: TBD
+
+Changes since Manim Community release v0.1.0
+
+
+Configuration
+^^^^^^^^^^^^^
+
+#. The global ``config`` dict has been replaced by a global ``config`` instance
+   of the new class :class:`~.ManimConfig`.  This class has a dict-like API, so
+   this should not break user code, only make it more robust.  See the
+   Configuration tutorial for details.
+
+
+Documentation
+^^^^^^^^^^^^^
+
+#. Add ``:issue:`` and ``:pr:`` directives for simplifying linking to issues and
+   pull requests on GitHub (via :pr:`685`).
+
+
+Mobjects, Scenes, and Animations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. The ``alignment`` attribute to Tex and MathTex has been removed in favour of ``tex_environment``.
+#. :class:`~.Text` now uses Pango for rendering. ``PangoText`` has been removed. The old implementation is still available as a fallback as :class:`~.CairoText`.
+#. **New**: Variations of :class:`~.Dot` have been added as :class:`~.AnnotationDot`
+   (a bigger dot with bolder stroke) and :class:`~.LabeledDot` (a dot containing a
+   label).
+#. Scene.set_variables_as_attrs has been removed (via :pr:`692`).
+
+
+
+
+
+v0.1.0
+==================
+
+:Date: October 21, 2020
 
 This is the first release of manimce after forking from 3b1b/manim.  As such,
 developers have focused on cleaning up and refactoring the codebase while still
@@ -20,7 +59,7 @@ Command line
 ^^^^^^^^^^^^
 
 #. Output of 'manim --help' has been improved
-#. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol` prints
+#. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol' prints
 #. Added a flag :code:`--dry_run`, which doesn’t write any media
 #. Allow for running manim with :code:`python3 -m manim`
 #. Refactored Tex Template management. You can now use custom templates with command line args using :code:`--tex_template`!
@@ -42,6 +81,16 @@ Config system
 #. Implement a :code:`manim.cfg` config file system, that consolidates the global configuration, the command line argument parsing, and some of the constants defined in :code:`constants.py`
 #. Added utilities for manipulating Manim’s :code:`.cfg` files.
 #. Added a subcommand structure for easier use of utilities managing :code:`.cfg` files
+#. Also some variables have been moved from ``constants.py`` to the new config system:
+
+    #. ``FRAME_HEIGHT`` to ``config["frame_width"]``
+    #. ``TOP`` to ``config["frame_height"] / 2 * UP``
+    #. ``BOTTOM`` to ``config["frame_height"] / 2 * DOWN``
+    #. ``LEFT_SIDE`` to ``config["frame_width"] / 2 * LEFT``
+    #. ``RIGHT_SIDE`` to ``config["frame_width"] / 2 * RIGHT``
+    #. ``self.camera.frame_rate`` to ``config["frame_rate"]``
+
+
 
 
 Mobjects, Scenes, and Animations
@@ -50,6 +99,7 @@ Mobjects, Scenes, and Animations
 #. Add customizable left and right bracket for :code:`Matrix` mobject and :code:`set_row_colors` method for matrix mobject
 #. Add :code:`AddTeXLetterByLetter` animation
 #. Enhanced GraphScene
+
     #. You can now add arrow tips to axes
     #. extend axes a bit at the start and/or end
     #. have invisible axes

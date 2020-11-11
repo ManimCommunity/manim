@@ -10,13 +10,13 @@ Installing using Chocolatey
 
 You can install manim very easily using chocolatey, by typing the following command.
 
-
 .. code-block:: powershell
 
-      choco install manim
+      choco install manimce
 
 
 And then you can skip all the other steps and move to installing :ref:`latex-installation`.
+Please see :ref:`troubleshooting` section for details about OSError.
 
 Pango Installation
 ******************

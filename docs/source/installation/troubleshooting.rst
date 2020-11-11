@@ -3,6 +3,65 @@ Troubleshooting
 
 List of known installation problems.
 
+ModuleNotFoundError: No module named '[...]._generated.ffi'?
+------------------------------------------------------------
+
+Fresh installations of the pip packages ``cairocffi``, ``pangocffi``,
+and ``pangocairocffi`` sometimes fail to generate the corresponding ffi bindings.
+In this case, trying to run Manim leads to a ``ModuleNotFoundError`` that
+references a non-existing ``_generated.ffi`` module.
+
+To resolve this issue, either install the afflicted package again using a
+modified call to pip, namely:
+
+.. code-block:: bash
+
+  pip install --no-binary :all: -U cairocffi
+  pip install --no-binary :all: -U pangocffi
+  pip install --no-binary :all: -U pangocairocffi
+
+In case you are installing Manim within a virtualenv, make sure to call
+that particular virtualenv's ``pip``.
+
+Alternatively, you can also trigger building the bindings yourself.
+To do so, switch to your Python's ``site-packages`` directory and
+run:
+
+.. code-block:: bash
+
+  python cairocffi/ffi_build.py
+  python pangocffi/ffi_build.py
+  python pangocairocffi/ffi_build.py
+
+This should generate the missing ``_generated.ffi`` modules.
+
+
+(Windows) OSError: dlopen() failed to load a library: pango?
+------------------------------------------------------------
+
+If your manual installation of Manim (or even the installation using
+Chocolatey) fails with the error
+
+.. code-block::
+
+  OSError: dlopen() failed to load a library: pango / pango-1 / pango-1.0 / pango-1.0-0
+
+possibly combined with alerts warning about procedure entry points
+``"deflateSetHeader"`` and ``"inflateReset2"`` that could not be
+located, you might run into an issue with a patched version of ``zlib1.dll``
+shipped by Intel, `as described here <https://github.com/msys2/MINGW-packages/issues/813>`_.
+
+To resolve this issue, you can copy ``zlib1.dll`` from the directory
+provided for the Pango binaries to the directory Manim is installed to.
+
+For a more global solution (try at your own risk!), try renaming the
+file ``zlib1.dll`` located at ``C:\Program Files\Intel\Wifi\bin`` to
+something like ``zlib1.dll.bak`` -- and then try installing Manim again
+(either using ``pip install manimce`` or with Chocolatey). Ensure that
+you are able to revert this name change in case you run into troubles
+with your WiFi (we did not get any reports about such a problem, however).
+
+
 Some letters are missing from TextMobject/TexMobject output?
 ------------------------------------------------------------
 
@@ -15,7 +74,7 @@ uses. Which can be done by running:
 
 
 .. _dvisvgm-troubleshoot:
-  
+
 Installation does not support converting PDF to SVG?
 ----------------------------------------------------
 
@@ -51,27 +110,27 @@ As soon as you have found the library, try (on Mac OS or Linux)
 
 .. code-block:: bash
 
-  export LIBS=<path to your library including the file name>
+  export LIBGS=<path to your library including the file name>
   dvisvgm -l
 
-or (on Windows)  
+or (on Windows)
 
-.. code-block:: cmd
+.. code-block:: bat
 
-  set LIBS=<path to your library including the file name>
+  set LIBGS=<path to your library including the file name>
   dvisvgm -l
 
 
 You should now see ``ps    dvips PostScript specials`` in the output. Refer to your operating system's documentation in order to find out how you can set or export the environment variable ``LIBGS`` automatically whenever you open a shell.
 
-As a last check, you can run 
+As a last check, you can run
 
 .. code-block:: bash
 
   dvisvgm -V1
 
 while still having ``LIBGS`` set to the correct path, of course. If ``dvisvgm`` can find your Ghostscript installation, it will be shown in the output together with the version number.
-  
+
 If you do not have the necessary library on your system, please refer to your operating system's documentation in order to find out where you can get it and how you have to install it.
 
 If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvisvgm.de/FAQ/>`_.

@@ -1,7 +1,7 @@
 from . import scene
 from ..camera.camera import Camera
 from ..camera.js_camera import JsCamera
-from ..config import config
+from .. import config
 from ..grpc.gen import renderserver_pb2
 from ..grpc.gen import renderserver_pb2_grpc
 from ..grpc.impl.frame_server_impl import FrameServer
@@ -14,7 +14,7 @@ import inspect
 import random
 import string
 import types
-from ..config.logger import logger
+from .. import logger
 
 
 def get_random_name(name_map):
