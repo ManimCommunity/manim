@@ -171,9 +171,9 @@ class BraceBetweeenPoints(Brace):
 
     Parameters
     ----------
-    point_1 : :class:`[Union[:class:`list`,:class:`numpy.array`]]`
+    point_1 : Union[:class:`list`, :class:`numpy.array`]
         The first point.
-    point_2 : :class:`[Union[:class:`list`,:class:`numpy.array`]]`
+    point_2 : Union[:class:`list`, :class:`numpy.array`]
         The second point.
     direction : Optional[Union[:class:`list`,:class:`numpy.array`]], optional
         The direction from which the brace faces the mobject.
