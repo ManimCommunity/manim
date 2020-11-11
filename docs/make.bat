@@ -1,7 +1,6 @@
 @ECHO OFF
 
-pushd %~dp0
-pushd source
+pushd %~dp0\source
 
 REM Command file for Sphinx documentation
 
@@ -35,5 +34,4 @@ goto end
 %SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 
 :end
-popd
 popd
