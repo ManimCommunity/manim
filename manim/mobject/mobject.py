@@ -220,6 +220,7 @@ class Mobject(Container):
             return self
         for updater in self.updaters:
             parameters = get_parameters(updater)
+            print(updater,parameters, self)
             if "dt" in parameters:
                 updater(self, dt)
             else:
