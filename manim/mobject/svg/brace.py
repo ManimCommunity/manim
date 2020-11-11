@@ -19,7 +19,7 @@ from ...utils.space_ops import get_norm
 
 class Brace(MathTex):
     """Takes a mobject and draws a brace adjacent to it.
-    
+
     Passing a direction vector determines the direction from which the
     brace is drawn. By default it is drawn from below.
 
@@ -45,8 +45,10 @@ class Brace(MathTex):
                 brace = Brace(circle, direction=RIGHT)
                 self.play(ShowCreation(circle))
                 self.play(ShowCreation(brace))
-                
+                self.wait(2)
+
     """
+
     CONFIG = {
         "buff": 0.2,
         "width_multiplier": 2,
