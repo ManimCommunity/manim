@@ -5,12 +5,14 @@
 # from the environment for the first two.
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
-SOURCEDIR     = source
-BUILDDIR      = build
+
+# Path base is the source directory
+SOURCEDIR     = .
+BUILDDIR      = ../build
 
 # Put it first so that "make" without argument is like "make help".
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@(cd source; $(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O))
 
 .PHONY: help Makefile
 
@@ -19,8 +21,10 @@ help:
 cleanall: clean
 	rm source/reference/*
 	rm -rf source/media
+i18n:
+	@(cd source; $(SPHINXBUILD) -M gettext "$(SOURCEDIR)" i18n/gettext $(SPHINXOPTS) $(O))
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@(cd source; $(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O))
