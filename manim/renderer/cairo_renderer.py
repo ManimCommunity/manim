@@ -38,9 +38,9 @@ def handle_play_like_call(func):
 
     def wrapper(self, scene, *args, **kwargs):
         allow_write = not config["skip_animations"]
+        self.file_writer.end_animation(allow_write)
         self.file_writer.begin_animation(allow_write)
         func(self, scene, *args, **kwargs)
-        self.file_writer.end_animation(allow_write)
         self.num_plays += 1
 
     return wrapper
@@ -202,7 +202,9 @@ class CairoRenderer:
 
     def finish(self, scene):
         config["skip_animations"] = False
+        self.update_frame(scene, ignore_skipping=False)
+        self.add_frame(self.camera.pixel_array)
+        self.file_writer.end_animation(not config["skip_animations"])
         self.file_writer.finish()
         if config["save_last_frame"]:
-            self.update_frame(scene, ignore_skipping=False)
             self.file_writer.save_final_image(self.camera.get_image())
