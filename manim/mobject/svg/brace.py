@@ -27,7 +27,7 @@ class Brace(MathTex):
     ----------
     mobject : :class:`~.Mobject`
         The mobject adjacent to which the brace is placed.
-    direction : Optional[Union[:class:`list`,:class:`numpy.array`]], optional
+    direction : Optional[Union[:class:`list`, :class:`numpy.array`]]
         The direction from which the brace faces the mobject.
 
     See Also
@@ -164,7 +164,9 @@ class BraceText(BraceLabel):
 
 class BraceBetweenPoints(Brace):
     """Similar to Brace, but instead of taking a mobject it uses 2
-    points to place the brace. A fitting direction for the brace is
+    points to place the brace.
+
+    A fitting direction for the brace is
     computed, but it still can be manually overridden.
     If the points go from left to right, the brace is drawn from below.
     Swapping the points places the brace on the opposite side.
@@ -175,8 +177,8 @@ class BraceBetweenPoints(Brace):
         The first point.
     point_2 : Union[:class:`list`, :class:`numpy.array`]
         The second point.
-    direction : Optional[Union[:class:`list`,:class:`numpy.array`]], optional
-        The direction from which the brace faces towards the points.
+    direction : Optional[Union[:class:`list`, :class:`numpy.array`]]
+        The direction from which the brace faces the mobject.
 
     Examples
     --------
