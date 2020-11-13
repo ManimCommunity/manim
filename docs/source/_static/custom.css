@@ -31,6 +31,28 @@ h1 {
     border-bottom: 1px solid #525893;
 }
 
+.admonition.tip {
+    border-left-color: #87c2a5;
+}
+
+.admonition.tip .admonition-title {
+    color: #87c2a5;
+}
+
+.admonition.note {
+    border-left-color: #525893;
+}
+
+.admonition.note .admonition-title {
+    color: #525893;
+}
+
+.admonition.warning {
+    border-left-color: #e07a5f;
+}
+
+.admonition.warning .admonition-title {
+    color: #e07a5f;
 }
 
 img.align-center {
