@@ -178,7 +178,7 @@ class BraceBetweenPoints(Brace):
     point_2 : Union[:class:`list`, :class:`numpy.array`]
         The second point.
     direction : Optional[Union[:class:`list`, :class:`numpy.array`]]
-        The direction from which the brace faces the mobject.
+        The direction from which the brace faces towards the points.
 
     Examples
     --------
