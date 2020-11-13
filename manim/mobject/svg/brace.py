@@ -1,6 +1,6 @@
 """Mobject representing curly braces."""
 
-__all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweeenPoints"]
+__all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweenPoints"]
 
 
 import numpy as np
@@ -162,7 +162,7 @@ class BraceText(BraceLabel):
     CONFIG = {"label_constructor": Tex}
 
 
-class BraceBetweeenPoints(Brace):
+class BraceBetweenPoints(Brace):
     """Similar to Brace, but instead of taking a mobject it uses 2
     points to place the brace. A fitting direction for the brace is
     computed, but it still can be manually overridden.
@@ -176,7 +176,7 @@ class BraceBetweeenPoints(Brace):
     point_2 : Union[:class:`list`, :class:`numpy.array`]
         The second point.
     direction : Optional[Union[:class:`list`,:class:`numpy.array`]], optional
-        The direction from which the brace faces the mobject.
+        The direction from which the brace faces towards the points.
 
     Examples
     --------
@@ -186,7 +186,7 @@ class BraceBetweeenPoints(Brace):
                 def construct(self):
                     p1 = [0,0,0]
                     p2 = [1,2,0]
-                    brace = BraceBetweeenPoints(p1,p2)
+                    brace = BraceBetweenPoints(p1,p2)
                     self.play(ShowCreation(NumberPlane()))
                     self.play(ShowCreation(brace))
                     self.wait(2)
