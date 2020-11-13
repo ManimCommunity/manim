@@ -164,8 +164,8 @@ class BraceText(BraceLabel):
 
 class BraceBetweeenPoints(Brace):
     """Similar to Brace, but instead of taking a mobject it uses 2
-    points to place the brace. 
-    
+    points to place the brace.
+
     A fitting direction for the brace is
     computed, but it still can be manually overridden.
     If the points go from left to right, the brace is drawn from below.
