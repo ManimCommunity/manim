@@ -93,6 +93,7 @@ class CairoRenderer:
     def update_frame(  # TODO Description in Docstring
         self,
         scene,
+        dt,
         mobjects=None,
         background=None,
         include_submobjects=True,
@@ -116,6 +117,8 @@ class CairoRenderer:
         **kwargs
 
         """
+        scene.update_mobjects(dt)
+
         if config["skip_animations"] and not ignore_skipping:
             return
         if mobjects is None:
@@ -202,7 +205,7 @@ class CairoRenderer:
 
     def finish(self, scene):
         config["skip_animations"] = False
-        self.update_frame(scene, ignore_skipping=False)
+        self.update_frame(scene, 1/config.frame_rate, ignore_skipping=False)
         self.add_frame(self.camera.pixel_array)
         self.file_writer.end_animation(not config["skip_animations"])
         self.file_writer.finish()

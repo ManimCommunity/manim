@@ -807,7 +807,7 @@ class Scene(Container):
                 moving_mobjects,
                 stationary_mobjects,
             ) = self.get_moving_and_stationary_mobjects(animations)
-            self.renderer.update_frame(self, mobjects=stationary_mobjects)
+            self.renderer.update_frame(self, 1/config.frame_rate, mobjects=stationary_mobjects)
             self.static_image = self.renderer.get_frame()
             time_progression = self.get_animation_time_progression(animations)
 
@@ -819,8 +819,8 @@ class Scene(Container):
                 animation.update_mobjects(dt)
                 alpha = t / animation.run_time
                 animation.interpolate(alpha)
-            self.update_mobjects(dt)
-            self.renderer.update_frame(self, moving_mobjects, self.static_image)
+
+            self.renderer.update_frame(self, dt, moving_mobjects, self.static_image)
             self.renderer.add_frame(self.renderer.get_frame())
             if stop_condition is not None and stop_condition():
                 time_progression.close()
@@ -831,7 +831,7 @@ class Scene(Container):
             animation.clean_up_from_scene(self)
 
     def add_static_frames(self, duration):
-        self.renderer.update_frame(self)
+        self.renderer.update_frame(self, 1/config.frame_rate)
         dt = 1 / self.renderer.camera.frame_rate
         self.renderer.add_frame(
             self.renderer.get_frame(),
