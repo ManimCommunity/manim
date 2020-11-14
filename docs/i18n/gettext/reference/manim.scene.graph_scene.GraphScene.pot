@@ -1,0 +1,701 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:2
+msgid "manim.scene.graph\\_scene.GraphScene"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene:1
+msgid "Bases: :class:`manim.scene.scene.Scene`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`add_T_label <manim.scene.graph_scene.GraphScene.add_T_label>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:1
+msgid "Create a triangle marker with a vertical line from the x-axis to ``self.v_graph`` at the given x coordinate ``x_val``."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`angle_of_tangent <manim.scene.graph_scene.GraphScene.angle_of_tangent>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:1
+msgid "Returns the angle to the x axis of the tangent to the plotted curve at a particular x-value."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`animate_secant_slope_group_change <manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:1
+msgid "This method animates the change of the secant slope group  from the old secant slope group, into a new secant slope group."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`coords_to_point <manim.scene.graph_scene.GraphScene.coords_to_point>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid "The graph is smaller than the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_animation_integral_bounds_change <manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:1
+msgid "This method requires a lot of prerequisites: self.area must be defined from self.get_area() self.left_v_line and self.right_v_line must be defined from self.get_v_line self.left_T_label_group and self.right_T_label_group must be defined from self.add_T_label"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_area <manim.scene.graph_scene.GraphScene.get_area>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:1
+msgid "Returns a VGroup of Riemann rectangles sufficiently small enough to visually approximate the area under the graph passed."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_derivative_graph <manim.scene.graph_scene.GraphScene.get_derivative_graph>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:1
+msgid "Returns the curve of the derivative of the passed graph."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_graph <manim.scene.graph_scene.GraphScene.get_graph>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:1
+msgid "This method gets a curve to plot on the graph."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_graph_label <manim.scene.graph_scene.GraphScene.get_graph_label>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:1
+msgid "This method returns a properly positioned label for the passed graph, styled with the passed parameters."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_riemann_rectangles <manim.scene.graph_scene.GraphScene.get_riemann_rectangles>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:1
+msgid "This method returns the VGroup() of the Riemann Rectangles for a particular curve."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_riemann_rectangles_list <manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid "This method returns a list of multiple VGroups of Riemann Rectangles."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_secant_slope_group <manim.scene.graph_scene.GraphScene.get_secant_slope_group>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:1
+msgid "This method returns a VGroup of (two lines representing dx and df, the labels for dx and df, and the Secant to the Graph/curve at a particular x value."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_vertical_line_to_graph <manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:1
+msgid "This method returns a Vertical line from the x-axis to the corresponding point on the graph/curve."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`get_vertical_lines_to_graph <manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:1
+msgid "Obtains multiple lines from the x axis to the Graph/curve."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`input_to_graph_point <manim.scene.graph_scene.GraphScene.input_to_graph_point>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.input_to_graph_point:1
+msgid "This method returns a coordinate on the curve given an x_value and a the graoh-curve for which the corresponding y value should be found."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`point_to_coords <manim.scene.graph_scene.GraphScene.point_to_coords>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.point_to_coords:1
+msgid "The scene is smaller than the graph."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`setup <manim.scene.graph_scene.GraphScene.setup>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.setup:1
+msgid "This method is used internally by Manim to set up the scene for proper use."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`setup_axes <manim.scene.graph_scene.GraphScene.setup_axes>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.setup_axes:1
+msgid "This method sets up the axes of the graph."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`slope_of_tangent <manim.scene.graph_scene.GraphScene.slope_of_tangent>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.slope_of_tangent:1
+msgid "Returns the slople of the tangent to the plotted curve at a particular x-value."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid ":obj:`transform_between_riemann_rects <manim.scene.graph_scene.GraphScene.transform_between_riemann_rects>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:37:<autosummary>:1
+msgid "This method is used to transform between two VGroups of Riemann Rectangles, if they were obtained by get_riemann_rectangles or get_riemann_rectangles_list."
+msgstr ""
+
+#: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:39
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:1:<autosummary>:1
+msgid ":obj:`CONFIG <manim.scene.graph_scene.GraphScene.CONFIG>`\\"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:4
+msgid "This method adds to the Scene:"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:6
+msgid "a Vertical line from the x-axis to the corresponding point on the graph/curve."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:7
+msgid "a small vertical Triangle whose top point lies on the base of the vertical line"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:8
+msgid "a MathTex to be a label for the Line and Triangle, at the bottom of the Triangle."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:11
+msgid "The scene needs to have the graph have the identifier/variable name ``self.v_graph``."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.input_to_graph_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.point_to_coords:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.setup_axes:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.slope_of_tangent:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.transform_between_riemann_rects:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:14
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:6
+msgid "The x value at which the secant enters, and intersects the graph for the first time."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:19
+msgid "The label to give the vertline and triangle"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:21
+msgid "The hex color of the label."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:23
+msgid "Whether or not to animate the addition of the T_label"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:25
+msgid "Any valid keyword argument of a self.play call."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:4
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.slope_of_tangent:4
+msgid "The x value at which the tangent must touch the curve."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:6
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.slope_of_tangent:6
+msgid "The ParametricFunction for which to calculate the tangent."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:8
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.slope_of_tangent:8
+msgid "The small change in x with which a small change in y will be compared in order to obtain the tangent."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.input_to_graph_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.point_to_coords:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.slope_of_tangent:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:12
+msgid "The angle of the tangent with the x axis."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.input_to_graph_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.point_to_coords:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.slope_of_tangent:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:4
+msgid "The old secant_slope_group"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:6
+msgid "The new dx value."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:8
+msgid "The new x value at which the secant should be."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:10
+msgid "The run time for this change when animated."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:12
+msgid "Any exta animations that should be played alongside."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:14
+msgid "Any valid kwargs of a self.play call."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:1
+msgid "The graph is smaller than the scene. Because of this, coordinates in the scene don't map to coordinates on the graph. This method returns a scaled coordinate for the graph, given cartesian coordinates that correspond to the scene.."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:7
+msgid "The x value"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:9
+msgid "The y value"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:12
+msgid "The array of the coordinates."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:6
+msgid "This method will return a VGroup of new mobjects for each of those, when provided the graph/curve, the new t_min and t_max, the run_time and a bool stating whether or not to fade when close to the origin."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:10
+msgid "The graph for which this must be done."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:12
+msgid "The new lower bound."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:14
+msgid "The new upper bound."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:16
+msgid "Whether or not to fade when close to the origin."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:18
+msgid "The run_time of the animation of this change."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:5
+msgid "The graph/curve for which the area needs to be gotten."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:7
+msgid "The lower bound of x from which to approximate the area."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:9
+msgid "The upper bound of x until which the area must be approximated."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:12
+msgid "The VGroup containing the Riemann Rectangles."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:4
+msgid "The graph for which the derivative must be found."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:6
+msgid "The small change in x with which a small change in y will be compared in order to obtain the derivative."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:9
+msgid "Any valid keyword argument of ParametricFunction"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:11
+msgid "The curve of the derivative."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:3
+msgid "The function to plot. It's return value should be the y-coordinate for a given x-coordinate"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:6
+msgid "The string of the RGB color of the curve. in Hexadecimal representation."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:8
+msgid "The lower x_value from which to plot the curve."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:10
+msgid "The higher x_value until which to plot the curve."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:12
+msgid "Any valid keyword arguments of ParametricFunction."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:14
+msgid "The Parametric Curve for the function passed."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:4
+msgid "The curve of the function plotted."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:6
+msgid "The label for the function's curve."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:8
+msgid "The x_value with which the label should be aligned."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:10
+msgid "The cartesian position, relative to the curve that the label will be at. e.g LEFT, RIGHT"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:13
+msgid "The buffer space between the curve and the label"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:15
+msgid "The color of the label."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:18
+msgid "The LaTeX of the passed 'label' parameter"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph_label:19
+msgid ":class:`~.MathTex`"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:4
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:6
+msgid "The graph whose area needs to be approximated by the Riemann Rectangles."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:7
+msgid "The lower bound from which to start adding rectangles"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:9
+msgid "The upper bound where the rectangles stop."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:11
+msgid "The smallest change in x-values that is considered significant."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:14
+msgid "Can be any of \"left\", \"right\" or \"center"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:16
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:15
+msgid "The stroke_width of the border of the rectangles."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:18
+msgid "The string of hex colour of the rectangle's border."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:20
+msgid "The opacity of the rectangles. Takes values from 0 to 1."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:22
+msgid "The hex starting colour for the rectangles, this will, if end_color is a different colour, make a nice gradient."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:26
+msgid "The hex ending colour for the rectangles, this will, if start_color is a different colour, make a nice gradient."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:30
+msgid "Whether or not to indicate -ve area if curve dips below x-axis."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:33
+msgid "How much the width of the rectangles are scaled by when transforming."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles:36
+msgid "A VGroup containing the Riemann Rectangles."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:1
+msgid "This method returns a list of multiple VGroups of Riemann Rectangles. The inital VGroups are relatively inaccurate, but the closer you get to the end the more accurate the Riemann rectangles become"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:9
+msgid "The number of VGroups of successive accuracy that are needed."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:11
+msgid "The maximum change in x between two VGroups of Riemann Rectangles"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:13
+msgid "Defaults to 2"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:17
+msgid "Any valid keyword arguments of get_riemann_rectangles."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_riemann_rectangles_list:19
+msgid "The list of Riemann Rectangles of increasing accuracy."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:9
+msgid "The curve/graph for which the secant must be found."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:12
+msgid "The change in x after which the secant exits."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:14
+msgid "The line color for the line that indicates the change in x."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:16
+msgid "The line color for the line that indicates the change in y."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:18
+msgid "The label to be provided for the change in x."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:20
+msgid "The label to be provided for the change in y."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:22
+msgid "Whether or not to include the secant line in the graph, or just have the df and dx lines and labels."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:25
+msgid "The color of the secant line."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:27
+msgid "How long the secant line should be."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:30
+msgid "A group containing the elements ``dx_line``, ``df_line``, and if applicable also ``dx_label``, ``df_label``, ``secant_line``."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_secant_slope_group:32
+msgid ":class:`.VGroup`"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:4
+msgid "The x-value at which the line should be placed/calculated."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:6
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:3
+msgid "The graph on which the line should extend to."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:8
+msgid "The type of line that should be used. Defaults to Line."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:11
+msgid "Any valid keyword arguments of the object passed in \"line_class\" If line_class is Line, any valid keyword arguments of Line are allowed."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_line_to_graph:14
+msgid "Defaults to Line"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:5
+msgid "The lower bound from which lines can appear."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:7
+msgid "The upper bound until which the lines can appear."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:9
+msgid "The number of lines (evenly spaced) that are needed."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_vertical_lines_to_graph:13
+msgid "The VGroup of the evenly spaced lines."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.input_to_graph_point:5
+msgid "The x value for which to find the y value."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.input_to_graph_point:7
+msgid "The ParametricFunction object on which the x and y value lie."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.input_to_graph_point:11
+msgid "The array of the coordinates on the graph."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.point_to_coords:3
+msgid "Because of this, coordinates in the graph don't map to coordinates on the scene."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.point_to_coords:6
+msgid "This method returns a scaled coordinate for the scene, given coordinates that correspond to the graph."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.point_to_coords:9
+msgid "The point on the graph."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.point_to_coords:12
+msgid "The coordinates on the scene."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.setup_axes:3
+msgid "Whether or not to animate the setting up of the Axes."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.slope_of_tangent:12
+msgid "The slope of the tangent with the x axis."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.transform_between_riemann_rects:1
+msgid "This method is used to transform between two VGroups of Riemann Rectangles, if they were obtained by get_riemann_rectangles or get_riemann_rectangles_list. No animation is returned, and the animation is directly played."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.transform_between_riemann_rects:5
+msgid "The current Riemann Rectangles"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.transform_between_riemann_rects:7
+msgid "The Riemann Rectangles to transform to."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.transform_between_riemann_rects:9
+msgid "added_anims     Any other animations to play simultaneously."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.transform_between_riemann_rects:10
+msgid "added_anims"
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.transform_between_riemann_rects:11
+msgid "Any other animations to play simultaneously."
+msgstr ""

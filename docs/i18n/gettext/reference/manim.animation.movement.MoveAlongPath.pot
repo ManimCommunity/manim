@@ -1,0 +1,41 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.movement.MoveAlongPath.rst:2
+msgid "manim.animation.movement.MoveAlongPath"
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement.MoveAlongPath:1
+msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.MoveAlongPath.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.MoveAlongPath.rst:18:<autosummary>:1
+msgid ":obj:`interpolate_mobject <manim.animation.movement.MoveAlongPath.interpolate_mobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.MoveAlongPath.rst:20
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.MoveAlongPath.rst:23:<autosummary>:1
+msgid ":obj:`CONFIG <manim.animation.movement.MoveAlongPath.CONFIG>`\\"
+msgstr ""

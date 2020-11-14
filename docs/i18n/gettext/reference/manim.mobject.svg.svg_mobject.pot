@@ -1,0 +1,45 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.rst:2
+msgid "manim.mobject.svg.svg\\_mobject"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject:1
+msgid "Mobjects generated from an SVG file."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.rst:28:<autosummary>:1
+msgid ":obj:`SVGMobject <manim.mobject.svg.svg_mobject.SVGMobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.rst:28:<autosummary>:1
+msgid "A SVGMobject is a Vector Mobject constructed from an SVG (or XDV) file."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.rst:28:<autosummary>:1
+msgid ":obj:`VMobjectFromSVGPathstring <manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.rst:31
+msgid "Functions"
+msgstr ""

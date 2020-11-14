@@ -1,0 +1,118 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:2
+msgid "manim.mobject.svg.brace.Brace"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:1
+msgid "Bases: :class:`manim.mobject.svg.tex_mobject.MathTex`"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:1
+msgid "Takes a mobject and draws a brace adjacent to it."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:3
+msgid "Passing a direction vector determines the direction from which the brace is drawn. By default it is drawn from below."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:6
+msgid "The mobject adjacent to which the brace is placed."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:8
+msgid "The direction from which the brace faces the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:11
+msgid ":class:`BraceBetweenPoints`"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace:14
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:6
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:22:<autosummary>:1
+msgid ":obj:`get_direction <manim.mobject.svg.brace.Brace.get_direction>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:22:<autosummary>:1
+msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:22:<autosummary>:1
+msgid ":obj:`get_tex <manim.mobject.svg.brace.Brace.get_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:22:<autosummary>:1
+msgid ":obj:`get_text <manim.mobject.svg.brace.Brace.get_text>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:22:<autosummary>:1
+msgid ":obj:`get_tip <manim.mobject.svg.brace.Brace.get_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:22:<autosummary>:1
+msgid ":obj:`put_at_tip <manim.mobject.svg.brace.Brace.put_at_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.Brace.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1:<autosummary>:1
+msgid ":obj:`CONFIG <manim.mobject.svg.brace.Brace.CONFIG>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:1
+msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:7
+msgid "The default direction of a :class:`~.Circle` is counterclockwise::"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:11
+msgid "'CCW'"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:13
+msgid "Either `\"CW\"` or `\"CCW\"`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:14
+msgid ":class:`str`"
+msgstr ""

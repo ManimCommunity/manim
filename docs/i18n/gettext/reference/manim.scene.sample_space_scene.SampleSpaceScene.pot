@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:2
+msgid "manim.scene.sample\\_space\\_scene.SampleSpaceScene"
+msgstr ""
+
+#: ../../../manim/scene/sample_space_scene.py:docstring of manim.scene.sample_space_scene.SampleSpaceScene:1
+msgid "Bases: :class:`manim.scene.scene.Scene`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`add_sample_space <manim.scene.sample_space_scene.SampleSpaceScene.add_sample_space>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_bottom_conditional_change_anims <manim.scene.sample_space_scene.SampleSpaceScene.get_bottom_conditional_change_anims>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_conditional_change_anims <manim.scene.sample_space_scene.SampleSpaceScene.get_conditional_change_anims>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_division_change_animations <manim.scene.sample_space_scene.SampleSpaceScene.get_division_change_animations>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_horizontal_division_change_animations <manim.scene.sample_space_scene.SampleSpaceScene.get_horizontal_division_change_animations>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_posterior_rectangle_braces_and_labels <manim.scene.sample_space_scene.SampleSpaceScene.get_posterior_rectangle_braces_and_labels>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_posterior_rectangle_change_anims <manim.scene.sample_space_scene.SampleSpaceScene.get_posterior_rectangle_change_anims>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_posterior_rectangles <manim.scene.sample_space_scene.SampleSpaceScene.get_posterior_rectangles>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_prior_rectangles <manim.scene.sample_space_scene.SampleSpaceScene.get_prior_rectangles>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_sample_space <manim.scene.sample_space_scene.SampleSpaceScene.get_sample_space>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_top_conditional_change_anims <manim.scene.sample_space_scene.SampleSpaceScene.get_top_conditional_change_anims>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`get_vertical_division_change_animations <manim.scene.sample_space_scene.SampleSpaceScene.get_vertical_division_change_animations>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:30:<autosummary>:1
+msgid ":obj:`update_posterior_braces <manim.scene.sample_space_scene.SampleSpaceScene.update_posterior_braces>`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:32
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.scene.sample_space_scene.SampleSpaceScene.rst:35:<autosummary>:1
+msgid ":obj:`CONFIG <manim.scene.sample_space_scene.SampleSpaceScene.CONFIG>`\\"
+msgstr ""

@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:2
+msgid "manim.mobject.types.point\\_cloud\\_mobject"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject:1
+msgid "Mobjects representing point clouds."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":obj:`Mobject1D <manim.mobject.types.point_cloud_mobject.Mobject1D>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":obj:`Mobject2D <manim.mobject.types.point_cloud_mobject.Mobject2D>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":obj:`PGroup <manim.mobject.types.point_cloud_mobject.PGroup>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":obj:`PMobject <manim.mobject.types.point_cloud_mobject.PMobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":obj:`Point <manim.mobject.types.point_cloud_mobject.Point>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid ":obj:`PointCloudDot <manim.mobject.types.point_cloud_mobject.PointCloudDot>`"
+msgstr ""

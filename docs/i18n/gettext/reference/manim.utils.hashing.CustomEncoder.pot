@@ -1,0 +1,98 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.hashing.CustomEncoder.rst:2
+msgid "manim.utils.hashing.CustomEncoder"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder:1
+msgid "Bases: :class:`json.encoder.JSONEncoder`"
+msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.CustomEncoder.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.CustomEncoder.rst:19:<autosummary>:1
+msgid ":obj:`default <manim.utils.hashing.CustomEncoder.default>`"
+msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.CustomEncoder.rst:19:<autosummary>:1
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:1
+msgid "This method is used to serialize objects to JSON format."
+msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.CustomEncoder.rst:19:<autosummary>:1
+msgid ":obj:`encode <manim.utils.hashing.CustomEncoder.encode>`"
+msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.CustomEncoder.rst:19:<autosummary>:1
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.encode:1
+msgid "Overriding of :meth:`JSONEncoder.encode`, to make our own process."
+msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.CustomEncoder.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:1:<autosummary>:1
+msgid ":obj:`item_separator <manim.utils.hashing.CustomEncoder.item_separator>`\\"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:1:<autosummary>:1
+msgid ":obj:`key_separator <manim.utils.hashing.CustomEncoder.key_separator>`\\"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:3
+msgid "If obj is a function, then it will return a dict with two keys : 'code', for the code source, and 'nonlocals' for all nonlocalsvalues. (including nonlocals functions, that will be serialized as this is recursive.) if obj is a np.darray, it converts it into a list. if obj is an object with __dict__ attribute, it returns its __dict__. Else, will let the JSONEncoder do the stuff, and throw an error if the type is not suitable for JSONEncoder."
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:0
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.encode:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:8
+msgid "Arbitrary object to convert"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:0
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.encode:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:11
+msgid "Python object that JSON encoder will recognize"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.default:0
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.encode:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.encode:3
+msgid "The object to encode in JSON."
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.encode:6
+msgid "The object encoder with the standard json process."
+msgstr ""
+
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.CustomEncoder.encode:7
+msgid ":class:`str`"
+msgstr ""

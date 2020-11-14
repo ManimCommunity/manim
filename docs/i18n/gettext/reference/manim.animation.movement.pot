@@ -1,0 +1,49 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.movement.rst:2
+msgid "manim.animation.movement"
+msgstr ""
+
+#: ../../../manim/animation/movement.py:docstring of manim.animation.movement:1
+msgid "Animations related to movement."
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
+msgid ":obj:`ComplexHomotopy <manim.animation.movement.ComplexHomotopy>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
+msgid ":obj:`Homotopy <manim.animation.movement.Homotopy>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
+msgid ":obj:`MoveAlongPath <manim.animation.movement.MoveAlongPath>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
+msgid ":obj:`PhaseFlow <manim.animation.movement.PhaseFlow>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.movement.rst:28:<autosummary>:1
+msgid ":obj:`SmoothedVectorizedHomotopy <manim.animation.movement.SmoothedVectorizedHomotopy>`"
+msgstr ""

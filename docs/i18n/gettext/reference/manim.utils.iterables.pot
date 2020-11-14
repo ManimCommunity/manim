@@ -1,0 +1,37 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.iterables.rst:2
+msgid "manim.utils.iterables"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables:1
+msgid "Operations on iterables."
+msgstr ""
+
+#: ../../source/reference/manim.utils.iterables.rst:20
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_update:1
+msgid "Used instead of list(set(l1).update(l2)) to maintain order, making sure duplicates are removed from l1, not l2."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_list_redundancies:1
+msgid "Used instead of list(set(l)) to maintain order Keeps the last occurance of each element"
+msgstr ""

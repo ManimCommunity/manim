@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/installation/mac.rst:2
+msgid "Mac"
+msgstr ""
+
+#: ../../source/installation/mac.rst:4
+msgid "First, you need to install Homebrew.  Homebrew is a package manager similar to ``apt`` or ``pacman`` on linux that allows you to install packages easily.  If it is not installed, please install it with this command:"
+msgstr ""
+
+#: ../../source/installation/mac.rst:12
+msgid "To install cairo:"
+msgstr ""
+
+#: ../../source/installation/mac.rst:18
+msgid "To install Pango and it dependencies:"
+msgstr ""
+
+#: ../../source/installation/mac.rst:28
+msgid "To install ffmpeg:"
+msgstr ""
+
+#: ../../source/installation/mac.rst:34
+msgid "To install LaTeX:"
+msgstr ""
+
+#: ../../source/installation/mac.rst:40
+msgid "Note that MacTeX will require at least 4.5GB of hard disk space. This is due to the fact that it installs every LaTeX addon package offered by `CTAN <https://ctan.org/>`_.  Only a few of these packages are required by Manim.  If you would like a smaller LaTeX install which only contains the packages needed by Manim alone, consider installing BasicTeX with the instructions below. This will require only about 1.5GB of space.  If you have installed MacTeX and are comfortable with it, do not install BasicTeX."
+msgstr ""
+
+#: ../../source/installation/mac.rst:49
+msgid "(Alternative) To install BasicTeX:"
+msgstr ""
+
+#: ../../source/installation/mac.rst:55
+msgid "Ensure that the TeXLiveManager tool ``tlmgr`` works, by running ``tlmgr --version`` in the terminal.  Now run"
+msgstr ""
+
+#: ../../source/installation/mac.rst:65
+msgid "Certifying a clean install"
+msgstr ""
+
+#: ../../source/installation/mac.rst:67
+msgid "To check that all dependencies have been installed properly, you can execute the commands ``ffmpeg -version`` and ``latex`` (regardless of whether you installed MacTeX or BasicTeX).  If LaTeX is installed properly, you will be taken to a command-line program that captures your cursor. Press CTRL+C to exit."
+msgstr ""
+
+#: ../../source/installation/mac.rst:73
+msgid "After making sure you have a clean install, you can go back to :ref:`installing-manim`."
+msgstr ""

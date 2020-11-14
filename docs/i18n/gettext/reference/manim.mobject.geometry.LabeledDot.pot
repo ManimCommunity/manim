@@ -1,0 +1,57 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.LabeledDot.rst:2
+msgid "manim.mobject.geometry.LabeledDot"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.LabeledDot:1
+msgid "Bases: :class:`manim.mobject.geometry.Dot`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.LabeledDot:1
+msgid "A :class:`Dot` containing a label in its center."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.LabeledDot.rst:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.LabeledDot:3
+msgid "The label of the :class:`Dot`. This is rendered as :class:`~.MathTex` by default (i.e., when passing a :class:`str`), but other classes representing rendered strings like :class:`~.Text` or :class:`~.Tex` can be passed as well."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.LabeledDot:8
+msgid "The radius of the :class:`Dot`. If ``None`` (the default), the radius is calculated based on the size of the ``label``."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.LabeledDot:13
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.LabeledDot.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.LabeledDot.rst:19
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.LabeledDot.rst:22:<autosummary>:1
+msgid ":obj:`CONFIG <manim.mobject.geometry.LabeledDot.CONFIG>`\\"
+msgstr ""

@@ -1,0 +1,45 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.fading.FadeIn.rst:2
+msgid "manim.animation.fading.FadeIn"
+msgstr ""
+
+#: ../../../manim/animation/fading.py:docstring of manim.animation.fading.FadeIn:1
+msgid "Bases: :class:`manim.animation.transform.Transform`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.fading.FadeIn.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.fading.FadeIn.rst:19:<autosummary>:1
+msgid ":obj:`create_starting_mobject <manim.animation.fading.FadeIn.create_starting_mobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.fading.FadeIn.rst:19:<autosummary>:1
+msgid ":obj:`create_target <manim.animation.fading.FadeIn.create_target>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.fading.FadeIn.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.fading.FadeIn.rst:24:<autosummary>:1
+msgid ":obj:`CONFIG <manim.animation.fading.FadeIn.CONFIG>`\\"
+msgstr ""

@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.container.Container.rst:2
+msgid "manim.container.Container"
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container:1
+msgid "Bases: :class:`abc.ABC`"
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container:1
+msgid "Abstract base class for several objects used by manim.  In particular, both :class:`~.Scene` and :class:`~.Mobject` inherit from Container."
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container:0
+#: ../../../manim/container.py:docstring of manim.container.Container.add:0
+#: ../../../manim/container.py:docstring of manim.container.Container.remove:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container:4
+msgid "Arguments to be passed to :func:`~.digest_config`"
+msgstr ""
+
+#: ../../source/reference/manim.container.Container.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container.add:1:<autosummary>:1
+msgid ":obj:`add <manim.container.Container.add>`"
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container.add:1:<autosummary>:1
+#: ../../../manim/container.py:docstring of manim.container.Container.add:1
+msgid "Abstract method to add items to Container."
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container.add:1:<autosummary>:1
+msgid ":obj:`remove <manim.container.Container.remove>`"
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container.add:1:<autosummary>:1
+#: ../../../manim/container.py:docstring of manim.container.Container.remove:1
+msgid "Abstract method to remove items from Container."
+msgstr ""
+
+#: ../../../manim/container.py:docstring of manim.container.Container.add:3
+#: ../../../manim/container.py:docstring of manim.container.Container.remove:3
+msgid "Objects to be added."
+msgstr ""

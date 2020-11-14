@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:2
+msgid "manim.mobject.svg.tex\\_mobject"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject:1
+msgid "Mobjects representing text rendered using LaTeX."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`BulletedList <manim.mobject.svg.tex_mobject.BulletedList>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`MathTex <manim.mobject.svg.tex_mobject.MathTex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid "A string compiled with LaTeX in math mode."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`MathTexFromPresetString <manim.mobject.svg.tex_mobject.MathTexFromPresetString>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`SingleStringMathTex <manim.mobject.svg.tex_mobject.SingleStringMathTex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid "Elementary building block for rendering text with LaTeX."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`Tex <manim.mobject.svg.tex_mobject.Tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid "A string compiled with LaTeX in normal mode."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`TexMobject <manim.mobject.svg.tex_mobject.TexMobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`TexSymbol <manim.mobject.svg.tex_mobject.TexSymbol>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid "Purely a renaming of VMobjectFromSVGPathstring."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`TextMobject <manim.mobject.svg.tex_mobject.TextMobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`Title <manim.mobject.svg.tex_mobject.Title>`"
+msgstr ""

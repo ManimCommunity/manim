@@ -1,0 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:2
+msgid "manim.mobject.types.image\\_mobject.AbstractImageMobject"
+msgstr ""
+
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject:1
+msgid "Bases: :class:`manim.mobject.mobject.Mobject`"
+msgstr ""
+
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject:1
+msgid "Automatically filters out black pixels"
+msgstr ""
+
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject:3
+msgid "At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best. This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:20:<autosummary>:1
+msgid ":obj:`get_pixel_array <manim.mobject.types.image_mobject.AbstractImageMobject.get_pixel_array>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:20:<autosummary>:1
+msgid ":obj:`reset_points <manim.mobject.types.image_mobject.AbstractImageMobject.reset_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:20:<autosummary>:1
+msgid ":obj:`set_color <manim.mobject.types.image_mobject.AbstractImageMobject.set_color>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:20:<autosummary>:1
+msgid "Condition is function which takes in one arguments, (x, y, z)."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:22
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.set_color:1:<autosummary>:1
+msgid ":obj:`CONFIG <manim.mobject.types.image_mobject.AbstractImageMobject.CONFIG>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/types/image_mobject.py:docstring of manim.mobject.types.image_mobject.AbstractImageMobject.set_color:1
+msgid "Condition is function which takes in one arguments, (x, y, z). Here it just recurses to submobjects, but in subclasses this should be further implemented based on the the inner workings of color"
+msgstr ""

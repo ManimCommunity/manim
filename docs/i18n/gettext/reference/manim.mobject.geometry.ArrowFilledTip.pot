@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:2
+msgid "manim.mobject.geometry.ArrowFilledTip"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowFilledTip:1
+msgid "Bases: :class:`manim.mobject.geometry.ArrowTip`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowFilledTip:1
+msgid "Base class for arrow tips with filled tip."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowFilledTip:5
+msgid "In comparison to :class:`ArrowTip`, this class only provides different default settings for styling arrow tips. These settings (in particular `fill_opacity` and `stroke_width`) can also be overridden manually."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowFilledTip:10
+msgid ":class:`ArrowTip`, :class:`ArrowTriangleFilledTip`, :class:`ArrowCircleFilledTip`, :class:`ArrowSquareFilledTip`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:19
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid ":obj:`CONFIG <manim.mobject.geometry.ArrowFilledTip.CONFIG>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid ":obj:`base <manim.mobject.geometry.ArrowFilledTip.base>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid "The base point of the arrow tip."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid ":obj:`tip_angle <manim.mobject.geometry.ArrowFilledTip.tip_angle>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid "The angle of the arrow tip."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid ":obj:`tip_length <manim.mobject.geometry.ArrowFilledTip.tip_length>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid "The length of the arrow tip."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid ":obj:`tip_point <manim.mobject.geometry.ArrowFilledTip.tip_point>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid "The tip point of the arrow tip."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid ":obj:`vector <manim.mobject.geometry.ArrowFilledTip.vector>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowFilledTip.rst:27:<autosummary>:1
+msgid "The vector pointing from the base point to the tip point."
+msgstr ""

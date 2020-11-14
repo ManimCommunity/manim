@@ -58,6 +58,7 @@ docs/_build/
 docs/build/
 docs/source/_autosummary/
 docs/source/reference/
+docs/i18n/gettext/.doctrees
 docs/i18n/**/*.mo
 docs/source/_build/
 

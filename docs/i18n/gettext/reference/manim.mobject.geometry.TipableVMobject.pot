@@ -1,0 +1,174 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:2
+msgid "manim.mobject.geometry.TipableVMobject"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:1
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:1
+msgid "Meant for shared functionality between Arc and Line. Functionality can be classified broadly into these groups:"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:7
+msgid "Adding, Creating, Modifying tips"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:5
+msgid "add_tip calls create_tip, before pushing the new tip"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:6
+msgid "into the TipableVMobject's list of submobjects"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:7
+msgid "stylistic and positional configuration"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:11
+msgid "Checking for tips"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:11
+msgid "Boolean checks for whether the TipableVMobject has a tip"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:11
+msgid "and a starting tip"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:16
+msgid "Getters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:16
+msgid "Straightforward accessors, returning information pertaining"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject:15
+msgid "to the TipableVMobject instance's tip(s), its length etc"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`add_tip <manim.mobject.geometry.TipableVMobject.add_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject.add_tip:1
+msgid "Adds a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`asign_tip_attr <manim.mobject.geometry.TipableVMobject.asign_tip_attr>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`create_tip <manim.mobject.geometry.TipableVMobject.create_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject.create_tip:1
+msgid "Stylises the tip, positions it spacially, and returns the newly instantiated tip to the caller."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_default_tip_length <manim.mobject.geometry.TipableVMobject.get_default_tip_length>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_end <manim.mobject.geometry.TipableVMobject.get_end>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_first_handle <manim.mobject.geometry.TipableVMobject.get_first_handle>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_last_handle <manim.mobject.geometry.TipableVMobject.get_last_handle>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_length <manim.mobject.geometry.TipableVMobject.get_length>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_start <manim.mobject.geometry.TipableVMobject.get_start>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_tip <manim.mobject.geometry.TipableVMobject.get_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject.get_tip:1
+msgid "Returns the TipableVMobject instance's (first) tip, otherwise throws an exception."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_tips <manim.mobject.geometry.TipableVMobject.get_tips>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject.get_tips:1
+msgid "Returns a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`get_unpositioned_tip <manim.mobject.geometry.TipableVMobject.get_unpositioned_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject.get_unpositioned_tip:1
+msgid "Returns a tip that has been stylistically configured, but has not yet been given a position in space."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`has_start_tip <manim.mobject.geometry.TipableVMobject.has_start_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`has_tip <manim.mobject.geometry.TipableVMobject.has_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`pop_tips <manim.mobject.geometry.TipableVMobject.pop_tips>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`position_tip <manim.mobject.geometry.TipableVMobject.position_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:34:<autosummary>:1
+msgid ":obj:`reset_endpoints_based_on_tip <manim.mobject.geometry.TipableVMobject.reset_endpoints_based_on_tip>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.TipableVMobject.rst:36
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.TipableVMobject.add_tip:1:<autosummary>:1
+msgid ":obj:`CONFIG <manim.mobject.geometry.TipableVMobject.CONFIG>`\\"
+msgstr ""
