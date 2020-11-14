@@ -139,16 +139,17 @@ class Scene(Container):
         """
         return [getattr(self, key) for key in keys]
 
-    def update_mobjects(self, dt):
-        """
-        Begins updating all mobjects in the Scene.
+    def update_mobjects(self, dt, mobjects=None):
+        """Update all mobjects in the Scene.
 
         Parameters
         ----------
         dt: int or float
             Change in time between updates. Defaults (mostly) to 1/frames_per_second
         """
-        for mobject in self.mobjects:
+        if mobjects is None:
+            mobjects = self.mobjects
+        for mobject in mobjects:
             mobject.update(dt)
 
     def should_update_mobjects(self):

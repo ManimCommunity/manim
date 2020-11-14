@@ -117,8 +117,6 @@ class CairoRenderer:
         **kwargs
 
         """
-        scene.update_mobjects(dt)
-
         if config["skip_animations"] and not ignore_skipping:
             return
         if mobjects is None:
@@ -126,6 +124,8 @@ class CairoRenderer:
                 scene.mobjects,
                 scene.foreground_mobjects,
             )
+        scene.update_mobjects(dt, mobjects)
+
         if background is not None:
             self.camera.set_frame_to_background(background)
         else:
