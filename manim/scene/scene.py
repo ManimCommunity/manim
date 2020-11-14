@@ -190,21 +190,6 @@ class Scene(Container):
     def __str__(self):
         return self.__class__.__name__
 
-    def set_variables_as_attrs(self, *objects, **newly_named_objects):
-        """
-        This method is slightly hacky, making it a little easier
-        for certain methods (typically subroutines of construct)
-        to share local variables.
-        """
-        caller_locals = inspect.currentframe().f_back.f_locals
-        for key, value in list(caller_locals.items()):
-            for o in objects:
-                if value is o:
-                    setattr(self, key, value)
-        for key, value in list(newly_named_objects.items()):
-            setattr(self, key, value)
-        return self
-
     def get_attrs(self, *keys):
         """
         Gets attributes of a scene given the attribute's identifier/name.
@@ -860,13 +845,52 @@ class Scene(Container):
         **kwargs : named parameters affecting what was passed in *args e.g
             run_time, lag_ratio etc.
         """
-        self.last_t = 0
-        for t in self.time_progression:
+        if len(args) == 0:
+            warnings.warn("Called Scene.play with no animations")
+            return
+
+        animations = self.compile_play_args_to_animation_list(*args, **kwargs)
+        if (
+            len(animations) == 1
+            and isinstance(animations[0], Wait)
+            and not self.should_update_mobjects()
+        ):
+            self.add_static_frames(animations[0].duration)
+            return
+
+        for animation in animations:
+            animation.begin()
+
+        moving_mobjects = None
+        static_mobjects = None
+        duration = None
+        stop_condition = None
+        time_progression = None
+        if len(animations) == 1 and isinstance(animations[0], Wait):
+            # TODO, be smart about setting a static image
+            # the same way Scene.play does
+            duration = animations[0].duration
+            stop_condition = animations[0].stop_condition
+            self.static_image = None
+            time_progression = self.get_wait_time_progression(duration, stop_condition)
+        else:
+            # Paint all non-moving objects onto the screen, so they don't
+            # have to be rendered every frame
+            (
+                moving_mobjects,
+                stationary_mobjects,
+            ) = self.get_moving_and_stationary_mobjects(animations)
+            self.renderer.update_frame(self, mobjects=stationary_mobjects)
+            self.static_image = self.renderer.get_frame()
+            time_progression = self.get_animation_time_progression(animations)
+
+        last_t = 0
+        for t in time_progression:
             self.update_to_time(t)
             if not skip_rendering:
                 self.renderer.render(self.moving_mobjects)
-            if self.stop_condition is not None and self.stop_condition():
-                self.time_progression.close()
+            if stop_condition is not None and stop_condition():
+                time_progression.close()
                 break
 
         for animation in self.animations:
