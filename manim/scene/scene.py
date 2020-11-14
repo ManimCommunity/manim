@@ -808,7 +808,9 @@ class Scene(Container):
                 moving_mobjects,
                 stationary_mobjects,
             ) = self.get_moving_and_stationary_mobjects(animations)
-            self.renderer.update_frame(self, self.renderer.camera.frame_rate, mobjects=stationary_mobjects)
+            self.renderer.update_frame(
+                self, self.renderer.camera.frame_rate, mobjects=stationary_mobjects
+            )
             self.static_image = self.renderer.get_frame()
             time_progression = self.get_animation_time_progression(animations)
 

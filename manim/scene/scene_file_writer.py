@@ -383,7 +383,7 @@ class SceneFileWriter(object):
         input buffer, and move the temporary files into their permananant
         locations
         """
-        if not hasattr(self, 'writing_process'):
+        if not hasattr(self, "writing_process"):
             return
         self.writing_process.stdin.close()
         self.writing_process.wait()

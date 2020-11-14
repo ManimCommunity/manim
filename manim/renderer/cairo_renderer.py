@@ -205,7 +205,7 @@ class CairoRenderer:
 
     def finish(self, scene):
         config["skip_animations"] = False
-        self.update_frame(scene, 1/config.frame_rate, ignore_skipping=False)
+        self.update_frame(scene, self.camera.frame_rate, ignore_skipping=False)
         self.add_frame(self.camera.pixel_array)
         self.file_writer.end_animation(not config["skip_animations"])
         self.file_writer.finish()
