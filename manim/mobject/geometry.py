@@ -25,6 +25,7 @@ __all__ = [
     "CubicBezier",
     "Polygon",
     "RegularPolygon",
+    "ArcPolygon",
     "Triangle",
     "ArrowTip",
     "Rectangle",
@@ -143,8 +144,7 @@ class TipableVMobject(VMobject):
 
     def reset_endpoints_based_on_tip(self, tip, at_start):
         if self.get_length() == 0:
-            # Zero length, put_start_and_end_on wouldn't
-            # work
+            # Zero length, put_start_and_end_on wouldn't work
             return self
 
         if at_start:
@@ -861,6 +861,111 @@ class RegularPolygon(Polygon):
         start_vect = rotate_vector(RIGHT, self.start_angle)
         vertices = compass_directions(n, start_vect)
         Polygon.__init__(self, *vertices, **kwargs)
+
+
+class ArcPolygon(VMobject):
+    """
+    A more versatile polygon, made from arcs.
+
+    For proper appearance the passed arcs should seamlessly connect:
+    [a,b][b,c][c,a]
+    If there are any gaps between the arcs, those will be filled in
+    with straight lines, which can be used deliberately for any straight
+    sections. Arcs can also be passed as straight lines such as an arc
+    initialized with 'angle=0'.
+
+    ArcPolygons can be transformed properly into one another as well. Be
+    advised that any arc initialized with 'angle=0' will actually be
+    made like a line, so if a straight secion should seamlessly
+    transform into an arced section, initialize the straight section
+    with a negligible angle instead (such as 'angle=0.0001').
+
+    Parameters
+    ----------
+    *arcs : Union[:class:`Arc`, :class:`ArcBetweenPoints`]
+        These are the arcs from which the arcpolygon is assembled.
+    **kwargs : Any
+        Affects how the ArcPolygon itself is drawn, doesn't affect
+        passed arcs.
+
+    Examples
+    --------
+    One example of an arcpolygon is the Reuleaux triangle.
+    Instead of 3 straight lines connecting the outer points,
+    a Reuleaux triangle has 3 arcs connecting those points,
+    making a shape with constant width.
+
+    Passed arcs are stored as submobjects in the ArcPolygon.
+    This means that the arcs are changed along with the ArcPolygon,
+    for example when it's shifted, and these arcs can be manipulated
+    after the ArcPolygon has been initialized. They are accessible via
+    ArcPolygon.arcs, for which there's an example a bit further down.
+
+    Also both the arcs contained in an ArcPolygon, as well as the
+    ArcPolygon itself are drawn, which affects draw time in ShowCreation
+    for example. In most cases the arcs themselves don't
+    need to be drawn, in which case they can be passed as invisible.
+        .. manim:: ArcPolygonExample
+
+            class ArcPolygonExample(Scene):
+                def construct(self):
+                arc_conf = {"stroke_width":0}
+                poly_conf = {"stroke_width":10,"stroke_color":BLUE,
+                      "fill_opacity":1,"color": PURPLE}
+                a=[-1,0,0]
+                b=[1,0,0]
+                c=[0,np.sqrt(3),0]
+                arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
+                arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
+                arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
+                reuleaux_triangle=ArcPolygon(arc0,arc1,arc2,**poly_conf)
+                self.play(FadeIn(reuleaux_triangle))
+                self.wait(2)
+
+    >>> print(reuleaux_triangle.arcs)
+    '[ArcBetweenPoints, ArcBetweenPoints, ArcBetweenPoints]'
+
+    The ArcPolygon itself can also be hidden so that instead only the
+    contained arcs are drawn.
+        .. manim:: ArcPolygonExample2
+
+            class ArcPolygonExample2(Scene):
+                def construct(self):
+                arc_conf = {"stroke_width":3,"stroke_color":RED,
+                      "fill_opacity":0.5,"color": GREEN}
+                poly_conf = {"color":None}
+                a=[-1,0,0]
+                b=[1,0,0]
+                c=[0,np.sqrt(3),0]
+                arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
+                arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
+                arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
+                reuleaux_triangle=ArcPolygon(arc0,arc1,arc2,**poly_conf)
+                self.play(FadeIn(reuleaux_triangle))
+                self.wait(2)
+    """
+
+    def __init__(self, *arcs, **kwargs):
+        if not all(isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs):
+            raise ValueError(
+                "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints"
+            )
+        VMobject.__init__(self, **kwargs)
+        # Adding the arcs like this makes ArcPolygon double as a VGroup.
+        # Also makes changes to the ArcPolygon, such as scaling, affect
+        # the arcs, so that their new values are usable.
+        self.add(*arcs)
+        # This enables the use of ArcPolygon.arcs as a convenience
+        # because ArcPolygon[0] returns itself, not the first Arc.
+        self.arcs = [*arcs]
+        for arc1, arc2 in adjacent_pairs(arcs):
+            self.append_points(arc1.points)
+            line = Line(arc1.get_end(), arc2.get_start())
+            len_ratio = line.get_length() / arc1.get_arc_length()
+            if math.isnan(len_ratio) or math.isinf(len_ratio):
+                continue
+            line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
+            self.append_points(line.get_points())
 
 
 class Triangle(RegularPolygon):
