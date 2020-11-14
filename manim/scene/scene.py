@@ -808,7 +808,7 @@ class Scene(Container):
                 moving_mobjects,
                 stationary_mobjects,
             ) = self.get_moving_and_stationary_mobjects(animations)
-            self.renderer.update_frame(self, 1/config.frame_rate, mobjects=stationary_mobjects)
+            self.renderer.update_frame(self, self.renderer.camera.frame_rate, mobjects=stationary_mobjects)
             self.static_image = self.renderer.get_frame()
             time_progression = self.get_animation_time_progression(animations)
 
@@ -832,7 +832,7 @@ class Scene(Container):
             animation.clean_up_from_scene(self)
 
     def add_static_frames(self, duration):
-        self.renderer.update_frame(self, 1/config.frame_rate)
+        self.renderer.update_frame(self, self.renderer.camera.frame_rate)
         dt = 1 / self.renderer.camera.frame_rate
         self.renderer.add_frame(
             self.renderer.get_frame(),
