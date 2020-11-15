@@ -39,6 +39,7 @@ Paste your code here.
 
 ## Logs
 <details><summary>Terminal output</summary>
+<!-- Use "manim -v DEBUG ..." to generate more detailed logs -->
 
 ```
 PASTE HERE OR PROVIDE LINK TO https://pastebin.com/ OR SIMILAR
