@@ -26,6 +26,7 @@ Shapes, Images and Positions
 ============================
 
 .. manim:: PointMovingOnShapes
+    :ref_classes: Circle Dot Line GrowFromCenter Transform MoveAlongPath Rotating
 
     class PointMovingOnShapes(Scene):
         def construct(self):
@@ -46,6 +47,7 @@ Shapes, Images and Positions
 
 .. manim:: ManimCELogo
     :save_last_frame:
+    :ref_classes: MathTex Circle Square Triangle
 
     class ManimCELogo(Scene):
         def construct(self):
@@ -72,6 +74,7 @@ Shapes, Images and Positions
 
 .. manim:: GradientImageFromArray
     :save_last_frame:
+    :ref_classes: ImageMobject
 
     class GradientImageFromArray(Scene):
         def construct(self):
@@ -84,6 +87,7 @@ Shapes, Images and Positions
 
 
 .. manim:: MovingAround
+    :ref_functions: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
 
     class MovingAround(Scene):
         def construct(self):
@@ -97,6 +101,8 @@ Shapes, Images and Positions
 
 .. manim:: BezierSpline
     :save_last_frame:
+    :ref_classes: Line VGroup
+    :ref_functions: VMobject.add_cubic_bezier_curve
 
     class BezierSpline(Scene):
         def construct(self):
@@ -181,6 +187,8 @@ Annotations
 
 .. manim:: BraceAnnotation
     :save_last_frame:
+    :ref_classes: Brace
+    :ref_functions: Brace.get_text Brace.get_tex
 
     class BraceAnnotation(Scene):
         def construct(self):
@@ -195,6 +203,7 @@ Annotations
 
 .. manim:: VectorArrow
     :save_last_frame:
+    :ref_classes: Dot Arrow NumberPlane Text
 
     class VectorArrow(Scene):
         def construct(self):
@@ -211,6 +220,9 @@ Plotting with Manim
 
 .. manim:: SinAndCosFunctionPlot
     :save_last_frame:
+    :ref_modules: manim.scenes.graph_scene
+    :ref_classes: MathTex
+    :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
 
     class SinAndCosFunctionPlot(GraphScene):
         CONFIG = {
@@ -240,6 +252,8 @@ Plotting with Manim
 
 .. manim:: GraphAreaPlot
     :save_last_frame:
+    :ref_modules: manim.scenes.graph_scene
+    :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.get_area
 
     class GraphAreaPlot(GraphScene):
         CONFIG = {
@@ -263,6 +277,8 @@ Plotting with Manim
 
 .. manim:: HeatDiagramPlot
     :save_last_frame:
+    :ref_modules: manim.scenes.graph_scene
+    :ref_functions: GraphScene.setup_axes GraphScene.coords_to_point
 
     class HeatDiagramPlot(GraphScene):
         CONFIG = {
@@ -295,6 +311,8 @@ Formulas
 ========
 
 .. manim:: MovingFrameBox
+    :ref_modules: manim.mobject.svg.tex_mobject
+    :ref_classes: MathTex SurroundingRectangle
 
     class MovingFrameBox(Scene):
         def construct(self):
@@ -320,6 +338,8 @@ Formulas
 
 .. manim:: FixedInFrameMObjectTest
     :save_last_frame:
+    :ref_classes: ThreeDScene
+    :ref_functions: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
 
     class FixedInFrameMObjectTest(ThreeDScene):
         def construct(self):
@@ -334,6 +354,8 @@ Formulas
 
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
+    :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
+    :ref_functions: ThreeDScene.set_camera_orientation
 
     class ThreeDLightSourcePosition(ThreeDScene):
         def construct(self):
@@ -351,6 +373,8 @@ Formulas
             self.add(axes, sphere)
 
 .. manim:: ThreeDCameraRotation
+    :ref_classes: ThreeDScene ThreeDAxes
+    :ref_functions: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
 
     class ThreeDCameraRotation(ThreeDScene):
         def construct(self):
@@ -365,6 +389,8 @@ Formulas
             self.wait()
 
 .. manim:: ThreeDCameraIllusionRotation
+    :ref_classes: ThreeDScene ThreeDAxes
+    :ref_functions: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
 
     class ThreeDCameraIllusionRotation(ThreeDScene):
         def construct(self):
@@ -378,6 +404,7 @@ Formulas
 
 
 .. manim:: ThreeDFunctionPlot
+    :ref_classes: ThreeDScene ParametricSurface
 
     class ThreeDFunctionPlot(ThreeDScene):
         def construct(self):
@@ -434,6 +461,9 @@ Camera Settings
 ===============
 
 .. manim:: FollowingGraphCamera
+    :ref_modules: manim.scene.moving_camera_scene
+    :ref_classes: GraphScene MovingCameraScene MoveAlongPath Restore
+    :ref_functions: Mobject.add_updater
 
     class FollowingGraphCamera(GraphScene, MovingCameraScene):
         def setup(self):
@@ -465,6 +495,9 @@ Camera Settings
 
 
 .. manim:: MovingZoomedSceneAround
+    :ref_modules: manim.scene.zoomed_scene
+    :ref_classes: ZoomedScene BackgroundRectangle UpdateFromFunc
+    :ref_functions: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
 
     class MovingZoomedSceneAround(ZoomedScene):
     # contributed by TheoremofBeethoven, www.youtube.com/c/TheoremofBeethoven
@@ -531,9 +564,10 @@ Camera Settings
 Animations
 ==========
 
-.. manim:: RotationUpdater2
+.. manim:: RotationUpdater
+    :ref_functions: Mobject.add_updater Mobject.remove_updater
 
-    class RotationUpdater2(Scene):
+    class RotationUpdater(Scene):
         def construct(self):
             def updater_forth(mobj, dt):
                 mobj.rotate_about_origin(dt)
@@ -552,6 +586,8 @@ Animations
 
 
 .. manim:: PointWithTrace
+    :ref_classes: Rotating
+    :ref_functions: VMobject.set_points_as_corners Mobject.add_updater
 
     class PointWithTrace(Scene):
         def construct(self):
@@ -575,7 +611,8 @@ Advanced Projects
 =================
 
 .. manim:: OpeningManim
-    :ref_classes: Tex MathTex NumberPlane
+    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane ShowCreation
+    :ref_functions: NumberPlane.prepare_for_nonlinear_transform
 
     class OpeningManim(Scene):
         def construct(self):
@@ -632,6 +669,8 @@ Advanced Projects
 
 
 .. manim:: SineCurveUnitCircle
+    :ref_classes: MathTex Circle Dot Line VGroup
+    :ref_functions: Mobject.add_updater Mobject.remove_updater always_redraw
 
     class SineCurveUnitCircle(Scene):
         # contributed by heejin_park, https://infograph.tistory.com/230
