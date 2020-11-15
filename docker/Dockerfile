@@ -1,5 +1,7 @@
 FROM python:3.7-slim
 
+ARG MANIM_VERSION=stable
+
 RUN apt-get update -q \
     && apt-get install --no-install-recommends -y \
         ffmpeg \
@@ -23,7 +25,7 @@ RUN wget -O /tmp/install-tl-unx.tar.gz http://mirror.ctan.org/systems/texlive/tl
         setspace standalone tipa wasy wasysym xcolor xkeyval
 
 # clone and build manim
-RUN git clone --depth 1 --branch v0.1.0 https://github.com/ManimCommunity/manim.git /opt/manim
+RUN git clone --depth 1 --branch ${MANIM_VERSION} https://github.com/ManimCommunity/manim.git /opt/manim
 WORKDIR /opt/manim
 RUN pip install --no-cache .
 
