@@ -220,7 +220,7 @@ Plotting with Manim
 
 .. manim:: SinAndCosFunctionPlot
     :save_last_frame:
-    :ref_modules: manim.scenes.graph_scene
+    :ref_modules: manim.scene.graph_scene
     :ref_classes: MathTex
     :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
 
