@@ -2,7 +2,7 @@ FROM python:3.7-slim
 
 ARG MANIM_VERSION=stable
 
-RUN apt-get update -q \
+RUN apt-get update -qq \
     && apt-get install --no-install-recommends -y \
         ffmpeg \
         gcc \
