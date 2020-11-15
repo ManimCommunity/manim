@@ -27,12 +27,6 @@ RUN git clone --depth 1 --branch v0.1.0 https://github.com/ManimCommunity/manim.
 WORKDIR /opt/manim
 RUN pip install --no-cache .
 
-# ensure ffi bindings are generated correctly
-WORKDIR /usr/local/lib/python3.7/site-packages
-RUN python cairocffi/ffi_build.py \
-    && python pangocffi/ffi_build.py \
-    && python pangocairocffi/ffi_build.py
-
 # create working directory for user to mount local directory into
 WORKDIR /manim
 RUN chmod 666 /manim
