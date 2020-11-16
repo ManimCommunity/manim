@@ -944,7 +944,8 @@ class ArcPolygon(VMobject):
     ArcPolyon.arcs::
         >>> from manim import ArcPolygon, Arc, ArcBetweenPoints
         >>> ap=ArcPolygon(Arc(),ArcBetweenPoints([1,0,0],[0,1,0]),Arc())
-        >>> [Arc, ArcBetweenPoints, Arc]
+        >>> ap.arcs
+        [Arc, ArcBetweenPoints, Arc]
 
     Attributes
     ----------
