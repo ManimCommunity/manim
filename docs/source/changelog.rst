@@ -42,7 +42,9 @@ Mobjects, Scenes, and Animations
 #. Scene.set_variables_as_attrs has been removed (via :pr:`692`).
 #. Ensure that the axes for graphs (:class:`GraphScene`) always intersect (:pr:`580`).
 #. Now Mobject.add_updater does not call the newly-added updater by default
-   (use ``call_updater=True`` instead) (via :pr:`710`)
+   (use ``call_updater=True`` instead) (via :pr:`710`).
+#. The tip point for arrows using `ArrowCircleTip` has been moved to the center
+   of the circle (via :pr:`557`).
 
 
 
@@ -123,7 +125,6 @@ Mobjects, Scenes, and Animations
 #. :code:`Scene` now renders when :code:`Scene.render()` is called rather than upon instantiation.
 #. :code:`ValueTracker` now supports increment using the `+=` operator (in addition to the already existing `increment_value` method)
 #. Add :class:`PangoText` for rendering texts using Pango.
-#. The tip point for arrows using `ArrowCircleTip` has been moved to the center of the circle (via :pr:`557`).
 
 
 Documentation
