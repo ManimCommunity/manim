@@ -11,8 +11,6 @@ def test_import_color():
 
 
 def test_background_color():
-    import manim.utils.color as C
-
     S = Scene()
     S.camera.background_color = "#ff0000"
     S.renderer.update_frame(S)
