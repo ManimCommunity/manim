@@ -869,7 +869,7 @@ class ArcPolygon(VMobject):
 
     For proper appearance the passed arcs should seamlessly connect:
     [a,b][b,c][c,a]
-    
+
     If there are any gaps between the arcs, those will be filled in
     with straight lines, which can be used deliberately for any straight
     sections. Arcs can also be passed as straight lines such as an arc
@@ -910,20 +910,20 @@ class ArcPolygon(VMobject):
 
         class ArcPolygonExample(Scene):
             def construct(self):
-                >>> arc_conf = {"stroke_width":0}
-                >>> poly_conf = {"stroke_width":10,"stroke_color":BLUE,
+                arc_conf = {"stroke_width":0}
+                poly_conf = {"stroke_width":10,"stroke_color":BLUE,
                       "fill_opacity":1,"color": PURPLE}
-                >>> a=[-1,0,0]
-                >>> b=[1,0,0]
-                >>> c=[0,np.sqrt(3),0]
-                >>> arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
-                >>> arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
-                >>> arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
-                >>> reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
-                >>> self.play(FadeIn(reuleaux_tri))
-                >>> self.wait(2)
-                >>> print(reuleaux_triangle.arcs)
-                [ArcBetweenPoints, ArcBetweenPoints, ArcBetweenPoints]
+                a=[-1,0,0]
+                b=[1,0,0]
+                c=[0,np.sqrt(3),0]
+                arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
+                arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
+                arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
+                reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
+                self.play(FadeIn(reuleaux_tri))
+                self.wait(2)
+                print(reuleaux_triangle.arcs)
+    >>> [ArcBetweenPoints, ArcBetweenPoints, ArcBetweenPoints]
 
     The ArcPolygon itself can also be hidden so that instead only the
     contained arcs are drawn.
