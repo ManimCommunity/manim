@@ -886,7 +886,7 @@ class ArcPolygon(VMobject):
     *arcs : Union[:class:`Arc`, :class:`ArcBetweenPoints`]
         These are the arcs from which the arcpolygon is assembled.
     **kwargs : Any
-        Affects how the ArcPolygon itself is drawn, doesn't affect
+        Affects how the ArcPolygon itself is drawn, but doesn't affect
         passed arcs.
 
     Attributes
