@@ -889,6 +889,11 @@ class ArcPolygon(VMobject):
         Affects how the ArcPolygon itself is drawn, doesn't affect
         passed arcs.
 
+    Attributes
+    ----------
+    arcs : :attr:`list`
+        The arcs used to initialize the ArcPolygon.
+
     Examples
     --------
     One example of an arcpolygon is the Reuleaux triangle.
@@ -905,55 +910,47 @@ class ArcPolygon(VMobject):
     ArcPolygon itself are drawn, which affects draw time in ShowCreation
     for example. In most cases the arcs themselves don't
     need to be drawn, in which case they can be passed as invisible.
-    
-    .. manim:: ArcPolygonExample
+        .. manim:: ArcPolygonExample
 
-        class ArcPolygonExample(Scene):
-            def construct(self):
-                arc_conf = {"stroke_width":0}
-                poly_conf = {"stroke_width":10,"stroke_color":BLUE,
+            class ArcPolygonExample(Scene):
+                def construct(self):
+                    arc_conf = {"stroke_width":0}
+                    poly_conf = {"stroke_width":10,"stroke_color":BLUE,
                       "fill_opacity":1,"color": PURPLE}
-                a=[-1,0,0]
-                b=[1,0,0]
-                c=[0,np.sqrt(3),0]
-                arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
-                arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
-                arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
-                reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
-                self.play(FadeIn(reuleaux_tri))
-                self.wait(2)
+                    a=[-1,0,0]
+                    b=[1,0,0]
+                    c=[0,np.sqrt(3),0]
+                    arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
+                    arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
+                    arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
+                    reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
+                    self.play(FadeIn(reuleaux_tri))
+                    self.wait(2)
 
     The ArcPolygon itself can also be hidden so that instead only the
     contained arcs are drawn.
-    
-    .. manim:: ArcPolygonExample2
+        .. manim:: ArcPolygonExample2
 
-        class ArcPolygonExample2(Scene):
-            def construct(self):
-                arc_conf = {"stroke_width":3,"stroke_color":RED,
+            class ArcPolygonExample2(Scene):
+                def construct(self):
+                    arc_conf = {"stroke_width":3,"stroke_color":RED,
                       "fill_opacity":0.5,"color": GREEN}
-                poly_conf = {"color":None}
-                a=[-1,0,0]
-                b=[1,0,0]
-                c=[0,np.sqrt(3),0]
-                arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
-                arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
-                arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
-                reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
-                self.play(FadeIn(reuleaux_tri))
-                self.wait(2)
+                    poly_conf = {"color":None}
+                    a=[-1,0,0]
+                    b=[1,0,0]
+                    c=[0,np.sqrt(3),0]
+                    arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
+                    arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
+                    arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
+                    reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
+                    self.play(FadeIn(reuleaux_tri))
+                    self.wait(2)
 
     ArcPolyon.arcs::
         >>> from manim import ArcPolygon, Arc, ArcBetweenPoints
         >>> ap=ArcPolygon(Arc(),ArcBetweenPoints([1,0,0],[0,1,0]),Arc())
         >>> ap.arcs
         [Arc, ArcBetweenPoints, Arc]
-
-    Attributes
-    ----------
-    arcs : :class:`list`
-        The arcs used to initialize the ArcPolygon
-
     """
 
     def __init__(self, *arcs, **kwargs):
