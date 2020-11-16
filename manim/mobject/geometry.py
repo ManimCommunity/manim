@@ -910,22 +910,22 @@ class ArcPolygon(VMobject):
     ArcPolygon itself are drawn, which affects draw time in ShowCreation
     for example. In most cases the arcs themselves don't
     need to be drawn, in which case they can be passed as invisible.
-        .. manim:: ArcPolygonExample
+    .. manim:: ArcPolygonExample
 
-            class ArcPolygonExample(Scene):
-                def construct(self):
-                    arc_conf = {"stroke_width":0}
-                    poly_conf = {"stroke_width":10,"stroke_color":BLUE,
+        class ArcPolygonExample(Scene):
+            def construct(self):
+                arc_conf = {"stroke_width":0}
+                poly_conf = {"stroke_width":10,"stroke_color":BLUE,
                       "fill_opacity":1,"color": PURPLE}
-                    a=[-1,0,0]
-                    b=[1,0,0]
-                    c=[0,np.sqrt(3),0]
-                    arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
-                    arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
-                    arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
-                    reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
-                    self.play(FadeIn(reuleaux_tri))
-                    self.wait(2)
+                a=[-1,0,0]
+                b=[1,0,0]
+                c=[0,np.sqrt(3),0]
+                arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
+                arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
+                arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
+                reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
+                self.play(FadeIn(reuleaux_tri))
+                self.wait(2)
 
     The ArcPolygon itself can also be hidden so that instead only the
     contained arcs are drawn.
