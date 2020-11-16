@@ -813,6 +813,7 @@ class Scene(Container):
                 self.renderer.static_image = None
                 self.stop_condition = self.animations[0].stop_condition
             else:
+                self.duration = self.animations[0].duration
                 if not skip_rendering:
                     self.add_static_frames(self.animations[0].duration)
                 return None

@@ -44,7 +44,8 @@ message FrameResponse {
     bool animation_finished = 3;
     bool scene_finished = 4;
     float duration = 5;
-    string animation_name = 6;
+    repeated string animations = 6;
+    int32 animation_index = 7;
 }
 
 message RendererStatusRequest {}

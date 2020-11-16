@@ -58,6 +58,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
     def GetFrameAtTime(self, request, context):
         try:
+            # Find the requested scene.
             requested_scene_index = 0
             requested_scene = self.keyframes[requested_scene_index]
             requested_scene_end_time = requested_scene.duration
@@ -71,6 +72,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     scene_finished = True
                     break
 
+            # Update to the requested time.
             if not scene_finished:
                 requested_scene_start_time = (
                     requested_scene_end_time - requested_scene.duration
@@ -81,14 +83,10 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 requested_scene.update_to_time(requested_scene_time_offset)
             else:
                 requested_scene.update_to_time(requested_scene.duration)
-            if not requested_scene.is_static:
-                mobjects = (
-                    requested_scene.moving_mobjects + requested_scene.static_mobjects
-                )
-            else:
-                mobjects = requested_scene.mobjects
+
+            # Serialize the scene's mobjects.
             mobjects = extract_mobject_family_members(
-                mobjects, only_those_with_points=True
+                requested_scene.mobjects, only_those_with_points=True
             )
             serialized_mobjects = [serialize_mobject(mobject) for mobject in mobjects]
 
@@ -97,8 +95,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 frame_pending=False,
                 animation_finished=False,
                 scene_finished=scene_finished,
-                duration=0,
-                animation_name="",
+                duration=requested_scene.duration,
+                animations=map(
+                    lambda anim: anim.__class__.__name__, requested_scene.animations
+                ),
+                animation_index=requested_scene_index,
             )
             return resp
         except Exception as e:
