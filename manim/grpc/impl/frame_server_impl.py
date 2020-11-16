@@ -12,6 +12,7 @@ import grpc
 import subprocess as sp
 import threading
 import time
+import traceback
 import ctypes
 from ...utils.module_ops import (
     get_module,
@@ -21,6 +22,7 @@ from ...utils.module_ops import (
 from ... import logger
 from ...constants import JS_RENDERER_INFO
 from ...renderer.js_renderer import JsRenderer
+from ...utils.family import extract_mobject_family_members
 
 
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
@@ -55,90 +57,52 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         self.scene_thread.start()
 
     def GetFrameAtTime(self, request, context):
-        requested_scene_index = 0
-        requested_scene = self.keyframes[requested_scene_index]
-        cumulative_time = requested_scene.duration
-        while cumulative_time < request.scene_offset:
-            requested_scene_index += 1
+        try:
+            requested_scene_index = 0
             requested_scene = self.keyframes[requested_scene_index]
-            cumulative_time += requested_scene.duration
+            requested_scene_end_time = requested_scene.duration
+            scene_finished = False
+            while requested_scene_end_time < request.scene_offset:
+                if requested_scene_index + 1 < len(self.keyframes):
+                    requested_scene_index += 1
+                    requested_scene = self.keyframes[requested_scene_index]
+                    requested_scene_end_time += requested_scene.duration
+                else:
+                    scene_finished = True
+                    break
 
-        cumulative_time_before_requested_scene = (
-            cumulative_time - requested_scene.duration
-        )
-        requested_scene_time_offset = (
-            request.scene_offset - cumulative_time_before_requested_scene
-        )
-        print(requested_scene_time_offset)
-        # TODO: IMPLEMENT THIS
-        requested_scene.update_to_time(requested_scene_time_offset)
+            if not scene_finished:
+                requested_scene_start_time = (
+                    requested_scene_end_time - requested_scene.duration
+                )
+                requested_scene_time_offset = (
+                    request.scene_offset - requested_scene_start_time
+                )
+                requested_scene.update_to_time(requested_scene_time_offset)
+            else:
+                requested_scene.update_to_time(requested_scene.duration)
+            if not requested_scene.is_static:
+                mobjects = (
+                    requested_scene.moving_mobjects + requested_scene.static_mobjects
+                )
+            else:
+                mobjects = requested_scene.mobjects
+            mobjects = extract_mobject_family_members(
+                mobjects, only_those_with_points=True
+            )
+            serialized_mobjects = [serialize_mobject(mobject) for mobject in mobjects]
 
-        # # play() uses run_time and wait() uses duration TODO: Fix this inconsistency.
-        # # TODO: What about animations without a fixed duration?
-        # duration = (
-        #     selected_scene.run_time
-        #     if selected_scene.animations
-        #     else selected_scene.duration
-        # )
-
-        # if request.animation_offset > duration:
-        #     if self.animation_index_is_cached(request.animation_index + 1):
-        #         # TODO: Clone scenes to allow reuse.
-        #         selected_scene = self.keyframes[request.animation_index + 1]
-        #     else:
-        #         return self.signal_pending_animation(request.animation_index + 1)
-
-        # setattr(selected_scene, "camera", self.scene.camera)
-
-        # if selected_scene.animations:
-        #     # This is a call to play().
-        #     selected_scene.update_animation_to_time(request.animation_offset)
-        #     selected_scene.update_frame(
-        #         selected_scene.moving_mobjects,
-        #         selected_scene.static_image,
-        #     )
-        #     serialized_mobject_list, duration = selected_scene.add_frame(
-        #         selected_scene.renderer.get_frame()
-        #     )
-        #     resp = list_to_frame_response(
-        #         selected_scene, duration, serialized_mobject_list
-        #     )
-        #     return resp
-        # else:
-        #     # This is a call to wait().
-        #     if selected_scene.should_update_mobjects():
-        #         # TODO, be smart about setting a static image
-        #         # the same way Scene.play does
-        #         selected_scene.update_animation_to_time(time)
-        #         selected_scene.update_frame()
-        #         serialized_mobject_list, duration = selected_scene.add_frame(
-        #             selected_scene.get_frame()
-        #         )
-        #         frame_response = list_to_frame_response(
-        #             selected_scene, duration, serialized_mobject_list
-        #         )
-        #         if (
-        #             selected_scene.stop_condition is not None
-        #             and selected_scene.stop_condition()
-        #         ):
-        #             selected_scene.animation_finished.set()
-        #             frame_response.frame_pending = True
-        #             selected_scene.renderer_waiting = True
-        #         return frame_response
-        #     elif selected_scene.skip_animations:
-        #         # Do nothing
-        #         return
-        #     else:
-        #         selected_scene.update_frame()
-        #         dt = 1 / selected_scene.camera.frame_rate
-        #         serialized_mobject_list, duration = selected_scene.add_frame(
-        #             selected_scene.get_frame(),
-        #             num_frames=int(selected_scene.duration / dt),
-        #         )
-        #         resp = list_to_frame_response(
-        #             selected_scene, duration, serialized_mobject_list
-        #         )
-        #         return resp
+            resp = frameserver_pb2.FrameResponse(
+                mobjects=serialized_mobjects,
+                frame_pending=False,
+                animation_finished=False,
+                scene_finished=scene_finished,
+                duration=0,
+                animation_name="",
+            )
+            return resp
+        except Exception as e:
+            traceback.print_exc()
 
     def RendererStatus(self, request, context):
         response = frameserver_pb2.RendererStatusResponse()
@@ -153,28 +117,31 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
     #     return response
 
 
-def list_to_frame_response(scene, duration, serialized_mobject_list):
-    response = frameserver_pb2.FrameResponse()
-    response.frame_pending = False
-    response.duration = duration
+def serialize_mobject(mobject):
+    mob_proto = frameserver_pb2.MobjectData()
 
-    for mob_serialization in serialized_mobject_list:
-        mob_proto = response.mobjects.add()
-        mob_proto.id = mob_serialization["id"]
-        mob_proto.needs_redraw = mob_serialization["needs_redraw"]
-        for point in mob_serialization["points"]:
-            point_proto = mob_proto.points.add()
-            point_proto.x = point[0]
-            point_proto.y = point[1]
-            point_proto.z = point[2]
-        mob_proto.style.fill_color = mob_serialization["style"]["fill_color"]
-        mob_proto.style.fill_opacity = float(mob_serialization["style"]["fill_opacity"])
-        mob_proto.style.stroke_color = mob_serialization["style"]["stroke_color"]
-        mob_proto.style.stroke_opacity = float(
-            mob_serialization["style"]["stroke_opacity"]
-        )
-        mob_proto.style.stroke_width = float(mob_serialization["style"]["stroke_width"])
-    return response
+    needs_redraw = False
+    point_hash = hash(tuple(mobject.points.flatten()))
+    if mobject.point_hash != point_hash:
+        mobject.point_hash = point_hash
+        needs_redraw = True
+    mob_proto.needs_redraw = needs_redraw
+
+    for point in mobject.points:
+        point_proto = mob_proto.points.add()
+        point_proto.x = point[0]
+        point_proto.y = point[1]
+        point_proto.z = point[2]
+
+    mob_style = mobject.get_style(simple=True)
+    mob_proto.style.fill_color = mob_style["fill_color"]
+    mob_proto.style.fill_opacity = float(mob_style["fill_opacity"])
+    mob_proto.style.stroke_color = mob_style["stroke_color"]
+    mob_proto.style.stroke_opacity = float(mob_style["stroke_opacity"])
+    mob_proto.style.stroke_width = float(mob_style["stroke_width"])
+
+    mob_proto.id = id(mobject)
+    return mob_proto
 
 
 class UpdateFrontendHandler(FileSystemEventHandler):

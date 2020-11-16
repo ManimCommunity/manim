@@ -9,6 +9,8 @@ import random
 import warnings
 import platform
 import copy
+import string
+import types
 
 from tqdm import tqdm
 import numpy as np
@@ -580,7 +582,6 @@ class Scene(Container):
         return []
 
     def get_moving_and_static_mobjects(self, animations):
-        moving_mobjects = self.get_moving_mobjects(*animations)
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
             all_mobjects,
@@ -799,6 +800,7 @@ class Scene(Container):
             return None
 
         self.animations = self.compile_play_args_to_animation_list(*args, **kwargs)
+        self.add_mobjects_from_animations(self.animations)
 
         self.stop_condition = None
         self.moving_mobjects = None

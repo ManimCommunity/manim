@@ -22,6 +22,7 @@ class JsRenderer:
         if s is None:
             scene_copy.is_static = True
         else:
+            scene_copy.is_static = False
             scene.play_internal(skip_rendering=True)
 
     def update_frame(  # TODO Description in Docstring
