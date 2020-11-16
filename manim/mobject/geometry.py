@@ -905,6 +905,7 @@ class ArcPolygon(VMobject):
     ArcPolygon itself are drawn, which affects draw time in ShowCreation
     for example. In most cases the arcs themselves don't
     need to be drawn, in which case they can be passed as invisible.
+    
     .. manim:: ArcPolygonExample
 
         class ArcPolygonExample(Scene):
@@ -924,6 +925,7 @@ class ArcPolygon(VMobject):
 
     The ArcPolygon itself can also be hidden so that instead only the
     contained arcs are drawn.
+    
     .. manim:: ArcPolygonExample2
 
         class ArcPolygonExample2(Scene):
