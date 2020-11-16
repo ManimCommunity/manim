@@ -1082,7 +1082,27 @@ class ArrowTriangleFilledTip(ArrowFilledTip, ArrowTriangleTip):
 
 
 class ArrowCircleTip(ArrowTip, Circle):
-    r"""Circular arrow tip."""
+    r"""Circular arrow tip.
+
+    .. note::
+
+        The tip point of arrows using this tip is located at the center
+        of the circle.
+
+    Tests
+    -----
+
+    Check that the tip point is located at the circle center::
+
+        >>> from manim import Arrow
+        >>> from manim.mobject.geometry import ArrowCircleTip
+        >>> arr = Arrow([0, 0, 0], [2, 2, 0], tip_shape=ArrowCircleTip, buff=0)
+        >>> np.all(arr.tip.tip_point == arr.tip.get_center())
+        True
+        >>> arr.tip.tip_point
+        array([2., 2., 0.])
+
+    """
 
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
