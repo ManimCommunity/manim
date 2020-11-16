@@ -73,6 +73,8 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# Custom sections in docstrings
+napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 
 # -- Options for HTML output -------------------------------------------------
 
