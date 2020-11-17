@@ -46,6 +46,7 @@ message FrameResponse {
     float duration = 5;
     repeated string animations = 6;
     int32 animation_index = 7;
+    float animation_offset = 8;
 }
 
 message RendererStatusRequest {}

@@ -77,12 +77,10 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 requested_scene_start_time = (
                     requested_scene_end_time - requested_scene.duration
                 )
-                requested_scene_time_offset = (
-                    request.scene_offset - requested_scene_start_time
-                )
-                requested_scene.update_to_time(requested_scene_time_offset)
+                animation_offset = request.scene_offset - requested_scene_start_time
             else:
-                requested_scene.update_to_time(requested_scene.duration)
+                animation_offset = 1
+            requested_scene.update_to_time(animation_offset)
 
             # Serialize the scene's mobjects.
             mobjects = extract_mobject_family_members(
@@ -100,6 +98,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     lambda anim: anim.__class__.__name__, requested_scene.animations
                 ),
                 animation_index=requested_scene_index,
+                animation_offset=animation_offset,
             )
             return resp
         except Exception as e:
