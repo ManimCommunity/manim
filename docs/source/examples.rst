@@ -22,28 +22,9 @@ different functionalities all across the library. Enjoy this taste of Manim!
    :backlinks: none
    :local:
 
-Shapes, Images and Positions
-============================
 
-.. manim:: PointMovingOnShapes
-    :ref_classes: Circle Dot Line GrowFromCenter Transform MoveAlongPath Rotating
-
-    class PointMovingOnShapes(Scene):
-        def construct(self):
-            circle = Circle(radius=1, color=BLUE)
-            dot = Dot()
-            dot2 = dot.copy().shift(RIGHT)
-            self.add(dot)
-
-            line = Line([3, 0, 0], [5, 0, 0])
-            self.add(line)
-
-            self.play(GrowFromCenter(circle))
-            self.play(Transform(dot, dot2))
-            self.play(MoveAlongPath(dot, circle), run_time=2, rate_func=linear)
-            self.play(Rotating(dot, about_point=[2, 0, 0]), run_time=1.5)
-            self.wait()
-
+Basic Concepts
+==============
 
 .. manim:: ManimCELogo
     :save_last_frame:
@@ -68,9 +49,10 @@ Shapes, Images and Positions
             circle.shift(LEFT)
             square.shift(UP)
             triangle.shift(RIGHT)
-            self.add(triangle, square, circle, ds_m) # Order matters
+            logo = VGroup(triangle, square, circle, ds_m) # order matters
+            logo.move_to(ORIGIN)
+            self.add(logo)
             self.wait()
-
 
 .. manim:: GradientImageFromArray
     :save_last_frame:
@@ -85,19 +67,34 @@ Shapes, Images and Positions
             image = ImageMobject(imageArray).scale(2)
             self.add(image)
 
+.. manim:: BraceAnnotation
+    :save_last_frame:
+    :ref_classes: Brace
+    :ref_functions: Brace.get_text Brace.get_tex
 
-.. manim:: MovingAround
-    :ref_functions: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
-
-    class MovingAround(Scene):
+    class BraceAnnotation(Scene):
         def construct(self):
-            square = Square(color=BLUE, fill_opacity=1)
+            dot = Dot([-2, -1, 0])
+            dot2 = Dot([2, 1, 0])
+            line = Line(dot.get_center(), dot2.get_center()).set_color(ORANGE)
+            b1 = Brace(line)
+            b1text = b1.get_text("Horizontal distance")
+            b2 = Brace(line, direction=line.copy().rotate(PI / 2).get_unit_vector())
+            b2text = b2.get_tex("x-x_1")
+            self.add(line, dot, dot2, b1, b2, b1text, b2text)
 
-            self.play(square.shift, LEFT)
-            self.play(square.set_fill, ORANGE)
-            self.play(square.scale, 0.3)
-            self.play(square.rotate, 0.4)
+.. manim:: VectorArrow
+    :save_last_frame:
+    :ref_classes: Dot Arrow NumberPlane Text
 
+    class VectorArrow(Scene):
+        def construct(self):
+            dot = Dot(ORIGIN)
+            arrow = Arrow(ORIGIN, [2, 2, 0], buff=0)
+            numberplane = NumberPlane()
+            origin_text = Text('(0, 0)').next_to(dot, DOWN)
+            tip_text = Text('(2, 2)').next_to(arrow.get_end(), RIGHT)
+            self.add(numberplane, dot, arrow, origin_text, tip_text)
 
 .. manim:: BezierSpline
     :save_last_frame:
@@ -182,37 +179,102 @@ Shapes, Images and Positions
             self.add(mobjects)
 
 
-Annotations
-===========
+Animations
+==========
 
-.. manim:: BraceAnnotation
-    :save_last_frame:
-    :ref_classes: Brace
-    :ref_functions: Brace.get_text Brace.get_tex
+.. manim:: PointMovingOnShapes
+    :ref_classes: Circle Dot Line GrowFromCenter Transform MoveAlongPath Rotating
 
-    class BraceAnnotation(Scene):
+    class PointMovingOnShapes(Scene):
         def construct(self):
-            dot = Dot([-2, -1, 0])
-            dot2 = Dot([2, 1, 0])
-            line = Line(dot.get_center(), dot2.get_center()).set_color(ORANGE)
-            b1 = Brace(line)
-            b1text = b1.get_text("Horizontal distance")
-            b2 = Brace(line, direction=line.copy().rotate(PI / 2).get_unit_vector())
-            b2text = b2.get_tex("x-x_1")
-            self.add(line, dot, dot2, b1, b2, b1text, b2text)
+            circle = Circle(radius=1, color=BLUE)
+            dot = Dot()
+            dot2 = dot.copy().shift(RIGHT)
+            self.add(dot)
 
-.. manim:: VectorArrow
-    :save_last_frame:
-    :ref_classes: Dot Arrow NumberPlane Text
+            line = Line([3, 0, 0], [5, 0, 0])
+            self.add(line)
 
-    class VectorArrow(Scene):
+            self.play(GrowFromCenter(circle))
+            self.play(Transform(dot, dot2))
+            self.play(MoveAlongPath(dot, circle), run_time=2, rate_func=linear)
+            self.play(Rotating(dot, about_point=[2, 0, 0]), run_time=1.5)
+            self.wait()
+
+.. manim:: MovingAround
+    :ref_functions: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
+
+    class MovingAround(Scene):
         def construct(self):
-            dot = Dot(ORIGIN)
-            arrow = Arrow(ORIGIN, [2, 2, 0], buff=0)
-            numberplane = NumberPlane()
-            origin_text = Text('(0, 0)').next_to(dot, DOWN)
-            tip_text = Text('(2, 2)').next_to(arrow.get_end(), RIGHT)
-            self.add(numberplane, dot, arrow, origin_text, tip_text)
+            square = Square(color=BLUE, fill_opacity=1)
+
+            self.play(square.shift, LEFT)
+            self.play(square.set_fill, ORANGE)
+            self.play(square.scale, 0.3)
+            self.play(square.rotate, 0.4)
+
+.. manim:: MovingFrameBox
+    :ref_modules: manim.mobject.svg.tex_mobject
+    :ref_classes: MathTex SurroundingRectangle
+
+    class MovingFrameBox(Scene):
+        def construct(self):
+            text=MathTex(
+                "\\frac{d}{dx}f(x)g(x)=","f(x)\\frac{d}{dx}g(x)","+",
+                "g(x)\\frac{d}{dx}f(x)"
+            )
+            self.play(Write(text))
+            framebox1 = SurroundingRectangle(text[1], buff = .1)
+            framebox2 = SurroundingRectangle(text[3], buff = .1)
+            self.play(
+                ShowCreation(framebox1),
+            )
+            self.wait()
+            self.play(
+                ReplacementTransform(framebox1,framebox2),
+            )
+            self.wait()
+
+.. manim:: RotationUpdater
+    :ref_functions: Mobject.add_updater Mobject.remove_updater
+
+    class RotationUpdater(Scene):
+        def construct(self):
+            def updater_forth(mobj, dt):
+                mobj.rotate_about_origin(dt)
+            def updater_back(mobj, dt):
+                mobj.rotate_about_origin(-dt)
+            line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
+            line_moving = Line(ORIGIN, LEFT).set_color(YELLOW)
+            line_moving.add_updater(updater_forth)
+            self.add(line_reference, line_moving)
+            self.wait(2)
+            line_moving.remove_updater(updater_forth)
+            line_moving.add_updater(updater_back)
+            self.wait(2)
+            line_moving.remove_updater(updater_back)
+            self.wait(0.5)
+
+.. manim:: PointWithTrace
+    :ref_classes: Rotating
+    :ref_functions: VMobject.set_points_as_corners Mobject.add_updater
+
+    class PointWithTrace(Scene):
+        def construct(self):
+            path = VMobject()
+            dot = Dot()
+            path.set_points_as_corners([dot.get_center(), dot.get_center()])
+            def update_path(path):
+                previus_path = path.copy()
+                previus_path.add_points_as_corners([dot.get_center()])
+                path.become(previus_path)
+            path.add_updater(update_path)
+            self.add(path, dot)
+            self.play(Rotating(dot, radians=PI, about_point=RIGHT, run_time=2))
+            self.wait()
+            self.play(dot.shift, UP)
+            self.play(dot.shift, LEFT)
+            self.wait()
 
 
 Plotting with Manim
@@ -307,158 +369,8 @@ Plotting with Manim
             self.add(l1, l2, l3)
 
 
-Formulas
-========
-
-.. manim:: MovingFrameBox
-    :ref_modules: manim.mobject.svg.tex_mobject
-    :ref_classes: MathTex SurroundingRectangle
-
-    class MovingFrameBox(Scene):
-        def construct(self):
-            text=MathTex(
-                "\\frac{d}{dx}f(x)g(x)=","f(x)\\frac{d}{dx}g(x)","+",
-                "g(x)\\frac{d}{dx}f(x)"
-            )
-            self.play(Write(text))
-            framebox1 = SurroundingRectangle(text[1], buff = .1)
-            framebox2 = SurroundingRectangle(text[3], buff = .1)
-            self.play(
-                ShowCreation(framebox1),
-            )
-            self.wait()
-            self.play(
-                ReplacementTransform(framebox1,framebox2),
-            )
-            self.wait()
-
-
-3D Scenes
-=========
-
-.. manim:: FixedInFrameMObjectTest
-    :save_last_frame:
-    :ref_classes: ThreeDScene
-    :ref_functions: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
-
-    class FixedInFrameMObjectTest(ThreeDScene):
-        def construct(self):
-            axes = ThreeDAxes()
-            self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
-            text3d = Text("This is a 3D text")
-            self.add_fixed_in_frame_mobjects(text3d)
-            text3d.to_corner(UL)
-            self.add(axes)
-            self.wait()
-
-
-.. manim:: ThreeDLightSourcePosition
-    :save_last_frame:
-    :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
-    :ref_functions: ThreeDScene.set_camera_orientation
-
-    class ThreeDLightSourcePosition(ThreeDScene):
-        def construct(self):
-            axes = ThreeDAxes()
-            sphere = ParametricSurface(
-                lambda u, v: np.array([
-                    1.5 * np.cos(u) * np.cos(v),
-                    1.5 * np.cos(u) * np.sin(v),
-                    1.5 * np.sin(u)
-                ]), v_min=0, v_max=TAU, u_min=-PI / 2, u_max=PI / 2,
-                checkerboard_colors=[RED_D, RED_E], resolution=(15, 32)
-            )
-            self.renderer.camera.light_source.move_to(3*IN) # changes the source of the light
-            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-            self.add(axes, sphere)
-
-.. manim:: ThreeDCameraRotation
-    :ref_classes: ThreeDScene ThreeDAxes
-    :ref_functions: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
-
-    class ThreeDCameraRotation(ThreeDScene):
-        def construct(self):
-            axes = ThreeDAxes()
-            circle=Circle()
-            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-            self.add(circle,axes)
-            self.begin_ambient_camera_rotation(rate=0.1)
-            self.wait(3)
-            self.stop_ambient_camera_rotation()
-            self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES)
-            self.wait()
-
-.. manim:: ThreeDCameraIllusionRotation
-    :ref_classes: ThreeDScene ThreeDAxes
-    :ref_functions: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
-
-    class ThreeDCameraIllusionRotation(ThreeDScene):
-        def construct(self):
-            axes = ThreeDAxes()
-            circle=Circle()
-            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-            self.add(circle,axes)
-            self.begin_3dillusion_camera_rotation(rate=2)
-            self.wait(PI)
-            self.stop_3dillusion_camera_rotation()
-
-
-.. manim:: ThreeDFunctionPlot
-    :ref_classes: ThreeDScene ParametricSurface
-
-    class ThreeDFunctionPlot(ThreeDScene):
-        def construct(self):
-            resolution_fa = 22
-            self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
-
-            def param_plane(u, v):
-                x = u
-                y = v
-                z = 0
-                return np.array([x, y, z])
-
-            plane = ParametricSurface(
-                param_plane,
-                resolution=(resolution_fa, resolution_fa),
-                v_min=-2,
-                v_max=+2,
-                u_min=-2,
-                u_max=+2,
-            )
-            plane.scale_about_point(2, ORIGIN)
-
-            def param_gauss(u, v):
-                x = u
-                y = v
-                d = np.sqrt(x * x + y * y)
-                sigma, mu = 0.4, 0.0
-                z = np.exp(-((d - mu) ** 2 / (2.0 * sigma ** 2)))
-                return np.array([x, y, z])
-
-            gauss_plane = ParametricSurface(
-                param_gauss,
-                resolution=(resolution_fa, resolution_fa),
-                v_min=-2,
-                v_max=+2,
-                u_min=-2,
-                u_max=+2,
-            )
-
-            gauss_plane.scale_about_point(2, ORIGIN)
-            gauss_plane.set_style(fill_opacity=1)
-            gauss_plane.set_style(stroke_color=GREEN)
-            gauss_plane.set_fill_by_checkerboard(GREEN, BLUE, opacity=0.1)
-
-            axes = ThreeDAxes()
-
-            self.add(axes)
-            self.play(Write(plane))
-            self.play(Transform(plane, gauss_plane))
-            self.wait()
-
-
-Camera Settings
-===============
+Special Camera Settings
+=======================
 
 .. manim:: FollowingGraphCamera
     :ref_modules: manim.scene.moving_camera_scene
@@ -492,7 +404,6 @@ Camera Settings
             self.camera_frame.remove_updater(update_curve)
 
             self.play(Restore(self.camera_frame))
-
 
 .. manim:: MovingZoomedSceneAround
     :ref_modules: manim.scene.zoomed_scene
@@ -560,50 +471,122 @@ Camera Settings
             self.play(Uncreate(zoomed_display_frame), FadeOut(frame))
             self.wait()
 
+.. manim:: FixedInFrameMObjectTest
+    :save_last_frame:
+    :ref_classes: ThreeDScene
+    :ref_functions: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
 
-Animations
-==========
-
-.. manim:: RotationUpdater
-    :ref_functions: Mobject.add_updater Mobject.remove_updater
-
-    class RotationUpdater(Scene):
+    class FixedInFrameMObjectTest(ThreeDScene):
         def construct(self):
-            def updater_forth(mobj, dt):
-                mobj.rotate_about_origin(dt)
-            def updater_back(mobj, dt):
-                mobj.rotate_about_origin(-dt)
-            line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
-            line_moving = Line(ORIGIN, LEFT).set_color(YELLOW)
-            line_moving.add_updater(updater_forth)
-            self.add(line_reference, line_moving)
-            self.wait(2)
-            line_moving.remove_updater(updater_forth)
-            line_moving.add_updater(updater_back)
-            self.wait(2)
-            line_moving.remove_updater(updater_back)
-            self.wait(0.5)
-
-
-.. manim:: PointWithTrace
-    :ref_classes: Rotating
-    :ref_functions: VMobject.set_points_as_corners Mobject.add_updater
-
-    class PointWithTrace(Scene):
-        def construct(self):
-            path = VMobject()
-            dot = Dot()
-            path.set_points_as_corners([dot.get_center(), dot.get_center()])
-            def update_path(path):
-                previus_path = path.copy()
-                previus_path.add_points_as_corners([dot.get_center()])
-                path.become(previus_path)
-            path.add_updater(update_path)
-            self.add(path, dot)
-            self.play(Rotating(dot, radians=PI, about_point=RIGHT, run_time=2))
+            axes = ThreeDAxes()
+            self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+            text3d = Text("This is a 3D text")
+            self.add_fixed_in_frame_mobjects(text3d)
+            text3d.to_corner(UL)
+            self.add(axes)
             self.wait()
-            self.play(dot.shift, UP)
-            self.play(dot.shift, LEFT)
+
+.. manim:: ThreeDLightSourcePosition
+    :save_last_frame:
+    :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
+    :ref_functions: ThreeDScene.set_camera_orientation
+
+    class ThreeDLightSourcePosition(ThreeDScene):
+        def construct(self):
+            axes = ThreeDAxes()
+            sphere = ParametricSurface(
+                lambda u, v: np.array([
+                    1.5 * np.cos(u) * np.cos(v),
+                    1.5 * np.cos(u) * np.sin(v),
+                    1.5 * np.sin(u)
+                ]), v_min=0, v_max=TAU, u_min=-PI / 2, u_max=PI / 2,
+                checkerboard_colors=[RED_D, RED_E], resolution=(15, 32)
+            )
+            self.renderer.camera.light_source.move_to(3*IN) # changes the source of the light
+            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.add(axes, sphere)
+
+.. manim:: ThreeDCameraRotation
+    :ref_classes: ThreeDScene ThreeDAxes
+    :ref_functions: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
+
+    class ThreeDCameraRotation(ThreeDScene):
+        def construct(self):
+            axes = ThreeDAxes()
+            circle=Circle()
+            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.add(circle,axes)
+            self.begin_ambient_camera_rotation(rate=0.1)
+            self.wait(3)
+            self.stop_ambient_camera_rotation()
+            self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.wait()
+
+.. manim:: ThreeDCameraIllusionRotation
+    :ref_classes: ThreeDScene ThreeDAxes
+    :ref_functions: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
+
+    class ThreeDCameraIllusionRotation(ThreeDScene):
+        def construct(self):
+            axes = ThreeDAxes()
+            circle=Circle()
+            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.add(circle,axes)
+            self.begin_3dillusion_camera_rotation(rate=2)
+            self.wait(PI)
+            self.stop_3dillusion_camera_rotation()
+
+.. manim:: ThreeDFunctionPlot
+    :ref_classes: ThreeDScene ParametricSurface
+
+    class ThreeDFunctionPlot(ThreeDScene):
+        def construct(self):
+            resolution_fa = 22
+            self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
+
+            def param_plane(u, v):
+                x = u
+                y = v
+                z = 0
+                return np.array([x, y, z])
+
+            plane = ParametricSurface(
+                param_plane,
+                resolution=(resolution_fa, resolution_fa),
+                v_min=-2,
+                v_max=+2,
+                u_min=-2,
+                u_max=+2,
+            )
+            plane.scale_about_point(2, ORIGIN)
+
+            def param_gauss(u, v):
+                x = u
+                y = v
+                d = np.sqrt(x * x + y * y)
+                sigma, mu = 0.4, 0.0
+                z = np.exp(-((d - mu) ** 2 / (2.0 * sigma ** 2)))
+                return np.array([x, y, z])
+
+            gauss_plane = ParametricSurface(
+                param_gauss,
+                resolution=(resolution_fa, resolution_fa),
+                v_min=-2,
+                v_max=+2,
+                u_min=-2,
+                u_max=+2,
+            )
+
+            gauss_plane.scale_about_point(2, ORIGIN)
+            gauss_plane.set_style(fill_opacity=1)
+            gauss_plane.set_style(stroke_color=GREEN)
+            gauss_plane.set_fill_by_checkerboard(GREEN, BLUE, opacity=0.1)
+
+            axes = ThreeDAxes()
+
+            self.add(axes)
+            self.play(Write(plane))
+            self.play(Transform(plane, gauss_plane))
             self.wait()
 
 
@@ -666,7 +649,6 @@ Advanced Projects
             self.wait()
             self.play(Transform(grid_title, grid_transform_title))
             self.wait()
-
 
 .. manim:: SineCurveUnitCircle
     :ref_classes: MathTex Circle Dot Line VGroup
