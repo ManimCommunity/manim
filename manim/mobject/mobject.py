@@ -244,7 +244,7 @@ class Mobject(Container):
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function, index=None, call_updater=True):
+    def add_updater(self, update_function, index=None, call_updater=False):
         """Add an update function to this mobject.
 
         Examples
@@ -275,7 +275,7 @@ class Mobject(Container):
         else:
             self.updaters.insert(index, update_function)
         if call_updater:
-            self.update(0)
+            update_function(self, 0)
         return self
 
     def remove_updater(self, update_function):
