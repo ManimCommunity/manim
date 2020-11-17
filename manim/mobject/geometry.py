@@ -26,6 +26,7 @@ __all__ = [
     "Polygon",
     "RegularPolygon",
     "ArcPolygon",
+    "ArcPolygonP",
     "Triangle",
     "ArrowTip",
     "Rectangle",
@@ -861,6 +862,75 @@ class RegularPolygon(Polygon):
         start_vect = rotate_vector(RIGHT, self.start_angle)
         vertices = compass_directions(n, start_vect)
         Polygon.__init__(self, *vertices, **kwargs)
+
+
+class ArcPolygonP(VMobject):
+    """A generalized polygon consisting of circular arcs that are joined together.
+
+    Parameters
+    ----------
+    *vertices : Union[:class:`list`, :class:`np.array`]
+        A list of vertices, start and end points for the arc segments.
+    angle : :class:`float`
+        The angle used for constructing the arcs. If no other parameters
+        are set, this angle is used to construct all arcs.
+    radius : Optional[:class:`float`]
+        The circle radius used to construct the arcs. If specified,
+        overrides the specified ``angle``.
+    arc_config : Optional[Union[List[:class:`dict`]], :class:`dict`]
+        When passing a ``dict``, its content will be passed as keyword
+        arguments to :class:`~.ArcBetweenPoints`. Otherwise, a list
+        of dictionaries containing values that are passed as keyword
+        arguments for every individual arc can be passed.
+
+    Examples
+    --------
+
+    .. manim:: SeveralArcPolygons
+
+        class SeveralArcPolygons(Scene):
+            def construct(self):
+                a = [0, 0, 0]
+                b = [2, 0, 0]
+                c = [0, 2, 0]
+                ap1 = ArcPolygonP(a, b, c, radius=2)
+                ap2 = ArcPolygonP(a, b, c, angle=45*DEGREES)
+                ap3 = ArcPolygonP(a, b, c, arc_config={'radius': 1.7, 'color': RED})
+                ap4 = ArcPolygonP(a, b, c, arc_config=[{'radius': 1.7, 'color': RED},
+                                            {'angle': 20*DEGREES, 'color': BLUE},
+                                            {'radius': 1}])
+                ap_group = VGroup(ap1, ap2, ap3, ap4).arrange()
+                self.play(*[ShowCreation(ap) for ap in [ap1, ap2, ap3, ap4]])
+                self.wait()
+
+    """
+
+    def __init__(self, *vertices, angle=PI / 4, radius=None, arc_config=None, **kwargs):
+        n = len(vertices)
+        point_pairs = [(vertices[k], vertices[(k + 1) % n]) for k in range(n)]
+
+        if not arc_config:
+            if radius:
+                all_arc_configs = [{"radius": radius} for pair in point_pairs]
+            else:
+                all_arc_configs = [{"angle": angle} for pair in point_pairs]
+        elif isinstance(arc_config, dict):
+            all_arc_configs = [arc_config for pair in point_pairs]
+        else:
+            assert len(arc_config) == n
+            all_arc_configs = arc_config
+
+        arcs = [
+            ArcBetweenPoints(*pair, **conf)
+            for (pair, conf) in zip(point_pairs, all_arc_configs)
+        ]
+
+        VMobject.__init__(self, **kwargs)
+        self.add(*arcs)
+        for arc in arcs:
+            self.append_points(arc.points)
+
+        self.arcs = arcs
 
 
 class ArcPolygon(VMobject):
