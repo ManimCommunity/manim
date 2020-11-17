@@ -65,7 +65,7 @@ jobs:
           brew install pango
           brew install glib
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
-          echo "$HOME/.poetry/bin:$PATH:" >> $GITHUB_PATH
+          echo "$HOME/.poetry/bin:$PATH" >> $GITHUB_PATH
 
       - name: Cache Windows
         id: cache-windows
