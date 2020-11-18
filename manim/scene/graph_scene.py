@@ -158,6 +158,12 @@ class GraphScene(Scene):
         )
         y_axis.shift(self.graph_origin - y_shift)
         y_axis.rotate(np.pi / 2, about_point=self.graph_origin)
+        
+        #rotate numbers in y_axis
+        if (y_axis.include_numbers):
+            for num in y_axis.numbers:
+                num.rotate(-90 * DEGREES)
+        
         if len(self.y_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.y_labeled_nums = [y for y in self.y_labeled_nums if y != 0]
