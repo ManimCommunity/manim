@@ -160,7 +160,7 @@ class GraphScene(Scene):
         y_axis.rotate(np.pi / 2, about_point=self.graph_origin)
         
         #rotate numbers in y_axis
-        if (y_axis.include_numbers):
+        if y_axis.include_numbers:
             for num in y_axis.numbers:
                 num.rotate(-90 * DEGREES)
         
