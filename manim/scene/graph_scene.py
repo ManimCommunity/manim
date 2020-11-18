@@ -146,7 +146,7 @@ class GraphScene(Scene):
                 "numbers_with_elongated_ticks": self.y_labeled_nums,
                 "color": self.axes_color,
                 "line_to_number_vect": LEFT,
-                "label_direction": LEFT,
+                "label_direction": DOWN,
                 "include_tip": self.include_tip,
             },
             **self.y_axis_config,
