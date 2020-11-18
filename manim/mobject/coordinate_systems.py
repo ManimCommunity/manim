@@ -154,7 +154,7 @@ class Axes(VGroup, CoordinateSystem):
         self.axes = VGroup(self.x_axis, self.y_axis)
         self.add(*self.axes)
         self.shift(self.center_point)
-        if y_axis.include_numbers:
+        if self.y_axis.include_numbers:
             for num in range(len(self.y_axis.numbers)):
                 self.y_axis.numbers[num].rotate(-90 * DEGREES)
 
