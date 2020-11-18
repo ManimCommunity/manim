@@ -873,17 +873,17 @@ class ArcPolygon(VMobject):
     use across all arcs, but to configure arcs individually an arc_config list has to be
     passed with the syntax explained below.
 
-    There is an alternative version that is instantiated with pre-defined arcs.
-
-    See Also
-    --------
-    :class:`ArcPolygonFromArcs`
-
     ArcPolygons can be transformed properly into one another as well. Be
     advised that any arc initialized with 'angle=0' will actually be
     made like a line, so if a straight secion should seamlessly
     transform into an arced section, initialize the straight section
     with a negligible angle instead (such as 'angle=0.0001').
+
+    There is an alternative version that is instantiated with pre-defined arcs.
+
+    See Also
+    --------
+    :class:`ArcPolygonFromArcs`
 
     Attributes
     ----------
@@ -965,12 +965,6 @@ class ArcPolygonFromArcs(VMobject):
     little new syntax. However unlike :class:`Polygon` it can't be created with points
     directly.
 
-    There is an alternative version that can be instantiated with points.
-
-    See Also
-    --------
-    :class:`ArcPolygon`
-
     For proper appearance the passed arcs should usually seamlessly connect:
     [a,b][b,c][c,a]
 
@@ -984,6 +978,12 @@ class ArcPolygonFromArcs(VMobject):
     made like a line, so if a straight secion should seamlessly
     transform into an arced section, initialize the straight section
     with a negligible angle instead (such as 'angle=0.0001').
+
+    There is an alternative version that can be instantiated with points.
+
+    See Also
+    --------
+    :class:`ArcPolygon`
 
     Parameters
     ----------
