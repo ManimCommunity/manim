@@ -917,10 +917,10 @@ class ArcPolygon(VMobject):
                 a = [0, 0, 0]
                 b = [2, 0, 0]
                 c = [0, 2, 0]
-                ap1 = ArcPolygonP(a, b, c, radius=2)
-                ap2 = ArcPolygonP(a, b, c, angle=45*DEGREES)
-                ap3 = ArcPolygonP(a, b, c, arc_config={'radius': 1.7, 'color': RED})
-                ap4 = ArcPolygonP(a, b, c, color=RED, fill_opacity=1,
+                ap1 = ArcPolygon(a, b, c, radius=2)
+                ap2 = ArcPolygon(a, b, c, angle=45*DEGREES)
+                ap3 = ArcPolygon(a, b, c, arc_config={'radius': 1.7, 'color': RED})
+                ap4 = ArcPolygon(a, b, c, color=RED, fill_opacity=1,
                                             arc_config=[{'radius': 1.7, 'color': RED},
                                             {'angle': 20*DEGREES, 'color': BLUE},
                                             {'radius': 1}])
@@ -1011,13 +1011,13 @@ class ArcPolygonFromArcs(VMobject):
     a Reuleaux triangle has 3 arcs connecting those points,
     making a shape with constant width.
 
-    Passed arcs are stored as submobjects in the ArcPolygon.
-    This means that the arcs are changed along with the ArcPolygon,
+    Passed arcs are stored as submobjects in the arcpolygon.
+    This means that the arcs are changed along with the arcpolygon,
     for example when it's shifted, and these arcs can be manipulated
-    after the ArcPolygon has been initialized.
+    after the arcpolygon has been initialized.
 
-    Also both the arcs contained in an ArcPolygon, as well as the
-    ArcPolygon itself are drawn, which affects draw time in ShowCreation
+    Also both the arcs contained in an ArcPolygonFromArcs, as well as the
+    arcpolygon itself are drawn, which affects draw time in ShowCreation
     for example. In most cases the arcs themselves don't
     need to be drawn, in which case they can be passed as invisible.
 
@@ -1034,7 +1034,7 @@ class ArcPolygonFromArcs(VMobject):
                 arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
                 arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
                 arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
-                reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
+                reuleaux_tri=ArcPolygonFromArcs(arc0,arc1,arc2,**poly_conf)
                 self.play(FadeIn(reuleaux_tri))
                 self.wait(2)
 
@@ -1054,7 +1054,7 @@ class ArcPolygonFromArcs(VMobject):
                 arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
                 arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
                 arc2 = ArcBetweenPoints(c, a, radius=2, **{"stroke_color":RED})
-                reuleaux_tri=ArcPolygon(arc0,arc1,arc2,**poly_conf)
+                reuleaux_tri=ArcPolygonFromArcs(arc0,arc1,arc2,**poly_conf)
                 self.play(FadeIn(reuleaux_tri))
                 self.wait(2)
 
