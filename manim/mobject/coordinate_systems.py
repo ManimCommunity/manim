@@ -154,9 +154,9 @@ class Axes(VGroup, CoordinateSystem):
         self.axes = VGroup(self.x_axis, self.y_axis)
         self.add(*self.axes)
         self.shift(self.center_point)
-        ynums = self.y_axis.numbers
-        for num in range(len(ynum)):
-            self.y_axis.numbers[num].rotate(-90 * DEGREES)
+        if y_axis.include_numbers:
+            for num in range(len(self.y_axis.numbers)):
+                self.y_axis.numbers[num].rotate(-90 * DEGREES)
 
     def create_axis(self, min_val, max_val, axis_config):
         new_config = merge_dicts_recursively(
