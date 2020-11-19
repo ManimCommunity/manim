@@ -33,7 +33,7 @@ class ShowPartial(Animation):
 
     Raises
     ------
-    :class:`NotImplementedError`
+    :class:`TypeError`
         If ``mobject`` is not an instance of :class:`~.VMobject`.
 
     See Also
@@ -44,7 +44,7 @@ class ShowPartial(Animation):
 
     def __init__(self, mobject, **kwargs):
         if not isinstance(mobject, VMobject):
-            raise NotImplementedError(
+            raise TypeError(
                 "This Animation only works on vectorized mobjects"
             )
         super().__init__(mobject, **kwargs)
