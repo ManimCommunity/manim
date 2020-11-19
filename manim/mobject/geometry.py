@@ -1100,7 +1100,7 @@ class ArcPolygonFromArcs(VMobject):
         self.add(*arcs)
         # This enables the use of ArcPolygonFromArcs.arcs as a convenience
         # because ArcPolygonFromArcs[0] returns itself, not the first Arc.
-        self.arcs = arcs
+        self.arcs = [*arcs]
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
             line = Line(arc1.get_end(), arc2.get_start())
