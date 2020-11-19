@@ -909,7 +909,7 @@ class ArcPolygon(VMobject):
 
     Attributes
     ----------
-    arcs : :attr:`list`
+    arcs : :class:`list`
         The arcs used to initialize the ArcPolygon.
 
     Parameters
