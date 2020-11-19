@@ -44,9 +44,7 @@ class ShowPartial(Animation):
 
     def __init__(self, mobject, **kwargs):
         if not isinstance(mobject, VMobject):
-            raise TypeError(
-                "This Animation only works on vectorized mobjects"
-            )
+            raise TypeError("This Animation only works on vectorized mobjects")
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(self, submob, start_submob, alpha):
