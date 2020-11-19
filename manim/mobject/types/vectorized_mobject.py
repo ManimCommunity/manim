@@ -1229,6 +1229,7 @@ class VDict(VMobject):
         --------
         ::
 
+            >>> from manim import *
             >>> my_dict = VDict({'sq': Square()})
             >>> 'sq' in my_dict
             True
@@ -1255,6 +1256,7 @@ class VDict(VMobject):
         --------
         ::
 
+            >>> from manim import *
             >>> my_dict = VDict({'sq': Square()})
             >>> 'sq' in my_dict
             True
