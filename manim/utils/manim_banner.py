@@ -11,16 +11,16 @@ from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.tex_templates import TexFontTemplates
 
 
-
 class ManimBanner(VGroup):
     r"""Convenience class representing Manim's banner.
 
-    Can be animated using the custom methods.
+    Can be animated using the costum methods.
 
     Examples
     --------
 
     .. manim:: BannerExample
+        from manim.utils.manim_banner import ManimBanner
 
         class BannerExample(Scene):
             def construct(self):
@@ -31,6 +31,7 @@ class ManimBanner(VGroup):
                 self.wait()
 
     """
+
     def __init__(self, dark_theme=True):
         VGroup.__init__(self)
 
@@ -71,6 +72,9 @@ class ManimBanner(VGroup):
 
         self.anim = anim
         self.anim.set_opacity(0)
+
+    def updater(self):
+        self.shift(LEFT * 0.1)
 
     def scale(self, scale_factor, **kwargs):
         self.scale_factor *= scale_factor
