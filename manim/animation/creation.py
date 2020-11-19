@@ -44,14 +44,16 @@ class ShowPartial(Animation):
 
     def __init__(self, mobject, **kwargs):
         if not isinstance(mobject, VMobject):
-            raise NotImplementedError('This Animation only works on vectorized mobjects')
+            raise NotImplementedError(
+                "This Animation only works on vectorized mobjects"
+            )
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(self, submob, start_submob, alpha):
         submob.pointwise_become_partial(start_submob, *self.get_bounds(alpha))
 
     def get_bounds(self, alpha):
-        raise NotImplementedError('Please use ShowCreation or ShowPassingFlash')
+        raise NotImplementedError("Please use ShowCreation or ShowPassingFlash")
 
 
 class ShowCreation(ShowPartial):
