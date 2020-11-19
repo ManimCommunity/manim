@@ -907,11 +907,6 @@ class ArcPolygon(VMobject):
     --------
     :class:`ArcPolygonFromArcs`
 
-    Attributes
-    ----------
-    arcs : :class:`list`
-        The arcs used to initialize the ArcPolygon.
-
     Parameters
     ----------
     *vertices : Union[:class:`list`, :class:`np.array`]
@@ -927,6 +922,17 @@ class ArcPolygon(VMobject):
         arguments to :class:`~.ArcBetweenPoints`. Otherwise, a list
         of dictionaries containing values that are passed as keyword
         arguments for every individual arc can be passed.
+
+    Attributes
+    ----------
+    arcs : :class:`list`
+        The arcs created from the input parameters.
+        ArcPolyon.arcs::
+
+            >>> from manim import ArcPolygon
+            >>> ap = ArcPolygon([0, 0, 0], [2, 0, 0], [0, 2, 0])
+            >>> ap.arcs
+            [ArcBetweenPoints, ArcBetweenPoints, ArcBetweenPoints]
 
     Examples
     --------
@@ -1023,11 +1029,11 @@ class ArcPolygonFromArcs(VMobject):
 
     Attributes
     ----------
-    arcs : :attr:`list`
-        The arcs used to initialize the ArcPolygon.
-        ArcPolyon.arcs::
+    arcs : :class:`list`
+        The arcs used to initialize the ArcPolygonFromArcs.
+        ArcPolygonFromArcs.arcs::
 
-            >>> from manim import ArcPolygon, Arc, ArcBetweenPoints
+            >>> from manim import ArcPolygonFromArcs, Arc, ArcBetweenPoints
             >>> ap = ArcPolygonFromArcs(Arc(), ArcBetweenPoints([1,0,0], [0,1,0]), Arc())
             >>> ap.arcs
             [Arc, ArcBetweenPoints, Arc]
