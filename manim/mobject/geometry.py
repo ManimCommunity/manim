@@ -894,13 +894,14 @@ class ArcPolygon(VMobject):
     use across all arcs, but to configure arcs individually an arc_config list has to be
     passed with the syntax explained below.
 
-    ArcPolygons can be transformed properly into one another as well. Be
+    Arcpolygons can be transformed properly into one another as well. Be
     advised that any arc initialized with ``angle=0`` will actually be
     a straight line, so if a straight section should seamlessly
     transform into an arced section, initialize the straight section
     with a negligible angle instead (such as ``angle=0.0001``).
 
-    There is an alternative version that is instantiated with pre-defined arcs.
+    There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated
+    with pre-defined arcs.
 
     See Also
     --------
@@ -972,10 +973,15 @@ class ArcPolygon(VMobject):
         ]
 
         super().__init__(**kwargs)
+        # Adding the arcs like this makes ArcPolygon double as a VGroup.
+        # Also makes changes to the ArcPolygon, such as scaling, affect
+        # the arcs, so that their new values are usable.
         self.add(*arcs)
         for arc in arcs:
             self.append_points(arc.points)
 
+        # This enables the use of ArcPolygon.arcs as a convenience
+        # because ArcPolygon[0] returns itself, not the first Arc.
         self.arcs = arcs
 
 
@@ -994,13 +1000,14 @@ class ArcPolygonFromArcs(VMobject):
     sections. Arcs can also be passed as straight lines such as an arc
     initialized with 'angle=0'.
 
-    ArcPolygons can be transformed properly into one another as well. Be
+    Arcpolygons can be transformed properly into one another as well. Be
     advised that any arc initialized with 'angle=0' will actually be
     made like a line, so if a straight secion should seamlessly
     transform into an arced section, initialize the straight section
     with a negligible angle instead (such as 'angle=0.0001').
 
-    There is an alternative version that can be instantiated with points.
+    There is an alternative version (:class:`ArcPolygon`) that can be instantiated
+    with points.
 
     See Also
     --------
@@ -1087,13 +1094,13 @@ class ArcPolygonFromArcs(VMobject):
                 "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints"
             )
         super().__init__(**kwargs)
-        # Adding the arcs like this makes ArcPolygon double as a VGroup.
-        # Also makes changes to the ArcPolygon, such as scaling, affect
+        # Adding the arcs like this makes ArcPolygonFromArcs double as a VGroup.
+        # Also makes changes to the ArcPolygonFromArcs, such as scaling, affect
         # the arcs, so that their new values are usable.
         self.add(*arcs)
-        # This enables the use of ArcPolygon.arcs as a convenience
-        # because ArcPolygon[0] returns itself, not the first Arc.
-        self.arcs = [*arcs]
+        # This enables the use of ArcPolygonFromArcs.arcs as a convenience
+        # because ArcPolygonFromArcs[0] returns itself, not the first Arc.
+        self.arcs = arcs
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
             line = Line(arc1.get_end(), arc2.get_start())
