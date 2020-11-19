@@ -13,7 +13,7 @@ import copy
 from tqdm import tqdm as ProgressDisplay
 import numpy as np
 
-from .. import camera_config, file_writer_config, logger
+from .. import config, logger
 from ..animation.animation import Animation, Wait
 from ..animation.transform import MoveToTarget, ApplyMethod
 from ..camera.camera import Camera
@@ -80,15 +80,22 @@ class Scene(Container):
 
         self.setup()
 
+    @property
+    def camera(self):
+        return self.renderer.camera
+
     def render(self):
         """
         Render this Scene.
         """
+        self.original_skipping_status = config["skip_animations"]
         try:
             self.construct()
         except EndSceneEarlyException:
             pass
         self.tear_down()
+        # We have to reset these settings in case of multiple renders.
+        config["skip_animations"] = self.original_skipping_status
         self.renderer.finish(self)
         logger.info(
             f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
@@ -119,21 +126,6 @@ class Scene(Container):
 
     def __str__(self):
         return self.__class__.__name__
-
-    def set_variables_as_attrs(self, *objects, **newly_named_objects):
-        """
-        This method is slightly hacky, making it a little easier
-        for certain methods (typically subroutines of construct)
-        to share local variables.
-        """
-        caller_locals = inspect.currentframe().f_back.f_locals
-        for key, value in list(caller_locals.items()):
-            for o in objects:
-                if value is o:
-                    setattr(self, key, value)
-        for key, value in list(newly_named_objects.items()):
-            setattr(self, key, value)
-        return self
 
     def get_attrs(self, *keys):
         """
@@ -549,7 +541,7 @@ class Scene(Container):
         by a dict of kwargs for that method).
         This animation list is built by going through the args list,
         and each animation is simply added, but when a mobject method
-        s hit, a MoveToTarget animation is built using the args that
+        is hit, a MoveToTarget animation is built using the args that
         follow up until either another animation is hit, another method
         is hit, or the args list runs out.
 
@@ -650,7 +642,7 @@ class Scene(Container):
         ProgressDisplay
             The CommandLine Progress Bar.
         """
-        if file_writer_config["skip_animations"] and not override_skip_animations:
+        if config["skip_animations"] and not override_skip_animations:
             times = [run_time]
         else:
             step = 1 / self.renderer.camera.frame_rate
@@ -658,9 +650,9 @@ class Scene(Container):
         time_progression = ProgressDisplay(
             times,
             total=n_iterations,
-            leave=file_writer_config["leave_progress_bars"],
+            leave=config["leave_progress_bars"],
             ascii=True if platform.system() == "Windows" else None,
-            disable=not file_writer_config["progress_bar"],
+            disable=not config["progress_bar"],
         )
         return time_progression
 
@@ -797,6 +789,9 @@ class Scene(Container):
             self.add_static_frames(animations[0].duration)
             return
 
+        for animation in animations:
+            animation.begin()
+
         moving_mobjects = None
         static_mobjects = None
         duration = None
@@ -819,9 +814,6 @@ class Scene(Container):
             self.renderer.update_frame(self, mobjects=stationary_mobjects)
             self.static_image = self.renderer.get_frame()
             time_progression = self.get_animation_time_progression(animations)
-
-        for animation in animations:
-            animation.begin()
 
         last_t = 0
         for t in time_progression:
@@ -866,7 +858,7 @@ class Scene(Container):
         gain :
 
         """
-        if file_writer_config["skip_animations"]:
+        if config["skip_animations"]:
             return
         time = self.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)

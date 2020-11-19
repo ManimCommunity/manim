@@ -10,6 +10,25 @@ v0.2.0
 
 Changes since Manim Community release v0.1.0
 
+Fixes
+^^^^^
+
+#. JsRender is optional to install. (via :pr:`697`).
+
+Configuration
+^^^^^^^^^^^^^
+
+#. The global ``config`` dict has been replaced by a global ``config`` instance
+   of the new class :class:`~.ManimConfig`.  This class has a dict-like API, so
+   this should not break user code, only make it more robust.  See the
+   Configuration tutorial for details.
+
+
+Documentation
+^^^^^^^^^^^^^
+
+#. Add ``:issue:`` and ``:pr:`` directives for simplifying linking to issues and
+   pull requests on GitHub (via :pr:`685`).
 
 
 Mobjects, Scenes, and Animations
@@ -17,10 +36,13 @@ Mobjects, Scenes, and Animations
 
 #. The ``alignment`` attribute to Tex and MathTex has been removed in favour of ``tex_environment``.
 #. :class:`~.Text` now uses Pango for rendering. ``PangoText`` has been removed. The old implementation is still available as a fallback as :class:`~.CairoText`.
-
-
-
-
+#. **New**: Variations of :class:`~.Dot` have been added as :class:`~.AnnotationDot`
+   (a bigger dot with bolder stroke) and :class:`~.LabeledDot` (a dot containing a
+   label).
+#. Scene.set_variables_as_attrs has been removed (via :pr:`692`).
+#. Ensure that the axes for graphs (:class:`GraphScene`) always intersect (:pr:`580`).
+#. Now Mobject.add_updater does not call the newly-added updater by default
+   (use ``call_updater=True`` instead) (via :pr:`710`)
 
 
 
@@ -140,6 +162,3 @@ Other Changes
 #. Rename package from manimlib to manim
 #. Move all imports to :code:`__init__`, so :code:`from manim import *` replaces :code:`from manimlib.imports import *`
 #. Global dir variable handling has been removed. Instead :code:`initialize_directories`, if needed, overrides the values from the cfg files at runtime.
-
-
-

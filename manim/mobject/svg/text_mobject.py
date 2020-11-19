@@ -1,4 +1,46 @@
-"""Mobjects used for displaying (non-LaTeX) text."""
+"""Mobjects used for displaying (non-LaTeX) text.
+
+The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
+With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
+
+Examples
+--------
+
+.. manim:: HelloWorld
+    :save_last_frame:
+
+    class HelloWorld(Scene):
+        def construct(self):
+            text = Text('Hello world').scale(3)
+            self.add(text)
+
+.. manim:: TextAlignement
+    :save_last_frame:
+
+    class TextAlignement(Scene):
+        def construct(self):
+            title = Text("K-means clustering and Logistic Regression", color=WHITE)
+            title.scale_in_place(0.75)
+            self.add(title.to_edge(UP))
+
+            t1 = Text("1. Measuring").set_color(WHITE)
+            t1.next_to(ORIGIN, direction=RIGHT, aligned_edge=UP)
+
+            t2 = Text("2. Clustering").set_color(WHITE)
+            t2.next_to(t1, direction=DOWN, aligned_edge=LEFT)
+
+            t3 = Text("3. Regression").set_color(WHITE)
+            t3.next_to(t2, direction=DOWN, aligned_edge=LEFT)
+
+            t4 = Text("4. Prediction").set_color(WHITE)
+            t4.next_to(t3, direction=DOWN, aligned_edge=LEFT)
+
+            x = VGroup(t1, t2, t3, t4).scale_in_place(0.7)
+            x.set_opacity(0.5)
+            x.submobjects[1].set_opacity(1)
+            self.add(x)
+
+"""
 
 __all__ = ["Text", "Paragraph", "CairoText"]
 
@@ -13,7 +55,7 @@ import cairocffi
 import pangocairocffi
 import pangocffi
 
-from ... import config, file_writer_config, logger
+from ... import config, logger
 from ...constants import *
 from ...container import Container
 from ...mobject.geometry import Dot, Rectangle
@@ -310,7 +352,7 @@ class CairoText(SVGMobject):
             if NOT_SETTING_FONT_MSG:
                 logger.warning(NOT_SETTING_FONT_MSG)
 
-        dir_name = file_writer_config["text_dir"]
+        dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
 
@@ -884,7 +926,7 @@ class Text(SVGMobject):
         """
         size = self.size * 10
         line_spacing = self.line_spacing * 10
-        dir_name = file_writer_config["text_dir"]
+        dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         hash_name = self.text2hash()
@@ -897,13 +939,13 @@ class Text(SVGMobject):
         settings = self.text2settings()
         offset_x = 0
         last_line_num = 0
+        layout = pangocairocffi.create_layout(context)
+        layout.set_width(pangocffi.units_from_double(600))
         for setting in settings:
             family = setting.font
             style = self.str2style(setting.slant)
             weight = self.str2weight(setting.weight)
             text = self.text[setting.start : setting.end].replace("\n", " ")
-            layout = pangocairocffi.create_layout(context)
-            layout.set_width(pangocffi.units_from_double(600))
             fontdesc = pangocffi.FontDescription()
             fontdesc.set_size(pangocffi.units_from_double(size))
             if family:
@@ -917,9 +959,10 @@ class Text(SVGMobject):
             context.move_to(
                 START_X + offset_x, START_Y + line_spacing * setting.line_num
             )
+            pangocairocffi.update_layout(context, layout)
             layout.set_text(text)
             logger.debug(f"Setting Text {text}")
             pangocairocffi.show_layout(context, layout)
-            offset_x += layout.get_extents()[0].x
+            offset_x += pangocffi.units_to_double(layout.get_size()[0])
         surface.finish()
         return file_name

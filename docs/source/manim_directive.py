@@ -72,6 +72,7 @@ from docutils.parsers.rst import directives, Directive
 
 import jinja2
 import os
+from os.path import relpath
 from pathlib import Path
 from typing import List
 
@@ -113,6 +114,7 @@ class ManimDirective(Directive):
         ),
         "save_as_gif": bool,
         "save_last_frame": bool,
+        "ref_modules": lambda arg: process_name_list(arg, "mod"),
         "ref_classes": lambda arg: process_name_list(arg, "class"),
         "ref_functions": lambda arg: process_name_list(arg, "func"),
     }
@@ -133,10 +135,13 @@ class ManimDirective(Directive):
         save_as_gif = "save_as_gif" in self.options
         save_last_frame = "save_last_frame" in self.options
         assert not (save_as_gif and save_last_frame)
-        if "ref_classes" in self.options or "ref_functions" in self.options:
-            ref_classes = self.options.get("ref_classes", [])
-            ref_functions = self.options.get("ref_functions", [])
-            ref_content = ref_classes + ref_functions
+
+        ref_content = (
+            self.options.get("ref_modules", [])
+            + self.options.get("ref_classes", [])
+            + self.options.get("ref_functions", [])
+        )
+        if ref_content:
             ref_block = f"""
 .. admonition:: Example References
     :class: example-reference
@@ -174,12 +179,16 @@ class ManimDirective(Directive):
         document = state_machine.document
 
         source_file_name = document.attributes["source"]
-        source_rel_name = Path(source_file_name).relative_to(setup.confdir)
-        source_rel_dir = source_rel_name.resolve().parent
+        source_rel_name = relpath(source_file_name, setup.confdir)
+        source_rel_dir = os.path.dirname(source_rel_name)
+        while source_rel_dir.startswith(os.path.sep):
+            source_rel_dir = source_rel_dir[1:]
 
-        dest_dir = Path(setup.app.builder.outdir) / source_rel_dir
-        if not dest_dir.exists():
-            dest_dir.mkdir(parents=True)
+        dest_dir = os.path.abspath(
+            os.path.join(setup.app.builder.outdir, source_rel_dir)
+        )
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
 
         source_block = [
             ".. code-block:: python",
@@ -188,35 +197,19 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block)
 
-        # NOTE: skips directory creation in case path already exists
-        # due to exists_ok param
-        media_dir = Path(setup.confdir) / "media"
-        media_dir.mkdir(parents=True, exist_ok=True)
-
-        images_dir = Path(media_dir) / "images"
-        images_dir.mkdir(parents=True, exist_ok=True)
-
-        tex_dir = media_dir / "tex"
-        tex_dir.mkdir(parents=True, exist_ok=True)
-
-        text_dir = media_dir / "text"
-        text_dir.mkdir(parents=True, exist_ok=True)
-
-        video_dir = media_dir / "videos"
+        config.media_dir = Path(setup.confdir) / "media"
+        config.images_dir = "{media_dir}/images"
+        config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
+        config.assets_dir = Path("_static")
 
-        file_writer_config_code = [
+        config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
             f'config["pixel_width"] = {pixel_width}',
-            f'file_writer_config["media_dir"] = r"{media_dir}"',
-            f'file_writer_config["images_dir"] = r"{images_dir}"',
-            f'file_writer_config["tex_dir"] = r"{tex_dir}"',
-            f'file_writer_config["text_dir"] = r"{text_dir}"',
-            f'file_writer_config["video_dir"] = r"{video_dir}"',
-            f'file_writer_config["save_last_frame"] = {save_last_frame}',
-            f'file_writer_config["save_as_gif"] = {save_as_gif}',
-            f'file_writer_config["output_file"] = r"{output_file}"',
+            f'config["save_last_frame"] = {save_last_frame}',
+            f'config["save_as_gif"] = {save_as_gif}',
+            f'config["output_file"] = r"{output_file}"',
         ]
 
         user_code = self.content
@@ -227,7 +220,7 @@ class ManimDirective(Directive):
 
         code = [
             "from manim import *",
-            *file_writer_config_code,
+            *config_code,
             *user_code,
             f"{clsname}().render()",
         ]
@@ -236,22 +229,23 @@ class ManimDirective(Directive):
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f"{output_file}.mp4"
-            filesrc = Path(video_dir) / qualitydir / filename
-            destfile = Path(dest_dir) / filename
+            filesrc = config.get_dir("video_dir") / filename
+            destfile = os.path.join(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
-            filesrc = Path(video_dir) / qualitydir / filename
+            filesrc = config.get_dir("video_dir") / filename
         elif save_last_frame:
             filename = f"{output_file}.png"
-            filesrc = Path(images_dir) / filename
+            filesrc = config.get_dir("images_dir") / filename
         else:
             raise ValueError("Invalid combination of render flags received.")
 
         rendered_template = jinja2.Template(TEMPLATE).render(
             clsname=clsname,
+            clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
-            filesrc_rel=Path(filesrc).relative_to(setup.confdir),
+            filesrc_rel=os.path.relpath(filesrc, setup.confdir),
             output_file=output_file,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
@@ -288,18 +282,20 @@ TEMPLATE = r"""
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+    <video id="{{ clsname_lowercase }}" class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
 {% elif save_as_gif %}
 .. image:: /{{ filesrc_rel }}
     :align: center
+    :name: {{ clsname_lowercase }}
 {% elif save_last_frame %}
 .. image:: /{{ filesrc_rel }}
     :align: center
+    :name: {{ clsname_lowercase }}
 {% endif %}
 {% if not hide_source %}
 .. raw:: html
 
-    <div class="example-header">{{ clsname }}</div>
+    <h5 class="example-header">{{ clsname }}<a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></h5>
 
 {{ source_block }}
 {{ ref_block }}
