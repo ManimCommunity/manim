@@ -894,10 +894,10 @@ class ArcPolygon(VMobject):
     use across all arcs, but to configure arcs individually an arc_config list has to be
     passed with the syntax explained below.
 
-    Arcpolygons can be transformed properly into one another as well. Be
-    advised that any arc initialized with ``angle=0`` will actually be
+    Two instances of :class:`ArcPolygon` can be transformed properly into one another as
+    well. Be advised that any arc initialized with ``angle=0`` will actually be
     a straight line, so if a straight section should seamlessly
-    transform into an arced section, initialize the straight section
+    transform into an arced section or vice versa, initialize the straight section
     with a negligible angle instead (such as ``angle=0.0001``).
 
     There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated
@@ -1006,11 +1006,11 @@ class ArcPolygonFromArcs(VMobject):
     sections. Arcs can also be passed as straight lines such as an arc
     initialized with 'angle=0'.
 
-    Arcpolygons can be transformed properly into one another as well. Be
-    advised that any arc initialized with 'angle=0' will actually be
-    made like a line, so if a straight secion should seamlessly
-    transform into an arced section, initialize the straight section
-    with a negligible angle instead (such as 'angle=0.0001').
+    Two instances of :class:`ArcPolygon` can be transformed properly into one another as
+    well. Be advised that any arc initialized with ``angle=0`` will actually be
+    a straight line, so if a straight section should seamlessly
+    transform into an arced section or vice versa, initialize the straight section
+    with a negligible angle instead (such as ``angle=0.0001``).
 
     There is an alternative version (:class:`ArcPolygon`) that can be instantiated
     with points.
