@@ -1167,7 +1167,7 @@ class VDict(VMobject):
         return self
 
     def __getitem__(self, key):
-        """Overriding the [] operator for getting submobject by key
+        """Override the [] operator for item retrieval.
 
         Parameters
         ----------
@@ -1189,7 +1189,7 @@ class VDict(VMobject):
         return submob
 
     def __setitem__(self, key, value):
-        """Overriding the [] operator for assigning submobject like a python dict
+        """Override the [] operator for item assignment.
 
         Parameters
         ----------
@@ -1212,6 +1212,55 @@ class VDict(VMobject):
         if key in self.submob_dict:
             self.remove(key)
         self.add([(key, value)])
+
+    def __delitem__(self, key):
+        """Override the del operator for deleting an item.
+
+        Parameters
+        ----------
+        key : Hashable
+            The key of the submoject to be deleted
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        ::
+
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+            >>> del my_dict['sq']
+            >>> 'sq' in my_dict
+            False
+
+        """
+        del self.submob_dict[key]
+
+    def __contains__(self, key):
+        """Override the in operator.
+
+        Parameters
+        ----------
+        key : Hashable
+            The key to check membership of.
+
+        Returns
+        -------
+        :clas:`bool`
+
+        Examples
+        --------
+        ::
+
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+
+        """
+        return key in self.submob_dict
 
     def get_all_submobjects(self):
         """To get all the submobjects associated with a particular :class:`VDict` object
