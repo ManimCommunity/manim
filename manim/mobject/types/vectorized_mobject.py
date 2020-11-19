@@ -1237,6 +1237,11 @@ class VDict(VMobject):
             >>> 'sq' in my_dict
             False
 
+        Notes
+        -----
+        Removing an item from a VDict does not remove that item from any Scene
+        that the VDict is part of.
+
         """
         del self.submob_dict[key]
 
