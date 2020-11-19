@@ -927,6 +927,7 @@ class ArcPolygon(VMobject):
     ----------
     arcs : :class:`list`
         The arcs created from the input parameters.
+        ::
             >>> from manim import ArcPolygon
             >>> ap = ArcPolygon([0, 0, 0], [2, 0, 0], [0, 2, 0])
             >>> ap.arcs
@@ -1029,10 +1030,11 @@ class ArcPolygonFromArcs(VMobject):
     ----------
     arcs : :class:`list`
         The arcs used to initialize the ArcPolygonFromArcs.
-        >>> from manim import ArcPolygonFromArcs, Arc, ArcBetweenPoints
-        >>> ap = ArcPolygonFromArcs(Arc(), ArcBetweenPoints([1,0,0], [0,1,0]), Arc())
-        >>> ap.arcs
-        [Arc, ArcBetweenPoints, Arc]
+        ::
+            >>> from manim import ArcPolygonFromArcs, Arc, ArcBetweenPoints
+            >>> ap = ArcPolygonFromArcs(Arc(), ArcBetweenPoints([1,0,0], [0,1,0]), Arc())
+            >>> ap.arcs
+            [Arc, ArcBetweenPoints, Arc]
 
     Examples
     --------
