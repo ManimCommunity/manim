@@ -121,6 +121,7 @@ Utilities
    ~utils.hashing
    ~utils.images
    ~utils.iterables
+   ~utils.manim_banner
    ~utils.paths
    ~utils.rate_functions
    ~utils.simple_functions

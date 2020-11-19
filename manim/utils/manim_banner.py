@@ -1,3 +1,7 @@
+"""Manim Banner utilities."""
+
+__all__ = ["ManimBanner"]
+
 from ..constants import LEFT, UP, RIGHT, DOWN, ORIGIN
 from ..animation.composition import Succession, AnimationGroup
 from ..animation.transform import ApplyMethod
@@ -7,7 +11,26 @@ from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.tex_templates import TexFontTemplates
 
 
+
 class ManimBanner(VGroup):
+    r"""Convenience class representing Manim's banner.
+
+    Can be animated using the costum methods.
+
+    Examples
+    --------
+
+    .. manim:: BannerExample
+
+        class BannerExample(Scene):
+            def construct(self):
+                banner = ManimBanner().scale(0.25).to_corner(DR)
+                self.add(banner)
+                self.wait()
+                self.play(banner.expand())
+                self.wait()
+
+    """
     def __init__(self, dark_theme=True):
         VGroup.__init__(self)
 
