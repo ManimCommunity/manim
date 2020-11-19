@@ -14,7 +14,10 @@ service FrameServer {
 }
 
 message FrameRequest {
-    float scene_offset = 1;
+    int32 start_index = 1;
+    int32 end_index = 2;
+    bool use_indices = 3;
+    float time_offset = 4;
 }
 
 message Style {

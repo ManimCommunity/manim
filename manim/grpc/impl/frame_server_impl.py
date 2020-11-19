@@ -58,13 +58,22 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
     def GetFrameAtTime(self, request, context):
         try:
+            # Determine start and end indices.
+            if request.use_indices:
+                requested_scene_index = request.start_index
+            else:
+                requested_scene_index = 0
+            if request.use_indices and request.end_index > request.start_index:
+                requested_end_index = request.end_index
+            else:
+                requested_end_index = len(self.keyframes)
+
             # Find the requested scene.
-            requested_scene_index = 0
             requested_scene = self.keyframes[requested_scene_index]
             requested_scene_end_time = requested_scene.duration
             scene_finished = False
-            while requested_scene_end_time < request.scene_offset:
-                if requested_scene_index + 1 < len(self.keyframes):
+            while requested_scene_end_time < request.time_offset:
+                if requested_scene_index + 1 < requested_end_index:
                     requested_scene_index += 1
                     requested_scene = self.keyframes[requested_scene_index]
                     requested_scene_end_time += requested_scene.duration
@@ -77,7 +86,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 requested_scene_start_time = (
                     requested_scene_end_time - requested_scene.duration
                 )
-                animation_offset = request.scene_offset - requested_scene_start_time
+                animation_offset = request.time_offset - requested_scene_start_time
             else:
                 animation_offset = 1
             requested_scene.update_to_time(animation_offset)
