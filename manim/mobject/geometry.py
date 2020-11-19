@@ -874,10 +874,10 @@ class ArcPolygon(VMobject):
     passed with the syntax explained below.
 
     ArcPolygons can be transformed properly into one another as well. Be
-    advised that any arc initialized with 'angle=0' will actually be
-    made like a line, so if a straight secion should seamlessly
+    advised that any arc initialized with ``angle=0`` will actually be
+    a straight line, so if a straight section should seamlessly
     transform into an arced section, initialize the straight section
-    with a negligible angle instead (such as 'angle=0.0001').
+    with a negligible angle instead (such as ``angle=0.0001``).
 
     There is an alternative version that is instantiated with pre-defined arcs.
 
@@ -908,7 +908,7 @@ class ArcPolygon(VMobject):
 
     Examples
     --------
-    For an example of a Reuleaux triangle see :class:`ArcPolygonFromArcs`
+    For further examples see :class:`ArcPolygonFromArcs`
 
     .. manim:: SeveralArcPolygons
 
@@ -950,7 +950,7 @@ class ArcPolygon(VMobject):
             for (pair, conf) in zip(point_pairs, all_arc_configs)
         ]
 
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*arcs)
         for arc in arcs:
             self.append_points(arc.points)
@@ -1000,7 +1000,7 @@ class ArcPolygonFromArcs(VMobject):
         ArcPolyon.arcs::
 
             >>> from manim import ArcPolygon, Arc, ArcBetweenPoints
-            >>> ap=ArcPolygonFromArcs(Arc(),ArcBetweenPoints([1,0,0],[0,1,0]),Arc())
+            >>> ap = ArcPolygonFromArcs(Arc(), ArcBetweenPoints([1,0,0], [0,1,0]), Arc())
             >>> ap.arcs
             [Arc, ArcBetweenPoints, Arc]
 
@@ -1065,7 +1065,7 @@ class ArcPolygonFromArcs(VMobject):
             raise ValueError(
                 "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints"
             )
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         # Adding the arcs like this makes ArcPolygon double as a VGroup.
         # Also makes changes to the ArcPolygon, such as scaling, affect
         # the arcs, so that their new values are usable.
