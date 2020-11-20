@@ -94,6 +94,8 @@ class AnimationGroup(Animation):
         # be a rescaled version.  But that's okay!
         time = alpha * self.max_end_time
         for anim, start_time, end_time in self.anims_with_timings:
+            if not (start_time <= time <= end_time):
+                continue
             anim_time = end_time - start_time
             if anim_time == 0:
                 sub_alpha = 0
