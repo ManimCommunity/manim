@@ -193,7 +193,7 @@ class CairoRenderer:
         self.skip_animations = self.original_skipping_status
 
         # if there was an animation being played, render the last frame
-        if hasattr(self.file_writer, 'writing_process'):
+        if hasattr(self.file_writer, "writing_process"):
             self.update_frame(scene, self.camera.frame_rate, ignore_skipping=False)
             self.add_frame(self.camera.pixel_array)
 
