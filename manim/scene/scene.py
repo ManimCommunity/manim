@@ -58,7 +58,6 @@ class Scene(Container):
 
     CONFIG = {
         "camera_class": Camera,
-        "skip_animations": False,
         "always_update_mobjects": False,
         "random_seed": 0,
     }
@@ -66,7 +65,10 @@ class Scene(Container):
     def __init__(self, renderer=None, **kwargs):
         Container.__init__(self, **kwargs)
         if renderer is None:
-            self.renderer = CairoRenderer(camera_class=self.camera_class)
+            self.renderer = CairoRenderer(
+                camera_class=self.camera_class,
+                skip_animations=kwargs.get("skip_animations", False),
+            )
         else:
             self.renderer = renderer
         self.renderer.init(self)
@@ -78,20 +80,20 @@ class Scene(Container):
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
-        self.setup()
+    @property
+    def camera(self):
+        return self.renderer.camera
 
     def render(self):
         """
         Render this Scene.
         """
-        self.original_skipping_status = config["skip_animations"]
+        self.setup()
         try:
             self.construct()
         except EndSceneEarlyException:
             pass
         self.tear_down()
-        # We have to reset these settings in case of multiple renders.
-        config["skip_animations"] = self.original_skipping_status
         self.renderer.finish(self)
         logger.info(
             f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
@@ -538,7 +540,7 @@ class Scene(Container):
         by a dict of kwargs for that method).
         This animation list is built by going through the args list,
         and each animation is simply added, but when a mobject method
-        s hit, a MoveToTarget animation is built using the args that
+        is hit, a MoveToTarget animation is built using the args that
         follow up until either another animation is hit, another method
         is hit, or the args list runs out.
 
@@ -639,7 +641,7 @@ class Scene(Container):
         ProgressDisplay
             The CommandLine Progress Bar.
         """
-        if config["skip_animations"] and not override_skip_animations:
+        if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
             step = 1 / self.renderer.camera.frame_rate
@@ -857,7 +859,7 @@ class Scene(Container):
         gain :
 
         """
-        if config["skip_animations"]:
+        if self.renderer.skip_animations:
             return
         time = self.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
