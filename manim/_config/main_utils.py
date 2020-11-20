@@ -107,6 +107,9 @@ def parse_args(args):
     if args[0] == "python" and args[1] == "-m":
         args = args[2:]
 
+    if len(args) == 1:
+        return _parse_args_no_subcmd(args)
+
     subcmd = _find_subcommand(args)
     if subcmd == "cfg":
         return _parse_args_cfg_subcmd(args)
@@ -314,7 +317,11 @@ def _parse_args_no_subcmd(args):
     parser.add_argument(
         "-q",
         "--quality",
-        choices=[constants.QUALITIES[q]["flag"] for q in constants.QUALITIES],
+        choices=[
+            constants.QUALITIES[q]["flag"]
+            for q in constants.QUALITIES
+            if constants.QUALITIES[q]["flag"]
+        ],
         default=constants.DEFAULT_QUALITY_SHORT,
         help="Render at specific quality, short form of the --*_quality flags",
     )
