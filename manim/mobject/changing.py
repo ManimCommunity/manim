@@ -95,7 +95,7 @@ class TracedPath(VMobject):
                 dot = Dot(color=RED).move_to(circ.get_start())
                 rolling_circle = VGroup(circ, dot)
                 trace = TracedPath(circ.get_start)
-                rolling_circle.add_updater(lambda m: m.rotate(-0.3))
+                rolling_circle.add_updater(lambda m, _: m.rotate(-0.3))
                 self.add(trace, rolling_circle)
                 self.play(rolling_circle.shift, 8*RIGHT, run_time=4, rate_func=linear)
 
@@ -110,7 +110,7 @@ class TracedPath(VMobject):
     def __init__(self, traced_point_func, **kwargs):
         super().__init__(**kwargs)
         self.traced_point_func = traced_point_func
-        self.add_updater(lambda m: m.update_path())
+        self.add_updater(lambda m, _: m.update_path())
 
     def update_path(self):
         new_point = self.traced_point_func()

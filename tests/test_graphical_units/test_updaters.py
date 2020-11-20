@@ -10,7 +10,7 @@ class UpdaterTest(Scene):
         dot = Dot()
         square = Square()
         self.add(dot, square)
-        square.add_updater(lambda m: m.next_to(dot, RIGHT, buff=SMALL_BUFF))
+        square.add_updater(lambda m, _: m.next_to(dot, RIGHT, buff=SMALL_BUFF))
         self.add(square)
         self.play(dot.shift, UP * 2)
         square.clear_updaters()

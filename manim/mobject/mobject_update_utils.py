@@ -30,7 +30,7 @@ def always(method, *args, **kwargs):
     assert_is_mobject_method(method)
     mobject = method.__self__
     func = method.__func__
-    mobject.add_updater(lambda m: func(m, *args, **kwargs))
+    mobject.add_updater(lambda m, _: func(m, *args, **kwargs))
     return mobject
 
 
@@ -44,7 +44,7 @@ def f_always(method, *arg_generators, **kwargs):
     mobject = method.__self__
     func = method.__func__
 
-    def updater(mob):
+    def updater(mob, _):
         args = [arg_generator() for arg_generator in arg_generators]
         func(mob, *args, **kwargs)
 
@@ -54,7 +54,7 @@ def f_always(method, *arg_generators, **kwargs):
 
 def always_redraw(func):
     mob = func()
-    mob.add_updater(lambda m: mob.become(func()))
+    mob.add_updater(lambda m, _: mob.become(func()))
     return mob
 
 

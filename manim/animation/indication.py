@@ -60,7 +60,7 @@ class FocusOn(Transform):
     def create_target(self):
         little_dot = Dot(radius=0)
         little_dot.set_fill(self.color, opacity=self.opacity)
-        little_dot.add_updater(lambda d: d.move_to(self.focus_point))
+        little_dot.add_updater(lambda d, _: d.move_to(self.focus_point))
         return little_dot
 
     def create_starting_mobject(self):
@@ -116,7 +116,7 @@ class Flash(AnimationGroup):
             lines.add(line)
         lines.set_color(self.color)
         lines.set_stroke(width=3)
-        lines.add_updater(lambda l: l.move_to(self.point))
+        lines.add_updater(lambda l, _: l.move_to(self.point))
         return lines
 
     def create_line_anims(self):
@@ -139,7 +139,7 @@ class CircleIndicate(Indicate):
 
     def get_circle(self, mobject):
         circle = Circle(**self.circle_config)
-        circle.add_updater(lambda c: c.surround(mobject))
+        circle.add_updater(lambda c, _: c.surround(mobject))
         return circle
 
     def interpolate_mobject(self, alpha):
@@ -216,7 +216,7 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         self.mobject_to_surround = mobject
 
         rect = self.get_rect()
-        rect.add_updater(lambda r: r.move_to(mobject))
+        rect.add_updater(lambda r, _: r.move_to(mobject))
 
         super().__init__(
             self.rect_animation(rect, **kwargs),

@@ -219,24 +219,11 @@ class Mobject(Container):
         if self.updating_suspended:
             return self
         for updater in self.updaters:
-            parameters = get_parameters(updater)
-            if "dt" in parameters:
-                updater(self, dt)
-            else:
-                updater(self)
+            updater(self, dt)
         if recursive:
             for submob in self.submobjects:
                 submob.update(dt, recursive)
         return self
-
-    def get_time_based_updaters(self):
-        return [updater for updater in self.updaters if "dt" in get_parameters(updater)]
-
-    def has_time_based_updater(self):
-        for updater in self.updaters:
-            if "dt" in get_parameters(updater):
-                return True
-        return False
 
     def get_updaters(self):
         return self.updaters

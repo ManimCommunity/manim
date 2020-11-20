@@ -26,11 +26,11 @@ class ValueTracker(Mobject):
             def construct(self):
                 number_line = NumberLine()
                 pointer = Vector(DOWN)
-                label = MathTex("x").add_updater(lambda m: m.next_to(pointer, UP))
+                label = MathTex("x").add_updater(lambda m, _: m.next_to(pointer, UP))
 
                 pointer_value = ValueTracker(0)
                 pointer.add_updater(
-                    lambda m: m.next_to(
+                    lambda m, _: m.next_to(
                                 number_line.n2p(pointer_value.get_value()),
                                 UP
                             )

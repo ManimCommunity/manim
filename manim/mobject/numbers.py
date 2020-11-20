@@ -27,8 +27,8 @@ class DecimalNumber(VMobject):
                 )
                 square = Square().to_edge(UP)
 
-                decimal.add_updater(lambda d: d.next_to(square, RIGHT))
-                decimal.add_updater(lambda d: d.set_value(square.get_center()[1]))
+                decimal.add_updater(lambda d, _: d.next_to(square, RIGHT))
+                decimal.add_updater(lambda d, _: d.set_value(square.get_center()[1]))
                 self.add(square, decimal)
                 self.play(
                     square.to_edge,
@@ -284,9 +284,9 @@ class Variable(VMobject):
         elif var_type == Integer:
             self.value = Integer(self.tracker.get_value())
 
-        self.value.add_updater(lambda v: v.set_value(self.tracker.get_value())).next_to(
-            self.label, RIGHT
-        )
+        self.value.add_updater(
+            lambda v, _: v.set_value(self.tracker.get_value())
+        ).next_to(self.label, RIGHT)
 
         VMobject.__init__(self, **kwargs)
         self.add(self.label, self.value)
