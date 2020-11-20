@@ -3,7 +3,8 @@
 __all__ = ["ManimBanner"]
 
 from ..constants import LEFT, UP, RIGHT, DOWN, ORIGIN
-from ..animation.composition import Succession, AnimationGroup
+from ..animation.composition import AnimationGroup
+from ..animation.fading import FadeIn
 from ..animation.transform import ApplyMethod
 from ..mobject.geometry import Circle, Square, Triangle
 from ..mobject.svg.tex_mobject import Tex, MathTex
@@ -68,7 +69,6 @@ class ManimBanner(VGroup):
         )
 
         self.anim = anim
-        self.anim.set_opacity(0)
 
     def updater(self):
         self.shift(LEFT * 0.1)
@@ -88,17 +88,13 @@ class ManimBanner(VGroup):
             ApplyMethod(self.triangle.shift, m_shape_offset * LEFT),
             ApplyMethod(self.square.shift, m_shape_offset * LEFT),
             ApplyMethod(self.circle.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.M.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.anim.set_opacity, 0),
+            ApplyMethod(self.M.shift, m_shape_offset * LEFT)
         )
         move_right = AnimationGroup(
             ApplyMethod(self.triangle.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.square.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.circle.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.M.shift, 0 * LEFT),
-            AnimationGroup(
-                *[ApplyMethod(obj.set_opacity, 1) for obj in self.anim], lag_ratio=0.15
-            )
-            # for whatever reason, FadeIn(self.anim, lag_ratio=1) does the weirdest stuff
+            FadeIn(self.anim, lag_ratio=1)
         )
-        return Succession(move_left, move_right)
+        return AnimationGroup(move_left, move_right, lag_ratio=1)
