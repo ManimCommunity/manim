@@ -39,9 +39,9 @@ def handle_play_like_call(func):
     def wrapper(self, scene, *args, **kwargs):
         allow_write = not self.skip_animations
         self.file_writer.end_animation(allow_write)
+        self.num_plays += 1
         self.file_writer.begin_animation(allow_write)
         func(self, scene, *args, **kwargs)
-        self.num_plays += 1
 
     return wrapper
 
@@ -75,7 +75,7 @@ class CairoRenderer:
         self.original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animations_hashes = []
-        self.num_plays = 0
+        self.num_plays = -1
         self.time = 0
 
     def init(self, scene):
@@ -182,10 +182,10 @@ class CairoRenderer:
         raises an EndSceneEarlyException if they don't correspond.
         """
         if config["from_animation_number"]:
-            if self.num_plays < config["from_animation_number"]:
+            if self.num_plays < config["from_animation_number"] - 1:
                 self.skip_animations = True
         if config["upto_animation_number"]:
-            if self.num_plays > config["upto_animation_number"]:
+            if self.num_plays > config["upto_animation_number"] - 1:
                 self.skip_animations = True
                 raise EndSceneEarlyException()
 
@@ -198,6 +198,8 @@ class CairoRenderer:
             self.add_frame(self.camera.pixel_array)
 
         self.file_writer.end_animation(not self.skip_animations)
+        self.num_plays += 1
+
         self.file_writer.finish()
         if config["save_last_frame"]:
             self.file_writer.save_final_image(self.camera.get_image())

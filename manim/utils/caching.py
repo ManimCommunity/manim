@@ -23,11 +23,13 @@ def handle_caching_play(func):
         self.update_skipping_status()
         animations = scene.compile_play_args_to_animation_list(*args, **kwargs)
         scene.add_mobjects_from_animations(animations)
+
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             func(self, scene, *args, **kwargs)
-            # If the animation is skipped, we mark its hash as None.
-            # When sceneFileWriter will start combining partial movie files, it won't take into account None hashes.
+            # If the animation is skipped, we mark its hash as None.  When
+            # Scenefilewriter starts combining partial movie files, it won't take into
+            # account None hashes.
             self.animations_hashes.append(None)
             self.file_writer.add_partial_movie_file(None)
             return
