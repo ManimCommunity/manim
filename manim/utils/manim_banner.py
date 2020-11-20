@@ -44,16 +44,12 @@ class ManimBanner(VGroup):
         self.font_color = "#ece6e2" if dark_theme else "#343434"
         self.scale_factor = 1
 
-        ds_m = MathTex(r"\mathbb{M}").scale(7).set_color(self.font_color)
-        ds_m.shift(2.25 * LEFT + 1.5 * UP)
-        self.M = ds_m
+        self.M = MathTex(r"\mathbb{M}").scale(7).set_color(self.font_color)
+        self.M.shift(2.25 * LEFT + 1.5 * UP)
 
-        circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
-        self.circle = circle
-        square = Square(color=logo_blue, fill_opacity=1).shift(UP)
-        self.square = square
-        triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
-        self.triangle = triangle
+        self.circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
+        self.square = Square(color=logo_blue, fill_opacity=1).shift(UP)
+        self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
         self.add(self.triangle, self.square, self.circle, self.M)
         self.move_to(ORIGIN)
 
