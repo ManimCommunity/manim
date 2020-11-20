@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -156,6 +156,10 @@ msgstr ""
 
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:1:<autosummary>:1
 msgid ":obj:`CONFIG <manim.scene.vector_space_scene.VectorScene.CONFIG>`\\"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:1:<autosummary>:1
+msgid ":obj:`camera <manim.scene.vector_space_scene.VectorScene.camera>`\\"
 msgstr ""
 
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:0
@@ -310,10 +314,11 @@ msgid "The color to give the label."
 msgstr ""
 
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:13
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:14
 msgid "How much to scale the label by."
 msgstr ""
 
-#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:15
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:16
 #: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:12
 msgid "The MathTex of the label."
 msgstr ""

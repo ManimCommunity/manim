@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,36 @@ msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:1
 msgid "Bases: :class:`manim.camera.camera.Camera`"
+msgstr ""
+
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:1
+msgid "Initializes the ThreeDCamera"
+msgstr ""
+
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_orientation_mobjects:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.capture_mobjects:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_fill_rgbas:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_mobjects_to_display:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_stroke_rgbas:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.project_point:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.project_points:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.remove_fixed_in_frame_mobjects:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.remove_fixed_orientation_mobjects:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_distance:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_gamma:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_phi:0
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_theta:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:3
+msgid "Any argument of Camera"
+msgstr ""
+
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera:4
+msgid "Any keyword argument of Camera."
 msgstr ""
 
 #: ../../source/reference/manim.camera.three_d_camera.ThreeDCamera.rst:12
@@ -239,6 +269,14 @@ msgid ":obj:`CONFIG <manim.camera.three_d_camera.ThreeDCamera.CONFIG>`\\"
 msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:1:<autosummary>:1
+msgid ":obj:`background_color <manim.camera.three_d_camera.ThreeDCamera.background_color>`\\"
+msgstr ""
+
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:1:<autosummary>:1
+msgid ":obj:`background_opacity <manim.camera.three_d_camera.ThreeDCamera.background_opacity>`\\"
+msgstr ""
+
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:1:<autosummary>:1
 msgid ":obj:`frame_center <manim.camera.three_d_camera.ThreeDCamera.frame_center>`\\"
 msgstr ""
 
@@ -248,23 +286,6 @@ msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:6
 msgid "Highly useful when displaying Titles or formulae or the like."
-msgstr ""
-
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_orientation_mobjects:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.capture_mobjects:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_fill_rgbas:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_mobjects_to_display:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.get_stroke_rgbas:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.project_point:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.project_points:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.remove_fixed_in_frame_mobjects:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.remove_fixed_orientation_mobjects:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_distance:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_gamma:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_phi:0
-#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.set_theta:0
-msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:8

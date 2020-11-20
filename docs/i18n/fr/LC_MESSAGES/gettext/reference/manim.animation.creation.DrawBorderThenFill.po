@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:2
+msgid "manim.animation.creation.DrawBorderThenFill"
+msgstr ""
+
+#: manim.animation.creation.DrawBorderThenFill:1 of
+msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+msgid ":obj:`begin <manim.animation.creation.DrawBorderThenFill.begin>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+msgid ""
+":obj:`check_validity_of_input "
+"<manim.animation.creation.DrawBorderThenFill.check_validity_of_input>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+msgid ""
+":obj:`get_all_mobjects "
+"<manim.animation.creation.DrawBorderThenFill.get_all_mobjects>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1 of
+msgid "Ordering must match the ording of arguments to interpolate_submobject"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+msgid ""
+":obj:`get_outline "
+"<manim.animation.creation.DrawBorderThenFill.get_outline>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+msgid ""
+":obj:`get_stroke_color "
+"<manim.animation.creation.DrawBorderThenFill.get_stroke_color>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+msgid ""
+":obj:`interpolate_submobject "
+"<manim.animation.creation.DrawBorderThenFill.interpolate_submobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1:<autosummary>:1
+#: of
+msgid ":obj:`CONFIG <manim.animation.creation.DrawBorderThenFill.CONFIG>`\\"
+msgstr ""
+

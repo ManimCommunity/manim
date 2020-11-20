@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,7 +32,7 @@ msgstr ""
 msgid "Automatically adds the text for the label and the value when instantiated and added to the screen."
 msgstr ""
 
-#: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:0
+#: ../../source/reference/manim.mobject.numbers.Variable.rst:0
 msgid "Parameters"
 msgstr ""
 

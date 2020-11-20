@@ -1,0 +1,140 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/installation/linux.rst:2
+msgid "Linux"
+msgstr ""
+
+#: ../../source/installation/linux.rst:4
+msgid ""
+"The following instructions are given for different linux distributions "
+"that use different package managers.  After executing the instructions "
+"corresponding to your distribution, go to `Certifying a clean install`_ "
+"to check whether the dependencies are installed correctly.  All "
+"distributions will follow the same instructions in `Certifying a clean "
+"install`_."
+msgstr ""
+
+#: ../../source/installation/linux.rst:10
+msgid ""
+"The two necessary dependencies are cairo and ffmpeg.  LaTeX is strongly "
+"recommended, as it is necessary to have access to the ``Tex`` and "
+"``MathTex`` classes."
+msgstr ""
+
+#: ../../source/installation/linux.rst:14
+msgid "Ubuntu/Mint/Debian"
+msgstr ""
+
+#: ../../source/installation/linux.rst:16
+#: ../../source/installation/linux.rst:87
+msgid "Before installing anything, make sure that your system is up to date."
+msgstr ""
+
+#: ../../source/installation/linux.rst:23
+#: ../../source/installation/linux.rst:55
+#: ../../source/installation/linux.rst:93
+msgid "To install cairo:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:29
+#: ../../source/installation/linux.rst:100
+msgid "To install ffmpeg:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:35
+#: ../../source/installation/linux.rst:77
+#: ../../source/installation/linux.rst:106
+msgid "To install LaTeX:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:42
+msgid "If you don't have python3-pip installed, install it:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:48
+msgid ""
+"These instructions are also valid for other Debian-based distributions or"
+" distributions that use the ``apt`` package manager."
+msgstr ""
+
+#: ../../source/installation/linux.rst:53
+msgid "Fedora/CentOS/RHEL"
+msgstr ""
+
+#: ../../source/installation/linux.rst:61
+msgid ""
+"To install ffmpeg, you have to add RPMfusion repository (If it's not "
+"already added). Please follow the instructions for your specific "
+"distribution in the following URL:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:63
+msgid "https://rpmfusion.org/Configuration/"
+msgstr ""
+
+#: ../../source/installation/linux.rst:65
+msgid "Install ffmpeg from RPMfusion repository:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:71
+msgid ""
+"Install python development headers in order to successfully build pycairo"
+" wheel:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:85
+msgid "Arch/Manjaro"
+msgstr ""
+
+#: ../../source/installation/linux.rst:112
+msgid "If you don't have python-pip installed, install it:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:119
+msgid ""
+"These instructions are also valid for other Arch-based distributions or "
+"distributions that use the ``pacman`` package manager."
+msgstr ""
+
+#: ../../source/installation/linux.rst:125
+msgid "Certifying a clean install"
+msgstr ""
+
+#: ../../source/installation/linux.rst:127
+msgid ""
+"To check that all dependencies have been installed properly, you can "
+"execute the commands ``ffmpeg -version`` and ``latex``.  (If LaTeX is "
+"installed properly, you will be taken to a command-line program that "
+"captures your cursor. Press CTRL+C to exit.)"
+msgstr ""
+
+#: ../../source/installation/linux.rst:132
+msgid ""
+"Note the LaTeX installation may take up a lot of space.  The manim "
+"community developers are currently working on providing a simpler, "
+"lighter LaTeX package for you to install."
+msgstr ""
+
+#: ../../source/installation/linux.rst:136
+msgid ""
+"After making sure you have a clean install, you can go back to :ref"
+":`installing-manim`."
+msgstr ""
+

@@ -1,0 +1,47 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.animation.composition.rst:2
+msgid "manim.animation.composition"
+msgstr ""
+
+#: manim.animation.composition:1 of
+msgid "Tools for displaying multiple animations at once."
+msgstr ""
+
+#: ../../source/reference/manim.animation.composition.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.composition.rst:26:<autosummary>:1
+msgid ":obj:`AnimationGroup <manim.animation.composition.AnimationGroup>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.composition.rst:26:<autosummary>:1
+msgid ":obj:`LaggedStart <manim.animation.composition.LaggedStart>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.composition.rst:26:<autosummary>:1
+msgid ":obj:`LaggedStartMap <manim.animation.composition.LaggedStartMap>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.composition.rst:26:<autosummary>:1
+msgid ":obj:`Succession <manim.animation.composition.Succession>`"
+msgstr ""
+

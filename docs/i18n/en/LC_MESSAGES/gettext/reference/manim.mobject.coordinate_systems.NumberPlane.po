@@ -1,0 +1,159 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:2
+msgid "manim.mobject.coordinate\\_systems.NumberPlane"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane:1 of
+msgid "Bases: :class:`manim.mobject.coordinate_systems.Axes`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ":obj:`get_axes <manim.mobject.coordinate_systems.NumberPlane.get_axes>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ""
+":obj:`get_center_point "
+"<manim.mobject.coordinate_systems.NumberPlane.get_center_point>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ":obj:`get_lines <manim.mobject.coordinate_systems.NumberPlane.get_lines>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid "Generate all the lines, faded and not faded."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ""
+":obj:`get_lines_parallel_to_axis "
+"<manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:1 of
+msgid "Generate a set of lines parallel to an axis."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ""
+":obj:`get_vector "
+"<manim.mobject.coordinate_systems.NumberPlane.get_vector>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ""
+":obj:`get_x_unit_size "
+"<manim.mobject.coordinate_systems.NumberPlane.get_x_unit_size>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ""
+":obj:`get_y_unit_size "
+"<manim.mobject.coordinate_systems.NumberPlane.get_y_unit_size>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ""
+":obj:`init_background_lines "
+"<manim.mobject.coordinate_systems.NumberPlane.init_background_lines>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: manim.mobject.coordinate_systems.NumberPlane.init_background_lines:1 of
+msgid "Will init all the lines of NumberPlanes (faded or not)"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+msgid ""
+":obj:`prepare_for_nonlinear_transform "
+"<manim.mobject.coordinate_systems.NumberPlane.prepare_for_nonlinear_transform>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:28
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1 of
+msgid ":obj:`CONFIG <manim.mobject.coordinate_systems.NumberPlane.CONFIG>`\\"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines:1 of
+msgid ""
+"Generate all the lines, faded and not faded. Two sets of lines are "
+"generated: one parallel to the X-axis, and parallel to the Y-axis."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines:3 of
+msgid ""
+"The first (i.e the non faded lines) and second (i.e the faded lines) sets"
+" of lines, respectively."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines:4
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:13
+#: of
+msgid "Tuple[:class:`~.VGroup`, :class:`~.VGroup`]"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:3 of
+msgid "The axis with which the lines will be parallel."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:5 of
+msgid "The axis with which the lines will be perpendicular."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:7 of
+msgid "The number of faded lines between each non-faded line."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:9 of
+msgid "Frequency of non-faded lines (number of non-faded lines per graph unit)."
+msgstr ""
+
+#: manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:12
+#: of
+msgid ""
+"The first (i.e the non-faded lines parallel to `axis_parallel_to`) and "
+"second (i.e the faded lines parallel to `axis_parallel_to`) sets of "
+"lines, respectively."
+msgstr ""
+

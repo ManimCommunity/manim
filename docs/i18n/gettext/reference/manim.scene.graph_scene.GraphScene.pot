@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -213,6 +213,10 @@ msgstr ""
 msgid ":obj:`CONFIG <manim.scene.graph_scene.GraphScene.CONFIG>`\\"
 msgstr ""
 
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:1:<autosummary>:1
+msgid ":obj:`camera <manim.scene.graph_scene.GraphScene.camera>`\\"
+msgstr ""
+
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:4
 msgid "This method adds to the Scene:"
 msgstr ""
@@ -236,7 +240,7 @@ msgstr ""
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.add_T_label:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.animate_secant_slope_group_change:0
-#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:0
@@ -292,7 +296,7 @@ msgid "The small change in x with which a small change in y will be compared in 
 msgstr ""
 
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:0
-#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:0
@@ -313,7 +317,7 @@ msgid "The angle of the tangent with the x axis."
 msgstr ""
 
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.angle_of_tangent:0
-#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:0
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_area:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_derivative_graph:0
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_graph:0
@@ -367,6 +371,10 @@ msgstr ""
 
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:12
 msgid "The array of the coordinates."
+msgstr ""
+
+#: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.coords_to_point:16
+msgid "Examples"
 msgstr ""
 
 #: ../../../manim/scene/graph_scene.py:docstring of manim.scene.graph_scene.GraphScene.get_animation_integral_bounds_change:6

@@ -1,0 +1,111 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:2
+msgid "manim.mobject.svg.tex\\_mobject.MathTex"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject.MathTex:1 of
+msgid "Bases: :class:`manim.mobject.svg.tex_mobject.SingleStringMathTex`"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject.MathTex:1 of
+msgid "A string compiled with LaTeX in math mode."
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject.MathTex:4 of
+msgid "Examples"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject.MathTex:15 of
+msgid "Check that creating a :class:`~.MathTex` works::"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ""
+":obj:`break_up_by_substrings "
+"<manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+#: manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1 of
+msgid ""
+"Reorganize existing submojects one layer deeper based on the structure of"
+" tex_strings (as a list of tex_strings)"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ""
+":obj:`break_up_tex_strings "
+"<manim.mobject.svg.tex_mobject.MathTex.break_up_tex_strings>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ""
+":obj:`get_part_by_tex "
+"<manim.mobject.svg.tex_mobject.MathTex.get_part_by_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ""
+":obj:`get_parts_by_tex "
+"<manim.mobject.svg.tex_mobject.MathTex.get_parts_by_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ":obj:`index_of_part <manim.mobject.svg.tex_mobject.MathTex.index_of_part>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ""
+":obj:`index_of_part_by_tex "
+"<manim.mobject.svg.tex_mobject.MathTex.index_of_part_by_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ""
+":obj:`set_color_by_tex "
+"<manim.mobject.svg.tex_mobject.MathTex.set_color_by_tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ""
+":obj:`set_color_by_tex_to_color_map "
+"<manim.mobject.svg.tex_mobject.MathTex.set_color_by_tex_to_color_map>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:26:<autosummary>:1
+msgid ""
+":obj:`sort_alphabetically "
+"<manim.mobject.svg.tex_mobject.MathTex.sort_alphabetically>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTex.rst:28
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject.MathTex.break_up_by_substrings:1:<autosummary>:1
+#: of
+msgid ":obj:`CONFIG <manim.mobject.svg.tex_mobject.MathTex.CONFIG>`\\"
+msgstr ""
+

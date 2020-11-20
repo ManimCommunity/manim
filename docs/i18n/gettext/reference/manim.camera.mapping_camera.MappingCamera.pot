@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,23 @@ msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera:1
 msgid "Camera object that allows mapping between objects."
+msgstr ""
+
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera:4
+msgid "Initialises the Camera."
+msgstr ""
+
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera:0
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera:6
+msgid "What self.background should be, by default None as will be set later."
+msgstr ""
+
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera:8
+msgid "Any local variables to be set."
 msgstr ""
 
 #: ../../source/reference/manim.camera.mapping_camera.MappingCamera.rst:12
@@ -53,12 +70,16 @@ msgstr ""
 msgid ":obj:`CONFIG <manim.camera.mapping_camera.MappingCamera.CONFIG>`\\"
 msgstr ""
 
-#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:3
-msgid "This is the essential function that converts the contents of a Scene into an array, which is then converted to an image or video."
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:1:<autosummary>:1
+msgid ":obj:`background_color <manim.camera.mapping_camera.MappingCamera.background_color>`\\"
 msgstr ""
 
-#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:0
-msgid "Parameters"
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:1:<autosummary>:1
+msgid ":obj:`background_opacity <manim.camera.mapping_camera.MappingCamera.background_opacity>`\\"
+msgstr ""
+
+#: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:3
+msgid "This is the essential function that converts the contents of a Scene into an array, which is then converted to an image or video."
 msgstr ""
 
 #: ../../../manim/camera/mapping_camera.py:docstring of manim.camera.mapping_camera.MappingCamera.capture_mobjects:6

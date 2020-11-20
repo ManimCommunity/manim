@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -75,6 +75,11 @@ msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Mobject.rst:173:<autosummary>:1
 msgid ":obj:`add_updater <manim.mobject.mobject.Mobject.add_updater>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Mobject.rst:173:<autosummary>:1
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:1
+msgid "Add an update function to this mobject."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Mobject.rst:173:<autosummary>:1
@@ -396,7 +401,7 @@ msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Mobject.rst:173:<autosummary>:1
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.interpolate:1
-msgid "Turns self into an interpolation between mobject1 and mobject2."
+msgid "Turns this mobject into an interpolation between ``mobject1`` and ``mobject2``."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Mobject.rst:173:<autosummary>:1
@@ -457,6 +462,11 @@ msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Mobject.rst:173:<autosummary>:1
 msgid ":obj:`next_to <manim.mobject.mobject.Mobject.next_to>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Mobject.rst:173:<autosummary>:1
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.next_to:1
+msgid "Move this mobject next to another mobject or coordinate."
 msgstr ""
 
 #: ../../source/reference/manim.mobject.mobject.Mobject.rst:173:<autosummary>:1
@@ -813,6 +823,9 @@ msgid ":meth:`~Mobject.remove`"
 msgstr ""
 
 #: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add:23
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.add_updater:4
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.interpolate:5
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Mobject.next_to:4
 msgid "Examples"
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,18 @@ msgstr ""
 
 #: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:1
 msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:1
+msgid "A group of vectorized mobjects."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:3
+msgid "This can be used to group multiple :class:`~.VMobject` instances together in order to scale, move, ... them together."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:7
+msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.types.vectorized_mobject.VGroup.rst:12

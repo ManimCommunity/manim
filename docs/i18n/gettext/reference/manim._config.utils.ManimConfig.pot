@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -534,14 +534,6 @@ msgid "Whether to show the output file in the file browser (-f)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid ":obj:`skip_animations <manim._config.utils.ManimConfig.skip_animations>`\\"
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-msgid "Whether to skip the next animation."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 msgid ":obj:`sound <manim._config.utils.ManimConfig.sound>`\\"
 msgstr ""
 
@@ -833,10 +825,6 @@ msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.partial_movie_dir:1
 msgid "Directory to place partial movie files (no flag).  See :meth:`ManimConfig.get_dir`."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.skip_animations:1
-msgid "Whether to skip the next animation.  Internal use only."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.tex_dir:1

@@ -1,0 +1,166 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim._config.utils.rst:2
+msgid "manim.\\_config.utils"
+msgstr ""
+
+#: manim._config.utils:1 of
+msgid "Utilities to create and set the config."
+msgstr ""
+
+#: manim._config.utils:3 of
+msgid ""
+"The main class exported by this module is :class:`ManimConfig`.  This "
+"class contains all configuration options, including frame geometry (e.g. "
+"frame height/width, frame rate), output (e.g. directories, logging), "
+"styling (e.g. background color, transparency), and general behavior (e.g."
+" writing a movie vs writing a single frame)."
+msgstr ""
+
+#: manim._config.utils:9 of
+msgid ""
+"See :doc:`tutorials/configuration` for an introduction to Manim's "
+"configuration system."
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.rst:28:<autosummary>:1
+msgid ":obj:`ManimConfig <manim._config.utils.ManimConfig>`"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.rst:28:<autosummary>:1
+msgid "Dict-like class storing all config options."
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.rst:28:<autosummary>:1
+msgid ":obj:`ManimFrame <manim._config.utils.ManimFrame>`"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.rst:31
+msgid "Functions"
+msgstr ""
+
+#: manim._config.utils.config_file_paths:1 of
+msgid "The paths where ``.cfg`` files will be searched for."
+msgstr ""
+
+#: manim._config.utils.config_file_paths:3 of
+msgid ""
+"When manim is first imported, it processes any ``.cfg`` files it finds.  "
+"This function returns the locations in which these files are searched "
+"for.  In ascending order of precedence, these are: the library-wide "
+"config file, the user-wide config file, and the folder-wide config file."
+msgstr ""
+
+#: manim._config.utils.config_file_paths:8 of
+msgid ""
+"The library-wide config file determines manim's default behavior.  The "
+"user-wide config file is stored in the user's home folder, and determines"
+" the behavior of manim whenever the user invokes it from anywhere in the "
+"system.  The folder-wide config file only affects scenes that are in the "
+"same folder.  The latter two files are optional."
+msgstr ""
+
+#: manim._config.utils.config_file_paths:14 of
+msgid ""
+"These files, if they exist, are meant to loaded into a single "
+":class:`configparser.ConfigParser` object, and then processed by "
+":class:`ManimConfig`."
+msgstr ""
+
+#: manim._config.utils.config_file_paths manim._config.utils.make_config_parser
+#: of
+msgid "Returns"
+msgstr ""
+
+#: manim._config.utils.config_file_paths:18 of
+msgid ""
+"List of paths which may contain ``.cfg`` files, in ascending order of "
+"precedence."
+msgstr ""
+
+#: manim._config.utils.config_file_paths manim._config.utils.make_config_parser
+#: of
+msgid "Return type"
+msgstr ""
+
+#: manim._config.utils.config_file_paths:20 of
+msgid "List[:class:`Path`]"
+msgstr ""
+
+#: manim._config.utils.config_file_paths:22 of
+msgid ""
+":func:`make_config_parser`, :meth:`ManimConfig.digest_file`, "
+":meth:`ManimConfig.digest_parser`"
+msgstr ""
+
+#: manim._config.utils.config_file_paths:25 of
+msgid "Notes"
+msgstr ""
+
+#: manim._config.utils.config_file_paths:26 of
+msgid "The location of the user-wide config file is OS-specific."
+msgstr ""
+
+#: manim._config.utils.make_config_parser:1 of
+msgid "Make a :class:`ConfigParser` object and load any ``.cfg`` files."
+msgstr ""
+
+#: manim._config.utils.make_config_parser:3 of
+msgid ""
+"The user-wide file, if it exists, overrides the library-wide file.  The "
+"folder-wide file, if it exists, overrides the other two."
+msgstr ""
+
+#: manim._config.utils.make_config_parser:6 of
+msgid ""
+"The folder-wide file can be ignored by passing ``custom_file``.  However,"
+" the user-wide and library-wide config files cannot be ignored."
+msgstr ""
+
+#: manim._config.utils.make_config_parser of
+msgid "Parameters"
+msgstr ""
+
+#: manim._config.utils.make_config_parser:9 of
+msgid ""
+"Path to a custom config file.  If used, the folder-wide file in the "
+"relevant directory will be ignored, if it exists.  If None, the folder-"
+"wide file will be used, if it exists."
+msgstr ""
+
+#: manim._config.utils.make_config_parser:14 of
+msgid ""
+"A parser containing the config options found in the .cfg files that were "
+"found.  It is guaranteed to contain at least the config options found in "
+"the library-wide file."
+msgstr ""
+
+#: manim._config.utils.make_config_parser:17 of
+msgid ":class:`ConfigParser`"
+msgstr ""
+
+#: manim._config.utils.make_config_parser:19 of
+msgid ":func:`config_file_paths`"
+msgstr ""
+

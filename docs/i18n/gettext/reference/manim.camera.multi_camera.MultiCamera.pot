@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,22 @@ msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:1
 msgid "Camera Object that allows for multiple perspectives."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:3
+msgid "Initalises the MultiCamera"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:7
+msgid "*image_mobjects_from_cameras : ImageMobject"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:10
+msgid "**kwargs"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:10
+msgid "Any valid keyword arguments of MovingCamera."
 msgstr ""
 
 #: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:12
@@ -83,6 +99,14 @@ msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
 msgid ":obj:`CONFIG <manim.camera.multi_camera.MultiCamera.CONFIG>`\\"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid ":obj:`background_color <manim.camera.multi_camera.MultiCamera.background_color>`\\"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid ":obj:`background_opacity <manim.camera.multi_camera.MultiCamera.background_opacity>`\\"
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1

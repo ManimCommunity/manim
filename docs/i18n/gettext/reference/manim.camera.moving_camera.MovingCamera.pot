@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,10 @@ msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera:5
 msgid ":class:`.MovingCameraScene`"
+msgstr ""
+
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera:8
+msgid "frame is a Mobject, (should almost certainly be a rectangle) determining which region of space the camera displys"
 msgstr ""
 
 #: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:12
@@ -73,6 +77,14 @@ msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.cache_cairo_context:1:<autosummary>:1
 msgid ":obj:`CONFIG <manim.camera.moving_camera.MovingCamera.CONFIG>`\\"
+msgstr ""
+
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.cache_cairo_context:1:<autosummary>:1
+msgid ":obj:`background_color <manim.camera.moving_camera.MovingCamera.background_color>`\\"
+msgstr ""
+
+#: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.cache_cairo_context:1:<autosummary>:1
+msgid ":obj:`background_opacity <manim.camera.moving_camera.MovingCamera.background_opacity>`\\"
 msgstr ""
 
 #: ../../../manim/camera/moving_camera.py:docstring of manim.camera.moving_camera.MovingCamera.cache_cairo_context:1:<autosummary>:1

@@ -1,0 +1,197 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:2
+msgid "manim.mobject.svg.tex\\_mobject"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:1 of
+msgid "Mobjects representing text rendered using LaTeX."
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:5 of
+msgid "The Tex mobject"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:6 of
+msgid ""
+"Just as you can use :class:`~.Text` to add text to your videos, you can "
+"use :class:`~.Tex` to insert LaTeX."
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:16 of
+msgid ""
+"Note that we are using a raw string (``r'---'``) instead of a regular "
+"string (``'---'``). This is because TeX code uses a lot of special "
+"characters - like ``\\`` for example - that have special meaning within a"
+" regular python string. An alternative would have been to write ``\\\\`` "
+"as in ``Tex('\\\\LaTeX')``."
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:22 of
+msgid "The MathTex mobject"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:23 of
+msgid "Anything enclosed in ``$`` signs is interpreted as maths-mode:"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:33 of
+msgid ""
+"Whereas in a :class:`~.MathTex` mobject everything is math-mode by "
+"default."
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:63 of
+msgid "LaTeX commands and keyword arguments"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:64 of
+msgid ""
+"We can use any standard LaTeX commands in the AMS maths packages. For "
+"example the ``mathtt`` math-text type, or the ``looparrowright`` arrow."
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:74 of
+msgid ""
+"On the manim side, the :class:`~.Tex` class also accepts attributes to "
+"change the appearance of the output. This is very similar to the "
+":class:`~.Text` class. For example, the ``color`` keyword changes the "
+"color of the TeX mobject:"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:86 of
+msgid "Extra LaTeX Packages"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:87 of
+msgid ""
+"Some commands require special packages to be loaded into the TeX "
+"template. For example, to use the ``mathscr`` script, we need to add the "
+"``mathrsfs`` package. Since this package isn't loaded into manim's tex "
+"template by default, we add it manually:"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:102 of
+msgid "Substrings and parts"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:103 of
+msgid ""
+"The TeX mobject can accept multiple strings as arguments. Afterwards you "
+"can refer to the individual parts either by their index (like "
+"``tex[1]``), or you can look them up by (parts of) the tex code like in "
+"this example where we set the color of the ``\\bigstar`` using "
+":func:`~.set_color_by_tex`:"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:117 of
+msgid "LaTeX Maths Fonts - The Template Library"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:118 of
+msgid ""
+"Changing fonts in LaTeX when typesetting mathematical formulae is a "
+"little bit more tricky than with regular text. It requires changing the "
+"template that is used to compile the tex code. Manim comes with a "
+"collection of :class:`~.TexFontTemplates` ready for you to use. These "
+"templates will all work in maths mode:"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:131 of
+msgid ""
+"Manim also has a :class:`~.TexTemplateLibrary` containing the TeX "
+"templates used by 3Blue1Brown. One example is the ctex template, used for"
+" typesetting Chinese. For this to work, the ctex LaTeX package must be "
+"installed on your system. Furthermore, if you are only typesetting Text, "
+"you probably do not need :class:`~.Tex` at all, and should use "
+":class:`~.Text` or :class:`~.PangoText` instead."
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:146 of
+msgid "Aligning formulae"
+msgstr ""
+
+#: manim.mobject.svg.tex_mobject:147 of
+msgid ""
+"A :class:`~.MathTex` mobject is typeset in the LaTeX  ``align*`` "
+"environment. This means you can use the ``&`` alignment character when "
+"typesetting multiline formulae:"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`BulletedList <manim.mobject.svg.tex_mobject.BulletedList>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`MathTex <manim.mobject.svg.tex_mobject.MathTex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid "A string compiled with LaTeX in math mode."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ""
+":obj:`MathTexFromPresetString "
+"<manim.mobject.svg.tex_mobject.MathTexFromPresetString>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ""
+":obj:`SingleStringMathTex "
+"<manim.mobject.svg.tex_mobject.SingleStringMathTex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid "Elementary building block for rendering text with LaTeX."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`Tex <manim.mobject.svg.tex_mobject.Tex>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid "A string compiled with LaTeX in normal mode."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`TexMobject <manim.mobject.svg.tex_mobject.TexMobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`TexSymbol <manim.mobject.svg.tex_mobject.TexSymbol>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid "Purely a renaming of VMobjectFromSVGPathstring."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`TextMobject <manim.mobject.svg.tex_mobject.TextMobject>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.tex_mobject.rst:36:<autosummary>:1
+msgid ":obj:`Title <manim.mobject.svg.tex_mobject.Title>`"
+msgstr ""
+

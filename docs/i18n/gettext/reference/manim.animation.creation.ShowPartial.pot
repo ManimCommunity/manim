@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,19 @@ msgid "Bases: :class:`manim.animation.animation.Animation`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowPartial:1
-msgid "Abstract class for ShowCreation and ShowPassingFlash"
+msgid "Abstract class for Animations that show the VMobject partially."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowPartial:0
+msgid "Raises"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowPartial:3
+msgid "If ``mobject`` is not an instance of :class:`~.VMobject`."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowPartial:5
+msgid ":class:`ShowCreation`, :class:`~.ShowPassingFlash`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.ShowPartial.rst:12

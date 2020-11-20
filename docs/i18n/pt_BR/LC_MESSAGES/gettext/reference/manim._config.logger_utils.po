@@ -1,0 +1,146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim._config.logger_utils.rst:2
+msgid "manim.\\_config.logger\\_utils"
+msgstr ""
+
+#: manim._config.logger_utils:1 of
+msgid "Utilities to create and set the logger."
+msgstr ""
+
+#: manim._config.logger_utils:3 of
+msgid ""
+"Manim's logger can be accessed as ``manim.logger``, or as "
+"``logging.getLogger(\"manim\")``, once the library has been imported.  "
+"Manim also exports a second object, ``console``, which should be used to "
+"print on screen messages that need not be logged."
+msgstr ""
+
+#: manim._config.logger_utils:8 of
+msgid ""
+"Both ``logger`` and ``console`` use the ``rich`` library to produce rich "
+"text format."
+msgstr ""
+
+#: ../../source/reference/manim._config.logger_utils.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim._config.logger_utils.rst:26:<autosummary>:1
+msgid ":obj:`JSONFormatter <manim._config.logger_utils.JSONFormatter>`"
+msgstr ""
+
+#: ../../source/reference/manim._config.logger_utils.rst:26:<autosummary>:1
+msgid "A formatter that outputs logs in a custom JSON format."
+msgstr ""
+
+#: ../../source/reference/manim._config.logger_utils.rst:29
+msgid "Functions"
+msgstr ""
+
+#: manim._config.logger_utils.make_logger:1 of
+msgid "Make the manim logger and console."
+msgstr ""
+
+#: manim._config.logger_utils.make_logger
+#: manim._config.logger_utils.parse_theme
+#: manim._config.logger_utils.set_file_logger of
+msgid "Parameters"
+msgstr ""
+
+#: manim._config.logger_utils.make_logger:3
+#: manim._config.logger_utils.parse_theme:3 of
+msgid "A parser containing any .cfg files in use."
+msgstr ""
+
+#: manim._config.logger_utils.make_logger:5
+#: manim._config.logger_utils.set_file_logger:7 of
+msgid "The verbosity level of the logger."
+msgstr ""
+
+#: manim._config.logger_utils.make_logger
+#: manim._config.logger_utils.parse_theme of
+msgid "Returns"
+msgstr ""
+
+#: manim._config.logger_utils.make_logger:8 of
+msgid ""
+"The manim logger and console.  Both use the theme returned by "
+":func:`parse_theme`"
+msgstr ""
+
+#: manim._config.logger_utils.make_logger
+#: manim._config.logger_utils.parse_theme of
+msgid "Return type"
+msgstr ""
+
+#: manim._config.logger_utils.make_logger:10 of
+msgid ":class:`logging.Logger`, :class:`rich.Console`"
+msgstr ""
+
+#: manim._config.logger_utils.make_logger:12 of
+msgid ":func:`~._config.utils.make_config_parser`, :func:`parse_theme`"
+msgstr ""
+
+#: manim._config.logger_utils.make_logger:15
+#: manim._config.logger_utils.set_file_logger:11 of
+msgid "Notes"
+msgstr ""
+
+#: manim._config.logger_utils.make_logger:16 of
+msgid ""
+"The ``parser`` is assumed to contain only the options related to "
+"configuring the logger at the top level."
+msgstr ""
+
+#: manim._config.logger_utils.parse_theme:1 of
+msgid "Configure the rich style of logger and console output."
+msgstr ""
+
+#: manim._config.logger_utils.parse_theme:6 of
+msgid "The rich theme to be used by the manim logger."
+msgstr ""
+
+#: manim._config.logger_utils.parse_theme:7 of
+msgid ":class:`rich.Theme`"
+msgstr ""
+
+#: manim._config.logger_utils.parse_theme:9 of
+msgid ":func:`make_logger`"
+msgstr ""
+
+#: manim._config.logger_utils.set_file_logger:1 of
+msgid "Add a file handler to manim logger."
+msgstr ""
+
+#: manim._config.logger_utils.set_file_logger:3 of
+msgid "The path to the file is built using ``config.log_dir``."
+msgstr ""
+
+#: manim._config.logger_utils.set_file_logger:5 of
+msgid "The global config, used to determine the log file path."
+msgstr ""
+
+#: manim._config.logger_utils.set_file_logger:12 of
+msgid ""
+"Calling this function changes the verbosity of all handlers assigned to "
+"manim logger."
+msgstr ""
+

@@ -1,0 +1,129 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:2
+msgid "manim.mobject.svg.svg\\_mobject.VMobjectFromSVGPathstring"
+msgstr ""
+
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring:1 of
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+msgid ""
+":obj:`generate_points "
+"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1 of
+msgid "Generates points from a given an SVG ``d`` attribute."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+msgid ""
+":obj:`get_original_path_string "
+"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_original_path_string>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_original_path_string:1
+#: of
+msgid "A simple getter for the path's ``d`` attribute."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+msgid ""
+":obj:`get_path_commands "
+"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands:1
+#: of
+msgid ""
+"Returns a list of possible path commands used within an SVG ``d`` "
+"attribute."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+msgid ""
+":obj:`handle_command "
+"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.handle_command>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.handle_command:1 of
+msgid "Core logic for handling each of the various path commands."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+msgid ""
+":obj:`string_to_points "
+"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.string_to_points>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.string_to_points:1
+#: of
+msgid ""
+"Since the SVG file's path command is provided as a string, this converts "
+"the coordinates into numbers."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`CONFIG "
+"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.CONFIG>`\\"
+msgstr ""
+
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands:4
+#: of
+msgid ""
+"See: https://svgwg.org/svg2-draft/paths.html#DProperty for further "
+"details on what each path command does."
+msgstr ""
+
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands:7
+#: of
+msgid "The various upper and lower cased path commands."
+msgstr ""
+
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands:8
+#: of
+msgid "List[:class:`str`]"
+msgstr ""
+

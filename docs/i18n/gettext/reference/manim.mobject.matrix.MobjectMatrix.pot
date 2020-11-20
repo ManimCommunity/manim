@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,10 @@ msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.MobjectMatrix:1
 msgid "Bases: :class:`manim.mobject.matrix.Matrix`"
+msgstr ""
+
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.MobjectMatrix:1
+msgid "Matrix can either either include numbres, tex_strings, or mobjects"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.matrix.MobjectMatrix.rst:12

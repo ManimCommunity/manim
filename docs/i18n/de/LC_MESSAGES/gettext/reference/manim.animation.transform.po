@@ -1,0 +1,132 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.animation.transform.rst:2
+msgid "manim.animation.transform"
+msgstr ""
+
+#: manim.animation.transform:1 of
+msgid "Animations transforming one mobject into another."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ""
+":obj:`ApplyComplexFunction "
+"<manim.animation.transform.ApplyComplexFunction>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ""
+"method is a method of Mobject, *args are arguments for that method. Key "
+"word arguments should be passed in as the last arg, as a dict, since "
+"**kwargs is for configuration of the transform itself."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`ApplyFunction <manim.animation.transform.ApplyFunction>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`ApplyMatrix <manim.animation.transform.ApplyMatrix>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`ApplyMethod <manim.animation.transform.ApplyMethod>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ""
+":obj:`ApplyPointwiseFunction "
+"<manim.animation.transform.ApplyPointwiseFunction>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid "Animation that applies a pointwise function to a mobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ""
+":obj:`ApplyPointwiseFunctionToCenter "
+"<manim.animation.transform.ApplyPointwiseFunctionToCenter>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`ClockwiseTransform <manim.animation.transform.ClockwiseTransform>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ""
+":obj:`CounterclockwiseTransform "
+"<manim.animation.transform.CounterclockwiseTransform>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`CyclicReplace <manim.animation.transform.CyclicReplace>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`FadeToColor <manim.animation.transform.FadeToColor>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`MoveToTarget <manim.animation.transform.MoveToTarget>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ""
+":obj:`ReplacementTransform "
+"<manim.animation.transform.ReplacementTransform>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`Restore <manim.animation.transform.Restore>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`ScaleInPlace <manim.animation.transform.ScaleInPlace>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`ShrinkToCenter <manim.animation.transform.ShrinkToCenter>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`Swap <manim.animation.transform.Swap>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`Transform <manim.animation.transform.Transform>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`TransformAnimations <manim.animation.transform.TransformAnimations>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid ":obj:`TransformFromCopy <manim.animation.transform.TransformFromCopy>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.rst:56:<autosummary>:1
+msgid "Performs a reversed Transform"
+msgstr ""
+

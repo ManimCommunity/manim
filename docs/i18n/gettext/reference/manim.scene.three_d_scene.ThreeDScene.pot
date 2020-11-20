@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,6 +137,10 @@ msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.add_fixed_in_frame_mobjects:1:<autosummary>:1
 msgid ":obj:`CONFIG <manim.scene.three_d_scene.ThreeDScene.CONFIG>`\\"
+msgstr ""
+
+#: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.add_fixed_in_frame_mobjects:1:<autosummary>:1
+msgid ":obj:`camera <manim.scene.three_d_scene.ThreeDScene.camera>`\\"
 msgstr ""
 
 #: ../../../manim/scene/three_d_scene.py:docstring of manim.scene.three_d_scene.ThreeDScene.add_fixed_in_frame_mobjects:1

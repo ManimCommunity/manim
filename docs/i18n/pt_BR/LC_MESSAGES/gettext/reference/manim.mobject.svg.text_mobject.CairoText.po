@@ -1,0 +1,114 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:2
+msgid "manim.mobject.svg.text\\_mobject.CairoText"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.CairoText:1 of
+msgid "Bases: :class:`manim.mobject.svg.svg_mobject.SVGMobject`"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.CairoText:1 of
+msgid "Display (non-LaTeX) text."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.CairoText:3 of
+msgid ""
+"Text objects behave like a :class:`.VGroup`-like iterable of all "
+"characters in the given text. In particular, slicing is possible."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.CairoText:10 of
+msgid ""
+"Using a :class:`.Transform` on text with leading whitespace can look "
+"`weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using "
+":meth:`remove_invisible_chars` to resolve this issue."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.CairoText:17 of
+msgid "Check whether writing text works::"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ""
+":obj:`find_indexes "
+"<manim.mobject.svg.text_mobject.CairoText.find_indexes>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ":obj:`full2short <manim.mobject.svg.text_mobject.CairoText.full2short>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ":obj:`gen_chars <manim.mobject.svg.text_mobject.CairoText.gen_chars>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ""
+":obj:`remove_last_M "
+"<manim.mobject.svg.text_mobject.CairoText.remove_last_M>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ""
+":obj:`set_color_by_t2c "
+"<manim.mobject.svg.text_mobject.CairoText.set_color_by_t2c>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ""
+":obj:`set_color_by_t2g "
+"<manim.mobject.svg.text_mobject.CairoText.set_color_by_t2g>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ":obj:`str2slant <manim.mobject.svg.text_mobject.CairoText.str2slant>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ":obj:`str2weight <manim.mobject.svg.text_mobject.CairoText.str2weight>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ":obj:`text2hash <manim.mobject.svg.text_mobject.CairoText.text2hash>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ""
+":obj:`text2settings "
+"<manim.mobject.svg.text_mobject.CairoText.text2settings>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:28:<autosummary>:1
+msgid ":obj:`text2svg <manim.mobject.svg.text_mobject.CairoText.text2svg>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:30
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.CairoText.rst:33:<autosummary>:1
+msgid ":obj:`CONFIG <manim.mobject.svg.text_mobject.CairoText.CONFIG>`\\"
+msgstr ""
+

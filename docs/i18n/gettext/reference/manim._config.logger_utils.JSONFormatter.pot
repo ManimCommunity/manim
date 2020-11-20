@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,22 @@ msgstr ""
 
 #: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter:3
 msgid "This class is used internally for testing purposes."
+msgstr ""
+
+#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter:6
+msgid "Initialize the formatter with specified format strings."
+msgstr ""
+
+#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter:8
+msgid "Initialize the formatter either with the specified format string, or a default as described above. Allow for specialized date formatting with the optional datefmt argument. If datefmt is omitted, you get an ISO8601-like (or RFC 3339-like) format."
+msgstr ""
+
+#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter:13
+msgid "Use a style parameter of '%', '{' or '$' to specify that you want to use one of %-formatting, :meth:`str.format` (``{}``) formatting or :class:`string.Template` formatting in your format string."
+msgstr ""
+
+#: ../../../manim/_config/logger_utils.py:docstring of manim._config.logger_utils.JSONFormatter:17
+msgid "Added the ``style`` parameter."
 msgstr ""
 
 #: ../../source/reference/manim._config.logger_utils.JSONFormatter.rst:12

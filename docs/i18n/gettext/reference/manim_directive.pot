@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,4 +122,12 @@ msgstr ""
 
 #: ../../source/manim_directive.py:docstring of manim_directive.process_name_list:1
 msgid "Reformats a string of space separated class names as a list of strings containing valid Sphinx references."
+msgstr ""
+
+#: ../../source/manim_directive.py:docstring of manim_directive.process_name_list:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../source/manim_directive.py:docstring of manim_directive.process_name_list:0
+msgid "Return type"
 msgstr ""

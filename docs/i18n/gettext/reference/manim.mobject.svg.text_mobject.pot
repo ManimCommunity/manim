@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,14 @@ msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject:1
 msgid "Mobjects used for displaying (non-LaTeX) text."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject:3
+msgid "The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text. With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject:7
+msgid "Examples"
 msgstr ""
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.rst:15

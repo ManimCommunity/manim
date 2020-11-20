@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,6 +58,57 @@ msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:13
 msgid "The height of the scene in pixels."
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:16
+msgid "Initialises the Camera."
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjusted_thickness:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_fill:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_stroke:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.cache_cairo_context:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.convert_pixel_array:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_image_mobject:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_background_colored_vmobjects:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_image_mobjects:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_non_background_colored_vmobjects:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_point_cloud_mobjects:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_vectorized_mobjects:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_vectorized:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_cached_cairo_context:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_cairo_context:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_fill_rgbas:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_image:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_mobjects_to_display:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_stroke_rgbas:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_thickening_nudges:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.is_in_frame:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.make_background_from_func:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.on_screen_pixels:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.overlay_PIL_image:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.overlay_rgba_array:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.reset_pixel_shape:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.resize_frame_shape:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_background:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_background_from_func:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_cairo_context_color:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_cairo_context_path:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_pixel_array:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.thickened_coordinates:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.type_or_raise:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:18
+msgid "What self.background should be, by default None as will be set later."
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera:20
+msgid "Any local variables to be set."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:12
@@ -190,7 +241,7 @@ msgid ":obj:`display_point_cloud <manim.camera.camera.Camera.display_point_cloud
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:61:<autosummary>:1
-msgid "Displays a PMobject by modifying the Pixel array suitably.."
+msgid "Displays a PMobject by modifying the Pixel array suitably."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.Camera.rst:61:<autosummary>:1
@@ -439,42 +490,12 @@ msgstr ""
 msgid ":obj:`CONFIG <manim.camera.camera.Camera.CONFIG>`\\"
 msgstr ""
 
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjusted_thickness:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_fill:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.apply_stroke:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.cache_cairo_context:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.capture_mobjects:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.convert_pixel_array:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_image_mobject:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_background_colored_vmobjects:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_image_mobjects:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_non_background_colored_vmobjects:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_point_cloud_mobjects:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_multiple_vectorized_mobjects:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.display_vectorized:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_cached_cairo_context:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_cairo_context:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_fill_rgbas:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_image:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_mobjects_to_display:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_stroke_rgbas:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.get_thickening_nudges:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.is_in_frame:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.make_background_from_func:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.on_screen_pixels:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.overlay_PIL_image:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.overlay_rgba_array:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.reset_pixel_shape:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.resize_frame_shape:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_background:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_background_from_func:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_cairo_context_color:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_cairo_context_path:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.set_pixel_array:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.thickened_coordinates:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.type_or_raise:0
-msgid "Parameters"
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:1:<autosummary>:1
+msgid ":obj:`background_color <manim.camera.camera.Camera.background_color>`\\"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:1:<autosummary>:1
+msgid ":obj:`background_opacity <manim.camera.camera.Camera.background_opacity>`\\"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.Camera.adjust_out_of_range_points:4

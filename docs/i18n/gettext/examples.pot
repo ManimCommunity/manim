@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,155 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../source/examples.rst:2
+#: ../../source/examples.rst:3
 msgid "Example Gallery"
+msgstr ""
+
+#: ../../source/examples.rst:5
+msgid "This gallery contains a collection of best practice code snippets together with their corresponding video/image output, illustrating different functionalities all across the library. Enjoy this taste of Manim!"
+msgstr ""
+
+#: ../../source/examples.rst:11
+msgid "This gallery is not the only place in our documentation where you can see explicit code and video examples: there are many more in our :doc:`reference manual </reference>` -- see, for example, our documentation for the modules :mod:`~.tex_mobject`, :mod:`~.geometry`, :mod:`~.moving_camera_scene`, and many more."
+msgstr ""
+
+#: ../../source/examples.rst:17
+msgid "Also, visit our `Twitter <https://twitter.com/manim_community/>`_ for more *manimations*!"
+msgstr ""
+
+#: ../../source/examples.rst:24
+msgid "Overview of thematic video categories"
+msgstr ""
+
+#: ../../source/examples.rst:27
+msgid "Basic Concepts"
+msgstr ""
+
+#: ../../source/examples.rst:37
+#: ../../source/examples.rst:30
+#: ../../source/examples.rst:32
+#: ../../source/examples.rst:30
+#: ../../source/examples.rst:98
+#: ../../source/examples.rst:37
+#: ../../source/examples.rst:30
+#: ../../source/examples.rst:39
+#: ../../source/examples.rst:38
+#: ../../source/examples.rst:38
+#: ../../source/examples.rst:47
+#: ../../source/examples.rst:41
+#: ../../source/examples.rst:47
+#: ../../source/examples.rst:49
+#: ../../source/examples.rst:82
+#: ../../source/examples.rst:31
+#: ../../source/examples.rst:36
+#: ../../source/examples.rst:33
+#: ../../source/examples.rst:31
+#: ../../source/examples.rst:71
+#: ../../source/examples.rst:74
+#: ../../source/examples.rst:108
+msgid "Example References"
+msgstr ""
+
+#: ../../source/examples.rst:40
+msgid ":class:`~.MathTex` :class:`~.Circle` :class:`~.Square` :class:`~.Triangle`"
+msgstr ""
+
+#: ../../source/examples.rst:33
+msgid ":class:`~.ImageMobject`"
+msgstr ""
+
+#: ../../source/examples.rst:35
+msgid ":class:`~.Brace` :func:`~.Brace.get_text` :func:`~.Brace.get_tex`"
+msgstr ""
+
+#: ../../source/examples.rst:33
+msgid ":class:`~.Dot` :class:`~.Arrow` :class:`~.NumberPlane` :class:`~.Text`"
+msgstr ""
+
+#: ../../source/examples.rst:101
+msgid ":class:`~.Line` :class:`~.VGroup` :func:`~.VMobject.add_cubic_bezier_curve`"
+msgstr ""
+
+#: ../../source/examples.rst:176
+msgid "Animations"
+msgstr ""
+
+#: ../../source/examples.rst:40
+msgid ":class:`~.Circle` :class:`~.Dot` :class:`~.Line` :class:`~.GrowFromCenter` :class:`~.Transform` :class:`~.MoveAlongPath` :class:`~.Rotating`"
+msgstr ""
+
+#: ../../source/examples.rst:33
+msgid ":func:`~.Mobject.shift` :func:`~.VMobject.set_fill` :func:`~.Mobject.scale` :func:`~.Mobject.rotate`"
+msgstr ""
+
+#: ../../source/examples.rst:42
+msgid ":mod:`~.manim.mobject.svg.tex_mobject` :class:`~.MathTex` :class:`~.SurroundingRectangle`"
+msgstr ""
+
+#: ../../source/examples.rst:41
+msgid ":func:`~.Mobject.add_updater` :func:`~.Mobject.remove_updater`"
+msgstr ""
+
+#: ../../source/examples.rst:41
+msgid ":class:`~.Rotating` :func:`~.VMobject.set_points_as_corners` :func:`~.Mobject.add_updater`"
+msgstr ""
+
+#: ../../source/examples.rst:274
+msgid "Plotting with Manim"
+msgstr ""
+
+#: ../../source/examples.rst:50
+msgid ":mod:`~.manim.scene.graph_scene` :class:`~.MathTex` :func:`~.GraphScene.setup_axes` :func:`~.GraphScene.get_graph` :func:`~.GraphScene.get_vertical_line_to_graph` :func:`~.GraphScene.input_to_graph_point`"
+msgstr ""
+
+#: ../../source/examples.rst:44
+msgid ":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` :func:`~.GraphScene.get_graph` :func:`~.GraphScene.get_vertical_line_to_graph` :func:`~.GraphScene.get_area`"
+msgstr ""
+
+#: ../../source/examples.rst:50
+msgid ":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` :func:`~.GraphScene.coords_to_point`"
+msgstr ""
+
+#: ../../source/examples.rst:366
+msgid "Special Camera Settings"
+msgstr ""
+
+#: ../../source/examples.rst:52
+msgid ":mod:`~.manim.scene.moving_camera_scene` :class:`~.GraphScene` :class:`~.MovingCameraScene` :class:`~.MoveAlongPath` :class:`~.Restore` :func:`~.Mobject.add_updater`"
+msgstr ""
+
+#: ../../source/examples.rst:85
+msgid ":mod:`~.manim.scene.zoomed_scene` :class:`~.ZoomedScene` :class:`~.BackgroundRectangle` :class:`~.UpdateFromFunc` :func:`~.Mobject.add_updater` :func:`~.ZoomedScene.get_zoomed_display_pop_out_animation`"
+msgstr ""
+
+#: ../../source/examples.rst:34
+msgid ":class:`~.ThreeDScene` :func:`~.ThreeDScene.set_camera_orientation` :func:`~.ThreeDScene.add_fixed_in_frame_mobjects`"
+msgstr ""
+
+#: ../../source/examples.rst:39
+msgid ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` :class:`~.ParametricSurface` :func:`~.ThreeDScene.set_camera_orientation`"
+msgstr ""
+
+#: ../../source/examples.rst:36
+msgid ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` :func:`~.ThreeDScene.begin_ambient_camera_rotation` :func:`~.ThreeDScene.stop_ambient_camera_rotation`"
+msgstr ""
+
+#: ../../source/examples.rst:34
+msgid ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` :func:`~.ThreeDScene.begin_3dillusion_camera_rotation` :func:`~.ThreeDScene.stop_3dillusion_camera_rotation`"
+msgstr ""
+
+#: ../../source/examples.rst:74
+msgid ":class:`~.ThreeDScene` :class:`~.ParametricSurface`"
+msgstr ""
+
+#: ../../source/examples.rst:587
+msgid "Advanced Projects"
+msgstr ""
+
+#: ../../source/examples.rst:77
+msgid ":class:`~.Tex` :class:`~.MathTex` :class:`~.Write` :class:`~.FadeInFrom` :class:`~.LaggedStart` :class:`~.NumberPlane` :class:`~.ShowCreation` :func:`~.NumberPlane.prepare_for_nonlinear_transform`"
+msgstr ""
+
+#: ../../source/examples.rst:111
+msgid ":class:`~.MathTex` :class:`~.Circle` :class:`~.Dot` :class:`~.Line` :class:`~.VGroup` :func:`~.Mobject.add_updater` :func:`~.Mobject.remove_updater` :func:`~.always_redraw`"
 msgstr ""

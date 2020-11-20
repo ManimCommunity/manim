@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,6 +82,10 @@ msgstr ""
 
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene.activate_zooming:1:<autosummary>:1
 msgid ":obj:`CONFIG <manim.scene.zoomed_scene.ZoomedScene.CONFIG>`\\"
+msgstr ""
+
+#: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene.activate_zooming:1:<autosummary>:1
+msgid ":obj:`camera <manim.scene.zoomed_scene.ZoomedScene.camera>`\\"
 msgstr ""
 
 #: ../../../manim/scene/zoomed_scene.py:docstring of manim.scene.zoomed_scene.ZoomedScene.activate_zooming:0

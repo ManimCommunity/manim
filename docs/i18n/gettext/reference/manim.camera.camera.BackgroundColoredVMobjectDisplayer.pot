@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,18 @@ msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer:1
 msgid "Bases: :class:`object`"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:0
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer:1
+msgid "Camera object to use."
 msgstr ""
 
 #: ../../source/reference/manim.camera.camera.BackgroundColoredVMobjectDisplayer.rst:12
@@ -66,13 +78,6 @@ msgstr ""
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:1
 msgid "Resizes the background array to match the passed pixel array."
-msgstr ""
-
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:0
-#: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:0
-msgid "Parameters"
 msgstr ""
 
 #: ../../../manim/camera/camera.py:docstring of manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:3

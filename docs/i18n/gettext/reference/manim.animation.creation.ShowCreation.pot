@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,6 +22,18 @@ msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:1
 msgid "Bases: :class:`manim.animation.creation.ShowPartial`"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:1
+msgid "Incrementally shows the VMobject."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:4
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:11
+msgid ":class:`~.ShowPassingFlash`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.ShowCreation.rst:12

@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:2
+msgid "manim.mobject.shape\\_matchers.BackgroundRectangle"
+msgstr ""
+
+#: manim.mobject.shape_matchers.BackgroundRectangle:1 of
+msgid "Bases: :class:`manim.mobject.shape_matchers.SurroundingRectangle`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:20:<autosummary>:1
+msgid ""
+":obj:`get_fill_color "
+"<manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:20:<autosummary>:1
+#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1 of
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:20:<autosummary>:1
+msgid ""
+":obj:`pointwise_become_partial "
+"<manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:20:<autosummary>:1
+msgid ""
+":obj:`set_style "
+"<manim.mobject.shape_matchers.BackgroundRectangle.set_style>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:22
+msgid "Attributes"
+msgstr ""
+
+#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
+#: of
+msgid ":obj:`CONFIG <manim.mobject.shape_matchers.BackgroundRectangle.CONFIG>`\\"
+msgstr ""
+

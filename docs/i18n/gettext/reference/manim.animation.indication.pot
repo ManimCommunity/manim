@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-14 15:19+0100\n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,6 +34,10 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
 msgid ":obj:`ApplyWave <manim.animation.indication.ApplyWave>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid "Homotopy is a function from (x, y, z, t) to (x', y', z')"
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
@@ -70,6 +74,10 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
 msgid ":obj:`ShowPassingFlash <manim.animation.indication.ShowPassingFlash>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid "Show only a sliver of the VMobject each frame."
 msgstr ""
 
 #: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
