@@ -28,11 +28,11 @@ def test_background_color():
 
 def test_set_color():
     m = Mobject()
-    assert m.color.hex == '#fff'
+    assert m.color.hex == "#fff"
     m.set_color(BLACK)
-    assert m.color.hex == '#000'
+    assert m.color.hex == "#000"
 
     m = VMobject()
-    assert m.color.hex == '#fff'
+    assert m.color.hex == "#fff"
     m.set_color(BLACK)
-    assert m.color.hex == '#000'
+    assert m.color.hex == "#000"
