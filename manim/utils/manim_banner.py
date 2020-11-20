@@ -20,6 +20,7 @@ class ManimBanner(VGroup):
     --------
 
     .. manim:: BannerExample
+
         from manim.utils.manim_banner import ManimBanner
 
         class BannerExample(Scene):
