@@ -126,6 +126,7 @@ def _determine_quality(args):
             pass
         elif getattr(args, quality, None) or (
             hasattr(args, "quality")
+            and args.quality is not None
             and args.quality == constants.QUALITIES[quality]["flag"]
         ):
             return quality
@@ -278,7 +279,6 @@ class ManimConfig(MutableMapping):
         "save_pngs",
         "scene_names",
         "show_in_file_browser",
-        "skip_animations",
         "sound",
         "tex_dir",
         "tex_template_file",
@@ -506,7 +506,6 @@ class ManimConfig(MutableMapping):
             "disable_caching",
             "flush_cache",
             "custom_folders",
-            "skip_animations",
             "use_js_renderer",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
@@ -904,12 +903,6 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["upto_animation_number"],
         lambda self, val: self._set_pos_number("upto_animation_number", val, True),
         doc="Stop rendering animations at this nmber.  Use -1 to avoid skipping (-n).",
-    )
-
-    skip_animations = property(
-        lambda self: self._d["skip_animations"],
-        lambda self, val: self._set_boolean("skip_animations", val),
-        doc="Whether to skip the next animation.  Internal use only.",
     )
 
     max_files_cached = property(
