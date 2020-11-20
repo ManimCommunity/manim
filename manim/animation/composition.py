@@ -48,12 +48,9 @@ class AnimationGroup(Animation):
         return super().get_run_time()
 
     def begin(self) -> None:
-        for anim in self.animations:
-            anim.begin()
-
-    def finish(self) -> None:
-        for anim in self.animations:
-            anim.finish()
+        for anim, start_time, end_time in self.anims_with_timings:
+            if np.isclose(start_time, 0):
+                anim.begin()
 
     def clean_up_from_scene(self, scene: Scene) -> None:
         for anim in self.animations:
@@ -61,7 +58,8 @@ class AnimationGroup(Animation):
 
     def update_mobjects(self, dt: float) -> None:
         for anim in self.animations:
-            anim.update_mobjects(dt)
+            if hasattr(anim, 'starting_mobject'):
+                anim.update_mobjects(dt)
 
     def init_run_time(self) -> None:
         self.build_animations_with_timings()
@@ -101,7 +99,11 @@ class AnimationGroup(Animation):
                 sub_alpha = 0
             else:
                 sub_alpha = np.clip((time - start_time) / anim_time, 0, 1)
+            if np.isclose(sub_alpha, 0):
+                anim.begin()
             anim.interpolate(sub_alpha)
+            if np.isclose(sub_alpha, 1):
+                anim.finish()
 
 
 class Succession(AnimationGroup):
