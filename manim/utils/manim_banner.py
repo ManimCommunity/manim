@@ -88,13 +88,13 @@ class ManimBanner(VGroup):
             ApplyMethod(self.triangle.shift, m_shape_offset * LEFT),
             ApplyMethod(self.square.shift, m_shape_offset * LEFT),
             ApplyMethod(self.circle.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.M.shift, m_shape_offset * LEFT)
+            ApplyMethod(self.M.shift, m_shape_offset * LEFT),
         )
         move_right = AnimationGroup(
             ApplyMethod(self.triangle.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.square.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.circle.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.M.shift, 0 * LEFT),
-            FadeIn(self.anim, lag_ratio=1)
+            FadeIn(self.anim, lag_ratio=1),
         )
         return AnimationGroup(move_left, move_right, lag_ratio=1)
