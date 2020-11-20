@@ -61,10 +61,10 @@ class ManimBanner(VGroup):
             )
             if i != 0:
                 tex.next_to(anim, buff=0.01)
-            tex.align_to(ds_m, DOWN)
+            tex.align_to(self.M, DOWN)
             anim.add(tex)
         anim.set_color(self.font_color).set_height(
-            m_height_over_anim_height * ds_m.get_height()
+            m_height_over_anim_height * self.M.get_height()
         )
 
         self.anim = anim
