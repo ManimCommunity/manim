@@ -73,7 +73,7 @@ add_module_names = False
 templates_path = ["_templates"]
 
 # Custom section headings in our documentation
-napoleon_custom_sections = ['Tests', ('Test', 'Tests')]
+napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
