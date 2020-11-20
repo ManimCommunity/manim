@@ -81,6 +81,9 @@ class ManimBanner(VGroup):
     def expand(self):
         m_shape_offset = 5.7 * self.scale_factor
         m_anim_buff = 0.06
+        self.anim.next_to(self.M, buff=m_anim_buff).shift(
+            m_shape_offset * LEFT
+        ).align_to(self.M, DOWN)
         move_left = AnimationGroup(
             ApplyMethod(self.triangle.shift, m_shape_offset * LEFT),
             ApplyMethod(self.square.shift, m_shape_offset * LEFT),
@@ -88,9 +91,6 @@ class ManimBanner(VGroup):
             ApplyMethod(self.M.shift, m_shape_offset * LEFT),
             ApplyMethod(self.anim.set_opacity, 0),
         )
-        self.anim.next_to(self.M, buff=m_anim_buff).shift(
-            m_shape_offset * LEFT
-        ).align_to(self.M, DOWN)
         move_right = AnimationGroup(
             ApplyMethod(self.triangle.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.square.shift, m_shape_offset * RIGHT),
