@@ -3,6 +3,8 @@ import json
 from functools import wraps
 import os
 
+import numpy as np
+
 from ..utils.commands import capture
 
 
@@ -28,6 +30,14 @@ def _load_video_data(path_to_data):
     return json.load(open(path_to_data, "r"))
 
 
+def _keys_are_different(v1, v2):
+    try:
+        v1, v2 = float(v1), float(v2)
+        return not np.isclose(v1, v2)
+    except ValueError:
+        return v1 != v2
+
+
 def _check_video_data(path_control_data, path_to_video_generated):
     control_data = _load_video_data(path_control_data)
     config_generated = _get_config_from_video(path_to_video_generated)
@@ -35,7 +45,7 @@ def _check_video_data(path_control_data, path_to_video_generated):
     diff_keys = [
         d1[0]
         for d1, d2 in zip(config_expected.items(), config_generated.items())
-        if d1[1] != d2[1]
+        if _keys_are_different(d1[1], d2[1])
     ]
     # \n does not work in f-strings.
     newline = "\n"
