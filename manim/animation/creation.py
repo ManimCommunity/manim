@@ -1,4 +1,85 @@
-"""Animate the display or removal of a mobject from a scene."""
+r"""Animate the display or removal of a mobject from a scene.
+
+.. manim:: CreationModule
+    :hide_source:
+
+    class ManimBanner(VGroup):
+
+        def __init__(self, dark_theme=True):
+            VGroup.__init__(self)
+
+            logo_green = "#81b29a"
+            logo_blue = "#454866"
+            logo_red = "#e07a5f"
+            m_height_over_anim_height = 0.75748
+
+            self.font_color = "#ece6e2" if dark_theme else "#343434"
+            self.scale_factor = 1
+
+            self.M = MathTex(r"\mathbb{M}").scale(7).set_color(self.font_color)
+            self.M.shift(2.25 * LEFT + 1.5 * UP)
+
+            self.circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
+            self.square = Square(color=logo_blue, fill_opacity=1).shift(UP)
+            self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
+            self.add(self.triangle, self.square, self.circle, self.M)
+            self.move_to(ORIGIN)
+
+            anim = VGroup()
+            for i, ch in enumerate("anim"):
+                tex = Tex(
+                    "\\textbf{" + ch + "}",
+                    tex_template=TexFontTemplates.gnu_freeserif_freesans,
+                )
+                if i != 0:
+                    tex.next_to(anim, buff=0.01)
+                tex.align_to(self.M, DOWN)
+                anim.add(tex)
+            anim.set_color(self.font_color).set_height(
+                m_height_over_anim_height * self.M.get_height()
+            )
+
+            self.anim = anim
+
+        def updater(self):
+            self.shift(LEFT * 0.1)
+
+        def scale(self, scale_factor, **kwargs):
+            self.scale_factor *= scale_factor
+            self.anim.scale(scale_factor, **kwargs)
+            return super().scale(scale_factor, **kwargs)
+
+
+    class CreationModule(Scene):
+        def construct(self):
+            texts = [Text('manim'), Text('manim')]
+            texts[0].shift(LEFT * 2 + UP)
+            texts[1].shift(RIGHT * 2 + UP)
+            self.add(*texts)
+
+            objs = [ManimBanner().scale(0.25) for _ in range(5)]
+            for idx, obj in enumerate(objs):
+                obj.shift(LEFT * 6 + RIGHT * (2.75 * idx) + DOWN)
+            self.add(*objs)
+
+            self.play(
+                # text creation
+                Write(texts[0]),
+                AddTextLetterByLetter(texts[1]),
+
+                # mobject creation
+                ShowCreation(objs[0]),
+                Uncreate(objs[1]),
+                DrawBorderThenFill(objs[2]),
+                ShowIncreasingSubsets(objs[3]),
+                ShowSubmobjectsOneByOne(objs[4]),
+
+                run_time=3,
+            )
+
+            self.wait()
+
+"""
 
 
 __all__ = [
@@ -48,14 +129,24 @@ class ShowPartial(Animation):
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(self, submob, start_submob, alpha):
-        submob.pointwise_become_partial(start_submob, *self.get_bounds(alpha))
+        submob.pointwise_become_partial(start_submob, *self._get_bounds(alpha))
 
-    def get_bounds(self, alpha):
+    def _get_bounds(self, alpha):
         raise NotImplementedError("Please use ShowCreation or ShowPassingFlash")
 
 
 class ShowCreation(ShowPartial):
-    """Incrementally shows the VMobject.
+    """Incrementally show a VMobject.
+
+    Parameters
+    ----------
+    mobject : :class:`~.VMobject`
+        The VMobject to animate.
+
+    Raises
+    ------
+    :class:`TypeError`
+        If ``mobject`` is not an instance of :class:`~.VMobject`.
 
     Examples
     --------
@@ -64,7 +155,6 @@ class ShowCreation(ShowPartial):
         class ShowCreationScene(Scene):
             def construct(self):
                 self.play(ShowCreation(Square()))
-
 
     See Also
     --------
@@ -76,15 +166,24 @@ class ShowCreation(ShowPartial):
         "lag_ratio": 1,
     }
 
-    def get_bounds(self, alpha):
+    def _get_bounds(self, alpha):
         return (0, alpha)
 
 
 class Uncreate(ShowCreation):
+    """Like :class:`ShowCreation` but in reverse.
+
+    See Also
+    --------
+    :class:`ShowCreation`
+
+    """
     CONFIG = {"rate_func": lambda t: smooth(1 - t), "remover": True}
 
 
 class DrawBorderThenFill(Animation):
+    """Show the border first and then show the fill."""
+
     CONFIG = {
         "run_time": 2,
         "rate_func": double_smooth,
@@ -133,6 +232,8 @@ class DrawBorderThenFill(Animation):
 
 
 class Write(DrawBorderThenFill):
+    """Simulate hand-writing a :class:`~.Text`."""
+
     CONFIG = {
         # To be figured out in
         # set_default_config_from_lengths
@@ -158,6 +259,8 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
+    """Show one submobject at a time, leaving all previous ones on screen."""
+
     CONFIG = {
         "suspend_mobject_updating": False,
         "int_func": np.floor,
@@ -177,8 +280,13 @@ class ShowIncreasingSubsets(Animation):
 
 
 class AddTextLetterByLetter(ShowIncreasingSubsets):
-    """
-    Add a Text Object letter by letter on the scene. Use time_per_char to change frequency of appearance of the letters.
+    """Show a :class:`Text` letter by letter on the scene.
+
+    Parameters
+    ----------
+    time_per_char : :class:`float`
+        Frequency of appearance of the letters.
+
     """
 
     CONFIG = {
@@ -198,6 +306,8 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
 
 class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
+    """Show one submobject at a time, removing all previous ones from screen."""
+
     CONFIG = {
         "int_func": np.ceil,
     }
@@ -216,6 +326,8 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
 # TODO, this is broken...
 class AddTextWordByWord(Succession):
+    """Show a :class:`Text` word by word on the scene."""
+
     CONFIG = {
         # If given a value for run_time, it will
         # override the time_per_char

@@ -170,7 +170,7 @@ class ShowPassingFlash(ShowPartial):
         "remover": True,
     }
 
-    def get_bounds(self, alpha):
+    def _get_bounds(self, alpha):
         tw = self.time_width
         upper = interpolate(0, 1 + tw, alpha)
         lower = upper - tw
