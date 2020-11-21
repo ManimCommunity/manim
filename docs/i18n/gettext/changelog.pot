@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgid "Changes since Manim Community release v0.1.0"
 msgstr ""
 
 #: ../../source/changelog.rst:14
-#: ../../source/changelog.rst:138
+#: ../../source/changelog.rst:137
 msgid "Fixes"
 msgstr ""
 
@@ -59,7 +59,7 @@ msgid "The global ``config`` dict has been replaced by a global ``config`` insta
 msgstr ""
 
 #: ../../source/changelog.rst:31
-#: ../../source/changelog.rst:132
+#: ../../source/changelog.rst:131
 msgid "Documentation"
 msgstr ""
 
@@ -68,7 +68,7 @@ msgid "Add ``:issue:`` and ``:pr:`` directives for simplifying linking to issues
 msgstr ""
 
 #: ../../source/changelog.rst:38
-#: ../../source/changelog.rst:105
+#: ../../source/changelog.rst:104
 msgid "Mobjects, Scenes, and Animations"
 msgstr ""
 
@@ -108,199 +108,203 @@ msgstr ""
 msgid "This is the first release of manimce after forking from 3b1b/manim.  As such, developers have focused on cleaning up and refactoring the codebase while still maintaining backwards compatibility wherever possible."
 msgstr ""
 
-#: ../../source/changelog.rst:67
+#: ../../source/changelog.rst:63
+msgid "New Features"
+msgstr ""
+
+#: ../../source/changelog.rst:66
 msgid "Command line"
 msgstr ""
 
-#: ../../source/changelog.rst:69
+#: ../../source/changelog.rst:68
 msgid "Output of 'manim --help' has been improved"
 msgstr ""
 
-#: ../../source/changelog.rst:70
+#: ../../source/changelog.rst:69
 msgid "Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol' prints"
 msgstr ""
 
-#: ../../source/changelog.rst:71
+#: ../../source/changelog.rst:70
 msgid "Added a flag :code:`--dry_run`, which doesn’t write any media"
 msgstr ""
 
-#: ../../source/changelog.rst:72
+#: ../../source/changelog.rst:71
 msgid "Allow for running manim with :code:`python3 -m manim`"
 msgstr ""
 
-#: ../../source/changelog.rst:73
+#: ../../source/changelog.rst:72
 msgid "Refactored Tex Template management. You can now use custom templates with command line args using :code:`--tex_template`!"
 msgstr ""
 
-#: ../../source/changelog.rst:74
+#: ../../source/changelog.rst:73
 msgid "Re-add :code:`--save_frames` flag, which will save each frame as a png"
 msgstr ""
 
-#: ../../source/changelog.rst:75
+#: ../../source/changelog.rst:74
 msgid "Re-introduce manim feature that allows you to type manim code in :code:`stdin` if you pass a minus sign :code:`(-)` as filename"
 msgstr ""
 
-#: ../../source/changelog.rst:76
+#: ../../source/changelog.rst:75
 msgid "Added the :code:`--custom_folders` flag which yields a simpler output folder structure"
 msgstr ""
 
-#: ../../source/changelog.rst:77
+#: ../../source/changelog.rst:76
 msgid "Re-implement GIF export with the :code:`-i` flag (using this flag outputs ONLY a .gif file, and no .mp4 file)"
 msgstr ""
 
-#: ../../source/changelog.rst:78
+#: ../../source/changelog.rst:77
 msgid "Added a :code:`--verbose` flag"
 msgstr ""
 
-#: ../../source/changelog.rst:79
+#: ../../source/changelog.rst:78
 msgid "You can save the logs to a file by using :code:`--log_to_file`"
 msgstr ""
 
-#: ../../source/changelog.rst:80
+#: ../../source/changelog.rst:79
 msgid "Read :code:`tex_template` from config file if not specified by :code:`--tex_template`."
 msgstr ""
 
-#: ../../source/changelog.rst:81
+#: ../../source/changelog.rst:80
 msgid "Add experimental javascript rendering with :code:`--use_js_renderer`"
 msgstr ""
 
-#: ../../source/changelog.rst:82
+#: ../../source/changelog.rst:81
 msgid "Add :code:`-q/--quality [k|p|h|m|l]` flag and removed :code:`-m/-l` flags."
 msgstr ""
 
-#: ../../source/changelog.rst:83
+#: ../../source/changelog.rst:82
 msgid "Removed :code:`--sound` flag"
 msgstr ""
 
-#: ../../source/changelog.rst:87
+#: ../../source/changelog.rst:86
 msgid "Config system"
 msgstr ""
 
-#: ../../source/changelog.rst:89
+#: ../../source/changelog.rst:88
 msgid "Implement a :code:`manim.cfg` config file system, that consolidates the global configuration, the command line argument parsing, and some of the constants defined in :code:`constants.py`"
 msgstr ""
 
-#: ../../source/changelog.rst:90
+#: ../../source/changelog.rst:89
 msgid "Added utilities for manipulating Manim’s :code:`.cfg` files."
 msgstr ""
 
-#: ../../source/changelog.rst:91
+#: ../../source/changelog.rst:90
 msgid "Added a subcommand structure for easier use of utilities managing :code:`.cfg` files"
 msgstr ""
 
-#: ../../source/changelog.rst:92
+#: ../../source/changelog.rst:91
 msgid "Also some variables have been moved from ``constants.py`` to the new config system:"
 msgstr ""
 
-#: ../../source/changelog.rst:94
+#: ../../source/changelog.rst:93
 msgid "``FRAME_HEIGHT`` to ``config[\"frame_width\"]``"
 msgstr ""
 
-#: ../../source/changelog.rst:95
+#: ../../source/changelog.rst:94
 msgid "``TOP`` to ``config[\"frame_height\"] / 2 * UP``"
 msgstr ""
 
-#: ../../source/changelog.rst:96
+#: ../../source/changelog.rst:95
 msgid "``BOTTOM`` to ``config[\"frame_height\"] / 2 * DOWN``"
 msgstr ""
 
-#: ../../source/changelog.rst:97
+#: ../../source/changelog.rst:96
 msgid "``LEFT_SIDE`` to ``config[\"frame_width\"] / 2 * LEFT``"
 msgstr ""
 
-#: ../../source/changelog.rst:98
+#: ../../source/changelog.rst:97
 msgid "``RIGHT_SIDE`` to ``config[\"frame_width\"] / 2 * RIGHT``"
 msgstr ""
 
-#: ../../source/changelog.rst:99
+#: ../../source/changelog.rst:98
 msgid "``self.camera.frame_rate`` to ``config[\"frame_rate\"]``"
 msgstr ""
 
-#: ../../source/changelog.rst:107
+#: ../../source/changelog.rst:106
 msgid "Add customizable left and right bracket for :code:`Matrix` mobject and :code:`set_row_colors` method for matrix mobject"
 msgstr ""
 
-#: ../../source/changelog.rst:108
+#: ../../source/changelog.rst:107
 msgid "Add :code:`AddTeXLetterByLetter` animation"
 msgstr ""
 
-#: ../../source/changelog.rst:109
+#: ../../source/changelog.rst:108
 msgid "Enhanced GraphScene"
 msgstr ""
 
-#: ../../source/changelog.rst:111
+#: ../../source/changelog.rst:110
 msgid "You can now add arrow tips to axes"
 msgstr ""
 
-#: ../../source/changelog.rst:112
+#: ../../source/changelog.rst:111
 msgid "extend axes a bit at the start and/or end"
 msgstr ""
 
-#: ../../source/changelog.rst:113
+#: ../../source/changelog.rst:112
 msgid "have invisible axes"
 msgstr ""
 
-#: ../../source/changelog.rst:114
+#: ../../source/changelog.rst:113
 msgid "highlight the area between two curves"
 msgstr ""
 
-#: ../../source/changelog.rst:115
+#: ../../source/changelog.rst:114
 msgid "ThreeDScene now supports 3dillusion_camera_rotation"
 msgstr ""
 
-#: ../../source/changelog.rst:116
+#: ../../source/changelog.rst:115
 msgid "Add :code:`z_index` for manipulating depth of Objects on scene."
 msgstr ""
 
-#: ../../source/changelog.rst:117
+#: ../../source/changelog.rst:116
 msgid "Add a :code:`VDict` class: a :code:`VDict` is to a :code:`VGroup` what a :code:`dict` is to a :code:`list`"
 msgstr ""
 
-#: ../../source/changelog.rst:118
+#: ../../source/changelog.rst:117
 msgid "Added Scene-caching feature. Now, if a partial movie file is unchanged in your code, it isn’t rendered again! [HIGHLY UNSTABLE We're working on it ;)]"
 msgstr ""
 
-#: ../../source/changelog.rst:119
+#: ../../source/changelog.rst:118
 msgid "Most :code:`get_` and :code:`set_` methods have been removed in favor of instance attributes and properties"
 msgstr ""
 
-#: ../../source/changelog.rst:120
+#: ../../source/changelog.rst:119
 msgid "The :code:`Container` class has been made into an AbstractBaseClass, i.e. in cannot be instantiated.  Instead, use one of its children classes"
 msgstr ""
 
-#: ../../source/changelog.rst:121
+#: ../../source/changelog.rst:120
 msgid "The ``TextMobject`` and ``TexMobject`` objects have been deprecated, due to their confusing names, in favour of ``Tex`` and ``MathTex``. You can still, however, continue to use ``TextMobject`` and ``TexMobject``, albeit with Deprecation Warnings constantly reminding you to switch."
 msgstr ""
 
-#: ../../source/changelog.rst:122
+#: ../../source/changelog.rst:121
 msgid "Add a :code:`Variable` class for displaying text that continuously updates to reflect the value of a python variable."
 msgstr ""
 
-#: ../../source/changelog.rst:123
+#: ../../source/changelog.rst:122
 msgid "The ``Tex`` and ``MathTex`` objects allow you to specify a custom TexTemplate using the ``template`` keyword argument."
 msgstr ""
 
-#: ../../source/changelog.rst:124
+#: ../../source/changelog.rst:123
 msgid ":code:`VGroup` now supports printing the class names of contained mobjects and :code:`VDict` supports printing the internal dict of mobjects"
 msgstr ""
 
-#: ../../source/changelog.rst:125
+#: ../../source/changelog.rst:124
 msgid "Add all the standard easing functions"
 msgstr ""
 
-#: ../../source/changelog.rst:126
+#: ../../source/changelog.rst:125
 msgid ":code:`Scene` now renders when :code:`Scene.render()` is called rather than upon instantiation."
 msgstr ""
 
-#: ../../source/changelog.rst:127
+#: ../../source/changelog.rst:126
 msgid ":code:`ValueTracker` now supports increment using the `+=` operator (in addition to the already existing `increment_value` method)"
 msgstr ""
 
-#: ../../source/changelog.rst:128
+#: ../../source/changelog.rst:127
 msgid "Add :class:`PangoText` for rendering texts using Pango."
 msgstr ""
 
-#: ../../source/changelog.rst:134
+#: ../../source/changelog.rst:133
 msgid "Added clearer installation instructions, tutorials, examples, and API reference [WIP]"
 msgstr ""
 
@@ -380,18 +384,18 @@ msgstr ""
 msgid "Other Changes"
 msgstr ""
 
-#: ../../source/changelog.rst:164
+#: ../../source/changelog.rst:165
 msgid "Cleanup 3b1b Specific Files"
 msgstr ""
 
-#: ../../source/changelog.rst:165
+#: ../../source/changelog.rst:166
 msgid "Rename package from manimlib to manim"
 msgstr ""
 
-#: ../../source/changelog.rst:166
+#: ../../source/changelog.rst:167
 msgid "Move all imports to :code:`__init__`, so :code:`from manim import *` replaces :code:`from manimlib.imports import *`"
 msgstr ""
 
-#: ../../source/changelog.rst:167
+#: ../../source/changelog.rst:168
 msgid "Global dir variable handling has been removed. Instead :code:`initialize_directories`, if needed, overrides the values from the cfg files at runtime."
 msgstr ""

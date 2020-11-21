@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -603,8 +603,12 @@ msgstr ""
 msgid "The CommandLine ProgressBar of the wait time"
 msgstr ""
 
-#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play_internal:7
-msgid "run_time, lag_ratio etc."
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play_internal:5
+msgid "Animation or mobject with mobject method and params"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play_internal:6
+msgid "named parameters affecting what was passed in ``args``, e.g. ``run_time``, ``lag_ratio`` and so on."
 msgstr ""
 
 #: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove:5

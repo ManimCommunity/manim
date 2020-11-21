@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgid "Examples"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunction:18
-msgid "method is a method of Mobject, *args are arguments for that method.  Key word arguments should be passed in as the last arg, as a dict, since **kwargs is for configuration of the transform itself"
+msgid "method is a method of Mobject, ``args`` are arguments for that method.  Key word arguments should be passed in as the last arg, as a dict, since ``kwargs`` is for configuration of the transform itself"
 msgstr ""
 
 #: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ApplyPointwiseFunction:23

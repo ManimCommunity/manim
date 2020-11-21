@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,16 +97,12 @@ msgstr ""
 msgid "The default direction of a :class:`~.Circle` is counterclockwise::"
 msgstr ""
 
-#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:11
-msgid "'CCW'"
-msgstr ""
-
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:0
 msgid "Returns"
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:13
-msgid "Either `\"CW\"` or `\"CCW\"`."
+msgid "Either ``\"CW\"`` or ``\"CCW\"``."
 msgstr ""
 
 #: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.Brace.get_direction:0

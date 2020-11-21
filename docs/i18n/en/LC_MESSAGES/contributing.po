@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,20 +284,23 @@ msgid "Internationalization"
 msgstr ""
 
 #: ../../source/contributing.rst:198
-msgid "If you want to translate the program, create a transifex account"
-msgstr ""
-
-#: ../../source/contributing.rst:202
-msgid "Further useful guidelines"
+msgid ""
+"If you want to translate the program, create a transifex account. Then, "
+"go to this url, and ask to join the project as a translator for your "
+"language. You can also ask for new languages if you want."
 msgstr ""
 
 #: ../../source/contributing.rst:204
+msgid "Further useful guidelines"
+msgstr ""
+
+#: ../../source/contributing.rst:206
 msgid ""
 "When submitting a PR, please make special note of whether your proposed "
 "changes will result in breaking changes."
 msgstr ""
 
-#: ../../source/contributing.rst:207
+#: ../../source/contributing.rst:209
 msgid ""
 "When submitting a PR, make sure that your proposed changes are as general"
 " as possible, and ready to be taken advantage of by all of manim's users."
@@ -305,19 +308,19 @@ msgid ""
 "personal information it may contain."
 msgstr ""
 
-#: ../../source/contributing.rst:212
+#: ../../source/contributing.rst:214
 msgid ""
 "If you are a maintainer, please label issues and PRs appropriately and "
 "frequently."
 msgstr ""
 
-#: ../../source/contributing.rst:215
+#: ../../source/contributing.rst:217
 msgid ""
 "When opening a new issue, if there are old issues that are related, link "
 "them in your new issue (even if the old ones are closed)."
 msgstr ""
 
-#: ../../source/contributing.rst:218
+#: ../../source/contributing.rst:220
 msgid ""
 "When submitting a code review, it is highly recommended that you adhere "
 "to `these general guidelines <https://conventionalcomments.org/>`_.  "
@@ -326,20 +329,23 @@ msgid ""
 "<https://www.conventionalcommits.org/en/v1.0.0/>`_."
 msgstr ""
 
-#: ../../source/contributing.rst:223
+#: ../../source/contributing.rst:225
 msgid ""
 "If you find stale or inactive issues that seem to be irrelevant, please "
 "post a comment saying 'This issue should be closed', and a community "
 "developer will take a look."
 msgstr ""
 
-#: ../../source/contributing.rst:227
+#: ../../source/contributing.rst:229
 msgid ""
 "Please do as much as possible to keep issues, PRs, and development in "
 "general as tidy as possible."
 msgstr ""
 
-#: ../../source/contributing.rst:231
+#: ../../source/contributing.rst:233
 msgid "**Thank you for contributing!**"
 msgstr ""
+
+#~ msgid "If you want to translate the program, create a transifex account"
+#~ msgstr ""
 

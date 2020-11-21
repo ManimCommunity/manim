@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,7 +36,7 @@ msgstr ""
 
 #: manim._config.utils:9 of
 msgid ""
-"See :doc:`tutorials/configuration` for an introduction to Manim's "
+"See :doc:`/tutorials/configuration` for an introduction to Manim's "
 "configuration system."
 msgstr ""
 
@@ -163,4 +163,9 @@ msgstr ""
 #: manim._config.utils.make_config_parser:19 of
 msgid ":func:`config_file_paths`"
 msgstr ""
+
+#~ msgid ""
+#~ "See :doc:`tutorials/configuration` for an "
+#~ "introduction to Manim's configuration system."
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -637,7 +637,8 @@ msgstr ""
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.types.vectorized_mobject.VMobject.force_direction:4 of
+#: manim.mobject.types.vectorized_mobject.VMobject.force_direction:4
+#: manim.mobject.types.vectorized_mobject.VMobject.get_direction:13 of
 msgid "Either ``\"CW\"`` or ``\"CCW\"``."
 msgstr ""
 
@@ -670,18 +671,10 @@ msgstr ""
 msgid "The default direction of a :class:`~.Circle` is counterclockwise::"
 msgstr ""
 
-#: manim.mobject.types.vectorized_mobject.VMobject.get_direction:11 of
-msgid "'CCW'"
-msgstr ""
-
 #: manim.mobject.types.vectorized_mobject.VMobject.get_direction
 #: manim.mobject.types.vectorized_mobject.VMobject.scale_handle_to_anchor_distances
 #: of
 msgid "Returns"
-msgstr ""
-
-#: manim.mobject.types.vectorized_mobject.VMobject.get_direction:13 of
-msgid "Either `\"CW\"` or `\"CCW\"`."
 msgstr ""
 
 #: manim.mobject.types.vectorized_mobject.VMobject.get_direction
@@ -725,4 +718,10 @@ msgid ""
 "just recurses to submobjects, but in subclasses this should be further "
 "implemented based on the the inner workings of color"
 msgstr ""
+
+#~ msgid "'CCW'"
+#~ msgstr ""
+
+#~ msgid "Either `\"CW\"` or `\"CCW\"`."
+#~ msgstr ""
 

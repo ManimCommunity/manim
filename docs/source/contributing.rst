@@ -195,7 +195,9 @@ at least two approving code reviews from core community developers are required.
 
 Internationalization
 ====================
-If you want to translate the program, create a transifex account
+If you want to translate the program, create a transifex account.
+Then, go to this url, and ask to join the project as a translator for your language.
+You can also ask for new languages if you want.
 
 
 Further useful guidelines

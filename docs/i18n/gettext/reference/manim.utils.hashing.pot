@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,6 +47,7 @@ msgstr ""
 #: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_camera_dict_for_hashing:0
 #: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_hash_from_play_call:0
 #: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_hash_from_wait_call:0
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:0
 msgid "Parameters"
 msgstr ""
 
@@ -103,7 +104,7 @@ msgstr ""
 
 #: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_hash_from_play_call:13
 #: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_hash_from_wait_call:13
-#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:9
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:7
 msgid ":class:`str`"
 msgstr ""
 
@@ -131,18 +132,10 @@ msgstr ""
 msgid "Recursively serialize `object` to JSON using the :class:`CustomEncoder` class."
 msgstr ""
 
-#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:6
-msgid "dict_config : :class:`dict`"
-msgstr ""
-
-#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:5
-msgid "dict"
-msgstr ""
-
-#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:6
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:3
 msgid "The dict to flatten"
 msgstr ""
 
-#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:8
+#: ../../../manim/utils/hashing.py:docstring of manim.utils.hashing.get_json:6
 msgid "The flattened object"
 msgstr ""

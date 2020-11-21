@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,10 @@ msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex:4
 msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex:14
+msgid "Tests"
 msgstr ""
 
 #: ../../../manim/mobject/svg/tex_mobject.py:docstring of manim.mobject.svg.tex_mobject.MathTex:15

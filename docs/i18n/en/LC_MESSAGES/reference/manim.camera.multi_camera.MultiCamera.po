@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,15 +33,13 @@ msgstr ""
 msgid "Initalises the MultiCamera"
 msgstr ""
 
+#: manim.camera.multi_camera.MultiCamera
+#: manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera
+#: manim.camera.multi_camera.MultiCamera.capture_mobjects of
+msgid "Parameters"
+msgstr ""
+
 #: manim.camera.multi_camera.MultiCamera:7 of
-msgid "*image_mobjects_from_cameras : ImageMobject"
-msgstr ""
-
-#: manim.camera.multi_camera.MultiCamera:10 of
-msgid "**kwargs"
-msgstr ""
-
-#: manim.camera.multi_camera.MultiCamera:10 of
 msgid "Any valid keyword arguments of MovingCamera."
 msgstr ""
 
@@ -59,7 +57,7 @@ msgstr ""
 #: manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1 of
 msgid ""
 "Adds an ImageMobject that's been obtained from the camera into the list "
-"`self.image_mobject_from_cameras`"
+"``self.image_mobject_from_cameras``"
 msgstr ""
 
 #: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:22:<autosummary>:1
@@ -159,11 +157,6 @@ msgstr ""
 msgid "Returns the width of the frame"
 msgstr ""
 
-#: manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera
-#: manim.camera.multi_camera.MultiCamera.capture_mobjects of
-msgid "Parameters"
-msgstr ""
-
 #: manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:4 of
 msgid "The ImageMobject to add to self.image_mobject_from_cameras"
 msgstr ""
@@ -205,4 +198,16 @@ msgstr ""
 #: manim.camera.multi_camera.MultiCamera.reset:3 of
 msgid "The reset MultiCamera"
 msgstr ""
+
+#~ msgid "*image_mobjects_from_cameras : ImageMobject"
+#~ msgstr ""
+
+#~ msgid "**kwargs"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Adds an ImageMobject that's been "
+#~ "obtained from the camera into the "
+#~ "list `self.image_mobject_from_cameras`"
+#~ msgstr ""
 

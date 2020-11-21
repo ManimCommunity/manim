@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,11 @@ msgid ""
 ":meth:`remove_invisible_chars` to resolve this issue."
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.CairoText:17 of
+#: manim.mobject.svg.text_mobject.CairoText:15 of
+msgid "Tests"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.CairoText:16 of
 msgid "Check whether writing text works::"
 msgstr ""
 

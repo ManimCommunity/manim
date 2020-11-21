@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,11 +66,15 @@ msgstr ""
 msgid "As :class:`Text` uses Pango to render text, rendering non-English characters is easily possible:"
 msgstr ""
 
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:92
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:90
+msgid "Tests"
+msgstr ""
+
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:91
 msgid "Check that the creation of :class:`~.Text` works::"
 msgstr ""
 
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:99
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text:98
 msgid "Using a :class:`.Transform` on text with leading whitespace can look `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using :meth:`remove_invisible_chars` to resolve this issue."
 msgstr ""
 
