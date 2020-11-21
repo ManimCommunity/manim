@@ -178,6 +178,7 @@ class Uncreate(ShowCreation):
     :class:`ShowCreation`
 
     """
+
     CONFIG = {"rate_func": lambda t: smooth(1 - t), "remover": True}
 
 
