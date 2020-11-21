@@ -4,7 +4,7 @@
 from pathlib import Path
 import os
 from shutil import rmtree
-from subprocess import run 
+from subprocess import run
 import tarfile
 from sys import argv
 
@@ -12,16 +12,16 @@ manimpath = Path(__file__).parent.parent
 
 os.chdir(manimpath)
 
-buildcomm = run(["poetry","build"])
+buildcomm = run(["poetry", "build"])
 
-tarname = [f for f in os.listdir(manimpath/"dist") if f.endswith('.' + "tar.gz")][-1]
+tarname = [f for f in os.listdir(manimpath / "dist") if f.endswith("." + "tar.gz")][-1]
 
-tar = tarfile.open(name=manimpath/"dist"/tarname)
+tar = tarfile.open(name=manimpath / "dist" / tarname)
 
 print(f"Found tarfile at {manimpath/'dist'/tarname}. Extracting setup.py.")
 
-with open("setup.py","wb") as setupfile:
-    setupfile.write(tar.extractfile(tarname[:-7]+os.sep+"setup.py").read())
+with open("setup.py", "wb") as setupfile:
+    setupfile.write(tar.extractfile(tarname[:-7] + os.sep + "setup.py").read())
 
 if not "--keep_dist" in argv:
     print("Removing dist folder since --keep_dist not supplied.")
