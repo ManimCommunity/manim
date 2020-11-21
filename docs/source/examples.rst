@@ -257,7 +257,7 @@ Animations
             path = VMobject()
             dot = Dot()
             path.set_points_as_corners([dot.get_center(), dot.get_center()])
-            def update_path(path):
+            def update_path(path, _):
                 previus_path = path.copy()
                 previus_path.add_points_as_corners([dot.get_center()])
                 path.become(previus_path)
@@ -389,7 +389,7 @@ Special Camera Settings
             self.add(graph, dot_at_end_grap, dot_at_start_graph, moving_dot)
             self.play( self.camera_frame.scale,0.5,self.camera_frame.move_to,moving_dot)
 
-            def update_curve(mob):
+            def update_curve(mob, _):
                 mob.move_to(moving_dot.get_center())
 
             self.camera_frame.add_updater(update_curve)
@@ -709,7 +709,6 @@ Advanced Projects
                 x = self.curve_start[0] + self.t_offset * 4
                 y = dot.get_center()[1]
                 return Line(dot.get_center(), np.array([x,y,0]), color=YELLOW_A, stroke_width=2 )
-
 
             self.curve = VGroup()
             self.curve.add(Line(self.curve_start,self.curve_start))
