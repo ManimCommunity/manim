@@ -33,7 +33,7 @@ def _load_video_data(path_to_data):
 def _keys_are_different(v1, v2):
     try:
         v1, v2 = float(v1), float(v2)
-        return not np.isclose(v1, v2)
+        return not np.isclose(v1, v2, atol=1e-3, rtol=1e-3)
     except ValueError:
         return v1 != v2
 
