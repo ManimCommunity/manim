@@ -1146,7 +1146,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submoject to be removed.
 
         Returns
@@ -1171,7 +1171,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
            The key of the submoject to be accessed
 
         Returns
@@ -1193,7 +1193,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submoject to be assigned
         value : :class:`VMobject`
             The submobject to bind the key to
@@ -1218,7 +1218,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submoject to be deleted
 
         Returns
@@ -1250,7 +1250,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key to check membership of.
 
         Returns
@@ -1293,7 +1293,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submobject to be added.
         value : :class:`~.VMobject`
             The mobject associated with the key
