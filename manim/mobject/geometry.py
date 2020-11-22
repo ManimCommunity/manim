@@ -1010,11 +1010,13 @@ class ArcPolygonFromArcs(VMobject):
     sections. Arcs can also be passed as straight lines such as an arc
     initialized with ``angle=0``.
 
-    Two instances of :class:`ArcPolygon` can be transformed properly into one another as
-    well. Be advised that any arc initialized with ``angle=0`` will actually be
-    a straight line, so if a straight section should seamlessly
-    transform into an arced section or vice versa, initialize the straight section
-    with a negligible angle instead (such as ``angle=0.0001``).
+    .. tip::
+
+        Two instances of :class:`ArcPolygon` can be transformed properly into
+        one another as well. Be advised that any arc initialized with ``angle=0``
+        will actually be a straight line, so if a straight section should seamlessly
+        transform into an arced section or vice versa, initialize the straight
+        section with a negligible angle instead (such as ``angle=0.0001``).
 
     There is an alternative version (:class:`ArcPolygon`) that can be instantiated
     with points.
