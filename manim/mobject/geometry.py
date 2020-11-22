@@ -1421,6 +1421,7 @@ class Cutout(VMobject):
                 self.play(Write(c), run_time=4)
                 self.wait()
     """
+
     def __init__(self, main_shape, *mobjects, **kwargs):
         VMobject.__init__(self, **kwargs)
         self.append_points(main_shape.get_points())
