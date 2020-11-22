@@ -136,4 +136,5 @@ ogp_site_url = "https://docs.manim.community/"
 autosummary_context = {}
 
 from custom_method_order import custom_method_order
-autosummary_context['custom_method_order'] = custom_method_order
+
+autosummary_context["custom_method_order"] = custom_method_order
