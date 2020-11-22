@@ -1218,7 +1218,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submoject to be deleted
 
         Returns
