@@ -131,3 +131,9 @@ extlinks = {
 ogp_image = "https://www.manim.community/logo.png"
 ogp_site_name = "Manim Community | Documentation"
 ogp_site_url = "https://docs.manim.community/"
+
+# anything in autosummary_context is readable from within autosummary templates
+autosummary_context = {}
+
+from custom_method_order import custom_method_order
+autosummary_context['custom_method_order'] = custom_method_order
