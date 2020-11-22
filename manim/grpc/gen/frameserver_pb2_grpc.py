@@ -30,15 +30,14 @@ class FrameServerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def GetFrameAtTime(self, request, context):
-        """Updates the scene to the specified animation offset and returns a
-        serialization of the frame at that time.
+        """Returns a serialization of the scene at the specified time.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def FetchSceneData(self, request, context):
-        """Used to signal to the renderer that manim is running.
+        """Returns a list of the names and durations of all animations in the scene.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')

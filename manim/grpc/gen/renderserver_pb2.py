@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x12renderserver.proto\x12\x0crenderserver\"<\n\x16UpdateSceneDataRequest\x12\"\n\x05scene\x18\x01 \x01(\x0b\x32\x13.renderserver.Scene\"B\n\x05Scene\x12\x0c\n\x04name\x18\x01 \x01(\t\x12+\n\nanimations\x18\x02 \x03(\x0b\x32\x17.renderserver.Animation\"+\n\tAnimation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x64uration\x18\x02 \x01(\x02\"\x0e\n\x0c\x45mptyRequest\"\x0f\n\rEmptyResponse2d\n\x0cRenderServer\x12T\n\x0fUpdateSceneData\x12$.renderserver.UpdateSceneDataRequest\x1a\x1b.renderserver.EmptyResponseb\x06proto3'
+  serialized_pb=b'\n\x12renderserver.proto\x12\x0crenderserver\"<\n\x16UpdateSceneDataRequest\x12\"\n\x05scene\x18\x01 \x01(\x0b\x32\x13.renderserver.Scene\"B\n\x05Scene\x12\x0c\n\x04name\x18\x01 \x01(\t\x12+\n\nanimations\x18\x02 \x03(\x0b\x32\x17.renderserver.Animation\"+\n\tAnimation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x64uration\x18\x02 \x01(\x02\"\x0e\n\x0c\x45mptyRequest\"\x0f\n\rEmptyResponse2\xaa\x01\n\x0cRenderServer\x12T\n\x0fUpdateSceneData\x12$.renderserver.UpdateSceneDataRequest\x1a\x1b.renderserver.EmptyResponse\x12\x44\n\tPlayScene\x12\x1a.renderserver.EmptyRequest\x1a\x1b.renderserver.EmptyResponseb\x06proto3'
 )
 
 
@@ -237,8 +237,8 @@ _RENDERSERVER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=244,
-  serialized_end=344,
+  serialized_start=245,
+  serialized_end=415,
   methods=[
   _descriptor.MethodDescriptor(
     name='UpdateSceneData',
@@ -246,6 +246,16 @@ _RENDERSERVER = _descriptor.ServiceDescriptor(
     index=0,
     containing_service=None,
     input_type=_UPDATESCENEDATAREQUEST,
+    output_type=_EMPTYRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='PlayScene',
+    full_name='renderserver.RenderServer.PlayScene',
+    index=1,
+    containing_service=None,
+    input_type=_EMPTYREQUEST,
     output_type=_EMPTYRESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,

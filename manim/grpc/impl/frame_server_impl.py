@@ -45,11 +45,17 @@ class MyEventHandler(FileSystemEventHandler):
         self.catch_all_handler(event)
 
     def on_modified(self, event):
-        self.catch_all_handler(event)
         self.frame_server.scene_class = scene_classes_from_file(
             self.frame_server.input_file_path, require_single_scene=True
         )
         self.frame_server.generate_keyframe_data()
+
+        with grpc.insecure_channel("localhost:50052") as channel:
+            stub = renderserver_pb2_grpc.RenderServerStub(channel)
+            try:
+                stub.PlayScene(renderserver_pb2.EmptyRequest())
+            except grpc._channel._InactiveRpcError:
+                sp.Popen(config["js_renderer_path"])
 
 
 def animations_to_name(animations):
@@ -59,9 +65,6 @@ def animations_to_name(animations):
 
 
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
-    def animation_index_is_cached(self, animation_index):
-        return animation_index < len(self.keyframes)
-
     def __init__(self, server, input_file_path):
         self.server = server
         self.input_file_path = input_file_path
@@ -209,82 +212,6 @@ def serialize_mobject(mobject):
 
     mob_proto.id = id(mobject)
     return mob_proto
-
-
-class UpdateFrontendHandler(FileSystemEventHandler):
-    """Logs all the events captured."""
-
-    def __init__(self, frame_server):
-        super().__init__()
-        self.frame_server = frame_server
-
-    def on_moved(self, event):
-        super().on_moved(event)
-        raise NotImplementedError("Update not implemented for moved files.")
-
-    def on_deleted(self, event):
-        super().on_deleted(event)
-        raise NotImplementedError("Update not implemented for deleted files.")
-
-    def on_modified(self, event):
-        super().on_modified(event)
-        module = get_module(config["input_file"])
-        all_scene_classes = get_scene_classes_from_module(module)
-        scene_classes_to_render = get_scenes_to_render(all_scene_classes)
-        scene_class = scene_classes_to_render[0]
-
-        # Get the old thread's ID.
-        old_thread_id = None
-        old_thread = self.frame_server.scene_thread
-        if hasattr(old_thread, "_thread_id"):
-            old_thread_id = old_thread._thread_id
-        if old_thread_id is None:
-            for thread_id, thread in threading._active.items():
-                if thread is old_thread:
-                    old_thread_id = thread_id
-
-        # Stop the old thread.
-        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-            old_thread_id, ctypes.py_object(SystemExit)
-        )
-        if res > 1:
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(old_thread_id, 0)
-            print("Exception raise failure")
-        old_thread.join()
-
-        # Start a new thread.
-        self.frame_server.initialize_scene(scene_class, start_animation=1)
-        self.frame_server.scene.reached_start_animation.wait()
-
-        # Serialize data on Animations up to the target one.
-        animations = []
-        for scene in self.frame_server.keyframes:
-            if scene.animations:
-                animation_duration = scene.run_time
-                if len(scene.animations) == 1:
-                    animation_name = str(scene.animations[0])
-                else:
-                    animation_name = f"{str(scene.animations[0])}..."
-            else:
-                animation_duration = scene.duration
-                animation_name = "Wait"
-            animations.append(
-                renderserver_pb2.Animation(
-                    name=animation_name,
-                    duration=animation_duration,
-                )
-            )
-
-        # Reset the renderer.
-        with grpc.insecure_channel("localhost:50052") as channel:
-            stub = renderserver_pb2_grpc.RenderServerStub(channel)
-            request = renderserver_pb2.ManimStatusRequest(
-                scene_name=str(self.frame_server.scene), animations=animations
-            )
-            try:
-                stub.ManimStatus(request)
-            except grpc._channel._InactiveRpcError:
-                sp.Popen(config["js_renderer_path"])
 
 
 def get(input_file_path):

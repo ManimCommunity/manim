@@ -5,6 +5,8 @@ package renderserver;
 service RenderServer {
     // Called from Manim when a scene has been newly rendered.
     rpc UpdateSceneData (UpdateSceneDataRequest) returns (EmptyResponse);
+
+    rpc PlayScene (EmptyRequest) returns (EmptyResponse);
 }
 
 message UpdateSceneDataRequest {
