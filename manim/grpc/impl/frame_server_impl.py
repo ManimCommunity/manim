@@ -138,7 +138,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 )
                 animation_offset = request.time_offset - requested_scene_start_time
             else:
-                animation_offset = 1
+                animation_offset = requested_scene.duration
             requested_scene.update_to_time(animation_offset)
 
             # Serialize the scene's mobjects.
