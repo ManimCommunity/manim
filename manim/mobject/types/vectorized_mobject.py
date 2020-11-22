@@ -1255,7 +1255,7 @@ class VDict(VMobject):
 
         Returns
         -------
-        :clas:`bool`
+        :class:`bool`
 
         Examples
         --------
