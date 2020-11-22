@@ -25,6 +25,7 @@ from ...constants import JS_RENDERER_INFO
 from ...renderer.js_renderer import JsRenderer
 from ...utils.family import extract_mobject_family_members
 import logging
+import copy
 
 
 class MyEventHandler(FileSystemEventHandler):
@@ -130,6 +131,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 else:
                     scene_finished = True
                     break
+            requested_scene = copy.deepcopy(requested_scene)
 
             # Update to the requested time.
             if not scene_finished:
