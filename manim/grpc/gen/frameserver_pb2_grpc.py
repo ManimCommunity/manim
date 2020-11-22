@@ -19,15 +19,10 @@ class FrameServerStub(object):
                 request_serializer=frameserver__pb2.FrameRequest.SerializeToString,
                 response_deserializer=frameserver__pb2.FrameResponse.FromString,
                 )
-        self.RendererStatus = channel.unary_unary(
-                '/frameserver.FrameServer/RendererStatus',
-                request_serializer=frameserver__pb2.RendererStatusRequest.SerializeToString,
-                response_deserializer=frameserver__pb2.RendererStatusResponse.FromString,
-                )
-        self.UpdateSceneLocation = channel.unary_unary(
-                '/frameserver.FrameServer/UpdateSceneLocation',
-                request_serializer=frameserver__pb2.SceneLocationRequest.SerializeToString,
-                response_deserializer=frameserver__pb2.SceneLocationResponse.FromString,
+        self.FetchSceneData = channel.unary_unary(
+                '/frameserver.FrameServer/FetchSceneData',
+                request_serializer=frameserver__pb2.EmptyRequest.SerializeToString,
+                response_deserializer=frameserver__pb2.FetchSceneDataResponse.FromString,
                 )
 
 
@@ -42,15 +37,9 @@ class FrameServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def RendererStatus(self, request, context):
+    def FetchSceneData(self, request, context):
         """Used to signal to the renderer that manim is running.
         """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def UpdateSceneLocation(self, request, context):
-        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -63,15 +52,10 @@ def add_FrameServerServicer_to_server(servicer, server):
                     request_deserializer=frameserver__pb2.FrameRequest.FromString,
                     response_serializer=frameserver__pb2.FrameResponse.SerializeToString,
             ),
-            'RendererStatus': grpc.unary_unary_rpc_method_handler(
-                    servicer.RendererStatus,
-                    request_deserializer=frameserver__pb2.RendererStatusRequest.FromString,
-                    response_serializer=frameserver__pb2.RendererStatusResponse.SerializeToString,
-            ),
-            'UpdateSceneLocation': grpc.unary_unary_rpc_method_handler(
-                    servicer.UpdateSceneLocation,
-                    request_deserializer=frameserver__pb2.SceneLocationRequest.FromString,
-                    response_serializer=frameserver__pb2.SceneLocationResponse.SerializeToString,
+            'FetchSceneData': grpc.unary_unary_rpc_method_handler(
+                    servicer.FetchSceneData,
+                    request_deserializer=frameserver__pb2.EmptyRequest.FromString,
+                    response_serializer=frameserver__pb2.FetchSceneDataResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -101,7 +85,7 @@ class FrameServer(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def RendererStatus(request,
+    def FetchSceneData(request,
             target,
             options=(),
             channel_credentials=None,
@@ -111,25 +95,8 @@ class FrameServer(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/frameserver.FrameServer/RendererStatus',
-            frameserver__pb2.RendererStatusRequest.SerializeToString,
-            frameserver__pb2.RendererStatusResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def UpdateSceneLocation(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/frameserver.FrameServer/UpdateSceneLocation',
-            frameserver__pb2.SceneLocationRequest.SerializeToString,
-            frameserver__pb2.SceneLocationResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/frameserver.FrameServer/FetchSceneData',
+            frameserver__pb2.EmptyRequest.SerializeToString,
+            frameserver__pb2.FetchSceneDataResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

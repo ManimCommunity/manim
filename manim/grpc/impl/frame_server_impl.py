@@ -18,33 +18,82 @@ from ...utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
     get_scenes_to_render,
+    scene_classes_from_file,
 )
 from ... import logger
 from ...constants import JS_RENDERER_INFO
 from ...renderer.js_renderer import JsRenderer
 from ...utils.family import extract_mobject_family_members
+import logging
+
+
+class MyEventHandler(FileSystemEventHandler):
+    def __init__(self, frame_server):
+        super().__init__()
+        self.frame_server = frame_server
+
+    def catch_all_handler(self, event):
+        print(event)
+
+    def on_moved(self, event):
+        self.catch_all_handler(event)
+
+    def on_created(self, event):
+        self.catch_all_handler(event)
+
+    def on_deleted(self, event):
+        self.catch_all_handler(event)
+
+    def on_modified(self, event):
+        self.catch_all_handler(event)
+        self.frame_server.scene_class = scene_classes_from_file(
+            self.frame_server.input_file_path, require_single_scene=True
+        )
+        self.frame_server.generate_keyframe_data()
+
+
+def animations_to_name(animations):
+    if len(animations) == 1:
+        return str(animations[0].__class__.__name__)
+    return f"{str(animations[0])}..."
 
 
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
     def animation_index_is_cached(self, animation_index):
         return animation_index < len(self.keyframes)
 
-    def __init__(self, server, scene_class):
+    def __init__(self, server, input_file_path):
         self.server = server
-        self.keyframes = []
-        self.renderer = JsRenderer(self)
-        self.scene = scene_class(self.renderer)
-        self.scene_thread = threading.Thread(
-            target=lambda s: s.render(), args=(self.scene,)
+        self.input_file_path = input_file_path
+        self.scene_class = scene_classes_from_file(
+            self.input_file_path, require_single_scene=True
         )
+        self.generate_keyframe_data()
+
+        observer = Observer()
+        event_handler = MyEventHandler(self)
+        path = self.input_file_path
+        observer.schedule(event_handler, path)
+        observer.start()  # When / where to stop?
 
         # If a javascript renderer is running, notify it of the scene being served. If
         # not, spawn one and it will request the scene when it starts.
         with grpc.insecure_channel("localhost:50052") as channel:
             stub = renderserver_pb2_grpc.RenderServerStub(channel)
-            request = renderserver_pb2.NewSceneRequest(name=str(self.scene))
+            request = renderserver_pb2.UpdateSceneDataRequest(
+                scene=renderserver_pb2.Scene(
+                    name=str(self.scene),
+                    animations=[
+                        renderserver_pb2.Animation(
+                            name=animations_to_name(scene.animations),
+                            duration=scene.duration,
+                        )
+                        for scene in self.keyframes
+                    ],
+                ),
+            )
             try:
-                stub.NewScene(request)
+                stub.UpdateSceneData(request)
             except grpc._channel._InactiveRpcError:
                 logger.warning("No frontend was detected at localhost:50052.")
                 try:
@@ -53,8 +102,6 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     logger.info(JS_RENDERER_INFO)
                     self.server.stop(None)
                     return
-
-        self.scene_thread.start()
 
     def GetFrameAtTime(self, request, context):
         try:
@@ -113,17 +160,28 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         except Exception as e:
             traceback.print_exc()
 
-    def RendererStatus(self, request, context):
-        response = frameserver_pb2.RendererStatusResponse()
-        response.scene_name = str(self.scene)
-        return response
+    def FetchSceneData(self, request, context):
+        try:
+            return frameserver_pb2.FetchSceneDataResponse(
+                scene=frameserver_pb2.Scene(
+                    name=str(self.scene),
+                    animations=[
+                        frameserver_pb2.Animation(
+                            name=animations_to_name(scene.animations),
+                            duration=scene.duration,
+                        )
+                        for scene in self.keyframes
+                    ],
+                ),
+            )
+        except Exception as e:
+            traceback.print_exc()
 
-    # def UpdateSceneLocation(self, request, context):
-    #     # Reload self.scene.
-    #     print(scene_classes_to_render)
-
-    #     response = frameserver_pb2.SceneLocationResponse()
-    #     return response
+    def generate_keyframe_data(self):
+        self.keyframes = []
+        self.renderer = JsRenderer(self)
+        self.scene = self.scene_class(self.renderer)
+        self.scene.render()
 
 
 def serialize_mobject(mobject):
@@ -229,10 +287,10 @@ class UpdateFrontendHandler(FileSystemEventHandler):
                 sp.Popen(config["js_renderer_path"])
 
 
-def get(scene_class):
+def get(input_file_path):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     frameserver_pb2_grpc.add_FrameServerServicer_to_server(
-        FrameServer(server, scene_class), server
+        FrameServer(server, input_file_path), server
     )
     server.add_insecure_port("localhost:50051")
     return server

@@ -19,10 +19,120 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11\x66rameserver.proto\x12\x0b\x66rameserver\"`\n\x0c\x46rameRequest\x12\x13\n\x0bstart_index\x18\x01 \x01(\x05\x12\x11\n\tend_index\x18\x02 \x01(\x05\x12\x13\n\x0buse_indices\x18\x03 \x01(\x08\x12\x13\n\x0btime_offset\x18\x04 \x01(\x02\"u\n\x05Style\x12\x12\n\nfill_color\x18\x01 \x01(\t\x12\x14\n\x0c\x66ill_opacity\x18\x02 \x01(\x02\x12\x14\n\x0cstroke_color\x18\x03 \x01(\t\x12\x16\n\x0estroke_opacity\x18\x04 \x01(\x02\x12\x14\n\x0cstroke_width\x18\x05 \x01(\x02\"(\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\"v\n\x0bMobjectData\x12\n\n\x02id\x18\x01 \x01(\x03\x12\"\n\x06points\x18\x02 \x03(\x0b\x32\x12.frameserver.Point\x12!\n\x05style\x18\x03 \x01(\x0b\x32\x12.frameserver.Style\x12\x14\n\x0cneeds_redraw\x18\x04 \x01(\x08\"\xdf\x01\n\rFrameResponse\x12*\n\x08mobjects\x18\x01 \x03(\x0b\x32\x18.frameserver.MobjectData\x12\x15\n\rframe_pending\x18\x02 \x01(\x08\x12\x1a\n\x12\x61nimation_finished\x18\x03 \x01(\x08\x12\x16\n\x0escene_finished\x18\x04 \x01(\x08\x12\x10\n\x08\x64uration\x18\x05 \x01(\x02\x12\x12\n\nanimations\x18\x06 \x03(\t\x12\x17\n\x0f\x61nimation_index\x18\x07 \x01(\x05\x12\x18\n\x10\x61nimation_offset\x18\x08 \x01(\x02\"\x17\n\x15RendererStatusRequest\",\n\x16RendererStatusResponse\x12\x12\n\nscene_name\x18\x01 \x01(\t\"\x16\n\x14SceneLocationRequest\"\x17\n\x15SceneLocationResponse2\x8f\x02\n\x0b\x46rameServer\x12G\n\x0eGetFrameAtTime\x12\x19.frameserver.FrameRequest\x1a\x1a.frameserver.FrameResponse\x12Y\n\x0eRendererStatus\x12\".frameserver.RendererStatusRequest\x1a#.frameserver.RendererStatusResponse\x12\\\n\x13UpdateSceneLocation\x12!.frameserver.SceneLocationRequest\x1a\".frameserver.SceneLocationResponseb\x06proto3'
+  serialized_pb=b'\n\x11\x66rameserver.proto\x12\x0b\x66rameserver\";\n\x16\x46\x65tchSceneDataResponse\x12!\n\x05scene\x18\x01 \x01(\x0b\x32\x12.frameserver.Scene\"A\n\x05Scene\x12\x0c\n\x04name\x18\x01 \x01(\t\x12*\n\nanimations\x18\x02 \x03(\x0b\x32\x16.frameserver.Animation\"+\n\tAnimation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x64uration\x18\x02 \x01(\x02\"`\n\x0c\x46rameRequest\x12\x13\n\x0bstart_index\x18\x01 \x01(\x05\x12\x11\n\tend_index\x18\x02 \x01(\x05\x12\x13\n\x0buse_indices\x18\x03 \x01(\x08\x12\x13\n\x0btime_offset\x18\x04 \x01(\x02\"u\n\x05Style\x12\x12\n\nfill_color\x18\x01 \x01(\t\x12\x14\n\x0c\x66ill_opacity\x18\x02 \x01(\x02\x12\x14\n\x0cstroke_color\x18\x03 \x01(\t\x12\x16\n\x0estroke_opacity\x18\x04 \x01(\x02\x12\x14\n\x0cstroke_width\x18\x05 \x01(\x02\"(\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\"v\n\x0bMobjectData\x12\n\n\x02id\x18\x01 \x01(\x03\x12\"\n\x06points\x18\x02 \x03(\x0b\x32\x12.frameserver.Point\x12!\n\x05style\x18\x03 \x01(\x0b\x32\x12.frameserver.Style\x12\x14\n\x0cneeds_redraw\x18\x04 \x01(\x08\"\xdf\x01\n\rFrameResponse\x12*\n\x08mobjects\x18\x01 \x03(\x0b\x32\x18.frameserver.MobjectData\x12\x15\n\rframe_pending\x18\x02 \x01(\x08\x12\x1a\n\x12\x61nimation_finished\x18\x03 \x01(\x08\x12\x16\n\x0escene_finished\x18\x04 \x01(\x08\x12\x10\n\x08\x64uration\x18\x05 \x01(\x02\x12\x12\n\nanimations\x18\x06 \x03(\t\x12\x17\n\x0f\x61nimation_index\x18\x07 \x01(\x05\x12\x18\n\x10\x61nimation_offset\x18\x08 \x01(\x02\"\x0e\n\x0c\x45mptyRequest\"\x0f\n\rEmptyResponse2\xa8\x01\n\x0b\x46rameServer\x12G\n\x0eGetFrameAtTime\x12\x19.frameserver.FrameRequest\x1a\x1a.frameserver.FrameResponse\x12P\n\x0e\x46\x65tchSceneData\x12\x19.frameserver.EmptyRequest\x1a#.frameserver.FetchSceneDataResponseb\x06proto3'
 )
 
 
+
+
+_FETCHSCENEDATARESPONSE = _descriptor.Descriptor(
+  name='FetchSceneDataResponse',
+  full_name='frameserver.FetchSceneDataResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='scene', full_name='frameserver.FetchSceneDataResponse.scene', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=34,
+  serialized_end=93,
+)
+
+
+_SCENE = _descriptor.Descriptor(
+  name='Scene',
+  full_name='frameserver.Scene',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='frameserver.Scene.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='animations', full_name='frameserver.Scene.animations', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=95,
+  serialized_end=160,
+)
+
+
+_ANIMATION = _descriptor.Descriptor(
+  name='Animation',
+  full_name='frameserver.Animation',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='frameserver.Animation.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='duration', full_name='frameserver.Animation.duration', index=1,
+      number=2, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=162,
+  serialized_end=205,
+)
 
 
 _FRAMEREQUEST = _descriptor.Descriptor(
@@ -73,8 +183,8 @@ _FRAMEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=34,
-  serialized_end=130,
+  serialized_start=207,
+  serialized_end=303,
 )
 
 
@@ -133,8 +243,8 @@ _STYLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=132,
-  serialized_end=249,
+  serialized_start=305,
+  serialized_end=422,
 )
 
 
@@ -179,8 +289,8 @@ _POINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=251,
-  serialized_end=291,
+  serialized_start=424,
+  serialized_end=464,
 )
 
 
@@ -232,8 +342,8 @@ _MOBJECTDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=293,
-  serialized_end=411,
+  serialized_start=466,
+  serialized_end=584,
 )
 
 
@@ -313,14 +423,14 @@ _FRAMERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=414,
-  serialized_end=637,
+  serialized_start=587,
+  serialized_end=810,
 )
 
 
-_RENDERERSTATUSREQUEST = _descriptor.Descriptor(
-  name='RendererStatusRequest',
-  full_name='frameserver.RendererStatusRequest',
+_EMPTYREQUEST = _descriptor.Descriptor(
+  name='EmptyRequest',
+  full_name='frameserver.EmptyRequest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -338,46 +448,14 @@ _RENDERERSTATUSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=639,
-  serialized_end=662,
+  serialized_start=812,
+  serialized_end=826,
 )
 
 
-_RENDERERSTATUSRESPONSE = _descriptor.Descriptor(
-  name='RendererStatusResponse',
-  full_name='frameserver.RendererStatusResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='scene_name', full_name='frameserver.RendererStatusResponse.scene_name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=664,
-  serialized_end=708,
-)
-
-
-_SCENELOCATIONREQUEST = _descriptor.Descriptor(
-  name='SceneLocationRequest',
-  full_name='frameserver.SceneLocationRequest',
+_EMPTYRESPONSE = _descriptor.Descriptor(
+  name='EmptyResponse',
+  full_name='frameserver.EmptyResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -395,48 +473,47 @@ _SCENELOCATIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=710,
-  serialized_end=732,
+  serialized_start=828,
+  serialized_end=843,
 )
 
-
-_SCENELOCATIONRESPONSE = _descriptor.Descriptor(
-  name='SceneLocationResponse',
-  full_name='frameserver.SceneLocationResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=734,
-  serialized_end=757,
-)
-
+_FETCHSCENEDATARESPONSE.fields_by_name['scene'].message_type = _SCENE
+_SCENE.fields_by_name['animations'].message_type = _ANIMATION
 _MOBJECTDATA.fields_by_name['points'].message_type = _POINT
 _MOBJECTDATA.fields_by_name['style'].message_type = _STYLE
 _FRAMERESPONSE.fields_by_name['mobjects'].message_type = _MOBJECTDATA
+DESCRIPTOR.message_types_by_name['FetchSceneDataResponse'] = _FETCHSCENEDATARESPONSE
+DESCRIPTOR.message_types_by_name['Scene'] = _SCENE
+DESCRIPTOR.message_types_by_name['Animation'] = _ANIMATION
 DESCRIPTOR.message_types_by_name['FrameRequest'] = _FRAMEREQUEST
 DESCRIPTOR.message_types_by_name['Style'] = _STYLE
 DESCRIPTOR.message_types_by_name['Point'] = _POINT
 DESCRIPTOR.message_types_by_name['MobjectData'] = _MOBJECTDATA
 DESCRIPTOR.message_types_by_name['FrameResponse'] = _FRAMERESPONSE
-DESCRIPTOR.message_types_by_name['RendererStatusRequest'] = _RENDERERSTATUSREQUEST
-DESCRIPTOR.message_types_by_name['RendererStatusResponse'] = _RENDERERSTATUSRESPONSE
-DESCRIPTOR.message_types_by_name['SceneLocationRequest'] = _SCENELOCATIONREQUEST
-DESCRIPTOR.message_types_by_name['SceneLocationResponse'] = _SCENELOCATIONRESPONSE
+DESCRIPTOR.message_types_by_name['EmptyRequest'] = _EMPTYREQUEST
+DESCRIPTOR.message_types_by_name['EmptyResponse'] = _EMPTYRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+FetchSceneDataResponse = _reflection.GeneratedProtocolMessageType('FetchSceneDataResponse', (_message.Message,), {
+  'DESCRIPTOR' : _FETCHSCENEDATARESPONSE,
+  '__module__' : 'frameserver_pb2'
+  # @@protoc_insertion_point(class_scope:frameserver.FetchSceneDataResponse)
+  })
+_sym_db.RegisterMessage(FetchSceneDataResponse)
+
+Scene = _reflection.GeneratedProtocolMessageType('Scene', (_message.Message,), {
+  'DESCRIPTOR' : _SCENE,
+  '__module__' : 'frameserver_pb2'
+  # @@protoc_insertion_point(class_scope:frameserver.Scene)
+  })
+_sym_db.RegisterMessage(Scene)
+
+Animation = _reflection.GeneratedProtocolMessageType('Animation', (_message.Message,), {
+  'DESCRIPTOR' : _ANIMATION,
+  '__module__' : 'frameserver_pb2'
+  # @@protoc_insertion_point(class_scope:frameserver.Animation)
+  })
+_sym_db.RegisterMessage(Animation)
 
 FrameRequest = _reflection.GeneratedProtocolMessageType('FrameRequest', (_message.Message,), {
   'DESCRIPTOR' : _FRAMEREQUEST,
@@ -473,33 +550,19 @@ FrameResponse = _reflection.GeneratedProtocolMessageType('FrameResponse', (_mess
   })
 _sym_db.RegisterMessage(FrameResponse)
 
-RendererStatusRequest = _reflection.GeneratedProtocolMessageType('RendererStatusRequest', (_message.Message,), {
-  'DESCRIPTOR' : _RENDERERSTATUSREQUEST,
+EmptyRequest = _reflection.GeneratedProtocolMessageType('EmptyRequest', (_message.Message,), {
+  'DESCRIPTOR' : _EMPTYREQUEST,
   '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.RendererStatusRequest)
+  # @@protoc_insertion_point(class_scope:frameserver.EmptyRequest)
   })
-_sym_db.RegisterMessage(RendererStatusRequest)
+_sym_db.RegisterMessage(EmptyRequest)
 
-RendererStatusResponse = _reflection.GeneratedProtocolMessageType('RendererStatusResponse', (_message.Message,), {
-  'DESCRIPTOR' : _RENDERERSTATUSRESPONSE,
+EmptyResponse = _reflection.GeneratedProtocolMessageType('EmptyResponse', (_message.Message,), {
+  'DESCRIPTOR' : _EMPTYRESPONSE,
   '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.RendererStatusResponse)
+  # @@protoc_insertion_point(class_scope:frameserver.EmptyResponse)
   })
-_sym_db.RegisterMessage(RendererStatusResponse)
-
-SceneLocationRequest = _reflection.GeneratedProtocolMessageType('SceneLocationRequest', (_message.Message,), {
-  'DESCRIPTOR' : _SCENELOCATIONREQUEST,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.SceneLocationRequest)
-  })
-_sym_db.RegisterMessage(SceneLocationRequest)
-
-SceneLocationResponse = _reflection.GeneratedProtocolMessageType('SceneLocationResponse', (_message.Message,), {
-  'DESCRIPTOR' : _SCENELOCATIONRESPONSE,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.SceneLocationResponse)
-  })
-_sym_db.RegisterMessage(SceneLocationResponse)
+_sym_db.RegisterMessage(EmptyResponse)
 
 
 
@@ -510,8 +573,8 @@ _FRAMESERVER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=760,
-  serialized_end=1031,
+  serialized_start=846,
+  serialized_end=1014,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetFrameAtTime',
@@ -524,22 +587,12 @@ _FRAMESERVER = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='RendererStatus',
-    full_name='frameserver.FrameServer.RendererStatus',
+    name='FetchSceneData',
+    full_name='frameserver.FrameServer.FetchSceneData',
     index=1,
     containing_service=None,
-    input_type=_RENDERERSTATUSREQUEST,
-    output_type=_RENDERERSTATUSRESPONSE,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-  _descriptor.MethodDescriptor(
-    name='UpdateSceneLocation',
-    full_name='frameserver.FrameServer.UpdateSceneLocation',
-    index=2,
-    containing_service=None,
-    input_type=_SCENELOCATIONREQUEST,
-    output_type=_SCENELOCATIONRESPONSE,
+    input_type=_EMPTYREQUEST,
+    output_type=_FETCHSCENEDATARESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
