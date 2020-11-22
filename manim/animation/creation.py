@@ -307,7 +307,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
 
 class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
-    """Show one submobject at a time, removing all previous ones from screen."""
+    """Show one submobject at a time, removing all previously displayed ones from screen."""
 
     CONFIG = {
         "int_func": np.ceil,
