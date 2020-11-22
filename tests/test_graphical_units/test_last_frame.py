@@ -4,10 +4,6 @@ import manim as mn
 from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
-mn.config.frame_rate = 5
-mn.config.pixel_height = 150
-mn.config.pixel_width = 150
-
 
 def make_lbl(num):
     text = mn.Text(f"{num}").scale(7)
