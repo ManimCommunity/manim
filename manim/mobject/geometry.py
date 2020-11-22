@@ -888,17 +888,19 @@ class RegularPolygon(Polygon):
 class ArcPolygon(VMobject):
     """A generalized polygon allowing for points to be connected with arcs.
 
-    This version tries to stick close to the way :class:`Polygon` is used. Points can be
-    passed to it directly which are used to generate the according arcs
+    This version tries to stick close to the way :class:`Polygon` is used. Points
+    can be passed to it directly which are used to generate the according arcs
     (using :class:`ArcBetweenPoints`). An angle or radius can be passed to it to
-    use across all arcs, but to configure arcs individually an arc_config list has to be
-    passed with the syntax explained below.
+    use across all arcs, but to configure arcs individually an ``arc_config`` list
+    has to be passed with the syntax explained below.
 
-    Two instances of :class:`ArcPolygon` can be transformed properly into one another as
-    well. Be advised that any arc initialized with ``angle=0`` will actually be
-    a straight line, so if a straight section should seamlessly
-    transform into an arced section or vice versa, initialize the straight section
-    with a negligible angle instead (such as ``angle=0.0001``).
+    .. tip::
+
+        Two instances of :class:`ArcPolygon` can be transformed properly into one
+        another as well. Be advised that any arc initialized with ``angle=0``
+        will actually be a straight line, so if a straight section should seamlessly
+        transform into an arced section or vice versa, initialize the straight section
+        with a negligible angle instead (such as ``angle=0.0001``).
 
     There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated
     with pre-defined arcs.
@@ -909,7 +911,7 @@ class ArcPolygon(VMobject):
 
     Parameters
     ----------
-    *vertices : Union[:class:`list`, :class:`np.array`]
+    vertices : Union[:class:`list`, :class:`np.array`]
         A list of vertices, start and end points for the arc segments.
     angle : :class:`float`
         The angle used for constructing the arcs. If no other parameters
@@ -922,12 +924,15 @@ class ArcPolygon(VMobject):
         arguments to :class:`~.ArcBetweenPoints`. Otherwise, a list
         of dictionaries containing values that are passed as keyword
         arguments for every individual arc can be passed.
+    kwargs
+        Further keyword arguments that are passed to the constructor of
+        :class:`~.VMobject`.
 
     Attributes
     ----------
     arcs : :class:`list`
-        The arcs created from the input parameters.
-        ::
+        The arcs created from the input parameters::
+
             >>> from manim import ArcPolygon
             >>> ap = ArcPolygon([0, 0, 0], [2, 0, 0], [0, 2, 0])
             >>> ap.arcs
@@ -935,7 +940,6 @@ class ArcPolygon(VMobject):
 
     Examples
     --------
-    For further examples see :class:`ArcPolygonFromArcs`
 
     .. manim:: SeveralArcPolygons
 
@@ -955,6 +959,7 @@ class ArcPolygon(VMobject):
                 self.play(*[ShowCreation(ap) for ap in [ap1, ap2, ap3, ap4]])
                 self.wait()
 
+    For further examples see :class:`ArcPolygonFromArcs`.
     """
 
     def __init__(self, *vertices, angle=PI / 4, radius=None, arc_config=None, **kwargs):
@@ -993,17 +998,17 @@ class ArcPolygon(VMobject):
 class ArcPolygonFromArcs(VMobject):
     """A generalized polygon allowing for points to be connected with arcs.
 
-    This version takes in pre-defined arcs to generate the arcpoylgon and introduces
+    This version takes in pre-defined arcs to generate the arcpolygon and introduces
     little new syntax. However unlike :class:`Polygon` it can't be created with points
     directly.
 
-    For proper appearance the passed arcs should usually seamlessly connect:
-    [a,b][b,c][c,a]
+    For proper appearance the passed arcs should connect seamlessly:
+    ``[a,b][b,c][c,a]``
 
     If there are any gaps between the arcs, those will be filled in
     with straight lines, which can be used deliberately for any straight
     sections. Arcs can also be passed as straight lines such as an arc
-    initialized with 'angle=0'.
+    initialized with ``angle=0``.
 
     Two instances of :class:`ArcPolygon` can be transformed properly into one another as
     well. Be advised that any arc initialized with ``angle=0`` will actually be
@@ -1020,17 +1025,18 @@ class ArcPolygonFromArcs(VMobject):
 
     Parameters
     ----------
-    *arcs : Union[:class:`Arc`, :class:`ArcBetweenPoints`]
+    arcs : Union[:class:`Arc`, :class:`ArcBetweenPoints`]
         These are the arcs from which the arcpolygon is assembled.
-    **kwargs : Any
-        Affects how the ArcPolygon itself is drawn, but doesn't affect
-        passed arcs.
+    kwargs
+        Keyword arguments that are passed to the constructor of
+        :class:`~.VMobject`. Affects how the ArcPolygon itself is drawn,
+        but doesn't affect passed arcs.
 
     Attributes
     ----------
     arcs : :class:`list`
-        The arcs used to initialize the ArcPolygonFromArcs.
-        ::
+        The arcs used to initialize the ArcPolygonFromArcs::
+
             >>> from manim import ArcPolygonFromArcs, Arc, ArcBetweenPoints
             >>> ap = ArcPolygonFromArcs(Arc(), ArcBetweenPoints([1,0,0], [0,1,0]), Arc())
             >>> ap.arcs
@@ -1048,8 +1054,8 @@ class ArcPolygonFromArcs(VMobject):
     for example when it's shifted, and these arcs can be manipulated
     after the arcpolygon has been initialized.
 
-    Also both the arcs contained in an ArcPolygonFromArcs, as well as the
-    arcpolygon itself are drawn, which affects draw time in ShowCreation
+    Also both the arcs contained in an :class:`~.ArcPolygonFromArcs`, as well as the
+    arcpolygon itself are drawn, which affects draw time in :class:`~.ShowCreation`
     for example. In most cases the arcs themselves don't
     need to be drawn, in which case they can be passed as invisible.
 
@@ -1057,36 +1063,36 @@ class ArcPolygonFromArcs(VMobject):
 
         class ArcPolygonExample(Scene):
             def construct(self):
-                arc_conf = {"stroke_width":0}
-                poly_conf = {"stroke_width":10,"stroke_color":BLUE,
-                      "fill_opacity":1,"color": PURPLE}
-                a=[-1,0,0]
-                b=[1,0,0]
-                c=[0,np.sqrt(3),0]
-                arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
-                arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
-                arc2=ArcBetweenPoints(c,a,radius=2,**arc_conf)
-                reuleaux_tri=ArcPolygonFromArcs(arc0,arc1,arc2,**poly_conf)
+                arc_conf = {"stroke_width": 0}
+                poly_conf = {"stroke_width": 10, "stroke_color": BLUE,
+                      "fill_opacity": 1, "color": PURPLE}
+                a = [-1, 0, 0]
+                b = [1, 0, 0]
+                c = [0, np.sqrt(3), 0]
+                arc0 = ArcBetweenPoints(a, b, radius=2, **arc_conf)
+                arc1 = ArcBetweenPoints(b, c, radius=2, **arc_conf)
+                arc2 = ArcBetweenPoints(c, a, radius=2, **arc_conf)
+                reuleaux_tri = ArcPolygonFromArcs(arc0, arc1, arc2, **poly_conf)
                 self.play(FadeIn(reuleaux_tri))
                 self.wait(2)
 
-    The ArcPolygon itself can also be hidden so that instead only the contained
+    The arcpolygon itself can also be hidden so that instead only the contained
     arcs are drawn. This can be used to easily debug arcs or to highlight them.
 
     .. manim:: ArcPolygonExample2
 
         class ArcPolygonExample2(Scene):
             def construct(self):
-                arc_conf = {"stroke_width":3,"stroke_color":BLUE,
-                    "fill_opacity":0.5,"color": GREEN}
-                poly_conf = {"color":None}
-                a=[-1,0,0]
-                b=[1,0,0]
-                c=[0,np.sqrt(3),0]
-                arc0=ArcBetweenPoints(a,b,radius=2,**arc_conf)
-                arc1=ArcBetweenPoints(b,c,radius=2,**arc_conf)
-                arc2 = ArcBetweenPoints(c, a, radius=2, **{"stroke_color":RED})
-                reuleaux_tri=ArcPolygonFromArcs(arc0,arc1,arc2,**poly_conf)
+                arc_conf = {"stroke_width": 3, "stroke_color": BLUE,
+                    "fill_opacity": 0.5, "color": GREEN}
+                poly_conf = {"color": None}
+                a = [-1, 0, 0]
+                b = [1, 0, 0]
+                c = [0, np.sqrt(3), 0]
+                arc0 = ArcBetweenPoints(a, b, radius=2, **arc_conf)
+                arc1 = ArcBetweenPoints(b, c, radius=2, **arc_conf)
+                arc2 = ArcBetweenPoints(c, a, radius=2, stroke_color=RED)
+                reuleaux_tri = ArcPolygonFromArcs(arc0, arc1, arc2, **poly_conf)
                 self.play(FadeIn(reuleaux_tri))
                 self.wait(2)
 
