@@ -150,6 +150,7 @@ class NumberLine(Line):
         numbers = np.arange(
             np.floor(self.leftmost_tick),
             np.ceil(self.x_max),
+            self.tick_frequency,
         )
         if self.exclude_zero_from_default_numbers:
             numbers = numbers[numbers != 0]
