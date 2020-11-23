@@ -18,26 +18,37 @@ DEFAULT_ANIMATION_RUN_TIME = 1.0
 DEFAULT_ANIMATION_LAG_RATIO = 0
 
 
-class Animation(object):
-    CONFIG = {
-        "run_time": DEFAULT_ANIMATION_RUN_TIME,
-        "rate_func": smooth,
-        "name": None,
-        # Does this animation add or remove a mobject form the screen
-        "remover": False,
+class Animation:
+    def __init__(
+        self,
+        mobject,
+        run_time=DEFAULT_ANIMATION_RUN_TIME,
+        rate_func=smooth,
+        name=None,
+        remover=False,  # remove a mobject from the screen?
+        suspend_mobject_updating=True,
         # If 0, the animation is applied to all submobjects
         # at the same time
         # If 1, it is applied to each successively.
         # If 0 < lag_ratio < 1, its applied to each
         # with lagged start times
-        "lag_ratio": DEFAULT_ANIMATION_LAG_RATIO,
-        "suspend_mobject_updating": True,
-    }
-
-    def __init__(self, mobject, **kwargs):
-        assert isinstance(mobject, Mobject)
-        digest_config(self, kwargs)
+        lag_ratio=DEFAULT_ANIMATION_LAG_RATIO,
+    ):
+        self._typecheck_input(mobject)
+        self.run_time = run_time
+        self.rate_func = rate_func
+        self.name = name
+        self.remover = remover
+        self.suspend_mobject_updating = suspend_mobject_updating
+        self.lag_ratio = lag_ratio
+        self.starting_mobject = None
         self.mobject = mobject
+
+    def _typecheck_input(self, mobject):
+        if mobject is None:
+            logger.warning("creating dummy animation")
+        elif not isinstance(mobject, Mobject):
+            raise TypeError("Animation only works on Mobjects")
 
     def __str__(self):
         if self.name:
@@ -105,7 +116,7 @@ class Animation(object):
         return deepcopy(self)
 
     def update_config(self, **kwargs):
-        digest_config(self, kwargs)
+        self.__dict__.update(kwargs)
         return self
 
     # Methods for interpolation, the mean of an Animation
@@ -168,10 +179,11 @@ class Animation(object):
 
 
 class Wait(Animation):
-    def __init__(self, stop_condition=None, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, duration=1, stop_condition=None, **kwargs):
+        self.duration = duration
         self.mobject = None
         self.stop_condition = stop_condition
+        super().__init__(None, **kwargs)
 
     def begin(self):
         pass

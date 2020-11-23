@@ -55,10 +55,10 @@ class FadeOut(Transform):
 
     """
 
-    CONFIG = {
-        "remover": True,
-        "lag_ratio": DEFAULT_FADE_LAG_RATIO,
-    }
+    def __init__(
+        self, vmobject, remover=True, lag_ratio=DEFAULT_FADE_LAG_RATIO, **kwargs
+    ):
+        super().__init__(vmobject, remover=remover, lag_ratio=lag_ratio, **kwargs)
 
     def create_target(self):
         return self.mobject.copy().fade(1)
@@ -69,9 +69,8 @@ class FadeOut(Transform):
 
 
 class FadeIn(Transform):
-    CONFIG = {
-        "lag_ratio": DEFAULT_FADE_LAG_RATIO,
-    }
+    def __init__(self, vmobject, lag_ratio=DEFAULT_FADE_LAG_RATIO, **kwargs):
+        super().__init__(vmobject, lag_ratio=lag_ratio, **kwargs)
 
     def create_target(self):
         return self.mobject
@@ -86,14 +85,8 @@ class FadeIn(Transform):
 
 
 class FadeInFrom(Transform):
-    CONFIG = {
-        "direction": DOWN,
-        "lag_ratio": DEFAULT_ANIMATION_LAG_RATIO,
-    }
-
-    def __init__(self, mobject, direction=None, **kwargs):
-        if direction is not None:
-            self.direction = direction
+    def __init__(self, mobject, direction=DOWN, **kwargs):
+        self.direction = direction
         super().__init__(mobject, **kwargs)
 
     def create_target(self):
@@ -111,26 +104,16 @@ class FadeInFromDown(FadeInFrom):
     communicates the default
     """
 
-    CONFIG = {
-        "direction": DOWN,
-        "lag_ratio": DEFAULT_ANIMATION_LAG_RATIO,
-    }
-
-    def __init__(self, mobject, **kwargs):
-        super().__init__(mobject, direction=DOWN, **kwargs)
+    def __init__(self, mobject, direction=DOWN, **kwargs):
+        super().__init__(mobject, direction=direction, **kwargs)
         logger.warning(
             "FadeInFromDown is deprecated and will eventually disappear. Please use FadeInFrom(<mobject>, direction=DOWN, <other_args>) instead."
         )
 
 
 class FadeOutAndShift(FadeOut):
-    CONFIG = {
-        "direction": DOWN,
-    }
-
-    def __init__(self, mobject, direction=None, **kwargs):
-        if direction is not None:
-            self.direction = direction
+    def __init__(self, mobject, direction=DOWN, **kwargs):
+        self.direction = direction
         super().__init__(mobject, **kwargs)
 
     def create_target(self):
@@ -145,12 +128,8 @@ class FadeOutAndShiftDown(FadeOutAndShift):
     communicates the default
     """
 
-    CONFIG = {
-        "direction": DOWN,
-    }
-
-    def __init__(self, mobject, **kwargs):
-        super().__init__(mobject, direction=DOWN, **kwargs)
+    def __init__(self, mobject, direction=DOWN, **kwargs):
+        super().__init__(mobject, direction=direction, **kwargs)
         logger.warning(
             "FadeOutAndShiftDown is deprecated and will eventually disappear. Please use FadeOutAndShift(<mobject>, direction=DOWN, <other_args>) instead."
         )
@@ -169,13 +148,8 @@ class FadeInFromPoint(FadeIn):
 
 
 class FadeInFromLarge(FadeIn):
-    CONFIG = {
-        "scale_factor": 2,
-    }
-
     def __init__(self, mobject, scale_factor=2, **kwargs):
-        if scale_factor is not None:
-            self.scale_factor = scale_factor
+        self.scale_factor = scale_factor
         super().__init__(mobject, **kwargs)
 
     def create_starting_mobject(self):
@@ -189,9 +163,10 @@ class VFadeIn(Animation):
     VFadeIn and VFadeOut only work for VMobjects,
     """
 
-    CONFIG = {
-        "suspend_mobject_updating": False,
-    }
+    def __init__(self, mobject, suspend_mobject_updating=False, **kwargs):
+        super().__init__(
+            mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
+        )
 
     def interpolate_submobject(self, submob, start, alpha):
         submob.set_stroke(opacity=interpolate(0, start.get_stroke_opacity(), alpha))
@@ -199,14 +174,13 @@ class VFadeIn(Animation):
 
 
 class VFadeOut(VFadeIn):
-    CONFIG = {"remover": True}
+    def __init__(self, mobject, remover=True, **kwargs):
+        super().__init__(mobject, remover=remover, **kwargs)
 
     def interpolate_submobject(self, submob, start, alpha):
         super().interpolate_submobject(submob, start, 1 - alpha)
 
 
 class VFadeInThenOut(VFadeIn):
-    CONFIG = {
-        "rate_func": there_and_back,
-        "remover": True,
-    }
+    def __init__(self, mobject, remover=True, rate_func=there_and_back, **kwargs):
+        super().__init__(mobject, remover=remover, rate_func=there_and_back, **kwargs)
