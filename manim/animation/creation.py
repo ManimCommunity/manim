@@ -233,7 +233,7 @@ class DrawBorderThenFill(Animation):
 
 
 class Write(DrawBorderThenFill):
-    """Simulate hand-writing a :class:`~.Text`."""
+    """Simulate hand-writing a :class:`~.Text` or hand-drawing a :class:`~.VMobject`."""
 
     CONFIG = {
         # To be figured out in
