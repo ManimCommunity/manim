@@ -65,7 +65,12 @@ class Camera(object):
         "use_z_index": True,
     }
 
-    def __init__(self, video_quality_config, background=None, **kwargs):
+    def __init__(
+        self,
+        # video_quality_config,
+        background=None,
+        **kwargs,
+    ):
         """Initialises the Camera.
 
         Parameters

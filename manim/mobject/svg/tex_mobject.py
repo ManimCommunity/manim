@@ -388,10 +388,7 @@ class MathTex(SingleStringMathTex):
         SingleStringMathTex.__init__(
             self, self.arg_separator.join(tex_strings), **kwargs
         )
-        # TODO: fix these lines
-        # config = dict(self.CONFIG)
-        # config.update(kwargs)
-        # self.break_up_by_substrings(config)
+        self.break_up_by_substrings(self.tex_strings)
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
         if self.organize_left_to_right:

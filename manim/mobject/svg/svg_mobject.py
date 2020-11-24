@@ -540,7 +540,8 @@ class SVGMobject(VMobject):
 
 class VMobjectFromSVGPathstring(VMobject):
     def __init__(self, path_string, **kwargs):
-        digest_locals(self)
+        # digest_locals(self)
+        self.path_string = path_string
         VMobject.__init__(self, **kwargs)
 
     def get_path_commands(self):

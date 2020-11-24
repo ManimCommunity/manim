@@ -221,7 +221,7 @@ class Mobject(Container):
     def generate_target(self, use_deepcopy=False):
         self.target = None  # Prevent exponential explosion
         if use_deepcopy:
-            self.target = self.deepcopy()
+            self.target = copy.deepcopy(self)
         else:
             self.target = self.copy()
         return self.target
