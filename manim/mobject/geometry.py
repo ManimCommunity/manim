@@ -1129,15 +1129,28 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
-    CONFIG = {
-        "color": WHITE,
-        "height": 2.0,
-        "width": 4.0,
-        "mark_paths_closed": True,
-        "close_new_points": True,
-    }
+    # CONFIG = {
+    #     "color": WHITE,
+    #     "height": 2.0,
+    #     "width": 4.0,
+    #     "mark_paths_closed": True,
+    #     "close_new_points": True,
+    # }
 
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        color=WHITE,
+        height=2.0,
+        width=4.0,
+        mark_paths_closed=True,
+        close_new_points=True,
+        **kwargs
+    ):
+        self.color = color
+        self.height = height
+        self.width = width
+        self.mark_paths_closed = mark_paths_closed
+        self.close_new_points = close_new_points
         Polygon.__init__(self, UL, UR, DR, DL, **kwargs)
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)

@@ -416,12 +416,12 @@ class MathTex(SingleStringMathTex):
         deeper based on the structure of tex_strings (as a list
         of tex_strings)
         """
-        print("config is ", config)
         new_submobjects = []
         curr_index = 0
         for tex_string in self.tex_strings:
             sub_tex_mob = SingleStringMathTex(
-                tex_string, tex_environment=self.tex_environment
+                tex_string,
+                tex_environment=self.tex_environment,  # TODO check which kwargs are needed. tex template maybe?
             )
             num_submobs = len(sub_tex_mob.submobjects)
             new_index = curr_index + num_submobs
@@ -505,10 +505,16 @@ class Tex(MathTex):
     #     "tex_environment": "center",
     # }
 
-    def __init__(self, *args, arg_separator="", tex_environment="center", **kwargs):
-        # self.arg_separator = arg_separator
-        # self.tex_environment = tex_environment
-        MathTex().__init__(*args, arg_separator="", tex_environment="center", **kwargs)
+    def __init__(
+        self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
+    ):
+        MathTex.__init__(
+            self,
+            *tex_strings,
+            arg_separator=arg_separator,
+            tex_environment=tex_environment,
+            **kwargs,
+        )
 
 
 class BulletedList(Tex):
