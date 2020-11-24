@@ -194,7 +194,10 @@ class ApplyMethod(Transform):
             method_kwargs = args.pop()
         else:
             method_kwargs = {}
-        target = method.__self__.copy()
+        if method.__self__.target is None:
+            target = method.__self__.generate_target()
+        else:
+            target = method.__self__.target
         method.__func__(target, *args, **method_kwargs)
         return target
 
