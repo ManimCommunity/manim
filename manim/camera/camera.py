@@ -48,27 +48,40 @@ class Camera(object):
 
     """
 
-    CONFIG = {
-        "background_image": None,
-        # Note: frame height and width will be resized to match
-        # the pixel aspect ratio
-        "frame_center": ORIGIN,
-        # Points in vectorized mobjects with norm greater
-        # than this value will be rescaled.
-        "image_mode": "RGBA",
-        "n_channels": 4,
-        "pixel_array_dtype": "uint8",
-        # z_buff_func is only used if the flag above is set to True.
-        # round z coordinate to nearest hundredth when comparring
-        "z_buff_func": lambda m: np.round(m.get_center()[2], 2),
-        "cairo_line_width_multiple": 0.01,
-        "use_z_index": True,
-    }
+    # CONFIG = {
+    #     "background_image": None,
+    #     # Note: frame height and width will be resized to match
+    #     # the pixel aspect ratio
+    #     "frame_center": ORIGIN,
+    #     # Points in vectorized mobjects with norm greater
+    #     # than this value will be rescaled.
+    #     "image_mode": "RGBA",
+    #     "n_channels": 4,
+    #     "pixel_array_dtype": "uint8",
+    #     # z_buff_func is only used if the flag above is set to True.
+    #     # round z coordinate to nearest hundredth when comparring
+    #     "z_buff_func": lambda m: np.round(m.get_center()[2], 2),
+    #     "cairo_line_width_multiple": 0.01,
+    #     "use_z_index": True,
+    # }
 
     def __init__(
         self,
         # video_quality_config,
+        background_image=None,
+        frame_center=ORIGIN,
+        image_mode="RGBA",
+        n_channels=4,
+        pixel_array_dtype="uint8",
+        z_buff_func=lambda m: np.round(m.get_center()[2], 2),
+        cairo_line_width_multiple=0.01,
+        use_z_index=True,
         background=None,
+        pixel_height=None,
+        pixel_width=None,
+        frame_height=None,
+        frame_width=None,
+        frame_rate=None,
         **kwargs,
     ):
         """Initialises the Camera.
@@ -80,22 +93,36 @@ class Camera(object):
         **kwargs
             Any local variables to be set.
         """
-        digest_config(self, kwargs, locals())
+        # digest_config(self, kwargs, locals())
+        self.background_image = background_image
+        self.frame_center = frame_center
+        self.image_mode = image_mode
+        self.n_channels = n_channels
+        self.pixel_array_dtype = pixel_array_dtype
+        self.z_buff_func = z_buff_func
+        self.cairo_line_width_multiple = cairo_line_width_multiple
+        self.use_z_index = use_z_index
+        self.background = background
 
-        # All of the following are set to EITHER the value passed via kwargs,
-        # OR the value stored in the global config dict at the time of
-        # _instance construction_.  Before, they were in the CONFIG dict, which
-        # is a class attribute and is defined at the time of _class
-        # definition_.  This did not allow for creating two Cameras with
-        # different configurations in the same session.
-        for attr in [
-            "pixel_height",
-            "pixel_width",
-            "frame_height",
-            "frame_width",
-            "frame_rate",
-        ]:
-            setattr(self, attr, kwargs.get(attr, config[attr]))
+        if pixel_height is None:
+            pixel_height = config["pixel_height"]
+        self.pixel_height = pixel_height
+
+        if pixel_width is None:
+            pixel_width = config["pixel_width"]
+        self.pixel_width = pixel_width
+
+        if frame_height is None:
+            frame_height = config["frame_height"]
+        self.frame_height = frame_height
+
+        if frame_width is None:
+            frame_width = config["frame_width"]
+        self.frame_width = frame_width
+
+        if frame_rate is None:
+            frame_rate = config["frame_rate"]
+        self.frame_rate = frame_rate
 
         for attr in ["background_color", "background_opacity"]:
             setattr(self, f"_{attr}", kwargs.get(attr, config[attr]))
