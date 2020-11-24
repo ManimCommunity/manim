@@ -67,7 +67,7 @@ class Camera(object):
 
     def __init__(
         self,
-        # video_quality_config,
+        video_quality_config=None,
         background_image=None,
         frame_center=ORIGIN,
         image_mode="RGBA",

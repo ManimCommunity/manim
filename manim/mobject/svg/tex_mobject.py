@@ -386,9 +386,12 @@ class MathTex(SingleStringMathTex):
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
         SingleStringMathTex.__init__(
-            self, self.arg_separator.join(tex_strings), **kwargs
+            self,
+            self.arg_separator.join(tex_strings),
+            tex_environment=self.tex_environment,
+            **kwargs,
         )
-        self.break_up_by_substrings(self.tex_strings)
+        self.break_up_by_substrings()
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
         if self.organize_left_to_right:
@@ -407,16 +410,19 @@ class MathTex(SingleStringMathTex):
         split_list = [s for s in split_list if s != ""]
         return split_list
 
-    def break_up_by_substrings(self, config):
+    def break_up_by_substrings(self):
         """
         Reorganize existing submojects one layer
         deeper based on the structure of tex_strings (as a list
         of tex_strings)
         """
+        print("config is ", config)
         new_submobjects = []
         curr_index = 0
         for tex_string in self.tex_strings:
-            sub_tex_mob = SingleStringMathTex(tex_string, **config)
+            sub_tex_mob = SingleStringMathTex(
+                tex_string, tex_environment=self.tex_environment
+            )
             num_submobs = len(sub_tex_mob.submobjects)
             new_index = curr_index + num_submobs
             if num_submobs == 0:
@@ -494,10 +500,15 @@ class Tex(MathTex):
 
     """
 
-    CONFIG = {
-        "arg_separator": "",
-        "tex_environment": "center",
-    }
+    # CONFIG = {
+    #     "arg_separator": "",
+    #     "tex_environment": "center",
+    # }
+
+    def __init__(self, *args, arg_separator="", tex_environment="center", **kwargs):
+        # self.arg_separator = arg_separator
+        # self.tex_environment = tex_environment
+        MathTex().__init__(*args, arg_separator="", tex_environment="center", **kwargs)
 
 
 class BulletedList(Tex):
