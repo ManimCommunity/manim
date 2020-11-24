@@ -17,7 +17,11 @@ class LastFrame(mn.Scene):
         cols = mn.color_gradient([C.RED, C.WHITE, C.BLUE], num_colors)
 
         def col_uptater(mob):
-            integ = int((val_tracker.get_value() - tick_start) / (tick_end - tick_start) * (num_colors - 1))
+            integ = int(
+                (val_tracker.get_value() - tick_start)
+                / (tick_end - tick_start)
+                * (num_colors - 1)
+            )
             mob.set_color(cols[integ])
 
         square.add_updater(col_uptater)
