@@ -74,7 +74,7 @@ class DecimalNumber(VMobject):
         self.include_background_rectangle = include_background_rectangle
         self.edge_to_fix = edge_to_fix
 
-        self.initial_config = kwargs
+        self.initial_config = kwargs.copy()
         self.initial_config.update(
             {
                 "num_decimal_places": num_decimal_places,
