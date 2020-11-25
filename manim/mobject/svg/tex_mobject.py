@@ -243,8 +243,11 @@ class SingleStringMathTex(SVGMobject):
             self,
             file_name=file_name,
             should_center=self.should_center,
+            stroke_width=self.stroke_width,
             height=self.height,
             fill_opacity=self.fill_opacity,
+            background_stroke_width=self.background_stroke_width,
+            background_stroke_color=self.background_stroke_color,
             **kwargs,
         )
         if self.height is None:
