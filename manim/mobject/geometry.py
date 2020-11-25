@@ -1407,12 +1407,12 @@ class ArrowTip(VMobject):
                 self.add(a00, a11, a12, a21, a22, a31, a32, b11, b12, b21)
 
     """
-    CONFIG = {
-        "fill_opacity": 0,
-        "stroke_width": 3,
-        "length": DEFAULT_ARROW_TIP_LENGTH,
-        "start_angle": PI,
-    }
+    # CONFIG = {
+    #     "fill_opacity": 0,
+    #     "stroke_width": 3,
+    #     "length": DEFAULT_ARROW_TIP_LENGTH,
+    #     "start_angle": PI,
+    # }
 
     def __init__(self, *args, **kwargs):
         raise NotImplementedError("Has to be implemented in inheriting subclasses.")
@@ -1495,75 +1495,124 @@ class ArrowTip(VMobject):
         return get_norm(self.vector)
 
 
-class ArrowFilledTip(ArrowTip):
-    r"""Base class for arrow tips with filled tip.
+# class ArrowFilledTip(ArrowTip):
+#     r"""Base class for arrow tips with filled tip.
 
-    Note
-    ----
-    In comparison to :class:`ArrowTip`, this class only provides
-    different default settings for styling arrow tips. These settings
-    (in particular `fill_opacity` and `stroke_width`) can also be
-    overridden manually.
+#     Note
+#     ----
+#     In comparison to :class:`ArrowTip`, this class only provides
+#     different default settings for styling arrow tips. These settings
+#     (in particular `fill_opacity` and `stroke_width`) can also be
+#     overridden manually.
 
-    See Also
-    --------
-    :class:`ArrowTip`
-    :class:`ArrowTriangleFilledTip`
-    :class:`ArrowCircleFilledTip`
-    :class:`ArrowSquareFilledTip`
+#     See Also
+#     --------
+#     :class:`ArrowTip`
+#     :class:`ArrowTriangleFilledTip`
+#     :class:`ArrowCircleFilledTip`
+#     :class:`ArrowSquareFilledTip`
 
-    """
-    CONFIG = {
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "length": DEFAULT_ARROW_TIP_LENGTH,
-        "start_angle": PI,
-    }
+#     """
+#     # CONFIG = {
+#     "fill_opacity": 1,
+#     "stroke_width": 0,
+#     "length": DEFAULT_ARROW_TIP_LENGTH,
+#     "start_angle": PI,
+# }
 
 
 class ArrowTriangleTip(ArrowTip, Triangle):
     r"""Triangular arrow tip."""
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        Triangle.__init__(self, **kwargs)
+    def __init__(
+        self,
+        fill_opacity=0,
+        stroke_width=2,
+        length=DEFAULT_ARROW_TIP_LENGTH,
+        start_angle=PI,
+        **kwargs
+    ):
+        self.length = length
+        Triangle.__init__(
+            self,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            start_angle=start_angle,
+            **kwargs
+        )
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
 
 
-class ArrowTriangleFilledTip(ArrowFilledTip, ArrowTriangleTip):
+class ArrowTriangleFilledTip(ArrowTriangleTip):
     r"""Triangular arrow tip with filled tip.
 
     This is the default arrow tip shape.
     """
-    pass
+
+    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+        ArrowTriangleTip.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
 
 
 class ArrowCircleTip(ArrowTip, Circle):
     r"""Circular arrow tip."""
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        Circle.__init__(self, **kwargs)
+    def __init__(
+        self,
+        fill_opacity=0,
+        stroke_width=2,
+        length=DEFAULT_ARROW_TIP_LENGTH,
+        start_angle=PI,
+        **kwargs
+    ):
+        self.length = length
+        self.start_angle = start_angle
+        Circle.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
 
 
-class ArrowCircleFilledTip(ArrowFilledTip, ArrowCircleTip):
+class ArrowCircleFilledTip(ArrowCircleTip):
     r"""Circular arrow tip with filled tip."""
-    pass
+
+    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+        ArrowCircleTip.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
 
 
 class ArrowSquareTip(ArrowTip, Square):
     r"""Square arrow tip."""
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        Square.__init__(self, side_length=self.length, **kwargs)
+    def __init__(
+        self,
+        fill_opacity=0,
+        stroke_width=2,
+        length=DEFAULT_ARROW_TIP_LENGTH,
+        start_angle=PI,
+        **kwargs
+    ):
+        self.length = length
+        self.start_angle = start_angle
+        Square.__init__(
+            self,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            side_length=self.length,
+            **kwargs
+        )
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
 
 
-class ArrowSquareFilledTip(ArrowFilledTip, ArrowSquareTip):
+class ArrowSquareFilledTip(ArrowSquareTip):
     r"""Square arrow tip with filled tip."""
-    pass
+
+    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+        ArrowSquareTip.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
