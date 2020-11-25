@@ -40,21 +40,54 @@ class DecimalNumber(VMobject):
 
     """
 
-    CONFIG = {
-        "num_decimal_places": 2,
-        "include_sign": False,
-        "group_with_commas": True,
-        "digit_to_digit_buff": 0.05,
-        "show_ellipsis": False,
-        "unit": None,  # Aligned to bottom unless it starts with "^"
-        "include_background_rectangle": False,
-        "edge_to_fix": LEFT,
-    }
+    # CONFIG = {
+    #     "num_decimal_places": 2,
+    #     "include_sign": False,
+    #     "group_with_commas": True,
+    #     "digit_to_digit_buff": 0.05,
+    #     "show_ellipsis": False,
+    #     "unit": None,  # Aligned to bottom unless it starts with "^"
+    #     "include_background_rectangle": False,
+    #     "edge_to_fix": LEFT,
+    # }
 
-    def __init__(self, number=0, **kwargs):
+    def __init__(
+        self,
+        number=0,
+        num_decimal_places=2,
+        include_sign=False,
+        group_with_commas=True,
+        digit_to_digit_buff=0.05,
+        show_ellipsis=False,
+        unit=None,  # Aligned to bottom unless it starts with "^"
+        include_background_rectangle=False,
+        edge_to_fix=LEFT,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.number = number
+        self.num_decimal_places = num_decimal_places
+        self.include_sign = include_sign
+        self.group_with_commas = group_with_commas
+        self.digit_to_digit_buff = digit_to_digit_buff
+        self.show_ellipsis = show_ellipsis
+        self.unit = unit
+        self.include_background_rectangle = include_background_rectangle
+        self.edge_to_fix = edge_to_fix
+
         self.initial_config = kwargs
+        self.initial_config.update(
+            {
+                "num_decimal_places": num_decimal_places,
+                "include_sign": include_sign,
+                "group_with_commas": group_with_commas,
+                "digit_to_digit_buff": digit_to_digit_buff,
+                "show_ellipsis": show_ellipsis,
+                "unit": unit,
+                "include_background_rectangle": include_background_rectangle,
+                "edge_to_fix": edge_to_fix,
+            }
+        )
 
         if isinstance(number, complex):
             formatter = self.get_complex_formatter()
@@ -144,7 +177,7 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number, **config):
-        full_config = dict(self.CONFIG)
+        full_config = dict()
         full_config.update(self.initial_config)
         full_config.update(config)
         new_decimal = DecimalNumber(number, **full_config)
@@ -170,9 +203,11 @@ class DecimalNumber(VMobject):
 
 
 class Integer(DecimalNumber):
-    CONFIG = {
-        "num_decimal_places": 0,
-    }
+    # CONFIG = {
+    #     "num_decimal_places": 0,
+    # }
+    def __init__(self, num_decimal_places=0, **kwargs):
+        DecimalNumber.__init__(self, num_decimal_places=num_decimal_places, **kwargs)
 
     def get_value(self):
         return int(np.round(super().get_value()))
