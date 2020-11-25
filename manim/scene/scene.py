@@ -54,7 +54,8 @@ class Scene(Container):
     def __init__(self, **kwargs):
         Container.__init__(self, **kwargs)
         self.camera = self.camera_class(**camera_config)
-        self.file_writer = SceneFileWriter(self, **file_writer_config,)
+        cls = getattr(self, "file_writer_class", SceneFileWriter)
+        self.file_writer = cls(self, **file_writer_config,)
 
         self.mobjects = []
         # TODO, remove need for foreground mobjects
@@ -856,6 +857,7 @@ class Scene(Container):
             self.file_writer.begin_animation(allow_write)
             func(self, *args, **kwargs)
             self.file_writer.end_animation(allow_write)
+            getattr(self.file_writer, "stream", lambda: None)()
             self.num_plays += 1
 
         return wrapper
