@@ -131,16 +131,6 @@ class CoordinateSystem:
 
 
 class Axes(VGroup, CoordinateSystem):
-    # CONFIG = {
-    #     "axis_config": {
-    #         "color": LIGHT_GREY,
-    #         "include_tip": True,
-    #         "exclude_zero_from_default_numbers": True,
-    #     },
-    #     "x_axis_config": {},
-    #     "y_axis_config": {"label_direction": LEFT},
-    #     "center_point": ORIGIN,
-    # }
 
     def __init__(
         self,
@@ -218,14 +208,6 @@ class Axes(VGroup, CoordinateSystem):
 
 
 class ThreeDAxes(Axes):
-    # CONFIG = {
-    #     "z_axis_config": {},
-    #     "z_min": -3.5,
-    #     "z_max": 3.5,
-    #     "z_normal": DOWN,
-    #     "num_axis_pieces": 20,
-    #     "light_source": 9 * DOWN + 7 * LEFT + 10 * OUT,
-    # }
 
     def __init__(
         self,
@@ -234,7 +216,7 @@ class ThreeDAxes(Axes):
         z_max=3.5,
         z_normal=DOWN,
         num_axis_pieces=20,
-        light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
+        light_source=9*DOWN + 7*LEFT + 10*OUT,
         **kwargs
     ):
         if z_axis_config is None:

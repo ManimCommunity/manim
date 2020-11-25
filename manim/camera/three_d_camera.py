@@ -27,11 +27,11 @@ class ThreeDCamera(Camera):
             self,
             *args,
             distance=20.0,
-            shading_factor = 0.2,
-            default_distance = 5.0,
-            light_source_start_point = 9*DOWN + 7*LEFT + 10*OUT,
-            should_apply_shading = True,
-            exponential_projection = False,
+            shading_factor=0.2,
+            default_distance=5.0,
+            light_source_start_point=9*DOWN + 7*LEFT + 10*OUT,
+            should_apply_shading=True,
+            exponential_projection=False,
             phi=0,
             theta=-90*DEGREES,
             gamma=0,
@@ -96,9 +96,7 @@ class ThreeDCamera(Camera):
             self.gamma_tracker,
         ]
 
-    def modified_rgbas(
-        self, vmobject, rgbas
-    ):  # TODO: Write DocStrings for this method.
+    def modified_rgbas(self, vmobject, rgbas):
         if not self.should_apply_shading:
             return rgbas
         if vmobject.shade_in_3d and (vmobject.get_num_points() > 0):
