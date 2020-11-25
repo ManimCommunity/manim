@@ -103,12 +103,23 @@ class TipableVMobject(VMobject):
 
     """
 
-    CONFIG = {
-        "tip_length": DEFAULT_ARROW_TIP_LENGTH,
-        # TODO
-        "normal_vector": OUT,
-        "tip_style": dict(),
-    }
+    # CONFIG = {
+    #     "tip_length": DEFAULT_ARROW_TIP_LENGTH,
+    #     # TODO
+    #     "normal_vector": OUT,
+    #     "tip_style": dict(),
+    # }
+    def __init__(
+        self,
+        tip_length=DEFAULT_ARROW_TIP_LENGTH,
+        normal_vector=OUT,
+        tip_style=dict(),
+        **kwargs
+    ):
+        self.tip_length = tip_length
+        self.normal_vector = normal_vector
+        self.tip_style = tip_style
+        VMobject.__init__(self, **kwargs)
 
     # Adding, Creating, Modifying tips
 
@@ -254,18 +265,31 @@ class TipableVMobject(VMobject):
 class Arc(TipableVMobject):
     """A circular arc."""
 
-    CONFIG = {
-        "radius": 1.0,
-        "num_components": 9,
-        "anchors_span_full_range": True,
-        "arc_center": ORIGIN,
-    }
+    # CONFIG = {
+    #     "radius": 1.0,
+    #     "num_components": 9,
+    #     "anchors_span_full_range": True,
+    #     "arc_center": ORIGIN,
+    # }
 
-    def __init__(self, start_angle=0, angle=TAU / 4, **kwargs):
+    def __init__(
+        self,
+        start_angle=0,
+        angle=TAU / 4,
+        radius=1.0,
+        num_components=9,
+        anchors_span_full_range=True,
+        arc_center=ORIGIN,
+        **kwargs
+    ):
+        self.radius = radius
+        self.num_components = num_components
+        self.anchors_span_full_range = anchors_span_full_range
+        self.arc_center = arc_center
         self.start_angle = start_angle
         self.angle = angle
         self._failed_to_get_center = False
-        VMobject.__init__(self, **kwargs)
+        TipableVMobject.__init__(self, **kwargs)
 
     def generate_points(self):
         self.set_pre_positioned_points()
@@ -350,7 +374,7 @@ class ArcBetweenPoints(Arc):
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
-        Arc.__init__(self, angle=angle, **kwargs)
+        Arc.__init__(self, radius=radius, angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
@@ -381,10 +405,19 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
-    CONFIG = {"color": RED, "close_new_points": True, "anchors_span_full_range": False}
+    # CONFIG = {"color": RED, "close_new_points": True, "anchors_span_full_range": False}
 
-    def __init__(self, **kwargs):
-        Arc.__init__(self, 0, TAU, **kwargs)
+    def __init__(
+        self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
+    ):
+        Arc.__init__(
+            self,
+            0,
+            TAU,
+            close_new_points=close_new_points,
+            anchors_span_full_range=anchors_span_full_range,
+            **kwargs
+        )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
         # Ignores dim_to_match and stretch; result will always be a circle
@@ -403,15 +436,31 @@ class Circle(Arc):
 
 
 class Dot(Circle):
-    CONFIG = {
-        "radius": DEFAULT_DOT_RADIUS,
-        "stroke_width": 0,
-        "fill_opacity": 1.0,
-        "color": WHITE,
-    }
+    # CONFIG = {
+    #     "radius": DEFAULT_DOT_RADIUS,
+    #     "stroke_width": 0,
+    #     "fill_opacity": 1.0,
+    #     "color": WHITE,
+    # }
 
-    def __init__(self, point=ORIGIN, **kwargs):
-        Circle.__init__(self, arc_center=point, **kwargs)
+    def __init__(
+        self,
+        point=ORIGIN,
+        radius=DEFAULT_DOT_RADIUS,
+        stroke_width=0,
+        fill_opacity=1.0,
+        color=WHITE,
+        **kwargs
+    ):
+        Circle.__init__(
+            self,
+            arc_center=point,
+            radius=radius,
+            stroke_width=stroke_width,
+            fill_opacity=fill_opacity,
+            color=color,
+            **kwargs
+        )
 
 
 class SmallDot(Dot):
@@ -419,7 +468,9 @@ class SmallDot(Dot):
     A dot with small radius
     """
 
-    CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
+    # CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
+    def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
+        Dot.__init__(self, radius=radius, **kwargs)
 
 
 class AnnotationDot(Dot):
@@ -427,12 +478,28 @@ class AnnotationDot(Dot):
     A dot with bigger radius and bold stroke to annotate scenes.
     """
 
-    CONFIG = {
-        "radius": DEFAULT_DOT_RADIUS * 1.3,
-        "stroke_width": 5,
-        "stroke_color": WHITE,
-        "fill_color": BLUE,
-    }
+    # CONFIG = {
+    #     "radius": DEFAULT_DOT_RADIUS * 1.3,
+    #     "stroke_width": 5,
+    #     "stroke_color": WHITE,
+    #     "fill_color": BLUE,
+    # }
+    def __init__(
+        self,
+        radius=DEFAULT_DOT_RADIUS * 1.3,
+        stroke_width=5,
+        stroke_color=WHITE,
+        fill_color=BLUE,
+        **kwargs
+    ):
+        Dot.__init__(
+            self,
+            radius=radius,
+            stroke_width=stroke_width,
+            stroke_color=stroke_color,
+            fill_color=fill_color,
+            **kwargs
+        )
 
 
 class LabeledDot(Dot):
@@ -489,24 +556,54 @@ class LabeledDot(Dot):
 
 
 class Ellipse(Circle):
-    CONFIG = {"width": 2, "height": 1}
+    # CONFIG = {"width": 2, "height": 1}
 
-    def __init__(self, **kwargs):
+    def __init__(self, width=2, height=1, **kwargs):
         Circle.__init__(self, **kwargs)
+        self.width = width
+        self.height = height
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
 
 class AnnularSector(Arc):
-    CONFIG = {
-        "inner_radius": 1,
-        "outer_radius": 2,
-        "angle": TAU / 4,
-        "start_angle": 0,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "color": WHITE,
-    }
+    # CONFIG = {
+    #     "inner_radius": 1,
+    #     "outer_radius": 2,
+    #     "angle": TAU / 4,
+    #     "start_angle": 0,
+    #     "fill_opacity": 1,
+    #     "stroke_width": 0,
+    #     "color": WHITE,
+    # }
+
+    def __init__(
+        self,
+        inner_radius=1,
+        outer_radius=2,
+        angle=TAU / 4,
+        start_angle=0,
+        fill_opacity=1,
+        stroke_width=0,
+        color=WHITE,
+        **kwargs
+    ):
+        self.inner_radius = inner_radius
+        self.outer_radius = outer_radius
+        self.angle = angle
+        self.start_angle = start_angle
+        self.fill_opacity = fill_opacity
+        self.stroke_width = stroke_width
+        self.color = color
+        Arc.__init__(
+            self,
+            start_angle=self.start_angle,
+            angle=self.angle,
+            fill_opacity=self.fill_opacity,
+            stroke_width=self.stroke_width,
+            color=self.color,
+            **kwargs
+        )
 
     def generate_points(self):
         inner_arc, outer_arc = [
