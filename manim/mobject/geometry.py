@@ -392,7 +392,6 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
-    # CONFIG = {"color": RED, "close_new_points": True, "anchors_span_full_range": False}
 
     def __init__(
         self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
@@ -401,6 +400,7 @@ class Circle(Arc):
             self,
             0,
             TAU,
+            color=color,
             close_new_points=close_new_points,
             anchors_span_full_range=anchors_span_full_range,
             **kwargs

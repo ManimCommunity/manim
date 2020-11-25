@@ -47,18 +47,22 @@ class ParametricFunction(VMobject):
                 self.wait()
     """
 
-    CONFIG = {
-        "t_min": 0,
-        "t_max": 1,
-        "step_size": 0.01,  # Use "auto" (lowercase) for automatic step size
-        "dt": 1e-8,
-        # TODO, be smarter about figuring these out?
-        "discontinuities": [],
-    }
-
-    def __init__(self, function=None, **kwargs):
-        # either get a function from __init__ or from CONFIG
-        self.function = function or self.function
+    def __init__(
+            self,
+            function=None,
+            t_min=0,
+            t_max=1,
+            step_size=0.01,
+            dt=1e-8,
+            discontinuities=None,
+            **kwargs
+    ):
+        self.function = function
+        self.t_min = t_min
+        self.t_max = t_max
+        self.step_size = step_size
+        self.dt = dt
+        self.discontinuities = [] if discontinuities is None else discontinuities
         VMobject.__init__(self, **kwargs)
 
     def get_function(self):

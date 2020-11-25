@@ -20,24 +20,39 @@ class ThreeDVMobject(VMobject):
 
 
 class ParametricSurface(VGroup):
-    CONFIG = {
-        "u_min": 0,
-        "u_max": 1,
-        "v_min": 0,
-        "v_max": 1,
-        "resolution": 32,
-        "surface_piece_config": {},
-        "fill_color": BLUE_D,
-        "fill_opacity": 1.0,
-        "checkerboard_colors": [BLUE_D, BLUE_E],
-        "stroke_color": LIGHT_GREY,
-        "stroke_width": 0.5,
-        "should_make_jagged": False,
-        "pre_function_handle_to_anchor_scale_factor": 0.00001,
-    }
 
-    def __init__(self, func, **kwargs):
+    def __init__(
+            self,
+            func,
+            u_min=0,
+            u_max=1,
+            v_min=0,
+            v_max=1,
+            resolution=32,
+            surface_piece_config={},
+            fill_color=BLUE_D,
+            fill_opacity=1.0,
+            checkerboard_colors=[BLUE_D, BLUE_E],
+            stroke_color=LIGHT_GREY,
+            stroke_width=0.5,
+            should_make_jagged=False,
+            pre_function_handle_to_anchor_scale_factor=0.00001,
+            **kwargs
+    ):
         VGroup.__init__(self, **kwargs)
+        self.u_min = u_min
+        self.u_max = u_max
+        self.v_min = v_min
+        self.v_max = v_max
+        self.resolution = resolution
+        self.surface_piece_config = surface_piece_config
+        self.fill_color = fill_color
+        self.fill_opacity = fill_opacity
+        self.checkerboard_colors = checkerboard_colors
+        self.stroke_color = stroke_color
+        self.stroke_width = stroke_width
+        self.should_make_jagged = should_make_jagged
+        self.pre_function_handle_to_anchor_scale_factor = pre_function_handle_to_anchor_scale_factor
         self.func = func
         self.setup_in_uv_space()
         self.apply_function(lambda p: func(p[0], p[1]))
@@ -105,17 +120,27 @@ class ParametricSurface(VGroup):
 
 
 class Sphere(ParametricSurface):
-    CONFIG = {
-        "resolution": (12, 24),
-        "radius": 1,
-        "u_min": 0.001,
-        "u_max": PI - 0.001,
-        "v_min": 0,
-        "v_max": TAU,
-    }
 
-    def __init__(self, **kwargs):
-        ParametricSurface.__init__(self, self.func, **kwargs)
+    def __init__(
+            self,
+            radius=1,
+            resolution=(12, 24),
+            u_min=0.001,
+            u_max=PI-0.001,
+            v_min=0,
+            v_max=TAU,
+            **kwargs
+    ):
+        ParametricSurface.__init__(
+            self,
+            self.func,
+            resolution=resolution,
+            u_min=u_min,
+            u_max=u_max,
+            v_min=v_min,
+            v_max=v_max,
+            **kwargs)
+        self.radius = radius
         self.scale(self.radius)
 
     def func(self, u, v):

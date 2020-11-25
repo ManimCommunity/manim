@@ -15,9 +15,10 @@ from ...utils.space_ops import get_norm
 
 
 class PMobject(Mobject):
-    CONFIG = {
-        "stroke_width": DEFAULT_STROKE_WIDTH,
-    }
+
+    def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, **kwargs):
+        self.stroke_width = stroke_width
+        super().__init__(**kwargs)
 
     def reset_points(self):
         self.rgbas = np.zeros((0, 4))
@@ -242,10 +243,7 @@ class PointCloudDot(Mobject1D):
 
 
 class Point(PMobject):
-    CONFIG = {
-        "color": BLACK,
-    }
 
-    def __init__(self, location=ORIGIN, **kwargs):
-        PMobject.__init__(self, **kwargs)
+    def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
+        PMobject.__init__(self, color=color, **kwargs)
         self.add_points([location])
