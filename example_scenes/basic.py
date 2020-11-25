@@ -68,11 +68,6 @@ class OpeningManimExample(Scene):
         self.wait()
 
 
-class AronTest(Scene):
-    def construct(self):
-        t = Tex("test", "\\LaTeX")
-
-
 class SquareToCircle(Scene):
     def construct(self):
         circle = Circle()
