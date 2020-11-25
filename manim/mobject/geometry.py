@@ -103,12 +103,23 @@ class TipableVMobject(VMobject):
 
     """
 
-    CONFIG = {
-        "tip_length": DEFAULT_ARROW_TIP_LENGTH,
-        # TODO
-        "normal_vector": OUT,
-        "tip_style": dict(),
-    }
+    # CONFIG = {
+    #     "tip_length": DEFAULT_ARROW_TIP_LENGTH,
+    #     # TODO
+    #     "normal_vector": OUT,
+    #     "tip_style": dict(),
+    # }
+    def __init__(
+        self,
+        tip_length=DEFAULT_ARROW_TIP_LENGTH,
+        normal_vector=OUT,
+        tip_style=dict(),
+        **kwargs
+    ):
+        self.tip_length = tip_length
+        self.normal_vector = normal_vector
+        self.tip_style = tip_style
+        VMobject.__init__(self, **kwargs)
 
     # Adding, Creating, Modifying tips
 
@@ -254,18 +265,31 @@ class TipableVMobject(VMobject):
 class Arc(TipableVMobject):
     """A circular arc."""
 
-    CONFIG = {
-        "radius": 1.0,
-        "num_components": 9,
-        "anchors_span_full_range": True,
-        "arc_center": ORIGIN,
-    }
+    # CONFIG = {
+    #     "radius": 1.0,
+    #     "num_components": 9,
+    #     "anchors_span_full_range": True,
+    #     "arc_center": ORIGIN,
+    # }
 
-    def __init__(self, start_angle=0, angle=TAU / 4, **kwargs):
+    def __init__(
+        self,
+        start_angle=0,
+        angle=TAU / 4,
+        radius=1.0,
+        num_components=9,
+        anchors_span_full_range=True,
+        arc_center=ORIGIN,
+        **kwargs
+    ):
+        self.radius = radius
+        self.num_components = num_components
+        self.anchors_span_full_range = anchors_span_full_range
+        self.arc_center = arc_center
         self.start_angle = start_angle
         self.angle = angle
         self._failed_to_get_center = False
-        VMobject.__init__(self, **kwargs)
+        TipableVMobject.__init__(self, **kwargs)
 
     def generate_points(self):
         self.set_pre_positioned_points()
@@ -350,7 +374,7 @@ class ArcBetweenPoints(Arc):
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
-        Arc.__init__(self, angle=angle, **kwargs)
+        Arc.__init__(self, radius=radius, angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
@@ -381,10 +405,19 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
-    CONFIG = {"color": RED, "close_new_points": True, "anchors_span_full_range": False}
+    # CONFIG = {"color": RED, "close_new_points": True, "anchors_span_full_range": False}
 
-    def __init__(self, **kwargs):
-        Arc.__init__(self, 0, TAU, **kwargs)
+    def __init__(
+        self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
+    ):
+        Arc.__init__(
+            self,
+            0,
+            TAU,
+            close_new_points=close_new_points,
+            anchors_span_full_range=anchors_span_full_range,
+            **kwargs
+        )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
         # Ignores dim_to_match and stretch; result will always be a circle
@@ -403,15 +436,31 @@ class Circle(Arc):
 
 
 class Dot(Circle):
-    CONFIG = {
-        "radius": DEFAULT_DOT_RADIUS,
-        "stroke_width": 0,
-        "fill_opacity": 1.0,
-        "color": WHITE,
-    }
+    # CONFIG = {
+    #     "radius": DEFAULT_DOT_RADIUS,
+    #     "stroke_width": 0,
+    #     "fill_opacity": 1.0,
+    #     "color": WHITE,
+    # }
 
-    def __init__(self, point=ORIGIN, **kwargs):
-        Circle.__init__(self, arc_center=point, **kwargs)
+    def __init__(
+        self,
+        point=ORIGIN,
+        radius=DEFAULT_DOT_RADIUS,
+        stroke_width=0,
+        fill_opacity=1.0,
+        color=WHITE,
+        **kwargs
+    ):
+        Circle.__init__(
+            self,
+            arc_center=point,
+            radius=radius,
+            stroke_width=stroke_width,
+            fill_opacity=fill_opacity,
+            color=color,
+            **kwargs
+        )
 
 
 class SmallDot(Dot):
@@ -419,7 +468,9 @@ class SmallDot(Dot):
     A dot with small radius
     """
 
-    CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
+    # CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
+    def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
+        Dot.__init__(self, radius=radius, **kwargs)
 
 
 class AnnotationDot(Dot):
@@ -427,12 +478,28 @@ class AnnotationDot(Dot):
     A dot with bigger radius and bold stroke to annotate scenes.
     """
 
-    CONFIG = {
-        "radius": DEFAULT_DOT_RADIUS * 1.3,
-        "stroke_width": 5,
-        "stroke_color": WHITE,
-        "fill_color": BLUE,
-    }
+    # CONFIG = {
+    #     "radius": DEFAULT_DOT_RADIUS * 1.3,
+    #     "stroke_width": 5,
+    #     "stroke_color": WHITE,
+    #     "fill_color": BLUE,
+    # }
+    def __init__(
+        self,
+        radius=DEFAULT_DOT_RADIUS * 1.3,
+        stroke_width=5,
+        stroke_color=WHITE,
+        fill_color=BLUE,
+        **kwargs
+    ):
+        Dot.__init__(
+            self,
+            radius=radius,
+            stroke_width=stroke_width,
+            stroke_color=stroke_color,
+            fill_color=fill_color,
+            **kwargs
+        )
 
 
 class LabeledDot(Dot):
@@ -489,24 +556,54 @@ class LabeledDot(Dot):
 
 
 class Ellipse(Circle):
-    CONFIG = {"width": 2, "height": 1}
+    # CONFIG = {"width": 2, "height": 1}
 
-    def __init__(self, **kwargs):
+    def __init__(self, width=2, height=1, **kwargs):
         Circle.__init__(self, **kwargs)
+        self.width = width
+        self.height = height
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
 
 class AnnularSector(Arc):
-    CONFIG = {
-        "inner_radius": 1,
-        "outer_radius": 2,
-        "angle": TAU / 4,
-        "start_angle": 0,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "color": WHITE,
-    }
+    # CONFIG = {
+    #     "inner_radius": 1,
+    #     "outer_radius": 2,
+    #     "angle": TAU / 4,
+    #     "start_angle": 0,
+    #     "fill_opacity": 1,
+    #     "stroke_width": 0,
+    #     "color": WHITE,
+    # }
+
+    def __init__(
+        self,
+        inner_radius=1,
+        outer_radius=2,
+        angle=TAU / 4,
+        start_angle=0,
+        fill_opacity=1,
+        stroke_width=0,
+        color=WHITE,
+        **kwargs
+    ):
+        self.inner_radius = inner_radius
+        self.outer_radius = outer_radius
+        self.angle = angle
+        self.start_angle = start_angle
+        self.fill_opacity = fill_opacity
+        self.stroke_width = stroke_width
+        self.color = color
+        Arc.__init__(
+            self,
+            start_angle=self.start_angle,
+            angle=self.angle,
+            fill_opacity=self.fill_opacity,
+            stroke_width=self.stroke_width,
+            color=self.color,
+            **kwargs
+        )
 
     def generate_points(self):
         inner_arc, outer_arc = [
@@ -526,18 +623,48 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    CONFIG = {"outer_radius": 1, "inner_radius": 0}
+    # CONFIG = {"outer_radius": 1, "inner_radius": 0}
+    def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
+        self.outer_radius = outer_radius
+        self.inner_radius = inner_radius
+        AnnularSector.__init__(
+            self,
+            inner_radius=self.inner_radius,
+            outer_radius=self.outer_radius,
+            **kwargs
+        )
 
 
 class Annulus(Circle):
-    CONFIG = {
-        "inner_radius": 1,
-        "outer_radius": 2,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "color": WHITE,
-        "mark_paths_closed": False,
-    }
+    # CONFIG = {
+    #     "inner_radius": 1,
+    #     "outer_radius": 2,
+    #     "fill_opacity": 1,
+    #     "stroke_width": 0,
+    #     "color": WHITE,
+    #     "mark_paths_closed": False,
+    # }
+
+    def __init__(
+        self,
+        inner_radius=1,
+        outer_radius=2,
+        fill_opacity=1,
+        stroke_width=0,
+        color=WHITE,
+        mark_paths_closed=False,
+        **kwargs
+    ):
+        self.mark_paths_closed = mark_paths_closed  # is this even used?
+        self.inner_radius = inner_radius
+        self.outer_radius = outer_radius
+        Circle.__init__(
+            self,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            color=color,
+            **kwargs
+        )
 
     def generate_points(self):
         self.radius = self.outer_radius
@@ -550,12 +677,14 @@ class Annulus(Circle):
 
 
 class Line(TipableVMobject):
-    CONFIG = {"buff": 0, "path_arc": None}  # angle of arc specified here
+    # CONFIG = {"buff": 0, "path_arc": None}  # angle of arc specified here
 
-    def __init__(self, start=LEFT, end=RIGHT, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=None, **kwargs):
+        # digest_config(self, kwargs)
+        self.buff = buff
+        self.path_arc = path_arc
         self.set_start_and_end_attrs(start, end)
-        VMobject.__init__(self, **kwargs)
+        TipableVMobject.__init__(self, **kwargs)
 
     def generate_points(self):
         if self.path_arc:
@@ -644,13 +773,23 @@ class Line(TipableVMobject):
 
 
 class DashedLine(Line):
-    CONFIG = {
-        "dash_length": DEFAULT_DASH_LENGTH,
-        "dash_spacing": None,
-        "positive_space_ratio": 0.5,
-    }
+    # CONFIG = {
+    #     "dash_length": DEFAULT_DASH_LENGTH,
+    #     "dash_spacing": None,
+    #     "positive_space_ratio": 0.5,
+    # }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        dash_length=DEFAULT_DASH_LENGTH,
+        dash_spacing=None,
+        positive_space_ratio=0.5,
+        **kwargs
+    ):
+        self.dash_length = dash_length
+        self.dash_spacing = (dash_spacing,)
+        self.positive_space_ratio = positive_space_ratio
         Line.__init__(self, *args, **kwargs)
         ps_ratio = self.positive_space_ratio
         num_dashes = self.calculate_num_dashes(ps_ratio)
@@ -690,10 +829,12 @@ class DashedLine(Line):
 
 
 class TangentLine(Line):
-    CONFIG = {"length": 1, "d_alpha": 1e-6}
+    # CONFIG = {"length": 1, "d_alpha": 1e-6}
 
-    def __init__(self, vmob, alpha, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
+        # digest_config(self, kwargs)
+        self.length = length
+        self.d_alpha = d_alpha
         da = self.d_alpha
         a1 = np.clip(alpha - da, 0, 1)
         a2 = np.clip(alpha + da, 0, 1)
@@ -704,9 +845,11 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
-    CONFIG = {"width": 0.2, "angle": 0}
+    # CONFIG = {"width": 0.2, "angle": 0}
 
-    def __init__(self, **kwargs):
+    def __init__(self, width=0.2, angle=0, **kwargs):
+        self.width = width
+        self.angle = angle
         VMobject.__init__(self, **kwargs)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
         self.set_width(self.width, about_point=ORIGIN)
@@ -714,16 +857,34 @@ class Elbow(VMobject):
 
 
 class Arrow(Line):
-    CONFIG = {
-        "stroke_width": 6,
-        "buff": MED_SMALL_BUFF,
-        "max_tip_length_to_length_ratio": 0.25,
-        "max_stroke_width_to_length_ratio": 5,
-        "preserve_tip_size_when_scaling": True,
-    }
+    # CONFIG = {
+    #     "stroke_width": 6,
+    #     "buff": MED_SMALL_BUFF,
+    #     "max_tip_length_to_length_ratio": 0.25,
+    #     "max_stroke_width_to_length_ratio": 5,
+    #     "preserve_tip_size_when_scaling": True,
+    # }
 
-    def __init__(self, *args, **kwargs):
-        Line.__init__(self, *args, **kwargs)
+    def __init__(
+        self,
+        *args,
+        stroke_width=6,
+        buff=MED_SMALL_BUFF,
+        max_tip_length_to_length_ratio=0.25,
+        max_stroke_width_to_length_ratio=5,
+        preserve_tip_size_when_scaling=True,
+        **kwargs
+    ):
+        self.max_tip_length_to_length_ratio = (
+            max_tip_length_to_length_ratio  # is this used anywhere
+        )
+        self.max_stroke_width_to_length_ratio = (
+            max_stroke_width_to_length_ratio  # is this used anywhere
+        )
+        self.preserve_tip_size_when_scaling = (
+            preserve_tip_size_when_scaling  # is this used anywhere
+        )
+        Line.__init__(self, *args, buff=buff, **kwargs)
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
@@ -800,12 +961,12 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
-    CONFIG = {"buff": 0}
+    # CONFIG = {"buff": 0}
 
-    def __init__(self, direction=RIGHT, **kwargs):
+    def __init__(self, buff=0, direction=RIGHT, **kwargs):
         if len(direction) == 2:
             direction = np.append(np.array(direction), 0)
-        Arrow.__init__(self, ORIGIN, direction, **kwargs)
+        Arrow.__init__(self, ORIGIN, direction, buff=0, **kwargs)
 
 
 class DoubleArrow(Arrow):
@@ -826,10 +987,10 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
-    CONFIG = {"color": BLUE}
+    # CONFIG = {"color": BLUE}
 
-    def __init__(self, *vertices, **kwargs):
-        VMobject.__init__(self, **kwargs)
+    def __init__(self, *vertices, color=BLUE, **kwargs):
+        VMobject.__init__(self, color=color, **kwargs)
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
@@ -871,10 +1032,11 @@ class Polygon(VMobject):
 
 
 class RegularPolygon(Polygon):
-    CONFIG = {"start_angle": None}
+    # CONFIG = {"start_angle": None}
 
-    def __init__(self, n=6, **kwargs):
-        digest_config(self, kwargs, locals())
+    def __init__(self, n=6, start_angle=None, **kwargs):
+        # digest_config(self, kwargs, locals())
+        self.start_angle = start_angle
         if self.start_angle is None:
             if n % 2 == 0:
                 self.start_angle = 0
@@ -1129,34 +1291,49 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
-    CONFIG = {
-        "color": WHITE,
-        "height": 2.0,
-        "width": 4.0,
-        "mark_paths_closed": True,
-        "close_new_points": True,
-    }
+    # CONFIG = {
+    #     "color": WHITE,
+    #     "height": 2.0,
+    #     "width": 4.0,
+    #     "mark_paths_closed": True,
+    #     "close_new_points": True,
+    # }
 
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        color=WHITE,
+        height=2.0,
+        width=4.0,
+        mark_paths_closed=True,
+        close_new_points=True,
+        **kwargs
+    ):
+        self.color = color
+        self.height = height
+        self.width = width
+        self.mark_paths_closed = mark_paths_closed
+        self.close_new_points = close_new_points
         Polygon.__init__(self, UL, UR, DR, DL, **kwargs)
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
 
 class Square(Rectangle):
-    CONFIG = {"side_length": 2.0}
+    # CONFIG = {"side_length": 2.0}
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, side_length=2.0, **kwargs):
+        self.side_length = side_length
+        # digest_config(self, kwargs)
         Rectangle.__init__(
             self, height=self.side_length, width=self.side_length, **kwargs
         )
 
 
 class RoundedRectangle(Rectangle):
-    CONFIG = {"corner_radius": 0.5}
+    # CONFIG = {"corner_radius": 0.5}
 
-    def __init__(self, **kwargs):
+    def __init__(self, corner_radius=0.5, **kwargs):
+        self.corner_radius = corner_radius
         Rectangle.__init__(self, **kwargs)
         self.round_corners(self.corner_radius)
 
@@ -1230,12 +1407,12 @@ class ArrowTip(VMobject):
                 self.add(a00, a11, a12, a21, a22, a31, a32, b11, b12, b21)
 
     """
-    CONFIG = {
-        "fill_opacity": 0,
-        "stroke_width": 3,
-        "length": DEFAULT_ARROW_TIP_LENGTH,
-        "start_angle": PI,
-    }
+    # CONFIG = {
+    #     "fill_opacity": 0,
+    #     "stroke_width": 3,
+    #     "length": DEFAULT_ARROW_TIP_LENGTH,
+    #     "start_angle": PI,
+    # }
 
     def __init__(self, *args, **kwargs):
         raise NotImplementedError("Has to be implemented in inheriting subclasses.")
@@ -1318,75 +1495,124 @@ class ArrowTip(VMobject):
         return get_norm(self.vector)
 
 
-class ArrowFilledTip(ArrowTip):
-    r"""Base class for arrow tips with filled tip.
+# class ArrowFilledTip(ArrowTip):
+#     r"""Base class for arrow tips with filled tip.
 
-    Note
-    ----
-    In comparison to :class:`ArrowTip`, this class only provides
-    different default settings for styling arrow tips. These settings
-    (in particular `fill_opacity` and `stroke_width`) can also be
-    overridden manually.
+#     Note
+#     ----
+#     In comparison to :class:`ArrowTip`, this class only provides
+#     different default settings for styling arrow tips. These settings
+#     (in particular `fill_opacity` and `stroke_width`) can also be
+#     overridden manually.
 
-    See Also
-    --------
-    :class:`ArrowTip`
-    :class:`ArrowTriangleFilledTip`
-    :class:`ArrowCircleFilledTip`
-    :class:`ArrowSquareFilledTip`
+#     See Also
+#     --------
+#     :class:`ArrowTip`
+#     :class:`ArrowTriangleFilledTip`
+#     :class:`ArrowCircleFilledTip`
+#     :class:`ArrowSquareFilledTip`
 
-    """
-    CONFIG = {
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "length": DEFAULT_ARROW_TIP_LENGTH,
-        "start_angle": PI,
-    }
+#     """
+#     # CONFIG = {
+#     "fill_opacity": 1,
+#     "stroke_width": 0,
+#     "length": DEFAULT_ARROW_TIP_LENGTH,
+#     "start_angle": PI,
+# }
 
 
 class ArrowTriangleTip(ArrowTip, Triangle):
     r"""Triangular arrow tip."""
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        Triangle.__init__(self, **kwargs)
+    def __init__(
+        self,
+        fill_opacity=0,
+        stroke_width=2,
+        length=DEFAULT_ARROW_TIP_LENGTH,
+        start_angle=PI,
+        **kwargs
+    ):
+        self.length = length
+        Triangle.__init__(
+            self,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            start_angle=start_angle,
+            **kwargs
+        )
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
 
 
-class ArrowTriangleFilledTip(ArrowFilledTip, ArrowTriangleTip):
+class ArrowTriangleFilledTip(ArrowTriangleTip):
     r"""Triangular arrow tip with filled tip.
 
     This is the default arrow tip shape.
     """
-    pass
+
+    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+        ArrowTriangleTip.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
 
 
 class ArrowCircleTip(ArrowTip, Circle):
     r"""Circular arrow tip."""
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        Circle.__init__(self, **kwargs)
+    def __init__(
+        self,
+        fill_opacity=0,
+        stroke_width=2,
+        length=DEFAULT_ARROW_TIP_LENGTH,
+        start_angle=PI,
+        **kwargs
+    ):
+        self.length = length
+        self.start_angle = start_angle
+        Circle.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
 
 
-class ArrowCircleFilledTip(ArrowFilledTip, ArrowCircleTip):
+class ArrowCircleFilledTip(ArrowCircleTip):
     r"""Circular arrow tip with filled tip."""
-    pass
+
+    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+        ArrowCircleTip.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
 
 
 class ArrowSquareTip(ArrowTip, Square):
     r"""Square arrow tip."""
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
-        Square.__init__(self, side_length=self.length, **kwargs)
+    def __init__(
+        self,
+        fill_opacity=0,
+        stroke_width=2,
+        length=DEFAULT_ARROW_TIP_LENGTH,
+        start_angle=PI,
+        **kwargs
+    ):
+        self.length = length
+        self.start_angle = start_angle
+        Square.__init__(
+            self,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            side_length=self.length,
+            **kwargs
+        )
         self.set_width(self.length)
         self.set_height(self.length, stretch=True)
 
 
-class ArrowSquareFilledTip(ArrowFilledTip, ArrowSquareTip):
+class ArrowSquareFilledTip(ArrowSquareTip):
     r"""Square arrow tip with filled tip."""
-    pass
+
+    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+        ArrowSquareTip.__init__(
+            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
