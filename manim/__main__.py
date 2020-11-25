@@ -14,6 +14,7 @@ from .utils.sounds import play_error_sound
 from .utils.sounds import play_finish_sound
 from . import constants
 from .logger import logger, console
+from .stream_starter import livestream
 
 
 def open_file_if_needed(file_writer):
@@ -156,6 +157,9 @@ def get_module(file_name):
 
 
 def main():
+    if file_writer_config["livestream"]:
+        livestream()
+        return
     module = get_module(file_writer_config["input_file"])
     all_scene_classes = get_scene_classes_from_module(module)
     scene_classes_to_render = get_scenes_to_render(all_scene_classes)
