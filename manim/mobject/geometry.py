@@ -987,7 +987,6 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
-    # CONFIG = {"color": BLUE}
 
     def __init__(self, *vertices, color=BLUE, **kwargs):
         VMobject.__init__(self, color=color, **kwargs)
@@ -1291,13 +1290,6 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
-    # CONFIG = {
-    #     "color": WHITE,
-    #     "height": 2.0,
-    #     "width": 4.0,
-    #     "mark_paths_closed": True,
-    #     "close_new_points": True,
-    # }
 
     def __init__(
         self,
@@ -1313,24 +1305,21 @@ class Rectangle(Polygon):
         self.width = width
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
-        Polygon.__init__(self, UL, UR, DR, DL, **kwargs)
+        Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
         self.set_width(self.width, stretch=True)
         self.set_height(self.height, stretch=True)
 
 
 class Square(Rectangle):
-    # CONFIG = {"side_length": 2.0}
 
     def __init__(self, side_length=2.0, **kwargs):
         self.side_length = side_length
-        # digest_config(self, kwargs)
         Rectangle.__init__(
             self, height=self.side_length, width=self.side_length, **kwargs
         )
 
 
 class RoundedRectangle(Rectangle):
-    # CONFIG = {"corner_radius": 0.5}
 
     def __init__(self, corner_radius=0.5, **kwargs):
         self.corner_radius = corner_radius
