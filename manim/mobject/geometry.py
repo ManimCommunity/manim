@@ -623,18 +623,48 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    CONFIG = {"outer_radius": 1, "inner_radius": 0}
+    # CONFIG = {"outer_radius": 1, "inner_radius": 0}
+    def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
+        self.outer_radius = outer_radius
+        self.inner_radius = inner_radius
+        AnnularSector.__init__(
+            self,
+            inner_radius=self.inner_radius,
+            outer_radius=self.outer_radius,
+            **kwargs
+        )
 
 
 class Annulus(Circle):
-    CONFIG = {
-        "inner_radius": 1,
-        "outer_radius": 2,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "color": WHITE,
-        "mark_paths_closed": False,
-    }
+    # CONFIG = {
+    #     "inner_radius": 1,
+    #     "outer_radius": 2,
+    #     "fill_opacity": 1,
+    #     "stroke_width": 0,
+    #     "color": WHITE,
+    #     "mark_paths_closed": False,
+    # }
+
+    def __init__(
+        self,
+        inner_radius=1,
+        outer_radius=2,
+        fill_opacity=1,
+        stroke_width=0,
+        color=WHITE,
+        mark_paths_closed=False,
+        **kwargs
+    ):
+        self.mark_paths_closed = mark_paths_closed  # is this even used?
+        self.inner_radius = inner_radius
+        self.outer_radius = outer_radius
+        Circle.__init__(
+            self,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            color=color,
+            **kwargs
+        )
 
     def generate_points(self):
         self.radius = self.outer_radius
@@ -647,12 +677,14 @@ class Annulus(Circle):
 
 
 class Line(TipableVMobject):
-    CONFIG = {"buff": 0, "path_arc": None}  # angle of arc specified here
+    # CONFIG = {"buff": 0, "path_arc": None}  # angle of arc specified here
 
-    def __init__(self, start=LEFT, end=RIGHT, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, buff=0, path_arc=None, start=LEFT, end=RIGHT, **kwargs):
+        # digest_config(self, kwargs)
+        self.buff = buff
+        self.path_arc = path_arc
         self.set_start_and_end_attrs(start, end)
-        VMobject.__init__(self, **kwargs)
+        TipableVMobject.__init__(self, **kwargs)
 
     def generate_points(self):
         if self.path_arc:
@@ -741,13 +773,23 @@ class Line(TipableVMobject):
 
 
 class DashedLine(Line):
-    CONFIG = {
-        "dash_length": DEFAULT_DASH_LENGTH,
-        "dash_spacing": None,
-        "positive_space_ratio": 0.5,
-    }
+    # CONFIG = {
+    #     "dash_length": DEFAULT_DASH_LENGTH,
+    #     "dash_spacing": None,
+    #     "positive_space_ratio": 0.5,
+    # }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        dash_length=DEFAULT_DASH_LENGTH,
+        dash_spacing=None,
+        positive_space_ratio=0.5,
+        **kwargs
+    ):
+        self.dash_length = dash_length
+        self.dash_spacing = (dash_spacing,)
+        self.positive_space_ratio = positive_space_ratio
         Line.__init__(self, *args, **kwargs)
         ps_ratio = self.positive_space_ratio
         num_dashes = self.calculate_num_dashes(ps_ratio)
@@ -787,10 +829,12 @@ class DashedLine(Line):
 
 
 class TangentLine(Line):
-    CONFIG = {"length": 1, "d_alpha": 1e-6}
+    # CONFIG = {"length": 1, "d_alpha": 1e-6}
 
-    def __init__(self, vmob, alpha, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
+        # digest_config(self, kwargs)
+        self.length = length
+        self.d_alpha = d_alpha
         da = self.d_alpha
         a1 = np.clip(alpha - da, 0, 1)
         a2 = np.clip(alpha + da, 0, 1)
@@ -801,9 +845,11 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
-    CONFIG = {"width": 0.2, "angle": 0}
+    # CONFIG = {"width": 0.2, "angle": 0}
 
-    def __init__(self, **kwargs):
+    def __init__(self, width=0.2, angle=0, **kwargs):
+        self.width = width
+        self.angle = angle
         VMobject.__init__(self, **kwargs)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
         self.set_width(self.width, about_point=ORIGIN)
@@ -811,16 +857,34 @@ class Elbow(VMobject):
 
 
 class Arrow(Line):
-    CONFIG = {
-        "stroke_width": 6,
-        "buff": MED_SMALL_BUFF,
-        "max_tip_length_to_length_ratio": 0.25,
-        "max_stroke_width_to_length_ratio": 5,
-        "preserve_tip_size_when_scaling": True,
-    }
+    # CONFIG = {
+    #     "stroke_width": 6,
+    #     "buff": MED_SMALL_BUFF,
+    #     "max_tip_length_to_length_ratio": 0.25,
+    #     "max_stroke_width_to_length_ratio": 5,
+    #     "preserve_tip_size_when_scaling": True,
+    # }
 
-    def __init__(self, *args, **kwargs):
-        Line.__init__(self, *args, **kwargs)
+    def __init__(
+        self,
+        *args,
+        stroke_width=6,
+        buff=MED_SMALL_BUFF,
+        max_tip_length_to_length_ratio=0.25,
+        max_stroke_width_to_length_ratio=5,
+        preserve_tip_size_when_scaling=True,
+        **kwargs
+    ):
+        self.max_tip_length_to_length_ratio = (
+            max_tip_length_to_length_ratio  # is this used anywhere
+        )
+        self.max_stroke_width_to_length_ratio = (
+            max_stroke_width_to_length_ratio  # is this used anywhere
+        )
+        self.preserve_tip_size_when_scaling = (
+            preserve_tip_size_when_scaling  # is this used anywhere
+        )
+        Line.__init__(self, *args, buff=buff, **kwargs)
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
@@ -897,12 +961,12 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
-    CONFIG = {"buff": 0}
+    # CONFIG = {"buff": 0}
 
-    def __init__(self, direction=RIGHT, **kwargs):
+    def __init__(self, buff=0, direction=RIGHT, **kwargs):
         if len(direction) == 2:
             direction = np.append(np.array(direction), 0)
-        Arrow.__init__(self, ORIGIN, direction, **kwargs)
+        Arrow.__init__(self, ORIGIN, direction, buff=0, **kwargs)
 
 
 class DoubleArrow(Arrow):
@@ -923,10 +987,10 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
-    CONFIG = {"color": BLUE}
+    # CONFIG = {"color": BLUE}
 
-    def __init__(self, *vertices, **kwargs):
-        VMobject.__init__(self, **kwargs)
+    def __init__(self, *vertices, color=BLUE, **kwargs):
+        VMobject.__init__(self, color=color, **kwargs)
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
@@ -968,10 +1032,11 @@ class Polygon(VMobject):
 
 
 class RegularPolygon(Polygon):
-    CONFIG = {"start_angle": None}
+    # CONFIG = {"start_angle": None}
 
-    def __init__(self, n=6, **kwargs):
-        digest_config(self, kwargs, locals())
+    def __init__(self, n=6, start_angle=None, **kwargs):
+        # digest_config(self, kwargs, locals())
+        self.start_angle = start_angle
         if self.start_angle is None:
             if n % 2 == 0:
                 self.start_angle = 0
@@ -1254,19 +1319,21 @@ class Rectangle(Polygon):
 
 
 class Square(Rectangle):
-    CONFIG = {"side_length": 2.0}
+    # CONFIG = {"side_length": 2.0}
 
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, side_length=2.0, **kwargs):
+        self.side_length = side_length
+        # digest_config(self, kwargs)
         Rectangle.__init__(
             self, height=self.side_length, width=self.side_length, **kwargs
         )
 
 
 class RoundedRectangle(Rectangle):
-    CONFIG = {"corner_radius": 0.5}
+    # CONFIG = {"corner_radius": 0.5}
 
-    def __init__(self, **kwargs):
+    def __init__(self, corner_radius=0.5, **kwargs):
+        self.corner_radius = corner_radius
         Rectangle.__init__(self, **kwargs)
         self.round_corners(self.corner_radius)
 
