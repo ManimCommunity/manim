@@ -25,14 +25,21 @@ class ThreeDScene(Scene):
     make it suitable for Three Dimensional Scenes.
     """
 
-    CONFIG = {
-        "camera_class": ThreeDCamera,
-        "ambient_camera_rotation": None,
-        "default_angled_camera_orientation_kwargs": {
-            "phi": 70 * DEGREES,
-            "theta": -135 * DEGREES,
-        },
-    }
+    def __init__(
+            self,
+            camera_class=ThreeDCamera,
+            ambient_camera_rotation=None,
+            default_angled_camera_orientation_kwargs=None,
+            **kwargs
+    ):
+        self.ambient_camera_rotation = ambient_camera_rotation
+        if default_angled_camera_orientation_kwargs is None:
+            default_angled_camera_orientation_kwargs = {
+                "phi": 70 * DEGREES,
+                "theta": -135 * DEGREES,
+        }
+        self.default_angled_camera_orientation_kwargs = default_angled_camera_orientation_kwargs
+        super().__init__(camera_class=camera_class, **kwargs)
 
     def set_camera_orientation(self, phi=None, theta=None, distance=None, gamma=None):
         """
