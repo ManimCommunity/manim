@@ -1007,7 +1007,7 @@ class Tiling(VMobject):
                     )
                     
 class TilingMK2(VMobject):
-    def __init__(self, tile_function, x_range, y_range, tile_prototype=None **kwargs):
+    def __init__(self, tile_function, x_range, y_range, tile_prototype=None, **kwargs):
         VMobject.__init__(self, **kwargs)
         # Add one more to the ranges, so that a range(-1,1,1)
         # also gives us 3 tiles, [-1,0,1] as opposed to 2 [-1,0]
