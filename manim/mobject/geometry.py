@@ -679,7 +679,7 @@ class Annulus(Circle):
 class Line(TipableVMobject):
     # CONFIG = {"buff": 0, "path_arc": None}  # angle of arc specified here
 
-    def __init__(self, buff=0, path_arc=None, start=LEFT, end=RIGHT, **kwargs):
+    def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=None, **kwargs):
         # digest_config(self, kwargs)
         self.buff = buff
         self.path_arc = path_arc
