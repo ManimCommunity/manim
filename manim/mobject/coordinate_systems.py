@@ -218,16 +218,33 @@ class Axes(VGroup, CoordinateSystem):
 
 
 class ThreeDAxes(Axes):
-    CONFIG = {
-        "z_axis_config": {},
-        "z_min": -3.5,
-        "z_max": 3.5,
-        "z_normal": DOWN,
-        "num_axis_pieces": 20,
-        "light_source": 9 * DOWN + 7 * LEFT + 10 * OUT,
-    }
+    # CONFIG = {
+    #     "z_axis_config": {},
+    #     "z_min": -3.5,
+    #     "z_max": 3.5,
+    #     "z_normal": DOWN,
+    #     "num_axis_pieces": 20,
+    #     "light_source": 9 * DOWN + 7 * LEFT + 10 * OUT,
+    # }
 
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        z_axis_config=None,
+        z_min=-3.5,
+        z_max=3.5,
+        z_normal=DOWN,
+        num_axis_pieces=20,
+        light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
+        **kwargs
+    ):
+        if z_axis_config is None:
+            z_axis_config = {}
+        self.z_axis_config = z_axis_config
+        self.z_min = z_min
+        self.z_max = z_max
+        self.z_normal = z_normal
+        self.num_axis_pieces = num_axis_pieces
+        self.light_source = light_source
         self.x_min = -5.5
         self.x_max = 5.5
         self.y_min = -5.5
