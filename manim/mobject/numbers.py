@@ -41,7 +41,6 @@ class DecimalNumber(VMobject):
     """
 
     # CONFIG = {
-    #     "num_decimal_places": 2,
     #     "include_sign": False,
     #     "group_with_commas": True,
     #     "digit_to_digit_buff": 0.05,
@@ -203,9 +202,7 @@ class DecimalNumber(VMobject):
 
 
 class Integer(DecimalNumber):
-    # CONFIG = {
-    #     "num_decimal_places": 0,
-    # }
+
     def __init__(self, num_decimal_places=0, **kwargs):
         DecimalNumber.__init__(self, num_decimal_places=num_decimal_places, **kwargs)
 

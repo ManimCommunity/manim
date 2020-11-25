@@ -267,29 +267,6 @@ class ThreeDAxes(Axes):
 
 
 class NumberPlane(Axes):
-    # CONFIG = {
-    #     "axis_config": {
-    #         "stroke_color": WHITE,
-    #         "stroke_width": 2,
-    #         "include_ticks": False,
-    #         "include_tip": False,
-    #         "line_to_number_buff": SMALL_BUFF,
-    #         "label_direction": DR,
-    #         "number_scale_val": 0.5,
-    #     },
-    #     "y_axis_config": {"label_direction": DR},
-    #     "background_line_style": {
-    #         "stroke_color": BLUE_D,
-    #         "stroke_width": 2,
-    #         "stroke_opacity": 1,
-    #     },
-    #     # Defaults to a faded version of line_config
-    #     "faded_line_style": None,
-    #     "x_line_frequency": 1,
-    #     "y_line_frequency": 1,
-    #     "faded_line_ratio": 1,
-    #     "make_smooth_after_applying_functions": True,
-    # }
 
     def __init__(
         self,
@@ -463,15 +440,14 @@ class NumberPlane(Axes):
 
 
 class ComplexPlane(NumberPlane):
-    # CONFIG = {
-    #     "color": BLUE,
-    #     "line_frequency": 1,
-    # }
 
-    def __init__(self, color=BLUE, line_frequency=1, **kwargs):
-        self.color = color
-        self.line_frequency = line_frequency
-        super().__init__(color=self.color, line_frequency=self.line_frequency, **kwargs)
+    def __init__(self, color=BLUE, x_line_frequency=1, y_line_frequency=1, **kwargs):
+        super().__init__(
+            color=color,
+            x_line_frequency=x_line_frequency,
+            y_line_frequency=y_line_frequency,
+            **kwargs
+        )
 
     def number_to_point(self, number):
         number = complex(number)

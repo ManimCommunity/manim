@@ -185,7 +185,6 @@ class GraphScene(Scene):
                 "leftmost_tick": self.y_bottom_tick,
                 "numbers_with_elongated_ticks": self.y_labeled_nums,
                 "color": self.axes_color,
-                "line_to_number_vect": LEFT,
                 "label_direction": LEFT,
                 "include_tip": self.include_tip,
             },

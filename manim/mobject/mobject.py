@@ -42,28 +42,15 @@ class Mobject(Container):
 
     """
 
-    # CONFIG = {
-    #     "color": WHITE,
-    #     "name": None,
-    #     "dim": 3,
-    #     "target": None,
-    #     "z_index": 0,
-    # }
-
-    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
         self.color = color
-        self.name = name
+        self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
         self.z_index = z_index
-
-        # Container.__init__(self, **kwargs)
         self.point_hash = None
         self.submobjects = []
         self.color = Color(self.color)
-
-        if self.name is None:
-            self.name = self.__class__.__name__
         self.updaters = []
         self.updating_suspended = False
         self.reset_points()

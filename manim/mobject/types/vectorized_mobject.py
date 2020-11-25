@@ -42,37 +42,6 @@ from ...utils.space_ops import shoelace_direction
 
 
 class VMobject(Mobject):
-    # CONFIG = {
-    #     "fill_color": None,
-    #     "fill_opacity": 0.0,
-    #     "stroke_color": None,
-    #     "stroke_opacity": 1.0,
-    #     "stroke_width": DEFAULT_STROKE_WIDTH,
-    #     # The purpose of background stroke is to have
-    #     # something that won't overlap the fill, e.g.
-    #     # For text against some textured background
-    #     "background_stroke_color": BLACK,
-    #     "background_stroke_opacity": 1.0,
-    #     "background_stroke_width": 0,
-    #     # When a color c is set, there will be a second color
-    #     # computed based on interpolating c to WHITE by with
-    #     # sheen_factor, and the display will gradient to this
-    #     # secondary color in the direction of sheen_direction.
-    #     "sheen_factor": 0.0,
-    #     "sheen_direction": UL,
-    #     # Indicates that it will not be displayed, but
-    #     # that it should count in parent mobject's path
-    #     "close_new_points": False,
-    #     "pre_function_handle_to_anchor_scale_factor": 0.01,
-    #     "make_smooth_after_applying_functions": False,
-    #     "background_image_file": None,
-    #     "shade_in_3d": False,
-    #     # This is within a pixel
-    #     # TODO, do we care about accounting for
-    #     # varying zoom levels?
-    #     "tolerance_for_point_equality": 1e-6,
-    #     "n_points_per_cubic_curve": 4,
-    # }
 
     def __init__(
         self,
@@ -112,20 +81,11 @@ class VMobject(Mobject):
         self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
-        # The purpose of background stroke is to have
-        # something that won't overlap the fill, e.g.
-        # For text against some textured background
         self.background_stroke_color = background_stroke_color
         self.background_stroke_opacity = background_stroke_opacity
         self.background_stroke_width = background_stroke_width
-        # When a color c is set, there will be a second color
-        # computed based on interpolating c to WHITE by with
-        # sheen_factor, and the display will gradient to this
-        # secondary color in the direction of sheen_direction.
         self.sheen_factor = sheen_factor
         self.sheen_direction = sheen_direction
-        # Indicates that it will not be displayed, but
-        # that it should count in parent mobject's path
         self.close_new_points = close_new_points
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
@@ -133,9 +93,6 @@ class VMobject(Mobject):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
         self.background_image_file = background_image_file
         self.shade_in_3d = shade_in_3d
-        # This is within a pixel
-        # TODO, do we care about accounting for
-        # varying zoom levels?
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
         Mobject.__init__(self, **kwargs)
