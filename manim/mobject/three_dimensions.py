@@ -14,9 +14,8 @@ from ..utils.color import BLUE_D, BLUE, BLUE_E, LIGHT_GREY
 
 
 class ThreeDVMobject(VMobject):
-    CONFIG = {
-        "shade_in_3d": True,
-    }
+    def __init__(self, shade_in_3d=True, **kwargs):
+        super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
 class ParametricSurface(VGroup):
