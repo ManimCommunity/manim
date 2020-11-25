@@ -22,19 +22,21 @@ from ..utils.family import extract_mobject_family_members
 
 
 class ThreeDCamera(Camera):
-    CONFIG = {
-        "shading_factor": 0.2,
-        "distance": 20.0,
-        "default_distance": 5.0,
-        "phi": 0,  # Angle off z axis
-        "theta": -90 * DEGREES,  # Rotation about z axis
-        "gamma": 0,  # Rotation about normal vector to camera
-        "light_source_start_point": 9 * DOWN + 7 * LEFT + 10 * OUT,
-        "should_apply_shading": True,
-        "exponential_projection": False,
-    }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+            self,
+            *args,
+            distance=20.0,
+            shading_factor = 0.2,
+            default_distance = 5.0,
+            light_source_start_point = 9*DOWN + 7*LEFT + 10*OUT,
+            should_apply_shading = True,
+            exponential_projection = False,
+            phi=0,
+            theta=-90*DEGREES,
+            gamma=0,
+            **kwargs
+    ):
         """Initializes the ThreeDCamera
 
         Parameters
@@ -44,14 +46,25 @@ class ThreeDCamera(Camera):
         *kwargs
             Any keyword argument of Camera.
         """
+        self.distance = distance
+        self.phi = phi
+        self.theta = theta
+        self.gamma = gamma
+        self.shading_factor = shading_factor
+        self.default_distance = default_distance
+        self.light_source_start_point = light_source_start_point
+        self.should_apply_shading = should_apply_shading
+        self.exponential_projection = exponential_projection
+        self._frame_center = Point(kwargs.get("frame_center", ORIGIN))
+
         Camera.__init__(self, *args, **kwargs)
+
         self.max_allowable_norm = 3 * config["frame_width"]
         self.phi_tracker = ValueTracker(self.phi)
         self.theta_tracker = ValueTracker(self.theta)
         self.distance_tracker = ValueTracker(self.distance)
         self.gamma_tracker = ValueTracker(self.gamma)
         self.light_source = Point(self.light_source_start_point)
-        self._frame_center = Point(kwargs.get("frame_center", ORIGIN))
         self.fixed_orientation_mobjects = dict()
         self.fixed_in_frame_mobjects = set()
         self.reset_rotation_matrix()

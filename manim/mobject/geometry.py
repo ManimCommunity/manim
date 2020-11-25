@@ -103,17 +103,11 @@ class TipableVMobject(VMobject):
 
     """
 
-    # CONFIG = {
-    #     "tip_length": DEFAULT_ARROW_TIP_LENGTH,
-    #     # TODO
-    #     "normal_vector": OUT,
-    #     "tip_style": dict(),
-    # }
     def __init__(
         self,
         tip_length=DEFAULT_ARROW_TIP_LENGTH,
         normal_vector=OUT,
-        tip_style=dict(),
+        tip_style={},
         **kwargs
     ):
         self.tip_length = tip_length
@@ -264,13 +258,6 @@ class TipableVMobject(VMobject):
 
 class Arc(TipableVMobject):
     """A circular arc."""
-
-    # CONFIG = {
-    #     "radius": 1.0,
-    #     "num_components": 9,
-    #     "anchors_span_full_range": True,
-    #     "arc_center": ORIGIN,
-    # }
 
     def __init__(
         self,

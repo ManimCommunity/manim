@@ -123,12 +123,20 @@ class Sphere(ParametricSurface):
 
 
 class Cube(VGroup):
-    CONFIG = {
-        "fill_opacity": 0.75,
-        "fill_color": BLUE,
-        "stroke_width": 0,
-        "side_length": 2,
-    }
+
+    def __init__(
+            self,
+            side_length=2,
+            fill_opacity=0.75,
+            fill_color=BLUE,
+            stroke_width=0,
+            **kwargs
+    ):
+        self.side_length = side_length
+        self.fill_opacity = fill_opacity
+        self.fill_color = fill_color
+        self.stroke_width = stroke_width
+        super().__init__(**kwargs)
 
     def generate_points(self):
         for vect in IN, OUT, LEFT, RIGHT, UP, DOWN:
