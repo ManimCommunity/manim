@@ -157,10 +157,12 @@ class Cube(VGroup):
             **kwargs
     ):
         self.side_length = side_length
-        self.fill_opacity = fill_opacity
-        self.fill_color = fill_color
-        self.stroke_width = stroke_width
-        super().__init__(**kwargs)
+        super().__init__(
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs
+        )
 
     def generate_points(self):
         for vect in IN, OUT, LEFT, RIGHT, UP, DOWN:
