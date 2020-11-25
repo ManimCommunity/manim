@@ -6,7 +6,7 @@ __all__ = ["ParametricFunction", "FunctionGraph"]
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.config_ops import digest_config
+from ..utils.config_ops import digest_config, merge_dicts_recursively
 from ..utils.color import YELLOW
 
 import math
@@ -64,7 +64,7 @@ class ParametricFunction(VMobject):
     def get_function(self):
         return self.function
 
-    def get_point_from_function(self, t):
+    def evaluate(self, t):
         return self.function(t)
 
     def get_step_size(self, t=None):
@@ -114,6 +114,62 @@ class ParametricFunction(VMobject):
         self.make_smooth()
         return self
 
+    def derivative(self,t,dt=0.01):
+        """
+           Returns the slope of the tangent to the plotted curve
+           at a particular x-value.
+
+           Parameters
+           ----------
+           t : int, float
+               The t value at which the tangent must touch the curve.
+
+           dt : int, float, optional
+               The small change in t with which a small change in the parametric function to get dy/dx
+               will be compared in order to obtain the tangent.
+
+           Returns:
+           The derivative at that point
+        """
+
+        functionAtTimestep = self.evaluate(t+dt)
+        functionAtT = self.evaluate(t)
+        return (functionAtTimestep[1] - functionAtT[1])/(functionAtTimestep[0] - functionAtT[0])
+
+    def get_derivative_function(self, dt=0.01, **kwargs):
+        """
+        Returns the curve of the derivative of the passed
+        graph.
+
+        Parameters
+        ----------
+        dt: Tiny change in dt to calculate derivative.
+
+        graph : ParametricFunction
+            The graph for which the derivative must be found.
+
+        dx : float, int, optional
+            The small change in x with which a small change in y
+            will be compared in order to obtain the derivative.
+
+        **kwargs
+            Any valid keyword argument of ParametricFunction
+
+        Returns
+        -------
+        ParametricFunction
+            The curve of the derivative.
+        """
+        def wrapper(t):
+            return self.derivative(t, dt)
+
+        print(self.CONFIG)
+        return FunctionGraph(lambda t: self.derivative,**self.CONFIG)
+
+    def get_intersection(self,graph2,**kwargs): # TODO
+        lower_bound = kwargs.pop("t_min",self.t_min)
+        upper_bound = kwargs.pop("t_min", self.t_min)
+        dt = kwargs.pop("dt", 0.01)
 
 class FunctionGraph(ParametricFunction):
     CONFIG = {
@@ -126,7 +182,7 @@ class FunctionGraph(ParametricFunction):
         self.x_max = config["frame_x_radius"]
         self.parametric_function = lambda t: np.array([t, function(t), 0])
         ParametricFunction.__init__(
-            self, self.parametric_function, t_min=self.x_min, t_max=self.x_max, **kwargs
+            self, self.parametric_function, **merge_dicts_recursively({'t_min':self.x_min, 't_max':self.x_max},kwargs)
         )
         self.function = function
 

@@ -154,6 +154,7 @@ class Axes(VGroup, CoordinateSystem):
         self.add(*self.axes)
         self.shift(self.center_point)
 
+
     def create_axis(self, min_val, max_val, axis_config):
         new_config = merge_dicts_recursively(
             self.axis_config,
