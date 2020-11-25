@@ -235,7 +235,4 @@ def shoelace_direction(x_y):
     the input set of points is directed clockwise or counterclockwise.
     """
     area = shoelace(x_y)
-        if area > 0:
-            return "CW"
-        else:
-            return "CCW"
+    return "CW" if area > 0 else "CCW"

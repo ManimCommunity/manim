@@ -112,7 +112,7 @@ def _parse_file_writer_config(config_parser, args):
             "streaming_protocol",
             "streaming_client",
             "streaming_port",
-            "streaming_port",
+            "streaming_url",
             "streaming_console_banner",
         ]
     }
@@ -121,6 +121,8 @@ def _parse_file_writer_config(config_parser, args):
     fw_config["skip_animations"] = any(
         [fw_config["save_last_frame"], fw_config["from_animation_number"]]
     )
+
+    fw_config["livestream"] = args.livestream
 
     return fw_config
 
@@ -132,7 +134,10 @@ def _parse_cli(arg_list, input=True):
     )
     if input:
         parser.add_argument(
-            "file", help="path to file holding the python code for the scene",
+            "file",
+            nargs="?",
+            default="",
+            help="path to file holding the python code for the scene",
         )
         parser.add_argument(
             "scene_names",
@@ -312,6 +317,12 @@ def _parse_cli(arg_list, input=True):
     # Specify the manim.cfg file
     parser.add_argument(
         "--config_file", help="Specify the configuration file",
+    )
+
+    parser.add_argument(
+        "--livestream",
+        action="store_true",
+        help="Run in streaming mode" 
     )
 
     return parser.parse_args(arg_list)
