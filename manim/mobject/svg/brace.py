@@ -110,12 +110,18 @@ class Brace(MathTex):
 
 
 class BraceLabel(VMobject):
-    CONFIG = {
-        "label_constructor": MathTex,
-        "label_scale": 1,
-    }
 
-    def __init__(self, obj, text, brace_direction=DOWN, **kwargs):
+    def __init__(
+            self,
+            obj,
+            text,
+            brace_direction=DOWN,
+            label_constructor=MathTex,
+            label_scale=1,
+            **kwargs
+    ):
+        self.label_constructor = label_constructor
+        self.label_scale = label_scale
         VMobject.__init__(self, **kwargs)
         self.brace_direction = brace_direction
         if isinstance(obj, list):
@@ -159,8 +165,14 @@ class BraceLabel(VMobject):
 
 
 class BraceText(BraceLabel):
-    CONFIG = {"label_constructor": Tex}
-
+    def __init__(
+            self,
+            obj,
+            text,
+            label_constructor=Tex,
+            **kwargs
+    ):
+        super().__init__(obj, text, label_constructor=label_constructor, **kwargs)
 
 class BraceBetweenPoints(Brace):
     """Similar to Brace, but instead of taking a mobject it uses 2
