@@ -43,10 +43,9 @@ class SceneFileWriter(object):
 
     """
 
-    def __init__(self, renderer, video_quality_config, scene_name, **kwargs):
+    def __init__(self, renderer, scene_name, **kwargs):
         digest_config(self, kwargs)
         self.renderer = renderer
-        self.video_quality_config = video_quality_config
         self.stream_lock = False
         self.init_output_directories(scene_name)
         self.init_audio()

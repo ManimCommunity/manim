@@ -25,7 +25,6 @@ class ThreeDCamera(Camera):
 
     def __init__(
             self,
-            *args,
             distance=20.0,
             shading_factor=0.2,
             default_distance=5.0,
@@ -46,6 +45,8 @@ class ThreeDCamera(Camera):
         *kwargs
             Any keyword argument of Camera.
         """
+        self._frame_center = Point(kwargs.get("frame_center", ORIGIN))
+        super().__init__(**kwargs)
         self.distance = distance
         self.phi = phi
         self.theta = theta
@@ -53,18 +54,14 @@ class ThreeDCamera(Camera):
         self.shading_factor = shading_factor
         self.default_distance = default_distance
         self.light_source_start_point = light_source_start_point
+        self.light_source = Point(self.light_source_start_point)
         self.should_apply_shading = should_apply_shading
         self.exponential_projection = exponential_projection
-        self._frame_center = Point(kwargs.get("frame_center", ORIGIN))
-
-        Camera.__init__(self, *args, **kwargs)
-
         self.max_allowable_norm = 3 * config["frame_width"]
         self.phi_tracker = ValueTracker(self.phi)
         self.theta_tracker = ValueTracker(self.theta)
         self.distance_tracker = ValueTracker(self.distance)
         self.gamma_tracker = ValueTracker(self.gamma)
-        self.light_source = Point(self.light_source_start_point)
         self.fixed_orientation_mobjects = dict()
         self.fixed_in_frame_mobjects = set()
         self.reset_rotation_matrix()

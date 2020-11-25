@@ -15,7 +15,7 @@ class MultiCamera(MovingCamera):
     }
 
     def __init__(
-        self, video_quality_config, image_mobjects_from_cameras=None, **kwargs
+        self, image_mobjects_from_cameras=None, **kwargs
     ):
         """Initalises the MultiCamera
 
@@ -30,7 +30,7 @@ class MultiCamera(MovingCamera):
         if image_mobjects_from_cameras is not None:
             for imfc in image_mobjects_from_cameras:
                 self.add_image_mobject_from_camera(imfc)
-        MovingCamera.__init__(self, video_quality_config, **kwargs)
+        MovingCamera.__init__(self, **kwargs)
 
     def add_image_mobject_from_camera(self, image_mobject_from_camera):
         """Adds an ImageMobject that's been obtained from the camera

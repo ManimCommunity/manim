@@ -60,17 +60,8 @@ class CairoRenderer:
         # definition_.  This did not allow for creating two Cameras with
         # different configurations in the same session.
         self.file_writer = None
-        self.video_quality_config = {}
-        for attr in [
-            "pixel_height",
-            "pixel_width",
-            "frame_height",
-            "frame_width",
-            "frame_rate",
-        ]:
-            self.video_quality_config[attr] = kwargs.get(attr, config[attr])
         camera_cls = camera_class if camera_class is not None else Camera
-        self.camera = camera_cls(self.video_quality_config)
+        self.camera = camera_cls()
         self.original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animations_hashes = []
@@ -80,7 +71,6 @@ class CairoRenderer:
     def init(self, scene):
         self.file_writer = SceneFileWriter(
             self,
-            self.video_quality_config,
             scene.__class__.__name__,
         )
 

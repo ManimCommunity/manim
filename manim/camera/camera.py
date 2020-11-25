@@ -48,26 +48,8 @@ class Camera(object):
 
     """
 
-    # CONFIG = {
-    #     "background_image": None,
-    #     # Note: frame height and width will be resized to match
-    #     # the pixel aspect ratio
-    #     "frame_center": ORIGIN,
-    #     # Points in vectorized mobjects with norm greater
-    #     # than this value will be rescaled.
-    #     "image_mode": "RGBA",
-    #     "n_channels": 4,
-    #     "pixel_array_dtype": "uint8",
-    #     # z_buff_func is only used if the flag above is set to True.
-    #     # round z coordinate to nearest hundredth when comparring
-    #     "z_buff_func": lambda m: np.round(m.get_center()[2], 2),
-    #     "cairo_line_width_multiple": 0.01,
-    #     "use_z_index": True,
-    # }
-
     def __init__(
         self,
-        video_quality_config=None,
         background_image=None,
         frame_center=ORIGIN,
         image_mode="RGBA",
@@ -93,7 +75,6 @@ class Camera(object):
         **kwargs
             Any local variables to be set.
         """
-        # digest_config(self, kwargs, locals())
         self.background_image = background_image
         self.frame_center = frame_center
         self.image_mode = image_mode
