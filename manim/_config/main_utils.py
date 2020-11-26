@@ -164,6 +164,8 @@ def _parse_args_no_subcmd(args):
 
     parser.add_argument(
         "file",
+        nargs="?",
+        default="",
         help="Path to file holding the python code for the scene",
     )
     parser.add_argument(
@@ -408,6 +410,14 @@ def _parse_args_no_subcmd(args):
         action="store_true",
         help="Use the folders defined in the [custom_folders] "
         "section of the config file to define the output folder structure",
+    )
+
+    # Overrides default false streaming so streaming can happen
+    # ? Should we really screw over anyone who uses this with the other commands
+    parser.add_argument(
+        "--livestream",
+        action="store_true",
+        help="Run in streaming mode. Mate, get to this in a bit. Something about defaults",
     )
 
     # Specify the verbosity

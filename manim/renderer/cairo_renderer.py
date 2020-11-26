@@ -39,6 +39,7 @@ def handle_play_like_call(func):
         self.file_writer.begin_animation(not self.skip_animations)
         func(self, scene, *args, **kwargs)
         self.file_writer.end_animation(not self.skip_animations)
+        getattr(self.file_writer, "stream", lambda: None)()
         self.num_plays += 1
 
     return wrapper
