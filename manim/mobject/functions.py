@@ -11,7 +11,6 @@ from ..utils.color import YELLOW
 
 import math
 
-
 class ParametricFunction(VMobject):
     """A parametric curve.
 
@@ -114,62 +113,51 @@ class ParametricFunction(VMobject):
         self.make_smooth()
         return self
 
-    def derivative(self,t,dt=0.01):
+    def vector_derivative(self,t,dt=0.01):
         """
-           Returns the slope of the tangent to the plotted curve
-           at a particular x-value.
+           Returns the derivative of each subfunction at the point t on the plotted curve
+           at a particular t-value.
 
            Parameters
            ----------
            t : int, float
-               The t value at which the tangent must touch the curve.
+               The t value
 
            dt : int, float, optional
                The small change in t with which a small change in the parametric function to get dy/dx
                will be compared in order to obtain the tangent.
 
            Returns:
-           The derivative at that point
+           The derivative of each subfunction contained in ParametricFunction
         """
 
         functionAtTimestep = self.evaluate(t+dt)
         functionAtT = self.evaluate(t)
-        return (functionAtTimestep[1] - functionAtT[1])/(functionAtTimestep[0] - functionAtT[0])
+        return np.array([(functionAtTimestep[0]-functionAtT[0])/dt,(functionAtTimestep[1]-functionAtT[1])/dt,(functionAtTimestep[2]-functionAtT[2])/dt])
 
-    def get_derivative_function(self, dt=0.01, **kwargs):
+    def derivative(self,t,dt=0.01):
         """
-        Returns the curve of the derivative of the passed
-        graph.
+           Returns the slope of the tangent line at the point t on the plotted curve
+           at a particular t-value.
 
-        Parameters
-        ----------
-        dt: Tiny change in dt to calculate derivative.
+           Parameters
+           ----------
+           t : int, float
+               The t value
 
-        graph : ParametricFunction
-            The graph for which the derivative must be found.
+           dt : int, float, optional
+               The small change in t with which a small change in the parametric function to get dy/dx
+               will be compared in order to obtain the tangent.
 
-        dx : float, int, optional
-            The small change in x with which a small change in y
-            will be compared in order to obtain the derivative.
-
-        **kwargs
-            Any valid keyword argument of ParametricFunction
-
-        Returns
-        -------
-        ParametricFunction
-            The curve of the derivative.
+           Returns:
+           The slope of the tangent line
         """
-        def wrapper(t):
-            return self.derivative(t, dt)
 
-        print(self.CONFIG)
-        return FunctionGraph(lambda t: self.derivative,**self.CONFIG)
+        vector_derivative = self.vector_derivative(t,dt)
+        return vector_derivative[1]/vector_derivative[0]
 
-    def get_intersection(self,graph2,**kwargs): # TODO
-        lower_bound = kwargs.pop("t_min",self.t_min)
-        upper_bound = kwargs.pop("t_min", self.t_min)
-        dt = kwargs.pop("dt", 0.01)
+    def get_derivative_function(self,dt=0.01):
+        return lambda t: np.array([self.evaluate(t)[0],self.derivative(t,dt),self.evaluate(t)[2]])
 
 class FunctionGraph(ParametricFunction):
     CONFIG = {

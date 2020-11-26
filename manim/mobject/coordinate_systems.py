@@ -92,14 +92,16 @@ class CoordinateSystem:
         return self.axis_labels
 
     def get_graph(self, function, **kwargs):
-        x_min = kwargs.pop("x_min", self.x_min)
-        x_max = kwargs.pop("x_max", self.x_max)
+        x_min = kwargs.pop("x_min", kwargs.pop("t_min",self.x_min))
+        x_max = kwargs.pop("x_max", kwargs.pop("t_max",self.x_max))
+
         graph = ParametricFunction(
             lambda t: self.coords_to_point(t, function(t)),
             t_min=x_min,
             t_max=x_max,
             **kwargs,
         )
+
         graph.underlying_function = function
         return graph
 
@@ -108,12 +110,13 @@ class CoordinateSystem:
         graph = ParametricFunction(
             lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
         )
-        graph.underlying_function = function
+
+        graph.function = function
         return graph
 
     def input_to_graph_point(self, x, graph):
-        if hasattr(graph, "underlying_function"):
-            return self.coords_to_point(x, graph.underlying_function(x))
+        if graph.function is not None:
+            return self.coords_to_point(*graph.function(x))
         else:
             alpha = binary_search(
                 function=lambda a: self.point_to_coords(graph.point_from_proportion(a))[
