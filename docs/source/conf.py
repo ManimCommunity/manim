@@ -21,10 +21,6 @@ sys.path.insert(0, os.path.abspath("."))
 
 if os.environ.get("READTHEDOCS") == "True":
     site_path = get_python_lib()
-    # bindings for pangocffi, cairocffi, pangocairocffi need to be generated
-    subprocess.run(["python", "pangocffi/ffi_build.py"], cwd=site_path)
-    subprocess.run(["python", "cairocffi/ffi_build.py"], cwd=site_path)
-    subprocess.run(["python", "pangocairocffi/ffi_build.py"], cwd=site_path)
     # we need to add ffmpeg to the path
     ffmpeg_path = os.path.join(site_path, "imageio_ffmpeg", "binaries")
     # the included binary is named ffmpeg-linux..., create a symlink
@@ -57,6 +53,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.extlinks",
+    "sphinx.ext.linkcode",
     "sphinxext.opengraph",
     "manim_directive",
 ]
@@ -64,12 +61,19 @@ extensions = [
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
 
+# generate documentation from type hints
+autodoc_typehints = "description"
+autoclass_content = "both"
+
 # controls whether functions documented by the autofunction directive
 # appear with their full module names
 add_module_names = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
+
+# Custom section headings in our documentation
+napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -103,6 +107,19 @@ html_static_path = ["_static"]
 
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
+
+# source links to github
+def linkcode_resolve(domain, info):
+    if domain != "py":
+        return None
+    if not info["module"]:
+        return None
+    filename = info["module"].replace(".", "/")
+    version = os.getenv("READTHEDOCS_VERSION", "master")
+    if version == "latest":
+        version = "master"
+    return f"https://github.com/ManimCommunity/manim/blob/{version}/{filename}.py"
+
 
 # external links
 extlinks = {

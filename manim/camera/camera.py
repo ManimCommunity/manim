@@ -20,11 +20,10 @@ from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.mobject import Mobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import color_to_int_rgba, BLACK
+from ..utils.color import color_to_int_rgba
 from ..utils.config_ops import digest_config
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
-from ..utils.iterables import remove_list_redundancies
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
@@ -89,10 +88,11 @@ class Camera(object):
             "frame_height",
             "frame_width",
             "frame_rate",
-            "background_color",
-            "background_opacity",
         ]:
             setattr(self, attr, kwargs.get(attr, config[attr]))
+
+        for attr in ["background_color", "background_opacity"]:
+            setattr(self, f"_{attr}", kwargs.get(attr, config[attr]))
 
         # This one is in the same boat as the above, but it doesn't have the
         # same name as the corresponding key so it has to be handled on its own
@@ -116,6 +116,24 @@ class Camera(object):
         # to the aggdraw library
         self.canvas = None
         return copy.copy(self)
+
+    @property
+    def background_color(self):
+        return self._background_color
+
+    @background_color.setter
+    def background_color(self, color):
+        self._background_color = color
+        self.init_background()
+
+    @property
+    def background_opacity(self):
+        return self._background_opacity
+
+    @background_opacity.setter
+    def background_opacity(self, alpha):
+        self._background_opacity = alpha
+        self.init_background()
 
     def type_or_raise(self, mobject):
         """Return the type of mobject, if it is a type that can be rendered.

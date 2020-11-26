@@ -53,6 +53,26 @@ The global ``config`` object is mean to be the single source of truth for all
 config options.  All of the other ways of setting config options ultimately
 change the values of the global ``config`` object.
 
+The following example illustrates the video resolution chosen for examples
+rendered in our documentation with a reference frame.
+
+.. manim:: ShowScreenResolution
+    :save_last_frame:
+
+    class ShowScreenResolution(Scene):
+        def construct(self):
+            pixel_height = config["pixel_height"]  #  1080 is default
+            pixel_width = config["pixel_width"]  # 1920 is default
+            frame_width = config["frame_width"]
+            frame_height = config["frame_height"]
+            self.add(Dot())
+            d1 = Line(frame_width * LEFT / 2, frame_width * RIGHT / 2).to_edge(DOWN)
+            self.add(d1)
+            self.add(Text(str(pixel_width)).next_to(d1, UP))
+            d2 = Line(frame_height * UP / 2, frame_height * DOWN / 2).to_edge(LEFT)
+            self.add(d2)
+            self.add(Text(str(pixel_height)).next_to(d2, RIGHT))
+
 
 Command line arguments
 **********************
@@ -282,19 +302,19 @@ these steps:
 5. :class:`ManimConfig` is instantiated to create the global ``config`` object.
 6. The ``parser`` from step 3 is fed into the ``config`` from step 5 via
    :meth:`ManimConfig.digest_parser`.
-6. Both ``logger`` and ``config`` are exposed to the user.
+7. Both ``logger`` and ``config`` are exposed to the user.
 
 If manim is being invoked from the command line, all of the previous steps
 happen, and are complemented by:
 
-7. The CLI flags are parsed and fed into ``config`` via
+8. The CLI flags are parsed and fed into ``config`` via
    :meth:`~ManimConfig.digest_args`.
-8. If the ``--config_file`` flag was used, a new :class:`ConfigParser` object
+9. If the ``--config_file`` flag was used, a new :class:`ConfigParser` object
    is created with the contents of the library-wide file, the user-wide file if
    it exists, and the file passed via ``--config_file``.  In this case, the
    folder-wide file, if it exists, is ignored.
-9. The new parser is fed into ``config``.
-10. The rest of the CLI flags are processed.
+10. The new parser is fed into ``config``.
+11. The rest of the CLI flags are processed.
 
 To summarize, the order of precedence for configuration options, from lowest to
 highest precedence, is:

@@ -165,9 +165,9 @@ class MoveToTarget(Transform):
 class ApplyMethod(Transform):
     def __init__(self, method, *args, **kwargs):
         """
-        method is a method of Mobject, *args are arguments for
+        method is a method of Mobject, ``args`` are arguments for
         that method.  Key word arguments should be passed in
-        as the last arg, as a dict, since **kwargs is for
+        as the last arg, as a dict, since ``kwargs`` is for
         configuration of the transform itself
 
         Relies on the fact that mobject methods return the mobject
@@ -200,6 +200,26 @@ class ApplyMethod(Transform):
 
 
 class ApplyPointwiseFunction(ApplyMethod):
+    """Animation that applies a pointwise function to a mobject.
+
+    Examples
+    --------
+
+    .. manim:: WarpSquare
+        :quality: low
+
+        class WarpSquare(Scene):
+            def construct(self):
+                square = Square()
+                self.play(
+                    ApplyPointwiseFunction(
+                        lambda point: complex_to_R3(np.exp(R3_to_complex(point))), square
+                    )
+                )
+                self.wait()
+
+    """
+
     CONFIG = {"run_time": DEFAULT_POINTWISE_FUNCTION_RUN_TIME}
 
     def __init__(self, function, mobject, **kwargs):

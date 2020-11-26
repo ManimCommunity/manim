@@ -30,6 +30,7 @@ from ...utils.iterables import tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector
 from ...utils.space_ops import get_norm
+from ...utils.space_ops import shoelace_direction
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -879,8 +880,95 @@ class VMobject(Mobject):
         vmob.pointwise_become_partial(self, a, b)
         return vmob
 
+    def get_direction(self):
+        """Uses :func:`~.space_ops.shoelace_direction` to calculate the direction.
+        The direction of points determines in which direction the
+        object is drawn, clockwise or counterclockwise.
+
+        Examples
+        --------
+        The default direction of a :class:`~.Circle` is counterclockwise::
+
+            >>> from manim import Circle
+            >>> Circle().get_direction()
+            'CCW'
+
+        Returns
+        -------
+        :class:`str`
+            Either ``"CW"`` or ``"CCW"``.
+        """
+        return shoelace_direction(self.get_start_anchors())
+
+    def reverse_direction(self):
+        """Reverts the point direction by inverting the point order.
+
+        Returns
+        -------
+        :class:`VMobject`
+            Returns self.
+
+        Examples
+        --------
+        .. manim:: ChangeOfDirection
+
+            class ChangeOfDirection(Scene):
+                def construct(self):
+                    ccw = RegularPolygon(5)
+                    ccw.shift(LEFT).rotate
+                    cw = RegularPolygon(5)
+                    cw.shift(RIGHT).reverse_direction()
+
+                    self.play(ShowCreation(ccw), ShowCreation(cw),
+                    run_time=4)
+        """
+        self.points = self.points[::-1]
+        return self
+
+    def force_direction(self, target_direction):
+        """Makes sure that points are either directed clockwise or
+        counterclockwise.
+
+        Parameters
+        ----------
+        target_direction : :class:`str`
+            Either ``"CW"`` or ``"CCW"``.
+        """
+        if target_direction not in ("CW", "CCW"):
+            raise ValueError('Invalid input for force_direction. Use "CW" or "CCW"')
+        if self.get_direction() != target_direction:
+            # Since we already assured the input is CW or CCW,
+            # and the directions don't match, we just reverse
+            self.reverse_direction()
+            return self
+
 
 class VGroup(VMobject):
+    """A group of vectorized mobjects.
+
+    This can be used to group multiple :class:`~.VMobject` instances together
+    in order to scale, move, ... them together.
+
+    Examples
+    --------
+
+    .. manim:: ArcShapeIris
+        :save_last_frame:
+
+        class ArcShapeIris(Scene):
+            def construct(self):
+                colors = [DARK_BLUE, DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
+                radius = [1 + rad * 0.1 for rad in range(len(colors))]
+
+                circles_group = VGroup()
+
+                # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
+                circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
+                                    for rad, col in zip(radius, colors)])
+                self.add(circles_group)
+
+    """
+
     def __init__(self, *vmobjects, **kwargs):
         VMobject.__init__(self, **kwargs)
         self.add(*vmobjects)
@@ -943,6 +1031,74 @@ class VDict(VMobject):
     submob_dict : :class:`dict`
             Is the actual python dictionary that is used to bind
             the keys to the mobjects.
+
+    Examples
+    --------
+
+    .. manim:: ShapesWithVDict
+
+        class ShapesWithVDict(Scene):
+            def construct(self):
+                square = Square().set_color(RED)
+                circle = Circle().set_color(YELLOW).next_to(square, UP)
+
+                # create dict from list of tuples each having key-mobject pair
+                pairs = [("s", square), ("c", circle)]
+                my_dict = VDict(pairs, show_keys=True)
+
+                # display it just like a VGroup
+                self.play(ShowCreation(my_dict))
+                self.wait()
+
+                text = Tex("Some text").set_color(GREEN).next_to(square, DOWN)
+
+                # add a key-value pair by wrapping it in a single-element list of tuple
+                # after attrs branch is merged, it will be easier like `.add(t=text)`
+                my_dict.add([("t", text)])
+                self.wait()
+
+                rect = Rectangle().next_to(text, DOWN)
+                # can also do key assignment like a python dict
+                my_dict["r"] = rect
+
+                # access submobjects like a python dict
+                my_dict["t"].set_color(PURPLE)
+                self.play(my_dict["t"].scale, 3)
+                self.wait()
+
+                # also supports python dict styled reassignment
+                my_dict["t"] = Tex("Some other text").set_color(BLUE)
+                self.wait()
+
+                # remove submoject by key
+                my_dict.remove("t")
+                self.wait()
+
+                self.play(Uncreate(my_dict["s"]))
+                self.wait()
+
+                self.play(FadeOut(my_dict["c"]))
+                self.wait()
+
+                self.play(FadeOutAndShift(my_dict["r"], DOWN))
+                self.wait()
+
+                # you can also make a VDict from an existing dict of mobjects
+                plain_dict = {
+                    1: Integer(1).shift(DOWN),
+                    2: Integer(2).shift(2 * DOWN),
+                    3: Integer(3).shift(3 * DOWN),
+                }
+
+                vdict_from_plain_dict = VDict(plain_dict)
+                vdict_from_plain_dict.shift(1.5 * (UP + LEFT))
+                self.play(ShowCreation(vdict_from_plain_dict))
+
+                # you can even use zip
+                vdict_using_zip = VDict(zip(["s", "c", "r"], [Square(), Circle(), Rectangle()]))
+                vdict_using_zip.shift(1.5 * RIGHT)
+                self.play(ShowCreation(vdict_using_zip))
+                self.wait()
     """
 
     def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
@@ -990,7 +1146,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submoject to be removed.
 
         Returns
@@ -1011,11 +1167,11 @@ class VDict(VMobject):
         return self
 
     def __getitem__(self, key):
-        """Overriding the [] operator for getting submobject by key
+        """Override the [] operator for item retrieval.
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
            The key of the submoject to be accessed
 
         Returns
@@ -1033,11 +1189,11 @@ class VDict(VMobject):
         return submob
 
     def __setitem__(self, key, value):
-        """Overriding the [] operator for assigning submobject like a python dict
+        """Override the [] operator for item assignment.
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submoject to be assigned
         value : :class:`VMobject`
             The submobject to bind the key to
@@ -1056,6 +1212,62 @@ class VDict(VMobject):
         if key in self.submob_dict:
             self.remove(key)
         self.add([(key, value)])
+
+    def __delitem__(self, key):
+        """Override the del operator for deleting an item.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key of the submoject to be deleted
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+            >>> del my_dict['sq']
+            >>> 'sq' in my_dict
+            False
+
+        Notes
+        -----
+        Removing an item from a VDict does not remove that item from any Scene
+        that the VDict is part of.
+
+        """
+        del self.submob_dict[key]
+
+    def __contains__(self, key):
+        """Override the in operator.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key to check membership of.
+
+        Returns
+        -------
+        :class:`bool`
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+
+        """
+        return key in self.submob_dict
 
     def get_all_submobjects(self):
         """To get all the submobjects associated with a particular :class:`VDict` object
@@ -1081,7 +1293,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submobject to be added.
         value : :class:`~.VMobject`
             The mobject associated with the key
