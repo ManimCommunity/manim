@@ -62,7 +62,8 @@ class Scene(Container):
     def __init__(self, renderer=None, **kwargs):
         Container.__init__(self, **kwargs)
         if renderer is None:
-            self.renderer = CairoRenderer(
+            cls = getattr(self, "renderer_class", CairoRenderer)
+            self.renderer = cls(
                 camera_class=self.camera_class,
                 skip_animations=kwargs.get("skip_animations", False),
             )
