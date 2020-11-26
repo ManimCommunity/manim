@@ -102,8 +102,8 @@ class GraphScene(Scene):
         to set up the scene for proper use.
         """
         logger.warning(
-            "GraphScene has been deprecated (outdated) "
-            "in favour of TwoDScene. Please use TwoDScene instead!"
+            "GraphScene is in the process of being deprecated (outdated) "
+            "in favour of TwoDScene. Please use TwoDScene in the future"
         )
 
         self.default_graph_colors_cycle = it.cycle(self.default_graph_colors)
