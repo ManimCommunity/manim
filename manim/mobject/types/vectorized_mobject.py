@@ -1353,13 +1353,6 @@ class VDict(VMobject):
 
 
 class VectorizedPoint(VMobject):
-    # CONFIG = {
-    #     "color": BLACK,
-    #     "fill_opacity": 0,
-    #     "stroke_width": 0,
-    #     "artificial_width": 0.01,
-    #     "artificial_height": 0.01,
-    # }
 
     def __init__(
         self,
@@ -1371,12 +1364,15 @@ class VectorizedPoint(VMobject):
         artificial_height=0.01,
         **kwargs
     ):
-        self.color = color
-        self.fill_opacity = fill_opacity
-        self.stroke_width = stroke_width
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
-        VMobject.__init__(self, **kwargs)
+        VMobject.__init__(
+            self,
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs
+        )
         self.set_points(np.array([location]))
 
     def get_width(self):
@@ -1404,16 +1400,13 @@ class CurvesAsSubmobjects(VGroup):
 
 
 class DashedVMobject(VMobject):
-    # CONFIG = {"num_dashes": 15, "positive_space_ratio": 0.5, "color": WHITE}
 
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):
         self.num_dashes = num_dashes
         self.positive_space_ratio = positive_space_ratio
-        self.color = color
-        VMobject.__init__(self, **kwargs)
-        num_dashes = self.num_dashes
+        VMobject.__init__(self, color=color, **kwargs)
         ps_ratio = self.positive_space_ratio
         if num_dashes > 0:
             # End points of the unit interval for division

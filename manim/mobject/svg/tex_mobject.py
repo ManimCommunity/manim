@@ -179,7 +179,6 @@ from ...mobject.svg.svg_mobject import VMobjectFromSVGPathstring
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VectorizedPoint
 
-# from ...utils.config_ops import digest_config
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
 from ...utils.color import BLACK
@@ -363,25 +362,17 @@ class MathTex(SingleStringMathTex):
 
     """
 
-    # CONFIG = {
-    #     "arg_separator": " ",
-    #     "substrings_to_isolate": [],
-    #     "tex_to_color_map": {},
-    #     "tex_environment": "align*",
-    # }
-
     def __init__(
         self,
         *tex_strings,
         arg_separator=" ",
-        substrings_to_isolate=[],
+        substrings_to_isolate=None,
         tex_to_color_map=None,
         tex_environment="align*",
         **kwargs,
     ):
-        # digest_config(self, kwargs)
         self.arg_separator = arg_separator
-        self.substrings_to_isolate = substrings_to_isolate
+        self.substrings_to_isolate = [] if substrings_to_isolate is None else substrings_to_isolate
         self.tex_to_color_map = tex_to_color_map
         if self.tex_to_color_map is None:
             self.tex_to_color_map = {}
@@ -503,11 +494,6 @@ class Tex(MathTex):
 
     """
 
-    # CONFIG = {
-    #     "arg_separator": "",
-    #     "tex_environment": "center",
-    # }
-
     def __init__(
         self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
     ):
@@ -521,12 +507,6 @@ class Tex(MathTex):
 
 
 class BulletedList(Tex):
-    # CONFIG = {
-    #     "buff": MED_LARGE_BUFF,
-    #     "dot_scale_factor": 2,
-    #     # Have to include because of handle_multiple_args implementation
-    #     "tex_environment": None,
-    # }
 
     def __init__(
         self,
@@ -563,13 +543,6 @@ class BulletedList(Tex):
 
 
 class Title(Tex):
-    # CONFIG = {
-    #     "scale_factor": 1,
-    #     "include_underline": True,
-    #     # This will override underline_width
-    #     "match_underline_width_to_text": False,
-    #     "underline_buff": MED_SMALL_BUFF,
-    # }
 
     def __init__(
         self,

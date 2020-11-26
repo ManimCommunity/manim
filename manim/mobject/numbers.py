@@ -40,16 +40,6 @@ class DecimalNumber(VMobject):
 
     """
 
-    # CONFIG = {
-    #     "include_sign": False,
-    #     "group_with_commas": True,
-    #     "digit_to_digit_buff": 0.05,
-    #     "show_ellipsis": False,
-    #     "unit": None,  # Aligned to bottom unless it starts with "^"
-    #     "include_background_rectangle": False,
-    #     "edge_to_fix": LEFT,
-    # }
-
     def __init__(
         self,
         number=0,

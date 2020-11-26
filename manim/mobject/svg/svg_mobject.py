@@ -72,18 +72,6 @@ class SVGMobject(VMobject):
         Specifies the opacity of the image. `1` is opaque, `0` is transparent. Defaults to `1`.
     """
 
-    # CONFIG = {
-    #     "should_center": True,
-    #     "height": 2,
-    #     "width": None,
-    #     # Must be filled in in a subclass, or when called
-    #     "file_name": None,
-    #     "unpack_groups": True,  # if False, creates a hierarchy of VGroups
-    #     "stroke_width": DEFAULT_STROKE_WIDTH,
-    #     "fill_opacity": 1.0,
-    #     # "fill_color" : LIGHT_GREY,
-    # }
-
     def __init__(
         self,
         file_name=None,
@@ -101,12 +89,10 @@ class SVGMobject(VMobject):
         self.height = height
         self.width = width
         self.unpack_groups = unpack_groups
-        self.stroke_width = stroke_width
-        self.fill_opacity = fill_opacity
         VMobject.__init__(
             self,
-            fill_opacity=self.fill_opacity,
-            stroke_width=self.stroke_width,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
             **kwargs
         )
         self.move_into_position()
@@ -540,7 +526,6 @@ class SVGMobject(VMobject):
 
 class VMobjectFromSVGPathstring(VMobject):
     def __init__(self, path_string, **kwargs):
-        # digest_locals(self)
         self.path_string = path_string
         VMobject.__init__(self, **kwargs)
 
