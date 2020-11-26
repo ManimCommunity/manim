@@ -279,6 +279,7 @@ class ManimConfig(MutableMapping):
         "save_pngs",
         "scene_names",
         "show_in_file_browser",
+        "streaming_dir",
         "sound",
         "tex_dir",
         "tex_template_file",
@@ -538,6 +539,7 @@ class ManimConfig(MutableMapping):
             "movie_file_extension",
             "background_color",
             "js_renderer_path",
+            "streaming_dir",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -558,6 +560,19 @@ class ManimConfig(MutableMapping):
         val = parser["ffmpeg"].get("loglevel")
         if val:
             setattr(self, "ffmpeg_loglevel", val)
+
+        streaming_config = {
+            opt: parser["streaming"].get(opt, fallback="", raw=True)
+            for opt in [
+                "streaming_protocol",
+                "streaming_ip",
+                "streaming_port",
+                "streaming_console_banner",
+            ]
+        }
+        url = parser["streaming"].get("streaming_url", fallback="", raw=True)
+        streaming_config["streaming_url"] = url.format(**streaming_config)
+        setattr(self, "streaming_config", streaming_config)
 
         return self
 
@@ -677,11 +692,9 @@ class ManimConfig(MutableMapping):
                 "partial_movie_dir",
             ]:
                 self[opt] = self._parser["custom_folders"].get(opt, raw=True)
-            # --media_dir overrides the deaful.cfg file
+            # --media_dir overrides the default.cfg file
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
-
-        return self
 
     def digest_file(self, filename):
         """Process the config options present in a ``.cfg`` file.
@@ -1158,6 +1171,7 @@ class ManimConfig(MutableMapping):
             "input_file",
             "output_file",
             "partial_movie_dir",
+            "streaming_dir",
         ]
         if key not in dirs:
             raise KeyError(
@@ -1231,6 +1245,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["partial_movie_dir"],
         lambda self, val: self._set_dir("partial_movie_dir", val),
         doc="Directory to place partial movie files (no flag).  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    streaming_dir = property(
+        lambda self: self._d["streaming_dir"],
+        lambda self, val: self._set_dir("streaming_dir", val),
+        doc="Directory to have streamed files.  See :meth:`ManimConfig.get_dir`.",
     )
 
     custom_folders = property(
