@@ -48,14 +48,14 @@ class ParametricFunction(VMobject):
     """
 
     def __init__(
-            self,
-            function=None,
-            t_min=0,
-            t_max=1,
-            step_size=0.01,
-            dt=1e-8,
-            discontinuities=None,
-            **kwargs
+        self,
+        function=None,
+        t_min=0,
+        t_max=1,
+        step_size=0.01,
+        dt=1e-8,
+        discontinuities=None,
+        **kwargs
     ):
         self.function = function
         self.t_min = t_min
@@ -120,12 +120,13 @@ class ParametricFunction(VMobject):
 
 
 class FunctionGraph(ParametricFunction):
-    CONFIG = {
-        "color": YELLOW,
-    }
+    # CONFIG = {
+    #     "color": YELLOW,
+    # }
 
-    def __init__(self, function, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, function, color=YELLOW, **kwargs):
+        # digest_config(self, kwargs)
+
         self.x_min = -config["frame_x_radius"]
         self.x_max = config["frame_x_radius"]
         self.parametric_function = lambda t: np.array([t, function(t), 0])
