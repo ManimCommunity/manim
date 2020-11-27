@@ -417,7 +417,7 @@ def _parse_args_no_subcmd(args):
     parser.add_argument(
         "--livestream",
         action="store_true",
-        help="Run in streaming mode. Mate, get to this in a bit. Something about defaults",
+        help="Run in streaming mode",
     )
 
     # Specify the verbosity
