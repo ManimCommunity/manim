@@ -1395,6 +1395,7 @@ class ArrowSquareFilledTip(ArrowFilledTip, ArrowSquareTip):
 
 class Cutout(VMobject):
     """A shape with smaller cutouts.
+
     .. warning::
 
         Technically, this class behaves similar to a symmetric difference: if
