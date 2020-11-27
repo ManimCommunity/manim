@@ -42,14 +42,8 @@ from .mobject.shape_matchers import *
 from .mobject.svg.brace import *
 from .mobject.svg.svg_mobject import *
 from .mobject.svg.tex_mobject import *
-<<<<<<< HEAD
-
-# from .mobject.svg.text_mobject import *
-# from .mobject.svg.code_mobject import *
-=======
 from .mobject.svg.text_mobject import *
 from .mobject.svg.code_mobject import *
->>>>>>> parent of 7725ec27... Add files via upload
 from .mobject.three_d_utils import *
 from .mobject.three_dimensions import *
 from .mobject.types.image_mobject import *
@@ -91,7 +85,4 @@ from .utils.space_ops import *
 from .utils.strings import *
 from .utils.tex import *
 from .utils.tex_templates import *
-<<<<<<< HEAD
 from .stream_starter import *
-=======
->>>>>>> parent of 7725ec27... Add files via upload
