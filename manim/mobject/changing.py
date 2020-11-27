@@ -107,7 +107,7 @@ class TracedPath(VMobject):
 
         class TracedPathExample(Scene):
             def construct(self):
-                circ = Circle(Color=RED).shift(4*LEFT)
+                circ = Circle(color=RED).shift(4*LEFT)
                 dot = Dot(color=RED).move_to(circ.get_start())
                 rolling_circle = VGroup(circ, dot)
                 trace = TracedPath(circ.get_start)

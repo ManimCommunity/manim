@@ -92,8 +92,8 @@ class MovingCameraScene(Scene):
     """
 
     # CONFIG = {"camera_class": MovingCamera}
-    def __init__(self, camera_class=MovingCamera):
-        Scene.__init__(self, camera_class=Ccamera_class, **kwargs)
+    def __init__(self, camera_class=MovingCamera, **kwargs):
+        Scene.__init__(self, camera_class=camera_class, **kwargs)
 
     def setup(self):
         """

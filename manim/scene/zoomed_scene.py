@@ -122,7 +122,7 @@ class ZoomedScene(MovingCameraScene):
         """
         MovingCameraScene.setup(self)
         # Initialize camera and display
-        zoomed_camera = MovingCamera({}, **self.zoomed_camera_config)
+        zoomed_camera = MovingCamera(**self.zoomed_camera_config)
         zoomed_display = ImageMobjectFromCamera(
             zoomed_camera, **self.zoomed_camera_image_mobject_config
         )

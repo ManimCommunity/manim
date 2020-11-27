@@ -202,7 +202,6 @@ class DecimalNumber(VMobject):
 
 
 class Integer(DecimalNumber):
-
     def __init__(self, num_decimal_places=0, **kwargs):
         DecimalNumber.__init__(self, num_decimal_places=num_decimal_places, **kwargs)
 
@@ -219,7 +218,7 @@ class Variable(VMobject):
     ----------
     var : Union[:class:`int`, :class:`float`]
         The python variable you need to keep track of and display.
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`, :class:`~.MathTexFromPresetString`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex]
         The label for your variable, for example ``x = ...``. To use math mode, for e.g.
         subscripts, superscripts, etc. simply pass in a raw string.
     var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
@@ -232,7 +231,7 @@ class Variable(VMobject):
 
     Attributes
     ----------
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`, :class:`~.MathTexFromPresetString`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
         The label for your variable, for example ``x = ...``.
     tracker : :class:`~.ValueTracker`
         Useful in updating the value of your variable on-screen.

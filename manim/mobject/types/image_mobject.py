@@ -36,7 +36,6 @@ class AbstractImageMobject(Mobject):
     def __init__(self, scale_to_resolution, pixel_array_dtype="uint8", **kwargs):
         self.pixel_array_dtype = pixel_array_dtype
         self.scale_to_resolution = scale_to_resolution
-
         Mobject.__init__(self, **kwargs)
 
     def get_pixel_array(self):
@@ -111,6 +110,7 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array = np.array(image)
         else:
             self.pixel_array = np.array(filename_or_array)
+        self.pixel_array_dtype = kwargs.get("pixel_array_dtype", "uint8")
         self.change_to_rgba_array()
         if self.invert:
             self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
