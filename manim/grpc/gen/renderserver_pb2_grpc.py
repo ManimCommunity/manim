@@ -19,11 +19,6 @@ class RenderServerStub(object):
                 request_serializer=renderserver__pb2.UpdateSceneDataRequest.SerializeToString,
                 response_deserializer=renderserver__pb2.EmptyResponse.FromString,
                 )
-        self.PlayScene = channel.unary_unary(
-                '/renderserver.RenderServer/PlayScene',
-                request_serializer=renderserver__pb2.EmptyRequest.SerializeToString,
-                response_deserializer=renderserver__pb2.EmptyResponse.FromString,
-                )
 
 
 class RenderServerServicer(object):
@@ -36,23 +31,12 @@ class RenderServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def PlayScene(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_RenderServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'UpdateSceneData': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateSceneData,
                     request_deserializer=renderserver__pb2.UpdateSceneDataRequest.FromString,
-                    response_serializer=renderserver__pb2.EmptyResponse.SerializeToString,
-            ),
-            'PlayScene': grpc.unary_unary_rpc_method_handler(
-                    servicer.PlayScene,
-                    request_deserializer=renderserver__pb2.EmptyRequest.FromString,
                     response_serializer=renderserver__pb2.EmptyResponse.SerializeToString,
             ),
     }
@@ -78,23 +62,6 @@ class RenderServer(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/renderserver.RenderServer/UpdateSceneData',
             renderserver__pb2.UpdateSceneDataRequest.SerializeToString,
-            renderserver__pb2.EmptyResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def PlayScene(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/renderserver.RenderServer/PlayScene',
-            renderserver__pb2.EmptyRequest.SerializeToString,
             renderserver__pb2.EmptyResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

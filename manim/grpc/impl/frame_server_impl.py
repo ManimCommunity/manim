@@ -54,8 +54,9 @@ class MyEventHandler(FileSystemEventHandler):
         with grpc.insecure_channel("localhost:50052") as channel:
             stub = renderserver_pb2_grpc.RenderServerStub(channel)
             try:
-                stub.PlayScene(renderserver_pb2.EmptyRequest())
+                self.frame_server.update_renderer_scene_data(play_scene=True)
             except grpc._channel._InactiveRpcError:
+                logger.warning("No frontend was detected at localhost:50052.")
                 sp.Popen(config["js_renderer_path"])
 
 
@@ -80,32 +81,16 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         observer.schedule(event_handler, path)
         observer.start()  # When / where to stop?
 
-        # If a javascript renderer is running, notify it of the scene being served. If
-        # not, spawn one and it will request the scene when it starts.
-        with grpc.insecure_channel("localhost:50052") as channel:
-            stub = renderserver_pb2_grpc.RenderServerStub(channel)
-            request = renderserver_pb2.UpdateSceneDataRequest(
-                scene=renderserver_pb2.Scene(
-                    name=str(self.scene),
-                    animations=[
-                        renderserver_pb2.Animation(
-                            name=animations_to_name(scene.animations),
-                            duration=scene.duration,
-                        )
-                        for scene in self.keyframes
-                    ],
-                ),
-            )
+        try:
+            self.update_renderer_scene_data()
+        except grpc._channel._InactiveRpcError:
+            logger.warning("No frontend was detected at localhost:50052.")
             try:
-                stub.UpdateSceneData(request)
-            except grpc._channel._InactiveRpcError:
-                logger.warning("No frontend was detected at localhost:50052.")
-                try:
-                    sp.Popen(config["js_renderer_path"])
-                except PermissionError:
-                    logger.info(JS_RENDERER_INFO)
-                    self.server.stop(None)
-                    return
+                sp.Popen(config["js_renderer_path"])
+            except PermissionError:
+                logger.info(JS_RENDERER_INFO)
+                self.server.stop(None)
+                return
 
     def GetFrameAtTime(self, request, context):
         try:
@@ -187,6 +172,25 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         self.renderer = JsRenderer(self)
         self.scene = self.scene_class(self.renderer)
         self.scene.render()
+
+    def update_renderer_scene_data(self):
+        # If a javascript renderer is running, notify it of the scene being served. If
+        # not, spawn one and it will request the scene when it starts.
+        with grpc.insecure_channel("localhost:50052") as channel:
+            stub = renderserver_pb2_grpc.RenderServerStub(channel)
+            request = renderserver_pb2.UpdateSceneDataRequest(
+                scene=renderserver_pb2.Scene(
+                    name=str(self.scene),
+                    animations=[
+                        renderserver_pb2.Animation(
+                            name=animations_to_name(scene.animations),
+                            duration=scene.duration,
+                        )
+                        for scene in self.keyframes
+                    ],
+                ),
+            )
+            stub.UpdateSceneData(request)
 
 
 def serialize_mobject(mobject):
