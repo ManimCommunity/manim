@@ -2,7 +2,6 @@ from abc import ABCMeta
 
 import os
 import subprocess
-import datetime
 
 from .. import config, logger
 from ..constants import FFMPEG_BIN
