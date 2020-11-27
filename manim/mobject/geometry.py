@@ -268,6 +268,8 @@ class Arc(TipableVMobject):
         arc_center=ORIGIN,
         **kwargs
     ):
+        if radius is None:  # apparently None is passed by ArcBetweenPoints
+            radius = 1.0
         self.radius = radius
         self.num_components = num_components
         self.anchors_span_full_range = anchors_span_full_range
