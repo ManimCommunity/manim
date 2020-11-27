@@ -43,6 +43,8 @@ def digest_config(obj, kwargs, caller_locals={}):
     as an attribute of the object.
     """
 
+    print("AAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!")
+
     # Assemble list of CONFIGs from all super classes
     classes_in_hierarchy = [obj.__class__]
     static_configs = []

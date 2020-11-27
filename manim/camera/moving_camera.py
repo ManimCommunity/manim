@@ -14,18 +14,17 @@ from ..camera.camera import Camera
 from ..constants import ORIGIN
 from ..mobject.frame import ScreenRectangle
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.config_ops import digest_config
 from ..utils.color import WHITE
 
 
 # TODO, think about how to incorporate perspective
 class CameraFrame(VGroup):
-    CONFIG = {
-        "center": ORIGIN,
-    }
+    # CONFIG = {
+    #     "center": ORIGIN,
+    # }
 
-    def __init__(self, **kwargs):
-        VGroup.__init__(self, **kwargs)
+    def __init__(self, center=ORIGIN, **kwargs):
+        VGroup.__init__(self, center=center, **kwargs)
         self.width = config["frame_width"]
         self.height = config["frame_height"]
 
@@ -40,18 +39,27 @@ class MovingCamera(Camera):
 
     """
 
-    CONFIG = {
-        "fixed_dimension": 0,  # width
-        "default_frame_stroke_color": WHITE,
-        "default_frame_stroke_width": 0,
-    }
+    # CONFIG = {
+    #     "fixed_dimension": 0,  # width
+    #     "default_frame_stroke_color": WHITE,
+    #     "default_frame_stroke_width": 0,
+    # }
 
-    def __init__(self, frame=None, **kwargs):
+    def __init__(
+        self,
+        frame=None,
+        fixed_dimension=0,  # width
+        default_frame_stroke_color=WHITE,
+        default_frame_stroke_width=0,
+        **kwargs
+    ):
         """
         frame is a Mobject, (should almost certainly be a rectangle)
         determining which region of space the camera displys
         """
-        digest_config(self, kwargs)
+        self.fixed_dimension = fixed_dimension
+        self.default_frame_stroke_color = default_frame_stroke_color
+        self.default_frame_stroke_width = default_frame_stroke_width
         if frame is None:
             frame = ScreenRectangle(height=config["frame_height"])
             frame.set_stroke(

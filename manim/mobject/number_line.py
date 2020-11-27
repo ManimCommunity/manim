@@ -12,7 +12,6 @@ from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.bezier import interpolate
-from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
@@ -20,43 +19,42 @@ from ..utils.color import LIGHT_GREY
 
 
 class NumberLine(Line):
-
     def __init__(
-            self,
-            color=LIGHT_GREY,
-            unit_size=1,
-            include_ticks=True,
-            tick_size=0.1,
-            tick_frequency=1,
-            # Defaults to value near x_min s.t. 0 is a tick
-            # TODO, rename this
-            leftmost_tick=None,
-            # Change name
-            numbers_with_elongated_ticks=[0],
-            include_numbers=False,
-            numbers_to_show=None,
-            longer_tick_multiple=2,
-            number_at_center=0,
-            number_scale_val=0.75,
-            label_direction=DOWN,
-            line_to_number_buff=MED_SMALL_BUFF,
-            include_tip=False,
-            tip_width=0.25,
-            tip_height=0.25,
-            add_start=0,  # extend number line by this amount at its starting point
-            add_end=0,  # extend number line by this amount at its end point
-            decimal_number_config={"num_decimal_places": 0},
-            exclude_zero_from_default_numbers=False,
-            x_min=-config["frame_x_radius"],
-            x_max=config["frame_x_radius"],
-            **kwargs
+        self,
+        color=LIGHT_GREY,
+        unit_size=1,
+        include_ticks=True,
+        tick_size=0.1,
+        tick_frequency=1,
+        # Defaults to value near x_min s.t. 0 is a tick
+        # TODO, rename this
+        leftmost_tick=None,
+        # Change name
+        numbers_with_elongated_ticks=[0],
+        include_numbers=False,
+        numbers_to_show=None,
+        longer_tick_multiple=2,
+        number_at_center=0,
+        number_scale_val=0.75,
+        label_direction=DOWN,
+        line_to_number_buff=MED_SMALL_BUFF,
+        include_tip=False,
+        tip_width=0.25,
+        tip_height=0.25,
+        add_start=0,  # extend number line by this amount at its starting point
+        add_end=0,  # extend number line by this amount at its end point
+        decimal_number_config={"num_decimal_places": 0},
+        exclude_zero_from_default_numbers=False,
+        x_min=-config["frame_x_radius"],
+        x_max=config["frame_x_radius"],
+        **kwargs
     ):
         self.unit_size = unit_size
         self.include_ticks = include_ticks
         self.tick_size = tick_size
         self.tick_frequency = tick_frequency
         self.leftmost_tick = leftmost_tick
-        self.numbers_with_elongated_ticks = [0]
+        self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
         self.include_numbers = include_numbers
         self.numbers_to_show = numbers_to_show
         self.longer_tick_multiple = longer_tick_multiple
@@ -216,17 +214,35 @@ class NumberLine(Line):
 
 
 class UnitInterval(NumberLine):
-    CONFIG = {
-        "unit_size": 6,
-        "tick_frequency": 0.1,
-        "numbers_with_elongated_ticks": [0, 1],
-        "number_at_center": 0.5,
-        "decimal_number_config": {
+    # CONFIG = {
+    #     "unit_size": 6,
+    #     "tick_frequency": 0.1,
+    #     "numbers_with_elongated_ticks": [0, 1],
+    #     "number_at_center": 0.5,
+    #     "decimal_number_config": {
+    #         "num_decimal_places": 1,
+    #     },
+    # }
+
+    def __init__(
+        self,
+        unit_size=6,
+        tick_frequency=0.1,
+        numbers_with_elongated_ticks=[0, 1],
+        number_at_center=0.5,
+        decimal_number_config={
             "num_decimal_places": 1,
         },
-    }
-
-    def __init__(self, **kwargs):
-        NumberLine.__init__(self, **kwargs)
-        self.x_min = 0
-        self.x_max = 1
+        **kwargs
+    ):
+        NumberLine.__init__(
+            self,
+            unit_size=unit_size,
+            tick_frequency=tick_frequency,
+            numbers_with_elongated_ticks=numbers_with_elongated_ticks,
+            number_at_center=number_at_center,
+            decimal_number_config=decimal_number_config,
+            x_min=0,
+            x_max=1,
+            **kwargs,
+        )

@@ -27,17 +27,33 @@ class AnimatedBoundary(VGroup):
 
     """
 
-    CONFIG = {
-        "colors": [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
-        "max_stroke_width": 3,
-        "cycle_rate": 0.5,
-        "back_and_forth": True,
-        "draw_rate_func": smooth,
-        "fade_rate_func": smooth,
-    }
+    # CONFIG = {
+    #     "colors": [BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
+    #     "max_stroke_width": 3,
+    #     "cycle_rate": 0.5,
+    #     "back_and_forth": True,
+    #     "draw_rate_func": smooth,
+    #     "fade_rate_func": smooth,
+    # }
 
-    def __init__(self, vmobject, **kwargs):
+    def __init__(
+        self,
+        vmobject,
+        colors=[BLUE_D, BLUE_B, BLUE_E, GREY_BROWN],
+        max_stroke_width=3,
+        cycle_rate=0.5,
+        back_and_forth=True,
+        draw_rate_func=smooth,
+        fade_rate_func=smooth,
+        **kwargs
+    ):
         super().__init__(**kwargs)
+        self.colors = colors
+        self.max_stroke_width = max_stroke_width
+        self.cycle_rate = cycle_rate
+        self.back_and_forth = back_and_forth
+        self.draw_rate_func = draw_rate_func
+        self.fade_rate_func = fade_rate_func
         self.vmobject = vmobject
         self.boundary_copies = [
             vmobject.copy().set_style(stroke_width=0, fill_opacity=0) for x in range(2)
@@ -101,14 +117,22 @@ class TracedPath(VMobject):
 
     """
 
-    CONFIG = {
-        "stroke_width": 2,
-        "stroke_color": WHITE,
-        "min_distance_to_new_point": 0.1,
-    }
+    # CONFIG = {
+    #     "stroke_width": 2,
+    #     "stroke_color": WHITE,
+    #     "min_distance_to_new_point": 0.1,
+    # }
 
-    def __init__(self, traced_point_func, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        traced_point_func,
+        stroke_width=2,
+        stroke_color=WHITE,
+        min_distance_to_new_point=0.1,
+        **kwargs
+    ):
+        super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
+        self.min_distance_to_new_point = min_distance_to_new_point
         self.traced_point_func = traced_point_func
         self.add_updater(lambda m: m.update_path())
 

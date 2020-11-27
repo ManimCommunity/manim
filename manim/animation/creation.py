@@ -19,7 +19,6 @@ from ..animation.composition import Succession
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.mobject import Group
 from ..utils.bezier import integer_interpolate
-from ..utils.config_ops import digest_config
 from ..utils.rate_functions import linear
 from ..utils.rate_functions import double_smooth
 from ..utils.rate_functions import smooth
