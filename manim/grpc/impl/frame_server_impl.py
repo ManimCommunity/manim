@@ -54,16 +54,10 @@ class MyEventHandler(FileSystemEventHandler):
         with grpc.insecure_channel("localhost:50052") as channel:
             stub = renderserver_pb2_grpc.RenderServerStub(channel)
             try:
-                self.frame_server.update_renderer_scene_data(play_scene=True)
+                self.frame_server.update_renderer_scene_data()
             except grpc._channel._InactiveRpcError:
                 logger.warning("No frontend was detected at localhost:50052.")
                 sp.Popen(config["js_renderer_path"])
-
-
-def animations_to_name(animations):
-    if len(animations) == 1:
-        return str(animations[0].__class__.__name__)
-    return f"{str(animations[0])}..."
 
 
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
@@ -95,13 +89,25 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
     def GetFrameAtTime(self, request, context):
         try:
             # Determine start and end indices.
-            if request.use_indices:
+            if (
+                request.preview_mode
+                == frameserver_pb2.FrameRequest.PreviewMode.ANIMATION_RANGE
+            ):
                 requested_scene_index = request.start_index
-            else:
+            elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.ALL:
                 requested_scene_index = 0
-            if request.use_indices and request.end_index > request.start_index:
+            elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.IMAGE:
+                requested_scene_index = request.image_index
+
+            if (
+                request.preview_mode
+                == frameserver_pb2.FrameRequest.PreviewMode.ANIMATION_RANGE
+                and request.end_index > request.start_index
+            ):
                 requested_end_index = request.end_index
-            else:
+            elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.ALL:
+                requested_end_index = len(self.keyframes)
+            elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.IMAGE:
                 requested_end_index = len(self.keyframes)
 
             # Find the requested scene.
@@ -138,7 +144,9 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 mobjects=serialized_mobjects,
                 frame_pending=False,
                 animation_finished=False,
-                scene_finished=scene_finished,
+                scene_finished=scene_finished
+                or request.preview_mode
+                == frameserver_pb2.FrameRequest.PreviewMode.IMAGE,
                 duration=requested_scene.duration,
                 animations=map(
                     lambda anim: anim.__class__.__name__, requested_scene.animations
@@ -191,6 +199,12 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 ),
             )
             stub.UpdateSceneData(request)
+
+
+def animations_to_name(animations):
+    if len(animations) == 1:
+        return str(animations[0].__class__.__name__)
+    return f"{str(animations[0])}..."
 
 
 def serialize_mobject(mobject):
