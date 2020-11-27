@@ -945,7 +945,7 @@ class Arrow(Line):
 class Vector(Arrow):
     # CONFIG = {"buff": 0}
 
-    def __init__(self, buff=0, direction=RIGHT, **kwargs):
+    def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
             direction = np.append(np.array(direction), 0)
