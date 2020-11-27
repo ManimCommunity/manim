@@ -696,6 +696,8 @@ class ManimConfig(MutableMapping):
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
 
+        return self
+
     def digest_file(self, filename):
         """Process the config options present in a ``.cfg`` file.
 
