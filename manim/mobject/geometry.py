@@ -1395,13 +1395,18 @@ class ArrowSquareFilledTip(ArrowFilledTip, ArrowSquareTip):
 
 class Cutout(VMobject):
     """A shape with smaller cutouts.
+    .. warning::
+
+        Technically, this class behaves similar to a symmetric difference: if
+        parts of the ``mobjects`` are not located within the ``main_shape``,
+        these parts will be added to the resulting :class:`~.VMobject`.
 
     Parameters
     ----------
     main_shape : :class:`~.VMobject`
         The primary shape from which cutouts are made.
     mobjects : :class:`~.VMobject`
-        The smaller shapes which are to be cut out of the main_shape.
+        The smaller shapes which are to be cut out of the ``main_shape``.
     kwargs
         Further keyword arguments that are passed to the constructor of
         :class:`~.VMobject`.
