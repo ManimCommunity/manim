@@ -32,18 +32,6 @@ class StreamFileWriter(SceneFileWriter):
     @property
     def file_path(self):
         return self.partial_movie_files[-1]
-        # file_name = self.renderer.num_plays
-        # return os.path.join(
-        #     self.FOLDER_PATH,
-        #     "{:05}{}".format(file_name, config["movie_file_extension"]),
-        # )
-
-    # @property
-    # def stream_path(self):
-    #     return os.path.join(self.FOLDER_PATH, os.listdir(self.FOLDER_PATH)[-1])
-
-    # def begin_animation(self, allow_write=False):
-    #     if os.path.exists()
 
     def end_animation(self, allow_write=False):
         super().end_animation(allow_write=allow_write)
