@@ -30,8 +30,9 @@ def livestream():
 def stream():
     """For a quick import and livestream eg:
 
-    >>> from manim import `stream, stuff and other stuff`
+    >>> from manim import stream, Circle, ShowCreation
     >>> manim = stream()
-    >>> manim.play(...)
+    >>> circ = Circle()
+    >>> manim.play(ShowCreation(circ))
     """
     return BasicStreamer()
