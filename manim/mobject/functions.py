@@ -6,7 +6,6 @@ __all__ = ["ParametricFunction", "FunctionGraph"]
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.config_ops import digest_config
 from ..utils.color import YELLOW
 
 import math
@@ -125,8 +124,6 @@ class FunctionGraph(ParametricFunction):
     # }
 
     def __init__(self, function, color=YELLOW, **kwargs):
-        # digest_config(self, kwargs)
-
         self.x_min = -config["frame_x_radius"]
         self.x_max = config["frame_x_radius"]
         self.parametric_function = lambda t: np.array([t, function(t), 0])

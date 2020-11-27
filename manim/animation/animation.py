@@ -10,7 +10,7 @@ import numpy as np
 
 from .. import logger
 from ..mobject.mobject import Mobject
-from ..utils.config_ops import digest_config
+
 from ..utils.rate_functions import smooth
 
 

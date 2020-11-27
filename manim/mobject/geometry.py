@@ -64,7 +64,6 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.vectorized_mobject import DashedVMobject
-from ..utils.config_ops import digest_config
 from ..utils.iterables import adjacent_n_tuples
 from ..utils.iterables import adjacent_pairs
 from ..utils.simple_functions import fdiv
@@ -377,22 +376,19 @@ class ArcBetweenPoints(Arc):
 class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
         ArcBetweenPoints.__init__(self, start_point, end_point, **kwargs)
-        self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleFilledTip))
+        self.add_tip(tip_shape=kwargs.pop("tip_shape", ArrowTriangleFilledTip))
 
 
 class CurvedDoubleArrow(CurvedArrow):
     def __init__(self, start_point, end_point, **kwargs):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
+        tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
         CurvedArrow.__init__(self, start_point, end_point, **kwargs)
-        self.add_tip(
-            at_start=True,
-            tip_shape=kwargs.get("tip_shape_start", ArrowTriangleFilledTip),
-        )
+        self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
 class Circle(Arc):
-
     def __init__(
         self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
     ):
@@ -664,7 +660,6 @@ class Annulus(Circle):
 
 
 class Line(TipableVMobject):
-
     def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=None, **kwargs):
         self.buff = buff
         self.path_arc = path_arc
@@ -817,7 +812,6 @@ class TangentLine(Line):
     # CONFIG = {"length": 1, "d_alpha": 1e-6}
 
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
-        # digest_config(self, kwargs)
         self.length = length
         self.d_alpha = d_alpha
         da = self.d_alpha
@@ -869,11 +863,12 @@ class Arrow(Line):
         self.preserve_tip_size_when_scaling = (
             preserve_tip_size_when_scaling  # is this used anywhere
         )
-        Line.__init__(self, *args, buff=buff, **kwargs)
+        tipp_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
+        Line.__init__(self, *args, buff=buff, stroke_width=stroke_width, **kwargs)
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
-        self.add_tip(tip_shape=kwargs.get("tip_shape", ArrowTriangleFilledTip))
+        self.add_tip(tip_shape=tipp_shape)
         self.set_stroke_width_from_length()
 
     def scale(self, factor, scale_tips=False, **kwargs):
@@ -949,6 +944,7 @@ class Vector(Arrow):
     # CONFIG = {"buff": 0}
 
     def __init__(self, buff=0, direction=RIGHT, **kwargs):
+        self.buff = buff
         if len(direction) == 2:
             direction = np.append(np.array(direction), 0)
         Arrow.__init__(self, ORIGIN, direction, buff=0, **kwargs)
@@ -958,11 +954,9 @@ class DoubleArrow(Arrow):
     def __init__(self, *args, **kwargs):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
+        tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
         Arrow.__init__(self, *args, **kwargs)
-        self.add_tip(
-            at_start=True,
-            tip_shape=kwargs.get("tip_shape_start", ArrowTriangleFilledTip),
-        )
+        self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
 class CubicBezier(VMobject):
@@ -972,7 +966,6 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
-
     def __init__(self, *vertices, color=BLUE, **kwargs):
         VMobject.__init__(self, color=color, **kwargs)
         self.set_points_as_corners([*vertices, vertices[0]])
@@ -1019,7 +1012,6 @@ class RegularPolygon(Polygon):
     # CONFIG = {"start_angle": None}
 
     def __init__(self, n=6, start_angle=None, **kwargs):
-        # digest_config(self, kwargs, locals())
         self.start_angle = start_angle
         if self.start_angle is None:
             if n % 2 == 0:
@@ -1275,7 +1267,6 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
-
     def __init__(
         self,
         color=WHITE,
@@ -1296,7 +1287,6 @@ class Rectangle(Polygon):
 
 
 class Square(Rectangle):
-
     def __init__(self, side_length=2.0, **kwargs):
         self.side_length = side_length
         Rectangle.__init__(
@@ -1305,7 +1295,6 @@ class Square(Rectangle):
 
 
 class RoundedRectangle(Rectangle):
-
     def __init__(self, corner_radius=0.5, **kwargs):
         self.corner_radius = corner_radius
         Rectangle.__init__(self, **kwargs)

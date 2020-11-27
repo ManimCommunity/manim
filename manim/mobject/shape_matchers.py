@@ -9,7 +9,6 @@ from ..mobject.geometry import Rectangle
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import Color, YELLOW, BLACK, RED
-from ..utils.config_ops import digest_config
 
 
 class SurroundingRectangle(Rectangle):
@@ -19,10 +18,11 @@ class SurroundingRectangle(Rectangle):
     # }
 
     def __init__(self, mobject, color=YELLOW, buff=SMALL_BUFF, **kwargs):
-        # digest_config(self, kwargs)
+        self.color = color
+        self.buff = buff
         kwargs["width"] = mobject.get_width() + 2 * self.buff
         kwargs["height"] = mobject.get_height() + 2 * self.buff
-        Rectangle.__init__(self, color=color, buff=buff, **kwargs)
+        Rectangle.__init__(self, color=color, **kwargs)
         self.move_to(mobject)
 
 

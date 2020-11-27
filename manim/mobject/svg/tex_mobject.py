@@ -178,8 +178,6 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_mobject import VMobjectFromSVGPathstring
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VectorizedPoint
-
-# from ...utils.config_ops import digest_config
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
 from ...utils.color import BLACK
@@ -379,7 +377,6 @@ class MathTex(SingleStringMathTex):
         tex_environment="align*",
         **kwargs,
     ):
-        # digest_config(self, kwargs)
         self.arg_separator = arg_separator
         self.substrings_to_isolate = substrings_to_isolate
         self.tex_to_color_map = tex_to_color_map

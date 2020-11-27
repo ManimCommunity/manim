@@ -10,12 +10,15 @@ from ..utils.iterables import list_difference_update
 class MultiCamera(MovingCamera):
     """Camera Object that allows for multiple perspectives."""
 
-    CONFIG = {
-        "allow_cameras_to_capture_their_own_display": False,
-    }
+    # CONFIG = {
+    #     "allow_cameras_to_capture_their_own_display": False,
+    # }
 
     def __init__(
-        self, image_mobjects_from_cameras=None, **kwargs
+        self,
+        image_mobjects_from_cameras=None,
+        allow_cameras_to_capture_their_own_display=False,
+        **kwargs
     ):
         """Initalises the MultiCamera
 
@@ -30,6 +33,9 @@ class MultiCamera(MovingCamera):
         if image_mobjects_from_cameras is not None:
             for imfc in image_mobjects_from_cameras:
                 self.add_image_mobject_from_camera(imfc)
+        self.allow_cameras_to_capture_their_own_display = (
+            allow_cameras_to_capture_their_own_display
+        )
         MovingCamera.__init__(self, **kwargs)
 
     def add_image_mobject_from_camera(self, image_mobject_from_camera):
