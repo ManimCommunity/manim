@@ -10,6 +10,7 @@ from manim.utils.module_ops import (
 )
 from manim.utils.file_ops import open_file as open_media_file
 from manim._config.main_utils import parse_args
+from manim.stream_starter import livestream
 
 try:
     from manim.grpc.impl import frame_server_impl
@@ -64,9 +65,13 @@ def main():
 
         # elif args.cmd == "some_other_cmd":
         #     something_else_here()
+        # TODO: Maybe make use of this when I understand this?
 
     else:
         config.digest_args(args)
+
+        if args.livestream:
+            livestream()
 
         module = get_module(config.get_dir("input_file"))
         all_scene_classes = get_scene_classes_from_module(module)
