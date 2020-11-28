@@ -69,6 +69,8 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             self.input_file_path, require_single_scene=True
         )
         self.generate_keyframe_data()
+        self.previous_scene_index = None
+        self.previous_scene = None
 
         observer = Observer()
         event_handler = MyEventHandler(self)
@@ -123,7 +125,13 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 else:
                     scene_finished = True
                     break
-            requested_scene = copy.deepcopy(requested_scene)
+
+            if requested_scene_index == self.previous_scene_index:
+                requested_scene = self.previous_scene
+            else:
+                requested_scene = copy.deepcopy(requested_scene)
+                self.previous_scene = requested_scene
+                self.previous_scene_index = requested_scene_index
 
             # Update to the requested time.
             if not scene_finished:
