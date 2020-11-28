@@ -26,6 +26,7 @@ from ...renderer.js_renderer import JsRenderer
 from ...utils.family import extract_mobject_family_members
 import logging
 import copy
+from ...mobject.value_tracker import ValueTracker
 
 
 class MyEventHandler(FileSystemEventHandler):
@@ -138,7 +139,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             mobjects = extract_mobject_family_members(
                 requested_scene.mobjects, only_those_with_points=True
             )
-            serialized_mobjects = [serialize_mobject(mobject) for mobject in mobjects]
+            serialized_mobjects = [
+                serialize_mobject(mobject)
+                for mobject in mobjects
+                if not isinstance(mobject, ValueTracker)
+            ]
 
             resp = frameserver_pb2.FrameResponse(
                 mobjects=serialized_mobjects,

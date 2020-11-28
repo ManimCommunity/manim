@@ -799,6 +799,7 @@ class Scene(Container):
             warnings.warn("Called Scene.play with no animations")
             return None
 
+        self.last_t = 0
         self.animations = self.compile_play_args_to_animation_list(*args, **kwargs)
         self.add_mobjects_from_animations(self.animations)
 
@@ -830,7 +831,6 @@ class Scene(Container):
         self.time_progression = self.get_animation_time_progression(
             self.animations, self.duration
         )
-        self.last_t = 0
 
         for animation in self.animations:
             animation.begin()
