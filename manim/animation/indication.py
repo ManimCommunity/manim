@@ -37,7 +37,6 @@ from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.geometry import Line
 from ..utils.bezier import interpolate
-from ..utils.config_ops import digest_config
 from ..utils.rate_functions import there_and_back
 from ..utils.rate_functions import wiggle
 from ..utils.color import GREY, YELLOW

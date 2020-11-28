@@ -178,7 +178,6 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_mobject import VMobjectFromSVGPathstring
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VectorizedPoint
-
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
 from ...utils.color import BLACK

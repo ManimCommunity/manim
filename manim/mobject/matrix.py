@@ -207,22 +207,39 @@ class Matrix(VMobject):
 
 
 class DecimalMatrix(Matrix):
-    CONFIG = {
-        "element_to_mobject": DecimalNumber,
-        "element_to_mobject_config": {"num_decimal_places": 1},
-    }
+    # CONFIG = {
+    #     "element_to_mobject": DecimalNumber,
+    #     "element_to_mobject_config": {"num_decimal_places": 1},
+    # }
+
+    def __init__(
+        self,
+        element_to_mobject=DecimalNumber,
+        element_to_mobject_config={"num_decimal_places": 1},
+        **kwargs
+    ):
+        Matrix.__init__(
+            self,
+            element_to_mobject=element_to_mobject,
+            element_to_mobject_config=element_to_mobject_config,
+            **kwargs
+        )
 
 
 class IntegerMatrix(Matrix):
-    CONFIG = {
-        "element_to_mobject": Integer,
-    }
+    # CONFIG = {
+    #     "element_to_mobject": Integer,
+    # }
+    def __init__(self, element_to_mobject=Integer, **kwargs):
+        Matrix.__init__(self, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class MobjectMatrix(Matrix):
-    CONFIG = {
-        "element_to_mobject": lambda m: m,
-    }
+    # CONFIG = {
+    #     "element_to_mobject": lambda m: m,
+    # }
+    def __init__(self, element_to_mobject=lambda m: m, **kwargs):
+        Matrix.__init__(self, element_to_mobject=element_to_mobject, **kwargs)
 
 
 def get_det_text(

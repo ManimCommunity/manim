@@ -20,7 +20,6 @@ from ...mobject.geometry import RoundedRectangle
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import *
-from ...utils.config_ops import digest_config
 from ...utils.config_ops import digest_locals
 
 

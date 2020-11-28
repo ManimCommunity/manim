@@ -42,7 +42,7 @@ class Mobject(Container):
 
     """
 
-    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0):
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
         self.color = color
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
@@ -56,6 +56,8 @@ class Mobject(Container):
         self.reset_points()
         self.generate_points()
         self.init_colors()
+        if kwargs:
+            print("got extra kwargs: ", kwargs)
 
     def __repr__(self):
         return str(self.name)

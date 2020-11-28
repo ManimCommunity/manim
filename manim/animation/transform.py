@@ -33,7 +33,6 @@ from ..constants import OUT
 from ..constants import DEGREES
 from ..mobject.mobject import Group
 from ..mobject.mobject import Mobject
-from ..utils.config_ops import digest_config
 from ..utils.paths import path_along_arc
 from ..utils.paths import straight_path
 from ..utils.rate_functions import smooth
@@ -305,10 +304,10 @@ class ApplyComplexFunction(ApplyMethod):
         method = mobject.apply_complex_function
         super().__init__(method, function, **kwargs)
 
-    def init_path_func(self):
+    def _init_path_func(self):
         func1 = self.function(complex(1))
         self.path_arc = np.log(func1).imag
-        super().init_path_func()
+        super()._init_path_func()
 
 
 ###
@@ -336,6 +335,8 @@ class TransformAnimations(Transform):
     def __init__(
         self, start_anim, end_anim, rate_func=squish_rate_func(smooth), **kwargs
     ):
+        self.start_anim = start_anim
+        self.end_anim = end_anim
         if "run_time" in kwargs:
             self.run_time = kwargs.pop("run_time")
         else:

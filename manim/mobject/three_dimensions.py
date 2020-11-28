@@ -19,24 +19,23 @@ class ThreeDVMobject(VMobject):
 
 
 class ParametricSurface(VGroup):
-
     def __init__(
-            self,
-            func,
-            u_min=0,
-            u_max=1,
-            v_min=0,
-            v_max=1,
-            resolution=32,
-            surface_piece_config={},
-            fill_color=BLUE_D,
-            fill_opacity=1.0,
-            checkerboard_colors=[BLUE_D, BLUE_E],
-            stroke_color=LIGHT_GREY,
-            stroke_width=0.5,
-            should_make_jagged=False,
-            pre_function_handle_to_anchor_scale_factor=0.00001,
-            **kwargs
+        self,
+        func,
+        u_min=0,
+        u_max=1,
+        v_min=0,
+        v_max=1,
+        resolution=32,
+        surface_piece_config={},
+        fill_color=BLUE_D,
+        fill_opacity=1.0,
+        checkerboard_colors=[BLUE_D, BLUE_E],
+        stroke_color=LIGHT_GREY,
+        stroke_width=0.5,
+        should_make_jagged=False,
+        pre_function_handle_to_anchor_scale_factor=0.00001,
+        **kwargs
     ):
         VGroup.__init__(self, **kwargs)
         self.u_min = u_min
@@ -51,7 +50,9 @@ class ParametricSurface(VGroup):
         self.stroke_color = stroke_color
         self.stroke_width = stroke_width
         self.should_make_jagged = should_make_jagged
-        self.pre_function_handle_to_anchor_scale_factor = pre_function_handle_to_anchor_scale_factor
+        self.pre_function_handle_to_anchor_scale_factor = (
+            pre_function_handle_to_anchor_scale_factor
+        )
         self.func = func
         self.setup_in_uv_space()
         self.apply_function(lambda p: func(p[0], p[1]))
@@ -119,16 +120,15 @@ class ParametricSurface(VGroup):
 
 
 class Sphere(ParametricSurface):
-
     def __init__(
-            self,
-            radius=1,
-            resolution=(12, 24),
-            u_min=0.001,
-            u_max=PI-0.001,
-            v_min=0,
-            v_max=TAU,
-            **kwargs
+        self,
+        radius=1,
+        resolution=(12, 24),
+        u_min=0.001,
+        u_max=PI - 0.001,
+        v_min=0,
+        v_max=TAU,
+        **kwargs
     ):
         ParametricSurface.__init__(
             self,
@@ -138,23 +138,25 @@ class Sphere(ParametricSurface):
             u_max=u_max,
             v_min=v_min,
             v_max=v_max,
-            **kwargs)
+            **kwargs
+        )
         self.radius = radius
         self.scale(self.radius)
 
-    def func(self, u, v):
+    def func(
+        self, u, v
+    ):  # FIXME: An attribute defined in manim.mobject.three_dimensions line 56 hides this method
         return np.array([np.cos(v) * np.sin(u), np.sin(v) * np.sin(u), np.cos(u)])
 
 
 class Cube(VGroup):
-
     def __init__(
-            self,
-            side_length=2,
-            fill_opacity=0.75,
-            fill_color=BLUE,
-            stroke_width=0,
-            **kwargs
+        self,
+        side_length=2,
+        fill_opacity=0.75,
+        fill_color=BLUE,
+        stroke_width=0,
+        **kwargs
     ):
         self.side_length = side_length
         super().__init__(
@@ -178,7 +180,11 @@ class Cube(VGroup):
 
 
 class Prism(Cube):
-    CONFIG = {"dimensions": [3, 2, 1]}
+    # CONFIG = {"dimensions": [3, 2, 1]}
+
+    def __init__(self, dimensions=[3, 2, 1], **kwargs):
+        self.dimensions = dimensions
+        Cube.__init__(self, **kwargs)
 
     def generate_points(self):
         Cube.generate_points(self)

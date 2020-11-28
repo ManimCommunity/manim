@@ -8,7 +8,6 @@ __all__ = ["Container"]
 
 
 from abc import ABC, abstractmethod
-from .utils.config_ops import digest_config
 
 
 class Container(ABC):
@@ -18,12 +17,11 @@ class Container(ABC):
     Parameters
     ----------
     kwargs : Any
-        Arguments to be passed to :func:`~.digest_config`
 
     """
 
     def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+        pass
 
     @abstractmethod
     def add(self, *items):

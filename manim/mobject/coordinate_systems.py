@@ -14,7 +14,6 @@ from ..mobject.geometry import Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
@@ -131,7 +130,6 @@ class CoordinateSystem:
 
 
 class Axes(VGroup, CoordinateSystem):
-
     def __init__(
         self,
         axis_config=None,
@@ -153,7 +151,7 @@ class Axes(VGroup, CoordinateSystem):
         self.y_axis_config = y_axis_config
         self.center_point = center_point
         CoordinateSystem.__init__(self)
-        VGroup.__init__(self, **kwargs)  # dim=self.dim? or self.dimension?
+        VGroup.__init__(self, **kwargs)
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
         self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
@@ -208,7 +206,6 @@ class Axes(VGroup, CoordinateSystem):
 
 
 class ThreeDAxes(Axes):
-
     def __init__(
         self,
         z_axis_config=None,
@@ -216,7 +213,7 @@ class ThreeDAxes(Axes):
         z_max=3.5,
         z_normal=DOWN,
         num_axis_pieces=20,
-        light_source=9*DOWN + 7*LEFT + 10*OUT,
+        light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
         **kwargs
     ):
         if z_axis_config is None:
@@ -267,7 +264,6 @@ class ThreeDAxes(Axes):
 
 
 class NumberPlane(Axes):
-
     def __init__(
         self,
         axis_config=None,
@@ -440,13 +436,12 @@ class NumberPlane(Axes):
 
 
 class ComplexPlane(NumberPlane):
-
     def __init__(self, color=BLUE, x_line_frequency=1, y_line_frequency=1, **kwargs):
         super().__init__(
             color=color,
             x_line_frequency=x_line_frequency,
             y_line_frequency=y_line_frequency,
-            **kwargs
+            **kwargs,
         )
 
     def number_to_point(self, number):
