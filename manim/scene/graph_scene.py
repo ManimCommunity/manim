@@ -1122,7 +1122,20 @@ class GraphScene(Scene):
         secant_slope_group.kwargs["dx"] = target_dx
 
     def interpolate_between_points(self, pt1, pt2):
-        """Interpolates the space between two points by returning a function for a straight line between them."""
+        """Interpolates the space between two points by returning a function for a straight line between them.
+
+        Parameters
+        ----------
+        pt1 : Tuple[Union[:class:`int`, :class:`float`], Union[:class:`int`, :class:`float`]]
+            The first point to calculate the line througn.
+
+        pt2 : Tuple[Union[:class:`int`, :class:`float`], Union[:class:`int`, :class:`float`]]
+            The second point to calculate the line througn.
+
+        Returns
+        -------
+        :class:`function`
+            The function of a straight line passing through the two points."""
         return (
             lambda x: ((pt2[1] - pt1[1]) / (pt2[0] - pt1[0])) * x
             + pt1[1]
@@ -1145,7 +1158,7 @@ class GraphScene(Scene):
         Returns
         -------
         :class:`.VGroup`
-            A group containing the ``ParametricFunction`` instances connecting each point of the graph."""
+            A group containing the :class:`.ParametricFunction` instances connecting each point of the graph."""
         if len(points) in (1, 2):
             points = (
                 sorted(zip(*points))
@@ -1179,11 +1192,11 @@ class GraphScene(Scene):
 
         **kwargs : :class:`dict`
             Any valid kwargs of a `GraphScene.get_graph()` call.
-        
+
         Returns
         -------
         :class:`list`
-            List of """
+            List of :class:`.VGroup` instances containing the :class:`.ParametricFunction` instances that make up the connective lines between points."""
         graphs = []
 
         for arg in args:
