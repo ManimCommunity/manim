@@ -31,7 +31,8 @@ def _find_subcommand(args):
     """
     subcmd = args[1]
     if subcmd in [
-        "cfg"
+        "cfg",
+        "plugins",
         # , 'init',
     ]:
         return subcmd
@@ -106,6 +107,8 @@ def parse_args(args):
     subcmd = _find_subcommand(args)
     if subcmd == "cfg":
         return _parse_args_cfg_subcmd(args)
+    elif subcmd == "plugins":
+        return _parse_args_plugins(args)
     # elif subcmd == some_other_future_subcmd:
     #     return _parse_args_some_other_subcmd(args)
     elif subcmd is None:
@@ -149,6 +152,31 @@ def _parse_args_cfg_subcmd(args):
 
     return parsed
 
+def _parse_args_plugins(args):
+    """Parse arguments of the form 'manim plugins <args>'."""
+    parser = argparse.ArgumentParser(
+        description="Animation engine for explanatory math videos",
+        prog="manim plugins",
+        epilog="Made with <3 by the manim community devs",
+        usage=("%(prog)s -h -u -l"),
+        exit_on_error=True,
+    )
+
+    parser.add_argument(
+        "-l",
+        "--list",
+        action="store_true",
+        help="Lists all available plugins",
+    )
+    parser.add_argument(
+        "-u",
+        "--update",
+        action="store_true",
+        help="Updates plugins/__init__.py"
+    )
+    parsed = parser.parse_args(args[2:])
+    parsed.cmd = "plugins"
+    return parsed
 
 def _parse_args_no_subcmd(args):
     """Parse arguments of the form 'manim <args>', when no command is present."""
@@ -157,7 +185,8 @@ def _parse_args_no_subcmd(args):
         prog="manim",
         usage=(
             "%(prog)s file [flags] [scene [scene ...]]\n"
-            "       %(prog)s {cfg,init} [opts]"
+            "       %(prog)s {cfg,init} [opts]\n"
+            "       %(prog)s plugins [flags]"
         ),
         epilog="Made with <3 by the manim community devs",
     )
