@@ -825,7 +825,7 @@ class Arrow(Line):
             >>> scaled_arrow = arrow.scale(2)
             >>> scaled_arrow.get_start_and_end()
             (array([-2., -2.,  0.]), array([2., 2., 0.]))
-            >>> arrow.tip.tip_length == scaled_arrow.tip.tip_length
+            >>> arrow.tip.length == scaled_arrow.tip.length
             True
 
         Manually scaling the object using the default method
@@ -833,7 +833,7 @@ class Arrow(Line):
 
             >>> new_arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
             >>> another_scaled_arrow = VMobject.scale(new_arrow, 2)
-            >>> another_scaled_arrow.tip.tip_length == arrow.tip.tip_length
+            >>> another_scaled_arrow.tip.length == arrow.tip.length
             False
 
         """
