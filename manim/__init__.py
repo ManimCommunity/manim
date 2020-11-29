@@ -33,6 +33,7 @@ from .mobject.changing import *
 from .mobject.frame import *
 from .mobject.functions import *
 from .mobject.geometry import *
+from .mobject.logo import *
 from .mobject.matrix import *
 from .mobject.mobject import *
 from .mobject.number_line import *
@@ -76,7 +77,6 @@ from .utils.debug import *
 from .utils.images import *
 from .utils.iterables import *
 from .utils.file_ops import *
-from .utils.manim_banner import *
 from .utils.paths import *
 from .utils.rate_functions import *
 from .utils import rate_functions
