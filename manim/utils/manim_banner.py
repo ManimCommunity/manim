@@ -15,7 +15,7 @@ from ..utils.tex_templates import TexFontTemplates
 class ManimBanner(VGroup):
     r"""Convenience class representing Manim's banner.
 
-    Can be animated using the costum methods.
+    Can be animated using custom methods.
 
     Examples
     --------
