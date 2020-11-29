@@ -6,12 +6,12 @@ Examples
 .. manim:: FunctionPlotWithLabbeledYAxis
     :save_last_frame:
 
-    class FunctionPlotWithLabbeledYAxis(GraphScene):
+    class FunctionPlotWithLabbeledYAxis(TwoDScene):
         CONFIG = {
-            "y_min": 0,
-            "y_max": 100,
-            "y_axis_config": {"tick_frequency": 10},
-            "y_labeled_nums": np.arange(0, 100, 10)
+            "y_axis_config": {"tick_frequency": 10
+            "x_min": 0,
+            "x_max": 100,
+            "numbers_to_show": np.arange(0,100,10),},
         }
 
         def construct(self):
@@ -31,7 +31,7 @@ Examples
     def gaussian(x):
         return amp * np.exp((-1 / 2 * ((x - mu) / sig) ** 2))
 
-    class GaussianFunctionPlot(GraphScene):
+    class GaussianFunctionPlot(TwoDScene):
         def construct(self):
             self.setup_axes()
             graph = self.get_graph(gaussian, x_min=-1, x_max=10)
