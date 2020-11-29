@@ -2,6 +2,7 @@
 
 __all__ = ["ParametricFunction", "FunctionGraph"]
 
+from manim import logger
 
 from .. import config
 from ..constants import *
@@ -63,6 +64,13 @@ class ParametricFunction(VMobject):
     def get_function(self):
         return self.function
 
+    """
+    t : int, float
+    The t value
+    
+    Returns:
+    The ParametricFunction evaluated at the value t
+    """
     def evaluate(self, t):
         return self.function(t)
 
@@ -165,6 +173,7 @@ class FunctionGraph(ParametricFunction):
     }
 
     def __init__(self, function, **kwargs):
+        logger.warning("This class is being deprecated due to its lack of use. Please use ParametricFunction instead!")
         digest_config(self, kwargs)
         self.x_min = -config["frame_x_radius"]
         self.x_max = config["frame_x_radius"]

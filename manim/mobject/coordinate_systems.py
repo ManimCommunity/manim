@@ -102,7 +102,7 @@ class CoordinateSystem:
             **kwargs,
         )
 
-        graph.underlying_function = function
+        graph.underlying_function = lambda t: [t,function(t),0]
         return graph
 
     def get_parametric_curve(self, function, **kwargs):
@@ -111,12 +111,12 @@ class CoordinateSystem:
             lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
         )
 
-        graph.function = function
+        graph.underlying_function = function
         return graph
 
     def input_to_graph_point(self, x, graph):
-        if graph.function is not None:
-            return self.coords_to_point(*graph.function(x))
+        if hasattr(graph,"underlying_function"):
+            return self.coords_to_point(*graph.underlying_function(x))
         else:
             alpha = binary_search(
                 function=lambda a: self.point_to_coords(graph.point_from_proportion(a))[

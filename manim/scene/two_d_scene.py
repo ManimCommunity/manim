@@ -43,18 +43,10 @@ Examples
 __all__ = ["TwoDScene"]
 
 from manim import Write
-from .. import config
 from ..constants import *
 from ..mobject.coordinate_systems import NumberPlane
-from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VectorizedPoint
 from ..scene.scene import Scene
-from ..utils.color import color_gradient, BLACK, LIGHT_GREY
-from ..utils.color import invert_color
+from ..utils.color import LIGHT_GREY
 from ..utils.config_ops import merge_dicts_recursively
 
 
@@ -109,56 +101,4 @@ class TwoDScene(Scene,NumberPlane):
             default_labels[1].remove(default_labels[1][0])
         return default_labels
 
-    def get_graph_label(
-        self,
-        graph,
-        label="f(x)",
-        x_val=None,
-        direction=RIGHT,
-        buff=MED_SMALL_BUFF,
-        color=None,
-    ):
-        """
-        This method returns a properly positioned label for the passed graph,
-        styled with the passed parameters.
-
-        Parameters
-        ----------
-        graph : ParametricFunction
-            The curve of the function plotted.
-
-        label : str, optional
-            The label for the function's curve.
-
-        x_val : int, float, optional
-            The x_value with which the label should be aligned.
-
-        direction : np.ndarray, list, tuple
-            The cartesian position, relative to the curve that the label will be at.
-            e.g LEFT, RIGHT
-
-        buff : float, int, option
-            The buffer space between the curve and the label
-
-        color : str, optional
-            The color of the label.
-
-        Returns
-        -------
-        :class:`~.MathTex`
-            The LaTeX of the passed 'label' parameter
-
-        """
-        label = MathTex(label)
-        color = color or graph.get_color()
-        label.set_color(color)
-        if x_val is None:
-            # Search from right to left
-            for x in np.linspace(self.x_max, self.x_min, 100):
-                point = self.input_to_graph_point(x, graph)
-                if point[1] < config["frame_y_radius"]:
-                    break
-            x_val = x
-        label.next_to(self.input_to_graph_point(x_val, graph), direction, buff=buff)
-        label.shift_onto_screen()
-        return label
+# TODO: Finish reimplementing methods from GraphScene
