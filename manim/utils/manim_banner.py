@@ -3,7 +3,7 @@
 __all__ = ["ManimBanner"]
 
 from ..constants import LEFT, UP, RIGHT, DOWN, ORIGIN
-from ..animation.composition import AnimationGroup
+from ..animation.composition import AnimationGroup, Succession
 from ..animation.fading import FadeIn
 from ..animation.transform import ApplyMethod
 from ..mobject.geometry import Circle, Square, Triangle
@@ -69,6 +69,7 @@ class ManimBanner(VGroup):
         )
 
         self.anim = anim
+        self.anim.set_opacity(0)
 
     def updater(self):
         self.shift(LEFT * 0.1)
@@ -79,8 +80,14 @@ class ManimBanner(VGroup):
         return super().scale(scale_factor, **kwargs)
 
     def expand(self):
+        """An animation transforming the banner from its initial state (just icons)
+        to its expanded state (showing the full name and the icons).
+
+        See the class documentation for how to use this.
+        """
         m_shape_offset = 5.7 * self.scale_factor
         m_anim_buff = 0.06
+        self.add(self.anim)
         self.anim.next_to(self.M, buff=m_anim_buff).shift(
             m_shape_offset * LEFT
         ).align_to(self.M, DOWN)
@@ -95,6 +102,11 @@ class ManimBanner(VGroup):
             ApplyMethod(self.square.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.circle.shift, m_shape_offset * RIGHT),
             ApplyMethod(self.M.shift, 0 * LEFT),
-            FadeIn(self.anim, lag_ratio=1),
+            AnimationGroup(
+                *[ApplyMethod(obj.set_opacity, 1) for obj in self.anim], lag_ratio=0.15
+            ),
+            # It would be nice to have the last AnimationGroup replaced by
+            # FadeIn(self.anim, lag_ratio=1)
+            # Currently not working though.
         )
-        return AnimationGroup(move_left, move_right, lag_ratio=1)
+        return Succession(move_left, move_right)
