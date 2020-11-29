@@ -1149,11 +1149,12 @@ class GraphScene(Scene):
         ----------
         x : Optional[List[Union[:class:`int`, :class:`float`]]], optional
             The x values for each item of y. If not provided, it is assumed to be an index of y.
+
         y : List[Union[:class:`int`, :class:`float`]]
             The y values of each point on the graph.
 
         **kwargs : :class:`dict`
-            Any valid kwargs for a `GraphScene.get_graph()` call.
+            Any valid kwargs for a :meth:`.GraphScene.get_graph` call.
 
         Returns
         -------
@@ -1188,10 +1189,10 @@ class GraphScene(Scene):
         Parameters
         ----------
         *args : List[Union[:class:`function`, Tuple[:class:`function`, :class:`str`, ...]]]
-            If a function, the function to graph. If a tuple, the first item must be the function to graph and the rest must be positional arguments for a `GraphScene.get_graph()` call.
+            If a function, the function to graph. If a tuple, the first item must be the function to graph and the rest must be positional arguments for a :meth:`.GraphScene.get_graph` call.
 
         **kwargs : :class:`dict`
-            Any valid kwargs of a `GraphScene.get_graph()` call.
+            Any valid kwargs of a :meth:`.GraphScene.get_graph` call.
 
         Returns
         -------
@@ -1221,12 +1222,12 @@ class GraphScene(Scene):
             Each argument of points has to be the same length as its pair. If there is no pair, the argument is assumed to be the y value and the x value is assumed to be an index of y (the set of numbers 0..N-1 where N is the length of y).
 
         **kwargs : :class:`dict`
-            Any valid kwargs of a `GraphScene.get_graph_from_points()` call.
+            Any valid kwargs of a :meth:`.GraphScene.get_graph_from_points` call.
 
         Returns
         -------
         :class:`list`
-            A list of :class:`.VGroup` instances, which are the groups of ParametricFunction instances which connect each point provided."""
+            A list of :class:`.VGroup` instances, which are the groups of :class:`.ParametricFunction` instances which connect each point provided."""
         return [
             (
                 self.get_graph_from_points(x, **kwargs)
