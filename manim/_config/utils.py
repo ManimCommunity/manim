@@ -567,7 +567,6 @@ class ManimConfig(MutableMapping):
                 "streaming_protocol",
                 "streaming_ip",
                 "streaming_port",
-                "streaming_console_banner",
             ]
         }
         url = parser["streaming"].get("streaming_url", fallback="", raw=True)

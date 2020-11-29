@@ -4,6 +4,15 @@ from ..renderer.stream_renderer import StreamCairoRenderer
 from .scene import Scene
 
 
+def show_frame(self):
+    """
+    Opens the current frame in the Default Image Viewer
+    of your system.
+    """
+    self.renderer.update_frame(self, ignore_skipping=True)
+    self.renderer.camera.get_image().show()
+
+
 class StreamMeta(ABCMeta):
     """The metaclass kind of 'hijacks' the process of scene instantiation, throwing a
     renderer which is the adequately created StreamCairoRenderer. I didn't want to have
@@ -17,6 +26,7 @@ class StreamMeta(ABCMeta):
         namespace["renderer"] = StreamCairoRenderer(
             camera_class=scene.CONFIG["camera_class"]
         )
+        namespace["show_frame"] = show_frame
         return super().__new__(mcs, name, tuple([scene]), namespace)
 
 
