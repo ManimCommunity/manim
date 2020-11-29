@@ -78,9 +78,6 @@ class ManimBanner(VGroup):
         self.anim = anim
         self.anim.set_opacity(0)
 
-    def updater(self):
-        self.shift(LEFT * 0.1)
-
     def scale(self, scale_factor, **kwargs):
         self.scale_factor *= scale_factor
         self.anim.scale(scale_factor, **kwargs)
