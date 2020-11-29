@@ -159,7 +159,6 @@ def _parse_args_plugins(args):
         prog="manim plugins",
         epilog="Made with <3 by the manim community devs",
         usage=("%(prog)s -h -u -l"),
-        exit_on_error=True,
     )
 
     parser.add_argument(
