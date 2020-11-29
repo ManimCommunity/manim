@@ -27,6 +27,8 @@ from ...utils.family import extract_mobject_family_members
 import logging
 import copy
 from ...mobject.value_tracker import ValueTracker
+from ...mobject.types.vectorized_mobject import VMobject
+from ...mobject.types.image_mobject import ImageMobject
 
 
 class MyEventHandler(FileSystemEventHandler):
@@ -223,27 +225,46 @@ def animations_to_name(animations):
 def serialize_mobject(mobject):
     mob_proto = frameserver_pb2.MobjectData()
 
-    needs_redraw = False
-    point_hash = hash(tuple(mobject.points.flatten()))
-    if mobject.point_hash != point_hash:
-        mobject.point_hash = point_hash
-        needs_redraw = True
-    mob_proto.needs_redraw = needs_redraw
+    if isinstance(mobject, VMobject):
+        needs_redraw = False
+        point_hash = hash(tuple(mobject.points.flatten()))
+        if mobject.point_hash != point_hash:
+            mobject.point_hash = point_hash
+            needs_redraw = True
+        mob_proto.vectorized_mobject_data.needs_redraw = needs_redraw
 
-    for point in mobject.points:
-        point_proto = mob_proto.points.add()
-        point_proto.x = point[0]
-        point_proto.y = point[1]
-        point_proto.z = point[2]
+        for point in mobject.points:
+            point_proto = mob_proto.vectorized_mobject_data.points.add()
+            point_proto.x = point[0]
+            point_proto.y = point[1]
+            point_proto.z = point[2]
 
-    mob_style = mobject.get_style(simple=True)
-    mob_proto.style.fill_color = mob_style["fill_color"]
-    mob_proto.style.fill_opacity = float(mob_style["fill_opacity"])
-    mob_proto.style.stroke_color = mob_style["stroke_color"]
-    mob_proto.style.stroke_opacity = float(mob_style["stroke_opacity"])
-    mob_proto.style.stroke_width = float(mob_style["stroke_width"])
+        mob_style = mobject.get_style(simple=True)
+        mob_proto.style.fill_color = mob_style["fill_color"]
+        mob_proto.style.fill_opacity = float(mob_style["fill_opacity"])
+        mob_proto.style.stroke_color = mob_style["stroke_color"]
+        mob_proto.style.stroke_opacity = float(mob_style["stroke_opacity"])
+        mob_proto.style.stroke_width = float(mob_style["stroke_width"])
 
-    mob_proto.id = id(mobject)
+        mob_proto.id = id(mobject)
+    elif isinstance(mobject, ImageMobject):
+        mob_proto.type = frameserver_pb2.MobjectData.MobjectType.IMAGE_MOBJECT
+        mob_style = mobject.get_style()
+        mob_proto.style.fill_color = mob_style["fill_color"]
+        mob_proto.style.fill_opacity = float(mob_style["fill_opacity"])
+        assets_dir_path = str(config.get_dir("assets_dir"))
+        if mobject.path.startswith(assets_dir_path):
+            mob_proto.image_mobject_data.path = mobject.path[len(assets_dir_path) + 1 :]
+        else:
+            logger.info(
+                f"Expected path {mobject.path} to be under the assets dir ({assets_dir_path})"
+            )
+        mob_proto.image_mobject_data.height = mobject.get_height()
+        mob_proto.image_mobject_data.width = mobject.get_width()
+        mob_center = mobject.get_center()
+        mob_proto.image_mobject_data.center.x = mob_center[0]
+        mob_proto.image_mobject_data.center.y = mob_center[1]
+        mob_proto.image_mobject_data.center.z = mob_center[2]
     return mob_proto
 
 

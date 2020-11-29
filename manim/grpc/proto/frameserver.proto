@@ -54,9 +54,26 @@ message Point {
 
 message MobjectData {
     int64 id = 1;
-    repeated Point points = 2;
-    Style style = 3;
-    bool needs_redraw = 4;
+    Style style = 2;
+    enum MobjectType {
+        VMOBJECT = 0;
+        IMAGE_MOBJECT = 1;
+    }
+    MobjectType type = 3;
+    VMobjectData vectorized_mobject_data = 4;
+    ImageMobjectData image_mobject_data = 5;
+}
+
+message VMobjectData {
+    repeated Point points = 1;
+    bool needs_redraw = 2;
+}
+
+message ImageMobjectData {
+    string path = 1;
+    float height = 2;
+    float width = 3;
+    Point center = 4;
 }
 
 message FrameResponse {
