@@ -24,7 +24,7 @@ Mobjects are the basic building block for all manim animations.  Each class
 that derives from :class:`.Mobject` represents an object that can be displayed
 on screen.  For example, simple shapes such as :class:`.Circle`,
 :class:`.Arrow`, and :class:`.Rectangle` are all mobjects.  More complicated
-constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or
+constructs such as :class:`.Axes`, :class:`.ParametricFunction`, or
 :class:`.BarChart` are mobjects as well.
 
 If you try to display on screen an instance of :class:`.Mobject`, you will only
