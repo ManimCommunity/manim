@@ -155,7 +155,7 @@ def _parse_args_cfg_subcmd(args):
 def _parse_args_plugins(args):
     """Parse arguments of the form 'manim plugins <args>'."""
     parser = argparse.ArgumentParser(
-        description="Animation engine for explanatory math videos",
+        description="Utility command for managing plugins",
         prog="manim plugins",
         epilog="Made with <3 by the manim community devs",
         usage=("%(prog)s -h -u -l"),
