@@ -92,15 +92,17 @@ class CoordinateSystem:
         return self.axis_labels
 
     def get_graph(self, function, **kwargs):
-        x_min = kwargs.pop("x_min", self.x_min)
-        x_max = kwargs.pop("x_max", self.x_max)
+        x_min = kwargs.pop("x_min", kwargs.pop("t_min",self.x_min))
+        x_max = kwargs.pop("x_max", kwargs.pop("t_max",self.x_max))
+
         graph = ParametricFunction(
             lambda t: self.coords_to_point(t, function(t)),
             t_min=x_min,
             t_max=x_max,
             **kwargs,
         )
-        graph.underlying_function = function
+
+        graph.underlying_function = lambda t: [t,function(t),0]
         return graph
 
     def get_parametric_curve(self, function, **kwargs):
@@ -108,12 +110,13 @@ class CoordinateSystem:
         graph = ParametricFunction(
             lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
         )
+
         graph.underlying_function = function
         return graph
 
     def input_to_graph_point(self, x, graph):
-        if hasattr(graph, "underlying_function"):
-            return self.coords_to_point(x, graph.underlying_function(x))
+        if hasattr(graph,"underlying_function"):
+            return self.coords_to_point(*graph.underlying_function(x))
         else:
             alpha = binary_search(
                 function=lambda a: self.point_to_coords(graph.point_from_proportion(a))[
@@ -153,6 +156,7 @@ class Axes(VGroup, CoordinateSystem):
         self.axes = VGroup(self.x_axis, self.y_axis)
         self.add(*self.axes)
         self.shift(self.center_point)
+
 
     def create_axis(self, min_val, max_val, axis_config):
         new_config = merge_dicts_recursively(
@@ -301,7 +305,6 @@ class NumberPlane(Axes):
 
     def get_lines(self):
         """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
-
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
@@ -332,21 +335,16 @@ class NumberPlane(Axes):
         self, axis_parallel_to, axis_perpendicular_to, freq, ratio_faded_lines
     ):
         """Generate a set of lines parallel to an axis.
-
         Parameters
         ----------
         axis_parallel_to : :class:`~.Line`
             The axis with which the lines will be parallel.
-
         axis_perpendicular_to : :class:`~.Line`
             The axis with which the lines will be perpendicular.
-
         ratio_faded_lines : :class:`float`
             The number of faded lines between each non-faded line.
-
         freq : :class:`float`
             Frequency of non-faded lines (number of non-faded lines per graph unit).
-
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
