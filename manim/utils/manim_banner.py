@@ -22,8 +22,6 @@ class ManimBanner(VGroup):
 
     .. manim:: BannerDarkBackground
 
-        from manim.utils.manim_banner import ManimBanner
-
         class BannerExample(Scene):
             def construct(self):
                 banner = ManimBanner().scale(0.5).to_corner(DR)
@@ -32,8 +30,6 @@ class ManimBanner(VGroup):
                 self.play(FadeOut(banner))
 
     .. manim:: BannerLightBackground
-
-        from manim.utils.manim_banner import ManimBanner
 
         class BannerExample(Scene):
             def construct(self):

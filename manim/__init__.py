@@ -76,6 +76,7 @@ from .utils.debug import *
 from .utils.images import *
 from .utils.iterables import *
 from .utils.file_ops import *
+from .utils.manim_banner import *
 from .utils.paths import *
 from .utils.rate_functions import *
 from .utils import rate_functions
