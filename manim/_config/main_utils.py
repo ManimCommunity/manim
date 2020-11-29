@@ -152,6 +152,7 @@ def _parse_args_cfg_subcmd(args):
 
     return parsed
 
+
 def _parse_args_plugins(args):
     """Parse arguments of the form 'manim plugins <args>'."""
     parser = argparse.ArgumentParser(
@@ -168,14 +169,12 @@ def _parse_args_plugins(args):
         help="Lists all available plugins",
     )
     parser.add_argument(
-        "-u",
-        "--update",
-        action="store_true",
-        help="Updates plugins/__init__.py"
+        "-u", "--update", action="store_true", help="Updates plugins/__init__.py"
     )
     parsed = parser.parse_args(args[2:])
     parsed.cmd = "plugins"
     return parsed
+
 
 def _parse_args_no_subcmd(args):
     """Parse arguments of the form 'manim <args>', when no command is present."""
