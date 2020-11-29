@@ -1,4 +1,4 @@
-"""Manim Banner utilities."""
+"""Utilities for Manim's logo and banner."""
 
 __all__ = ["ManimBanner"]
 

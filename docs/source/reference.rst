@@ -22,6 +22,7 @@ Mobjects
    ~mobject.frame
    ~mobject.functions
    ~mobject.geometry
+   ~mobject.logo
    ~mobject.matrix
    ~mobject.mobject
    ~mobject.mobject_update_utils
@@ -121,7 +122,6 @@ Utilities
    ~utils.hashing
    ~utils.images
    ~utils.iterables
-   ~utils.manim_banner
    ~utils.paths
    ~utils.rate_functions
    ~utils.simple_functions
