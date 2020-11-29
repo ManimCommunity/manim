@@ -22,7 +22,7 @@ class ManimBanner(VGroup):
 
     .. manim:: BannerDarkBackground
 
-        class BannerExample(Scene):
+        class BannerDarkBackground(Scene):
             def construct(self):
                 banner = ManimBanner().scale(0.5).to_corner(DR)
                 self.play(FadeIn(banner))
@@ -31,7 +31,7 @@ class ManimBanner(VGroup):
 
     .. manim:: BannerLightBackground
 
-        class BannerExample(Scene):
+        class BannerLightBackground(Scene):
             def construct(self):
                 self.camera.background_color = "#ece6e2"
                 banner = ManimBanner(dark_theme=False).scale(0.5).to_corner(UL)
