@@ -71,8 +71,6 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             self.input_file_path, require_single_scene=True
         )
         self.generate_keyframe_data()
-        self.previous_scene_index = None
-        self.previous_scene = None
 
         observer = Observer()
         event_handler = MyEventHandler(self)
@@ -192,6 +190,8 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
     def generate_keyframe_data(self):
         self.keyframes = []
+        self.previous_scene_index = None
+        self.previous_scene = None
         self.renderer = JsRenderer(self)
         self.scene = self.scene_class(self.renderer)
         self.scene.render()
