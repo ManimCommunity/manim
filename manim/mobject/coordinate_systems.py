@@ -342,7 +342,7 @@ class NumberPlane(Axes):
             The axis with which the lines will be perpendicular.
 
         ratio_faded_lines : :class:`float`
-            The ratio between the space between faded lines and the space between non-faded line.
+            The ratio between the space between faded lines and the space between non-faded lines.
 
         freq : :class:`float`
             Frequency of non-faded lines (number of non-faded lines per graph unit).
