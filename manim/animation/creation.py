@@ -183,7 +183,7 @@ class Uncreate(ShowCreation):
 
 
 class DrawBorderThenFill(Animation):
-    """Show the border first and then show the fill."""
+    """Draw the border first and then show the fill."""
 
     CONFIG = {
         "run_time": 2,
@@ -281,7 +281,7 @@ class ShowIncreasingSubsets(Animation):
 
 
 class AddTextLetterByLetter(ShowIncreasingSubsets):
-    """Show a :class:`Text` letter by letter on the scene.
+    """Show a :class:`~.Text` letter by letter on the scene.
 
     Parameters
     ----------
@@ -327,7 +327,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
 # TODO, this is broken...
 class AddTextWordByWord(Succession):
-    """Show a :class:`Text` word by word on the scene."""
+    """Show a :class:`~.Text` word by word on the scene."""
 
     CONFIG = {
         # If given a value for run_time, it will
