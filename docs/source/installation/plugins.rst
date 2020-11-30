@@ -13,7 +13,7 @@ install, use, and create your own plugins.
 
 Installing Plugins
 ******************
-Plugins can be easily installed to your python site-packages via the ``pip``
+Plugins can be easily installed via the ``pip``
 command:
 
 .. code-block:: bash
