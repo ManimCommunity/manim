@@ -397,8 +397,8 @@ class Circle(Arc):
     ):
         Arc.__init__(
             self,
-            0,
-            TAU,
+            start_angle = 0,
+            angle = TAU,
             color=color,
             close_new_points=close_new_points,
             anchors_span_full_range=anchors_span_full_range,
