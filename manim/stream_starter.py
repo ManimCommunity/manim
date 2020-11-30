@@ -44,8 +44,7 @@ def livestream():
     shell.push("from manim import *")
     # To identify the scene area in a black background
     shell.push("_ = manim.add(FullScreenRectangle())")
-    logger.info(info)
-    shell.interact(banner="")
+    shell.interact(banner=info)
 
 
 def stream():
