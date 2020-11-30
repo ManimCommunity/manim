@@ -8,8 +8,7 @@ Plugins are features that extend Manim's core functionality. Since Manim is
 extensible and not everything belongs in its core, we'll go over how to
 install, use, and create your own plugins.
 
-*Note: The standard naming convention for plugins is to prefix the plugin*
-*with* ``manim-``
+.. note: The standard naming convention for plugins is to prefix the plugin with ``manim-``. This makes them easy to find on packages indexes such as PyPI.
 
 Installing Plugins
 ******************
