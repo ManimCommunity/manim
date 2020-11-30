@@ -17,6 +17,13 @@ class ManimBanner(VGroup):
 
     Can be animated using custom methods.
 
+    Parameters
+    ----------
+    dark_theme
+        If ``True`` (the default), the dark theme version of the logo
+        (with light text font) will be rendered. Otherwise, if ``False``,
+        the light theme version (with dark text font) is used.
+
     Examples
     --------
 
@@ -41,7 +48,7 @@ class ManimBanner(VGroup):
 
     """
 
-    def __init__(self, dark_theme=True):
+    def __init__(self, dark_theme: bool = True):
         VGroup.__init__(self)
 
         logo_green = "#81b29a"
@@ -78,16 +85,44 @@ class ManimBanner(VGroup):
         self.anim = anim
         self.anim.set_opacity(0)
 
-    def scale(self, scale_factor, **kwargs):
+    def scale(self, scale_factor: float, **kwargs) -> "ManimBanner":
+        """Scale the banner by the specified scale factor.
+
+        Parameters
+        ----------
+        scale_factor
+            The factor used for scaling the banner.
+
+        Returns
+        -------
+        :class:`~.ManimBanner`
+            The scaled banner.
+        """
         self.scale_factor *= scale_factor
         self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
-    def expand(self):
-        """An animation transforming the banner from its initial state (just icons)
-        to its expanded state (showing the full name and the icons).
+    def expand(self) -> Succession:
+        """An animation that expands Manim's logo into its banner.
+
+        The returned animation transforms the banner from its initial
+        state (representing Manim's logo with just the icons) to its
+        expanded state (showing the full name together with the icons).
 
         See the class documentation for how to use this.
+
+        .. note::
+
+            Before calling this method, the text "anim" is not a
+            submobject of the banner object. After the expansion,
+            it is added as a submobject so subsequent animations
+            to the banner object apply to the text "anim" as well.
+
+        Returns
+        -------
+        :class:`~.Succession`
+            An animation to be used in a :meth:`.Scene.play` call.
+
         """
         m_shape_offset = 5.7 * self.scale_factor
         m_anim_buff = 0.06
