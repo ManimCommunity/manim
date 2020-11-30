@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 
+import copy
 import itertools as it
 import sys
 import colour
@@ -998,10 +999,51 @@ class VGroup(VMobject):
         ------
         TypeError
             If one element of the list is not an instance of VMobject
+
+        Examples
+        --------
+        .. manim:: AddToVGroup
+
+            class AddToVGroup(Scene):
+                def construct(self):
+                    circle_red = Circle(color=RED)
+                    circle_green = Circle(color=GREEN)
+                    circle_blue = Circle(color=BLUE)
+                    circle_red.shift(LEFT)
+                    circle_blue.shift(RIGHT)
+                    gr = VGroup(circle_red, circle_green)
+                    gr2 = VGroup(circle_blue) # Constructor uses add directly
+                    self.add(gr,gr2)
+                    self.wait()
+                    gr += gr2 # Add group to another
+                    self.play( 
+                        gr.shift, DOWN,
+                    )
+                    gr -= gr2 # Remove group
+                    self.play( # Animate groups separately
+                        gr.shift, LEFT,
+                        gr2.shift, UP,
+                    )
+                    self.play( #Animate both without modifying gr
+                        (gr+gr2).shift, RIGHT
+                    )
         """
         if not all(isinstance(m, VMobject) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         return super().add(*vmobjects)
+
+    def __add__(self, vmobject):
+        return VGroup(self).add(vmobject)
+
+    def __iadd__(self, vmobject):
+        return self.add(vmobject)
+
+    def __sub__(self, vmobject):
+        acopy = copy.copy(self).remove(vmobject)
+        return acopy
+
+    def __isub__(self, vmobject):
+        return self.remove(vmobject)
 
 
 class VDict(VMobject):

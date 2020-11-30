@@ -82,6 +82,8 @@ class Mobject(Container):
 
         The mobjects are added to self.submobjects.
 
+        Subclasses of mobject may implement + and += dunder methods.
+
         Parameters
         ----------
         mobjects : :class:`Mobject`
@@ -142,7 +144,10 @@ class Mobject(Container):
         return self
 
     def __add__(self, mobject):
-        return self.add(mobject)
+        raise NotImplementedError
+
+    def __iadd__(self, mobject):
+        raise NotImplementedError
 
     def add_to_back(self, *mobjects):
         self.remove(*mobjects)
@@ -153,6 +158,8 @@ class Mobject(Container):
         """Remove submobjects.
 
         The mobjects are removed from self.submobjects, if they exist.
+
+        Subclasses of mobject may implement - and -= dunder methods.
 
         Parameters
         ----------
@@ -173,9 +180,12 @@ class Mobject(Container):
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
         return self
+    
+    def __sub__(self, other):
+        raise NotImplementedError
 
-    def __sub__(self, mobjects):
-        return self.remove(mobjects)
+    def __isub__(self, other):
+        raise NotImplementedError
 
     def get_array_attrs(self):
         return ["points"]

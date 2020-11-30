@@ -35,6 +35,8 @@ def test_vgroup_add_dunder():
     """Test the VGroup __add__ magic method."""
     obj = VGroup()
     assert len(obj.submobjects) == 0
+    obj + VMobject()
+    assert len(obj.submobjects) == 0
     obj += VMobject()
     assert len(obj.submobjects) == 1
     with pytest.raises(TypeError):
@@ -73,6 +75,8 @@ def test_vgroup_remove_dunder():
     obj = VGroup(a, b)
     assert len(obj.submobjects) == 2
     assert len(b.submobjects) == 1
+    obj - a
+    assert len(obj.submobjects) == 2
     obj -= a
     b -= c
     assert len(obj.submobjects) == 1
