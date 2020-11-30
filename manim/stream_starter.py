@@ -40,6 +40,8 @@ To view an image of the current state of the scene or mobject, use:
 def livestream():
     "Main purpose code"
     variables = {"Stream": Stream, "manim": BasicStreamer()}
+    readline.set_completer(rlcompleter.Completer(variables).complete)
+    readline.parse_and_bind("tab: complete")
     shell = code.InteractiveConsole(variables)
     shell.push("from manim import *")
     # To identify the scene area in a black background
