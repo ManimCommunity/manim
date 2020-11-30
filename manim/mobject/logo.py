@@ -101,7 +101,8 @@ class ManimBanner(VGroup):
             The scaled banner.
         """
         self.scale_factor *= scale_factor
-        if self.anim not in self.submobjects:  # self.anim is only added to self after expand()
+        # Note: self.anim is only added to self after expand()
+        if self.anim not in self.submobjects:
             self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
