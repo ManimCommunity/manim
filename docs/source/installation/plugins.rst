@@ -19,8 +19,7 @@ command:
 
     pip install manim-*
 
-The standard naming conventions makes plugins easy to find on organizations
-such as `PyPi.org <https://pypi.org/>`_. After installing plugins, you may
+After installing a plugin, you may
 use the ``manim plugins`` command to list and update Manim to import your
 plugins, see the following help output:
 
