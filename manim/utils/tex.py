@@ -47,7 +47,6 @@ class TexTemplate:
     default_preamble = r"""
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{dsfont}
