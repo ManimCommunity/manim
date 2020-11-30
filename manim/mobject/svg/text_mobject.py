@@ -57,12 +57,11 @@ import pangocffi
 
 from ... import config, logger
 from ...constants import *
-from ...container import Container
-from ...mobject.geometry import Dot, Rectangle
+from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.config_ops import digest_config
-from ...utils.color import WHITE, BLACK
+from ...utils.color import WHITE
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 
@@ -939,13 +938,13 @@ class Text(SVGMobject):
         settings = self.text2settings()
         offset_x = 0
         last_line_num = 0
+        layout = pangocairocffi.create_layout(context)
+        layout.set_width(pangocffi.units_from_double(600))
         for setting in settings:
             family = setting.font
             style = self.str2style(setting.slant)
             weight = self.str2weight(setting.weight)
             text = self.text[setting.start : setting.end].replace("\n", " ")
-            layout = pangocairocffi.create_layout(context)
-            layout.set_width(pangocffi.units_from_double(600))
             fontdesc = pangocffi.FontDescription()
             fontdesc.set_size(pangocffi.units_from_double(size))
             if family:
@@ -959,9 +958,10 @@ class Text(SVGMobject):
             context.move_to(
                 START_X + offset_x, START_Y + line_spacing * setting.line_num
             )
+            pangocairocffi.update_layout(context, layout)
             layout.set_text(text)
             logger.debug(f"Setting Text {text}")
             pangocairocffi.show_layout(context, layout)
-            offset_x += layout.get_extents()[0].x
+            offset_x += pangocffi.units_to_double(layout.get_size()[0])
         surface.finish()
         return file_name

@@ -1,16 +1,9 @@
 """Utilities called from ``__main__.py`` to interact with the config."""
 
 import os
-import sys
 import argparse
-import logging
 
-import colour
-
-from manim import constants, logger, config
-from .utils import make_config_parser
-from .logger_utils import JSONFormatter
-from ..utils.tex import TexTemplate, TexTemplateFromFile
+from manim import constants
 
 
 __all__ = ["parse_args"]
@@ -106,6 +99,9 @@ def parse_args(args):
     """
     if args[0] == "python" and args[1] == "-m":
         args = args[2:]
+
+    if len(args) == 1:
+        return _parse_args_no_subcmd(args)
 
     subcmd = _find_subcommand(args)
     if subcmd == "cfg":
@@ -314,7 +310,11 @@ def _parse_args_no_subcmd(args):
     parser.add_argument(
         "-q",
         "--quality",
-        choices=[constants.QUALITIES[q]["flag"] for q in constants.QUALITIES],
+        choices=[
+            constants.QUALITIES[q]["flag"]
+            for q in constants.QUALITIES
+            if constants.QUALITIES[q]["flag"]
+        ],
         default=constants.DEFAULT_QUALITY_SHORT,
         help="Render at specific quality, short form of the --*_quality flags",
     )
