@@ -1,4 +1,6 @@
 import code
+import readline
+import rlcompleter
 
 from colorama import Fore
 from colorama import Style
