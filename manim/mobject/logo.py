@@ -99,7 +99,8 @@ class ManimBanner(VGroup):
             The scaled banner.
         """
         self.scale_factor *= scale_factor
-        self.anim.scale(scale_factor, **kwargs)
+        if self.anim not in self.submobjects:  # self.anim is only added to self after expand()
+            self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
     def expand(self) -> Succession:
