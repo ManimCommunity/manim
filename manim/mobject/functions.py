@@ -173,7 +173,6 @@ class FunctionGraph(ParametricFunction):
     }
 
     def __init__(self, function, **kwargs):
-        logger.warning("This class is being deprecated due to its lack of use. Please use ParametricFunction instead!")
         digest_config(self, kwargs)
         self.x_min = -config["frame_x_radius"]
         self.x_max = config["frame_x_radius"]
