@@ -183,8 +183,7 @@ def _parse_args_no_subcmd(args):
         prog="manim",
         usage=(
             "%(prog)s file [flags] [scene [scene ...]]\n"
-            "       %(prog)s {cfg,init} [opts]\n"
-            "       %(prog)s plugins [flags]"
+            "       %(prog)s {cfg,init,plugins} [opts]\n"
         ),
         epilog="Made with <3 by the manim community devs",
     )
