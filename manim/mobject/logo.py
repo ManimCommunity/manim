@@ -82,6 +82,8 @@ class ManimBanner(VGroup):
             m_height_over_anim_height * self.M.get_height()
         )
 
+        # Note: "anim" is only shown in the expanded state
+        # and thus not yet added to the submobjects of self.
         self.anim = anim
         self.anim.set_opacity(0)
 
