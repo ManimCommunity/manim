@@ -141,6 +141,9 @@ class Mobject(Container):
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
+    def __add__(self, mobject):
+        return self.add(mobject)
+
     def add_to_back(self, *mobjects):
         self.remove(*mobjects)
         self.submobjects = list(mobjects) + self.submobjects
@@ -170,6 +173,9 @@ class Mobject(Container):
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
         return self
+
+    def __sub__(self, mobjects):
+        return self.remove(mobjects)
 
     def get_array_attrs(self):
         return ["points"]

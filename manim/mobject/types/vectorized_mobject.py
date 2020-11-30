@@ -992,7 +992,7 @@ class VGroup(VMobject):
 
         Returns
         -------
-        None
+        VGroup
 
         Raises
         ------
@@ -1001,7 +1001,7 @@ class VGroup(VMobject):
         """
         if not all(isinstance(m, VMobject) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
-        super().add(*vmobjects)
+        return super().add(*vmobjects)
 
 
 class VDict(VMobject):
