@@ -15,7 +15,7 @@
 
 <hr />
 
-`manim` is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
+Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
 
 > NOTE: This repository is maintained by the Manim Community, and is not associated with Grant Sanderson or 3Blue1Brown in any way (although we are definitely indebted to him for providing his work to the world). If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)). This fork is updated more frequently than his, and it's recommended to use this fork if you'd like to use Manim for your own projects.
 
@@ -35,7 +35,7 @@ Manim requires a few dependencies that must be installed prior to using it. Plea
 Once the dependencies have been installed, run the following in a terminal window:
 
 ```bash
-pip install manimce
+pip install manim
 ```
 
 ## Usage
@@ -69,7 +69,7 @@ You should see your native video player program pop up and play a simple scene i
 
 ## Command line arguments
 
-The general usage of manim is as follows:
+The general usage of Manim is as follows:
 
 ![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/master/docs/source/_static/command.png)
 
@@ -94,7 +94,7 @@ Server](https://discord.gg/mMRrZQW) or [Reddit Community](https://www.reddit.com
 
 ## Contributing
 
-Contributions to `manim` are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://manimce.readthedocs.io/en/latest/contributing.html).
+Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://manimce.readthedocs.io/en/latest/contributing.html).
 
 This project uses [Poetry](https://python-poetry.org/docs/) for management. You must have poetry installed and available in your environment. You can learn more `poetry` and how to use it at its [Documentation](https://manimce.readthedocs.io/en/latest/installation/for_dev.html).
 

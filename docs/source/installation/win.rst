@@ -12,7 +12,7 @@ You can install manim very easily using chocolatey, by typing the following comm
 
 .. code-block:: powershell
 
-      choco install manimce
+      choco install manim
 
 
 And then you can skip all the other steps and move to installing :ref:`latex-installation`.
