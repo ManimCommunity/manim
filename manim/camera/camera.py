@@ -30,7 +30,7 @@ from ..utils.space_ops import get_norm
 from ..utils.family import extract_mobject_family_members
 
 
-class Camera(object):
+class Camera:
     """Base camera class.
 
     This is the object which takes care of what exactly is displayed
@@ -1136,7 +1136,7 @@ class Camera(object):
 
 # NOTE: The methods of the following class have not been mentioned outside of their definitons.
 # Their DocStrings are not as detailed as preferred.
-class BackgroundColoredVMobjectDisplayer(object):
+class BackgroundColoredVMobjectDisplayer:
     def __init__(self, camera):
         """
         Parameters
