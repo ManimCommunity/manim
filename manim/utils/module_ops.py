@@ -9,7 +9,7 @@ import re
 
 
 def get_module(file_name):
-    if file_name == "-":
+    if str(file_name) == "-":
         module = types.ModuleType("input_scenes")
         logger.info(
             "Enter the animation's code & end with an EOF (CTRL+D on Linux/Unix, CTRL+Z on Windows):"
@@ -36,6 +36,7 @@ def get_module(file_name):
             spec = importlib.util.spec_from_file_location(module_name, file_name)
             module = importlib.util.module_from_spec(spec)
             sys.modules[module_name] = module
+            sys.path.insert(0, str(file_name.parent.absolute()))
             spec.loader.exec_module(module)
             return module
         else:
