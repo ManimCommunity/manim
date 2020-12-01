@@ -215,7 +215,7 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
-    """Show one submobject at a time, leaving all previous ones on screen."""
+    """Show one submobject at a time, leaving all previous ones displayed on screen."""
 
     CONFIG = {
         "suspend_mobject_updating": False,
