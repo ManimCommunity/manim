@@ -3,52 +3,7 @@ r"""Animate the display or removal of a mobject from a scene.
 .. manim:: CreationModule
     :hide_source:
 
-    class ManimBanner(VGroup):
-
-        def __init__(self, dark_theme=True):
-            VGroup.__init__(self)
-
-            logo_green = "#81b29a"
-            logo_blue = "#454866"
-            logo_red = "#e07a5f"
-            m_height_over_anim_height = 0.75748
-
-            self.font_color = "#ece6e2" if dark_theme else "#343434"
-            self.scale_factor = 1
-
-            self.M = MathTex(r"\mathbb{M}").scale(7).set_color(self.font_color)
-            self.M.shift(2.25 * LEFT + 1.5 * UP)
-
-            self.circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
-            self.square = Square(color=logo_blue, fill_opacity=1).shift(UP)
-            self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
-            self.add(self.triangle, self.square, self.circle, self.M)
-            self.move_to(ORIGIN)
-
-            anim = VGroup()
-            for i, ch in enumerate("anim"):
-                tex = Tex(
-                    "\\textbf{" + ch + "}",
-                    tex_template=TexFontTemplates.gnu_freeserif_freesans,
-                )
-                if i != 0:
-                    tex.next_to(anim, buff=0.01)
-                tex.align_to(self.M, DOWN)
-                anim.add(tex)
-            anim.set_color(self.font_color).set_height(
-                m_height_over_anim_height * self.M.get_height()
-            )
-
-            self.anim = anim
-
-        def updater(self):
-            self.shift(LEFT * 0.1)
-
-        def scale(self, scale_factor, **kwargs):
-            self.scale_factor *= scale_factor
-            self.anim.scale(scale_factor, **kwargs)
-            return super().scale(scale_factor, **kwargs)
-
+    from manim import ManimBanner
 
     class CreationModule(Scene):
         def construct(self):
