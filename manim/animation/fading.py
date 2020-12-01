@@ -17,7 +17,8 @@ __all__ = [
 
 
 from .. import logger
-from ..animation.animation import DEFAULT_ANIMATION_LAG_RATIO, Animation, Transform
+from ..animation.animation import DEFAULT_ANIMATION_LAG_RATIO, Animation
+from ..animation.transform import Transform
 from ..constants import DOWN
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import interpolate
