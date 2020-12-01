@@ -5,9 +5,7 @@ __all__ = ["Rotating", "Rotate"]
 
 from ..animation.animation import Animation
 from ..animation.transform import Transform
-from ..constants import OUT
-from ..constants import PI
-from ..constants import TAU
+from ..constants import OUT, PI, TAU
 from ..utils.rate_functions import linear
 
 

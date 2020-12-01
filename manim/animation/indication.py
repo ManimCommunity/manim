@@ -24,22 +24,18 @@ from .. import config
 from ..constants import *
 from ..animation.animation import Animation
 from ..animation.movement import Homotopy
-from ..animation.composition import AnimationGroup
-from ..animation.composition import Succession
-from ..animation.creation import ShowCreation
-from ..animation.creation import ShowPartial
+from ..animation.composition import AnimationGroup, Succession
+from ..animation.creation import ShowCreation, ShowPartial
 from ..animation.fading import FadeOut
 from ..animation.transform import Transform
 from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.geometry import Circle
-from ..mobject.geometry import Dot
+from ..mobject.geometry import Circle, Dot
 from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.geometry import Line
 from ..utils.bezier import interpolate
 from ..utils.config_ops import digest_config
-from ..utils.rate_functions import there_and_back
-from ..utils.rate_functions import wiggle
+from ..utils.rate_functions import there_and_back, wiggle
 from ..utils.color import GREY, YELLOW
 
 

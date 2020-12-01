@@ -16,15 +16,13 @@ __all__ = [
 ]
 
 
-from ..animation.animation import Animation
-from ..animation.animation import DEFAULT_ANIMATION_LAG_RATIO
-from ..animation.transform import Transform
+from .. import logger
+from ..animation.animation import (DEFAULT_ANIMATION_LAG_RATIO, Animation,
+                                   Transform)
 from ..constants import DOWN
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import interpolate
 from ..utils.rate_functions import there_and_back
-from .. import logger
-
 
 DEFAULT_FADE_LAG_RATIO = 0
 
