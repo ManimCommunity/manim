@@ -271,8 +271,8 @@ custom_method_order = {
             "setup",
             "tear_down",
             "construct",
-        ]
-    }
+        ],
+    },
 }
 
 for cls in custom_method_order:
