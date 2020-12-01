@@ -132,7 +132,7 @@ class Animation:
 
     def interpolate_submobject(self, submobject, starting_sumobject, alpha):
         # Typically implemented by subclass
-        pass
+        raise NotImplemented
 
     def get_sub_alpha(self, alpha, index, num_submobjects):
         # TODO, make this more understanable, and/or combine
