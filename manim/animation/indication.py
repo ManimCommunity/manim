@@ -21,22 +21,20 @@ __all__ = [
 import numpy as np
 
 from .. import config
-from ..constants import *
 from ..animation.animation import Animation
-from ..animation.movement import Homotopy
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import ShowCreation, ShowPartial
 from ..animation.fading import FadeOut
+from ..animation.movement import Homotopy
 from ..animation.transform import Transform
-from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.geometry import Circle, Dot
+from ..constants import *
+from ..mobject.geometry import Circle, Dot, Line
 from ..mobject.shape_matchers import SurroundingRectangle
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.geometry import Line
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate
+from ..utils.color import GREY, YELLOW
 from ..utils.config_ops import digest_config
 from ..utils.rate_functions import there_and_back, wiggle
-from ..utils.color import GREY, YELLOW
 
 
 class FocusOn(Transform):
