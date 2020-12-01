@@ -138,7 +138,7 @@ class Uncreate(ShowCreation):
 
 
 class DrawBorderThenFill(Animation):
-    """Show the border first and then show the fill."""
+    """Draw the border first and then show the fill."""
 
     CONFIG = {
         "run_time": 2,
@@ -188,7 +188,7 @@ class DrawBorderThenFill(Animation):
 
 
 class Write(DrawBorderThenFill):
-    """Simulate hand-writing a :class:`~.Text`."""
+    """Simulate hand-writing a :class:`~.Text` or hand-drawing a :class:`~.VMobject`."""
 
     CONFIG = {
         # To be figured out in
@@ -236,7 +236,7 @@ class ShowIncreasingSubsets(Animation):
 
 
 class AddTextLetterByLetter(ShowIncreasingSubsets):
-    """Show a :class:`Text` letter by letter on the scene.
+    """Show a :class:`~.Text` letter by letter on the scene.
 
     Parameters
     ----------
@@ -262,7 +262,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
 
 
 class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
-    """Show one submobject at a time, removing all previous ones from screen."""
+    """Show one submobject at a time, removing all previously displayed ones from screen."""
 
     CONFIG = {
         "int_func": np.ceil,
@@ -282,7 +282,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
 # TODO, this is broken...
 class AddTextWordByWord(Succession):
-    """Show a :class:`Text` word by word on the scene."""
+    """Show a :class:`~.Text` word by word on the scene."""
 
     CONFIG = {
         # If given a value for run_time, it will
