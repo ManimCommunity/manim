@@ -89,7 +89,7 @@ class skip_manim_node(nodes.Admonition, nodes.Element):
     pass
 
 
-def visit(self, node, name=''):
+def visit(self, node, name=""):
     self.visit_admonition(node, name)
 
 
@@ -137,12 +137,10 @@ class ManimDirective(Directive):
     final_argument_whitespace = True
 
     def run(self):
-        if 'skip-manim' in self.state.document.settings.env.app.builder.tags.tags:
+        if "skip-manim" in self.state.document.settings.env.app.builder.tags.tags:
             node = skip_manim_node()
             self.state.nested_parse(
-                StringList(self.content[0]),
-                self.content_offset,
-                node
+                StringList(self.content[0]), self.content_offset, node
             )
             return [node]
 
