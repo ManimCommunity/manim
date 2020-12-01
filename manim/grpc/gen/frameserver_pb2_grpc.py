@@ -4,7 +4,7 @@ import grpc
 import frameserver_pb2 as frameserver__pb2
 
 
-class FrameServerStub(object):
+class FrameServerStub:
     """Missing associated documentation comment in .proto file"""
 
     def __init__(self, channel):
@@ -30,7 +30,7 @@ class FrameServerStub(object):
         )
 
 
-class FrameServerServicer(object):
+class FrameServerServicer:
     """Missing associated documentation comment in .proto file"""
 
     def GetFrameAtTime(self, request, context):
@@ -79,7 +79,7 @@ def add_FrameServerServicer_to_server(servicer, server):
 
 
 # This class is part of an EXPERIMENTAL API.
-class FrameServer(object):
+class FrameServer:
     """Missing associated documentation comment in .proto file"""
 
     @staticmethod
