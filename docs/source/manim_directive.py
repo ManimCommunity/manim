@@ -269,7 +269,7 @@ class ManimDirective(Directive):
 def setup(app):
     import manim
 
-    app.add_node(my_node, html=(visit, depart))
+    app.add_node(skip_manim_node, html=(visit, depart))
 
     setup.app = app
     setup.config = app.config
