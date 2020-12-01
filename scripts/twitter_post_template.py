@@ -7,7 +7,7 @@ version_num = pkg_resources.get_distribution("manimce").version
 class TwitterScene(Scene):
     def construct(self):
         self.camera.background_color = "#ece6e2"
-        version = TextMobject(f"v {version_num}").to_corner(UR).set_color(BLACK)
+        version = Tex(f"v{version_num}").to_corner(UR).set_color(BLACK)
         self.add(version)
         ## add twitter scene content here
 
