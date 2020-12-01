@@ -71,7 +71,7 @@ class Animation:
 
     def create_starting_mobject(self):
         # Keep track of where the mobject starts
-        return self.mobject.copy() 
+        return self.mobject.copy()
 
     def get_all_mobjects(self):
         """
