@@ -2,11 +2,13 @@
 
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
+import pathlib
 
 import numpy as np
 
 from PIL import Image
 
+from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.shape_matchers import SurroundingRectangle
@@ -14,17 +16,29 @@ from ...utils.bezier import interpolate
 from ...utils.color import color_to_int_rgb, WHITE
 from ...utils.config_ops import digest_config
 from ...utils.images import get_full_raster_image_path
+from manim.constants import QUALITIES, DEFAULT_QUALITY
 
 
 class AbstractImageMobject(Mobject):
     """
     Automatically filters out black pixels
+
+    Parameters
+    ----------
+    scale_to_resolution : :class:`int`
+        At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
+        This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen.
     """
 
     CONFIG = {
-        "height": 2.0,
         "pixel_array_dtype": "uint8",
     }
+
+    def __init__(self, scale_to_resolution, **kwargs):
+        digest_config(self, kwargs)
+        self.scale_to_resolution = scale_to_resolution
+
+        Mobject.__init__(self, **kwargs)
 
     def get_pixel_array(self):
         raise NotImplementedError()
@@ -44,19 +58,52 @@ class AbstractImageMobject(Mobject):
         )
         self.center()
         h, w = self.get_pixel_array().shape[:2]
+        if self.scale_to_resolution:
+            self.height = h / self.scale_to_resolution * config["frame_height"]
+        else:
+            self.height = 3  ## this is the case for ImageMobjectFromCamera
         self.stretch_to_fit_height(self.height)
         self.stretch_to_fit_width(self.height * w / h)
 
 
 class ImageMobject(AbstractImageMobject):
+    """Displays an Image from a numpy array or a file.
+
+    Parameters
+        ----------
+        scale_to_resolution : :class:`int`
+            At this resolution the image is placed pixel by pixel onto the screen, so it will look the sharpest and best.
+            This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen.
+
+
+
+    Example
+    -------
+    .. manim:: ImageFromArray
+        :save_last_frame:
+
+        class ImageFromArray(Scene):
+            def construct(self):
+                image = ImageMobject(np.uint8([[0, 100, 30, 200],
+                                               [255, 0, 5, 33]]))
+                image.set_height(7)
+                self.add(image)
+
+    """
+
     CONFIG = {
         "invert": False,
         "image_mode": "RGBA",
     }
 
-    def __init__(self, filename_or_array, **kwargs):
+    def __init__(
+        self,
+        filename_or_array,
+        scale_to_resolution=QUALITIES[DEFAULT_QUALITY]["pixel_height"],
+        **kwargs,
+    ):
         digest_config(self, kwargs)
-        if isinstance(filename_or_array, str):
+        if isinstance(filename_or_array, (str, pathlib.PurePath)):
             path = get_full_raster_image_path(filename_or_array)
             image = Image.open(path).convert(self.image_mode)
             self.pixel_array = np.array(image)
@@ -65,9 +112,10 @@ class ImageMobject(AbstractImageMobject):
         self.change_to_rgba_array()
         if self.invert:
             self.pixel_array[:, :, :3] = 255 - self.pixel_array[:, :, :3]
-        AbstractImageMobject.__init__(self, **kwargs)
+        AbstractImageMobject.__init__(self, scale_to_resolution, **kwargs)
 
     def change_to_rgba_array(self):
+        """Converts an RGB array into RGBA with the alpha value opacity maxed."""
         pa = self.pixel_array
         if len(pa.shape) == 2:
             pa = pa.reshape(list(pa.shape) + [1])
@@ -81,6 +129,7 @@ class ImageMobject(AbstractImageMobject):
         self.pixel_array = pa
 
     def get_pixel_array(self):
+        """A simple getter method."""
         return self.pixel_array
 
     def set_color(self, color, alpha=None, family=True):
@@ -94,19 +143,51 @@ class ImageMobject(AbstractImageMobject):
         return self
 
     def set_opacity(self, alpha):
+        """Sets the image's opacity.
+
+        Parameters
+        ----------
+        alpha : float
+            The alpha value of the object, 1 being opaque and 0 being
+            transparent.
+        """
         self.pixel_array[:, :, 3] = int(255 * alpha)
         return self
 
     def fade(self, darkness=0.5, family=True):
+        """Sets the image's opacity using a 1 - alpha relationship.
+
+        Parameters
+        ----------
+        darkness : float
+            The alpha value of the object, 1 being transparent and 0 being
+            opaque.
+        family : Boolean
+            Whether the submobjects of the ImageMobject should be affected.
+        """
         self.set_opacity(1 - darkness)
         super().fade(darkness, family)
         return self
 
     def interpolate_color(self, mobject1, mobject2, alpha):
+        """Interpolates an array of pixel color values into another array of
+        equal size.
+
+        Parameters
+        ----------
+        mobject1 : ImageMobject
+            The ImageMobject to tranform from.
+
+        mobject1 : ImageMobject
+
+            The ImageMobject to tranform into.
+        alpha : float
+            Used to track the lerp relationship. Not opacity related.
+        """
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
-            f"Mobject 2 ({mobject2}) : {mobject1.pixel_array.shape}"
+            f"Mobject 2 ({mobject2}) : {mobject2.pixel_array.shape}"
         )
         self.pixel_array = interpolate(
             mobject1.pixel_array, mobject2.pixel_array, alpha
@@ -130,7 +211,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(self, camera, **kwargs):
         self.camera = camera
         self.pixel_array = self.camera.pixel_array
-        AbstractImageMobject.__init__(self, **kwargs)
+        AbstractImageMobject.__init__(self, scale_to_resolution=False, **kwargs)
 
     # TODO: Get rid of this.
     def get_pixel_array(self):
@@ -148,7 +229,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
-            f"Mobject 2 ({mobject2}) : {mobject1.pixel_array.shape}"
+            f"Mobject 2 ({mobject2}) : {mobject2.pixel_array.shape}"
         )
         self.pixel_array = interpolate(
             mobject1.pixel_array, mobject2.pixel_array, alpha

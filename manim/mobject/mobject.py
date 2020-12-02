@@ -15,7 +15,7 @@ from pathlib import Path
 from colour import Color
 import numpy as np
 
-from .. import config, file_writer_config
+from .. import config
 from ..constants import *
 from ..container import Container
 from ..utils.color import color_gradient, WHITE, BLACK, YELLOW_C
@@ -96,6 +96,9 @@ class Mobject(Container):
         ------
         :class:`ValueError`
             When a mobject tries to add itself.
+        :class:`TypeError`
+            When trying to add an object that is not an instance of :class:`Mobject`.
+
 
         Notes
         -----
@@ -130,8 +133,11 @@ class Mobject(Container):
             ValueError: Mobject cannot contain self
 
         """
-        if self in mobjects:
-            raise ValueError("Mobject cannot contain self")
+        for m in mobjects:
+            if not isinstance(m, Mobject):
+                raise TypeError("All submobjects must be of type Mobject")
+            if m is self:
+                raise ValueError("Mobject cannot contain self")
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
@@ -199,7 +205,7 @@ class Mobject(Container):
 
     def save_image(self, name=None):
         self.get_image().save(
-            Path(file_writer_config["video_dir"]).joinpath((name or str(self)) + ".png")
+            Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
     def copy(self):
@@ -244,13 +250,38 @@ class Mobject(Container):
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function, index=None, call_updater=True):
+    def add_updater(self, update_function, index=None, call_updater=False):
+        """Add an update function to this mobject.
+
+        Examples
+        --------
+
+        .. manim:: RotationUpdater
+
+            class RotationUpdater(Scene):
+                def construct(self):
+                    def updater_forth(mobj, dt):
+                        mobj.rotate_about_origin(dt)
+                    def updater_back(mobj, dt):
+                        mobj.rotate_about_origin(-dt)
+                    line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
+                    line_moving = Line(ORIGIN, LEFT).set_color(YELLOW)
+                    line_moving.add_updater(updater_forth)
+                    self.add(line_reference, line_moving)
+                    self.wait(2)
+                    line_moving.remove_updater(updater_forth)
+                    line_moving.add_updater(updater_back)
+                    self.wait(2)
+                    line_moving.remove_updater(updater_back)
+                    self.wait(0.5)
+
+        """
         if index is None:
             self.updaters.append(update_function)
         else:
             self.updaters.insert(index, update_function)
         if call_updater:
-            self.update(0)
+            update_function(self, 0)
         return self
 
     def remove_updater(self, update_function):
@@ -473,6 +504,26 @@ class Mobject(Container):
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
     ):
+        """Move this mobject next to another mobject or coordinate.
+
+        Examples
+        --------
+
+        .. manim:: GeometricShapes
+            :save_last_frame:
+
+            class GeometricShapes(Scene):
+                def construct(self):
+                    d = Dot()
+                    c = Circle()
+                    s = Square()
+                    t = Triangle()
+                    d.next_to(c, RIGHT)
+                    s.next_to(c, LEFT)
+                    t.next_to(c, DOWN)
+                    self.add(d, c, s, t)
+
+        """
         if isinstance(mobject_or_point, Mobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
@@ -653,7 +704,7 @@ class Mobject(Container):
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
-        self.color = color
+        self.color = Color(color)
         return self
 
     def set_color_by_gradient(self, *colors):
@@ -1115,9 +1166,25 @@ class Mobject(Container):
         return submob.copy()
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
-        """
-        Turns self into an interpolation between mobject1
-        and mobject2.
+        """Turns this mobject into an interpolation between ``mobject1``
+        and ``mobject2``.
+
+        Examples
+        --------
+
+        .. manim:: DotInterpolation
+            :save_last_frame:
+
+            class DotInterpolation(Scene):
+                def construct(self):
+                    dotL = Dot(color=DARK_GREY)
+                    dotL.shift(2 * RIGHT)
+                    dotR = Dot(color=WHITE)
+                    dotR.shift(2 * LEFT)
+
+                    dotMiddle = VMobject().interpolate(dotL, dotR, alpha=0.3)
+
+                    self.add(dotL, dotR, dotMiddle)
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
@@ -1181,7 +1248,5 @@ class Group(Mobject):
     """Groups together multiple Mobjects."""
 
     def __init__(self, *mobjects, **kwargs):
-        if not all([isinstance(m, Mobject) for m in mobjects]):
-            raise TypeError("All submobjects must be of type Mobject")
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)

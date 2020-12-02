@@ -1,18 +1,24 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: " [BUG-General]  "
+name: Manim bug
+about: Report a bug or unexpected behavior when running Manim
+title: ""
 labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-<!-- A clear and concise description of what the bug is. -->
+## Description of bug / unexpected behavior
+<!-- Add a clear and concise description of the problem you encountered. -->
 
-**To Reproduce**
-<!-- Provide the problematic code in the code block below -->
-<details><summary>Problematic Code</summary>
+
+## Expected behavior
+<!-- Add a clear and concise description of what you expected to happen. -->
+
+
+## How to reproduce the issue
+<!-- Provide a piece of code illustrating the undesired behavior. -->
+
+<details><summary>Code for reproducing the problem</summary>
 
 ```py
 Paste your code here.
@@ -20,10 +26,8 @@ Paste your code here.
 
 </details>
 
-**Expected behavior**
-<!-- A clear and concise description of what you expected to happen. -->
 
-**Output Media Files**
+## Additional media files
 <!-- Paste in the files manim produced on rendering the code above. Note that GitHub doesn't allow posting videos, so you may need to convert it to a GIF or use the `-i` rendering option. -->
 
 <details><summary>Images/GIFs</summary>
@@ -32,41 +36,42 @@ Paste your code here.
 
 </details>
 
-**Logs**
-<details><summary>Terminal output (Screenshots acceptable)</summary>
+
+## Logs
+<details><summary>Terminal output</summary>
+<!-- Add "-v DEBUG" when calling manim to generate more detailed logs -->
 
 ```
-PASTE HERE OR REMOVE IF PROVIDING SCREENSHOT
+PASTE HERE OR PROVIDE LINK TO https://pastebin.com/ OR SIMILAR
 ```
 
-<!-- Paste screenshot here -->
+<!-- Insert screenshots here (only when absolutely necessary, we prefer copy/pasted output!) -->
 
 </details>
 
-**System Specifications**
+
+## System specifications
 
 <details><summary>System Details</summary>
 
-- OS (with version, e.g Windows 10 v2004 or macOS 10.15 (Catalina)): 
-- RAM: 
+- OS (with version, e.g Windows 10 v2004 or macOS 10.15 (Catalina)):
+- RAM:
 - Python version (`python/py/python3 --version`):
 - Installed modules (provide output from `pip list`):
 ```
 PASTE HERE
 ```
-
 </details>
 
-<details>
-<summary>Latex details</summary>
+<details><summary>LaTeX details</summary>
 
-+ Distribution (e.g. TeX Live 2020):  
-
-<!-- output of `tlmgr list --only-installed` for TeX Live or a screenshot of the Packkages page for MikTeX -->
-+ Installed packages: 
++ LaTeX distribution (e.g. TeX Live 2020):
++ Installed LaTeX packages:
+<!-- output of `tlmgr list --only-installed` for TeX Live or a screenshot of the Packages page for MikTeX -->
 </details>
 
 <details><summary>FFMPEG</summary>
+
 Output of `ffmpeg -version`:
 
 ```
@@ -74,5 +79,5 @@ PASTE HERE
 ```
 </details>
 
-**Additional context**
-Add any other context about the problem here.
+## Additional comments
+<!-- Add further context that you think might be relevant for this issue here. -->

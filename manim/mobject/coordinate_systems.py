@@ -14,7 +14,6 @@ from ..mobject.geometry import Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.config_ops import digest_config
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
@@ -343,7 +342,7 @@ class NumberPlane(Axes):
             The axis with which the lines will be perpendicular.
 
         ratio_faded_lines : :class:`float`
-            The number of faded lines between each non-faded line.
+            The ratio between the space between faded lines and the space between non-faded lines.
 
         freq : :class:`float`
             Frequency of non-faded lines (number of non-faded lines per graph unit).
@@ -354,8 +353,9 @@ class NumberPlane(Axes):
             The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
-        dense_freq = ratio_faded_lines
-        step = (1 / dense_freq) * freq
+        if ratio_faded_lines == 0:  # don't show faded lines
+            ratio_faded_lines = 1  # i.e. set ratio to 1
+        step = (1 / ratio_faded_lines) * freq
         lines1 = VGroup()
         lines2 = VGroup()
         unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()

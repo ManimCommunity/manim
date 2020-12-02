@@ -1,11 +1,62 @@
-*********
+#########
 Changelog
-*********
+#########
 
-manimce-v1.0.0-dev
-==================
+******
+v0.2.0
+******
 
 :Date: TBD
+
+Changes since Manim Community release v0.1.0
+
+Fixes
+=====
+
+#. JsRender is optional to install. (via :pr:`697`).
+
+Configuration
+=============
+
+#. Removed the ``skip_animations`` config option and added the
+   ``Renderer.skip_animations`` attribute instead (via :pr:`696`).
+
+#. The global ``config`` dict has been replaced by a global ``config`` instance
+   of the new class :class:`~.ManimConfig`.  This class has a dict-like API, so
+   this should not break user code, only make it more robust.  See the
+   Configuration tutorial for details.
+
+
+Documentation
+=============
+
+#. Add ``:issue:`` and ``:pr:`` directives for simplifying linking to issues and
+   pull requests on GitHub (via :pr:`685`).
+
+
+Mobjects, Scenes, and Animations
+================================
+
+#. The ``alignment`` attribute to Tex and MathTex has been removed in favour of ``tex_environment``.
+#. :class:`~.Text` now uses Pango for rendering. ``PangoText`` has been removed. The old implementation is still available as a fallback as :class:`~.CairoText`.
+#. **New**: Variations of :class:`~.Dot` have been added as :class:`~.AnnotationDot`
+   (a bigger dot with bolder stroke) and :class:`~.LabeledDot` (a dot containing a
+   label).
+#. Scene.set_variables_as_attrs has been removed (via :pr:`692`).
+#. Ensure that the axes for graphs (:class:`GraphScene`) always intersect (:pr:`580`).
+#. Now Mobject.add_updater does not call the newly-added updater by default
+   (use ``call_updater=True`` instead) (via :pr:`710`)
+#. VMobject now has methods to determine and change the direction of the points (via :pr:`647`).
+#. Added BraceBetweenPoints (via :pr:`693`).
+#. Added ArcPolygon and ArcPolygonFromArcs (via :pr:`707`).
+#. Added Cutout (via :pr:`760`).
+
+
+******
+v0.1.0
+******
+
+:Date: October 21, 2020
 
 This is the first release of manimce after forking from 3b1b/manim.  As such,
 developers have focused on cleaning up and refactoring the codebase while still
@@ -13,14 +64,13 @@ maintaining backwards compatibility wherever possible.
 
 
 New Features
-------------
-
+============
 
 Command line
-^^^^^^^^^^^^
+------------
 
 #. Output of 'manim --help' has been improved
-#. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol` prints
+#. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol' prints
 #. Added a flag :code:`--dry_run`, which doesn’t write any media
 #. Allow for running manim with :code:`python3 -m manim`
 #. Refactored Tex Template management. You can now use custom templates with command line args using :code:`--tex_template`!
@@ -37,19 +87,30 @@ Command line
 
 
 Config system
-^^^^^^^^^^^^^
+-------------
 
 #. Implement a :code:`manim.cfg` config file system, that consolidates the global configuration, the command line argument parsing, and some of the constants defined in :code:`constants.py`
 #. Added utilities for manipulating Manim’s :code:`.cfg` files.
 #. Added a subcommand structure for easier use of utilities managing :code:`.cfg` files
+#. Also some variables have been moved from ``constants.py`` to the new config system:
+
+    #. ``FRAME_HEIGHT`` to ``config["frame_width"]``
+    #. ``TOP`` to ``config["frame_height"] / 2 * UP``
+    #. ``BOTTOM`` to ``config["frame_height"] / 2 * DOWN``
+    #. ``LEFT_SIDE`` to ``config["frame_width"] / 2 * LEFT``
+    #. ``RIGHT_SIDE`` to ``config["frame_width"] / 2 * RIGHT``
+    #. ``self.camera.frame_rate`` to ``config["frame_rate"]``
+
+
 
 
 Mobjects, Scenes, and Animations
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 #. Add customizable left and right bracket for :code:`Matrix` mobject and :code:`set_row_colors` method for matrix mobject
 #. Add :code:`AddTeXLetterByLetter` animation
 #. Enhanced GraphScene
+
     #. You can now add arrow tips to axes
     #. extend axes a bit at the start and/or end
     #. have invisible axes
@@ -71,13 +132,14 @@ Mobjects, Scenes, and Animations
 
 
 Documentation
--------------
+=============
 
 #. Added clearer installation instructions, tutorials, examples, and API reference [WIP]
 
 
 Fixes
------
+=====
+
 #. Initialization of directories has been moved to :code:`config.py`, and a bunch of bugs associated to file structure generation have been fixed
 #. Nonfunctional file :code:`media_dir.txt` has been removed
 #. Nonfunctional :code:`if` statements in :code:`scene_file_writer.py` have been removed
@@ -87,7 +149,7 @@ Fixes
 
 
 Of interest to developers
--------------------------
+=========================
 
 #. Python code formatting is now enforced by using the :code:`black` tool
 #. PRs now require two approving code reviews from community devs before they can be merged
@@ -102,7 +164,8 @@ Of interest to developers
 #. Colors have moved to an Enum
 
 Other Changes
---------------
+=============
+
 #. Cleanup 3b1b Specific Files
 #. Rename package from manimlib to manim
 #. Move all imports to :code:`__init__`, so :code:`from manim import *` replaces :code:`from manimlib.imports import *`

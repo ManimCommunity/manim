@@ -1,5 +1,25 @@
-"""Mobjects that are simple geometric shapes."""
+r"""Mobjects that are simple geometric shapes.
 
+Examples
+--------
+
+.. manim:: UsefulAnnotations
+    :save_last_frame:
+
+    class UsefulAnnotations(Scene):
+        def construct(self):
+            m0 = SmallDot()
+            m1 = AnnotationDot()
+            m2 = LabeledDot("ii")
+            m3 = LabeledDot(MathTex(r"\alpha").set_color(ORANGE))
+            m4 = CurvedArrow(ORIGIN, 2*LEFT)
+            m5 = CurvedDoubleArrow(ORIGIN, 2*RIGHT)
+
+            self.add(m0, m1, m2, m3, m4, m5)
+            for i, mobj in enumerate(self.mobjects):
+                mobj.shift(DOWN * (i-3))
+
+"""
 
 __all__ = [
     "TipableVMobject",
@@ -9,6 +29,8 @@ __all__ = [
     "CurvedDoubleArrow",
     "Circle",
     "Dot",
+    "AnnotationDot",
+    "LabeledDot",
     "SmallDot",
     "Ellipse",
     "AnnularSector",
@@ -24,13 +46,15 @@ __all__ = [
     "CubicBezier",
     "Polygon",
     "RegularPolygon",
+    "ArcPolygon",
+    "ArcPolygonFromArcs",
     "Triangle",
     "ArrowTip",
     "Rectangle",
     "Square",
     "RoundedRectangle",
+    "Cutout",
 ]
-
 
 import warnings
 import numpy as np
@@ -52,7 +76,7 @@ from ..utils.space_ops import line_intersection
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import normalize
 from ..utils.space_ops import rotate_vector
-from ..utils.color import RED, WHITE, BLUE
+from ..utils.color import *
 
 DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04
@@ -143,17 +167,13 @@ class TipableVMobject(VMobject):
 
     def reset_endpoints_based_on_tip(self, tip, at_start):
         if self.get_length() == 0:
-            # Zero length, put_start_and_end_on wouldn't
-            # work
+            # Zero length, put_start_and_end_on wouldn't work
             return self
 
         if at_start:
             self.put_start_and_end_on(tip.base, self.get_end())
         else:
-            self.put_start_and_end_on(
-                self.get_start(),
-                tip.base,
-            )
+            self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
     def asign_tip_attr(self, tip, at_start):
@@ -258,9 +278,7 @@ class Arc(TipableVMobject):
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
                 for a in np.linspace(
-                    self.start_angle,
-                    self.start_angle + self.angle,
-                    self.num_components,
+                    self.start_angle, self.start_angle + self.angle, self.num_components
                 )
             ]
         )
@@ -274,12 +292,7 @@ class Arc(TipableVMobject):
         # Use tangent vectors to deduce anchors
         handles1 = anchors[:-1] + (d_theta / 3) * tangent_vectors[:-1]
         handles2 = anchors[1:] - (d_theta / 3) * tangent_vectors[1:]
-        self.set_anchors_and_handles(
-            anchors[:-1],
-            handles1,
-            handles2,
-            anchors[1:],
-        )
+        self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
     def get_arc_center(self, warning=True):
         """
@@ -301,10 +314,7 @@ class Arc(TipableVMobject):
         n1 = rotate_vector(t1, TAU / 4)
         n2 = rotate_vector(t2, TAU / 4)
         try:
-            return line_intersection(
-                line1=(a1, a1 + n1),
-                line2=(a2, a2 + n2),
-            )
+            return line_intersection(line1=(a1, a1 + n1), line2=(a2, a2 + n2))
         except Exception:
             if warning:
                 warnings.warn("Can't find Arc center, using ORIGIN instead")
@@ -341,11 +351,7 @@ class ArcBetweenPoints(Arc):
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
 
-        Arc.__init__(
-            self,
-            angle=angle,
-            **kwargs,
-        )
+        Arc.__init__(self, angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
         self.put_start_and_end_on(start, end)
@@ -390,7 +396,7 @@ class Circle(Arc):
         self.replace(mobject, dim_to_match, stretch)
 
         self.set_width(np.sqrt(mobject.get_width() ** 2 + mobject.get_height() ** 2))
-        self.scale(buffer_factor)
+        return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
         start_angle = angle_of_vector(self.points[0] - self.get_center())
@@ -410,9 +416,77 @@ class Dot(Circle):
 
 
 class SmallDot(Dot):
+    """
+    A dot with small radius
+    """
+
+    CONFIG = {"radius": DEFAULT_SMALL_DOT_RADIUS}
+
+
+class AnnotationDot(Dot):
+    """
+    A dot with bigger radius and bold stroke to annotate scenes.
+    """
+
     CONFIG = {
-        "radius": DEFAULT_SMALL_DOT_RADIUS,
+        "radius": DEFAULT_DOT_RADIUS * 1.3,
+        "stroke_width": 5,
+        "stroke_color": WHITE,
+        "fill_color": BLUE,
     }
+
+
+class LabeledDot(Dot):
+    """A :class:`Dot` containing a label in its center.
+
+    Parameters
+    ----------
+    label : Union[:class:`str`, :class:`~.SingleStringMathTex`, :class:`~.Text`, :class:`~.Tex`]
+        The label of the :class:`Dot`. This is rendered as :class:`~.MathTex`
+        by default (i.e., when passing a :class:`str`), but other classes
+        representing rendered strings like :class:`~.Text` or :class:`~.Tex`
+        can be passed as well.
+
+    radius : :class:`float`
+        The radius of the :class:`Dot`. If ``None`` (the default), the radius
+        is calculated based on the size of the ``label``.
+
+    Examples
+    --------
+
+    .. manim:: SeveralLabeledDots
+        :save_last_frame:
+
+        class SeveralLabeledDots(Scene):
+            def construct(self):
+                sq = Square(fill_color=RED, fill_opacity=1)
+                self.add(sq)
+                dot1 = LabeledDot(Tex("42", color=RED))
+                dot2 = LabeledDot(MathTex("a", color=GREEN))
+                dot3 = LabeledDot(Text("ii", color=BLUE))
+                dot4 = LabeledDot("3")
+                dot1.next_to(sq, UL)
+                dot2.next_to(sq, UR)
+                dot3.next_to(sq, DL)
+                dot4.next_to(sq, DR)
+                self.add(dot1, dot2, dot3, dot4)
+    """
+
+    def __init__(self, label, radius=None, **kwargs) -> None:
+        if isinstance(label, str):
+            from manim import MathTex
+
+            rendered_label = MathTex(label, color=BLACK)
+        else:
+            rendered_label = label
+
+        if radius is None:
+            radius = (
+                0.1 + max(rendered_label.get_width(), rendered_label.get_height()) / 2
+            )
+        Dot.__init__(self, radius=radius, **kwargs)
+        rendered_label.move_to(self.get_center())
+        self.add(rendered_label)
 
 
 class Ellipse(Circle):
@@ -477,10 +551,7 @@ class Annulus(Circle):
 
 
 class Line(TipableVMobject):
-    CONFIG = {
-        "buff": 0,
-        "path_arc": None,  # angle of arc specified here
-    }
+    CONFIG = {"buff": 0, "path_arc": None}  # angle of arc specified here
 
     def __init__(self, start=LEFT, end=RIGHT, **kwargs):
         digest_config(self, kwargs)
@@ -558,13 +629,10 @@ class Line(TipableVMobject):
         return np.tan(self.get_angle())
 
     def set_angle(self, angle):
-        self.rotate(
-            angle - self.get_angle(),
-            about_point=self.get_start(),
-        )
+        return self.rotate(angle - self.get_angle(), about_point=self.get_start())
 
     def set_length(self, length):
-        self.scale(length / self.get_length())
+        return self.scale(length / self.get_length())
 
     def set_opacity(self, opacity, family=True):
         # Overwrite default, which would set
@@ -601,10 +669,7 @@ class DashedLine(Line):
             return 1
 
     def calculate_positive_space_ratio(self):
-        return fdiv(
-            self.dash_length,
-            self.dash_length + self.dash_spacing,
-        )
+        return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
     def get_start(self):
         if len(self.submobjects) > 0:
@@ -640,10 +705,7 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
-    CONFIG = {
-        "width": 0.2,
-        "angle": 0,
-    }
+    CONFIG = {"width": 0.2, "angle": 0}
 
     def __init__(self, **kwargs):
         VMobject.__init__(self, **kwargs)
@@ -727,27 +789,19 @@ class Arrow(Line):
 
     def get_default_tip_length(self):
         max_ratio = self.max_tip_length_to_length_ratio
-        return min(
-            self.tip_length,
-            max_ratio * self.get_length(),
-        )
+        return min(self.tip_length, max_ratio * self.get_length())
 
     def set_stroke_width_from_length(self):
         max_ratio = self.max_stroke_width_to_length_ratio
         self.set_stroke(
-            width=min(
-                self.initial_stroke_width,
-                max_ratio * self.get_length(),
-            ),
+            width=min(self.initial_stroke_width, max_ratio * self.get_length()),
             family=False,
         )
         return self
 
 
 class Vector(Arrow):
-    CONFIG = {
-        "buff": 0,
-    }
+    CONFIG = {"buff": 0}
 
     def __init__(self, direction=RIGHT, **kwargs):
         if len(direction) == 2:
@@ -773,9 +827,7 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
-    CONFIG = {
-        "color": BLUE,
-    }
+    CONFIG = {"color": BLUE}
 
     def __init__(self, *vertices, **kwargs):
         VMobject.__init__(self, **kwargs)
@@ -820,9 +872,7 @@ class Polygon(VMobject):
 
 
 class RegularPolygon(Polygon):
-    CONFIG = {
-        "start_angle": None,
-    }
+    CONFIG = {"start_angle": None}
 
     def __init__(self, n=6, **kwargs):
         digest_config(self, kwargs, locals())
@@ -834,6 +884,244 @@ class RegularPolygon(Polygon):
         start_vect = rotate_vector(RIGHT, self.start_angle)
         vertices = compass_directions(n, start_vect)
         Polygon.__init__(self, *vertices, **kwargs)
+
+
+class ArcPolygon(VMobject):
+    """A generalized polygon allowing for points to be connected with arcs.
+
+    This version tries to stick close to the way :class:`Polygon` is used. Points
+    can be passed to it directly which are used to generate the according arcs
+    (using :class:`ArcBetweenPoints`). An angle or radius can be passed to it to
+    use across all arcs, but to configure arcs individually an ``arc_config`` list
+    has to be passed with the syntax explained below.
+
+    .. tip::
+
+        Two instances of :class:`ArcPolygon` can be transformed properly into one
+        another as well. Be advised that any arc initialized with ``angle=0``
+        will actually be a straight line, so if a straight section should seamlessly
+        transform into an arced section or vice versa, initialize the straight section
+        with a negligible angle instead (such as ``angle=0.0001``).
+
+    There is an alternative version (:class:`ArcPolygonFromArcs`) that is instantiated
+    with pre-defined arcs.
+
+    See Also
+    --------
+    :class:`ArcPolygonFromArcs`
+
+    Parameters
+    ----------
+    vertices : Union[:class:`list`, :class:`np.array`]
+        A list of vertices, start and end points for the arc segments.
+    angle : :class:`float`
+        The angle used for constructing the arcs. If no other parameters
+        are set, this angle is used to construct all arcs.
+    radius : Optional[:class:`float`]
+        The circle radius used to construct the arcs. If specified,
+        overrides the specified ``angle``.
+    arc_config : Optional[Union[List[:class:`dict`]], :class:`dict`]
+        When passing a ``dict``, its content will be passed as keyword
+        arguments to :class:`~.ArcBetweenPoints`. Otherwise, a list
+        of dictionaries containing values that are passed as keyword
+        arguments for every individual arc can be passed.
+    kwargs
+        Further keyword arguments that are passed to the constructor of
+        :class:`~.VMobject`.
+
+    Attributes
+    ----------
+    arcs : :class:`list`
+        The arcs created from the input parameters::
+
+            >>> from manim import ArcPolygon
+            >>> ap = ArcPolygon([0, 0, 0], [2, 0, 0], [0, 2, 0])
+            >>> ap.arcs
+            [ArcBetweenPoints, ArcBetweenPoints, ArcBetweenPoints]
+
+    Examples
+    --------
+
+    .. manim:: SeveralArcPolygons
+
+        class SeveralArcPolygons(Scene):
+            def construct(self):
+                a = [0, 0, 0]
+                b = [2, 0, 0]
+                c = [0, 2, 0]
+                ap1 = ArcPolygon(a, b, c, radius=2)
+                ap2 = ArcPolygon(a, b, c, angle=45*DEGREES)
+                ap3 = ArcPolygon(a, b, c, arc_config={'radius': 1.7, 'color': RED})
+                ap4 = ArcPolygon(a, b, c, color=RED, fill_opacity=1,
+                                            arc_config=[{'radius': 1.7, 'color': RED},
+                                            {'angle': 20*DEGREES, 'color': BLUE},
+                                            {'radius': 1}])
+                ap_group = VGroup(ap1, ap2, ap3, ap4).arrange()
+                self.play(*[ShowCreation(ap) for ap in [ap1, ap2, ap3, ap4]])
+                self.wait()
+
+    For further examples see :class:`ArcPolygonFromArcs`.
+    """
+
+    def __init__(self, *vertices, angle=PI / 4, radius=None, arc_config=None, **kwargs):
+        n = len(vertices)
+        point_pairs = [(vertices[k], vertices[(k + 1) % n]) for k in range(n)]
+
+        if not arc_config:
+            if radius:
+                all_arc_configs = [{"radius": radius} for pair in point_pairs]
+            else:
+                all_arc_configs = [{"angle": angle} for pair in point_pairs]
+        elif isinstance(arc_config, dict):
+            all_arc_configs = [arc_config for pair in point_pairs]
+        else:
+            assert len(arc_config) == n
+            all_arc_configs = arc_config
+
+        arcs = [
+            ArcBetweenPoints(*pair, **conf)
+            for (pair, conf) in zip(point_pairs, all_arc_configs)
+        ]
+
+        super().__init__(**kwargs)
+        # Adding the arcs like this makes ArcPolygon double as a VGroup.
+        # Also makes changes to the ArcPolygon, such as scaling, affect
+        # the arcs, so that their new values are usable.
+        self.add(*arcs)
+        for arc in arcs:
+            self.append_points(arc.points)
+
+        # This enables the use of ArcPolygon.arcs as a convenience
+        # because ArcPolygon[0] returns itself, not the first Arc.
+        self.arcs = arcs
+
+
+class ArcPolygonFromArcs(VMobject):
+    """A generalized polygon allowing for points to be connected with arcs.
+
+    This version takes in pre-defined arcs to generate the arcpolygon and introduces
+    little new syntax. However unlike :class:`Polygon` it can't be created with points
+    directly.
+
+    For proper appearance the passed arcs should connect seamlessly:
+    ``[a,b][b,c][c,a]``
+
+    If there are any gaps between the arcs, those will be filled in
+    with straight lines, which can be used deliberately for any straight
+    sections. Arcs can also be passed as straight lines such as an arc
+    initialized with ``angle=0``.
+
+    .. tip::
+
+        Two instances of :class:`ArcPolygon` can be transformed properly into
+        one another as well. Be advised that any arc initialized with ``angle=0``
+        will actually be a straight line, so if a straight section should seamlessly
+        transform into an arced section or vice versa, initialize the straight
+        section with a negligible angle instead (such as ``angle=0.0001``).
+
+    There is an alternative version (:class:`ArcPolygon`) that can be instantiated
+    with points.
+
+    See Also
+    --------
+    :class:`ArcPolygon`
+
+    Parameters
+    ----------
+    arcs : Union[:class:`Arc`, :class:`ArcBetweenPoints`]
+        These are the arcs from which the arcpolygon is assembled.
+    kwargs
+        Keyword arguments that are passed to the constructor of
+        :class:`~.VMobject`. Affects how the ArcPolygon itself is drawn,
+        but doesn't affect passed arcs.
+
+    Attributes
+    ----------
+    arcs : :class:`list`
+        The arcs used to initialize the ArcPolygonFromArcs::
+
+            >>> from manim import ArcPolygonFromArcs, Arc, ArcBetweenPoints
+            >>> ap = ArcPolygonFromArcs(Arc(), ArcBetweenPoints([1,0,0], [0,1,0]), Arc())
+            >>> ap.arcs
+            [Arc, ArcBetweenPoints, Arc]
+
+    Examples
+    --------
+    One example of an arcpolygon is the Reuleaux triangle.
+    Instead of 3 straight lines connecting the outer points,
+    a Reuleaux triangle has 3 arcs connecting those points,
+    making a shape with constant width.
+
+    Passed arcs are stored as submobjects in the arcpolygon.
+    This means that the arcs are changed along with the arcpolygon,
+    for example when it's shifted, and these arcs can be manipulated
+    after the arcpolygon has been initialized.
+
+    Also both the arcs contained in an :class:`~.ArcPolygonFromArcs`, as well as the
+    arcpolygon itself are drawn, which affects draw time in :class:`~.ShowCreation`
+    for example. In most cases the arcs themselves don't
+    need to be drawn, in which case they can be passed as invisible.
+
+    .. manim:: ArcPolygonExample
+
+        class ArcPolygonExample(Scene):
+            def construct(self):
+                arc_conf = {"stroke_width": 0}
+                poly_conf = {"stroke_width": 10, "stroke_color": BLUE,
+                      "fill_opacity": 1, "color": PURPLE}
+                a = [-1, 0, 0]
+                b = [1, 0, 0]
+                c = [0, np.sqrt(3), 0]
+                arc0 = ArcBetweenPoints(a, b, radius=2, **arc_conf)
+                arc1 = ArcBetweenPoints(b, c, radius=2, **arc_conf)
+                arc2 = ArcBetweenPoints(c, a, radius=2, **arc_conf)
+                reuleaux_tri = ArcPolygonFromArcs(arc0, arc1, arc2, **poly_conf)
+                self.play(FadeIn(reuleaux_tri))
+                self.wait(2)
+
+    The arcpolygon itself can also be hidden so that instead only the contained
+    arcs are drawn. This can be used to easily debug arcs or to highlight them.
+
+    .. manim:: ArcPolygonExample2
+
+        class ArcPolygonExample2(Scene):
+            def construct(self):
+                arc_conf = {"stroke_width": 3, "stroke_color": BLUE,
+                    "fill_opacity": 0.5, "color": GREEN}
+                poly_conf = {"color": None}
+                a = [-1, 0, 0]
+                b = [1, 0, 0]
+                c = [0, np.sqrt(3), 0]
+                arc0 = ArcBetweenPoints(a, b, radius=2, **arc_conf)
+                arc1 = ArcBetweenPoints(b, c, radius=2, **arc_conf)
+                arc2 = ArcBetweenPoints(c, a, radius=2, stroke_color=RED)
+                reuleaux_tri = ArcPolygonFromArcs(arc0, arc1, arc2, **poly_conf)
+                self.play(FadeIn(reuleaux_tri))
+                self.wait(2)
+
+    """
+
+    def __init__(self, *arcs, **kwargs):
+        if not all(isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs):
+            raise ValueError(
+                "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints"
+            )
+        super().__init__(**kwargs)
+        # Adding the arcs like this makes ArcPolygonFromArcs double as a VGroup.
+        # Also makes changes to the ArcPolygonFromArcs, such as scaling, affect
+        # the arcs, so that their new values are usable.
+        self.add(*arcs)
+        # This enables the use of ArcPolygonFromArcs.arcs as a convenience
+        # because ArcPolygonFromArcs[0] returns itself, not the first Arc.
+        self.arcs = [*arcs]
+        for arc1, arc2 in adjacent_pairs(arcs):
+            self.append_points(arc1.points)
+            line = Line(arc1.get_end(), arc2.get_start())
+            len_ratio = line.get_length() / arc1.get_arc_length()
+            if math.isnan(len_ratio) or math.isinf(len_ratio):
+                continue
+            line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
+            self.append_points(line.get_points())
 
 
 class Triangle(RegularPolygon):
@@ -857,9 +1145,7 @@ class Rectangle(Polygon):
 
 
 class Square(Rectangle):
-    CONFIG = {
-        "side_length": 2.0,
-    }
+    CONFIG = {"side_length": 2.0}
 
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
@@ -869,9 +1155,7 @@ class Square(Rectangle):
 
 
 class RoundedRectangle(Rectangle):
-    CONFIG = {
-        "corner_radius": 0.5,
-    }
+    CONFIG = {"corner_radius": 0.5}
 
     def __init__(self, **kwargs):
         Rectangle.__init__(self, **kwargs)
@@ -924,6 +1208,27 @@ class ArrowTip(VMobject):
         >>> arrow = Arrow(np.array([0, 0, 0]), np.array([1, 1, 0]),
         ...               tip_style={'fill_opacity': 0, 'stroke_width': 3})
 
+    The following example illustrates the usage of all of the predefined
+    arrow tips.
+
+    .. manim:: ArrowTipsShowcase
+        :save_last_frame:
+
+        from manim.mobject.geometry import ArrowTriangleTip, ArrowSquareTip, ArrowSquareFilledTip,\
+                                        ArrowCircleTip, ArrowCircleFilledTip
+        class ArrowTipsShowcase(Scene):
+            def construct(self):
+                a00 = Arrow(start=[-2, 3, 0], end=[2, 3, 0], color=YELLOW)
+                a11 = Arrow(start=[-2, 2, 0], end=[2, 2, 0], tip_shape=ArrowTriangleTip)
+                a12 = Arrow(start=[-2, 1, 0], end=[2, 1, 0])
+                a21 = Arrow(start=[-2, 0, 0], end=[2, 0, 0], tip_shape=ArrowSquareTip)
+                a22 = Arrow([-2, -1, 0], [2, -1, 0], tip_shape=ArrowSquareFilledTip)
+                a31 = Arrow([-2, -2, 0], [2, -2, 0], tip_shape=ArrowCircleTip)
+                a32 = Arrow([-2, -3, 0], [2, -3, 0], tip_shape=ArrowCircleFilledTip)
+                b11 = a11.copy().scale(0.5, scale_tips=True).next_to(a11, RIGHT)
+                b12 = a12.copy().scale(0.5, scale_tips=True).next_to(a12, RIGHT)
+                b21 = a21.copy().scale(0.5, scale_tips=True).next_to(a21, RIGHT)
+                self.add(a00, a11, a12, a21, a22, a31, a32, b11, b12, b21)
 
     """
     CONFIG = {
@@ -1086,3 +1391,49 @@ class ArrowSquareTip(ArrowTip, Square):
 class ArrowSquareFilledTip(ArrowFilledTip, ArrowSquareTip):
     r"""Square arrow tip with filled tip."""
     pass
+
+
+class Cutout(VMobject):
+    """A shape with smaller cutouts.
+
+    .. warning::
+
+        Technically, this class behaves similar to a symmetric difference: if
+        parts of the ``mobjects`` are not located within the ``main_shape``,
+        these parts will be added to the resulting :class:`~.VMobject`.
+
+    Parameters
+    ----------
+    main_shape : :class:`~.VMobject`
+        The primary shape from which cutouts are made.
+    mobjects : :class:`~.VMobject`
+        The smaller shapes which are to be cut out of the ``main_shape``.
+    kwargs
+        Further keyword arguments that are passed to the constructor of
+        :class:`~.VMobject`.
+
+    Examples
+    --------
+    .. manim:: CutoutExample
+
+        class CutoutExample(Scene):
+            def construct(self):
+                s1 = Square().scale(2.5)
+                s2 = Triangle().shift(DOWN + RIGHT).scale(0.5)
+                s3 = Square().shift(UP + RIGHT).scale(0.5)
+                s4 = RegularPolygon(5).shift(DOWN + LEFT).scale(0.5)
+                s5 = RegularPolygon(6).shift(UP + LEFT).scale(0.5)
+                c = Cutout(s1, s2, s3, s4, s5, fill_opacity=1, color=BLUE, stroke_color=RED)
+                self.play(Write(c), run_time=4)
+                self.wait()
+    """
+
+    def __init__(self, main_shape, *mobjects, **kwargs):
+        VMobject.__init__(self, **kwargs)
+        self.append_points(main_shape.get_points())
+        if main_shape.get_direction() == "CW":
+            sub_direction = "CCW"
+        else:
+            sub_direction = "CW"
+        for mobject in mobjects:
+            self.append_points(mobject.force_direction(sub_direction).get_points())

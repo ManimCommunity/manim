@@ -21,6 +21,7 @@ As a second application, the directive can also be used to
 render scenes that are defined within doctests, for example::
 
     .. manim:: DirectiveDoctestExample
+        :ref_classes: Dot
 
         >>> dot = Dot(color=RED)
         >>> dot.color
@@ -58,17 +59,59 @@ directive:
         an image representing the last frame of the scene will
         be rendered and displayed, instead of a video.
 
+    ref_classes
+        A list of classes, separated by spaces, that is
+        rendered in a reference block after the source code.
+
+    ref_functions
+        A list of functions and methods, separated by spaces,
+        that is rendered in a reference block after the source code.
+
 """
+from docutils import nodes
 from docutils.parsers.rst import directives, Directive
-from docutils.parsers.rst.directives.images import Image
+from docutils.statemachine import StringList
 
 import jinja2
 import os
 from os.path import relpath
+from pathlib import Path
+from typing import List
 
 import shutil
 
+from manim import QUALITIES
+
 classnamedict = {}
+
+
+class skip_manim_node(nodes.Admonition, nodes.Element):
+    pass
+
+
+def visit(self, node, name=""):
+    self.visit_admonition(node, name)
+
+
+def depart(self, node):
+    self.depart_admonition(node)
+
+
+def process_name_list(option_input: str, reference_type: str) -> List[str]:
+    r"""Reformats a string of space separated class names
+    as a list of strings containing valid Sphinx references.
+
+    Tests
+    -----
+
+    ::
+
+        >>> process_name_list("Tex TexTemplate", "class")
+        [":class:`~.Tex`", ":class:`~.TexTemplate`"]
+        >>> process_name_list("Scene.play Mobject.rotate", "func")
+        [":func:`~.Scene.play`", ":func:`~.Mobject.rotate`"]
+    """
+    return [f":{reference_type}:`~.{name}`" for name in option_input.split()]
 
 
 class ManimDirective(Directive):
@@ -87,10 +130,20 @@ class ManimDirective(Directive):
         ),
         "save_as_gif": bool,
         "save_last_frame": bool,
+        "ref_modules": lambda arg: process_name_list(arg, "mod"),
+        "ref_classes": lambda arg: process_name_list(arg, "class"),
+        "ref_functions": lambda arg: process_name_list(arg, "func"),
     }
     final_argument_whitespace = True
 
     def run(self):
+        if "skip-manim" in self.state.document.settings.env.app.builder.tags.tags:
+            node = skip_manim_node()
+            self.state.nested_parse(
+                StringList(self.content[0]), self.content_offset, node
+            )
+            return [node]
+
         from manim import config
 
         global classnamedict
@@ -106,29 +159,27 @@ class ManimDirective(Directive):
         save_last_frame = "save_last_frame" in self.options
         assert not (save_as_gif and save_last_frame)
 
-        frame_rate = 30
-        pixel_height = 480
-        pixel_width = 854
+        ref_content = (
+            self.options.get("ref_modules", [])
+            + self.options.get("ref_classes", [])
+            + self.options.get("ref_functions", [])
+        )
+        if ref_content:
+            ref_block = f"""
+.. admonition:: Example References
+    :class: example-reference
+
+    {' '.join(ref_content)}"""
+        else:
+            ref_block = ""
 
         if "quality" in self.options:
-            quality = self.options["quality"]
-            if quality == "low":
-                pixel_height = 480
-                pixel_width = 854
-                frame_rate = 15
-            elif quality == "medium":
-                pixel_height = 720
-                pixel_width = 1280
-                frame_rate = 30
-            elif quality == "high":
-                pixel_height = 1440
-                pixel_width = 2560
-                frame_rate = 60
-            elif quality == "fourk":
-                pixel_height = 2160
-                pixel_width = 3840
-                frame_rate = 60
-
+            quality = f'{self.options["quality"]}_quality'
+        else:
+            quality = "example_quality"
+        frame_rate = QUALITIES[quality]["frame_rate"]
+        pixel_height = QUALITIES[quality]["pixel_height"]
+        pixel_width = QUALITIES[quality]["pixel_width"]
         qualitydir = f"{pixel_height}p{frame_rate}"
 
         state_machine = self.state_machine
@@ -153,33 +204,19 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block)
 
-        media_dir = os.path.join(setup.confdir, "media")
-        if not os.path.exists(media_dir):
-            os.mkdir(media_dir)
-        images_dir = os.path.join(media_dir, "images")
-        if not os.path.exists(images_dir):
-            os.mkdir(images_dir)
-        tex_dir = os.path.join(media_dir, "tex")
-        if not os.path.exists(tex_dir):
-            os.mkdir(tex_dir)
-        text_dir = os.path.join(media_dir, "text")
-        if not os.path.exists(text_dir):
-            os.mkdir(text_dir)
-        video_dir = os.path.join(media_dir, "videos")
+        config.media_dir = Path(setup.confdir) / "media"
+        config.images_dir = "{media_dir}/images"
+        config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
+        config.assets_dir = Path("_static")
 
-        file_writer_config_code = [
+        config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
             f'config["pixel_width"] = {pixel_width}',
-            f'file_writer_config["media_dir"] = r"{media_dir}"',
-            f'file_writer_config["images_dir"] = r"{images_dir}"',
-            f'file_writer_config["tex_dir"] = r"{tex_dir}"',
-            f'file_writer_config["text_dir"] = r"{text_dir}"',
-            f'file_writer_config["video_dir"] = r"{video_dir}"',
-            f'file_writer_config["save_last_frame"] = {save_last_frame}',
-            f'file_writer_config["save_as_gif"] = {save_as_gif}',
-            f'file_writer_config["output_file"] = r"{output_file}"',
+            f'config["save_last_frame"] = {save_last_frame}',
+            f'config["save_as_gif"] = {save_as_gif}',
+            f'config["output_file"] = r"{output_file}"',
         ]
 
         user_code = self.content
@@ -190,7 +227,7 @@ class ManimDirective(Directive):
 
         code = [
             "from manim import *",
-            *file_writer_config_code,
+            *config_code,
             *user_code,
             f"{clsname}().render()",
         ]
@@ -199,25 +236,28 @@ class ManimDirective(Directive):
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f"{output_file}.mp4"
-            filesrc = os.path.join(video_dir, qualitydir, filename)
+            filesrc = config.get_dir("video_dir") / filename
             destfile = os.path.join(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
-            filesrc = os.path.join(video_dir, qualitydir, filename)
+            filesrc = config.get_dir("video_dir") / filename
         elif save_last_frame:
             filename = f"{output_file}.png"
-            filesrc = os.path.join(images_dir, filename)
+            filesrc = config.get_dir("images_dir") / filename
         else:
             raise ValueError("Invalid combination of render flags received.")
 
         rendered_template = jinja2.Template(TEMPLATE).render(
+            clsname=clsname,
+            clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
             filesrc_rel=os.path.relpath(filesrc, setup.confdir),
             output_file=output_file,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
             source_block=source_block,
+            ref_block=ref_block,
         )
         state_machine.insert_input(
             rendered_template.split("\n"), source=document.attributes["source"]
@@ -229,9 +269,12 @@ class ManimDirective(Directive):
 def setup(app):
     import manim
 
+    app.add_node(skip_manim_node, html=(visit, depart))
+
     setup.app = app
     setup.config = app.config
     setup.confdir = app.confdir
+
     app.add_directive("manim", ManimDirective)
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
@@ -244,24 +287,31 @@ TEMPLATE = r"""
 
     <div class="manim-example">
 
-{{ source_block }}
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+    <video id="{{ clsname_lowercase }}" class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
 {% elif save_as_gif %}
 .. image:: /{{ filesrc_rel }}
     :align: center
+    :name: {{ clsname_lowercase }}
 {% elif save_last_frame %}
 .. image:: /{{ filesrc_rel }}
     :align: center
+    :name: {{ clsname_lowercase }}
 {% endif %}
-
 {% if not hide_source %}
 .. raw:: html
 
-    </div>
+    <h5 class="example-header">{{ clsname }}<a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></h5>
+
+{{ source_block }}
+{{ ref_block }}
 {% endif %}
+
+.. raw:: html
+
+    </div>
 """

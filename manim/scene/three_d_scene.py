@@ -165,7 +165,7 @@ class ThreeDScene(Scene):
                 anims.append(ApplyMethod(tracker.set_value, value, **kwargs))
         if frame_center is not None:
             anims.append(
-                ApplyMethod(self.renderer.camera.frame_center.move_to, frame_center)
+                ApplyMethod(self.renderer.camera._frame_center.move_to, frame_center)
             )
 
         self.play(*anims + added_anims)
@@ -308,11 +308,11 @@ class SpecialThreeDScene(ThreeDScene):
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
         if self.renderer.camera_config["pixel_width"] == config["pixel_width"]:
-            config = {}
+            _config = {}
         else:
-            config = self.low_quality_config
-        config = merge_dicts_recursively(config, kwargs)
-        ThreeDScene.__init__(self, **config)
+            _config = self.low_quality_config
+        _config = merge_dicts_recursively(_config, kwargs)
+        ThreeDScene.__init__(self, **_config)
 
     def get_axes(self):
         """Return a set of 3D axes.

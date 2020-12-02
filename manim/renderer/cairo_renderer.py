@@ -1,10 +1,9 @@
 import numpy as np
-from .. import config, camera_config, file_writer_config
+from .. import config
 from ..utils.iterables import list_update
 from ..utils.exceptions import EndSceneEarlyException
-from ..constants import DEFAULT_WAIT_TIME
 from ..scene.scene_file_writer import SceneFileWriter
-from ..utils.caching import handle_caching_play, handle_caching_wait
+from ..utils.caching import handle_caching_play
 from ..camera.camera import Camera
 
 
@@ -37,10 +36,9 @@ def handle_play_like_call(func):
     """
 
     def wrapper(self, scene, *args, **kwargs):
-        allow_write = not file_writer_config["skip_animations"]
-        self.file_writer.begin_animation(allow_write)
+        self.file_writer.begin_animation(not self.skip_animations)
         func(self, scene, *args, **kwargs)
-        self.file_writer.end_animation(allow_write)
+        self.file_writer.end_animation(not self.skip_animations)
         self.num_plays += 1
 
     return wrapper
@@ -53,7 +51,7 @@ class CairoRenderer:
     time: time elapsed since initialisation of scene.
     """
 
-    def __init__(self, camera_class=None, **kwargs):
+    def __init__(self, camera_class=None, skip_animations=False, **kwargs):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
         # _instance construction_.  Before, they were in the CONFIG dict, which
@@ -71,8 +69,9 @@ class CairoRenderer:
         ]:
             self.video_quality_config[attr] = kwargs.get(attr, config[attr])
         camera_cls = camera_class if camera_class is not None else Camera
-        self.camera = camera_cls(self.video_quality_config, **camera_config)
-        self.original_skipping_status = file_writer_config["skip_animations"]
+        self.camera = camera_cls(self.video_quality_config)
+        self.original_skipping_status = skip_animations
+        self.skip_animations = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
         self.time = 0
@@ -82,7 +81,6 @@ class CairoRenderer:
             self,
             self.video_quality_config,
             scene.__class__.__name__,
-            **file_writer_config,
         )
 
     @pass_scene_reference
@@ -90,12 +88,6 @@ class CairoRenderer:
     @handle_play_like_call
     def play(self, scene, *args, **kwargs):
         scene.play_internal(*args, **kwargs)
-
-    @pass_scene_reference
-    @handle_caching_wait
-    @handle_play_like_call
-    def wait(self, scene, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-        scene.wait_internal(duration=duration, stop_condition=stop_condition)
 
     def update_frame(  # TODO Description in Docstring
         self,
@@ -123,7 +115,7 @@ class CairoRenderer:
         **kwargs
 
         """
-        if file_writer_config["skip_animations"] and not ignore_skipping:
+        if self.skip_animations and not ignore_skipping:
             return
         if mobjects is None:
             mobjects = list_update(
@@ -163,7 +155,7 @@ class CairoRenderer:
         """
         dt = 1 / self.camera.frame_rate
         self.time += num_frames * dt
-        if file_writer_config["skip_animations"]:
+        if self.skip_animations:
             return
         for _ in range(num_frames):
             self.file_writer.write_frame(frame)
@@ -184,32 +176,17 @@ class CairoRenderer:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
-        if file_writer_config["from_animation_number"]:
-            if self.num_plays < file_writer_config["from_animation_number"]:
-                file_writer_config["skip_animations"] = True
-        if file_writer_config["upto_animation_number"]:
-            if self.num_plays > file_writer_config["upto_animation_number"]:
-                file_writer_config["skip_animations"] = True
+        if config["from_animation_number"]:
+            if self.num_plays < config["from_animation_number"]:
+                self.skip_animations = True
+        if config["upto_animation_number"]:
+            if self.num_plays > config["upto_animation_number"]:
+                self.skip_animations = True
                 raise EndSceneEarlyException()
 
-    def revert_to_original_skipping_status(self):
-        """
-        Forces the scene to go back to its original skipping status,
-        by setting skip_animations to whatever it reads
-        from original_skipping_status.
-
-        Returns
-        -------
-        Scene
-            The Scene, with the original skipping status.
-        """
-        if hasattr(self, "original_skipping_status"):
-            file_writer_config["skip_animations"] = self.original_skipping_status
-        return self
-
     def finish(self, scene):
-        file_writer_config["skip_animations"] = False
+        self.skip_animations = self.original_skipping_status
         self.file_writer.finish()
-        if file_writer_config["save_last_frame"]:
-            self.update_frame(scene, ignore_skipping=True)
+        if config["save_last_frame"]:
+            self.update_frame(scene, ignore_skipping=False)
             self.file_writer.save_final_image(self.camera.get_image())

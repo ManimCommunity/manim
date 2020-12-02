@@ -1,13 +1,10 @@
-from ...config import camera_config
-from ...config import file_writer_config
-from ...scene import scene
+from ... import config
 from ..gen import frameserver_pb2
 from ..gen import frameserver_pb2_grpc
 from ..gen import renderserver_pb2
 from ..gen import renderserver_pb2_grpc
 from concurrent import futures
-from google.protobuf import json_format
-from watchdog.events import LoggingEventHandler, FileSystemEventHandler
+from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 import grpc
 import subprocess as sp
@@ -19,7 +16,7 @@ from ...utils.module_ops import (
     get_scene_classes_from_module,
     get_scenes_to_render,
 )
-from ...config.logger import logger
+from ... import logger
 from ...constants import JS_RENDERER_INFO
 
 
@@ -53,7 +50,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             except grpc._channel._InactiveRpcError:
                 logger.warning(f"No frontend was detected at localhost:50052.")
                 try:
-                    sp.Popen(camera_config["js_renderer_path"])
+                    sp.Popen(config["js_renderer_path"])
                 except PermissionError:
                     logger.info(JS_RENDERER_INFO)
                     self.server.stop(None)
@@ -125,7 +122,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     frame_response.frame_pending = True
                     selected_scene.renderer_waiting = True
                 return frame_response
-            elif selected_scene.skip_animations:
+            elif selected_scene.renderer.skip_animations:
                 # Do nothing
                 return
             else:
@@ -194,7 +191,7 @@ class UpdateFrontendHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         super().on_modified(event)
-        module = get_module(file_writer_config["input_file"])
+        module = get_module(config["input_file"])
         all_scene_classes = get_scene_classes_from_module(module)
         scene_classes_to_render = get_scenes_to_render(all_scene_classes)
         scene_class = scene_classes_to_render[0]
@@ -250,7 +247,7 @@ class UpdateFrontendHandler(FileSystemEventHandler):
             try:
                 stub.ManimStatus(request)
             except grpc._channel._InactiveRpcError:
-                sp.Popen(camera_config["js_renderer_path"])
+                sp.Popen(config["js_renderer_path"])
 
 
 def get(scene_class):

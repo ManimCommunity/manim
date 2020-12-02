@@ -1,16 +1,15 @@
-from .. import constants
-from ..config import file_writer_config
-from ..config.logger import logger, console
+from .. import constants, logger, console, config
 import importlib.util
 import inspect
 import os
+from pathlib import Path
 import sys
 import types
 import re
 
 
 def get_module(file_name):
-    if file_name == "-":
+    if str(file_name) == "-":
         module = types.ModuleType("input_scenes")
         logger.info(
             "Enter the animation's code & end with an EOF (CTRL+D on Linux/Unix, CTRL+Z on Windows):"
@@ -29,13 +28,15 @@ def get_module(file_name):
             logger.error(f"Failed to render scene: {str(e)}")
             sys.exit(2)
     else:
-        if os.path.exists(file_name):
-            if file_name[-3:] != ".py":
+        if Path(file_name).exists():
+            ext = file_name.suffix
+            if ext != ".py":
                 raise ValueError(f"{file_name} is not a valid Manim python script.")
-            module_name = file_name[:-3].replace(os.sep, ".").split(".")[-1]
+            module_name = ext.replace(os.sep, ".").split(".")[-1]
             spec = importlib.util.spec_from_file_location(module_name, file_name)
             module = importlib.util.module_from_spec(spec)
             sys.modules[module_name] = module
+            sys.path.insert(0, str(file_name.parent.absolute()))
             spec.loader.exec_module(module)
             return module
         else:
@@ -63,10 +64,10 @@ def get_scenes_to_render(scene_classes):
     if not scene_classes:
         logger.error(constants.NO_SCENE_MESSAGE)
         return []
-    if file_writer_config["write_all"]:
+    if config["write_all"]:
         return scene_classes
     result = []
-    for scene_name in file_writer_config["scene_names"]:
+    for scene_name in config["scene_names"]:
         found = False
         for scene_class in scene_classes:
             if scene_class.__name__ == scene_name:

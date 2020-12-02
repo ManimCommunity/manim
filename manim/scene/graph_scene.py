@@ -1,4 +1,44 @@
-"""A scene for plotting / graphing functions."""
+"""A scene for plotting / graphing functions.
+
+Examples
+--------
+
+.. manim:: FunctionPlotWithLabbeledYAxis
+    :save_last_frame:
+
+    class FunctionPlotWithLabbeledYAxis(GraphScene):
+        CONFIG = {
+            "y_min": 0,
+            "y_max": 100,
+            "y_axis_config": {"tick_frequency": 10},
+            "y_labeled_nums": np.arange(0, 100, 10)
+        }
+
+        def construct(self):
+            self.setup_axes()
+            dot = Dot().move_to(self.coords_to_point(PI / 2, 20))
+            func_graph = self.get_graph(lambda x: 20 * np.sin(x))
+            self.add(dot,func_graph)
+
+
+.. manim:: GaussianFunctionPlot
+    :save_last_frame:
+
+    amp = 5
+    mu = 3
+    sig = 1
+
+    def gaussian(x):
+        return amp * np.exp((-1 / 2 * ((x - mu) / sig) ** 2))
+
+    class GaussianFunctionPlot(GraphScene):
+        def construct(self):
+            self.setup_axes()
+            graph = self.get_graph(gaussian, x_min=-1, x_max=10)
+            graph.set_stroke(width=5)
+            self.add(graph)
+
+"""
 
 __all__ = ["GraphScene"]
 
@@ -109,7 +149,10 @@ class GraphScene(Scene):
         )
 
         x_axis = NumberLine(**self.x_axis_config)
-        x_axis.shift(self.graph_origin - x_axis.number_to_point(0))
+        x_shift = x_axis.number_to_point(
+            0 if self.x_min <= 0 <= self.x_max else self.x_min
+        )
+        x_axis.shift(self.graph_origin - x_shift)
         if len(self.x_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.x_labeled_nums = [x for x in self.x_labeled_nums if x != 0]
@@ -117,11 +160,10 @@ class GraphScene(Scene):
         if self.x_axis_label:
             x_label = Tex(self.x_axis_label)
             x_label.next_to(
-                x_axis.get_tips() if self.include_tip else x_axis.get_tick_marks(),
+                x_axis.get_corner(self.x_label_position),
                 self.x_label_position,
                 buff=SMALL_BUFF,
             )
-            x_label.shift_onto_screen()
             x_axis.add(x_label)
             self.x_axis_label_mob = x_label
 
@@ -151,8 +193,11 @@ class GraphScene(Scene):
         )
 
         y_axis = NumberLine(**self.y_axis_config)
-        y_axis.shift(self.graph_origin - y_axis.number_to_point(0))
-        y_axis.rotate(np.pi / 2, about_point=y_axis.number_to_point(0))
+        y_shift = y_axis.number_to_point(
+            0 if self.y_min <= 0 <= self.y_max else self.y_min
+        )
+        y_axis.shift(self.graph_origin - y_shift)
+        y_axis.rotate(np.pi / 2, about_point=self.graph_origin)
         if len(self.y_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.y_labeled_nums = [y for y in self.y_labeled_nums if y != 0]
@@ -164,7 +209,6 @@ class GraphScene(Scene):
                 self.y_label_position,
                 buff=SMALL_BUFF,
             )
-            y_label.shift_onto_screen()
             y_axis.add(y_label)
             self.y_axis_label_mob = y_label
 
@@ -201,6 +245,26 @@ class GraphScene(Scene):
         -------
         np.ndarray
             The array of the coordinates.
+
+        Examples
+        --------
+
+        .. manim:: SequencePlot
+            :save_last_frame:
+
+            class SequencePlot(GraphScene):
+                CONFIG = {
+                    "y_axis_label": r"Concentration [\%]",
+                    "x_axis_label": "Time [s]",
+                    }
+
+                def construct(self):
+                    data = [1, 2, 2, 4, 4, 1, 3]
+                    self.setup_axes()
+                    for time, dat in enumerate(data):
+                        dot = Dot().move_to(self.coords_to_point(time, dat))
+                        self.add(dot)
+
         """
         assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
