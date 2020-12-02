@@ -1441,6 +1441,7 @@ class Cutout(VMobject):
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).get_points())
 
+
 class Histogram(ParametricFunction):
     """A Histogram VMobject (optionally scaled to a graph) that can be used to
         easily show statistical data. Made up of several lines connecting points
