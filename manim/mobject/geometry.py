@@ -54,7 +54,6 @@ __all__ = [
     "Square",
     "RoundedRectangle",
     "Cutout",
-    "Histogram",
 ]
 
 import warnings
