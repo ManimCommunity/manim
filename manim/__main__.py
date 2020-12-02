@@ -63,12 +63,10 @@ def main():
                 logger.error("No subcommand provided; Exiting...")
 
         elif args.cmd == "plugins":
-            from manim._config import plugins_flags
+            from manim.plugins import plugins_flags
 
             if args.list:
                 plugins_flags.list_plugins()
-            if args.update:
-                plugins_flags.update()
             elif not args.list or args.update:
                 logger.error("No flag provided; Exiting...")
 

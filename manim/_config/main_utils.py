@@ -159,7 +159,7 @@ def _parse_args_plugins(args):
         description="Utility command for managing plugins",
         prog="manim plugins",
         epilog="Made with <3 by the manim community devs",
-        usage=("%(prog)s -h -u -l"),
+        usage=("%(prog)s -h -l"),
     )
 
     parser.add_argument(
@@ -167,9 +167,6 @@ def _parse_args_plugins(args):
         "--list",
         action="store_true",
         help="Lists all available plugins",
-    )
-    parser.add_argument(
-        "-u", "--update", action="store_true", help="Updates plugins/__init__.py"
     )
     parsed = parser.parse_args(args[2:])
     parsed.cmd = "plugins"
