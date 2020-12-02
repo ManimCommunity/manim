@@ -4,6 +4,8 @@ Changelog
 
 .. contents:: Release history
    :depth: 1
+   :local:
+   :backlinks: none
 
 
 ****************
