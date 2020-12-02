@@ -2,11 +2,23 @@
 Changelog
 #########
 
-******
-v0.2.0
-******
+
+****************
+Upcoming release
+****************
 
 :Date: TBD
+
+Changes since the latest released version.
+
+- There is nothing here yet, check back later.
+
+
+******
+v0.1.1
+******
+
+:Date: December 1, 2020
 
 Changes since Manim Community release v0.1.0
 
