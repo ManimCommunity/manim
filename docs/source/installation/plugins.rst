@@ -8,7 +8,11 @@ Plugins are features that extend Manim's core functionality. Since Manim is
 extensible and not everything belongs in its core, we'll go over how to
 install, use, and create your own plugins.
 
-.. note:: The standard naming convention for plugins is to prefix the plugin with ``manim-``. This makes them easy to find on packages indexes such as PyPI.
+.. note:: 
+
+    The standard naming convention for plugins is to prefix the plugin with
+    ``manim-``. This makes them easy for users to find on package
+    repositories such as PyPI.
 
 .. WARNING::
 
@@ -50,7 +54,7 @@ manim's ``__init__.py``. As such, writing:
 
     from manim import *
 
-in your projects will import any of the plugins and packages written in the
+in your projects will import any of the plugins imported in
 ``plugins/__init__.py``.
 
 .. code-block:: python
@@ -59,9 +63,11 @@ in your projects will import any of the plugins and packages written in the
     # or
     from manim_cool_plugin import feature_x, feature_y, ...
 
-This is especially useful to modify if your projects will involve the same
-plugins. Alternatively, you can manually specify the same imports into your
-project scripts as well. 
+By default, ``plugins/__init__.py`` is not provided; although, there are
+plans to support subcommands that would manage this file. It is especially
+useful to create this file for projects that involve usage of the same
+plugins. Alternatively, you may manually specify the plugins in your project
+scripts.
 
 Creating Plugins
 ****************
@@ -74,3 +80,17 @@ on PyPI.org which servers as an in-depth tutorial for creating plugins.
 .. code-block:: bash
 
     pip install manim-plugintemplate
+
+The only requirement of manim plugins is that they specify an entry point
+with the group, ``"manim.plugins"``. This allows Manim to discover plugins
+available in the user's environment. Everything regarding the plugin's
+directory structure, build system, and naming are completely up to your
+discretion as an author. The aforementioned template plugin, is only a model
+using Poetry since this is the build system Manim uses. The plugin's `entry
+point <https://packaging.python.org/specifications/entry-points/>`_ can be
+specified in poetry as:
+
+.. code-block:: toml
+
+    [tool.poetry.plugins."manim.plugins"]
+    "name" = "object_reference"
