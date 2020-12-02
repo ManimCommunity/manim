@@ -125,6 +125,11 @@ class RoundedRectangleTest(Scene):
         a = RoundedRectangle()
         self.play(Animation(a))
 
+class HistogramTest(GraphScene):
+    def construct(self):
+        self.setup_axes()
+        a = Histogram([0, 1, 2, 3, 4], [5, 1, 4, 2, 3], self])
+        self.play(Animation(a))
 
 MODULE_NAME = "geometry"
 
