@@ -2,15 +2,15 @@
 
 __all__ = ["ParametricFunction", "FunctionGraph"]
 
+from manim import logger
 
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.config_ops import digest_config
+from ..utils.config_ops import digest_config, merge_dicts_recursively
 from ..utils.color import YELLOW
 
 import math
-
 
 class ParametricFunction(VMobject):
     """A parametric curve.
@@ -64,7 +64,14 @@ class ParametricFunction(VMobject):
     def get_function(self):
         return self.function
 
-    def get_point_from_function(self, t):
+    """
+    t : int, float
+    The t value
+    
+    Returns:
+    The ParametricFunction evaluated at the value t
+    """
+    def evaluate(self, t):
         return self.function(t)
 
     def get_step_size(self, t=None):
@@ -114,6 +121,51 @@ class ParametricFunction(VMobject):
         self.make_smooth()
         return self
 
+    def vector_derivative(self,t,dt=0.01):
+        """
+           Returns the derivative of each subfunction at the point t on the plotted curve
+           at a particular t-value.
+
+           Parameters
+           ----------
+           t : int, float
+               The t value
+
+           dt : int, float, optional
+               The small change in t with which a small change in the parametric function to get dy/dx
+               will be compared in order to obtain the tangent.
+
+           Returns:
+           The derivative of each subfunction contained in ParametricFunction
+        """
+
+        functionAtTimestep = self.evaluate(t+dt)
+        functionAtT = self.evaluate(t)
+        return np.array([(functionAtTimestep[0]-functionAtT[0])/dt,(functionAtTimestep[1]-functionAtT[1])/dt,(functionAtTimestep[2]-functionAtT[2])/dt])
+
+    def derivative(self,t,dt=0.01):
+        """
+           Returns the slope of the tangent line at the point t on the plotted curve
+           at a particular t-value.
+
+           Parameters
+           ----------
+           t : int, float
+               The t value
+
+           dt : int, float, optional
+               The small change in t with which a small change in the parametric function to get dy/dx
+               will be compared in order to obtain the tangent.
+
+           Returns:
+           The slope of the tangent line
+        """
+
+        vector_derivative = self.vector_derivative(t,dt)
+        return vector_derivative[1]/vector_derivative[0]
+
+    def get_derivative_function(self,dt=0.01):
+        return lambda t: np.array([self.evaluate(t)[0],self.derivative(t,dt),self.evaluate(t)[2]])
 
 class FunctionGraph(ParametricFunction):
     CONFIG = {
@@ -121,12 +173,13 @@ class FunctionGraph(ParametricFunction):
     }
 
     def __init__(self, function, **kwargs):
+        logger.warning("This class is being deprecated due to its lack of use. Please use ParametricFunction instead!")
         digest_config(self, kwargs)
         self.x_min = -config["frame_x_radius"]
         self.x_max = config["frame_x_radius"]
         self.parametric_function = lambda t: np.array([t, function(t), 0])
         ParametricFunction.__init__(
-            self, self.parametric_function, t_min=self.x_min, t_max=self.x_max, **kwargs
+            self, self.parametric_function, **merge_dicts_recursively({'t_min':self.x_min, 't_max':self.x_max},kwargs)
         )
         self.function = function
 

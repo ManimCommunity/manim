@@ -1,11 +1,8 @@
 """A scene for plotting / graphing functions.
-
 Examples
 --------
-
 .. manim:: FunctionPlotWithLabbeledYAxis
     :save_last_frame:
-
     class FunctionPlotWithLabbeledYAxis(GraphScene):
         CONFIG = {
             "y_min": 0,
@@ -13,37 +10,32 @@ Examples
             "y_axis_config": {"tick_frequency": 10},
             "y_labeled_nums": np.arange(0, 100, 10)
         }
-
         def construct(self):
             self.setup_axes()
             dot = Dot().move_to(self.coords_to_point(PI / 2, 20))
             func_graph = self.get_graph(lambda x: 20 * np.sin(x))
             self.add(dot,func_graph)
-
-
 .. manim:: GaussianFunctionPlot
     :save_last_frame:
-
     amp = 5
     mu = 3
     sig = 1
-
     def gaussian(x):
         return amp * np.exp((-1 / 2 * ((x - mu) / sig) ** 2))
-
     class GaussianFunctionPlot(GraphScene):
         def construct(self):
             self.setup_axes()
             graph = self.get_graph(gaussian, x_min=-1, x_max=10)
             graph.set_stroke(width=5)
             self.add(graph)
-
 """
 
 __all__ = ["GraphScene"]
 
 
 import itertools as it
+
+from manim import logger
 
 from .. import config
 from ..animation.creation import Write, DrawBorderThenFill, ShowCreation
@@ -109,6 +101,11 @@ class GraphScene(Scene):
         This method is used internally by Manim
         to set up the scene for proper use.
         """
+        logger.warning(
+            "GraphScene is in the process of being deprecated (outdated) "
+            "in favour of TwoDScene. Please use TwoDScene in the future"
+        )
+
         self.default_graph_colors_cycle = it.cycle(self.default_graph_colors)
 
         self.left_T_label = VGroup()
@@ -119,7 +116,6 @@ class GraphScene(Scene):
     def setup_axes(self, animate=False):
         """
         This method sets up the axes of the graph.
-
         Parameters
         ----------
         animate : bool, optional
@@ -232,39 +228,31 @@ class GraphScene(Scene):
         to coordinates on the graph.
         This method returns a scaled coordinate for the graph,
         given cartesian coordinates that correspond to the scene..
-
         Parameters
         ----------
         x : int, float
             The x value
-
         y : int, float
             The y value
-
         Returns
         -------
         np.ndarray
             The array of the coordinates.
-
         Examples
         --------
-
         .. manim:: SequencePlot
             :save_last_frame:
-
             class SequencePlot(GraphScene):
                 CONFIG = {
                     "y_axis_label": r"Concentration [\%]",
                     "x_axis_label": "Time [s]",
                     }
-
                 def construct(self):
                     data = [1, 2, 2, 4, 4, 1, 3]
                     self.setup_axes()
                     for time, dat in enumerate(data):
                         dot = Dot().move_to(self.coords_to_point(time, dat))
                         self.add(dot)
-
         """
         assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
@@ -274,18 +262,14 @@ class GraphScene(Scene):
     def point_to_coords(self, point):
         """
         The scene is smaller than the graph.
-
         Because of this, coordinates in the graph don't map
         to coordinates on the scene.
-
         This method returns a scaled coordinate for the scene,
         given coordinates that correspond to the graph.
-
         Parameters
         ----------
         point : np.ndarray
             The point on the graph.
-
         Returns
         -------
         tuple
@@ -296,30 +280,23 @@ class GraphScene(Scene):
     def get_graph(self, func, color=None, x_min=None, x_max=None, **kwargs):
         """
         This method gets a curve to plot on the graph.
-
         Parameters
         ----------
         func : function
             The function to plot. It's return value should be
             the y-coordinate for a given x-coordinate
-
         color : str, optional
             The string of the RGB color of the curve. in Hexadecimal representation.
-
         x_min : int, float, optional
             The lower x_value from which to plot the curve.
-
         x_max : int, float, optional
             The higher x_value until which to plot the curve.
-
         **kwargs :
             Any valid keyword arguments of ParametricFunction.
-
         Return
         ------
         ParametricFunction
             The Parametric Curve for the function passed.
-
         """
         if color is None:
             color = next(self.default_graph_colors_cycle)
@@ -344,16 +321,13 @@ class GraphScene(Scene):
         This method returns a coordinate on the curve
         given an x_value and a the graoh-curve for which
         the corresponding y value should be found.
-
         Parameters
         ----------
         x : int, float
             The x value for which to find the y value.
-
         graph : ParametricFunction
             The ParametricFunction object on which
             the x and y value lie.
-
         Returns
         -------
         numpy.nparray
@@ -365,19 +339,15 @@ class GraphScene(Scene):
         """
         Returns the angle to the x axis of the tangent
         to the plotted curve at a particular x-value.
-
         Parameters
         ----------
         x : int, float
             The x value at which the tangent must touch the curve.
-
         graph : ParametricFunction
             The ParametricFunction for which to calculate the tangent.
-
         dx : int, float, optional
             The small change in x with which a small change in y
             will be compared in order to obtain the tangent.
-
         Returns
         -------
         float
@@ -392,19 +362,15 @@ class GraphScene(Scene):
         """
         Returns the slople of the tangent to the plotted curve
         at a particular x-value.
-
         Parameters
         ----------
         x : int, float
             The x value at which the tangent must touch the curve.
-
         graph : ParametricFunction
             The ParametricFunction for which to calculate the tangent.
-
         dx : int, float, optional
             The small change in x with which a small change in y
             will be compared in order to obtain the tangent.
-
         Returns
         -------
         float
@@ -416,19 +382,15 @@ class GraphScene(Scene):
         """
         Returns the curve of the derivative of the passed
         graph.
-
         Parameters
         ----------
         graph : ParametricFunction
             The graph for which the derivative must be found.
-
         dx : float, int, optional
             The small change in x with which a small change in y
             will be compared in order to obtain the derivative.
-
         **kwargs
             Any valid keyword argument of ParametricFunction
-
         Returns
         -------
         ParametricFunction
@@ -454,33 +416,25 @@ class GraphScene(Scene):
         """
         This method returns a properly positioned label for the passed graph,
         styled with the passed parameters.
-
         Parameters
         ----------
         graph : ParametricFunction
             The curve of the function plotted.
-
         label : str, optional
             The label for the function's curve.
-
         x_val : int, float, optional
             The x_value with which the label should be aligned.
-
         direction : np.ndarray, list, tuple
             The cartesian position, relative to the curve that the label will be at.
             e.g LEFT, RIGHT
-
         buff : float, int, option
             The buffer space between the curve and the label
-
         color : str, optional
             The color of the label.
-
         Returns
         -------
         :class:`~.MathTex`
             The LaTeX of the passed 'label' parameter
-
         """
         label = MathTex(label)
         color = color or graph.get_color()
@@ -515,57 +469,43 @@ class GraphScene(Scene):
         """
         This method returns the VGroup() of the Riemann Rectangles for
         a particular curve.
-
         Parameters
         ----------
         graph : ParametricFunction
             The graph whose area needs to be approximated
             by the Riemann Rectangles.
-
         x_min : int, float, optional
             The lower bound from which to start adding rectangles
-
         x_max : int, float, optional
             The upper bound where the rectangles stop.
-
         dx : int, float, optional
             The smallest change in x-values that is
             considered significant.
-
         input_sample_type : {"left", "right", "center"}
             Can be any of "left", "right" or "center
-
         stroke_width : int, float, optional
             The stroke_width of the border of the rectangles.
-
         stroke_color : str, optional
             The string of hex colour of the rectangle's border.
-
         fill_opacity : int, float
             The opacity of the rectangles. Takes values from 0 to 1.
-
         start_color : str, optional
             The hex starting colour for the rectangles,
             this will, if end_color is a different colour,
             make a nice gradient.
-
         end_color : str, optional
             The hex ending colour for the rectangles,
             this will, if start_color is a different colour,
             make a nice gradient.
-
         show_signed_area : bool, optional
             Whether or not to indicate -ve area if curve dips below
             x-axis.
-
         width_scale_factor : int, float, optional
             How much the width of the rectangles are scaled by when transforming.
-
         Returns
         -------
         VGroup
             A VGroup containing the Riemann Rectangles.
-
         """
         x_min = x_min if x_min is not None else self.x_min
         x_max = x_max if x_max is not None else self.x_max
@@ -622,28 +562,21 @@ class GraphScene(Scene):
         Rectangles. The inital VGroups are relatively inaccurate,
         but the closer you get to the end the more accurate the Riemann
         rectangles become
-
         Parameters
         ----------
         graph : ParametricFunction
             The graph whose area needs to be approximated
             by the Riemann Rectangles.
-
         n_iterations : int,
             The number of VGroups of successive accuracy that are needed.
-
         max_dx : int, float, optional
             The maximum change in x between two VGroups of Riemann Rectangles
-
         power_base : int, float, optional
             Defaults to 2
-
         stroke_width : int, float, optional
             The stroke_width of the border of the rectangles.
-
         **kwargs
             Any valid keyword arguments of get_riemann_rectangles.
-
         Returns
         -------
         list
@@ -666,18 +599,14 @@ class GraphScene(Scene):
         Returns a VGroup of Riemann rectangles
         sufficiently small enough to visually
         approximate the area under the graph passed.
-
         Parameters
         ----------
         graph : ParametricFunction
             The graph/curve for which the area needs to be gotten.
-
         t_min : int, float
             The lower bound of x from which to approximate the area.
-
         t_max : int, float
             The upper bound of x until which the area must be approximated.
-
         Returns
         -------
         VGroup
@@ -703,15 +632,12 @@ class GraphScene(Scene):
         This method is used to transform between two VGroups of Riemann Rectangles,
         if they were obtained by get_riemann_rectangles or get_riemann_rectangles_list.
         No animation is returned, and the animation is directly played.
-
         Parameters
         ----------
         curr_rects : VGroup
             The current Riemann Rectangles
-
         new_rects : VGroup
             The Riemann Rectangles to transform to.
-
         **kwargs
             added_anims
                 Any other animations to play simultaneously.
@@ -733,23 +659,18 @@ class GraphScene(Scene):
         """
         This method returns a Vertical line from the x-axis to
         the corresponding point on the graph/curve.
-
         Parameters
         ----------
         x : int, float
             The x-value at which the line should be placed/calculated.
-
         graph : ParametricFunction
             The graph on which the line should extend to.
-
         line_class : Line and similar
             The type of line that should be used.
             Defaults to Line.
-
         **line_kwargs
             Any valid keyword arguments of the object passed in "line_class"
             If line_class is Line, any valid keyword arguments of Line are allowed.
-
         Return
         ------
         An object of type passed in "line_class"
@@ -768,27 +689,21 @@ class GraphScene(Scene):
     ):
         """
         Obtains multiple lines from the x axis to the Graph/curve.
-
         Parameters
         ----------
         graph : ParametricFunction
             The graph on which the line should extend to.
-
         x_min : int, float, optional
             The lower bound from which lines can appear.
-
         x_max : int, float, optional
             The upper bound until which the lines can appear.
-
         num_lines : int, optional
             The number of lines (evenly spaced)
             that are needed.
-
         Returns
         -------
         VGroup
             The VGroup of the evenly spaced lines.
-
         """
         x_min = x_min or self.x_min
         x_max = x_max or self.x_max
@@ -817,49 +732,36 @@ class GraphScene(Scene):
         representing dx and df, the labels for dx and
         df, and the Secant to the Graph/curve at a
         particular x value.
-
         Parameters
         ----------
         x : int, float
             The x value at which the secant enters, and intersects
             the graph for the first time.
-
         graph : ParametricFunction
             The curve/graph for which the secant must
             be found.
-
         dx : int, float, optional
             The change in x after which the secant exits.
-
         dx_line_color : str, optional
             The line color for the line that indicates the change in x.
-
         df_line_color : str, optional
             The line color for the line that indicates the change in y.
-
         dx_label : str, optional
             The label to be provided for the change in x.
-
         df_label : str, optional
             The label to be provided for the change in y.
-
         include_secant_line : bool, optional
             Whether or not to include the secant line in the graph,
             or just have the df and dx lines and labels.
-
         secant_line_color : str, optional
             The color of the secant line.
-
         secant_line_length : int, float, optional
             How long the secant line should be.
-
-
         Returns
         -------
         :class:`.VGroup`
             A group containing the elements ``dx_line``, ``df_line``, and
             if applicable also ``dx_label``, ``df_label``, ``secant_line``.
-
         """
         kwargs = locals()
         kwargs.pop("self")
@@ -923,34 +825,25 @@ class GraphScene(Scene):
     ):
         """Create a triangle marker with a vertical line from the x-axis
         to ``self.v_graph`` at the given x coordinate ``x_val``.
-
         This method adds to the Scene:
-
         - a Vertical line from the x-axis to the corresponding point on the graph/curve.
         - a small vertical Triangle whose top point lies on the base of the vertical line
         - a MathTex to be a label for the Line and Triangle, at the bottom of
           the Triangle.
-
         The scene needs to have the graph have the identifier/variable
         name ``self.v_graph``.
-
         Parameters
         ----------
         x_val : float, int
             The x value at which the secant enters, and intersects
             the graph for the first time.
-
         side : np.array(), optional
-
         label : str, optional
             The label to give the vertline and triangle
-
         color : str, optional
             The hex color of the label.
-
         animated : bool, optional
             Whether or not to animate the addition of the T_label
-
         **kwargs
             Any valid keyword argument of a self.play call.
         """
@@ -992,25 +885,19 @@ class GraphScene(Scene):
         self.area must be defined from self.get_area()
         self.left_v_line and self.right_v_line must be defined from self.get_v_line
         self.left_T_label_group and self.right_T_label_group must be defined from self.add_T_label
-
         This method will return a VGroup of new mobjects for each of those, when provided the graph/curve,
         the new t_min and t_max, the run_time and a bool stating whether or not to fade when close to
         the origin.
-
         Parameters
         ----------
         graph : ParametricFunction
             The graph for which this must be done.
-
         new_t_min : int, float
             The new lower bound.
-
         new_t_max : int, float
             The new upper bound.
-
         fade_close_to_origin : bool, optional
             Whether or not to fade when close to the origin.
-
         run_time : int, float, optional
             The run_time of the animation of this change.
         """
@@ -1067,27 +954,20 @@ class GraphScene(Scene):
         """
         This method animates the change of the secant slope group  from
         the old secant slope group, into a new secant slope group.
-
         Parameters
         ----------
         secant_slope_group : VGroup
             The old secant_slope_group
-
         target_dx : int, float, optional
             The new dx value.
-
         target_x : int, float, optional
             The new x value at which the secant should be.
-
         run_time : int, float, optional
             The run time for this change when animated.
-
         added_anims : list, optional
             Any exta animations that should be played alongside.
-
         **anim_kwargs
             Any valid kwargs of a self.play call.
-
         NOTE: At least one of target_dx and target_x should be not None.
         """
         if target_dx is None and target_x is None:

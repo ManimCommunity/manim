@@ -3,7 +3,7 @@
 
 __all__ = ["NumberLine", "UnitInterval"]
 
-
+import math
 import operator as op
 
 from .. import config
@@ -151,10 +151,11 @@ class NumberLine(Line):
     def default_numbers_to_display(self):
         if self.numbers_to_show is not None:
             return self.numbers_to_show
-        numbers = np.arange(
-            np.floor(self.leftmost_tick),
-            np.ceil(self.x_max),
-        )
+
+        coord_min = np.floor(self.leftmost_tick)
+        coord_max = np.ceil(self.x_max)
+        numbers = np.arange(coord_min,1+coord_max,self.tick_frequency)
+
         if self.exclude_zero_from_default_numbers:
             numbers = numbers[numbers != 0]
         return numbers
