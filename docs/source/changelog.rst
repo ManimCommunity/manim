@@ -2,6 +2,9 @@
 Changelog
 #########
 
+.. contents:: Release history
+   :maxdepth: 1
+
 
 ****************
 Upcoming release
