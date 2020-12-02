@@ -155,7 +155,9 @@ class ManimBanner(VGroup):
 
         spin_animation = ApplyMethod(tracker.set_value, 1, run_time=spiral_run_time)
 
-        return AnimationGroup(FadeIn(self, run_time=spiral_run_time/2), spin_animation)
+        return AnimationGroup(
+            FadeIn(self, run_time=spiral_run_time / 2), spin_animation
+        )
 
     def expand(self) -> Succession:
         """An animation that expands Manim's logo into its banner.
