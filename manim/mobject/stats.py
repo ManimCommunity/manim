@@ -26,9 +26,7 @@ __all__ = [
 
 class Histogram(ParametricFunction):
     """A Histogram VMobject (optionally scaled to a graph) that can be used to
-        easily show statistical data. Made up of several lines connecting points
-        defined when initiating the Histogram, or afterwards with
-        :meth:`.add_points`.
+        easily show statistical data.
 
     Parameters
     ----------
@@ -40,7 +38,7 @@ class Histogram(ParametricFunction):
 
     graph_scene : Optional[:class:`.GraphScene`], optional
         The :class:`.GraphScene` instance with which to align the Histogram's points.
-            When using Histogram in a GraphScene, this should be passed in as ``self``.
+        When using Histogram in a GraphScene, this should be passed in as ``self``.
 
     Attributes
     ----------
@@ -49,16 +47,13 @@ class Histogram(ParametricFunction):
         this attribute.
 
     lines : :class:`list`
-        A list of :class:`dict`s with information for the lines connecting :attr:`.points`. You
+        A list of :class:`dict` with information for the lines connecting :attr:`.points`. You
             cannot update this attribute. Each dictionary's keys are the following:
 
         * ``"func"``: The function representing the line connecting two adjacent points.
 
         * ``"domain"``: The domain in which to use the function to draw the line (not
-            including endpoints—those are determined from the points themselves).
-
-        ..
-            May be more to add to this, but that remains to be seen."""
+        including endpoints—those are determined from the points themselves)."""
 
     def __init__(self, x, y, graph_scene=None, **kwargs):
         if graph_scene is None:
