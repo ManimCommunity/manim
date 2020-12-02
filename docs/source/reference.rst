@@ -28,6 +28,7 @@ Mobjects
    ~mobject.number_line
    ~mobject.numbers
    ~mobject.probability
+   ~mobject.stats
    ~mobject.shape_matchers
    ~mobject.three_d_utils
    ~mobject.three_dimensions
