@@ -33,6 +33,6 @@ changes warrant it!
 
 ## Acknowledgements
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-- [ ] I have added an entry describing the changes from this PR to the [Changelog](https://docs.manim.community/en/latest/changelog.html)
+- [ ] I have added an entry describing the changes from this PR to the [Changelog](https://docs.manim.community/en/latest/changelog.html) at `docs/source/changelog.rst`
 
 <!-- Once again, thanks for helping out by contributing to manim! -->
