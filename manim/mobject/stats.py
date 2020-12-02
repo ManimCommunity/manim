@@ -26,7 +26,7 @@ __all__ = [
 
 class Histogram(ParametricFunction):
     """A Histogram VMobject (optionally scaled to a graph) that can be used to
-        easily show statistical data.
+    easily show statistical data.
 
     Parameters
     ----------
