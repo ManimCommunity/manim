@@ -44,6 +44,7 @@ from .mobject.svg.svg_mobject import *
 from .mobject.svg.tex_mobject import *
 from .mobject.svg.text_mobject import *
 from .mobject.svg.code_mobject import *
+from .mobject.stats import *
 from .mobject.three_d_utils import *
 from .mobject.three_dimensions import *
 from .mobject.types.image_mobject import *
