@@ -60,8 +60,8 @@ class Histogram(ParametricFunction):
         ..
             May be more to add to this, but that remains to be seen."""
 
-    def __init__(self, x, y, graph_scene=None, _has_axes=False, **kwargs):
-        if graph_scene is None and not _has_axes:
+    def __init__(self, x, y, graph_scene=None, **kwargs):
+        if graph_scene is None:
             graph_scene = GraphScene()
             graph_scene.setup()
             graph_scene.setup_axes()
