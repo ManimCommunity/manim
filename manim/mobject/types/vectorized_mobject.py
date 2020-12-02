@@ -969,7 +969,7 @@ class VGroup(VMobject):
         VGroup(Square)
         >>> vg - square; vg # a new VGroup is constructed
         VGroup()
-        VGroup(square)
+        VGroup(Square)
         >>> vg -= square; vg # modifies vg
         VGroup()
 
