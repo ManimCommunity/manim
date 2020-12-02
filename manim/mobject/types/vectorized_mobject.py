@@ -951,8 +951,11 @@ class VGroup(VMobject):
     in order to scale, move, ... them together.
 
     To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the
-    :meth:`~.VGroup.add` method, or straightforward addition:
+    :meth:`~.VGroup.add` method, or straightforward addition. Similarly, you
+    can subtract elements of a VGroup via :meth:`~.VGroup.remove` method, or
+    subtraction operators:
 
+        >>> from manim import Triangle, Square
         >>> vg = VGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
@@ -962,10 +965,6 @@ class VGroup(VMobject):
         VGroup(Triangle)
         >>> vg += square; vg  # modifies vg
         VGroup(Triangle, Square)
-
-    Similarly, you can subtract elements of a VGroup via :meth:`~.VGroup.remove`
-    method, or subtraction operators:
-
         >>> vg.remove(triangle)
         VGroup(Square)
         >>> vg - square; vg # a new VGroup is constructed
