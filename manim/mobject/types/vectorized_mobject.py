@@ -1058,7 +1058,11 @@ class VGroup(VMobject):
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
-        return VGroup(self, vmobject)
+        copy = VGroup()
+        for submobject in self.submobjects:
+            copy.add(submobject)
+        copy.add(vmobject)
+        return copy
 
     def __iadd__(self, vmobject):
         return self.add(vmobject)
