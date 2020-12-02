@@ -185,22 +185,6 @@ class ApplyMethod(Transform):
             )
         assert isinstance(method.__self__, Mobject)
 
-    def create_target(self):
-        method = self.method
-        # Make sure it's a list so that args.pop() works
-        args = list(self.method_args)
-
-        if len(args) > 0 and isinstance(args[-1], dict):
-            method_kwargs = args.pop()
-        else:
-            method_kwargs = {}
-        if method.__self__.target is None:
-            target = method.__self__.generate_target()
-        else:
-            target = method.__self__.target
-        method.__func__(target, *args, **method_kwargs)
-        return target
-
 
 class ApplyPointwiseFunction(ApplyMethod):
     """Animation that applies a pointwise function to a mobject.

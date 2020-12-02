@@ -14,7 +14,8 @@ import numpy as np
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait
-from ..animation.transform import MoveToTarget
+from ..animation.transform import ApplyMethod, MoveToTarget
+from ..animation.composition import AnimationGroup
 from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
@@ -581,10 +582,20 @@ class Scene(Container):
             state["curr_method"] = None
             state["method_args"] = []
 
+        def compile_animation(animation):
+            compile_method(state)
+            if isinstance(animation, ApplyMethod):
+                state["curr_method"] = animation.method
+                state["method_args"] = list(animation.method_args)                    
+            else:
+                animations.append(animation)
+        
         for arg in args:
-            if isinstance(arg, Animation):
-                compile_method(state)
-                animations.append(arg)
+            if isinstance(arg, AnimationGroup):
+                for anim in arg.animations:
+                    compile_animation(anim)
+            elif isinstance(arg, Animation):
+                compile_animation(arg)
             elif inspect.ismethod(arg):
                 compile_method(state)
                 state["curr_method"] = arg
