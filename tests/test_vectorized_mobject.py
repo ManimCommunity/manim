@@ -75,7 +75,7 @@ def test_vgroup_remove_dunder():
     obj = VGroup(a, b)
     assert len(obj.submobjects) == 2
     assert len(b.submobjects) == 1
-    obj - a
+    assert len((obj - a)) == 1
     assert len(obj.submobjects) == 2
     obj -= a
     b -= c

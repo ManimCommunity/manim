@@ -11,7 +11,6 @@ __all__ = [
 ]
 
 
-import copy
 import itertools as it
 import sys
 import colour
@@ -951,6 +950,30 @@ class VGroup(VMobject):
     This can be used to group multiple :class:`~.VMobject` instances together
     in order to scale, move, ... them together.
 
+    To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the
+    :meth:`~.VGroup.add` method, or straightforward addition:
+
+        >>> vg = VGroup()
+        >>> triangle, square = Triangle(), Square()
+        >>> vg.add(triangle)
+        VGroup(Triangle)
+        >>> vg + square; vg  # a new VGroup is constructed
+        VGroup(Triangle, Square)
+        VGroup(Triangle)
+        >>> vg += square; vg  # modifies vg
+        VGroup(Triangle, Square)
+
+    Similarly, you can subtract elements of a VGroup via :meth:`~.VGroup.remove`
+    method, or subtraction operators:
+
+        >>> vg.remove(triangle)
+        VGroup(Square)
+        >>> vg - square; vg # a new VGroup is constructed
+        VGroup()
+        VGroup(square)
+        >>> vg -= square; vg # modifies vg
+        VGroup()
+
     Examples
     --------
 
@@ -1024,8 +1047,11 @@ class VGroup(VMobject):
                         gr.shift, LEFT,
                         gr2.shift, UP,
                     )
-                    self.play( #Animate both without modifying gr
+                    self.play( #Animate groups without modification
                         (gr+gr2).shift, RIGHT
+                    )
+                    self.play( # Animate group without component
+                        (gr-circle_red).shift, RIGHT
                     )
         """
         if not all(isinstance(m, VMobject) for m in vmobjects):
@@ -1033,14 +1059,18 @@ class VGroup(VMobject):
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
-        return VGroup(self).add(vmobject)
+        return VGroup(self, vmobject)
 
     def __iadd__(self, vmobject):
         return self.add(vmobject)
 
     def __sub__(self, vmobject):
-        acopy = copy.copy(self).remove(vmobject)
-        return acopy
+        copy = VGroup()
+        for submobject in self.submobjects:
+            if submobject == vmobject:
+                continue
+            copy.add(submobject)
+        return copy
 
     def __isub__(self, vmobject):
         return self.remove(vmobject)
