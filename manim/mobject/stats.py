@@ -48,7 +48,7 @@ class Histogram(ParametricFunction):
 
     lines : :class:`list`
         A list of :class:`dict` with information for the lines connecting :attr:`.points`. You
-            cannot update this attribute. Each dictionary's keys are the following:
+        cannot update this attribute. Each dictionary's keys are the following:
 
         * ``"func"``: The function representing the line connecting two adjacent points.
 
