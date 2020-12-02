@@ -1142,47 +1142,6 @@ class GraphScene(Scene):
             - ((pt2[1] - pt1[1]) / (pt2[0] - pt1[0])) * pt1[0]
         )
 
-    def get_graph_from_points(self, *points, **kwargs):
-        """Graphs lines connecting the points ([x], y) (x and y must be iterables).
-
-        Parameters
-        ----------
-        x : Optional[List[Union[:class:`int`, :class:`float`]]], optional
-            The x values for each item of y. If not provided, it is assumed to be an index of y.
-
-        y : List[Union[:class:`int`, :class:`float`]]
-            The y values of each point on the graph.
-
-        **kwargs : :class:`dict`
-            Any valid kwargs for a :meth:`.GraphScene.get_graph` call.
-
-        Returns
-        -------
-        :class:`.VGroup`
-            A group containing the :class:`.ParametricFunction` instances connecting each point of the graph."""
-        if len(points) in (1, 2):
-            points = (
-                sorted(zip(*points))
-                if len(points) == 2
-                else list(
-                    zip(range(len(points[0])), points[0]), key=lambda item: item[0]
-                )
-            )
-        lines = [
-            self.interpolate_between_points(point1, point2)
-            for point1, point2 in zip(points[:-1], points[1:])
-        ]
-        domains = [
-            (point1[0], point2[0]) for point1, point2 in zip(points[:-1], points[1:])
-        ]
-
-        for i in range(len(lines)):
-            lines[i] = self.get_graph(
-                lines[i], x_min=domains[i][0], x_max=domains[i][1], **kwargs
-            )
-
-        return VGroup(*lines)
-
     def get_graphs(self, *args, **kwargs):
         """Returns a list of the graphs of all functions passed in *args.
 
@@ -1212,27 +1171,3 @@ class GraphScene(Scene):
             graphs.append(self.get_graph(func, *graph_args, **kwargs))
 
         return graphs
-
-    def get_graphs_from_points(self, *points, **kwargs):
-        """Returns a list of the graphs of all point sets passed in *points.
-
-        Parameters
-        ----------
-        *points : List[Union[:class:`int`, :class:`float`]]
-            Each argument of points has to be the same length as its pair. If there is no pair, the argument is assumed to be the y value and the x value is assumed to be an index of y (the set of numbers 0..N-1 where N is the length of y).
-
-        **kwargs : :class:`dict`
-            Any valid kwargs of a :meth:`.GraphScene.get_graph_from_points` call.
-
-        Returns
-        -------
-        :class:`list`
-            A list of :class:`.VGroup` instances, which are the groups of :class:`.ParametricFunction` instances which connect each point provided."""
-        return [
-            (
-                self.get_graph_from_points(x, **kwargs)
-                if not y
-                else self.get_graph_from_points(x, y, **kwargs)
-            )
-            for x, y in zip(points[::2], points[1::2])
-        ]
