@@ -16,6 +16,14 @@ Upcoming release
 
 Changes since the latest released version.
 
+New Features
+============
+
+- There is nothing here yet, check back later.
+
+Bugfixes
+========
+
 - There is nothing here yet, check back later.
 
 
