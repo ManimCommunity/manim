@@ -53,9 +53,7 @@ class Scene(Container):
 
         class MyScene(Scene):
             def construct(self):
-                t = Text("Hello World!")
-                self.add(t)
-                self.play(Write(t))
+                self.play(Write(Text("Hello World!")))
 
     """
 
@@ -140,9 +138,7 @@ class Scene(Container):
 
             class MyScene(Scene):
                 def construct(self):
-                    t = Text("Hello World!")
-                    self.add(t)
-                    self.play(Write(t))
+                    self.play(Write(Text("Hello World!")))
 
         See Also
         --------
