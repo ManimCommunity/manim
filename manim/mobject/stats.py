@@ -5,7 +5,7 @@ Examples
 .. manim:: ShowHistogram
     :save_last_frame:
 
-    class ShowHistogram(GraphScene)
+    class ShowHistogram(GraphScene):
         def construct(self):
             self.setup_axes()
             histogram = Histogram([0, 1, 2, 3, 4], [5, 1, 4, 2, 3], self)
