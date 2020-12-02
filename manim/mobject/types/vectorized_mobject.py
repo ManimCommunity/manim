@@ -1016,7 +1016,7 @@ class VGroup(VMobject):
                     self.add(gr,gr2)
                     self.wait()
                     gr += gr2 # Add group to another
-                    self.play( 
+                    self.play(
                         gr.shift, DOWN,
                     )
                     gr -= gr2 # Remove group

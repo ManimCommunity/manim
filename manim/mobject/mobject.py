@@ -180,7 +180,7 @@ class Mobject(Container):
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
         return self
-    
+
     def __sub__(self, other):
         raise NotImplementedError
 
