@@ -25,9 +25,9 @@ __all__ = [
 
 
 class Histogram(ParametricFunction):
-    """A Histogram VMobject (optionally scaled to a graph) that can be used to
-    easily show statistical data.
+    """A VMobject that can be used to easily show statistical data.
 
+     The histogram can optionally scaled to a graph, if rendered as part of a :class:`GraphScene`.
     Parameters
     ----------
     x : :class:`list`, :class:`tuple`, :class:`numpy.ndarray`
