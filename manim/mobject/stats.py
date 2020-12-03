@@ -92,17 +92,65 @@ class ConnectedLineGraph(ParametricFunction):
 
         def function(t):
             if t < self._graph_points[0][0] or t > self._graph_points[-1][0]:
-                return self._coords_to_point(t, np.nan)
+                point = (t, np.nan)
 
-            for x, y in self._graph_points:
-                if t == x:
-                    return self._coords_to_point(x, y)
+            else:
+                point = self._points_search(t)
 
-            for line in self._lines:
-                if t > line["domain"][0] and t < line["domain"][1]:
-                    return self._coords_to_point(t, line["func"](t))
+                if point is None:
+                    point = self._lines_search(t)
+
+            return self._coords_to_point(*point)
 
         super().__init__(function, **kwargs)
+
+    def _points_search_helper(self, low, high, x):
+        mid = self._graph_points[(high + low) // 2]
+        return (
+            (
+                mid
+                if mid[0] == x
+                else self._points_search_helper(low, (high + low) // 2 - 1, x)
+                if mid[0] > x
+                else self._points_search_helper((high + low) // 2 + 1, high, x)
+            )
+            if high >= low
+            else None
+        )
+
+    def _points_search(self, x):
+        mid = self._graph_points[len(self._graph_points) // 2]
+        return (
+            mid
+            if mid[0] == x
+            else self._points_search_helper(0, len(self._graph_points) // 2 - 1, x)
+            if mid[0] > x
+            else self._points_search_helper(
+                len(self._graph_points) // 2 + 1, len(self._graph_points) - 1, x
+            )
+        )
+
+    def _lines_search_helper(self, low, high, x):
+        mid = self._lines[(high + low) // 2]
+        return (
+            (x, mid["func"](x))
+            if mid["domain"][0] < x < mid["domain"][1]
+            else self._lines_search_helper(low, (high + low) // 2 - 1, x)
+            if mid["domain"][0] > x
+            else self._lines_search_helper((high + low) // 2 + 1, high, x)
+        )
+
+    def _lines_search(self, x):
+        mid = self._lines[len(self._lines) // 2]
+        return (
+            (x, mid["func"](x))
+            if mid["domain"][0] < x < mid["domain"][1]
+            else self._lines_search_helper(0, len(self._lines) // 2 - 1, x)
+            if mid["domain"][0] > x
+            else self._lines_search_helper(
+                len(self._lines) // 2 + 1, len(self._lines) - 1, x
+            )
+        )
 
     def _coords_to_point(self, x, y):
         result = self.x_axis.number_to_point(x)[0] * RIGHT
