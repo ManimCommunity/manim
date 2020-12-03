@@ -300,6 +300,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
                 t = Text("Hello")
                 self.play(AddTextLetterByLetter(t))
                 self.wait()
+
     """
 
     def __init__(
