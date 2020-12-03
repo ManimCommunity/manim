@@ -8,7 +8,7 @@ Examples
     class ShowLineGraph(GraphScene):
         def construct(self):
             self.setup_axes()
-            line_graph = LineGraph([0, 1, 2, 3, 4], [5, 1, 4, 2, 3], self)
+            line_graph = ConnectedLineGraph([0, 1, 2, 3, 4], [5, 1, 4, 2, 3], self)
 
             self.add(line_graph)
 
