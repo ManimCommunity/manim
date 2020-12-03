@@ -5,10 +5,10 @@ from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 
-class HistogramTest(GraphScene):
+class ConnectedLineGraphTest(GraphScene):
     def construct(self):
         self.setup_axes()
-        a = Histogram([0, 1, 2, 3, 4], [5, 1, 4, 2, 3], self)
+        a = ConnectedLineGraph([0, 1, 2, 3, 4], [5, 1, 4, 2, 3], self)
         self.play(Animation(a))
 
 
