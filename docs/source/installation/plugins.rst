@@ -45,6 +45,14 @@ your available plugins, see the following help output:
 
     Made with <3 by the manim community devs
 
+You can list plugins as such:
+
+.. code-block:: bash
+
+    manim plugins -l
+    Plugins:
+    • manim_plugintemplate
+
 Using Plugins in Projects
 *************************
 Plugins specified in ``plugins/__init__.py`` are imported automatically by
@@ -57,17 +65,17 @@ manim's ``__init__.py``. As such, writing:
 in your projects will import any of the plugins imported in
 ``plugins/__init__.py``.
 
-.. code-block:: python
-
-    import manim_cool_plugin
-    # or
-    from manim_cool_plugin import feature_x, feature_y, ...
-
 By default, ``plugins/__init__.py`` is not provided; although, there are
 plans to support subcommands that would manage this file. It is especially
 useful to create this file for projects that involve usage of the same
 plugins. Alternatively, you may manually specify the plugins in your project
 scripts.
+
+.. code-block:: python
+
+    import manim_cool_plugin
+    # or
+    from manim_cool_plugin import feature_x, feature_y, ...
 
 Creating Plugins
 ****************
@@ -75,7 +83,7 @@ Plugins are intended to extend Manim's core functionality. If you aren't sure
 whether a feature should be included in Manim's core, feel free to ask over
 on the `Discord server <https://discord.gg/mMRrZQW>`_. Visit
 `manim-plugintemplate <https://pypi.org/project/manim-plugintemplate/>`_
-on PyPI.org which servers as an in-depth tutorial for creating plugins.
+on PyPI.org which serves as an in-depth tutorial for creating plugins.
 
 .. code-block:: bash
 

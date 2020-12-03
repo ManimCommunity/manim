@@ -67,7 +67,7 @@ def main():
 
             if args.list:
                 plugins_flags.list_plugins()
-            elif not args.list or args.update:
+            elif not args.list:
                 logger.error("No flag provided; Exiting...")
 
         # elif args.cmd == "some_other_cmd":
