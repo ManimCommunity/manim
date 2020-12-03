@@ -126,6 +126,14 @@ class ShowCreation(ShowPartial):
 class Uncreate(ShowCreation):
     """Like :class:`ShowCreation` but in reverse.
 
+    Examples
+    --------
+    .. manim:: ShowUncreate
+
+        class ShowUncreate(Scene):
+            def construct(self):
+                self.play(Uncreate(Square()))
+
     See Also
     --------
     :class:`ShowCreation`
