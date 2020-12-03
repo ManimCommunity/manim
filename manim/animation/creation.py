@@ -218,11 +218,10 @@ class Write(DrawBorderThenFill):
     --------
     .. manim:: ShowWrite
 
-    class ShowWrite(Scene):
-        def construct(self):
-            self.play(Write(Text("Hello").scale(3)))
-
-"""
+        class ShowWrite(Scene):
+            def construct(self):
+                self.play(Write(Text("Hello").scale(3)))
+    """
 
     def __init__(
         self, vmobject, run_time=None, lag_ratio=None, rate_func=linear, **kwargs
