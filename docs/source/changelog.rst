@@ -207,3 +207,4 @@ Other Changes
 #. Rename package from manimlib to manim
 #. Move all imports to :code:`__init__`, so :code:`from manim import *` replaces :code:`from manimlib.imports import *`
 #. Global dir variable handling has been removed. Instead :code:`initialize_directories`, if needed, overrides the values from the cfg files at runtime.
+#. Removed temp partial movie file from SceneFileWriter (ffmpeg directly renders partial movie files instead of temp files)
