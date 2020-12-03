@@ -348,7 +348,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
 # TODO, this is broken...
 class AddTextWordByWord(Succession):
-    """Show a :class:`~.Text` word by word on the scene."""
+    """Show a :class:`~.Text` word by word on the scene. Note: currently broken."""
 
     def __init__(self, text_mobject, run_time=None, time_per_char=0.06, **kwargs):
         self.time_per_char = time_per_char

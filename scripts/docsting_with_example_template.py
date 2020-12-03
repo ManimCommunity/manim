@@ -35,7 +35,6 @@ class SomeClass:
         :save_last_frame:
         class AddTextLetterByLetterScene(Scene):
             def construct(self):
-                t = Text("Hello")
-                self.play(AddTextLetterByLetter(t))
-                self.wait()
+                t = Text("Hello World word by word")
+                self.play(AddTextWordByWord(t))
     """
