@@ -2,15 +2,15 @@ r"""Mobjects that have to do with statistics and statistical analysis.
 
 Examples
 --------
-.. manim:: ShowHistogram
+.. manim:: ShowLineGraph
     :save_last_frame:
 
-    class ShowHistogram(GraphScene):
+    class ShowLineGraph(GraphScene):
         def construct(self):
             self.setup_axes()
-            histogram = Histogram([0, 1, 2, 3, 4], [5, 1, 4, 2, 3], self)
+            line_graph = LineGraph([0, 1, 2, 3, 4], [5, 1, 4, 2, 3], self)
 
-            self.add(histogram)
+            self.add(line_graph)
 
 """
 
@@ -20,31 +20,31 @@ from ..scene.graph_scene import GraphScene
 from ..constants import *
 
 __all__ = [
-    "Histogram",
+    "LineGraph",
 ]
 
 
-class Histogram(ParametricFunction):
+class ConnectedLineGraph(ParametricFunction):
     """A VMobject that can be used to easily show statistical data.
 
-    The histogram can optionally scaled to a graph, if rendered as part of a :class:`GraphScene`.
+    The connected line graph can optionally scaled to a graph, if rendered as part of a :class:`GraphScene`.
 
     Parameters
     ----------
     x : :class:`list`, :class:`tuple`, :class:`numpy.ndarray`
-        The list, tuple, or array of X values for the Histogram to plot from.
+        The list, tuple, or array of X values for the ConnectedLineGraph to plot from.
 
     y : :class:`list`, :class:`tuple`, :class:`numpy.ndarray`
-        The list, tuple, or array of Y values for the Histogram to plot from.
+        The list, tuple, or array of Y values for the ConnectedLineGraph to plot from.
 
     graph_scene : Optional[:class:`.GraphScene`], optional
-        The :class:`.GraphScene` instance with which to align the Histogram's points.
-        When using Histogram in a :class:`.GraphScene`, this should be passed in as ``self``.
+        The :class:`.GraphScene` instance with which to align the ConnectedLineGraph's points.
+        When using ConnectedLineGraph in a :class:`.GraphScene`, this should be passed in as ``self``.
 
     Attributes
     ----------
-    hist_points : :class:`list`
-        A list of the points in the Histogram, ordered by X value. You cannot update
+    graph_points : :class:`list`
+        A list of the points in the ConnectedLineGraph, ordered by X value. You cannot update
         this attribute.
 
     lines : :class:`list`
@@ -79,10 +79,10 @@ class Histogram(ParametricFunction):
 
         self.x_axis = graph_scene.x_axis
         self.y_axis = graph_scene.y_axis
-        self._hist_points = sorted(list(zip(x, y)), key=lambda item: item[0])
+        self._graph_points = sorted(list(zip(x, y)), key=lambda item: item[0])
         self._lines = []
 
-        for point1, point2 in zip(self._hist_points[:-1], self._hist_points[1:]):
+        for point1, point2 in zip(self._graph_points[:-1], self._graph_points[1:]):
             self._lines.append(
                 {
                     "func": self._get_connecting_function(point1, point2),
@@ -91,10 +91,10 @@ class Histogram(ParametricFunction):
             )
 
         def function(t):
-            if t < self._hist_points[0][0] or t > self._hist_points[-1][0]:
+            if t < self._graph_points[0][0] or t > self._graph_points[-1][0]:
                 return self._coords_to_point(t, np.nan)
 
-            for x, y in self._hist_points:
+            for x, y in self._graph_points:
                 if t == x:
                     return self._coords_to_point(x, y)
 
@@ -121,5 +121,5 @@ class Histogram(ParametricFunction):
         return self._lines
 
     @property
-    def hist_points(self):
-        return self._hist_points
+    def graph_points(self):
+        return self._graph_points
