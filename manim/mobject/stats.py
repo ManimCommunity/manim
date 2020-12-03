@@ -91,10 +91,7 @@ class Histogram(ParametricFunction):
             )
 
         def function(t):
-            if (
-                t < self._hist_points[0][0]
-                or t > self._hist_points[-1][0]
-            ):
+            if t < self._hist_points[0][0] or t > self._hist_points[-1][0]:
                 return self._coords_to_point(t, np.nan)
 
             for x, y in self._hist_points:
