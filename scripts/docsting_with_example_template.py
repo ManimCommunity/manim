@@ -25,20 +25,16 @@ class SomeClass:
     :class:`ShowCreation`, :class:`~.ShowPassingFlash`
 
 
+    .. tip::
+        This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
+
     Examples
     --------
-
-    .. manim:: GeometricShapes
+    .. manim:: AddTextLetterByLetterScene
         :save_last_frame:
-
-        class GeometricShapes(Scene):
+        class AddTextLetterByLetterScene(Scene):
             def construct(self):
-                d = Dot()
-                c = Circle()
-                s = Square()
-                t = Triangle()
-                d.next_to(c, RIGHT)
-                s.next_to(c, LEFT)
-                t.next_to(c, DOWN)
-                self.add(d, c, s, t)
+                t = Text("Hello")
+                self.play(AddTextLetterByLetter(t))
+                self.wait()
                 """

@@ -249,7 +249,21 @@ class Write(DrawBorderThenFill):
 
 
 class ShowIncreasingSubsets(Animation):
-    """Show one submobject at a time, leaving all previous ones displayed on screen."""
+    """Show one submobject at a time, leaving all previous ones displayed on screen.
+
+    Examples
+    --------
+
+    .. manim:: ShowIncreasingSubsetsScene
+        :save_last_frame:
+
+        class ShowIncreasingSubsetsScene(Scene):
+            def construct(self):
+                p = VGroup(Dot(), Square(), Triangle())
+                self.add(p)
+                self.play(ShowIncreasingSubsets(p))
+                self.wait()
+    """
 
     def __init__(
         self, group, suspend_mobject_updating=False, int_func=np.floor, **kwargs
@@ -277,6 +291,19 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
     time_per_char : :class:`float`
         Frequency of appearance of the letters.
 
+    .. tip::
+        This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
+
+    Examples
+    --------
+    .. manim:: AddTextLetterByLetterScene
+        :save_last_frame:
+
+        class AddTextLetterByLetterScene(Scene):
+            def construct(self):
+                t = Text("Hello")
+                self.play(AddTextLetterByLetter(t))
+                self.wait()
     """
 
     def __init__(
