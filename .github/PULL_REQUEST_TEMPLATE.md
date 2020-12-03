@@ -25,6 +25,12 @@ changes warrant it!
 ## Explanation for Changes
 <!-- How do your changes solve aforementioned problems? -->
 
+## Oneline Summary of Changes
+<!-- Please update the lines below with a oneline summary of this PR for the list of upcoming changes at https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release -->
+```
+- Added new feature ... / Fixed bug ... / ... (:pr:`PR NUMBER HERE`)
+```
+
 ## Testing Status
 <!-- Optional, but recommended, your computer specs and what tests you ran with their results, if any -->
 
@@ -33,6 +39,5 @@ changes warrant it!
 
 ## Acknowledgements
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-- [ ] I have added an entry describing the changes from this PR to the [Changelog](https://docs.manim.community/en/latest/changelog.html) at `docs/source/changelog.rst`
 
 <!-- Once again, thanks for helping out by contributing to manim! -->
