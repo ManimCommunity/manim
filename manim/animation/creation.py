@@ -297,8 +297,6 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
     Examples
     --------
     .. manim:: AddTextLetterByLetterScene
-        :save_last_frame:
-
         class AddTextLetterByLetterScene(Scene):
             def construct(self):
                 t = Text("Hello")
