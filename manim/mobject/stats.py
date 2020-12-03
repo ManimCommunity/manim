@@ -27,7 +27,8 @@ __all__ = [
 class Histogram(ParametricFunction):
     """A VMobject that can be used to easily show statistical data.
 
-     The histogram can optionally scaled to a graph, if rendered as part of a :class:`GraphScene`.
+    The histogram can optionally scaled to a graph, if rendered as part of a :class:`GraphScene`.
+
     Parameters
     ----------
     x : :class:`list`, :class:`tuple`, :class:`numpy.ndarray`
@@ -38,7 +39,7 @@ class Histogram(ParametricFunction):
 
     graph_scene : Optional[:class:`.GraphScene`], optional
         The :class:`.GraphScene` instance with which to align the Histogram's points.
-        When using Histogram in a GraphScene, this should be passed in as ``self``.
+        When using Histogram in a :class:`.GraphScene`, this should be passed in as ``self``.
 
     Attributes
     ----------
@@ -76,7 +77,6 @@ class Histogram(ParametricFunction):
             else:
                 kwargs["t_max"] = max(x)
 
-        self.kwargs = kwargs
         self.x_axis = graph_scene.x_axis
         self.y_axis = graph_scene.y_axis
         self._hist_points = sorted(list(zip(x, y)), key=lambda item: item[0])
@@ -93,7 +93,7 @@ class Histogram(ParametricFunction):
         def function(t):
             if (
                 t < self._hist_points[0][0]
-                or t > self._hist_points[len(self._hist_points) - 1][0]
+                or t > self._hist_points[-1][0]
             ):
                 return self._coords_to_point(t, np.nan)
 
@@ -108,7 +108,6 @@ class Histogram(ParametricFunction):
         super().__init__(function, **kwargs)
 
     def _coords_to_point(self, x, y):
-        assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
         result += self.y_axis.number_to_point(y)[1] * UP
         return result
