@@ -10,12 +10,10 @@ class SomeClass:
 
     Extended Summary
 
-
     Parameters
     ----------
     scale_factor :class:`float`
         The factor used for scaling.
-
 
     Returns
     -------
@@ -42,19 +40,18 @@ class SomeClass:
     Warnings
     --------
 
-
     Notes
     -----
 
     Examples
     --------
     .. manim:: AddTextLetterByLetterScene
-    :save_last_frame:
+        :save_last_frame:
 
-    class AddTextLetterByLetterScene(Scene):
-        def construct(self):
-            t = Text("Hello World word by word")
-            self.play(AddTextWordByWord(t))
+        class AddTextLetterByLetterScene(Scene):
+            def construct(self):
+                t = Text("Hello World word by word")
+                self.play(AddTextWordByWord(t))
 
 
 
