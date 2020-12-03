@@ -20,7 +20,7 @@ from ..scene.graph_scene import GraphScene
 from ..constants import *
 
 __all__ = [
-    "LineGraph",
+    "ConnectedLineGraph",
 ]
 
 
