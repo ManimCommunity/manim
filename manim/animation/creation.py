@@ -147,7 +147,16 @@ class Uncreate(ShowCreation):
 
 
 class DrawBorderThenFill(Animation):
-    """Draw the border first and then show the fill."""
+    """Draw the border first and then show the fill.
+
+    Examples
+    --------
+    .. manim:: ShowDrawBorderThenFill
+
+        class ShowDrawBorderThenFill(Scene):
+            def construct(self):
+                self.play(DrawBorderThenFill(Square(fill_opacity=1, fill_color=ORANGE)))
+    """
 
     def __init__(
         self,
@@ -203,7 +212,17 @@ class DrawBorderThenFill(Animation):
 
 
 class Write(DrawBorderThenFill):
-    """Simulate hand-writing a :class:`~.Text` or hand-drawing a :class:`~.VMobject`."""
+    """Simulate hand-writing a :class:`~.Text` or hand-drawing a :class:`~.VMobject`.
+
+    Examples
+    --------
+    .. manim:: ShowWrite
+
+    class ShowWrite(Scene):
+        def construct(self):
+            self.play(Write(Text("Hello").scale(3)))
+
+"""
 
     def __init__(
         self, vmobject, run_time=None, lag_ratio=None, rate_func=linear, **kwargs
