@@ -2,11 +2,13 @@
 
 
 class SomeClass:
-    """Some Description of the Class
+    """A one line description of the Class.
+    
+    A short paragraph providing more details. 
 
     Parameters
     ----------
-    scale_factor
+    scale_factor :class:`float`
         The factor used for scaling.
 
 
@@ -17,7 +19,7 @@ class SomeClass:
 
     Raises
     ------
-    TypeError
+    :class:`TypeError`
         If one element of the list is not an instance of VMobject
 
 

@@ -255,6 +255,7 @@ class ShowIncreasingSubsets(Animation):
     --------
 
     .. manim:: ShowIncreasingSubsetsScene
+
         class ShowIncreasingSubsetsScene(Scene):
             def construct(self):
                 p = VGroup(Dot(), Square(), Triangle())

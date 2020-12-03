@@ -1199,6 +1199,7 @@ class Mobject(Container):
         Examples
         --------
         .. manim:: BecomeScene
+
             class BecomeScene(Scene):
                 def construct(self):
                     circ= Circle(fill_color=RED)
