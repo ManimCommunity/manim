@@ -131,6 +131,7 @@ class Uncreate(ShowCreation):
     :class:`ShowCreation`
 
     """
+
     def __init__(
         self, mobject, rate_func=lambda t: smooth(1 - t), remover=True, **kwargs
     ):
