@@ -292,15 +292,6 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
 
-    Examples
-    --------
-    .. manim:: AddTextLetterByLetterScene
-        class AddTextLetterByLetterScene(Scene):
-            def construct(self):
-                t = Text("Hello")
-                self.play(AddTextLetterByLetter(t))
-                self.wait()
-
     """
 
     def __init__(

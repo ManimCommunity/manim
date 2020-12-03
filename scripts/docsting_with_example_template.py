@@ -29,12 +29,13 @@ class SomeClass:
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
 
-    Examples
-    --------
-    .. manim:: AddTextLetterByLetterScene
-        :save_last_frame:
-        class AddTextLetterByLetterScene(Scene):
-            def construct(self):
-                t = Text("Hello World word by word")
-                self.play(AddTextWordByWord(t))
     """
+
+    # Examples
+    # --------
+    # .. manim:: AddTextLetterByLetterScene
+    # :save_last_frame:
+    # class AddTextLetterByLetterScene(Scene):
+    #     def construct(self):
+    #         t = Text("Hello World word by word")
+    #         self.play(AddTextWordByWord(t))
