@@ -7,15 +7,39 @@ r"""Animate the display or removal of a mobject from a scene.
 
     class CreationModule(Scene):
         def construct(self):
-            texts = [Text('manim'), Text('manim')]
-            texts[0].shift(LEFT * 2 + UP)
-            texts[1].shift(RIGHT * 2 + UP)
+            s1 = Square()
+            s2 = Square().next_to(s1, RIGHT, buff=1.9)
+            s3 = Square().next_to(s2, RIGHT, buff=1.9)
+            s4 = Square().next_to(s3, RIGHT, buff=1.9)
+            VGroup(s1, s2, s3, s4).set_x(0).shift(UP)
+            s5 = Square()
+            s6 = Square().next_to(s5, RIGHT, buff=2.6)
+            s7 = Square().next_to(s6, RIGHT, buff=2.6)
+            VGroup(s5, s6, s7).set_x(0).shift(2 * DOWN)
+            t1 = Text("Write").scale(0.5).next_to(s1, UP)
+            t2 = Text("AddTextLetterByLetter").scale(0.5).next_to(s2, UP)
+            t3 = Text("ShowCreation").scale(0.5).next_to(s3, UP)
+            t4 = Text("Uncreate").scale(0.5).next_to(s4, UP)
+            t5 = Text("DrawBorderThenFill").scale(0.5).next_to(s5, UP)
+            t6 = Text("ShowIncreasingSubsets").scale(0.45).next_to(s6, UP)
+            t7 = Text("ShowSubmobjectsOneByOne").scale(0.45).next_to(s7, UP)
+
+            self.add(s1, s2, s3, s4, s5, s6, s7, t1, t2, t3, t4, t5, t6, t7)
+
+
+            texts = [Text('manim').scale(0.6), Text('manim').scale(0.6)]
+            texts[0].move_to(s1.get_center())
+            texts[1].move_to(s2.get_center())
             self.add(*texts)
 
             objs = [ManimBanner().scale(0.25) for _ in range(5)]
-            for idx, obj in enumerate(objs):
-                obj.shift(LEFT * 6 + RIGHT * (2.75 * idx) + DOWN)
+            objs[0].move_to(s3.get_center())
+            objs[1].move_to(s4.get_center())
+            objs[2].move_to(s5.get_center())
+            objs[3].move_to(s6.get_center())
+            objs[4].move_to(s7.get_center())
             self.add(*objs)
+
 
             self.play(
                 # text creation
