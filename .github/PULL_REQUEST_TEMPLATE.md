@@ -1,4 +1,4 @@
-<!--- 
+<!---
 Thanks for contributing to manim!
 **Please ensure that your pull request works with the latest version of manim from this repository.**
 You should also include:
