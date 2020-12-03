@@ -1,5 +1,6 @@
 # see more documentation guidelines online here: https://github.com/ManimCommunity/manim/wiki/Documentation-guidelines-(WIP)
 
+
 class SomeClass:
     """Some Description of the Class
 
@@ -37,4 +38,4 @@ class SomeClass:
                 t = Text("Hello")
                 self.play(AddTextLetterByLetter(t))
                 self.wait()
-                """
+    """
