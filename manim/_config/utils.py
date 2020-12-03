@@ -571,7 +571,7 @@ class ManimConfig(MutableMapping):
         }
         url = parser["streaming"].get("streaming_url", fallback="", raw=True)
         streaming_config["streaming_url"] = url.format(**streaming_config)
-        setattr(self, "streaming_config", streaming_config)
+        self.streaming_config = streaming_config
 
         return self
 
