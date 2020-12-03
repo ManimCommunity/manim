@@ -41,3 +41,9 @@ changes warrant it!
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
 
 <!-- Once again, thanks for helping out by contributing to manim! -->
+
+
+## Reviewer Checklist
+- [ ] Newly added functions/classes are either private or have a docstring
+- [ ] Documentation builds and adds no additional warnings
+- [ ] The oneline summary has been included [in the wiki](https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release)
