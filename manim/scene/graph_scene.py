@@ -1156,7 +1156,7 @@ class GraphScene(Scene):
         Returns
         -------
         :class:`list`
-            List of :class:`.VGroup` instances containing the :class:`.ParametricFunction` instances that make up the connective lines between points."""
+            List of :class:`.ParametricFunction` instances returned by the :meth:`.get_graph` calls performed."""
         graphs = []
 
         for arg in args:
