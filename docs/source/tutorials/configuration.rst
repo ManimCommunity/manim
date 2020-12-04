@@ -361,7 +361,9 @@ A list of all CLI flags
    :hide:
 
    import subprocess
-   result = subprocess.run(['manim', '-h'], shell=True, stdout=subprocess.PIPE)
+   import os
+   is_windows = os.name == 'nt'
+   result = subprocess.run(['manim', '-h'], shell=is_windows, stdout=subprocess.PIPE)
    print(result.stdout.decode('utf-8'))
 
 .. testoutput::
