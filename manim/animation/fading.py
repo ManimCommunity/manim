@@ -1,6 +1,6 @@
 """Fading in and out of view.
 
-.. manim:: CreationModule
+.. manim:: Example
     :hide_source:
 
     class Example(Scene):
