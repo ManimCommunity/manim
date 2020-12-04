@@ -1,4 +1,6 @@
 import code
+import readline
+import rlcompleter
 
 from colorama import Fore
 from colorama import Style
@@ -40,6 +42,8 @@ To view an image of the current state of the scene or mobject, use:
 def livestream():
     "Main purpose code"
     variables = {"manim": get_streamer(), "get_streamer": get_streamer}
+    readline.set_completer(rlcompleter.Completer(variables).complete)
+    readline.parse_and_bind("tab: complete")
     shell = code.InteractiveConsole(variables)
     shell.push("from manim import *")
     shell.interact(banner=f"{Fore.GREEN}{info}{Style.RESET_ALL}")
