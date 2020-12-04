@@ -32,21 +32,23 @@ class StreamFileWriter(SceneFileWriter):
         """The point in the animation where the file exists.
         """
         super().end_animation(allow_write=allow_write)
-        self.stream()
+        self.stream(**config["streaming_config"])
 
     def combine_movie_files(self):
         """Also to reduce overriding code.
         """
         pass
 
-    def stream(self):
+    def stream(self, **streaming_config):
+        streaming_url = streaming_config["streaming_url"]
+        streaming_protocol = streaming_config["streaming_protocol"]
         logger.info(
             "Houston, we are ready to launch. Sending over to %(url)s",
-            {"url": {self.streaming_url}},
+            {"url": {streaming_url}},
         )
         sdp_path = os.path.join(
             config.get_dir("streaming_dir"),
-            "stream_{}.sdp".format(self.streaming_protocol),
+            "stream_{}.sdp".format(streaming_protocol),
         )
         command = [
             FFMPEG_BIN,
@@ -60,17 +62,13 @@ class StreamFileWriter(SceneFileWriter):
             "quiet",
         ]
 
-        if self.streaming_protocol == "rtp":
+        if streaming_protocol == "rtp":
             command += ["-sdp_file", sdp_path]
-        command += [
-            "-f",
-            (
-                self.streaming_protocol
-                if self.streaming_protocol == "rtp"
-                else "mpegts"
-            ),  # udp protocol didn't work for me but if it does for you congrats
-            self.streaming_url,
-        ]
+        command += ["-f",
+                    (streaming_protocol
+                    if streaming_protocol == "rtp"
+                    else "mpegts"),  # udp protocol didn't work for me but if it does for you congrats
+                    streaming_url,]
         os.system(" ".join(command))
 
     def open_movie_pipe(self):
