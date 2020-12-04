@@ -11,8 +11,8 @@ from ..utils.file_ops import guarantee_existence
 
 
 class StreamFileWriter(SceneFileWriter):
-    def __init__(self, renderer, video_quality_config, **kwargs):
-        super().__init__(renderer, video_quality_config, "", **kwargs)
+    def __init__(self, renderer, **kwargs):
+        super().__init__(renderer, "", **kwargs)
         path = os.path.join(config.get_dir("streaming_dir"), "clips")
         self.FOLDER_PATH = os.path.relpath(guarantee_existence(path))
         # To prevent extensive overwriting
