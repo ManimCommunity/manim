@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,7 @@ msgid "To resolve this issue, you can copy ``zlib1.dll`` from the directory prov
 msgstr ""
 
 #: ../../source/installation/troubleshooting.rst:24
-msgid "For a more global solution (try at your own risk!), try renaming the file ``zlib1.dll`` located at ``C:\\Program Files\\Intel\\Wifi\\bin`` to something like ``zlib1.dll.bak`` -- and then try installing Manim again (either using ``pip install manimce`` or with Chocolatey). Ensure that you are able to revert this name change in case you run into troubles with your WiFi (we did not get any reports about such a problem, however)."
+msgid "For a more global solution (try at your own risk!), try renaming the file ``zlib1.dll`` located at ``C:\\Program Files\\Intel\\Wifi\\bin`` to something like ``zlib1.dll.bak`` -- and then try installing Manim again (either using ``pip install manim`` or with Chocolatey). Ensure that you are able to revert this name change in case you run into troubles with your WiFi (we did not get any reports about such a problem, however)."
 msgstr ""
 
 #: ../../source/installation/troubleshooting.rst:33

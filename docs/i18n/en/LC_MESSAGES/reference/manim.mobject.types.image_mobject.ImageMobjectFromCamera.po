@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,31 +29,29 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:18:<autosummary>:1
 msgid ""
 ":obj:`add_display_frame "
 "<manim.mobject.types.image_mobject.ImageMobjectFromCamera.add_display_frame>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:18:<autosummary>:1
 msgid ""
 ":obj:`get_pixel_array "
 "<manim.mobject.types.image_mobject.ImageMobjectFromCamera.get_pixel_array>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:18:<autosummary>:1
 msgid ""
 ":obj:`interpolate_color "
 "<manim.mobject.types.image_mobject.ImageMobjectFromCamera.interpolate_color>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:22
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobjectFromCamera.rst:25:<autosummary>:1
-msgid ""
-":obj:`CONFIG "
-"<manim.mobject.types.image_mobject.ImageMobjectFromCamera.CONFIG>`\\"
-msgstr ""
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.mobject.types.image_mobject.ImageMobjectFromCamera.CONFIG>`\\"
+#~ msgstr ""
 

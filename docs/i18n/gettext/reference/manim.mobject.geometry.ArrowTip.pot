@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,8 +34,8 @@ msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:6
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:6
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.length:4
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_angle:4
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_length:4
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_point:4
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.vector:4
 msgid "Examples"
@@ -49,11 +49,11 @@ msgstr ""
 msgid "Instead, use one of the pre-defined ones, or make a custom one like this:"
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:33
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:34
 msgid "Using a class inherited from :class:`ArrowTip` to get a non-filled tip is a shorthand to manually specifying the arrow tip style as follows::"
 msgstr ""
 
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:39
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip:40
 msgid "The following example illustrates the usage of all of the predefined arrow tips."
 msgstr ""
 
@@ -66,10 +66,6 @@ msgid "Attributes"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.geometry.ArrowTip.CONFIG>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
 msgid ":obj:`base <manim.mobject.geometry.ArrowTip.base>`\\"
 msgstr ""
 
@@ -79,21 +75,21 @@ msgid "The base point of the arrow tip."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+msgid ":obj:`length <manim.mobject.geometry.ArrowTip.length>`\\"
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.length:1
+msgid "The length of the arrow tip."
+msgstr ""
+
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
 msgid ":obj:`tip_angle <manim.mobject.geometry.ArrowTip.tip_angle>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_angle:1
 msgid "The angle of the arrow tip."
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-msgid ":obj:`tip_length <manim.mobject.geometry.ArrowTip.tip_length>`\\"
-msgstr ""
-
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1
-#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.tip_length:1
-msgid "The length of the arrow tip."
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.ArrowTip.base:1:<autosummary>:1

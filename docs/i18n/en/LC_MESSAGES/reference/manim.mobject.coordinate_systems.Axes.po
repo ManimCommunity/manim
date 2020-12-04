@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,61 +31,59 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`add_coordinates "
 "<manim.mobject.coordinate_systems.Axes.add_coordinates>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid ":obj:`c2p <manim.mobject.coordinate_systems.Axes.c2p>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
-#: manim.mobject.coordinate_systems.Axes.c2p:1 of
+#: manim.mobject.coordinate_systems.Axes.c2p:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid "Abbreviation for coords_to_point"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`coords_to_point "
 "<manim.mobject.coordinate_systems.Axes.coords_to_point>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid ":obj:`create_axis <manim.mobject.coordinate_systems.Axes.create_axis>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid ":obj:`get_axes <manim.mobject.coordinate_systems.Axes.get_axes>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_coordinate_labels "
 "<manim.mobject.coordinate_systems.Axes.get_coordinate_labels>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid ":obj:`p2c <manim.mobject.coordinate_systems.Axes.p2c>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1
 #: manim.mobject.coordinate_systems.Axes.p2c:1 of
 msgid "Abbreviation for point_to_coords"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:25:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`point_to_coords "
 "<manim.mobject.coordinate_systems.Axes.point_to_coords>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:27
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.mobject.coordinate_systems.Axes.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.coordinate_systems.Axes.CONFIG>`\\"
+#~ msgstr ""
 

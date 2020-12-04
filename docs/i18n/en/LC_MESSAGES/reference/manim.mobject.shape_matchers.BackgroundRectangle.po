@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,35 +29,38 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:20:<autosummary>:1
+#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_fill_color "
 "<manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:20:<autosummary>:1
-#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1 of
+#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1
+#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
+#: of
 msgid "If there are multiple colors (for gradient) this returns the first one"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:20:<autosummary>:1
+#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`pointwise_become_partial "
 "<manim.mobject.shape_matchers.BackgroundRectangle.pointwise_become_partial>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:20:<autosummary>:1
+#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`set_style "
 "<manim.mobject.shape_matchers.BackgroundRectangle.set_style>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.shape_matchers.BackgroundRectangle.rst:22
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: manim.mobject.shape_matchers.BackgroundRectangle.get_fill_color:1:<autosummary>:1
-#: of
-msgid ":obj:`CONFIG <manim.mobject.shape_matchers.BackgroundRectangle.CONFIG>`\\"
-msgstr ""
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.mobject.shape_matchers.BackgroundRectangle.CONFIG>`\\"
+#~ msgstr ""
 

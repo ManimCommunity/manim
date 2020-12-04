@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,78 +29,79 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ":obj:`begin <manim.animation.composition.AnimationGroup.begin>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`build_animations_with_timings "
 "<manim.animation.composition.AnimationGroup.build_animations_with_timings>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
 #: manim.animation.composition.AnimationGroup.build_animations_with_timings:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
 #: of
 msgid "Creates a list of triplets of the form (anim, start_time, end_time)"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`clean_up_from_scene "
 "<manim.animation.composition.AnimationGroup.clean_up_from_scene>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ":obj:`finish <manim.animation.composition.AnimationGroup.finish>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_all_mobjects "
 "<manim.animation.composition.AnimationGroup.get_all_mobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
 #: manim.animation.composition.AnimationGroup.get_all_mobjects:1 of
 msgid "Ordering must match the ording of arguments to interpolate_submobject"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_run_time "
 "<manim.animation.composition.AnimationGroup.get_run_time>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`init_run_time "
 "<manim.animation.composition.AnimationGroup.init_run_time>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`interpolate "
 "<manim.animation.composition.AnimationGroup.interpolate>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
+#: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`update_mobjects "
 "<manim.animation.composition.AnimationGroup.update_mobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:26:<autosummary>:1
-msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
-msgstr ""
-
-#: ../../source/reference/manim.animation.composition.AnimationGroup.rst:28
-msgid "Attributes"
-msgstr ""
-
 #: manim.animation.composition.AnimationGroup.build_animations_with_timings:1:<autosummary>:1
 #: of
-msgid ":obj:`CONFIG <manim.animation.composition.AnimationGroup.CONFIG>`\\"
+msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
 msgstr ""
 
 #: manim.animation.composition.AnimationGroup.update_mobjects:1 of
@@ -110,4 +111,10 @@ msgid ""
 "its updating suspended during the animation, this will do nothing to "
 "self.mobject."
 msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.animation.composition.AnimationGroup.CONFIG>`\\"
+#~ msgstr ""
 

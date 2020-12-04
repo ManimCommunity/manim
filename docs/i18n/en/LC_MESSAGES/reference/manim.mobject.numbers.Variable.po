@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -78,8 +78,7 @@ msgstr ""
 #: manim.mobject.numbers.Variable:22 of
 msgid ""
 "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, "
-":class:`~.TexSymbol`, :class:`~.SingleStringMathTex`, "
-":class:`~.MathTexFromPresetString`]"
+":class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
 msgstr ""
 
 #: manim.mobject.numbers.Variable:26 of
@@ -110,11 +109,16 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:19
-msgid "Attributes"
-msgstr ""
+#~ msgid ""
+#~ "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`,"
+#~ " :class:`~.Text`, :class:`~.TexSymbol`, "
+#~ ":class:`~.SingleStringMathTex`, "
+#~ ":class:`~.MathTexFromPresetString`]"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:22:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.numbers.Variable.CONFIG>`\\"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.mobject.numbers.Variable.CONFIG>`\\"
+#~ msgstr ""
 

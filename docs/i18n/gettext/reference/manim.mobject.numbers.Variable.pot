@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,7 +67,7 @@ msgid "type"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:22
-msgid "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`, :class:`~.MathTexFromPresetString`]"
+msgid "Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]"
 msgstr ""
 
 #: ../../../manim/mobject/numbers.py:docstring of manim.mobject.numbers.Variable:26
@@ -96,12 +96,4 @@ msgstr ""
 
 #: ../../source/reference/manim.mobject.numbers.Variable.rst:12
 msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:19
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.Variable.rst:22:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.numbers.Variable.CONFIG>`\\"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 01:26+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,11 +110,6 @@ msgstr ""
 
 #: manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
 #: of
-msgid ":obj:`CONFIG <manim.camera.multi_camera.MultiCamera.CONFIG>`\\"
-msgstr ""
-
-#: manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
-#: of
 msgid ""
 ":obj:`background_color "
 "<manim.camera.multi_camera.MultiCamera.background_color>`\\"
@@ -209,5 +204,8 @@ msgstr ""
 #~ "Adds an ImageMobject that's been "
 #~ "obtained from the camera into the "
 #~ "list `self.image_mobject_from_cameras`"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.camera.multi_camera.MultiCamera.CONFIG>`\\"
 #~ msgstr ""
 

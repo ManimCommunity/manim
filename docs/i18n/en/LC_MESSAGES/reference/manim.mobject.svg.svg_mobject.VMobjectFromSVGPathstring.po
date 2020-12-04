@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,36 +29,40 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`generate_points "
 "<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
-#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1 of
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
+#: of
 msgid "Generates points from a given an SVG ``d`` attribute."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_original_path_string "
 "<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_original_path_string>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
 #: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_original_path_string:1
 #: of
 msgid "A simple getter for the path's ``d`` attribute."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_path_commands "
 "<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
 #: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands:1
 #: of
 msgid ""
@@ -66,40 +70,31 @@ msgid ""
 "attribute."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`handle_command "
 "<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.handle_command>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
 #: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.handle_command:1 of
 msgid "Core logic for handling each of the various path commands."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
-msgid ""
-":obj:`string_to_points "
-"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.string_to_points>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:22:<autosummary>:1
-#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.string_to_points:1
-#: of
-msgid ""
-"Since the SVG file's path command is provided as a string, this converts "
-"the coordinates into numbers."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.rst:24
-msgid "Attributes"
 msgstr ""
 
 #: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
 #: of
 msgid ""
-":obj:`CONFIG "
-"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.CONFIG>`\\"
+":obj:`string_to_points "
+"<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.string_to_points>`"
+msgstr ""
+
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.generate_points:1:<autosummary>:1
+#: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.string_to_points:1
+#: of
+msgid ""
+"Since the SVG file's path command is provided as a string, this converts "
+"the coordinates into numbers."
 msgstr ""
 
 #: manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.get_path_commands:4
@@ -126,4 +121,12 @@ msgstr ""
 #: of
 msgid "List[:class:`str`]"
 msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.mobject.svg.svg_mobject.VMobjectFromSVGPathstring.CONFIG>`\\"
+#~ msgstr ""
 

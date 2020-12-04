@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 01:26+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,12 +34,4 @@ msgstr ""
 
 #: ../../source/reference/manim.animation.transform.FadeToColor.rst:12
 msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.FadeToColor.rst:19
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.FadeToColor.rst:22:<autosummary>:1
-msgid ":obj:`CONFIG <manim.animation.transform.FadeToColor.CONFIG>`\\"
 msgstr ""

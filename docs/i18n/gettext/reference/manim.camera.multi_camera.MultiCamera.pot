@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 01:26+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,10 +93,6 @@ msgstr ""
 
 #: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24
 msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
-msgid ":obj:`CONFIG <manim.camera.multi_camera.MultiCamera.CONFIG>`\\"
 msgstr ""
 
 #: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,21 +21,17 @@ msgstr ""
 msgid "manim.mobject.svg.tex\\_mobject.MathTexFromPresetString"
 msgstr ""
 
-#: manim.mobject.svg.tex_mobject.MathTexFromPresetString:1 of
-msgid "Bases: :class:`manim.mobject.svg.tex_mobject.MathTex`"
-msgstr ""
+#~ msgid "Bases: :class:`manim.mobject.svg.tex_mobject.MathTex`"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTexFromPresetString.rst:12
-msgid "Methods"
-msgstr ""
+#~ msgid "Methods"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTexFromPresetString.rst:19
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.MathTexFromPresetString.rst:22:<autosummary>:1
-msgid ""
-":obj:`CONFIG "
-"<manim.mobject.svg.tex_mobject.MathTexFromPresetString.CONFIG>`\\"
-msgstr ""
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.mobject.svg.tex_mobject.MathTexFromPresetString.CONFIG>`\\"
+#~ msgstr ""
 

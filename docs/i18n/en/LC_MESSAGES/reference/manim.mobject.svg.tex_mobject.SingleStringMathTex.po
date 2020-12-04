@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 01:26+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,60 +41,57 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:23:<autosummary>:1
+#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_modified_expression "
 "<manim.mobject.svg.tex_mobject.SingleStringMathTex.get_modified_expression>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:23:<autosummary>:1
+#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_tex_string "
 "<manim.mobject.svg.tex_mobject.SingleStringMathTex.get_tex_string>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:23:<autosummary>:1
+#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`modify_special_strings "
 "<manim.mobject.svg.tex_mobject.SingleStringMathTex.modify_special_strings>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:23:<autosummary>:1
+#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`organize_submobjects_left_to_right "
 "<manim.mobject.svg.tex_mobject.SingleStringMathTex.organize_submobjects_left_to_right>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:23:<autosummary>:1
+#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`path_string_to_mobject "
 "<manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:23:<autosummary>:1
 #: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1
+#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
 #: of
 msgid "Converts a SVG path element's ``d`` attribute to a mobject."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:23:<autosummary>:1
+#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`remove_stray_braces "
 "<manim.mobject.svg.tex_mobject.SingleStringMathTex.remove_stray_braces>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:23:<autosummary>:1
+#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
 #: manim.mobject.svg.tex_mobject.SingleStringMathTex.remove_stray_braces:1 of
 msgid "Makes MathTex resilient to unmatched { at start"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.tex_mobject.SingleStringMathTex.rst:25
-msgid "Attributes"
-msgstr ""
-
-#: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject:1:<autosummary>:1
-#: of
-msgid ":obj:`CONFIG <manim.mobject.svg.tex_mobject.SingleStringMathTex.CONFIG>`\\"
 msgstr ""
 
 #: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject of
@@ -118,4 +115,12 @@ msgstr ""
 #: manim.mobject.svg.tex_mobject.SingleStringMathTex.path_string_to_mobject of
 msgid "Return type"
 msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.mobject.svg.tex_mobject.SingleStringMathTex.CONFIG>`\\"
+#~ msgstr ""
 

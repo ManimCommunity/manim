@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,67 +29,65 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`account_for_buff <manim.mobject.geometry.Line.account_for_buff>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`generate_points <manim.mobject.geometry.Line.generate_points>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`get_angle <manim.mobject.geometry.Line.get_angle>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`get_slope <manim.mobject.geometry.Line.get_slope>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`get_unit_vector <manim.mobject.geometry.Line.get_unit_vector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`get_vector <manim.mobject.geometry.Line.get_vector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`pointify <manim.mobject.geometry.Line.pointify>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ""
 ":obj:`put_start_and_end_on "
 "<manim.mobject.geometry.Line.put_start_and_end_on>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`set_angle <manim.mobject.geometry.Line.set_angle>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`set_length <manim.mobject.geometry.Line.set_length>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`set_opacity <manim.mobject.geometry.Line.set_opacity>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ":obj:`set_path_arc <manim.mobject.geometry.Line.set_path_arc>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Line.rst:28:<autosummary>:1
 msgid ""
 ":obj:`set_start_and_end_attrs "
 "<manim.mobject.geometry.Line.set_start_and_end_attrs>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:32
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Line.rst:35:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.geometry.Line.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.geometry.Line.CONFIG>`\\"
+#~ msgstr ""
 

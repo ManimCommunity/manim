@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgid "manim.utils.config\\_ops"
 msgstr ""
 
 #: manim.utils.config_ops:1 of
-msgid "Utilities required by manim's CONFIG attributes."
+msgid "Utilities that mught be useful for configuration dictionaries."
 msgstr ""
 
 #: ../../source/reference/manim.utils.config_ops.rst:15
@@ -35,17 +35,6 @@ msgstr ""
 
 #: ../../source/reference/manim.utils.config_ops.rst:29
 msgid "Functions"
-msgstr ""
-
-#: manim.utils.config_ops.digest_config:1 of
-msgid "Sets init args and CONFIG values as local variables"
-msgstr ""
-
-#: manim.utils.config_ops.digest_config:3 of
-msgid ""
-"The purpose of this function is to ensure that all configuration of any "
-"object is inheritable, able to be easily passed into instantiation, and "
-"is attached as an attribute of the object."
 msgstr ""
 
 #: manim.utils.config_ops.merge_dicts_recursively:1 of
@@ -63,9 +52,24 @@ msgstr ""
 msgid "When values are dictionaries, it is applied recursively"
 msgstr ""
 
-#: manim.utils.config_ops.soft_dict_update:1 of
-msgid ""
-"Adds key values pairs of d2 to d1 only when d1 doesn't already have that "
-"key"
-msgstr ""
+#~ msgid "Utilities required by manim's CONFIG attributes."
+#~ msgstr ""
+
+#~ msgid "Sets init args and CONFIG values as local variables"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The purpose of this function is to"
+#~ " ensure that all configuration of any"
+#~ " object is inheritable, able to be"
+#~ " easily passed into instantiation, and "
+#~ "is attached as an attribute of the"
+#~ " object."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Adds key values pairs of d2 to "
+#~ "d1 only when d1 doesn't already "
+#~ "have that key"
+#~ msgstr ""
 

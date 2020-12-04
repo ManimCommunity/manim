@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,43 +29,35 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arrow.scale:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_default_tip_length "
 "<manim.mobject.geometry.Arrow.get_default_tip_length>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arrow.scale:1:<autosummary>:1 of
 msgid ":obj:`get_normal_vector <manim.mobject.geometry.Arrow.get_normal_vector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arrow.scale:1:<autosummary>:1 of
 msgid ""
 ":obj:`reset_normal_vector "
 "<manim.mobject.geometry.Arrow.reset_normal_vector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arrow.scale:1:<autosummary>:1 of
 msgid ":obj:`scale <manim.mobject.geometry.Arrow.scale>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
-#: manim.mobject.geometry.Arrow.scale:1 of
+#: manim.mobject.geometry.Arrow.scale:1
+#: manim.mobject.geometry.Arrow.scale:1:<autosummary>:1 of
 msgid "Scale an arrow, but keep stroke width and arrow tip size fixed."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arrow.scale:1:<autosummary>:1 of
 msgid ""
 ":obj:`set_stroke_width_from_length "
 "<manim.mobject.geometry.Arrow.set_stroke_width_from_length>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24
-msgid "Attributes"
-msgstr ""
-
-#: manim.mobject.geometry.Arrow.scale:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.mobject.geometry.Arrow.CONFIG>`\\"
 msgstr ""
 
 #: manim.mobject.geometry.Arrow.scale:3 of
@@ -81,4 +73,10 @@ msgid ""
 "Manually scaling the object using the default method "
 ":meth:`~.Mobject.scale` does not have the same properties::"
 msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.mobject.geometry.Arrow.CONFIG>`\\"
+#~ msgstr ""
 

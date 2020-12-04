@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 01:26+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,15 +127,19 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim_directive.rst:26:<autosummary>:1
+#: ../../source/reference/manim_directive.rst:28:<autosummary>:1
 msgid ":obj:`ManimDirective <manim_directive.ManimDirective>`"
 msgstr ""
 
-#: ../../source/reference/manim_directive.rst:26:<autosummary>:1
+#: ../../source/reference/manim_directive.rst:28:<autosummary>:1
 msgid "The manim directive, rendering videos while building the documentation."
 msgstr ""
 
-#: ../../source/reference/manim_directive.rst:29
+#: ../../source/reference/manim_directive.rst:28:<autosummary>:1
+msgid ":obj:`skip_manim_node <manim_directive.skip_manim_node>`"
+msgstr ""
+
+#: ../../source/reference/manim_directive.rst:31
 msgid "Functions"
 msgstr ""
 

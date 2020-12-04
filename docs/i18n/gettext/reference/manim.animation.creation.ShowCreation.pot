@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,29 +25,33 @@ msgid "Bases: :class:`manim.animation.creation.ShowPartial`"
 msgstr ""
 
 #: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:1
-msgid "Incrementally shows the VMobject."
+msgid "Incrementally show a VMobject."
 msgstr ""
 
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:4
+#: ../../source/reference/manim.animation.creation.ShowCreation.rst:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:3
+msgid "The VMobject to animate."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.ShowCreation.rst:0
+msgid "Raises"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:6
+msgid "If ``mobject`` is not an instance of :class:`~.VMobject`."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:9
 msgid "Examples"
 msgstr ""
 
-#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:11
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.ShowCreation:16
 msgid ":class:`~.ShowPassingFlash`"
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.ShowCreation.rst:12
 msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.ShowCreation.rst:18:<autosummary>:1
-msgid ":obj:`get_bounds <manim.animation.creation.ShowCreation.get_bounds>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.ShowCreation.rst:20
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.ShowCreation.rst:23:<autosummary>:1
-msgid ":obj:`CONFIG <manim.animation.creation.ShowCreation.CONFIG>`\\"
 msgstr ""

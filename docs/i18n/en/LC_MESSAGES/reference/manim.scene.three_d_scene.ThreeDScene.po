@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -177,11 +177,6 @@ msgstr ""
 
 #: manim.scene.three_d_scene.ThreeDScene.add_fixed_in_frame_mobjects:1:<autosummary>:1
 #: of
-msgid ":obj:`CONFIG <manim.scene.three_d_scene.ThreeDScene.CONFIG>`\\"
-msgstr ""
-
-#: manim.scene.three_d_scene.ThreeDScene.add_fixed_in_frame_mobjects:1:<autosummary>:1
-#: of
 msgid ":obj:`camera <manim.scene.three_d_scene.ThreeDScene.camera>`\\"
 msgstr ""
 
@@ -303,4 +298,7 @@ msgid ""
 "Some recognised kwargs are phi, theta, distance, gamma, which have the "
 "same meaning as the parameters in set_camera_orientation."
 msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.scene.three_d_scene.ThreeDScene.CONFIG>`\\"
+#~ msgstr ""
 

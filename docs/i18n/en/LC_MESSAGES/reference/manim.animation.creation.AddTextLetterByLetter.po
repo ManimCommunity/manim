@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,20 +26,31 @@ msgid "Bases: :class:`manim.animation.creation.ShowIncreasingSubsets`"
 msgstr ""
 
 #: manim.animation.creation.AddTextLetterByLetter:1 of
-msgid ""
-"Add a Text Object letter by letter on the scene. Use time_per_char to "
-"change frequency of appearance of the letters."
+msgid "Show a :class:`~.Text` letter by letter on the scene."
+msgstr ""
+
+#: manim.animation.creation.AddTextLetterByLetter of
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.creation.AddTextLetterByLetter:3 of
+msgid "Frequency of appearance of the letters."
 msgstr ""
 
 #: ../../source/reference/manim.animation.creation.AddTextLetterByLetter.rst:12
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.AddTextLetterByLetter.rst:19
-msgid "Attributes"
-msgstr ""
+#~ msgid ""
+#~ "Add a Text Object letter by letter"
+#~ " on the scene. Use time_per_char to"
+#~ " change frequency of appearance of "
+#~ "the letters."
+#~ msgstr ""
 
-#: ../../source/reference/manim.animation.creation.AddTextLetterByLetter.rst:22:<autosummary>:1
-msgid ":obj:`CONFIG <manim.animation.creation.AddTextLetterByLetter.CONFIG>`\\"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.animation.creation.AddTextLetterByLetter.CONFIG>`\\"
+#~ msgstr ""
 

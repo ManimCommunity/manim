@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,14 +24,14 @@ msgstr ""
 msgid "Bases: :class:`manim.animation.creation.ShowCreation`"
 msgstr ""
 
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Uncreate:1
+msgid "Like :class:`ShowCreation` but in reverse."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Uncreate:3
+msgid ":class:`ShowCreation`"
+msgstr ""
+
 #: ../../source/reference/manim.animation.creation.Uncreate.rst:12
 msgid "Methods"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.Uncreate.rst:19
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.Uncreate.rst:22:<autosummary>:1
-msgid ":obj:`CONFIG <manim.animation.creation.Uncreate.CONFIG>`\\"
 msgstr ""

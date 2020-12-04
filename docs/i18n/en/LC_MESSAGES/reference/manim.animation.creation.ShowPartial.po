@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,21 +45,18 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.ShowPartial.rst:19:<autosummary>:1
-msgid ":obj:`get_bounds <manim.animation.creation.ShowPartial.get_bounds>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.ShowPartial.rst:19:<autosummary>:1
+#: ../../source/reference/manim.animation.creation.ShowPartial.rst:16:<autosummary>:1
 msgid ""
 ":obj:`interpolate_submobject "
 "<manim.animation.creation.ShowPartial.interpolate_submobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.ShowPartial.rst:21
-msgid "Attributes"
-msgstr ""
+#~ msgid ":obj:`get_bounds <manim.animation.creation.ShowPartial.get_bounds>`"
+#~ msgstr ""
 
-#: ../../source/reference/manim.animation.creation.ShowPartial.rst:24:<autosummary>:1
-msgid ":obj:`CONFIG <manim.animation.creation.ShowPartial.CONFIG>`\\"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.animation.creation.ShowPartial.CONFIG>`\\"
+#~ msgstr ""
 

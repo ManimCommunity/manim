@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,6 +43,12 @@ msgid ""
 ":meth:`remove_invisible_chars` to resolve this issue."
 msgstr ""
 
+#: manim.mobject.svg.text_mobject.Paragraph:15 of
+msgid ""
+"Due to issues with the Pango-powered :class:`.Text`, this class uses "
+":class:`.CairoText`."
+msgstr ""
+
 #: manim.mobject.svg.text_mobject.Paragraph
 #: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line
 #: manim.mobject.svg.text_mobject.Paragraph.gen_chars
@@ -52,25 +58,25 @@ msgstr ""
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:13 of
+#: manim.mobject.svg.text_mobject.Paragraph:18 of
 msgid "Represents the spaning betweeb lines. Default to -1, which means auto."
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:15 of
+#: manim.mobject.svg.text_mobject.Paragraph:20 of
 msgid ""
 "Defines the alignment of paragraph. Default to \"left\". Possible values "
 "are \"left\", \"right\", \"center\""
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:19 of
+#: manim.mobject.svg.text_mobject.Paragraph:24 of
 msgid "Examples"
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:20 of
+#: manim.mobject.svg.text_mobject.Paragraph:25 of
 msgid "Normal usage::"
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:27 of
+#: manim.mobject.svg.text_mobject.Paragraph:32 of
 msgid "Remove unwanted invisible characters::"
 msgstr ""
 
@@ -78,77 +84,76 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`change_alignment_for_a_line "
 "<manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
-#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1 of
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+#: of
 msgid "Function to change one line's aligment to a specific value."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+#: of
 msgid ":obj:`gen_chars <manim.mobject.svg.text_mobject.Paragraph.gen_chars>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+#: of
 msgid "Function to convert plain string to 2d-VGroup of chars."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`set_all_lines_alignments "
 "<manim.mobject.svg.text_mobject.Paragraph.set_all_lines_alignments>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
 #: manim.mobject.svg.text_mobject.Paragraph.set_all_lines_alignments:1 of
 msgid "Function to set all line's aligment to a specific value."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`set_all_lines_to_initial_positions "
 "<manim.mobject.svg.text_mobject.Paragraph.set_all_lines_to_initial_positions>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
 #: manim.mobject.svg.text_mobject.Paragraph.set_all_lines_to_initial_positions:1
 #: of
 msgid "Set all lines to their initial positions."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`set_line_alignment "
 "<manim.mobject.svg.text_mobject.Paragraph.set_line_alignment>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
 #: manim.mobject.svg.text_mobject.Paragraph.set_line_alignment:1 of
 msgid "Function to set one line's aligment to a specific value."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`set_line_to_initial_position "
 "<manim.mobject.svg.text_mobject.Paragraph.set_line_to_initial_position>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:23:<autosummary>:1
+#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
 #: manim.mobject.svg.text_mobject.Paragraph.set_line_to_initial_position:1 of
 msgid "Function to set one line to initial positions."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:25
-msgid "Attributes"
-msgstr ""
-
-#: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:1:<autosummary>:1
-#: of
-msgid ":obj:`CONFIG <manim.mobject.svg.text_mobject.Paragraph.CONFIG>`\\"
 msgstr ""
 
 #: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line:3
@@ -190,4 +195,10 @@ msgstr ""
 #: manim.mobject.svg.text_mobject.Paragraph.gen_chars:7 of
 msgid ":class:`~.VGroup`"
 msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.mobject.svg.text_mobject.Paragraph.CONFIG>`\\"
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,25 +29,23 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.probability.BarChart.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:18:<autosummary>:1
 msgid ":obj:`add_axes <manim.mobject.probability.BarChart.add_axes>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.probability.BarChart.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:18:<autosummary>:1
 msgid ":obj:`add_bars <manim.mobject.probability.BarChart.add_bars>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.probability.BarChart.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.probability.BarChart.rst:18:<autosummary>:1
 msgid ""
 ":obj:`change_bar_values "
 "<manim.mobject.probability.BarChart.change_bar_values>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.probability.BarChart.rst:22
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.probability.BarChart.rst:25:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.probability.BarChart.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.probability.BarChart.CONFIG>`\\"
+#~ msgstr ""
 

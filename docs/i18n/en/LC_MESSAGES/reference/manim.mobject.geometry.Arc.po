@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,40 +33,38 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arc.get_arc_center:1:<autosummary>:1 of
 msgid ":obj:`generate_points <manim.mobject.geometry.Arc.generate_points>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arc.get_arc_center:1:<autosummary>:1 of
 msgid ":obj:`get_arc_center <manim.mobject.geometry.Arc.get_arc_center>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:22:<autosummary>:1
-#: manim.mobject.geometry.Arc.get_arc_center:1 of
+#: manim.mobject.geometry.Arc.get_arc_center:1
+#: manim.mobject.geometry.Arc.get_arc_center:1:<autosummary>:1 of
 msgid ""
 "Looks at the normals to the first two anchors, and finds their "
 "intersection points"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arc.get_arc_center:1:<autosummary>:1 of
 msgid ":obj:`move_arc_center_to <manim.mobject.geometry.Arc.move_arc_center_to>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arc.get_arc_center:1:<autosummary>:1 of
 msgid ""
 ":obj:`set_pre_positioned_points "
 "<manim.mobject.geometry.Arc.set_pre_positioned_points>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:22:<autosummary>:1
+#: manim.mobject.geometry.Arc.get_arc_center:1:<autosummary>:1 of
 msgid ":obj:`stop_angle <manim.mobject.geometry.Arc.stop_angle>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arc.rst:24
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: manim.mobject.geometry.Arc.get_arc_center:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.mobject.geometry.Arc.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.geometry.Arc.CONFIG>`\\"
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -121,7 +121,7 @@ msgstr ""
 
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:21:<autosummary>:1
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression_in_env:1
-msgid "Inserts expression into TeX template wrapped in egin{environemnt} and \\end{environment}"
+msgid "Inserts expression into TeX template wrapped in \\begin{environemnt} and \\end{environment}"
 msgstr ""
 
 #: ../../source/reference/manim.utils.tex.TexTemplate.rst:23
@@ -173,7 +173,6 @@ msgid "Whether the text should be added at the beginning of the preample, i.e. r
 msgstr ""
 
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression:3
-#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression_in_env:3
 msgid "The string containing the expression to be typeset, e.g. ``$\\sqrt{2}$``"
 msgstr ""
 
@@ -189,6 +188,10 @@ msgstr ""
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression:0
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression_in_env:0
 msgid "Return type"
+msgstr ""
+
+#: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression_in_env:3
+msgid "The string containing the expression to be typeset, e.g. ``$\\\\sqrt{2}$``"
 msgstr ""
 
 #: ../../../manim/utils/tex.py:docstring of manim.utils.tex.TexTemplate.get_texcode_for_expression_in_env:5

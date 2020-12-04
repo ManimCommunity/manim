@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,202 +32,215 @@ msgstr ""
 msgid "Classes"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`AnnotationDot <manim.mobject.geometry.AnnotationDot>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "A dot with bigger radius and bold stroke to annotate scenes."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`AnnularSector <manim.mobject.geometry.AnnularSector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Annulus <manim.mobject.geometry.Annulus>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Arc <manim.mobject.geometry.Arc>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "A circular arc."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`ArcBetweenPoints <manim.mobject.geometry.ArcBetweenPoints>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Inherits from Arc and additionally takes 2 points between which the arc is spanned."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
+msgid ":obj:`ArcPolygon <manim.mobject.geometry.ArcPolygon>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
+msgid "A generalized polygon allowing for points to be connected with arcs."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
+msgid ":obj:`ArcPolygonFromArcs <manim.mobject.geometry.ArcPolygonFromArcs>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Arrow <manim.mobject.geometry.Arrow>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`ArrowCircleFilledTip <manim.mobject.geometry.ArrowCircleFilledTip>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Circular arrow tip with filled tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`ArrowCircleTip <manim.mobject.geometry.ArrowCircleTip>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Circular arrow tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
-msgid ":obj:`ArrowFilledTip <manim.mobject.geometry.ArrowFilledTip>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
-msgid "Base class for arrow tips with filled tip."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`ArrowSquareFilledTip <manim.mobject.geometry.ArrowSquareFilledTip>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Square arrow tip with filled tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`ArrowSquareTip <manim.mobject.geometry.ArrowSquareTip>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Square arrow tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`ArrowTip <manim.mobject.geometry.ArrowTip>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Base class for arrow tips."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`ArrowTriangleFilledTip <manim.mobject.geometry.ArrowTriangleFilledTip>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Triangular arrow tip with filled tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`ArrowTriangleTip <manim.mobject.geometry.ArrowTriangleTip>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Triangular arrow tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Circle <manim.mobject.geometry.Circle>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`CubicBezier <manim.mobject.geometry.CubicBezier>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`CurvedArrow <manim.mobject.geometry.CurvedArrow>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`CurvedDoubleArrow <manim.mobject.geometry.CurvedDoubleArrow>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
+msgid ":obj:`Cutout <manim.mobject.geometry.Cutout>`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
+msgid "A shape with smaller cutouts."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`DashedLine <manim.mobject.geometry.DashedLine>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Dot <manim.mobject.geometry.Dot>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`DoubleArrow <manim.mobject.geometry.DoubleArrow>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Elbow <manim.mobject.geometry.Elbow>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Ellipse <manim.mobject.geometry.Ellipse>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`LabeledDot <manim.mobject.geometry.LabeledDot>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "A :class:`Dot` containing a label in its center."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Line <manim.mobject.geometry.Line>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Polygon <manim.mobject.geometry.Polygon>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Rectangle <manim.mobject.geometry.Rectangle>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`RegularPolygon <manim.mobject.geometry.RegularPolygon>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`RoundedRectangle <manim.mobject.geometry.RoundedRectangle>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Sector <manim.mobject.geometry.Sector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`SmallDot <manim.mobject.geometry.SmallDot>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "A dot with small radius"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Square <manim.mobject.geometry.Square>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`TangentLine <manim.mobject.geometry.TangentLine>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`TipableVMobject <manim.mobject.geometry.TipableVMobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid "Meant for shared functionality between Arc and Line."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Triangle <manim.mobject.geometry.Triangle>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.rst:90:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.rst:94:<autosummary>:1
 msgid ":obj:`Vector <manim.mobject.geometry.Vector>`"
 msgstr ""

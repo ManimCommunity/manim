@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,11 +73,6 @@ msgstr ""
 
 #: manim.camera.mapping_camera.MappingCamera.capture_mobjects:1:<autosummary>:1
 #: of
-msgid ":obj:`CONFIG <manim.camera.mapping_camera.MappingCamera.CONFIG>`\\"
-msgstr ""
-
-#: manim.camera.mapping_camera.MappingCamera.capture_mobjects:1:<autosummary>:1
-#: of
 msgid ""
 ":obj:`background_color "
 "<manim.camera.mapping_camera.MappingCamera.background_color>`\\"
@@ -113,4 +108,7 @@ msgid ""
 "For a list of classes that can currently be rendered, see "
 ":meth:`display_funcs`."
 msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.camera.mapping_camera.MappingCamera.CONFIG>`\\"
+#~ msgstr ""
 

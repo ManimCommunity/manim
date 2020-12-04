@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgid ""
 msgstr ""
 
 #: manim.mobject.types.vectorized_mobject.VDict:11 of
-msgid "Other arguments to be passed to `Mobject` or the CONFIG."
+msgid "Other arguments to be passed to `Mobject`."
 msgstr ""
 
 #: manim.mobject.types.vectorized_mobject.VDict:16 of
@@ -91,55 +91,47 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:21:<autosummary>:1
+#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1 of
 msgid ":obj:`add <manim.mobject.types.vectorized_mobject.VDict.add>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:21:<autosummary>:1
-#: manim.mobject.types.vectorized_mobject.VDict.add:1 of
+#: manim.mobject.types.vectorized_mobject.VDict.add:1
+#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1 of
 msgid "Adds the key-value pairs to the :class:`VDict` object."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:21:<autosummary>:1
+#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1 of
 msgid ""
 ":obj:`add_key_value_pair "
 "<manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:21:<autosummary>:1
+#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1 of
 msgid ""
 "A utility function used by :meth:`add` to add the key-value pair to "
 ":attr:`submob_dict`."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:21:<autosummary>:1
+#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_all_submobjects "
 "<manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:21:<autosummary>:1
+#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
 #: manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:1 of
 msgid ""
 "To get all the submobjects associated with a particular :class:`VDict` "
 "object"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:21:<autosummary>:1
+#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1 of
 msgid ":obj:`remove <manim.mobject.types.vectorized_mobject.VDict.remove>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:21:<autosummary>:1
+#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
 #: manim.mobject.types.vectorized_mobject.VDict.remove:1 of
 msgid "Removes the mobject from the :class:`VDict` object having the key `key`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:23
-msgid "Attributes"
-msgstr ""
-
-#: manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.mobject.types.vectorized_mobject.VDict.CONFIG>`\\"
 msgstr ""
 
 #: manim.mobject.types.vectorized_mobject.VDict.add:3 of
@@ -219,4 +211,13 @@ msgstr ""
 #: manim.mobject.types.vectorized_mobject.VDict.remove:6 of
 msgid "The key of the submoject to be removed."
 msgstr ""
+
+#~ msgid "Other arguments to be passed to `Mobject` or the CONFIG."
+#~ msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.mobject.types.vectorized_mobject.VDict.CONFIG>`\\"
+#~ msgstr ""
 

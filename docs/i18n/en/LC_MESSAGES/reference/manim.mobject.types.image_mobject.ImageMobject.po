@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,22 +29,13 @@ msgstr ""
 msgid "Displays an Image from a numpy array or a file."
 msgstr ""
 
-#: manim.mobject.types.image_mobject.ImageMobject:9
 #: manim.mobject.types.image_mobject.ImageMobject.fade
 #: manim.mobject.types.image_mobject.ImageMobject.interpolate_color
 #: manim.mobject.types.image_mobject.ImageMobject.set_opacity of
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.types.image_mobject.ImageMobject:9 of
-msgid "scale_to_resolution : :class:`int`"
-msgstr ""
-
-#: manim.mobject.types.image_mobject.ImageMobject:8 of
-msgid "int"
-msgstr ""
-
-#: manim.mobject.types.image_mobject.ImageMobject:6 of
+#: manim.mobject.types.image_mobject.ImageMobject:3 of
 msgid ""
 "At this resolution the image is placed pixel by pixel onto the screen, so"
 " it will look the sharpest and best. This is a custom parameter of "
@@ -53,7 +44,7 @@ msgid ""
 " of the image on the screen."
 msgstr ""
 
-#: manim.mobject.types.image_mobject.ImageMobject:12 of
+#: manim.mobject.types.image_mobject.ImageMobject:8 of
 msgid "Example"
 msgstr ""
 
@@ -61,78 +52,77 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`change_to_rgba_array "
 "<manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
-#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1 of
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: of
 msgid "Converts an RGB array into RGBA with the alpha value opacity maxed."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: of
 msgid ":obj:`fade <manim.mobject.types.image_mobject.ImageMobject.fade>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
 #: manim.mobject.types.image_mobject.ImageMobject.fade:1 of
 msgid "Sets the image's opacity using a 1 - alpha relationship."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_pixel_array "
 "<manim.mobject.types.image_mobject.ImageMobject.get_pixel_array>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
 #: manim.mobject.types.image_mobject.ImageMobject.get_pixel_array:1 of
 msgid "A simple getter method."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`interpolate_color "
 "<manim.mobject.types.image_mobject.ImageMobject.interpolate_color>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
 #: manim.mobject.types.image_mobject.ImageMobject.interpolate_color:1 of
 msgid ""
 "Interpolates an array of pixel color values into another array of equal "
 "size."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`set_color "
 "<manim.mobject.types.image_mobject.ImageMobject.set_color>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: of
 msgid "Condition is function which takes in one arguments, (x, y, z)."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`set_opacity "
 "<manim.mobject.types.image_mobject.ImageMobject.set_opacity>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:23:<autosummary>:1
+#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
 #: manim.mobject.types.image_mobject.ImageMobject.set_opacity:1 of
 msgid "Sets the image's opacity."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.image_mobject.ImageMobject.rst:25
-msgid "Attributes"
-msgstr ""
-
-#: manim.mobject.types.image_mobject.ImageMobject.change_to_rgba_array:1:<autosummary>:1
-#: of
-msgid ":obj:`CONFIG <manim.mobject.types.image_mobject.ImageMobject.CONFIG>`\\"
 msgstr ""
 
 #: manim.mobject.types.image_mobject.ImageMobject.fade:3 of
@@ -165,4 +155,16 @@ msgstr ""
 #: manim.mobject.types.image_mobject.ImageMobject.set_opacity:3 of
 msgid "The alpha value of the object, 1 being opaque and 0 being transparent."
 msgstr ""
+
+#~ msgid "scale_to_resolution : :class:`int`"
+#~ msgstr ""
+
+#~ msgid "int"
+#~ msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.mobject.types.image_mobject.ImageMobject.CONFIG>`\\"
+#~ msgstr ""
 

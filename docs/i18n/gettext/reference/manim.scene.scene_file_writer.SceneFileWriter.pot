@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,7 +118,7 @@ msgstr ""
 
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.add_audio_segment:1:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.close_movie_pipe:1
-msgid "Used internally by Manim to gracefully stop writing to FFMPEG's input buffer, and move the temporary files into their permananant locations"
+msgid "Used internally by Manim to gracefully stop writing to FFMPEG's input buffer"
 msgstr ""
 
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.add_audio_segment:1:<autosummary>:1

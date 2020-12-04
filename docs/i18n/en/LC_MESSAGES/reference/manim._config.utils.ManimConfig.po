@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -221,7 +221,7 @@ msgstr ""
 
 #: manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: manim._config.utils.ManimConfig.assets_dir:1 of
-msgid "Directory to locate video assets."
+msgid "Directory to locate video assets (no flag)."
 msgstr ""
 
 #: manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1 of
@@ -995,4 +995,7 @@ msgstr ""
 #: manim._config.utils.ManimConfig.video_dir:1 of
 msgid "Directory to place videos (no flag).  See :meth:`ManimConfig.get_dir`."
 msgstr ""
+
+#~ msgid "Directory to locate video assets."
+#~ msgstr ""
 

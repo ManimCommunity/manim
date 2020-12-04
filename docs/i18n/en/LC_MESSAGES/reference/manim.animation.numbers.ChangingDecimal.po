@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,29 +29,27 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:20:<autosummary>:1
+#: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:18:<autosummary>:1
 msgid ""
 ":obj:`check_validity_of_input "
 "<manim.animation.numbers.ChangingDecimal.check_validity_of_input>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:20:<autosummary>:1
+#: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:18:<autosummary>:1
 msgid ""
 ":obj:`interpolate_mobject "
 "<manim.animation.numbers.ChangingDecimal.interpolate_mobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:20:<autosummary>:1
+#: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:18:<autosummary>:1
 msgid ""
 ":obj:`yell_about_depricated_configuration "
 "<manim.animation.numbers.ChangingDecimal.yell_about_depricated_configuration>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:22
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.animation.numbers.ChangingDecimal.rst:25:<autosummary>:1
-msgid ":obj:`CONFIG <manim.animation.numbers.ChangingDecimal.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.animation.numbers.ChangingDecimal.CONFIG>`\\"
+#~ msgstr ""
 

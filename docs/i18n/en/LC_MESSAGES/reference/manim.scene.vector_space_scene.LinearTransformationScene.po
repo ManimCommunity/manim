@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -361,13 +361,6 @@ msgstr ""
 #: manim.scene.vector_space_scene.LinearTransformationScene.add_background_mobject:1:<autosummary>:1
 #: of
 msgid ""
-":obj:`CONFIG "
-"<manim.scene.vector_space_scene.LinearTransformationScene.CONFIG>`\\"
-msgstr ""
-
-#: manim.scene.vector_space_scene.LinearTransformationScene.add_background_mobject:1:<autosummary>:1
-#: of
-msgid ""
 ":obj:`camera "
 "<manim.scene.vector_space_scene.LinearTransformationScene.camera>`\\"
 msgstr ""
@@ -662,4 +655,9 @@ msgstr ""
 #: of
 msgid "The column matrix representing the vector."
 msgstr ""
+
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.scene.vector_space_scene.LinearTransformationScene.CONFIG>`\\"
+#~ msgstr ""
 

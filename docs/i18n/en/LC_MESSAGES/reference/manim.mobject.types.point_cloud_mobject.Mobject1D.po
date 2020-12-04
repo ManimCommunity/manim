@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,17 +29,17 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:18:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:16:<autosummary>:1
 msgid ""
 ":obj:`add_line "
 "<manim.mobject.types.point_cloud_mobject.Mobject1D.add_line>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:20
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.types.point_cloud_mobject.Mobject1D.rst:23:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.types.point_cloud_mobject.Mobject1D.CONFIG>`\\"
-msgstr ""
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.mobject.types.point_cloud_mobject.Mobject1D.CONFIG>`\\"
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,42 +37,34 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:22:<autosummary>:1
+#: manim.mobject.numbers.DecimalNumber.get_formatter:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_complex_formatter "
 "<manim.mobject.numbers.DecimalNumber.get_complex_formatter>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:22:<autosummary>:1
+#: manim.mobject.numbers.DecimalNumber.get_formatter:1:<autosummary>:1 of
 msgid ":obj:`get_formatter <manim.mobject.numbers.DecimalNumber.get_formatter>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:22:<autosummary>:1
+#: manim.mobject.numbers.DecimalNumber.get_formatter:1:<autosummary>:1 of
 msgid ""
 "Configuration is based first off instance attributes, but overwritten by "
 "any kew word argument."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:22:<autosummary>:1
+#: manim.mobject.numbers.DecimalNumber.get_formatter:1:<autosummary>:1 of
 msgid ":obj:`get_value <manim.mobject.numbers.DecimalNumber.get_value>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:22:<autosummary>:1
+#: manim.mobject.numbers.DecimalNumber.get_formatter:1:<autosummary>:1 of
 msgid ""
 ":obj:`increment_value "
 "<manim.mobject.numbers.DecimalNumber.increment_value>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:22:<autosummary>:1
-msgid ":obj:`set_value <manim.mobject.numbers.DecimalNumber.set_value>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.numbers.DecimalNumber.rst:24
-msgid "Attributes"
-msgstr ""
-
 #: manim.mobject.numbers.DecimalNumber.get_formatter:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.mobject.numbers.DecimalNumber.CONFIG>`\\"
+msgid ":obj:`set_value <manim.mobject.numbers.DecimalNumber.set_value>`"
 msgstr ""
 
 #: manim.mobject.numbers.DecimalNumber.get_formatter:1 of
@@ -81,4 +73,10 @@ msgid ""
 "any kew word argument.  Relevant key words: - include_sign - "
 "group_with_commas - num_decimal_places - field_name (e.g. 0 or 0.real)"
 msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.mobject.numbers.DecimalNumber.CONFIG>`\\"
+#~ msgstr ""
 

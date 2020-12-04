@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -268,10 +268,6 @@ msgstr ""
 
 #: ../../source/reference/manim.scene.graph_scene.GraphScene.rst:39
 msgid "Attributes"
-msgstr ""
-
-#: manim.scene.graph_scene.GraphScene.add_T_label:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.scene.graph_scene.GraphScene.CONFIG>`\\"
 msgstr ""
 
 #: manim.scene.graph_scene.GraphScene.add_T_label:1:<autosummary>:1 of
@@ -818,4 +814,7 @@ msgstr ""
 #: manim.scene.graph_scene.GraphScene.transform_between_riemann_rects:11 of
 msgid "Any other animations to play simultaneously."
 msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.scene.graph_scene.GraphScene.CONFIG>`\\"
+#~ msgstr ""
 

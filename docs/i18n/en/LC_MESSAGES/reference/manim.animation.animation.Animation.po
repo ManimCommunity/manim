@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,128 +29,120 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`begin <manim.animation.animation.Animation.begin>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`clean_up_from_scene "
 "<manim.animation.animation.Animation.clean_up_from_scene>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`copy <manim.animation.animation.Animation.copy>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`create_starting_mobject "
 "<manim.animation.animation.Animation.create_starting_mobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`finish <manim.animation.animation.Animation.finish>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_all_families_zipped "
 "<manim.animation.animation.Animation.get_all_families_zipped>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_all_mobjects "
 "<manim.animation.animation.Animation.get_all_mobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
-#: manim.animation.animation.Animation.get_all_mobjects:1 of
+#: manim.animation.animation.Animation.get_all_mobjects:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid "Ordering must match the ording of arguments to interpolate_submobject"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_all_mobjects_to_update "
 "<manim.animation.animation.Animation.get_all_mobjects_to_update>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`get_rate_func <manim.animation.animation.Animation.get_rate_func>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`get_run_time <manim.animation.animation.Animation.get_run_time>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`get_sub_alpha <manim.animation.animation.Animation.get_sub_alpha>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`interpolate <manim.animation.animation.Animation.interpolate>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`interpolate_mobject "
 "<manim.animation.animation.Animation.interpolate_mobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`interpolate_submobject "
 "<manim.animation.animation.Animation.interpolate_submobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`is_remover <manim.animation.animation.Animation.is_remover>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`set_name <manim.animation.animation.Animation.set_name>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`set_rate_func <manim.animation.animation.Animation.set_rate_func>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`set_run_time <manim.animation.animation.Animation.set_run_time>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`update <manim.animation.animation.Animation.update>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1
 #: manim.animation.animation.Animation.update:1 of
 msgid ""
 "This method shouldn't exist, but it's here to keep many old scenes from "
 "breaking"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`update_config <manim.animation.animation.Animation.update_config>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
+#: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`update_mobjects "
 "<manim.animation.animation.Animation.update_mobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.animation.Animation.rst:38:<autosummary>:1
-msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
-msgstr ""
-
-#: ../../source/reference/manim.animation.animation.Animation.rst:40
-msgid "Attributes"
-msgstr ""
-
 #: manim.animation.animation.Animation.get_all_mobjects:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.animation.animation.Animation.CONFIG>`\\"
+msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
 msgstr ""
 
 #: manim.animation.animation.Animation.update_mobjects:1 of
@@ -160,4 +152,10 @@ msgid ""
 "its updating suspended during the animation, this will do nothing to "
 "self.mobject."
 msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.animation.animation.Animation.CONFIG>`\\"
+#~ msgstr ""
 

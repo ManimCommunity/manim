@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,23 +37,21 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:19:<autosummary>:1
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:17:<autosummary>:1
 msgid ""
 ":obj:`full_family_become_partial "
 "<manim.mobject.changing.AnimatedBoundary.full_family_become_partial>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:19:<autosummary>:1
+#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:17:<autosummary>:1
 msgid ""
 ":obj:`update_boundary_copies "
 "<manim.mobject.changing.AnimatedBoundary.update_boundary_copies>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:21
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.changing.AnimatedBoundary.rst:24:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.changing.AnimatedBoundary.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.changing.AnimatedBoundary.CONFIG>`\\"
+#~ msgstr ""
 

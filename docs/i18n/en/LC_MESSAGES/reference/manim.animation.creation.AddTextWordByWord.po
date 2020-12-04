@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,15 +25,17 @@ msgstr ""
 msgid "Bases: :class:`manim.animation.composition.Succession`"
 msgstr ""
 
+#: manim.animation.creation.AddTextWordByWord:1 of
+msgid "Show a :class:`~.Text` word by word on the scene."
+msgstr ""
+
 #: ../../source/reference/manim.animation.creation.AddTextWordByWord.rst:12
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.AddTextWordByWord.rst:19
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.animation.creation.AddTextWordByWord.rst:22:<autosummary>:1
-msgid ":obj:`CONFIG <manim.animation.creation.AddTextWordByWord.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.animation.creation.AddTextWordByWord.CONFIG>`\\"
+#~ msgstr ""
 

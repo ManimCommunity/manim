@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,29 +29,29 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:18:<autosummary>:1
 msgid ""
 ":obj:`get_u_values_and_v_values "
 "<manim.mobject.three_dimensions.ParametricSurface.get_u_values_and_v_values>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:18:<autosummary>:1
 msgid ""
 ":obj:`set_fill_by_checkerboard "
 "<manim.mobject.three_dimensions.ParametricSurface.set_fill_by_checkerboard>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:20:<autosummary>:1
+#: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:18:<autosummary>:1
 msgid ""
 ":obj:`setup_in_uv_space "
 "<manim.mobject.three_dimensions.ParametricSurface.setup_in_uv_space>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:22
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.three_dimensions.ParametricSurface.rst:25:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.three_dimensions.ParametricSurface.CONFIG>`\\"
-msgstr ""
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.mobject.three_dimensions.ParametricSurface.CONFIG>`\\"
+#~ msgstr ""
 

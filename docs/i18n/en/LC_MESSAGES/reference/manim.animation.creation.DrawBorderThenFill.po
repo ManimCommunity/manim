@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,55 +25,61 @@ msgstr ""
 msgid "Bases: :class:`manim.animation.animation.Animation`"
 msgstr ""
 
+#: manim.animation.creation.DrawBorderThenFill:1 of
+msgid "Draw the border first and then show the fill."
+msgstr ""
+
 #: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:12
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1:<autosummary>:1
+#: of
 msgid ":obj:`begin <manim.animation.creation.DrawBorderThenFill.begin>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
-msgid ""
-":obj:`check_validity_of_input "
-"<manim.animation.creation.DrawBorderThenFill.check_validity_of_input>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_all_mobjects "
 "<manim.animation.creation.DrawBorderThenFill.get_all_mobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
-#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1 of
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1:<autosummary>:1
+#: of
 msgid "Ordering must match the ording of arguments to interpolate_submobject"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_outline "
 "<manim.animation.creation.DrawBorderThenFill.get_outline>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_stroke_color "
 "<manim.animation.creation.DrawBorderThenFill.get_stroke_color>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:23:<autosummary>:1
+#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`interpolate_submobject "
 "<manim.animation.creation.DrawBorderThenFill.interpolate_submobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.creation.DrawBorderThenFill.rst:25
-msgid "Attributes"
-msgstr ""
+#~ msgid ""
+#~ ":obj:`check_validity_of_input "
+#~ "<manim.animation.creation.DrawBorderThenFill.check_validity_of_input>`"
+#~ msgstr ""
 
-#: manim.animation.creation.DrawBorderThenFill.get_all_mobjects:1:<autosummary>:1
-#: of
-msgid ":obj:`CONFIG <manim.animation.creation.DrawBorderThenFill.CONFIG>`\\"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.animation.creation.DrawBorderThenFill.CONFIG>`\\"
+#~ msgstr ""
 

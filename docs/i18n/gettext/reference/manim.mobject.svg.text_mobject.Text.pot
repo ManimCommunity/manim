@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 01:26+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,76 +82,59 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid ":obj:`find_indexes <manim.mobject.svg.text_mobject.Text.find_indexes>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid "Internally used function."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":obj:`full2short <manim.mobject.svg.text_mobject.Text.full2short>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid ":obj:`remove_last_M <manim.mobject.svg.text_mobject.Text.remove_last_M>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid "Internally used."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid ":obj:`set_color_by_t2c <manim.mobject.svg.text_mobject.Text.set_color_by_t2c>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid ":obj:`set_color_by_t2g <manim.mobject.svg.text_mobject.Text.set_color_by_t2g>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid ":obj:`str2style <manim.mobject.svg.text_mobject.Text.str2style>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid ":obj:`str2weight <manim.mobject.svg.text_mobject.Text.str2weight>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid ":obj:`text2hash <manim.mobject.svg.text_mobject.Text.text2hash>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
+#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
 msgid ":obj:`text2settings <manim.mobject.svg.text_mobject.Text.text2settings>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:27:<autosummary>:1
-msgid ":obj:`text2svg <manim.mobject.svg.text_mobject.Text.text2svg>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:29
-msgid "Attributes"
-msgstr ""
-
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.svg.text_mobject.Text.CONFIG>`\\"
+msgid ":obj:`text2svg <manim.mobject.svg.text_mobject.Text.text2svg>`"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.find_indexes:1
 msgid "Internally used function. Finds the indexes of ``text`` in ``word``."
-msgstr ""
-
-#: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.full2short:1
-msgid "Internally used function. Fomats some exapansion to short forms. text2color -> t2c text2font -> t2f text2gradient -> t2g text2slant -> t2s text2weight -> t2w"
 msgstr ""
 
 #: ../../../manim/mobject/svg/text_mobject.py:docstring of manim.mobject.svg.text_mobject.Text.remove_last_M:1

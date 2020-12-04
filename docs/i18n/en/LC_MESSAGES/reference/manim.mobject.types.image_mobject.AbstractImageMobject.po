@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,37 +46,30 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:20:<autosummary>:1
+#: manim.mobject.types.image_mobject.AbstractImageMobject.set_color:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`get_pixel_array "
 "<manim.mobject.types.image_mobject.AbstractImageMobject.get_pixel_array>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:20:<autosummary>:1
+#: manim.mobject.types.image_mobject.AbstractImageMobject.set_color:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`reset_points "
 "<manim.mobject.types.image_mobject.AbstractImageMobject.reset_points>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:20:<autosummary>:1
+#: manim.mobject.types.image_mobject.AbstractImageMobject.set_color:1:<autosummary>:1
+#: of
 msgid ""
 ":obj:`set_color "
 "<manim.mobject.types.image_mobject.AbstractImageMobject.set_color>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:20:<autosummary>:1
-msgid "Condition is function which takes in one arguments, (x, y, z)."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.image_mobject.AbstractImageMobject.rst:22
-msgid "Attributes"
-msgstr ""
-
 #: manim.mobject.types.image_mobject.AbstractImageMobject.set_color:1:<autosummary>:1
 #: of
-msgid ""
-":obj:`CONFIG "
-"<manim.mobject.types.image_mobject.AbstractImageMobject.CONFIG>`\\"
+msgid "Condition is function which takes in one arguments, (x, y, z)."
 msgstr ""
 
 #: manim.mobject.types.image_mobject.AbstractImageMobject.set_color:1 of
@@ -85,4 +78,12 @@ msgid ""
 "just recurses to submobjects, but in subclasses this should be further "
 "implemented based on the the inner workings of color"
 msgstr ""
+
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.mobject.types.image_mobject.AbstractImageMobject.CONFIG>`\\"
+#~ msgstr ""
 

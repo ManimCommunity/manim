@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -278,10 +278,6 @@ msgid "Attributes"
 msgstr ""
 
 #: manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.mobject.svg.code_mobject.Code.CONFIG>`\\"
-msgstr ""
-
-#: manim.mobject.svg.code_mobject.Code.correct_non_span:1:<autosummary>:1 of
 msgid ":obj:`styles_list <manim.mobject.svg.code_mobject.Code.styles_list>`\\"
 msgstr ""
 
@@ -328,4 +324,7 @@ msgstr ""
 #: manim.mobject.svg.code_mobject.Code.gen_line_numbers:3 of
 msgid "The generated line_numbers according to parameters."
 msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.mobject.svg.code_mobject.Code.CONFIG>`\\"
+#~ msgstr ""
 

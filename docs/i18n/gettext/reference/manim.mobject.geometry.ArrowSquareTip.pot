@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,46 +36,42 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.geometry.ArrowSquareTip.CONFIG>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
 msgid ":obj:`base <manim.mobject.geometry.ArrowSquareTip.base>`\\"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
 msgid "The base point of the arrow tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
-msgid ":obj:`tip_angle <manim.mobject.geometry.ArrowSquareTip.tip_angle>`\\"
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
+msgid ":obj:`length <manim.mobject.geometry.ArrowSquareTip.length>`\\"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
-msgid "The angle of the arrow tip."
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
-msgid ":obj:`tip_length <manim.mobject.geometry.ArrowSquareTip.tip_length>`\\"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
 msgid "The length of the arrow tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
+msgid ":obj:`tip_angle <manim.mobject.geometry.ArrowSquareTip.tip_angle>`\\"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
+msgid "The angle of the arrow tip."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
 msgid ":obj:`tip_point <manim.mobject.geometry.ArrowSquareTip.tip_point>`\\"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
 msgid "The tip point of the arrow tip."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
 msgid ":obj:`vector <manim.mobject.geometry.ArrowSquareTip.vector>`\\"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:27:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareTip.rst:26:<autosummary>:1
 msgid "The vector pointing from the base point to the tip point."
 msgstr ""

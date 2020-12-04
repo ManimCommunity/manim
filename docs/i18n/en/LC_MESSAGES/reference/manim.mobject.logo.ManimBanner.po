@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:2
+msgid "manim.mobject.logo.ManimBanner"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner:1 of
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner:1 of
+msgid "Convenience class representing Manim's banner."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner:3 of
+msgid "Can be animated using custom methods."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.scale of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner:5 of
+msgid ""
+"If ``True`` (the default), the dark theme version of the logo (with light"
+" text font) will be rendered. Otherwise, if ``False``, the light theme "
+"version (with dark text font) is used."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner:10 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:12
+msgid "Methods"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create:1:<autosummary>:1 of
+msgid ":obj:`create <manim.mobject.logo.ManimBanner.create>`"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create:1
+#: manim.mobject.logo.ManimBanner.create:1:<autosummary>:1 of
+msgid "The creation animation for Manim's logo."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create:1:<autosummary>:1 of
+msgid ":obj:`expand <manim.mobject.logo.ManimBanner.expand>`"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+#: manim.mobject.logo.ManimBanner.expand:1 of
+msgid "An animation that expands Manim's logo into its banner."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create:1:<autosummary>:1 of
+msgid ":obj:`scale <manim.mobject.logo.ManimBanner.scale>`"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+#: manim.mobject.logo.ManimBanner.scale:1 of
+msgid "Scale the banner by the specified scale factor."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create manim.mobject.logo.ManimBanner.expand
+#: manim.mobject.logo.ManimBanner.scale of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create:3
+#: manim.mobject.logo.ManimBanner.expand:16 of
+msgid "An animation to be used in a :meth:`.Scene.play` call."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create manim.mobject.logo.ManimBanner.expand
+#: manim.mobject.logo.ManimBanner.scale of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.create:4 of
+msgid ":class:`~.AnimationGroup`"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.expand:3 of
+msgid ""
+"The returned animation transforms the banner from its initial state "
+"(representing Manim's logo with just the icons) to its expanded state "
+"(showing the full name together with the icons)."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.expand:7 of
+msgid "See the class documentation for how to use this."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.expand:11 of
+msgid ""
+"Before calling this method, the text \"anim\" is not a submobject of the "
+"banner object. After the expansion, it is added as a submobject so "
+"subsequent animations to the banner object apply to the text \"anim\" as "
+"well."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.expand:17 of
+msgid ":class:`~.Succession`"
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.scale:3 of
+msgid "The factor used for scaling the banner."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.scale:5 of
+msgid "The scaled banner."
+msgstr ""
+
+#: manim.mobject.logo.ManimBanner.scale:6 of
+msgid ":class:`~.ManimBanner`"
+msgstr ""
+

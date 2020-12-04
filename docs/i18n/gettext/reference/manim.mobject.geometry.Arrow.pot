@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,37 +28,29 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1:<autosummary>:1
 msgid ":obj:`get_default_tip_length <manim.mobject.geometry.Arrow.get_default_tip_length>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1:<autosummary>:1
 msgid ":obj:`get_normal_vector <manim.mobject.geometry.Arrow.get_normal_vector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1:<autosummary>:1
 msgid ":obj:`reset_normal_vector <manim.mobject.geometry.Arrow.reset_normal_vector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1:<autosummary>:1
 msgid ":obj:`scale <manim.mobject.geometry.Arrow.scale>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1:<autosummary>:1
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1
 msgid "Scale an arrow, but keep stroke width and arrow tip size fixed."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:22:<autosummary>:1
-msgid ":obj:`set_stroke_width_from_length <manim.mobject.geometry.Arrow.set_stroke_width_from_length>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.geometry.Arrow.rst:24
-msgid "Attributes"
-msgstr ""
-
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:1:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.geometry.Arrow.CONFIG>`\\"
+msgid ":obj:`set_stroke_width_from_length <manim.mobject.geometry.Arrow.set_stroke_width_from_length>`"
 msgstr ""
 
 #: ../../../manim/mobject/geometry.py:docstring of manim.mobject.geometry.Arrow.scale:3

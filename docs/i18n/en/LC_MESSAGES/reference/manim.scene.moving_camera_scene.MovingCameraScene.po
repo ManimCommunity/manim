@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,11 +69,6 @@ msgstr ""
 
 #: manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects:1:<autosummary>:1
 #: of
-msgid ":obj:`CONFIG <manim.scene.moving_camera_scene.MovingCameraScene.CONFIG>`\\"
-msgstr ""
-
-#: manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects:1:<autosummary>:1
-#: of
 msgid ":obj:`camera <manim.scene.moving_camera_scene.MovingCameraScene.camera>`\\"
 msgstr ""
 
@@ -84,4 +79,9 @@ msgstr ""
 #: manim.scene.moving_camera_scene.MovingCameraScene.get_moving_mobjects:4 of
 msgid "The Animations whose mobjects will be checked."
 msgstr ""
+
+#~ msgid ""
+#~ ":obj:`CONFIG "
+#~ "<manim.scene.moving_camera_scene.MovingCameraScene.CONFIG>`\\"
+#~ msgstr ""
 

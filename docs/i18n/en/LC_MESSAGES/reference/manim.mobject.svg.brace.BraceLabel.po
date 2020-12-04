@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,29 +29,27 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:19:<autosummary>:1
 msgid ""
 ":obj:`change_brace_label "
 "<manim.mobject.svg.brace.BraceLabel.change_brace_label>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:19:<autosummary>:1
 msgid ":obj:`change_label <manim.mobject.svg.brace.BraceLabel.change_label>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:19:<autosummary>:1
 msgid ":obj:`creation_anim <manim.mobject.svg.brace.BraceLabel.creation_anim>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:19:<autosummary>:1
 msgid ":obj:`shift_brace <manim.mobject.svg.brace.BraceLabel.shift_brace>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:23
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.svg.brace.BraceLabel.rst:26:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.svg.brace.BraceLabel.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.svg.brace.BraceLabel.CONFIG>`\\"
+#~ msgstr ""
 

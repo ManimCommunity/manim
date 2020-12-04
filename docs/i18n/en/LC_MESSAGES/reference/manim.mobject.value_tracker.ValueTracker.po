@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,34 +47,32 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:21:<autosummary>:1
+#: manim.mobject.value_tracker.ValueTracker.interpolate:1:<autosummary>:1 of
 msgid ":obj:`get_value <manim.mobject.value_tracker.ValueTracker.get_value>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:21:<autosummary>:1
+#: manim.mobject.value_tracker.ValueTracker.interpolate:1:<autosummary>:1 of
 msgid ""
 ":obj:`increment_value "
 "<manim.mobject.value_tracker.ValueTracker.increment_value>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:21:<autosummary>:1
+#: manim.mobject.value_tracker.ValueTracker.interpolate:1:<autosummary>:1 of
 msgid ":obj:`interpolate <manim.mobject.value_tracker.ValueTracker.interpolate>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:21:<autosummary>:1
-#: manim.mobject.value_tracker.ValueTracker.interpolate:1 of
+#: manim.mobject.value_tracker.ValueTracker.interpolate:1
+#: manim.mobject.value_tracker.ValueTracker.interpolate:1:<autosummary>:1 of
 msgid "Turns self into an interpolation between mobject1 and mobject2."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:21:<autosummary>:1
+#: manim.mobject.value_tracker.ValueTracker.interpolate:1:<autosummary>:1 of
 msgid ":obj:`set_value <manim.mobject.value_tracker.ValueTracker.set_value>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.value_tracker.ValueTracker.rst:23
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: manim.mobject.value_tracker.ValueTracker.interpolate:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.mobject.value_tracker.ValueTracker.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.value_tracker.ValueTracker.CONFIG>`\\"
+#~ msgstr ""
 

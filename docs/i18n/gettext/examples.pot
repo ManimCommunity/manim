@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,22 +21,22 @@ msgid "Example Gallery"
 msgstr ""
 
 #: ../../source/examples.rst:5
-msgid "This gallery contains a collection of best practice code snippets together with their corresponding video/image output, illustrating different functionalities all across the library. Enjoy this taste of Manim!"
+msgid "This gallery contains a collection of best practice code snippets together with their corresponding video/image output, illustrating different functionalities all across the library. These are all under the MIT licence, so feel free to copy & paste them to your projects. Enjoy this taste of Manim!"
 msgstr ""
 
-#: ../../source/examples.rst:11
+#: ../../source/examples.rst:13
 msgid "This gallery is not the only place in our documentation where you can see explicit code and video examples: there are many more in our :doc:`reference manual </reference>` -- see, for example, our documentation for the modules :mod:`~.tex_mobject`, :mod:`~.geometry`, :mod:`~.moving_camera_scene`, and many more."
 msgstr ""
 
-#: ../../source/examples.rst:17
+#: ../../source/examples.rst:19
 msgid "Also, visit our `Twitter <https://twitter.com/manim_community/>`_ for more *manimations*!"
 msgstr ""
 
-#: ../../source/examples.rst:24
+#: ../../source/examples.rst:26
 msgid "Overview of thematic video categories"
 msgstr ""
 
-#: ../../source/examples.rst:27
+#: ../../source/examples.rst:29
 msgid "Basic Concepts"
 msgstr ""
 
@@ -50,11 +50,11 @@ msgstr ""
 #: ../../source/examples.rst:39
 #: ../../source/examples.rst:38
 #: ../../source/examples.rst:38
-#: ../../source/examples.rst:47
-#: ../../source/examples.rst:41
-#: ../../source/examples.rst:47
+#: ../../source/examples.rst:50
+#: ../../source/examples.rst:42
 #: ../../source/examples.rst:49
-#: ../../source/examples.rst:82
+#: ../../source/examples.rst:49
+#: ../../source/examples.rst:85
 #: ../../source/examples.rst:31
 #: ../../source/examples.rst:36
 #: ../../source/examples.rst:33
@@ -85,7 +85,7 @@ msgstr ""
 msgid ":class:`~.Line` :class:`~.VGroup` :func:`~.VMobject.add_cubic_bezier_curve`"
 msgstr ""
 
-#: ../../source/examples.rst:176
+#: ../../source/examples.rst:178
 msgid "Animations"
 msgstr ""
 
@@ -109,23 +109,23 @@ msgstr ""
 msgid ":class:`~.Rotating` :func:`~.VMobject.set_points_as_corners` :func:`~.Mobject.add_updater`"
 msgstr ""
 
-#: ../../source/examples.rst:274
+#: ../../source/examples.rst:276
 msgid "Plotting with Manim"
 msgstr ""
 
-#: ../../source/examples.rst:50
+#: ../../source/examples.rst:53
 msgid ":mod:`~.manim.scene.graph_scene` :class:`~.MathTex` :func:`~.GraphScene.setup_axes` :func:`~.GraphScene.get_graph` :func:`~.GraphScene.get_vertical_line_to_graph` :func:`~.GraphScene.input_to_graph_point`"
 msgstr ""
 
-#: ../../source/examples.rst:44
+#: ../../source/examples.rst:45
 msgid ":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` :func:`~.GraphScene.get_graph` :func:`~.GraphScene.get_vertical_line_to_graph` :func:`~.GraphScene.get_area`"
 msgstr ""
 
-#: ../../source/examples.rst:50
+#: ../../source/examples.rst:52
 msgid ":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` :func:`~.GraphScene.coords_to_point`"
 msgstr ""
 
-#: ../../source/examples.rst:366
+#: ../../source/examples.rst:374
 msgid "Special Camera Settings"
 msgstr ""
 
@@ -133,7 +133,7 @@ msgstr ""
 msgid ":mod:`~.manim.scene.moving_camera_scene` :class:`~.GraphScene` :class:`~.MovingCameraScene` :class:`~.MoveAlongPath` :class:`~.Restore` :func:`~.Mobject.add_updater`"
 msgstr ""
 
-#: ../../source/examples.rst:85
+#: ../../source/examples.rst:88
 msgid ":mod:`~.manim.scene.zoomed_scene` :class:`~.ZoomedScene` :class:`~.BackgroundRectangle` :class:`~.UpdateFromFunc` :func:`~.Mobject.add_updater` :func:`~.ZoomedScene.get_zoomed_display_pop_out_animation`"
 msgstr ""
 
@@ -157,7 +157,7 @@ msgstr ""
 msgid ":class:`~.ThreeDScene` :class:`~.ParametricSurface`"
 msgstr ""
 
-#: ../../source/examples.rst:587
+#: ../../source/examples.rst:598
 msgid "Advanced Projects"
 msgstr ""
 

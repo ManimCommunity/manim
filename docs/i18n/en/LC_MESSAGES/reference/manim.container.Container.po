@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,10 +36,6 @@ msgstr ""
 msgid "Parameters"
 msgstr ""
 
-#: manim.container.Container:4 of
-msgid "Arguments to be passed to :func:`~.digest_config`"
-msgstr ""
-
 #: ../../source/reference/manim.container.Container.rst:12
 msgid "Methods"
 msgstr ""
@@ -65,4 +61,7 @@ msgstr ""
 #: manim.container.Container.add:3 manim.container.Container.remove:3 of
 msgid "Objects to be added."
 msgstr ""
+
+#~ msgid "Arguments to be passed to :func:`~.digest_config`"
+#~ msgstr ""
 

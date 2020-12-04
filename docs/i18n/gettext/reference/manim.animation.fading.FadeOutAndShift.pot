@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,14 +28,6 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.fading.FadeOutAndShift.rst:18:<autosummary>:1
+#: ../../source/reference/manim.animation.fading.FadeOutAndShift.rst:16:<autosummary>:1
 msgid ":obj:`create_target <manim.animation.fading.FadeOutAndShift.create_target>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.fading.FadeOutAndShift.rst:20
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.animation.fading.FadeOutAndShift.rst:23:<autosummary>:1
-msgid ":obj:`CONFIG <manim.animation.fading.FadeOutAndShift.CONFIG>`\\"
 msgstr ""

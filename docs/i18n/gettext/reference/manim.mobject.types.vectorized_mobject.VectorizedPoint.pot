@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,26 +28,18 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:19:<autosummary>:1
 msgid ":obj:`get_height <manim.mobject.types.vectorized_mobject.VectorizedPoint.get_height>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:19:<autosummary>:1
 msgid ":obj:`get_location <manim.mobject.types.vectorized_mobject.VectorizedPoint.get_location>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:19:<autosummary>:1
 msgid ":obj:`get_width <manim.mobject.types.vectorized_mobject.VectorizedPoint.get_width>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:19:<autosummary>:1
 msgid ":obj:`set_location <manim.mobject.types.vectorized_mobject.VectorizedPoint.set_location>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:23
-msgid "Attributes"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.types.vectorized_mobject.VectorizedPoint.rst:26:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.types.vectorized_mobject.VectorizedPoint.CONFIG>`\\"
 msgstr ""

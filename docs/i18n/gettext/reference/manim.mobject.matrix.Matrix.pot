@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,66 +32,58 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`add_background_to_entries <manim.mobject.matrix.Matrix.add_background_to_entries>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`add_brackets <manim.mobject.matrix.Matrix.add_brackets>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`get_brackets <manim.mobject.matrix.Matrix.get_brackets>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`get_columns <manim.mobject.matrix.Matrix.get_columns>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`get_entries <manim.mobject.matrix.Matrix.get_entries>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`get_mob_matrix <manim.mobject.matrix.Matrix.get_mob_matrix>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`get_rows <manim.mobject.matrix.Matrix.get_rows>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1
 msgid "Return rows of the matrix as VGroups"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`matrix_to_mob_matrix <manim.mobject.matrix.Matrix.matrix_to_mob_matrix>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`organize_mob_matrix <manim.mobject.matrix.Matrix.organize_mob_matrix>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`set_column_colors <manim.mobject.matrix.Matrix.set_column_colors>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 msgid ":obj:`set_row_colors <manim.mobject.matrix.Matrix.set_row_colors>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:28:<autosummary>:1
+#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.set_row_colors:1
 msgid "Set individual colors for each row of the matrix"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.matrix.Matrix.rst:30
-msgid "Attributes"
-msgstr ""
-
-#: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.matrix.Matrix.CONFIG>`\\"
 msgstr ""
 
 #: ../../../manim/mobject/matrix.py:docstring of manim.mobject.matrix.Matrix.get_rows:0

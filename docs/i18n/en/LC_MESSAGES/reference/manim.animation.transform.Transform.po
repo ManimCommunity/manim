@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,62 +29,61 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`begin <manim.animation.transform.Transform.begin>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`check_target_mobject_validity "
 "<manim.animation.transform.Transform.check_target_mobject_validity>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`clean_up_from_scene "
 "<manim.animation.transform.Transform.clean_up_from_scene>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`create_target <manim.animation.transform.Transform.create_target>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_all_families_zipped "
 "<manim.animation.transform.Transform.get_all_families_zipped>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_all_mobjects "
 "<manim.animation.transform.Transform.get_all_mobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
-#: manim.animation.transform.Transform.get_all_mobjects:1 of
+#: manim.animation.transform.Transform.get_all_mobjects:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid "Ordering must match the ording of arguments to interpolate_submobject"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
-msgid ":obj:`init_path_func <manim.animation.transform.Transform.init_path_func>`"
-msgstr ""
-
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid ""
 ":obj:`interpolate_submobject "
 "<manim.animation.transform.Transform.interpolate_submobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:26:<autosummary>:1
+#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
 msgid ":obj:`update_config <manim.animation.transform.Transform.update_config>`"
 msgstr ""
 
-#: ../../source/reference/manim.animation.transform.Transform.rst:28
-msgid "Attributes"
-msgstr ""
+#~ msgid ""
+#~ ":obj:`init_path_func "
+#~ "<manim.animation.transform.Transform.init_path_func>`"
+#~ msgstr ""
 
-#: manim.animation.transform.Transform.get_all_mobjects:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.animation.transform.Transform.CONFIG>`\\"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.animation.transform.Transform.CONFIG>`\\"
+#~ msgstr ""
 

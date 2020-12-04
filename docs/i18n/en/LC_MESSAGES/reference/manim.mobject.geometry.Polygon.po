@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,19 +29,17 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Polygon.rst:19:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Polygon.rst:17:<autosummary>:1
 msgid ":obj:`get_vertices <manim.mobject.geometry.Polygon.get_vertices>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Polygon.rst:19:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.Polygon.rst:17:<autosummary>:1
 msgid ":obj:`round_corners <manim.mobject.geometry.Polygon.round_corners>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Polygon.rst:21
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.geometry.Polygon.rst:24:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.geometry.Polygon.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.geometry.Polygon.CONFIG>`\\"
+#~ msgstr ""
 

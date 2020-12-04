@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,35 +37,33 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:19:<autosummary>:1
 msgid ""
 ":obj:`generate_points "
 "<manim.mobject.functions.ParametricFunction.generate_points>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:19:<autosummary>:1
 msgid ""
 ":obj:`get_function "
 "<manim.mobject.functions.ParametricFunction.get_function>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:19:<autosummary>:1
 msgid ""
 ":obj:`get_point_from_function "
 "<manim.mobject.functions.ParametricFunction.get_point_from_function>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:19:<autosummary>:1
 msgid ""
 ":obj:`get_step_size "
 "<manim.mobject.functions.ParametricFunction.get_step_size>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:23
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: ../../source/reference/manim.mobject.functions.ParametricFunction.rst:26:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.functions.ParametricFunction.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.functions.ParametricFunction.CONFIG>`\\"
+#~ msgstr ""
 

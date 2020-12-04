@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,10 +98,6 @@ msgid "Attributes"
 msgstr ""
 
 #: manim.scene.three_d_scene.SpecialThreeDScene.get_axes:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.scene.three_d_scene.SpecialThreeDScene.CONFIG>`\\"
-msgstr ""
-
-#: manim.scene.three_d_scene.SpecialThreeDScene.get_axes:1:<autosummary>:1 of
 msgid ":obj:`camera <manim.scene.three_d_scene.SpecialThreeDScene.camera>`\\"
 msgstr ""
 
@@ -145,4 +141,7 @@ msgstr ""
 #: manim.scene.three_d_scene.SpecialThreeDScene.get_sphere:6 of
 msgid ":class:`.Sphere`"
 msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.scene.three_d_scene.SpecialThreeDScene.CONFIG>`\\"
+#~ msgstr ""
 

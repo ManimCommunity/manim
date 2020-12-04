@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,62 +28,54 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid ":obj:`get_axes <manim.mobject.coordinate_systems.NumberPlane.get_axes>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid ":obj:`get_center_point <manim.mobject.coordinate_systems.NumberPlane.get_center_point>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid ":obj:`get_lines <manim.mobject.coordinate_systems.NumberPlane.get_lines>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid "Generate all the lines, faded and not faded."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid ":obj:`get_lines_parallel_to_axis <manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:1
 msgid "Generate a set of lines parallel to an axis."
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid ":obj:`get_vector <manim.mobject.coordinate_systems.NumberPlane.get_vector>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid ":obj:`get_x_unit_size <manim.mobject.coordinate_systems.NumberPlane.get_x_unit_size>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid ":obj:`get_y_unit_size <manim.mobject.coordinate_systems.NumberPlane.get_y_unit_size>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 msgid ":obj:`init_background_lines <manim.mobject.coordinate_systems.NumberPlane.init_background_lines>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
+#: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.init_background_lines:1
 msgid "Will init all the lines of NumberPlanes (faded or not)"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:26:<autosummary>:1
-msgid ":obj:`prepare_for_nonlinear_transform <manim.mobject.coordinate_systems.NumberPlane.prepare_for_nonlinear_transform>`"
-msgstr ""
-
-#: ../../source/reference/manim.mobject.coordinate_systems.NumberPlane.rst:28
-msgid "Attributes"
-msgstr ""
-
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1:<autosummary>:1
-msgid ":obj:`CONFIG <manim.mobject.coordinate_systems.NumberPlane.CONFIG>`\\"
+msgid ":obj:`prepare_for_nonlinear_transform <manim.mobject.coordinate_systems.NumberPlane.prepare_for_nonlinear_transform>`"
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines:1
@@ -122,7 +114,7 @@ msgid "The axis with which the lines will be perpendicular."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:7
-msgid "The number of faded lines between each non-faded line."
+msgid "The ratio between the space between faded lines and the space between non-faded lines."
 msgstr ""
 
 #: ../../../manim/mobject/coordinate_systems.py:docstring of manim.mobject.coordinate_systems.NumberPlane.get_lines_parallel_to_axis:9

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,99 +29,97 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ":obj:`add_numbers <manim.mobject.number_line.NumberLine.add_numbers>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`add_tick_marks "
 "<manim.mobject.number_line.NumberLine.add_tick_marks>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`default_numbers_to_display "
 "<manim.mobject.number_line.NumberLine.default_numbers_to_display>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ":obj:`get_labels <manim.mobject.number_line.NumberLine.get_labels>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_number_mobject "
 "<manim.mobject.number_line.NumberLine.get_number_mobject>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_number_mobjects "
 "<manim.mobject.number_line.NumberLine.get_number_mobjects>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ":obj:`get_tick <manim.mobject.number_line.NumberLine.get_tick>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_tick_marks "
 "<manim.mobject.number_line.NumberLine.get_tick_marks>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`get_tick_numbers "
 "<manim.mobject.number_line.NumberLine.get_tick_numbers>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ":obj:`get_unit_size <manim.mobject.number_line.NumberLine.get_unit_size>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`init_leftmost_tick "
 "<manim.mobject.number_line.NumberLine.init_leftmost_tick>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ":obj:`n2p <manim.mobject.number_line.NumberLine.n2p>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
-#: manim.mobject.number_line.NumberLine.n2p:1 of
+#: manim.mobject.number_line.NumberLine.n2p:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid "Abbreviation for number_to_point"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`number_to_point "
 "<manim.mobject.number_line.NumberLine.number_to_point>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ":obj:`p2n <manim.mobject.number_line.NumberLine.p2n>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1
 #: manim.mobject.number_line.NumberLine.p2n:1 of
 msgid "Abbreviation for point_to_number"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:32:<autosummary>:1
+#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
 msgid ""
 ":obj:`point_to_number "
 "<manim.mobject.number_line.NumberLine.point_to_number>`"
 msgstr ""
 
-#: ../../source/reference/manim.mobject.number_line.NumberLine.rst:34
-msgid "Attributes"
-msgstr ""
+#~ msgid "Attributes"
+#~ msgstr ""
 
-#: manim.mobject.number_line.NumberLine.n2p:1:<autosummary>:1 of
-msgid ":obj:`CONFIG <manim.mobject.number_line.NumberLine.CONFIG>`\\"
-msgstr ""
+#~ msgid ":obj:`CONFIG <manim.mobject.number_line.NumberLine.CONFIG>`\\"
+#~ msgstr ""
 

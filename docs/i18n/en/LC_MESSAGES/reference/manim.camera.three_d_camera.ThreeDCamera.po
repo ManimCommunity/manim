@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -327,11 +327,6 @@ msgstr ""
 
 #: manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:1:<autosummary>:1
 #: of
-msgid ":obj:`CONFIG <manim.camera.three_d_camera.ThreeDCamera.CONFIG>`\\"
-msgstr ""
-
-#: manim.camera.three_d_camera.ThreeDCamera.add_fixed_in_frame_mobjects:1:<autosummary>:1
-#: of
 msgid ""
 ":obj:`background_color "
 "<manim.camera.three_d_camera.ThreeDCamera.background_color>`\\"
@@ -562,4 +557,7 @@ msgstr ""
 #: manim.camera.three_d_camera.ThreeDCamera.set_theta:3 of
 msgid "The new value of the azimuthal angle in radians."
 msgstr ""
+
+#~ msgid ":obj:`CONFIG <manim.camera.three_d_camera.ThreeDCamera.CONFIG>`\\"
+#~ msgstr ""
 
