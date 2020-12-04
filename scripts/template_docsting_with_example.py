@@ -20,6 +20,9 @@ class SomeClass:
     :class:`VMobject`
         Returns self.
 
+    Tests
+    -----
+
     Yields
     -------
 
@@ -62,7 +65,13 @@ class SomeClass:
     References
     ------
 
+
+    other useful constructs:
+
     .. tip::
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
+
+    .. note::
+        This is something to note
 
     """
