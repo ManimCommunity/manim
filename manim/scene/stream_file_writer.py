@@ -11,32 +11,32 @@ from ..utils.file_ops import guarantee_existence
 
 
 class StreamFileWriter(SceneFileWriter):
-
-    FOLDER_PATH = ""
-
     def __init__(self, renderer, video_quality_config, **kwargs):
         super().__init__(renderer, video_quality_config, "", **kwargs)
-        self.refresh_folder_path()
+        path = os.path.join(config.get_dir("streaming_dir"), "clips")
+        self.FOLDER_PATH = os.path.relpath(guarantee_existence(path))
+        # To prevent extensive overwriting
         self.partial_movie_directory = self.FOLDER_PATH
 
     def init_output_directories(self, scene_name):
+        """The original :class:`SceneFileWriter` uses this method while initializing.
+        I need most of that initialization, minus this. Hence kicked to the curb.
+        """
         pass
-
-    @classmethod
-    def refresh_folder_path(cls):
-        path = os.path.join(config.get_dir("streaming_dir"), "clips")
-        if path != cls.FOLDER_PATH:
-            cls.FOLDER_PATH = os.path.relpath(guarantee_existence(path))
 
     @property
     def file_path(self):
         return self.partial_movie_files[-1]
 
     def end_animation(self, allow_write=False):
+        """The point in the animation where the file exists.
+        """
         super().end_animation(allow_write=allow_write)
         self.stream()
 
     def combine_movie_files(self):
+        """Also to reduce overriding code.
+        """
         pass
 
     def stream(self):

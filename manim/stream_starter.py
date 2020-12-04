@@ -2,19 +2,16 @@ import code
 
 from colorama import Fore
 from colorama import Style
-from . import logger
 
-from .scene.streaming_scene import Stream
+from .scene.streaming_scene import get_streamer
+from .scene.scene import Scene
 
 
 __all__ = ["livestream", "stream"]
 
 
-class BasicStreamer(Stream):
-    pass
-
-
-info = """Manim is now running in streaming mode. Stream animations by passing
+info = """
+Manim is now running in streaming mode. Stream animations by passing
 them to manim.play(), e.g.
 
 >>> c = Circle()
@@ -24,10 +21,13 @@ The current streaming class under the name `manim` inherits from the
 original Scene class. To create a streaming class which inherits from 
 another scene class, e.g. MovingCameraScene, create it with the syntax:
 
->>> class AnotherStreamer(Stream, scene=MovingCameraScene):
-...     pass
-... 
->>> manim2 = AnotherStreamer()
+>>> manim2 = get_streamer(MovingCameraScene)
+>>> 
+
+Did you say multiple inheritance?
+
+>>> manim3 = get_streamer(MovingCameraScene, LinearTransformationScene)
+>>> 
 
 To view an image of the current state of the scene or mobject, use: 
 
@@ -39,13 +39,10 @@ To view an image of the current state of the scene or mobject, use:
 
 def livestream():
     "Main purpose code"
-    variables = {"Stream": Stream, "manim": BasicStreamer()}
+    variables = {"manim": get_streamer(), "get_streamer": get_streamer}
     shell = code.InteractiveConsole(variables)
     shell.push("from manim import *")
-    # To identify the scene area in a black background
-    shell.push("_ = manim.add(FullScreenRectangle())")
-    logger.info(info)
-    shell.interact(banner="")
+    shell.interact(banner=f"{Fore.GREEN}{info}{Style.RESET_ALL}")
 
 
 def stream():
@@ -56,4 +53,4 @@ def stream():
     >>> circ = Circle()
     >>> manim.play(ShowCreation(circ))
     """
-    return BasicStreamer()
+    return get_streamer()

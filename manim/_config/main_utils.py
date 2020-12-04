@@ -413,7 +413,6 @@ def _parse_args_no_subcmd(args):
     )
 
     # Overrides default false streaming so streaming can happen
-    # ? Should we really screw over anyone who uses this with the other commands
     parser.add_argument(
         "--livestream",
         action="store_true",
