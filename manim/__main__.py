@@ -1,10 +1,8 @@
 import os
-import platform
 import sys
 import traceback
 
-from manim import constants, logger, console, config
-from manim import Scene
+from manim import logger, config
 from manim.utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
@@ -53,7 +51,7 @@ def main():
     if hasattr(args, "cmd"):
         if args.cmd == "cfg":
             if args.subcmd:
-                from manim.config import cfg_subcmds
+                from manim._config import cfg_subcmds
 
                 if args.subcmd == "write":
                     cfg_subcmds.write(args.level, args.open)
@@ -63,6 +61,14 @@ def main():
                     cfg_subcmds.export(args.dir)
             else:
                 logger.error("No subcommand provided; Exiting...")
+
+        elif args.cmd == "plugins":
+            from manim.plugins import plugins_flags
+
+            if args.list:
+                plugins_flags.list_plugins()
+            elif not args.list:
+                logger.error("No flag provided; Exiting...")
 
         # elif args.cmd == "some_other_cmd":
         #     something_else_here()

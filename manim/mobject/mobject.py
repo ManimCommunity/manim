@@ -42,26 +42,21 @@ class Mobject(Container):
 
     """
 
-    CONFIG = {
-        "color": WHITE,
-        "name": None,
-        "dim": 3,
-        "target": None,
-        "z_index": 0,
-    }
-
-    def __init__(self, **kwargs):
-        Container.__init__(self, **kwargs)
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
+        self.color = color
+        self.name = self.__class__.__name__ if name is None else name
+        self.dim = dim
+        self.target = target
+        self.z_index = z_index
         self.point_hash = None
         self.submobjects = []
         self.color = Color(self.color)
-        if self.name is None:
-            self.name = self.__class__.__name__
         self.updaters = []
         self.updating_suspended = False
         self.reset_points()
         self.generate_points()
         self.init_colors()
+        Container.__init__(self, **kwargs)
 
     def __repr__(self):
         return str(self.name)
@@ -96,6 +91,9 @@ class Mobject(Container):
         ------
         :class:`ValueError`
             When a mobject tries to add itself.
+        :class:`TypeError`
+            When trying to add an object that is not an instance of :class:`Mobject`.
+
 
         Notes
         -----
@@ -130,8 +128,11 @@ class Mobject(Container):
             ValueError: Mobject cannot contain self
 
         """
-        if self in mobjects:
-            raise ValueError("Mobject cannot contain self")
+        for m in mobjects:
+            if not isinstance(m, Mobject):
+                raise TypeError("All submobjects must be of type Mobject")
+            if m is self:
+                raise ValueError("Mobject cannot contain self")
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
@@ -208,7 +209,7 @@ class Mobject(Container):
     def generate_target(self, use_deepcopy=False):
         self.target = None  # Prevent exponential explosion
         if use_deepcopy:
-            self.target = self.deepcopy()
+            self.target = copy.deepcopy(self)
         else:
             self.target = self.copy()
         return self.target
@@ -698,7 +699,7 @@ class Mobject(Container):
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
-        self.color = color
+        self.color = Color(color)
         return self
 
     def set_color_by_gradient(self, *colors):
@@ -1242,7 +1243,5 @@ class Group(Mobject):
     """Groups together multiple Mobjects."""
 
     def __init__(self, *mobjects, **kwargs):
-        if not all([isinstance(m, Mobject) for m in mobjects]):
-            raise TypeError("All submobjects must be of type Mobject")
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)
