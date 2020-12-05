@@ -879,7 +879,7 @@ class Scene(Container):
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering:
-                self.renderer.render(self.moving_mobjects)
+                self.renderer.render(self, self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
                 break
