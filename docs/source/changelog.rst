@@ -93,15 +93,12 @@ Mobjects, Scenes, and Animations
 #. Added BraceBetweenPoints (via :pr:`693`).
 #. Added ArcPolygon and ArcPolygonFromArcs (via :pr:`707`).
 #. Added Cutout (via :pr:`760`).
-<<<<<<< HEAD
 #. Added Mobject raise not implemented errors for dunder methods and implementations for VGroup dunder methods (via :pr:`790`).
-=======
 #. Added :class:`~.ManimBanner` for a animated version of our logo and banner (via :pr:`729`)
 #. The background color of a scene can now be changed reliably by setting, e.g.,
    ``self.camera.background_color = RED`` (via :pr:`716`).
 
 
->>>>>>> master
 
 ******
 v0.1.0
