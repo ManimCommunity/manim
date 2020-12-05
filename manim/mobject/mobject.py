@@ -43,14 +43,13 @@ class Mobject(Container):
     """
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
-        self.color = color
+        self.color = Color(color)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
         self.z_index = z_index
         self.point_hash = None
         self.submobjects = []
-        self.color = Color(self.color)
         self.updaters = []
         self.updating_suspended = False
         self.reset_points()
@@ -137,6 +136,9 @@ class Mobject(Container):
         return self
 
     def add_to_back(self, *mobjects):
+        """Adds (or moves) all *mobjects to the head of the self.submobjects list.
+        The head of the list is rendered first - i.e. at the back of the scene.
+        """
         self.remove(*mobjects)
         self.submobjects = list(mobjects) + self.submobjects
         return self
@@ -169,16 +171,17 @@ class Mobject(Container):
     def get_array_attrs(self):
         return ["points"]
 
-    def digest_mobject_attrs(self):
-        """
-        Ensures all attributes which are mobjects are included
-        in the submobjects list.
-        """
-        mobject_attrs = [
-            x for x in list(self.__dict__.values()) if isinstance(x, Mobject)
-        ]
-        self.submobjects = list_update(self.submobjects, mobject_attrs)
-        return self
+    # This does not seem to be in use any more:
+    # def digest_mobject_attrs(self):
+    #     """
+    #     Ensures all attributes which are mobjects are included
+    #     in the submobjects list.
+    #     """
+    #     mobject_attrs = [
+    #         x for x in list(self.__dict__.values()) if isinstance(x, Mobject)
+    #     ]
+    #     self.submobjects = list_update(self.submobjects, mobject_attrs)
+    #     return self
 
     def apply_over_attr_arrays(self, func):
         for attr in self.get_array_attrs():
@@ -207,7 +210,7 @@ class Mobject(Container):
         return copy.deepcopy(self)
 
     def generate_target(self, use_deepcopy=False):
-        self.target = None  # Prevent exponential explosion
+        self.target = None  # Prevent unbounded linear recursion
         if use_deepcopy:
             self.target = copy.deepcopy(self)
         else:
@@ -584,7 +587,7 @@ class Mobject(Container):
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
     def stretch_to_fit_depth(self, depth, **kwargs):
-        return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
+        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def set_width(self, width, stretch=False, **kwargs):
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
