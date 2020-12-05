@@ -11,7 +11,6 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import os
-import subprocess
 import sys
 from distutils.sysconfig import get_python_lib
 from pathlib import Path
@@ -61,12 +60,19 @@ extensions = [
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
 
+# generate documentation from type hints
+autodoc_typehints = "description"
+autoclass_content = "both"
+
 # controls whether functions documented by the autofunction directive
 # appear with their full module names
 add_module_names = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
+
+# Custom section headings in our documentation
+napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

@@ -17,14 +17,12 @@ import numpy as np
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait
-from ..animation.transform import MoveToTarget, ApplyMethod
+from ..animation.transform import MoveToTarget
 from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject
-from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.iterables import list_update, list_difference_update
-from ..utils.hashing import get_hash_from_play_call, get_hash_from_wait_call
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
@@ -40,40 +38,47 @@ def get_random_name(name_map):
 class Scene(Container):
     """A Scene is the canvas of your animation.
 
-    All of your own named Scenes will be subclasses of Scene, or other named
-    scenes.
+    The primary role of :class:`Scene` is to provide the user with tools to manage
+    mobjects and animations.  Generally speaking, a manim script consists of a class
+    that derives from :class:`Scene` whose :meth:`Scene.construct` method is overriden
+    by the user's code.
+
+    Mobjects are displayed on screen by calling :meth:`Scene.add` and removed from
+    screen by calling :meth:`Scene.remove`.  All mobjects currently on screen are kept
+    in :attr:`Scene.mobjects`.  Animations are played by calling :meth:`Scene.play`.
+
+    A :class:`Scene` is rendered internally by calling :meth:`Scene.render`.  This in
+    turn calls :meth:`Scene.setup`, :meth:`Scene.construct`, and
+    :meth:`Scene.tear_down`, in that order.
+
+    It is not recommended to override the ``__init__`` method in user Scenes.  For code
+    that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
+
 
     Examples
     --------
-    Override the construct() method to tell Manim what should go on in the
-    Scene.
+    Override the :meth:`Scene.construct` method with your code.
 
     .. code-block:: python
 
         class MyScene(Scene):
             def construct(self):
-                self.play(
-                    Write(Text("Hello World!"))
-                )
-
-    Some important variables to note are:
-        camera: The camera object to be used for the scene.
-        file_writer : The object that writes the animations in the scene to a video file.
-        mobjects : The list of mobjects present in the scene.
-        foreground_mobjects : List of mobjects explicitly in the foreground.
-        random_seed: The seed with which all random operations are done.
+                self.play(Write(Text("Hello World!")))
 
     """
 
-    CONFIG = {
-        "camera_class": Camera,
-        "skip_animations": False,
-        "always_update_mobjects": False,
-        "random_seed": 0,
-    }
+    def __init__(
+        self,
+        renderer=None,
+        camera_class=Camera,
+        always_update_mobjects=False,
+        random_seed=0,
+        **kwargs,
+    ):
+        self.camera_class = camera_class
+        self.always_update_mobjects = always_update_mobjects
+        self.random_seed = random_seed
 
-    def __init__(self, renderer=None, **kwargs):
-        Container.__init__(self, **kwargs)
         self.animations = None
         self.stop_condition = None
         self.moving_mobjects = None
@@ -83,7 +88,10 @@ class Scene(Container):
         self.last_t = None
 
         if renderer is None:
-            self.renderer = CairoRenderer(camera_class=self.camera_class)
+            self.renderer = CairoRenderer(
+                camera_class=self.camera_class,
+                skip_animations=kwargs.get("skip_animations", False),
+            )
         else:
             self.renderer = renderer
         self.renderer.init_scene(self)
@@ -95,7 +103,11 @@ class Scene(Container):
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
-        self.setup()
+        Container.__init__(self, **kwargs)
+
+    @property
+    def camera(self):
+        return self.renderer.camera
 
     def __deepcopy__(self, memo):
         cls = self.__class__
@@ -153,14 +165,13 @@ class Scene(Container):
         """
         Render this Scene.
         """
-        self.original_skipping_status = config["skip_animations"]
+        self.setup()
         try:
             self.construct()
         except EndSceneEarlyException:
             pass
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
-        config["skip_animations"] = self.original_skipping_status
         self.renderer.scene_finished(self)
         logger.info(
             f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
@@ -183,9 +194,35 @@ class Scene(Container):
         pass
 
     def construct(self):
-        """
-        The primary method for constructing (i.e adding content to)
-        the Scene.
+        """Add content to the Scene.
+
+        From within :meth:`Scene.construct`, display mobjects on screen by calling
+        :meth:`Scene.add` and remove them from screen by calling :meth:`Scene.remove`.
+        All mobjects currently on screen are kept in :attr:`Scene.mobjects`.  Play
+        animations by calling :meth:`Scene.play`.
+
+        Notes
+        -----
+        Initialization code should go in :meth:`Scene.setup`.  Termination code should
+        go in :meth:`Scene.tear_down`.
+
+        Examples
+        --------
+        A typical manim script includes a class derived from :class:`Scene` with an
+        overriden :meth:`Scene.contruct` method:
+
+        .. code-block:: python
+
+            class MyScene(Scene):
+                def construct(self):
+                    self.play(Write(Text("Hello World!")))
+
+        See Also
+        --------
+        :meth:`Scene.setup`
+        :meth:`Scene.render`
+        :meth:`Scene.tear_down`
+
         """
         pass  # To be implemented in subclasses
 
@@ -244,14 +281,13 @@ class Scene(Container):
         """
         # Return only those which are not in the family
         # of another mobject from the scene
-        mobjects = self.get_mobjects()
-        families = [m.get_family() for m in mobjects]
+        families = [m.get_family() for m in self.mobjects]
 
         def is_top_level(mobject):
             num_families = sum([(mobject in family) for family in families])
             return num_families == 1
 
-        return list(filter(is_top_level, mobjects))
+        return list(filter(is_top_level, self.mobjects))
 
     def get_mobject_family_members(self):
         """
@@ -288,15 +324,6 @@ class Scene(Container):
         mobjects = [*mobjects, *self.foreground_mobjects]
         self.restructure_mobjects(to_remove=mobjects)
         self.mobjects += mobjects
-        return self
-
-    def add_mobjects_among(self, values):
-        """
-        This is meant mostly for quick prototyping,
-        e.g. to add all mobjects defined up to a point,
-        call self.add_mobjects_among(locals().values())
-        """
-        self.add(*filter(lambda m: isinstance(m, Mobject), values))
         return self
 
     def add_mobjects_from_animations(self, animations):
@@ -526,30 +553,6 @@ class Scene(Container):
         self.foreground_mobjects = []
         return self
 
-    def get_mobjects(self):
-        """
-        Returns all the mobjects in self.mobjects
-
-        Returns
-        ------
-        list
-            The list of self.mobjects .
-        """
-        return list(self.mobjects)
-
-    def get_mobject_copies(self):
-        """
-        Returns a copy of all mobjects present in
-        self.mobjects .
-
-        Returns
-        ------
-        list
-            A list of the copies of all the mobjects
-            in self.mobjects
-        """
-        return [m.copy() for m in self.mobjects]
-
     def get_moving_mobjects(self, *animations):
         """
         Gets all moving mobjects in the passed animation(s).
@@ -605,7 +608,7 @@ class Scene(Container):
         by a dict of kwargs for that method).
         This animation list is built by going through the args list,
         and each animation is simply added, but when a mobject method
-        s hit, a MoveToTarget animation is built using the args that
+        is hit, a MoveToTarget animation is built using the args that
         follow up until either another animation is hit, another method
         is hit, or the args list runs out.
 
@@ -677,7 +680,29 @@ class Scene(Container):
 
         return animations
 
-    def get_animation_time_progression(self, animations, duration):
+    def _get_animation_time_progression(self, animations, duration):
+        """
+        You will hardly use this when making your own animations.
+        This method is for Manim's internal use.
+
+        Uses :func:`~.get_time_progression` to obtain a
+        CommandLine ProgressBar whose ``fill_time`` is
+        dependent on the qualities of the passed Animation,
+
+        Parameters
+        ----------
+        animations : List[:class:`~.Animation`, ...]
+            The list of animations to get
+            the time progression for.
+
+        duration : int or float
+            duration of wait time
+
+        Returns
+        -------
+        time_progression
+            The CommandLine Progress Bar.
+        """
         if len(animations) == 1 and isinstance(animations[0], Wait):
             stop_condition = animations[0].stop_condition
             if stop_condition is not None:
@@ -733,7 +758,7 @@ class Scene(Container):
         time_progression
             The CommandLine Progress Bar.
         """
-        if config["skip_animations"] and not override_skip_animations:
+        if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
             step = 1 / self.renderer.camera.frame_rate
@@ -828,7 +853,7 @@ class Scene(Container):
             self.renderer.save_static_frame_data(self, self.static_mobjects)
 
         self.duration = self.get_run_time(self.animations)
-        self.time_progression = self.get_animation_time_progression(
+        self.time_progression = self._get_animation_time_progression(
             self.animations, self.duration
         )
 
@@ -845,9 +870,11 @@ class Scene(Container):
 
         Parameters
         ----------
-        *args : Animation or mobject with mobject method and params
-        **kwargs : named parameters affecting what was passed in *args e.g
-            run_time, lag_ratio etc.
+        args
+            Animation or mobject with mobject method and params
+        kwargs
+            named parameters affecting what was passed in ``args``,
+            e.g. ``run_time``, ``lag_ratio`` and so on.
         """
         for t in self.time_progression:
             self.update_to_time(t)
@@ -895,7 +922,7 @@ class Scene(Container):
         gain :
 
         """
-        if config["skip_animations"]:
+        if self.renderer.skip_animations:
             return
         time = self.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)

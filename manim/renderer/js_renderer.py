@@ -3,6 +3,7 @@ import copy
 
 class JsRenderer:
     def __init__(self, frame_server):
+        self.skip_animations = True
         self.frame_server = frame_server
         self.camera = JsCamera()
         self.num_plays = 0

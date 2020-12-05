@@ -42,37 +42,59 @@ from ...utils.space_ops import shoelace_direction
 
 
 class VMobject(Mobject):
-    CONFIG = {
-        "fill_color": None,
-        "fill_opacity": 0.0,
-        "stroke_color": None,
-        "stroke_opacity": 1.0,
-        "stroke_width": DEFAULT_STROKE_WIDTH,
+    def __init__(
+        self,
+        fill_color=None,
+        fill_opacity=0.0,
+        stroke_color=None,
+        stroke_opacity=1.0,
+        stroke_width=DEFAULT_STROKE_WIDTH,
         # The purpose of background stroke is to have
         # something that won't overlap the fill, e.g.
         # For text against some textured background
-        "background_stroke_color": BLACK,
-        "background_stroke_opacity": 1.0,
-        "background_stroke_width": 0,
+        background_stroke_color=BLACK,
+        background_stroke_opacity=1.0,
+        background_stroke_width=0,
         # When a color c is set, there will be a second color
         # computed based on interpolating c to WHITE by with
         # sheen_factor, and the display will gradient to this
         # secondary color in the direction of sheen_direction.
-        "sheen_factor": 0.0,
-        "sheen_direction": UL,
+        sheen_factor=0.0,
+        sheen_direction=UL,
         # Indicates that it will not be displayed, but
         # that it should count in parent mobject's path
-        "close_new_points": False,
-        "pre_function_handle_to_anchor_scale_factor": 0.01,
-        "make_smooth_after_applying_functions": False,
-        "background_image_file": None,
-        "shade_in_3d": False,
+        close_new_points=False,
+        pre_function_handle_to_anchor_scale_factor=0.01,
+        make_smooth_after_applying_functions=False,
+        background_image_file=None,
+        shade_in_3d=False,
         # This is within a pixel
         # TODO, do we care about accounting for
         # varying zoom levels?
-        "tolerance_for_point_equality": 1e-6,
-        "n_points_per_cubic_curve": 4,
-    }
+        tolerance_for_point_equality=1e-6,
+        n_points_per_cubic_curve=4,
+        **kwargs
+    ):
+        self.fill_color = fill_color
+        self.fill_opacity = fill_opacity
+        self.stroke_color = stroke_color
+        self.stroke_opacity = stroke_opacity
+        self.stroke_width = stroke_width
+        self.background_stroke_color = background_stroke_color
+        self.background_stroke_opacity = background_stroke_opacity
+        self.background_stroke_width = background_stroke_width
+        self.sheen_factor = sheen_factor
+        self.sheen_direction = sheen_direction
+        self.close_new_points = close_new_points
+        self.pre_function_handle_to_anchor_scale_factor = (
+            pre_function_handle_to_anchor_scale_factor
+        )
+        self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
+        self.background_image_file = background_image_file
+        self.shade_in_3d = shade_in_3d
+        self.tolerance_for_point_equality = tolerance_for_point_equality
+        self.n_points_per_cubic_curve = n_points_per_cubic_curve
+        Mobject.__init__(self, **kwargs)
 
     def get_group_class(self):
         return VGroup
@@ -252,6 +274,7 @@ class VMobject(Mobject):
     def set_color(self, color, family=True):
         self.set_fill(color, family=family)
         self.set_stroke(color, family=family)
+        self.color = colour.Color(color)
         return self
 
     def set_opacity(self, opacity, family=True):
@@ -616,7 +639,7 @@ class VMobject(Mobject):
 
         Generator to not materialize a list or np.array needlessly.
         """
-        nppcc = VMobject.CONFIG["n_points_per_cubic_curve"]
+        nppcc = self.n_points_per_cubic_curve
         remainder = len(points) % nppcc
         points = points[: len(points) - remainder]
         return (points[i : i + nppcc] for i in range(0, len(points), nppcc))
@@ -889,14 +912,14 @@ class VMobject(Mobject):
         --------
         The default direction of a :class:`~.Circle` is counterclockwise::
 
-        >>> from manim import Circle
-        >>> Circle().get_direction()
-        'CCW'
+            >>> from manim import Circle
+            >>> Circle().get_direction()
+            'CCW'
 
         Returns
         -------
         :class:`str`
-            Either `"CW"` or `"CCW"`.
+            Either ``"CW"`` or ``"CCW"``.
         """
         return shoelace_direction(self.get_start_anchors())
 
@@ -940,10 +963,35 @@ class VMobject(Mobject):
             # Since we already assured the input is CW or CCW,
             # and the directions don't match, we just reverse
             self.reverse_direction()
-            return self
+        return self
 
 
 class VGroup(VMobject):
+    """A group of vectorized mobjects.
+
+    This can be used to group multiple :class:`~.VMobject` instances together
+    in order to scale, move, ... them together.
+
+    Examples
+    --------
+
+    .. manim:: ArcShapeIris
+        :save_last_frame:
+
+        class ArcShapeIris(Scene):
+            def construct(self):
+                colors = [DARK_BLUE, DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
+                radius = [1 + rad * 0.1 for rad in range(len(colors))]
+
+                circles_group = VGroup()
+
+                # zip(radius, color) makes the iterator [(radius[i], color[i]) for i in range(radius)]
+                circles_group.add(*[Circle(radius=rad, stroke_width=10, color=col)
+                                    for rad, col in zip(radius, colors)])
+                self.add(circles_group)
+
+    """
+
     def __init__(self, *vmobjects, **kwargs):
         VMobject.__init__(self, **kwargs)
         self.add(*vmobjects)
@@ -992,7 +1040,7 @@ class VDict(VMobject):
             especially when there are a lot of mobjects in the
             :class:`VDict`. Defaults to False.
     kwargs : Any
-            Other arguments to be passed to `Mobject` or the CONFIG.
+            Other arguments to be passed to `Mobject`.
 
     Attributes
     ----------
@@ -1006,6 +1054,74 @@ class VDict(VMobject):
     submob_dict : :class:`dict`
             Is the actual python dictionary that is used to bind
             the keys to the mobjects.
+
+    Examples
+    --------
+
+    .. manim:: ShapesWithVDict
+
+        class ShapesWithVDict(Scene):
+            def construct(self):
+                square = Square().set_color(RED)
+                circle = Circle().set_color(YELLOW).next_to(square, UP)
+
+                # create dict from list of tuples each having key-mobject pair
+                pairs = [("s", square), ("c", circle)]
+                my_dict = VDict(pairs, show_keys=True)
+
+                # display it just like a VGroup
+                self.play(ShowCreation(my_dict))
+                self.wait()
+
+                text = Tex("Some text").set_color(GREEN).next_to(square, DOWN)
+
+                # add a key-value pair by wrapping it in a single-element list of tuple
+                # after attrs branch is merged, it will be easier like `.add(t=text)`
+                my_dict.add([("t", text)])
+                self.wait()
+
+                rect = Rectangle().next_to(text, DOWN)
+                # can also do key assignment like a python dict
+                my_dict["r"] = rect
+
+                # access submobjects like a python dict
+                my_dict["t"].set_color(PURPLE)
+                self.play(my_dict["t"].scale, 3)
+                self.wait()
+
+                # also supports python dict styled reassignment
+                my_dict["t"] = Tex("Some other text").set_color(BLUE)
+                self.wait()
+
+                # remove submoject by key
+                my_dict.remove("t")
+                self.wait()
+
+                self.play(Uncreate(my_dict["s"]))
+                self.wait()
+
+                self.play(FadeOut(my_dict["c"]))
+                self.wait()
+
+                self.play(FadeOutAndShift(my_dict["r"], DOWN))
+                self.wait()
+
+                # you can also make a VDict from an existing dict of mobjects
+                plain_dict = {
+                    1: Integer(1).shift(DOWN),
+                    2: Integer(2).shift(2 * DOWN),
+                    3: Integer(3).shift(3 * DOWN),
+                }
+
+                vdict_from_plain_dict = VDict(plain_dict)
+                vdict_from_plain_dict.shift(1.5 * (UP + LEFT))
+                self.play(ShowCreation(vdict_from_plain_dict))
+
+                # you can even use zip
+                vdict_using_zip = VDict(zip(["s", "c", "r"], [Square(), Circle(), Rectangle()]))
+                vdict_using_zip.shift(1.5 * RIGHT)
+                self.play(ShowCreation(vdict_using_zip))
+                self.wait()
     """
 
     def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
@@ -1053,7 +1169,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submoject to be removed.
 
         Returns
@@ -1074,11 +1190,11 @@ class VDict(VMobject):
         return self
 
     def __getitem__(self, key):
-        """Overriding the [] operator for getting submobject by key
+        """Override the [] operator for item retrieval.
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
            The key of the submoject to be accessed
 
         Returns
@@ -1096,11 +1212,11 @@ class VDict(VMobject):
         return submob
 
     def __setitem__(self, key, value):
-        """Overriding the [] operator for assigning submobject like a python dict
+        """Override the [] operator for item assignment.
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submoject to be assigned
         value : :class:`VMobject`
             The submobject to bind the key to
@@ -1119,6 +1235,62 @@ class VDict(VMobject):
         if key in self.submob_dict:
             self.remove(key)
         self.add([(key, value)])
+
+    def __delitem__(self, key):
+        """Override the del operator for deleting an item.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key of the submoject to be deleted
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+            >>> del my_dict['sq']
+            >>> 'sq' in my_dict
+            False
+
+        Notes
+        -----
+        Removing an item from a VDict does not remove that item from any Scene
+        that the VDict is part of.
+
+        """
+        del self.submob_dict[key]
+
+    def __contains__(self, key):
+        """Override the in operator.
+
+        Parameters
+        ----------
+        key : :class:`typing.Hashable`
+            The key to check membership of.
+
+        Returns
+        -------
+        :class:`bool`
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+
+        """
+        return key in self.submob_dict
 
     def get_all_submobjects(self):
         """To get all the submobjects associated with a particular :class:`VDict` object
@@ -1144,7 +1316,7 @@ class VDict(VMobject):
 
         Parameters
         ----------
-        key : Hashable
+        key : :class:`typing.Hashable`
             The key of the submobject to be added.
         value : :class:`~.VMobject`
             The mobject associated with the key
@@ -1181,16 +1353,25 @@ class VDict(VMobject):
 
 
 class VectorizedPoint(VMobject):
-    CONFIG = {
-        "color": BLACK,
-        "fill_opacity": 0,
-        "stroke_width": 0,
-        "artificial_width": 0.01,
-        "artificial_height": 0.01,
-    }
-
-    def __init__(self, location=ORIGIN, **kwargs):
-        VMobject.__init__(self, **kwargs)
+    def __init__(
+        self,
+        location=ORIGIN,
+        color=BLACK,
+        fill_opacity=0,
+        stroke_width=0,
+        artificial_width=0.01,
+        artificial_height=0.01,
+        **kwargs
+    ):
+        self.artificial_width = artificial_width
+        self.artificial_height = artificial_height
+        VMobject.__init__(
+            self,
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs
+        )
         self.set_points(np.array([location]))
 
     def get_width(self):
@@ -1218,11 +1399,12 @@ class CurvesAsSubmobjects(VGroup):
 
 
 class DashedVMobject(VMobject):
-    CONFIG = {"num_dashes": 15, "positive_space_ratio": 0.5, "color": WHITE}
-
-    def __init__(self, vmobject, **kwargs):
-        VMobject.__init__(self, **kwargs)
-        num_dashes = self.num_dashes
+    def __init__(
+        self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
+    ):
+        self.num_dashes = num_dashes
+        self.positive_space_ratio = positive_space_ratio
+        VMobject.__init__(self, color=color, **kwargs)
         ps_ratio = self.positive_space_ratio
         if num_dashes > 0:
             # End points of the unit interval for division

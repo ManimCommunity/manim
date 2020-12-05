@@ -1,16 +1,9 @@
 """Utilities called from ``__main__.py`` to interact with the config."""
 
 import os
-import sys
 import argparse
-import logging
 
-import colour
-
-from manim import constants, logger, config
-from .utils import make_config_parser
-from .logger_utils import JSONFormatter
-from ..utils.tex import TexTemplate, TexTemplateFromFile
+from manim import constants
 
 
 __all__ = ["parse_args"]
@@ -38,7 +31,8 @@ def _find_subcommand(args):
     """
     subcmd = args[1]
     if subcmd in [
-        "cfg"
+        "cfg",
+        "plugins",
         # , 'init',
     ]:
         return subcmd
@@ -107,9 +101,14 @@ def parse_args(args):
     if args[0] == "python" and args[1] == "-m":
         args = args[2:]
 
+    if len(args) == 1:
+        return _parse_args_no_subcmd(args)
+
     subcmd = _find_subcommand(args)
     if subcmd == "cfg":
         return _parse_args_cfg_subcmd(args)
+    elif subcmd == "plugins":
+        return _parse_args_plugins(args)
     # elif subcmd == some_other_future_subcmd:
     #     return _parse_args_some_other_subcmd(args)
     elif subcmd is None:
@@ -154,6 +153,26 @@ def _parse_args_cfg_subcmd(args):
     return parsed
 
 
+def _parse_args_plugins(args):
+    """Parse arguments of the form 'manim plugins <args>'."""
+    parser = argparse.ArgumentParser(
+        description="Utility command for managing plugins",
+        prog="manim plugins",
+        epilog="Made with <3 by the manim community devs",
+        usage=("%(prog)s -h -l"),
+    )
+
+    parser.add_argument(
+        "-l",
+        "--list",
+        action="store_true",
+        help="Lists all available plugins",
+    )
+    parsed = parser.parse_args(args[2:])
+    parsed.cmd = "plugins"
+    return parsed
+
+
 def _parse_args_no_subcmd(args):
     """Parse arguments of the form 'manim <args>', when no command is present."""
     parser = argparse.ArgumentParser(
@@ -161,7 +180,7 @@ def _parse_args_no_subcmd(args):
         prog="manim",
         usage=(
             "%(prog)s file [flags] [scene [scene ...]]\n"
-            "       %(prog)s {cfg,init} [opts]"
+            "       %(prog)s {cfg,init,plugins} [opts]\n"
         ),
         epilog="Made with <3 by the manim community devs",
     )
@@ -314,7 +333,11 @@ def _parse_args_no_subcmd(args):
     parser.add_argument(
         "-q",
         "--quality",
-        choices=[constants.QUALITIES[q]["flag"] for q in constants.QUALITIES],
+        choices=[
+            constants.QUALITIES[q]["flag"]
+            for q in constants.QUALITIES
+            if constants.QUALITIES[q]["flag"]
+        ],
         default=constants.DEFAULT_QUALITY_SHORT,
         help="Render at specific quality, short form of the --*_quality flags",
     )
