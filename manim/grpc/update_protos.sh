@@ -6,5 +6,4 @@ poetry run python \
     --python_out=./gen \
     --grpc_python_out=./gen \
         ./proto/frameserver.proto \
-        ./proto/renderserver.proto \
-        ./proto/helloworld.proto
+        ./proto/renderserver.proto
