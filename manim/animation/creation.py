@@ -3,6 +3,7 @@ r"""Animate the display or removal of a mobject from a scene.
 .. manim:: CreationModule
     :hide_source:
 
+    from manim import ManimBanner
     class CreationModule(Scene):
         def construct(self):
             s1 = Square()
