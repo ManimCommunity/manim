@@ -7,7 +7,7 @@ from tests.helpers.graphical_units import set_test_scene
 # More about graphical unit tests: https://github.com/ManimCommunity/manim/wiki/Testing#graphical-unit-test
 
 
-class YourClassTest(Scene): # e.g. RoundedRectangleTest
+class YourClassTest(Scene):  # e.g. RoundedRectangleTest
     def construct(self):
         circle = Circle()
         self.play(Animation(circle))
