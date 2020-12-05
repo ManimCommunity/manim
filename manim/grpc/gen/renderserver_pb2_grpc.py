@@ -15,53 +15,65 @@ class RenderServerStub(object):
             channel: A grpc.Channel.
         """
         self.UpdateSceneData = channel.unary_unary(
-                '/renderserver.RenderServer/UpdateSceneData',
-                request_serializer=renderserver__pb2.UpdateSceneDataRequest.SerializeToString,
-                response_deserializer=renderserver__pb2.EmptyResponse.FromString,
-                )
+            "/renderserver.RenderServer/UpdateSceneData",
+            request_serializer=renderserver__pb2.UpdateSceneDataRequest.SerializeToString,
+            response_deserializer=renderserver__pb2.EmptyResponse.FromString,
+        )
 
 
 class RenderServerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def UpdateSceneData(self, request, context):
-        """Called from Manim when a scene has been newly rendered.
-        """
+        """Called from Manim when a scene has been newly rendered."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
 
 
 def add_RenderServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'UpdateSceneData': grpc.unary_unary_rpc_method_handler(
-                    servicer.UpdateSceneData,
-                    request_deserializer=renderserver__pb2.UpdateSceneDataRequest.FromString,
-                    response_serializer=renderserver__pb2.EmptyResponse.SerializeToString,
-            ),
+        "UpdateSceneData": grpc.unary_unary_rpc_method_handler(
+            servicer.UpdateSceneData,
+            request_deserializer=renderserver__pb2.UpdateSceneDataRequest.FromString,
+            response_serializer=renderserver__pb2.EmptyResponse.SerializeToString,
+        ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'renderserver.RenderServer', rpc_method_handlers)
+        "renderserver.RenderServer", rpc_method_handlers
+    )
     server.add_generic_rpc_handlers((generic_handler,))
 
 
- # This class is part of an EXPERIMENTAL API.
+# This class is part of an EXPERIMENTAL API.
 class RenderServer(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def UpdateSceneData(request,
+    def UpdateSceneData(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
             target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/renderserver.RenderServer/UpdateSceneData',
+            "/renderserver.RenderServer/UpdateSceneData",
             renderserver__pb2.UpdateSceneDataRequest.SerializeToString,
             renderserver__pb2.EmptyResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
