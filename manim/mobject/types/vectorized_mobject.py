@@ -973,24 +973,26 @@ class VGroup(VMobject):
     in order to scale, move, ... them together.
 
     To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the
-    :meth:`~.VGroup.add` method, or straightforward addition. Similarly, you
+    :meth:`~.VGroup.add` method, or use the `+` and `+=` operators. Similarly, you
     can subtract elements of a VGroup via :meth:`~.VGroup.remove` method, or
-    subtraction operators:
+    `-` and `-=` operators:
 
         >>> from manim import Triangle, Square
         >>> vg = VGroup()
         >>> triangle, square = Triangle(), Square()
         >>> vg.add(triangle)
         VGroup(Triangle)
-        >>> vg + square; vg  # a new VGroup is constructed
+        >>> vg + square   # a new VGroup is constructed
         VGroup(Triangle, Square)
+        >>> vg            # not modified
         VGroup(Triangle)
         >>> vg += square; vg  # modifies vg
         VGroup(Triangle, Square)
         >>> vg.remove(triangle)
         VGroup(Square)
-        >>> vg - square; vg # a new VGroup is constructed
+        >>> vg - square; # a new VGroup is constructed
         VGroup()
+        >>> vg   # not modified
         VGroup(Square)
         >>> vg -= square; vg # modifies vg
         VGroup()
@@ -1037,7 +1039,7 @@ class VGroup(VMobject):
 
         Returns
         -------
-        VGroup
+        :class:`VGroup`
 
         Raises
         ------
@@ -1080,21 +1082,14 @@ class VGroup(VMobject):
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
-        copy = VGroup()
-        for submobject in self.submobjects:
-            copy.add(submobject)
-        copy.add(vmobject)
-        return copy
+        return VGroup(*self.submobjects, vmobject)
 
     def __iadd__(self, vmobject):
         return self.add(vmobject)
 
     def __sub__(self, vmobject):
-        copy = VGroup()
-        for submobject in self.submobjects:
-            if submobject == vmobject:
-                continue
-            copy.add(submobject)
+        copy = VGroup(*self.submobjects)
+        copy.remove(vmobject)
         return copy
 
     def __isub__(self, vmobject):
