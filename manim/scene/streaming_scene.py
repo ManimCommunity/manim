@@ -32,6 +32,8 @@ class Stream:
     """
 
     def __init__(self, **kwargs):
+        # TODO: Someday, when this is accepted into the community, work on camera
+        # qualities that can be set from this initialization
         camera = self.get_camera_class()
         renderer = StreamCairoRenderer(camera_class=camera)
         super().__init__(renderer=renderer, **kwargs)
@@ -39,10 +41,11 @@ class Stream:
 
     @classmethod
     def get_camera_class(cls):
-        """In the c
+        """Desperately searches for camera classes in CONFIG dictionaries
+        in the class hierachy.
 
         Returns:
-            [type]: [description]
+            Camera: Camera object intended to be used by the StreamingScene
         """
         for scene in cls.mro():
             CONFIG = getattr(scene, "CONFIG", {})
@@ -51,6 +54,15 @@ class Stream:
         return Camera  # This really shouldn't happen but defaults
 
     def render(self):
+        """This is a recent development I landed on.
+        
+        >>> from example_scenes.basic import OpeningManimExample  # doctest: +SKIP
+        >>> manim = get_streamer(OpeningManimExample)             # doctest: +SKIP
+        >>> manim.render()                                        # doctest: +SKIP
+
+        This should stream a complete rendering of the Scene to the URL specified.
+        Hence I clear everything after it's finished for more use. Or something like that.
+        """
         super().render()
         self.clear()
 
@@ -63,22 +75,13 @@ class Stream:
         self.renderer.camera.get_image().show()
 
 
-def get_streamer(*scenes, **attributes):
+def get_streamer(*scenes):
     """Creates an instance of a class that has streaming services.
 
     Optional arguments:
         scenes: Scene classes whose methods can be used in the resulting
         instance, such as zooming in and arbitrary method constructions.
         Defaults to just Scene
-
-        attributes. Instance attributes you'd like in the scene. Although this works too:
-
-        >>> manim = get_streamer(indent=4)
-        >>> manim.indent
-        4
-        >>> manim.indent = 5
-        >>> manim.indent
-        5
 
     Returns:
         StreamingScene: It's a Scene that Streams. Name deconstruction.
@@ -87,4 +90,4 @@ def get_streamer(*scenes, **attributes):
     cls = type("StreamingScene", bases, {})
     # This class doesn't really need a name, but we can go
     # generic for this one
-    return cls(**attributes)
+    return cls()
