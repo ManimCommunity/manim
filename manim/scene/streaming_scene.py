@@ -55,7 +55,7 @@ class Stream:
 
     def render(self):
         """This is a recent development I landed on.
-        
+
         >>> from example_scenes.basic import OpeningManimExample  # doctest: +SKIP
         >>> manim = get_streamer(OpeningManimExample)             # doctest: +SKIP
         >>> manim.render()                                        # doctest: +SKIP

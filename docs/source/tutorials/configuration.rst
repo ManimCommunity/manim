@@ -355,8 +355,8 @@ A list of all config options
    'max_files_cached', 'media_dir', 'movie_file_extension', 'output_file',
    'partial_movie_dir', 'pixel_height', 'pixel_width', 'png_mode', 'preview',
    'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
-   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
-   'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
+   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'streaming_dir', 
+   'tex_dir', 'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
    'upto_animation_number', 'use_js_renderer', 'verbosity', 'video_dir', 'write_all',
    'write_to_movie']
 
@@ -435,6 +435,7 @@ A list of all CLI flags
      --config_file CONFIG_FILE
                            Specify the configuration file
      --custom_folders      Use the folders defined in the [custom_folders] section of the config file to define the output folder structure
+     --livestream          Run in streaming mode
      -v {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --verbosity {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                            Verbosity level. Also changes the ffmpeg log level unless the latter is specified in the config
      --progress_bar True/False
