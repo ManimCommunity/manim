@@ -63,6 +63,14 @@ def main():
             else:
                 logger.error("No subcommand provided; Exiting...")
 
+        elif args.cmd == "plugins":
+            from manim.plugins import plugins_flags
+
+            if args.list:
+                plugins_flags.list_plugins()
+            elif not args.list:
+                logger.error("No flag provided; Exiting...")
+
         # elif args.cmd == "some_other_cmd":
         #     something_else_here()
         # TODO: Maybe make use of this when I understand this?

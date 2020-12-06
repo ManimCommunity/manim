@@ -42,26 +42,21 @@ class Mobject(Container):
 
     """
 
-    CONFIG = {
-        "color": WHITE,
-        "name": None,
-        "dim": 3,
-        "target": None,
-        "z_index": 0,
-    }
-
-    def __init__(self, **kwargs):
-        Container.__init__(self, **kwargs)
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
+        self.color = color
+        self.name = self.__class__.__name__ if name is None else name
+        self.dim = dim
+        self.target = target
+        self.z_index = z_index
         self.point_hash = None
         self.submobjects = []
         self.color = Color(self.color)
-        if self.name is None:
-            self.name = self.__class__.__name__
         self.updaters = []
         self.updating_suspended = False
         self.reset_points()
         self.generate_points()
         self.init_colors()
+        Container.__init__(self, **kwargs)
 
     def __repr__(self):
         return str(self.name)
@@ -81,6 +76,8 @@ class Mobject(Container):
         """Add mobjects as submobjects.
 
         The mobjects are added to self.submobjects.
+
+        Subclasses of mobject may implement + and += dunder methods.
 
         Parameters
         ----------
@@ -141,6 +138,12 @@ class Mobject(Container):
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
+    def __add__(self, mobject):
+        raise NotImplementedError
+
+    def __iadd__(self, mobject):
+        raise NotImplementedError
+
     def add_to_back(self, *mobjects):
         self.remove(*mobjects)
         self.submobjects = list(mobjects) + self.submobjects
@@ -150,6 +153,8 @@ class Mobject(Container):
         """Remove submobjects.
 
         The mobjects are removed from self.submobjects, if they exist.
+
+        Subclasses of mobject may implement - and -= dunder methods.
 
         Parameters
         ----------
@@ -170,6 +175,12 @@ class Mobject(Container):
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
         return self
+
+    def __sub__(self, other):
+        raise NotImplementedError
+
+    def __isub__(self, other):
+        raise NotImplementedError
 
     def get_array_attrs(self):
         return ["points"]
@@ -214,7 +225,7 @@ class Mobject(Container):
     def generate_target(self, use_deepcopy=False):
         self.target = None  # Prevent exponential explosion
         if use_deepcopy:
-            self.target = self.deepcopy()
+            self.target = copy.deepcopy(self)
         else:
             self.target = self.copy()
         return self.target
@@ -704,7 +715,7 @@ class Mobject(Container):
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
-        self.color = color
+        self.color = Color(color)
         return self
 
     def set_color_by_gradient(self, *colors):
@@ -1032,9 +1043,32 @@ class Mobject(Container):
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
-    def arrange(self, direction=RIGHT, center=True, **kwargs):
+    def arrange(
+        self,
+        direction=RIGHT,
+        buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+        center=True,
+        **kwargs,
+    ):
+        """sort mobjects next to each other on screen.
+
+        Examples
+        --------
+
+        .. manim:: Example
+            :save_last_frame:
+
+            class Example(Scene):
+                def construct(self):
+                    s1 = Square()
+                    s2 = Square()
+                    s3 = Square()
+                    s4 = Square()
+                    x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
+                    self.add(x)
+        """
         for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
-            m2.next_to(m1, direction, **kwargs)
+            m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()
         return self
