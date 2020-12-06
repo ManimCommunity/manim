@@ -191,7 +191,7 @@ class Wait(Animation):
         self.duration = duration
         self.mobject = None
         self.stop_condition = stop_condition
-        super().__init__(None, **kwargs)
+        super().__init__(Mobject(), **kwargs)
 
     def begin(self):
         pass
