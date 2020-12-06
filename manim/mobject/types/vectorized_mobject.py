@@ -1388,6 +1388,21 @@ class VectorizedPoint(VMobject):
 
 
 class CurvesAsSubmobjects(VGroup):
+    """Takes a  curve and converts elements to submobjects.
+
+    Examples
+    --------
+    .. manim:: LineGradientExample
+        :save_last_frame:
+
+        class LineGradientExample(Scene):
+            def construct(self):
+                l = CurvedDoubleArrow(LEFT,RIGHT)
+                new_func = CurvesAsSubmobjects(l, background_stroke_width =0)
+                new_func.set_color_by_gradient(BLUE,RED)
+                self.add(new_func)
+    """
+
     def __init__(self, vmobject, **kwargs):
         VGroup.__init__(self, **kwargs)
         tuples = vmobject.get_cubic_bezier_tuples()
