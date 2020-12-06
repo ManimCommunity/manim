@@ -38,6 +38,7 @@ pycairo = "^1.19"
 pangocffi = "^0.8.0"
 pangocairocffi = "^0.4.0"
 cairocffi = "^1.1.0"
+pyreadline = { version = "*", markers = "sys_platform == 'win32'" }
 grpcio =  { version = "*", optional = true }
 grpcio-tools = { version = "*", optional = true }
 watchdog = { version = "*", optional = true }
