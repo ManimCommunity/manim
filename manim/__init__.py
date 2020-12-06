@@ -86,4 +86,3 @@ from .utils.strings import *
 from .utils.tex import *
 from .utils.tex_templates import *
 from .stream_starter import *
-from .plugins import *
