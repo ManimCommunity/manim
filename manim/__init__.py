@@ -33,6 +33,7 @@ from .mobject.changing import *
 from .mobject.frame import *
 from .mobject.functions import *
 from .mobject.geometry import *
+from .mobject.logo import *
 from .mobject.matrix import *
 from .mobject.mobject import *
 from .mobject.number_line import *
@@ -85,4 +86,6 @@ from .utils.space_ops import *
 from .utils.strings import *
 from .utils.tex import *
 from .utils.tex_templates import *
+
+from .plugins import *
 from .stream_starter import *

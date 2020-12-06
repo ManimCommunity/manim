@@ -4,7 +4,9 @@ Example Gallery
 
 This gallery contains a collection of best practice code snippets
 together with their corresponding video/image output, illustrating
-different functionalities all across the library. Enjoy this taste of Manim!
+different functionalities all across the library.
+These are all under the MIT licence, so feel free to copy & paste them to your projects.
+Enjoy this taste of Manim!
 
 .. tip::
 
@@ -258,9 +260,9 @@ Animations
             dot = Dot()
             path.set_points_as_corners([dot.get_center(), dot.get_center()])
             def update_path(path):
-                previus_path = path.copy()
-                previus_path.add_points_as_corners([dot.get_center()])
-                path.become(previus_path)
+                previous_path = path.copy()
+                previous_path.add_points_as_corners([dot.get_center()])
+                path.become(previous_path)
             path.add_updater(update_path)
             self.add(path, dot)
             self.play(Rotating(dot, radians=PI, about_point=RIGHT, run_time=2))
@@ -280,17 +282,20 @@ Plotting with Manim
     :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
 
     class SinAndCosFunctionPlot(GraphScene):
-        CONFIG = {
-            "x_min": -10,
-            "x_max": 10.3,
-            "num_graph_anchor_points": 100,
-            "y_min": -1.5,
-            "y_max": 1.5,
-            "graph_origin": ORIGIN,
-            "function_color": RED,
-            "axes_color": GREEN,
-            "x_labeled_nums": range(-10, 12, 2),
-        }
+        def __init__(self, **kwargs):
+            GraphScene.__init__(
+                self,
+                x_min=-10,
+                x_max=10.3,
+                num_graph_anchor_points=100,
+                y_min=-1.5,
+                y_max=1.5,
+                graph_origin=ORIGIN,
+                axes_color=GREEN,
+                x_labeled_nums=range(-10, 12, 2),
+                **kwargs
+            )
+            self.function_color = RED
 
         def construct(self):
             self.setup_axes(animate=False)
@@ -311,15 +316,16 @@ Plotting with Manim
     :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.get_area
 
     class GraphAreaPlot(GraphScene):
-        CONFIG = {
-            "x_min" : 0,
-            "x_max" : 5,
-            "y_min" : 0,
-            "y_max" : 6,
-            "y_tick_frequency" : 1,
-            "x_tick_frequency" : 1,
-            "x_labeled_nums" : [0,2,3]
-        }
+        def __init__(self, **kwargs):
+            GraphScene.__init__(
+                self,
+                x_min=0,
+                x_max=5,
+                y_min=0,
+                y_max=6,
+                x_labeled_nums=[0,2,3],
+                **kwargs)
+        
         def construct(self):
             self.setup_axes()
             curve1 = self.get_graph(lambda x: 4 * x - x ** 2, x_min=0, x_max=4)
@@ -336,16 +342,18 @@ Plotting with Manim
     :ref_functions: GraphScene.setup_axes GraphScene.coords_to_point
 
     class HeatDiagramPlot(GraphScene):
-        CONFIG = {
-            "y_axis_label": r"T[$^\circ C$]",
-            "x_axis_label": r"$\Delta Q$",
-            "y_min": -8,
-            "y_max": 30,
-            "x_min": 0,
-            "x_max": 40,
-            "y_labeled_nums": np.arange(-5, 34, 5),
-            "x_labeled_nums": np.arange(0, 40, 5),
-        }
+        def __init__(self, **kwargs):
+            GraphScene.__init__(
+                self,
+                y_axis_label=r"T[$^\circ C$]",
+                x_axis_label=r"$\Delta Q$",
+                y_min=-8,
+                y_max=30,
+                x_min=0,
+                x_max=40,
+                y_labeled_nums=np.arange(-5, 34, 5),
+                x_labeled_nums=np.arange(0, 40, 5),
+                **kwargs)
 
         def construct(self):
             data = [20, 0, 0, -5]
@@ -405,15 +413,18 @@ Special Camera Settings
 
     class MovingZoomedSceneAround(ZoomedScene):
     # contributed by TheoremofBeethoven, www.youtube.com/c/TheoremofBeethoven
-        CONFIG = {
-            "zoom_factor": 0.3,
-            "zoomed_display_height": 1,
-            "zoomed_display_width": 6,
-            "image_frame_stroke_width": 20,
-            "zoomed_camera_config": {
-                "default_frame_stroke_width": 3,
-            },
-        }
+        def __init__(self, **kwargs):
+            ZoomedScene.__init__(
+                self,
+                zoom_factor=0.3,
+                zoomed_display_height=1,
+                zoomed_display_width=6,
+                image_frame_stroke_width=20,
+                zoomed_camera_config={
+                    "default_frame_stroke_width": 3,
+                    },
+                **kwargs
+            )
 
         def construct(self):
             dot = Dot().shift(UL * 2)
