@@ -29,14 +29,12 @@ class StreamFileWriter(SceneFileWriter):
         return self.partial_movie_files[-1]
 
     def end_animation(self, allow_write=False):
-        """The point in the animation where the file exists.
-        """
+        """The point in the animation where the file exists."""
         super().end_animation(allow_write=allow_write)
         self.stream(**config["streaming_config"])
 
     def combine_movie_files(self):
-        """Also to reduce overriding code.
-        """
+        """Also to reduce overriding code."""
         pass
 
     def stream(self, **streaming_config):
@@ -64,11 +62,13 @@ class StreamFileWriter(SceneFileWriter):
 
         if streaming_protocol == "rtp":
             command += ["-sdp_file", sdp_path]
-        command += ["-f",
-                    (streaming_protocol
-                    if streaming_protocol == "rtp"
-                    else "mpegts"),  # udp protocol didn't work for me but if it does for you congrats
-                    streaming_url,]
+        command += [
+            "-f",
+            (
+                streaming_protocol if streaming_protocol == "rtp" else "mpegts"
+            ),  # udp protocol didn't work for me but if it does for you congrats
+            streaming_url,
+        ]
         os.system(" ".join(command))
 
     def open_movie_pipe(self):

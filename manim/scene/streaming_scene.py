@@ -12,8 +12,8 @@ class Stream:
     ...
     >>>
 
-    This order is paramount. This :class:`Stream` class does the switch to 
-    the specialized renderer, which uses the :class:`StreamFileWriter` to 
+    This order is paramount. This :class:`Stream` class does the switch to
+    the specialized renderer, which uses the :class:`StreamFileWriter` to
     handle specialized streaming services. That explains the calls to super,
     which dig through the MRO of a class instead of using just a single
     implementation contained in Scene. Okay, the references in super probably
@@ -48,7 +48,7 @@ class Stream:
             CONFIG = getattr(scene, "CONFIG", {})
             if "camera_class" in CONFIG:
                 return CONFIG["camera_class"]
-        return Camera   # This really shouldn't happen but defaults
+        return Camera  # This really shouldn't happen but defaults
 
     def render(self):
         super().render()
