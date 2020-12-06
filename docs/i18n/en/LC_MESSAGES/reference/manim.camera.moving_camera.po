@@ -1,0 +1,52 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.camera.moving_camera.rst:2
+msgid "manim.camera.moving\\_camera"
+msgstr ""
+
+#: manim.camera.moving_camera:1 of
+msgid "A camera able to move through a scene."
+msgstr ""
+
+#: manim.camera.moving_camera:5 of
+msgid ":mod:`.moving_camera_scene`"
+msgstr ""
+
+#: ../../source/reference/manim.camera.moving_camera.rst:15
+msgid "Classes"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.camera.moving_camera.rst:22:<autosummary>:1
+#msgid ":obj:`CameraFrame <manim.camera.moving_camera.CameraFrame>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.camera.moving_camera.rst:22:<autosummary>:1
+#msgid ":obj:`MovingCamera <manim.camera.moving_camera.MovingCamera>`"
+#msgstr ""
+
+#: ../../source/reference/manim.camera.moving_camera.rst:22:<autosummary>:1
+msgid ""
+"Stays in line with the height, width and position of it's 'frame', which "
+"is a Rectangle"
+msgstr ""
+
+

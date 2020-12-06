@@ -1,0 +1,138 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.matrix.Matrix.rst:2
+msgid "manim.mobject.matrix.Matrix"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix:1 of
+msgid "Bases: :class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix:1 of
+msgid "Matrix can either either include numbres, tex_strings, or mobjects"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.matrix.Matrix.rst:12
+msgid "Methods"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+msgid ""
+":obj:`add_background_to_entries "
+"<manim.mobject.matrix.Matrix.add_background_to_entries>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+#msgid ":obj:`add_brackets <manim.mobject.matrix.Matrix.add_brackets>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+#msgid ":obj:`get_brackets <manim.mobject.matrix.Matrix.get_brackets>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+#msgid ":obj:`get_columns <manim.mobject.matrix.Matrix.get_columns>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+#msgid ":obj:`get_entries <manim.mobject.matrix.Matrix.get_entries>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+#msgid ":obj:`get_mob_matrix <manim.mobject.matrix.Matrix.get_mob_matrix>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+#msgid ":obj:`get_rows <manim.mobject.matrix.Matrix.get_rows>`"
+#msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows:1
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+msgid "Return rows of the matrix as VGroups"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+msgid ""
+":obj:`matrix_to_mob_matrix "
+"<manim.mobject.matrix.Matrix.matrix_to_mob_matrix>`"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+msgid ""
+":obj:`organize_mob_matrix "
+"<manim.mobject.matrix.Matrix.organize_mob_matrix>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+#msgid ":obj:`set_column_colors <manim.mobject.matrix.Matrix.set_column_colors>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1 of
+#msgid ":obj:`set_row_colors <manim.mobject.matrix.Matrix.set_row_colors>`"
+#msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows:1:<autosummary>:1
+#: manim.mobject.matrix.Matrix.set_row_colors:1 of
+msgid "Set individual colors for each row of the matrix"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows
+#: manim.mobject.matrix.Matrix.set_row_colors of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows:3 of
+msgid "Each VGroup contains a row of the matrix."
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows
+#: manim.mobject.matrix.Matrix.set_row_colors of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.get_rows:4 of
+msgid "List[:class:`~.VGroup`]"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.set_row_colors of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.set_row_colors:3 of
+msgid "The list of colors; each color specified corresponds to a row."
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.set_row_colors:6 of
+msgid "The current matrix object (self)."
+msgstr ""
+
+#: manim.mobject.matrix.Matrix.set_row_colors:7 of
+msgid ":class:`Matrix`"
+msgstr ""
+
+

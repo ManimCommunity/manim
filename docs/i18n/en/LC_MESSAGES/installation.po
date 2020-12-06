@@ -1,0 +1,90 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/installation.rst:2
+msgid "Installation"
+msgstr ""
+
+#: ../../source/installation.rst:4
+msgid ""
+"Manim has a few dependencies that need to be installed before it.  The "
+"following pages have instructions that are specific to your system.  Once"
+" you are done installing the dependencies, come back to this page to "
+"install manim itself."
+msgstr ""
+
+#: ../../source/installation.rst:10
+msgid "Installing dependencies"
+msgstr ""
+
+#: ../../source/installation.rst:25
+msgid "Installing Manim"
+msgstr ""
+
+#: ../../source/installation.rst:27
+msgid ""
+"Manim-Community runs on Python 3.6+. If you'd like to just use the "
+"library, you can install it from PyPI via pip:"
+msgstr ""
+
+#: ../../source/installation.rst:34
+msgid "You can replace ``pip`` with ``pip3`` if you need to in your system."
+msgstr ""
+
+#: ../../source/installation.rst:36
+msgid ""
+"Alternatively, you can work with Manim using our Docker image that can be"
+" found at `Docker Hub <https://hub.docker.com/r/manimcommunity/manim>`_."
+msgstr ""
+
+#: ../../source/installation.rst:39
+msgid ""
+"If you'd like to contribute to and/or help develop ``manim-community``, "
+"you can clone this repository to your local device.  To do this, first "
+"make sure you have ``git`` installed. Then, clone this repo by executing "
+"either"
+msgstr ""
+
+#: ../../source/installation.rst:47
+msgid "or"
+msgstr ""
+
+#: ../../source/installation.rst:53
+msgid ""
+"depending on whether you want to use HTTPS or SSH.  Finally, after having"
+" cloned this repo, run the following:"
+msgstr ""
+
+#: ../../source/installation.rst:60
+msgid ""
+"Please see :doc:`contributing` for more details about contributing to "
+"Manim."
+msgstr ""
+
+#: ../../source/installation.rst:64
+msgid ""
+"If you want to contribute to ``manim-community`` and have cloned the "
+"repository to your local device, please uninstall the pip-installed "
+"version of ``manim-community``, if you had installed it previously. This "
+"is to avoid any accidental usage of the pip-installed version when "
+"developing and testing on your local copy of the repository. This warning"
+" doesn't apply for users who use `poetry <https://python-poetry.org>`_."
+msgstr ""
+
+

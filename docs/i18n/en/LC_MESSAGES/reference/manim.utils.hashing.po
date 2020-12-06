@@ -1,0 +1,156 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-21 01:26+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.utils.hashing.rst:2
+#msgid "manim.utils.hashing"
+#msgstr ""
+
+#: manim.utils.hashing:1 of
+msgid "Utilities for scene caching."
+msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.rst:15
+msgid "Classes"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.utils.hashing.rst:26:<autosummary>:1
+#msgid ":obj:`CustomEncoder <manim.utils.hashing.CustomEncoder>`"
+#msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.rst:26:<autosummary>:1
+msgid "Constructor for JSONEncoder, with sensible defaults."
+msgstr ""
+
+#: ../../source/reference/manim.utils.hashing.rst:29
+msgid "Functions"
+msgstr ""
+
+#: manim.utils.hashing.get_camera_dict_for_hashing:1 of
+msgid ""
+"Remove some keys from `camera_object.__dict__` that are very heavy and "
+"useless for the caching functionality."
+msgstr ""
+
+#: manim.utils.hashing.get_camera_dict_for_hashing
+#: manim.utils.hashing.get_hash_from_play_call
+#: manim.utils.hashing.get_hash_from_wait_call manim.utils.hashing.get_json of
+msgid "Parameters"
+msgstr ""
+
+#: manim.utils.hashing.get_camera_dict_for_hashing:3 of
+msgid "The camera object used in the scene"
+msgstr ""
+
+#: manim.utils.hashing.get_camera_dict_for_hashing
+#: manim.utils.hashing.get_hash_from_play_call
+#: manim.utils.hashing.get_hash_from_wait_call manim.utils.hashing.get_json of
+msgid "Returns"
+msgstr ""
+
+#: manim.utils.hashing.get_camera_dict_for_hashing:6 of
+msgid "`Camera.__dict__` but cleaned."
+msgstr ""
+
+#: manim.utils.hashing.get_camera_dict_for_hashing
+#: manim.utils.hashing.get_hash_from_play_call
+#: manim.utils.hashing.get_hash_from_wait_call manim.utils.hashing.get_json of
+msgid "Return type"
+msgstr ""
+
+#: manim.utils.hashing.get_camera_dict_for_hashing:7 of
+msgid ":class:`dict`"
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_play_call:1 of
+msgid ""
+"Take the list of animations and a list of mobjects and output their "
+"hashes. This is meant to be used for `scene.play` function."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_play_call:3
+#: manim.utils.hashing.get_hash_from_wait_call:3 of
+msgid "The scene object."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_play_call:5 of
+msgid "The camera object used in the scene."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_play_call:7 of
+msgid "The list of animations."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_play_call:9 of
+msgid "The list of mobjects."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_play_call:12 of
+msgid ""
+"A string concatenation of the respective hashes of `camera_object`, "
+"`animations_list` and `current_mobjects_list`, separated by `_`."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_play_call:13
+#: manim.utils.hashing.get_hash_from_wait_call:13
+#: manim.utils.hashing.get_json:7 of
+msgid ":class:`str`"
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_wait_call:1 of
+msgid ""
+"Take a wait time, a boolean function as a stop condition and a list of "
+"mobjects, and then output their individual hashes. This is meant to be "
+"used for `scene.wait` function."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_wait_call:5 of
+msgid "The camera object."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_wait_call:7 of
+msgid "The time to wait"
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_wait_call:9 of
+msgid "Boolean function used as a stop_condition in `wait`."
+msgstr ""
+
+#: manim.utils.hashing.get_hash_from_wait_call:12 of
+msgid ""
+"A concatenation of the respective hashes of `animations_list and "
+"`current_mobjects_list`, separated by `_`."
+msgstr ""
+
+#: manim.utils.hashing.get_json:1 of
+msgid ""
+"Recursively serialize `object` to JSON using the :class:`CustomEncoder` "
+"class."
+msgstr ""
+
+#: manim.utils.hashing.get_json:3 of
+msgid "The dict to flatten"
+msgstr ""
+
+#: manim.utils.hashing.get_json:6 of
+msgid "The flattened object"
+msgstr ""
+
+

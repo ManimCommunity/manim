@@ -1,0 +1,37 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:2
+msgid "manim.mobject.numbers.Integer"
+msgstr ""
+
+#: manim.mobject.numbers.Integer:1 of
+msgid "Bases: :class:`manim.mobject.numbers.DecimalNumber`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:12
+msgid "Methods"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.numbers.Integer.rst:16:<autosummary>:1
+#msgid ":obj:`get_value <manim.mobject.numbers.Integer.get_value>`"
+#msgstr ""
+
+

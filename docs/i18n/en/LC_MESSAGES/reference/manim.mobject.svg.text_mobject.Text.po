@@ -1,0 +1,190 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:2
+msgid "manim.mobject.svg.text\\_mobject.Text"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:1 of
+msgid "Bases: :class:`manim.mobject.svg.svg_mobject.SVGMobject`"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:1 of
+msgid ""
+"Display (non-LaTeX) text rendered using `Pango "
+"<https://pango.gnome.org/>`_."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:3 of
+msgid ""
+"Text objects behave like a :class:`.VGroup`-like iterable of all "
+"characters in the given text. In particular, slicing is possible."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.find_indexes
+#: manim.mobject.svg.text_mobject.Text.remove_last_M
+#: manim.mobject.svg.text_mobject.Text.text2svg of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:6 of
+msgid "The text that need to created as mobject."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.text2svg of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:9 of
+msgid "The mobject like :class:`.VGroup`."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.text2svg of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:10 of
+msgid ":class:`Text`"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:13 of
+msgid "Examples"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:56 of
+msgid ""
+"As :class:`Text` uses Pango to render text, rendering non-English "
+"characters is easily possible:"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:90 of
+msgid "Tests"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:91 of
+msgid "Check that the creation of :class:`~.Text` works::"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text:98 of
+msgid ""
+"Using a :class:`.Transform` on text with leading whitespace can look "
+"`weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using "
+":meth:`remove_invisible_chars` to resolve this issue."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.Text.rst:12
+msgid "Methods"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+#msgid ":obj:`find_indexes <manim.mobject.svg.text_mobject.Text.find_indexes>`"
+#msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+msgid "Internally used function."
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+#msgid ":obj:`remove_last_M <manim.mobject.svg.text_mobject.Text.remove_last_M>`"
+#msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+msgid "Internally used."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+msgid ""
+":obj:`set_color_by_t2c "
+"<manim.mobject.svg.text_mobject.Text.set_color_by_t2c>`"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+msgid ""
+":obj:`set_color_by_t2g "
+"<manim.mobject.svg.text_mobject.Text.set_color_by_t2g>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+#msgid ":obj:`str2style <manim.mobject.svg.text_mobject.Text.str2style>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+#msgid ":obj:`str2weight <manim.mobject.svg.text_mobject.Text.str2weight>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+#msgid ":obj:`text2hash <manim.mobject.svg.text_mobject.Text.text2hash>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+#msgid ":obj:`text2settings <manim.mobject.svg.text_mobject.Text.text2settings>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1:<autosummary>:1 of
+#msgid ":obj:`text2svg <manim.mobject.svg.text_mobject.Text.text2svg>`"
+#msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.find_indexes:1 of
+msgid "Internally used function. Finds the indexes of ``text`` in ``word``."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.remove_last_M:1 of
+msgid "Internally used. Use to format the rendered SVG files."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.set_color_by_t2c:1 of
+msgid "Internally used function. Sets colour for specified strings."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.set_color_by_t2g:1 of
+msgid ""
+"Internally used. Sets gradient colors for specified strings. Behaves "
+"similarly to ``set_color_by_t2c``."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.str2style:1 of
+msgid "Internally used function. Converts text to Pango Understandable Styles."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.str2weight:1 of
+msgid "Internally used function. Convert text to Pango Understandable Weight"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.text2hash:1 of
+msgid "Internally used function. Generates ``sha256`` hash for file name."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.text2settings:1 of
+msgid ""
+"Internally used function. Converts the texts and styles to a setting for "
+"parsing."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.Text.text2svg:1 of
+msgid "Internally used function. Convert the text to SVG using Pango"
+msgstr ""
+
+

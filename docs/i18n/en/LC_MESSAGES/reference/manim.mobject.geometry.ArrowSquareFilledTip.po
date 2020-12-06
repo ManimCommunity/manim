@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:2
+msgid "manim.mobject.geometry.ArrowSquareFilledTip"
+msgstr ""
+
+#: manim.mobject.geometry.ArrowSquareFilledTip:1 of
+msgid "Bases: :class:`manim.mobject.geometry.ArrowSquareTip`"
+msgstr ""
+
+#: manim.mobject.geometry.ArrowSquareFilledTip:1 of
+msgid "Square arrow tip with filled tip."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:12
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:19
+msgid "Attributes"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+#msgid ":obj:`base <manim.mobject.geometry.ArrowSquareFilledTip.base>`\\"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+msgid "The base point of the arrow tip."
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+#msgid ":obj:`length <manim.mobject.geometry.ArrowSquareFilledTip.length>`\\"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+msgid "The length of the arrow tip."
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+#msgid ":obj:`tip_angle <manim.mobject.geometry.ArrowSquareFilledTip.tip_angle>`\\"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+msgid "The angle of the arrow tip."
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+#msgid ":obj:`tip_point <manim.mobject.geometry.ArrowSquareFilledTip.tip_point>`\\"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+msgid "The tip point of the arrow tip."
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+#msgid ":obj:`vector <manim.mobject.geometry.ArrowSquareFilledTip.vector>`\\"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.ArrowSquareFilledTip.rst:26:<autosummary>:1
+msgid "The vector pointing from the base point to the tip point."
+msgstr ""
+
+

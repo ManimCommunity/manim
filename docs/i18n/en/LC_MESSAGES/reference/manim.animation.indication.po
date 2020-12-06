@@ -1,0 +1,117 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:2
+#msgid "manim.animation.indication"
+#msgstr ""
+
+#: manim.animation.indication:1 of
+msgid "Animations drawing attention to particular mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid ""
+":obj:`AnimationOnSurroundingRectangle "
+"<manim.animation.indication.AnimationOnSurroundingRectangle>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+#msgid ":obj:`ApplyWave <manim.animation.indication.ApplyWave>`"
+#msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid "Homotopy is a function from (x, y, z, t) to (x', y', z')"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+#msgid ":obj:`CircleIndicate <manim.animation.indication.CircleIndicate>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+#msgid ":obj:`Flash <manim.animation.indication.Flash>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+#msgid ":obj:`FocusOn <manim.animation.indication.FocusOn>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+#msgid ":obj:`Indicate <manim.animation.indication.Indicate>`"
+#msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid ""
+":obj:`ShowCreationThenDestruction "
+"<manim.animation.indication.ShowCreationThenDestruction>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid ""
+":obj:`ShowCreationThenDestructionAround "
+"<manim.animation.indication.ShowCreationThenDestructionAround>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid ""
+":obj:`ShowCreationThenFadeAround "
+"<manim.animation.indication.ShowCreationThenFadeAround>`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid ""
+":obj:`ShowCreationThenFadeOut "
+"<manim.animation.indication.ShowCreationThenFadeOut>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+#msgid ":obj:`ShowPassingFlash <manim.animation.indication.ShowPassingFlash>`"
+#msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid "Show only a sliver of the VMobject each frame."
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+msgid ""
+":obj:`ShowPassingFlashAround "
+"<manim.animation.indication.ShowPassingFlashAround>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+#msgid ":obj:`TurnInsideOut <manim.animation.indication.TurnInsideOut>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.animation.indication.rst:46:<autosummary>:1
+#msgid ":obj:`WiggleOutThenIn <manim.animation.indication.WiggleOutThenIn>`"
+#msgstr ""
+
+

@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.animation.animation.Wait.rst:2
+msgid "manim.animation.animation.Wait"
+msgstr ""
+
+#: manim.animation.animation.Wait:1 of
+msgid "Bases: :class:`manim.animation.animation.Animation`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.animation.Wait.rst:12
+msgid "Methods"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.animation.animation.Wait.update_mobjects:1:<autosummary>:1 of
+#msgid ":obj:`begin <manim.animation.animation.Wait.begin>`"
+#msgstr ""
+
+#: manim.animation.animation.Wait.update_mobjects:1:<autosummary>:1 of
+msgid ""
+":obj:`clean_up_from_scene "
+"<manim.animation.animation.Wait.clean_up_from_scene>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.animation.animation.Wait.update_mobjects:1:<autosummary>:1 of
+#msgid ":obj:`finish <manim.animation.animation.Wait.finish>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.animation.animation.Wait.update_mobjects:1:<autosummary>:1 of
+#msgid ":obj:`interpolate <manim.animation.animation.Wait.interpolate>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.animation.animation.Wait.update_mobjects:1:<autosummary>:1 of
+#msgid ":obj:`update_mobjects <manim.animation.animation.Wait.update_mobjects>`"
+#msgstr ""
+
+#: manim.animation.animation.Wait.update_mobjects:1:<autosummary>:1 of
+msgid "Updates things like starting_mobject, and (for Transforms) target_mobject."
+msgstr ""
+
+#: manim.animation.animation.Wait.update_mobjects:1 of
+msgid ""
+"Updates things like starting_mobject, and (for Transforms) "
+"target_mobject.  Note, since typically (always?) self.mobject will have "
+"its updating suspended during the animation, this will do nothing to "
+"self.mobject."
+msgstr ""
+
+

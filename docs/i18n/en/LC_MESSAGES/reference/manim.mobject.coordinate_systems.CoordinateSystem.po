@@ -1,0 +1,140 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.coordinate_systems.CoordinateSystem.rst:2
+msgid "manim.mobject.coordinate\\_systems.CoordinateSystem"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem:1 of
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem:1 of
+msgid "Abstract class for Axes and NumberPlane"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.CoordinateSystem.rst:12
+msgid "Methods"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+#msgid ":obj:`c2p <manim.mobject.coordinate_systems.CoordinateSystem.c2p>`"
+#msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid "Abbreviation for coords_to_point"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`coords_to_point "
+"<manim.mobject.coordinate_systems.CoordinateSystem.coords_to_point>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_axes "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_axes>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_axis "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_axis>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_axis_label "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_axis_label>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_axis_labels "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_axis_labels>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_graph "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_graph>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_parametric_curve "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_parametric_curve>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_x_axis "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_x_axis>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_x_axis_label "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_x_axis_label>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_y_axis "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_y_axis>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_y_axis_label "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_y_axis_label>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_z_axis "
+"<manim.mobject.coordinate_systems.CoordinateSystem.get_z_axis>`"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`input_to_graph_point "
+"<manim.mobject.coordinate_systems.CoordinateSystem.input_to_graph_point>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+#msgid ":obj:`p2c <manim.mobject.coordinate_systems.CoordinateSystem.p2c>`"
+#msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1
+#: manim.mobject.coordinate_systems.CoordinateSystem.p2c:1 of
+msgid "Abbreviation for point_to_coords"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.CoordinateSystem.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`point_to_coords "
+"<manim.mobject.coordinate_systems.CoordinateSystem.point_to_coords>`"
+msgstr ""
+
+

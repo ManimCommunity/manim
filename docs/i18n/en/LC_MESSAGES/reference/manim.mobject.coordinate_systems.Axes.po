@@ -1,0 +1,88 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:2
+msgid "manim.mobject.coordinate\\_systems.Axes"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.Axes:1 of
+msgid ""
+"Bases: :class:`manim.mobject.types.vectorized_mobject.VGroup`, "
+":class:`manim.mobject.coordinate_systems.CoordinateSystem`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.coordinate_systems.Axes.rst:12
+msgid "Methods"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`add_coordinates "
+"<manim.mobject.coordinate_systems.Axes.add_coordinates>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+#msgid ":obj:`c2p <manim.mobject.coordinate_systems.Axes.c2p>`"
+#msgstr ""
+
+#: manim.mobject.coordinate_systems.Axes.c2p:1
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+msgid "Abbreviation for coords_to_point"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`coords_to_point "
+"<manim.mobject.coordinate_systems.Axes.coords_to_point>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+#msgid ":obj:`create_axis <manim.mobject.coordinate_systems.Axes.create_axis>`"
+#msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+#msgid ":obj:`get_axes <manim.mobject.coordinate_systems.Axes.get_axes>`"
+#msgstr ""
+
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`get_coordinate_labels "
+"<manim.mobject.coordinate_systems.Axes.get_coordinate_labels>`"
+msgstr ""
+
+#Detected untranslatable text:
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+#msgid ":obj:`p2c <manim.mobject.coordinate_systems.Axes.p2c>`"
+#msgstr ""
+
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1
+#: manim.mobject.coordinate_systems.Axes.p2c:1 of
+msgid "Abbreviation for point_to_coords"
+msgstr ""
+
+#: manim.mobject.coordinate_systems.Axes.c2p:1:<autosummary>:1 of
+msgid ""
+":obj:`point_to_coords "
+"<manim.mobject.coordinate_systems.Axes.point_to_coords>`"
+msgstr ""
+
+

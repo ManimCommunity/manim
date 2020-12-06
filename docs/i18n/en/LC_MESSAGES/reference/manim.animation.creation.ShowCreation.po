@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.animation.creation.ShowCreation.rst:2
+msgid "manim.animation.creation.ShowCreation"
+msgstr ""
+
+#: manim.animation.creation.ShowCreation:1 of
+msgid "Bases: :class:`manim.animation.creation.ShowPartial`"
+msgstr ""
+
+#: manim.animation.creation.ShowCreation:1 of
+msgid "Incrementally show a VMobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.ShowCreation.rst
+msgid "Parameters"
+msgstr ""
+
+#: manim.animation.creation.ShowCreation:3 of
+msgid "The VMobject to animate."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.ShowCreation.rst
+msgid "Raises"
+msgstr ""
+
+#: manim.animation.creation.ShowCreation:6 of
+msgid "If ``mobject`` is not an instance of :class:`~.VMobject`."
+msgstr ""
+
+#: manim.animation.creation.ShowCreation:9 of
+msgid "Examples"
+msgstr ""
+
+#: manim.animation.creation.ShowCreation:16 of
+msgid ":class:`~.ShowPassingFlash`"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.ShowCreation.rst:12
+msgid "Methods"
+msgstr ""
+
+

@@ -1,0 +1,178 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.camera.camera.BackgroundColoredVMobjectDisplayer.rst:2
+msgid "manim.camera.camera.BackgroundColoredVMobjectDisplayer"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer:1 of
+msgid "Bases: :class:`object`"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match
+#: of
+msgid "Parameters"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer:1 of
+msgid "Camera object to use."
+msgstr ""
+
+#: ../../source/reference/manim.camera.camera.BackgroundColoredVMobjectDisplayer.rst:12
+msgid "Methods"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`display "
+"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.display>`"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: of
+msgid "Displays the colored VMobjects."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`get_background_array "
+"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array>`"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array:1
+#: of
+msgid "Gets the background array that has the passed file_name."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`reset_pixel_array "
+"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.reset_pixel_array>`"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`resize_background_array "
+"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array>`"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:1
+#: of
+msgid "Resizes the pixel array represinting the background."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: of
+msgid ""
+":obj:`resize_background_array_to_match "
+"<manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match>`"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:1:<autosummary>:1
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:1
+#: of
+msgid "Resizes the background array to match the passed pixel array."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:3 of
+msgid "The VMobjects"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match
+#: of
+msgid "Returns"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display:6 of
+msgid "The pixel array with the `cvmobjects` displayed."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.display
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match
+#: of
+msgid "Return type"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array:3
+#: of
+msgid "The file_name of the background image."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.get_background_array:6
+#: of
+msgid "The pixel array of the file whose file name is `file_name`"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:3
+#: of
+msgid "The pixel"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:5
+#: of
+msgid "The new width of the background"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:7
+#: of
+msgid "The new height of the background"
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:9
+#: of
+msgid "The PIL image mode, by default \"RGBA\""
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array:12
+#: of
+msgid "The numpy pixel array of the resized background."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:3
+#: of
+msgid "The prospective pixel array."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:5
+#: of
+msgid "The pixel array whose width and height should be matched."
+msgstr ""
+
+#: manim.camera.camera.BackgroundColoredVMobjectDisplayer.resize_background_array_to_match:8
+#: of
+msgid "The resized background array."
+msgstr ""
+
+

@@ -1,0 +1,159 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/installation/troubleshooting.rst:2
+msgid "Troubleshooting"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:4
+msgid "List of known installation problems."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:7
+msgid "(Windows) OSError: dlopen() failed to load a library: pango?"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:9
+msgid ""
+"If your manual installation of Manim (or even the installation using "
+"Chocolatey) fails with the error"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:16
+msgid ""
+"possibly combined with alerts warning about procedure entry points "
+"``\"deflateSetHeader\"`` and ``\"inflateReset2\"`` that could not be "
+"located, you might run into an issue with a patched version of "
+"``zlib1.dll`` shipped by Intel, `as described here "
+"<https://github.com/msys2/MINGW-packages/issues/813>`_."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:21
+msgid ""
+"To resolve this issue, you can copy ``zlib1.dll`` from the directory "
+"provided for the Pango binaries to the directory Manim is installed to."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:24
+msgid ""
+"For a more global solution (try at your own risk!), try renaming the file"
+" ``zlib1.dll`` located at ``C:\\Program Files\\Intel\\Wifi\\bin`` to "
+"something like ``zlib1.dll.bak`` -- and then try installing Manim again "
+"(either using ``pip install manim`` or with Chocolatey). Ensure that you "
+"are able to revert this name change in case you run into troubles with "
+"your WiFi (we did not get any reports about such a problem, however)."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:33
+msgid "Some letters are missing from TextMobject/TexMobject output?"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:35
+msgid ""
+"If you have recently installed TeX you may need to build the fonts it "
+"uses. Which can be done by running:"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:46
+msgid "Installation does not support converting PDF to SVG?"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:48
+msgid "First, make sure your ``dvisvgm`` version is at least 2.4:"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:55
+msgid ""
+"If you do not know how to update ``dvisvgm``, please refer to your "
+"operating system's documentation."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:57
+msgid ""
+"Second, check whether your ``dvisvgm`` supports PostScript specials. This"
+" is needed in order to convert from PDF to SVG."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:64
+msgid ""
+"If the output to this command does **not** contain ``ps  dvips PostScript"
+" specials``, this is a bad sign. In this case, run"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:72
+msgid ""
+"If the output does **not** contain ``--libgs=filename``, this means your "
+"``dvisvgm`` does not currently support PostScript. You must get another "
+"binary."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:74
+msgid ""
+"If, however, ``--libgs=filename`` appears in the help, that means that "
+"your ``dvisvgm`` needs the Ghostscript library in order to support "
+"PostScript. Search for ``libgs.so`` (on Linux, probably in "
+"``/usr/local/lib`` or ``/usr/lib``) or ``gsdll32.dll`` (on 32-bit "
+"Windows, probably in ``C:\\windows\\system32``) or ``gsdll64.dll`` (on "
+"64-bit Windows, probably in ``c:\\windows\\system32`` -- yes 32) or "
+"``libgsl.dylib`` (on Mac OS, probably in ``/usr/local/lib`` or "
+"``/opt/local/lib``). Please look carefully, as the file might be located "
+"elsewhere, e.g. in the directory where Ghostscript is installed."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:76
+msgid "As soon as you have found the library, try (on Mac OS or Linux)"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:83
+msgid "or (on Windows)"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:91
+msgid ""
+"You should now see ``ps    dvips PostScript specials`` in the output. "
+"Refer to your operating system's documentation in order to find out how "
+"you can set or export the environment variable ``LIBGS`` automatically "
+"whenever you open a shell."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:93
+msgid "As a last check, you can run"
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:99
+msgid ""
+"while still having ``LIBGS`` set to the correct path, of course. If "
+"``dvisvgm`` can find your Ghostscript installation, it will be shown in "
+"the output together with the version number."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:101
+msgid ""
+"If you do not have the necessary library on your system, please refer to "
+"your operating system's documentation in order to find out where you can "
+"get it and how you have to install it."
+msgstr ""
+
+#: ../../source/installation/troubleshooting.rst:103
+msgid ""
+"If you are unable to solve your problem, check out the `dvisvgm FAQ "
+"<https://dvisvgm.de/FAQ/>`_."
+msgstr ""
+
+

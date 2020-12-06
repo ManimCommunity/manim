@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2020, The Manim Community Dev Team
+# This file is distributed under the same license as the Manim package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-20 23:15+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:2
+msgid "manim.mobject.svg.text\\_mobject"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject:1 of
+msgid "Mobjects used for displaying (non-LaTeX) text."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject:3 of
+msgid ""
+"The simplest way to add text to your animations is to use the "
+":class:`~.Text` class. It uses the Pango library to render text. With "
+"Pango, you are also able to render non-English alphabets like `你好` or  "
+"`こんにちは` or `안녕하세요` or `مرحبا بالعالم`."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject:7 of
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:32:<autosummary>:1
+#msgid ":obj:`CairoText <manim.mobject.svg.text_mobject.CairoText>`"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:32:<autosummary>:1
+msgid "Display (non-LaTeX) text."
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:32:<autosummary>:1
+#msgid ":obj:`Paragraph <manim.mobject.svg.text_mobject.Paragraph>`"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:32:<autosummary>:1
+msgid "Display a paragraph of text."
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:32:<autosummary>:1
+#msgid ":obj:`Text <manim.mobject.svg.text_mobject.Text>`"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:32:<autosummary>:1
+msgid ""
+"Display (non-LaTeX) text rendered using `Pango "
+"<https://pango.gnome.org/>`_."
+msgstr ""
+
+#Detected untranslatable text:
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:32:<autosummary>:1
+#msgid ":obj:`TextSetting <manim.mobject.svg.text_mobject.TextSetting>`"
+#msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.text_mobject.rst:35
+msgid "Functions"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars:1 of
+msgid "Function to remove unwanted invisible characters from some mobject"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars of
+msgid "Parameters"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars:3 of
+msgid "Any SVGMobject from which we want to remove unwanted invisible characters."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars of
+msgid "Returns"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars:6 of
+msgid "The SVGMobject without unwanted invisible characters."
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars of
+msgid "Return type"
+msgstr ""
+
+#: manim.mobject.svg.text_mobject.remove_invisible_chars:7 of
+msgid ":class:`~.SVGMobject`"
+msgstr ""
+
+
