@@ -721,7 +721,7 @@ class DashedLine(Line):
             def construct(self):
                 l = DashedLine(config.frame_width/2*LEFT, 4*RIGHT)
                 self.add(l)
-                
+
     """
 
     def __init__(
