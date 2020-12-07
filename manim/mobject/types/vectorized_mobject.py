@@ -1401,7 +1401,7 @@ class CurvesAsSubmobjects(VGroup):
                 new_func = CurvesAsSubmobjects(l, background_stroke_width=0)
                 new_func.set_color_by_gradient(BLUE, RED)
                 self.add(new_func)
-                
+
     """
 
     def __init__(self, vmobject, **kwargs):
