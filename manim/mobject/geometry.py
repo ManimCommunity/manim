@@ -710,7 +710,7 @@ class Line(TipableVMobject):
 
 
 class DashedLine(Line):
-    """A dashed Line : - - - - - -
+    """A dashed Line.
 
     Examples
     --------
@@ -719,8 +719,10 @@ class DashedLine(Line):
 
         class DashedLineExample(Scene):
             def construct(self):
-                l = DashedLine(config.frame_width/2*LEFT,4*RIGHT)
-                self.add(l)"""
+                l = DashedLine(config.frame_width/2*LEFT, 4*RIGHT)
+                self.add(l)
+                
+    """
 
     def __init__(
         self,
