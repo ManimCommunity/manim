@@ -73,13 +73,7 @@ class SceneFileWriter(object):
             default_name = Path(scene_name)
 
         if config["save_last_frame"] or config["save_pngs"]:
-            if config["media_dir"]:
-                image_dir = guarantee_existence(
-                    config.get_dir("images_dir", module_name=module_name)
-                )
-            self.image_file_path = os.path.join(
-                image_dir, add_extension_if_not_present(default_name, ".png")
-            )
+            self.init_save_image(scene_name)
 
         if config["write_to_movie"]:
             movie_dir = guarantee_existence(
@@ -105,6 +99,25 @@ class SceneFileWriter(object):
                     module_name=module_name,
                 )
             )
+
+    def init_save_image(self, scene_name):
+        if config["output_file"]:
+            default_name = config.get_dir("output_file")
+        else:
+            default_name = Path(scene_name)
+
+        if config["input_file"]:
+            module_name = config.get_dir("input_file").stem
+        else:
+            module_name = ""
+
+        if config["media_dir"]:
+            image_dir = guarantee_existence(
+                config.get_dir("images_dir", module_name=module_name)
+            )
+        self.image_file_path = os.path.join(
+            image_dir, add_extension_if_not_present(default_name, ".png")
+        )
 
     def add_partial_movie_file(self, hash_animation):
         """Adds a new partial movie file path to scene.partial_movie_files from an hash. This method will compute the path from the hash.

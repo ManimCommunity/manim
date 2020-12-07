@@ -99,6 +99,12 @@ class Scene(Container):
             self.construct()
         except EndSceneEarlyException:
             pass
+
+        if (self.renderer.num_plays == 0 and not config['save_last_frame']):
+            config['write_to_movie'] = False
+            config['save_last_frame'] = True
+            self.renderer.file_writer.init_save_image(self.__class__.__name__)
+  
         self.tear_down()
         self.renderer.finish(self)
         logger.info(
