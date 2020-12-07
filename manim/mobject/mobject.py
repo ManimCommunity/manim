@@ -171,17 +171,6 @@ class Mobject(Container):
     def get_array_attrs(self):
         return ["points"]
 
-    # This does not seem to be in use any more:
-    # def digest_mobject_attrs(self):
-    #     """
-    #     Ensures all attributes which are mobjects are included
-    #     in the submobjects list.
-    #     """
-    #     mobject_attrs = [
-    #         x for x in list(self.__dict__.values()) if isinstance(x, Mobject)
-    #     ]
-    #     self.submobjects = list_update(self.submobjects, mobject_attrs)
-    #     return self
 
     def apply_over_attr_arrays(self, func):
         for attr in self.get_array_attrs():
