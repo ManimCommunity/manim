@@ -291,7 +291,7 @@ def get_hash_from_wait_call(
     ALREADY_PROCESSED_ID = {id(scene_object): scene_object}
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     current_mobjects_list_json = [
-        get_json(x) for x in sorted(current_mobjects_list, key=str)
+        get_json(x) for x in current_mobjects_list
     ]
     hash_current_mobjects = zlib.crc32(repr(current_mobjects_list_json).encode())
     hash_camera = zlib.crc32(repr(camera_json).encode())
