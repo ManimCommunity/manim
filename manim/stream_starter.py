@@ -98,3 +98,4 @@ def stream():
     _hide_wait_output(**config["streaming_config"])
     streamer = get_streamer()
     open_ffplay(**config["streaming_config"])
+    return streamer
