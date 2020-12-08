@@ -11,8 +11,9 @@ from ..utils.file_ops import guarantee_existence
 
 
 class StreamFileWriter(SceneFileWriter):
-    def __init__(self, renderer, **kwargs):
-        super().__init__(renderer, "", **kwargs)
+    def __init__(self, renderer):
+        super().__init__(renderer, "")
+        vars(self).update(config["streaming_config"])
         path = os.path.join(config.get_dir("streaming_dir"), "clips")
         self.FOLDER_PATH = os.path.relpath(guarantee_existence(path))
         # To prevent extensive overwriting
@@ -31,22 +32,16 @@ class StreamFileWriter(SceneFileWriter):
     def end_animation(self, allow_write=False):
         """The point in the animation where the file exists."""
         super().end_animation(allow_write=allow_write)
-        self.stream(**config["streaming_config"])
+        self.stream()
 
     def combine_movie_files(self):
         """Also to reduce overriding code."""
         pass
 
-    def stream(self, **streaming_config):
-        streaming_url = streaming_config["streaming_url"]
-        streaming_protocol = streaming_config["streaming_protocol"]
+    def stream(self):
         logger.info(
             "Houston, we are ready to launch. Sending over to %(url)s",
-            {"url": {streaming_url}},
-        )
-        sdp_path = os.path.join(
-            config.get_dir("streaming_dir"),
-            "stream_{}.sdp".format(streaming_protocol),
+            {"url": {self.streaming_url}},
         )
         command = [
             FFMPEG_BIN,
@@ -60,14 +55,16 @@ class StreamFileWriter(SceneFileWriter):
             "quiet",
         ]
 
-        if streaming_protocol == "rtp":
-            command += ["-sdp_file", sdp_path]
+        if self.streaming_protocol == "rtp":
+            command += ["-sdp_file", self.sdp_path]
         command += [
             "-f",
             (
-                streaming_protocol if streaming_protocol == "rtp" else "mpegts"
+                self.streaming_protocol
+                if self.streaming_protocol == "rtp"
+                else "mpegts"
             ),  # udp protocol didn't work for me but if it does for you congrats
-            streaming_url,
+            self.streaming_url,
         ]
         os.system(" ".join(command))
 

@@ -1,6 +1,6 @@
 from ..renderer.stream_renderer import StreamCairoRenderer
 from .scene import Scene
-from ..camera.camera import Camera
+from .moving_camera_scene import MovingCameraScene
 from ..mobject.frame import FullScreenRectangle as Frame
 
 
@@ -22,49 +22,19 @@ class Stream:
     PS: You can probably already tell using this class on its own will bring you
     errors.
 
-    PPS: Check this bonus:
-
-    >>> class Streamer(Stream, MovingCameraScene, LinearTransformationScene): # doctest: +SKIP
-    ...     pass
-    ...
-    >>>
-
     """
 
     def __init__(self, **kwargs):
         # TODO: Someday, when this is accepted into the community, work on camera
         # qualities that can be set from this initialization
-        camera = self.get_camera_class()
-        renderer = StreamCairoRenderer(camera_class=camera)
-        super().__init__(renderer=renderer, **kwargs)
+        super().__init__(**kwargs)
+        # I let the thing initialize the other renderer, and kick it out with this line
+        self.renderer = StreamCairoRenderer(camera_class=self.camera_class)
+        self.renderer.init()
+        # To identify the frame in a black background
         self.add(Frame())
-
-    @classmethod
-    def get_camera_class(cls):
-        """Desperately searches for camera classes in CONFIG dictionaries
-        in the class hierachy.
-
-        Returns:
-            Camera: Camera object intended to be used by the StreamingScene
-        """
-        for scene in cls.mro():
-            CONFIG = getattr(scene, "CONFIG", {})
-            if "camera_class" in CONFIG:
-                return CONFIG["camera_class"]
-        return Camera  # This really shouldn't happen but defaults
-
-    def render(self):
-        """This is a recent development I landed on.
-
-        >>> from example_scenes.basic import OpeningManimExample  # doctest: +SKIP
-        >>> manim = get_streamer(OpeningManimExample)             # doctest: +SKIP
-        >>> manim.render()                                        # doctest: +SKIP
-
-        This should stream a complete rendering of the Scene to the URL specified.
-        Hence I clear everything after it's finished for more use. Or something like that.
-        """
-        super().render()
-        self.clear()
+        # TODO: What happens when setup actually has play arguments?
+        self.setup()
 
     def show_frame(self):
         """
@@ -75,19 +45,41 @@ class Stream:
         self.renderer.camera.get_image().show()
 
 
-def get_streamer(*scenes):
+def get_streamer(*scene):
     """Creates an instance of a class that has streaming services.
 
     Optional arguments:
-        scenes: Scene classes whose methods can be used in the resulting
+        scene: The scene whose methods can be used in the resulting
         instance, such as zooming in and arbitrary method constructions.
         Defaults to just Scene
 
     Returns:
         StreamingScene: It's a Scene that Streams. Name deconstruction.
+
+    Note:
+        Using starred positional args makes the tuple of the passed scene
+        for me. At the moment I figure multiple inheritance is extremely
+        delicate and would only work if the classes after the first merely
+        add more methods than override base ones. Then again, multiple
+        inheritance of scenes was always a delicate matter in Manim.
     """
     bases = (Stream,) + (scenes or (Scene,))
     cls = type("StreamingScene", bases, {})
     # This class doesn't really need a name, but we can go
     # generic for this one
     return cls()
+
+
+def play_scene(scene):
+    """This is a recent development I landed on.
+
+    >>> from example_scenes.basic import OpeningManimExample  # doctest: +SKIP
+    >>> manim = get_streamer(OpeningManimExample)             # doctest: +SKIP
+    >>> manim.render()                                        # doctest: +SKIP
+
+    This should stream a complete rendering of the Scene to the URL specified.
+    Hence I clear everything after it's finished for more use. Or something like that.
+    """
+    manim = get_streamer(scene)
+    manim.render()
+    manim.clear()

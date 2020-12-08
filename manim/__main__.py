@@ -80,6 +80,7 @@ def main():
 
         if args.livestream:
             livestream()
+            return
 
         module = get_module(config.get_dir("input_file"))
         all_scene_classes = get_scene_classes_from_module(module)

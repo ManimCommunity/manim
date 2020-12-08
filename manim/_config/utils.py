@@ -313,7 +313,8 @@ class ManimConfig(MutableMapping):
         return getattr(self, key)
 
     def __setitem__(self, key, val):
-        getattr(ManimConfig, key).fset(self, val)  # fset is the property's setter
+        # fset is the property's setter
+        getattr(ManimConfig, key).fset(self, val)
 
     def update(self, obj):
         """Digest the options found in another :class:`ManimConfig` or in a dict.
@@ -564,13 +565,18 @@ class ManimConfig(MutableMapping):
         streaming_config = {
             opt: parser["streaming"].get(opt, fallback="", raw=True)
             for opt in [
+                "streaming_client",
                 "streaming_protocol",
                 "streaming_ip",
                 "streaming_port",
             ]
         }
         url = parser["streaming"].get("streaming_url", fallback="", raw=True)
+        sdp_name = parser["streaming"].get("sdp_name", fallback="", raw=True)
         streaming_config["streaming_url"] = url.format(**streaming_config)
+        streaming_config["sdp_path"] = os.path.join(
+            self.get_dir("streaming_dir"), sdp_name.format(**streaming_config)
+        )
         self.streaming_config = streaming_config
 
         return self
