@@ -291,6 +291,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         Frequency of appearance of the letters.
 
     .. tip::
+
         This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
 
     """

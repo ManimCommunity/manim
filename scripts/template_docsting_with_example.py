@@ -12,13 +12,13 @@ class SomeClass:
 
     Parameters
     ----------
-    scale_factor :class:`float`
+    scale_factor : :class:`float`
         The factor used for scaling.
 
     Returns
     -------
-    :class:`VMobject`
-        Returns self.
+    :class:`~.VMobject`
+        Returns the modified :class:`~.VMobject`.
 
     Tests
     -----
@@ -63,15 +63,17 @@ class SomeClass:
     :class:`ShowCreation`, :class:`~.ShowPassingFlash`
 
     References
-    ------
+    ----------
 
 
-    other useful constructs:
+    Other useful directives:
 
     .. tip::
-        This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
+
+        This is currently only possible for class:`~.Text` and not for class:`~.MathTex`.
 
     .. note::
-        This is something to note
+
+        This is something to note.
 
     """
