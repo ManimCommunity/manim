@@ -30,7 +30,7 @@
 
 ## Installation
 
-Manim requires a few dependencies that must be installed prior to using it. Please visit the [documentation](https://manimce.readthedocs.io/en/latest/installation.html) and follow the appropriate instructions for your operating system.
+Manim requires a few dependencies that must be installed prior to using it. Please visit the [Documentation](https://docs.manim.community/en/latest/installation.html) and follow the appropriate instructions for your operating system.
 
 Once the dependencies have been installed, run the following in a terminal window:
 
