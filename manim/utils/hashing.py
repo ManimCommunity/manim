@@ -244,7 +244,7 @@ def get_hash_from_play_call(
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
     current_mobjects_list_json = [
-        get_json(x) for x in sorted(current_mobjects_list, key=str)
+        get_json(x) for x in current_mobjects_list
     ]
     hash_camera, hash_animations, hash_current_mobjects = [
         zlib.crc32(repr(json_val).encode())
