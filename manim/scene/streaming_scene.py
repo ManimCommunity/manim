@@ -63,7 +63,7 @@ def get_streamer(*scene):
         add more methods than override base ones. Then again, multiple
         inheritance of scenes was always a delicate matter in Manim.
     """
-    bases = (Stream,) + (scenes or (Scene,))
+    bases = (Stream,) + (scene or (Scene,))
     cls = type("StreamingScene", bases, {})
     # This class doesn't really need a name, but we can go
     # generic for this one
