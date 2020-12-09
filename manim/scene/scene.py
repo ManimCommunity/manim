@@ -28,13 +28,6 @@ from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 
 
-def get_random_name(name_map):
-    while True:
-        random_name = "".join(random.sample(string.ascii_lowercase, k=10))
-        if random_name not in name_map:
-            return random_name
-
-
 class Scene(Container):
     """A Scene is the canvas of your animation.
 
@@ -109,46 +102,48 @@ class Scene(Container):
     def camera(self):
         return self.renderer.camera
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, clone_from_id):
         cls = self.__class__
         result = cls.__new__(cls)
-        memo[id(self)] = result
+        clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
             if k in ["renderer", "time_progression"]:
                 continue
             if k == "camera_class":
                 setattr(result, k, v)
-            setattr(result, k, copy.deepcopy(v, memo))
+            setattr(result, k, copy.deepcopy(v, clone_from_id))
 
         # Update updaters
         for mobject in self.mobjects:
             cloned_updaters = []
             for updater in mobject.updaters:
                 # Make the cloned updater use the cloned Mobjects as free variables
-                # rather than the original ones.
-                # TODO: The the same for function calls recursively.
+                # rather than the original ones. Analyzing function bytecode with the
+                # dis module will help in understanding this.
+                # https://docs.python.org/3/library/dis.html
+                # TODO: Do the same for function calls recursively.
                 free_variable_map = inspect.getclosurevars(updater).nonlocals
                 cloned_co_freevars = []
                 cloned_closure = []
                 for i, free_variable_name in enumerate(updater.__code__.co_freevars):
                     free_variable_value = free_variable_map[free_variable_name]
-                    if isinstance(free_variable_value, Mobject):
-                        random_name = get_random_name(free_variable_map)
 
-                        # Put the cloned Mobject in the function's scope.
-                        free_variable_map[random_name] = memo[id(free_variable_value)]
-
-                        # Add the cloned Mobject's name to the free variable list.
-                        cloned_co_freevars.append(random_name)
-
-                        # Add a cell containing the cloned Mobject's reference to the
-                        # closure list.
-                        cloned_closure.append(
-                            types.CellType(memo[id(free_variable_value)])
+                    # If the referenced variable has not been cloned, raise.
+                    if id(free_variable_value) not in clone_from_id:
+                        raise Exception(
+                            f"{free_variable_name} is referenced from an updater "
+                            "but is not an attribute of the Scene, which isn't "
+                            "allowed."
                         )
-                    else:
-                        cloned_co_freevars.append(free_variable_name)
-                        cloned_closure.append(updater.__closure__[i])
+
+                    # Add the cloned object's name to the free variable list.
+                    cloned_co_freevars.append(free_variable_name)
+
+                    # Add a cell containing the cloned object's reference to the
+                    # closure list.
+                    cloned_closure.append(
+                        types.CellType(clone_from_id[id(free_variable_value)])
+                    )
 
                 cloned_updater = types.FunctionType(
                     updater.__code__.replace(co_freevars=tuple(cloned_co_freevars)),
@@ -158,7 +153,7 @@ class Scene(Container):
                     tuple(cloned_closure),
                 )
                 cloned_updaters.append(cloned_updater)
-            memo[id(mobject)].updaters = cloned_updaters
+            clone_from_id[id(mobject)].updaters = cloned_updaters
         return result
 
     def render(self):
