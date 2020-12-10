@@ -21,7 +21,8 @@ class StreamFileWriter(SceneFileWriter):
 
     def init_output_directories(self, scene_name):
         """The original :class:`SceneFileWriter` uses this method while initializing.
-        I need most of that initialization, minus this. Hence kicked to the curb.
+        The method is overwritten carefully so as to correspond arguments in the
+        original and still avoid the folder creation effects of this method.
         """
         pass
 
@@ -59,11 +60,7 @@ class StreamFileWriter(SceneFileWriter):
             command += ["-sdp_file", self.sdp_path]
         command += [
             "-f",
-            (
-                self.streaming_protocol
-                if self.streaming_protocol == "rtp"
-                else "mpegts"
-            ),  # udp protocol didn't work for me but if it does for you congrats
+            self.streaming_protocol,  # Take a look here for other streaming protocols
             self.streaming_url,
         ]
         os.system(" ".join(command))

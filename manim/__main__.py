@@ -73,7 +73,6 @@ def main():
 
         # elif args.cmd == "some_other_cmd":
         #     something_else_here()
-        # TODO: Maybe make use of this when I understand this?
 
     else:
         config.digest_args(args)

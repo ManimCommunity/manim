@@ -26,8 +26,6 @@ class Stream:
     """
 
     def __init__(self, **kwargs):
-        # TODO: Someday, when this is accepted into the community, work on camera
-        # qualities that can be set from this initialization
         camera_class = self.mint_camera_class()
         renderer = StreamCairoRenderer(camera_class=camera_class)
         super().__init__(renderer=renderer, **kwargs)
@@ -75,13 +73,6 @@ def get_streamer(*scene):
 
     Returns:
         StreamingScene: It's a Scene that Streams. Name deconstruction.
-
-    Note:
-        Using starred positional args makes the tuple of the passed scene
-        for me. At the moment I figure multiple inheritance is extremely
-        delicate and would only work if the classes after the first merely
-        add more methods than override base ones. Then again, multiple
-        inheritance of scenes was always a delicate matter in Manim.
     """
     bases = (Stream,) + (scene or (Scene,))
     cls = type("StreamingScene", bases, {})
@@ -100,7 +91,8 @@ def play_scene(scene, start=None, end=None):
     >>> manim.render()                                        # doctest: +SKIP
 
     This should stream a complete rendering of the Scene to the URL specified.
-    Hence I clear everything after it's finished for more use. Or something like that.
+    Hence the function clears everything after it's finished for more use. Or
+    something like that.
 
     Arguments:
         scene: The scene to be played.
@@ -116,6 +108,6 @@ def play_scene(scene, start=None, end=None):
         config.upto_animation_number = end or config.upto_animation_number
     manim.render()
     # Need to put it back because an end point less than the number of animations
-    # in a streamer makes any others ignored
+    # in a streamer makes any others ignored. That's a bug
     config.from_animation_number, config.upto_animation_number = original
     manim.clear()
