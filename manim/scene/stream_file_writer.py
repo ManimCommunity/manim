@@ -13,7 +13,7 @@ from ..utils.file_ops import guarantee_existence
 class StreamFileWriter(SceneFileWriter):
     def __init__(self, renderer):
         super().__init__(renderer, "")
-        vars(self).update(config["streaming_config"])
+        vars(self).update(config.streaming_config)
         path = os.path.join(config.get_dir("streaming_dir"), "clips")
         self.FOLDER_PATH = os.path.relpath(guarantee_existence(path))
         # To prevent extensive overwriting

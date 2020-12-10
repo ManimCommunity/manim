@@ -82,8 +82,8 @@ def livestream():
     readline.parse_and_bind("tab: complete")
     shell = code.InteractiveConsole(variables)
     shell.push("from manim import *")
-    _hide_wait_output(**config["streaming_config"])
-    open_ffplay(**config["streaming_config"])
+    _hide_wait_output(**config.streaming_config)
+    open_ffplay(**config.streaming_config)
     shell.interact(banner=f"{Fore.GREEN}{info}{Style.RESET_ALL}")
 
 

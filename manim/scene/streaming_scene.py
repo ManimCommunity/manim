@@ -1,7 +1,8 @@
-from ..renderer.stream_renderer import StreamCairoRenderer
-from .scene import Scene
-from .moving_camera_scene import MovingCameraScene
+from .. import config
 from ..mobject.frame import FullScreenRectangle as Frame
+from ..renderer.stream_renderer import StreamCairoRenderer
+from .moving_camera_scene import MovingCameraScene
+from .scene import Scene
 
 
 class Stream:
@@ -70,8 +71,10 @@ def get_streamer(*scene):
     return cls()
 
 
-def play_scene(scene):
-    """This is a recent development I landed on.
+def play_scene(scene, start=None, end=None):
+    """Every scene has a render method that runs its setup and construct methods.
+    Using a streamer from classes with detailed implementation of this may call for
+    use of this.
 
     >>> from example_scenes.basic import OpeningManimExample  # doctest: +SKIP
     >>> manim = get_streamer(OpeningManimExample)             # doctest: +SKIP
@@ -79,7 +82,21 @@ def play_scene(scene):
 
     This should stream a complete rendering of the Scene to the URL specified.
     Hence I clear everything after it's finished for more use. Or something like that.
+
+    Arguments:
+        scene: The scene to be played.
+        start: The animation to start with. Default original start point.
+        end: The animation to end with. Default original endpoint
+             Note: The animations use endpoint-inclusive indexing, meaning (0, 5) would
+             play 0 upto 5 inclusive of both.
     """
     manim = get_streamer(scene)
+    if start or end:
+        original = (config.from_animation_number, config.upto_animation_number)
+        config.from_animation_number = start or config.from_animation_number
+        config.upto_animation_number = end or config.upto_animation_number
     manim.render()
+    # Need to put it back because an end point less than the number of animations
+    # in a streamer makes any others ignored
+    config.from_animation_number, config.upto_animation_number = original
     manim.clear()
