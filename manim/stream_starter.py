@@ -69,6 +69,7 @@ def _disable_logging(func):
     usual output expected from this action
     """
     functools.wraps(func)
+
     def action(*args, **kwargs):
         logger.disabled = True
         func(*args, **kwargs)
@@ -104,7 +105,7 @@ def livestream():
         "manim": get_streamer(),
         "get_streamer": get_streamer,
         "play_scene": play_scene,
-        "open_client": open_client
+        "open_client": open_client,
     }
     readline.set_completer(rlcompleter.Completer(variables).complete)
     readline.parse_and_bind("tab: complete")
@@ -116,8 +117,7 @@ def livestream():
 
     open_client()
 
-    logger.debug(
-        "Triggering streaming client window: Running Wait() animation")
+    logger.debug("Triggering streaming client window: Running Wait() animation")
     _popup_window(shell)
 
     shell.interact(banner=f"{Fore.GREEN}{info}{Style.RESET_ALL}")
