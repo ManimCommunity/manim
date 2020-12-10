@@ -9,6 +9,8 @@ service RenderServer {
 
 message UpdateSceneDataRequest {
     Scene scene = 1;
+    string exception = 2;
+    bool has_exception = 3;
 }
 
 message Scene {
