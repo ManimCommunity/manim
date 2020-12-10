@@ -7,7 +7,6 @@ import subprocess
 from colorama import Fore, Style
 
 from . import config, logger
-from .scene.scene import Scene
 from .scene.streaming_scene import get_streamer, play_scene
 
 __all__ = ["livestream", "stream"]

@@ -10,5 +10,8 @@ class StreamCairoRenderer(CairoRenderer):
     undesirable style.
     """
 
-    def init(self):
+    def init(self, scene):
+        """For compatibility with the __init__ from scene that's not being
+        directly overridden
+        """
         self.file_writer = StreamFileWriter(self)

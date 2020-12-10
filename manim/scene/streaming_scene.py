@@ -1,7 +1,7 @@
 from .. import config
 from ..mobject.frame import FullScreenRectangle as Frame
 from ..renderer.stream_renderer import StreamCairoRenderer
-from .moving_camera_scene import MovingCameraScene
+from ..utils.simple_functions import get_parameters
 from .scene import Scene
 
 
@@ -28,14 +28,33 @@ class Stream:
     def __init__(self, **kwargs):
         # TODO: Someday, when this is accepted into the community, work on camera
         # qualities that can be set from this initialization
-        super().__init__(**kwargs)
-        # I let the thing initialize the other renderer, and kick it out with this line
-        self.renderer = StreamCairoRenderer(camera_class=self.camera_class)
-        self.renderer.init()
+        camera_class = self.mint_camera_class()
+        renderer = StreamCairoRenderer(camera_class=camera_class)
+        super().__init__(renderer=renderer, **kwargs)
         # To identify the frame in a black background
         self.add(Frame())
         # TODO: What happens when setup actually has play arguments?
         self.setup()
+
+    @classmethod
+    def mint_camera_class(cls):
+        """Only __init__ arguments have the camera class now. In order for the
+        specialized renderer to be used, the scene's camera class must be found.
+
+        Returns:
+            A camera class from the scene's inheritance hierachy
+
+        Raises:
+            AttributeError: If this lookup fails
+        """
+        for obj in cls.mro():
+            try:
+                parameter = get_parameters(obj.__init__)["camera_class"]
+            except KeyError:
+                continue
+            else:
+                return parameter.default
+        raise AttributeError("Object does not contain scene protocol")
 
     def show_frame(self):
         """
