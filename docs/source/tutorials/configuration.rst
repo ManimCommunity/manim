@@ -53,6 +53,26 @@ The global ``config`` object is mean to be the single source of truth for all
 config options.  All of the other ways of setting config options ultimately
 change the values of the global ``config`` object.
 
+The following example illustrates the video resolution chosen for examples
+rendered in our documentation with a reference frame.
+
+.. manim:: ShowScreenResolution
+    :save_last_frame:
+
+    class ShowScreenResolution(Scene):
+        def construct(self):
+            pixel_height = config["pixel_height"]  #  1080 is default
+            pixel_width = config["pixel_width"]  # 1920 is default
+            frame_width = config["frame_width"]
+            frame_height = config["frame_height"]
+            self.add(Dot())
+            d1 = Line(frame_width * LEFT / 2, frame_width * RIGHT / 2).to_edge(DOWN)
+            self.add(d1)
+            self.add(Text(str(pixel_width)).next_to(d1, UP))
+            d2 = Line(frame_height * UP / 2, frame_height * DOWN / 2).to_edge(LEFT)
+            self.add(d2)
+            self.add(Text(str(pixel_height)).next_to(d2, RIGHT))
+
 
 Command line arguments
 **********************
@@ -282,19 +302,19 @@ these steps:
 5. :class:`ManimConfig` is instantiated to create the global ``config`` object.
 6. The ``parser`` from step 3 is fed into the ``config`` from step 5 via
    :meth:`ManimConfig.digest_parser`.
-6. Both ``logger`` and ``config`` are exposed to the user.
+7. Both ``logger`` and ``config`` are exposed to the user.
 
 If manim is being invoked from the command line, all of the previous steps
 happen, and are complemented by:
 
-7. The CLI flags are parsed and fed into ``config`` via
+8. The CLI flags are parsed and fed into ``config`` via
    :meth:`~ManimConfig.digest_args`.
-8. If the ``--config_file`` flag was used, a new :class:`ConfigParser` object
+9. If the ``--config_file`` flag was used, a new :class:`ConfigParser` object
    is created with the contents of the library-wide file, the user-wide file if
    it exists, and the file passed via ``--config_file``.  In this case, the
    folder-wide file, if it exists, is ignored.
-9. The new parser is fed into ``config``.
-10. The rest of the CLI flags are processed.
+10. The new parser is fed into ``config``.
+11. The rest of the CLI flags are processed.
 
 To summarize, the order of precedence for configuration options, from lowest to
 highest precedence, is:
@@ -315,24 +335,23 @@ A list of all config options
 
    from manim._config import ManimConfig
    from inspect import getmembers
-   sorted([n for n, _ in getmembers(ManimConfig, lambda v: isinstance(v, property))])
+   print(sorted([n for n, _ in getmembers(ManimConfig, lambda v: isinstance(v, property))]))
 
 .. testoutput::
    :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
 
-   ['aspect_ratio', 'background_color', 'background_opacity', 'bottom',
-   'custom_folders', 'disable_caching', 'dry_run', 'ffmpeg_loglevel',
-   'flush_cache', 'frame_height', 'frame_rate', 'frame_size', 'frame_width',
-   'frame_x_radius', 'frame_y_radius', 'from_animation_number', 'images_dir',
-   'input_file', 'js_renderer_path', 'leave_progress_bars', 'left_side',
-   'log_dir', 'log_to_file', 'max_files_cached', 'media_dir',
-   'movie_file_extension', 'output_file', 'partial_movie_dir', 'pixel_height',
-   'pixel_width', 'png_mode', 'preview', 'progress_bar', 'quality',
-   'right_side', 'save_as_gif', 'save_last_frame', 'save_pngs', 'scene_names',
-   'show_in_file_browser', 'skip_animations', 'sound', 'tex_dir',
+   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity', 'bottom',
+   'custom_folders', 'disable_caching', 'dry_run', 'ffmpeg_loglevel', 'flush_cache',
+   'frame_height', 'frame_rate', 'frame_size', 'frame_width', 'frame_x_radius',
+   'frame_y_radius', 'from_animation_number', 'images_dir', 'input_file',
+   'js_renderer_path', 'leave_progress_bars', 'left_side', 'log_dir', 'log_to_file',
+   'max_files_cached', 'media_dir', 'movie_file_extension', 'output_file',
+   'partial_movie_dir', 'pixel_height', 'pixel_width', 'png_mode', 'preview',
+   'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
+   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
-   'upto_animation_number', 'use_js_renderer', 'verbosity', 'video_dir',
-   'write_all', 'write_to_movie']
+   'upto_animation_number', 'use_js_renderer', 'verbosity', 'video_dir', 'write_all',
+   'write_to_movie']
 
 
 A list of all CLI flags
@@ -342,24 +361,21 @@ A list of all CLI flags
    :hide:
 
    import subprocess
-   result = subprocess.run(['manim', '-h'], stdout=subprocess.PIPE)
+   import os
+   is_windows = os.name == 'nt'
+   result = subprocess.run(['manim', '-h'], shell=is_windows, stdout=subprocess.PIPE)
    print(result.stdout.decode('utf-8'))
 
 .. testoutput::
    :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
 
-   usage: manim [-h] [-o OUTPUT_FILE] [-p] [-f] [--leave_progress_bars] [-a] [-w] [-s] [-g] [-i] [--disable_caching] [--flush_cache] [--log_to_file] [-c BACKGROUND_COLOR]
-                [--background_opacity BACKGROUND_OPACITY] [--media_dir MEDIA_DIR] [--log_dir LOG_DIR] [--tex_template TEX_TEMPLATE] [--dry_run] [-t] [-q {k,p,h,m,l}]
-                [--low_quality] [--medium_quality] [--high_quality] [--production_quality] [--fourk_quality] [-l] [-m] [-e] [-k] [-r RESOLUTION] [-n FROM_ANIMATION_NUMBER]
-                [--use_js_renderer] [--js_renderer_path JS_RENDERER_PATH] [--config_file CONFIG_FILE] [--custom_folders] [-v {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
-                [--progress_bar True/False]
-                {cfg} ... file [scene_names [scene_names ...]]
+   usage: manim file [flags] [scene [scene ...]]
+          manim {cfg,init} [opts]
 
    Animation engine for explanatory math videos
 
    positional arguments:
-     {cfg}
-     file                  path to file holding the python code for the scene
+     file                  Path to file holding the python code for the scene
      scene_names           Name of the Scene class you want to see
 
    optional arguments:
@@ -369,6 +385,7 @@ A list of all CLI flags
      -p, --preview         Automatically open the saved file once its done
      -f, --show_in_file_browser
                            Show the output file in the File Browser
+     --sound               Play a success/failure sound
      --leave_progress_bars
                            Leave progress bars displayed in terminal
      -a, --write_all       Write all the scenes from a file
@@ -382,8 +399,6 @@ A list of all CLI flags
      --log_to_file         Log terminal output to file
      -c BACKGROUND_COLOR, --background_color BACKGROUND_COLOR
                            Specify background color
-     --background_opacity BACKGROUND_OPACITY
-                           Specify background opacity
      --media_dir MEDIA_DIR
                            Directory to store media (including video files)
      --log_dir LOG_DIR     Directory to store log files
@@ -403,7 +418,7 @@ A list of all CLI flags
      -e                    DEPRECATED: USE -qh or --quality h
      -k                    DEPRECATED: USE -qk or --quality k
      -r RESOLUTION, --resolution RESOLUTION
-                           Resolution, passed as "height,width". Overrides any quality flags, if present
+                           Resolution, passed as "height,width". Overrides the -l, -m, -e, and -k flags, if present
      -n FROM_ANIMATION_NUMBER, --from_animation_number FROM_ANIMATION_NUMBER
                            Start rendering at the specified animation index, instead of the first animation. If you pass in two comma separated values, e.g. '3,6', it will end
                            the rendering at the second value

@@ -6,7 +6,7 @@ height/width, frame rate), output (e.g. directories, logging), styling
 (e.g. background color, transparency), and general behavior (e.g. writing a
 movie vs writing a single frame).
 
-See :doc:`tutorials/configuration` for an introduction to Manim's configuration system.
+See :doc:`/tutorials/configuration` for an introduction to Manim's configuration system.
 
 """
 
@@ -126,6 +126,7 @@ def _determine_quality(args):
             pass
         elif getattr(args, quality, None) or (
             hasattr(args, "quality")
+            and args.quality is not None
             and args.quality == constants.QUALITIES[quality]["flag"]
         ):
             return quality
@@ -278,7 +279,6 @@ class ManimConfig(MutableMapping):
         "save_pngs",
         "scene_names",
         "show_in_file_browser",
-        "skip_animations",
         "sound",
         "tex_dir",
         "tex_template_file",
@@ -506,7 +506,6 @@ class ManimConfig(MutableMapping):
             "disable_caching",
             "flush_cache",
             "custom_folders",
-            "skip_animations",
             "use_js_renderer",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
@@ -906,12 +905,6 @@ class ManimConfig(MutableMapping):
         doc="Stop rendering animations at this nmber.  Use -1 to avoid skipping (-n).",
     )
 
-    skip_animations = property(
-        lambda self: self._d["skip_animations"],
-        lambda self, val: self._set_boolean("skip_animations", val),
-        doc="Whether to skip the next animation.  Internal use only.",
-    )
-
     max_files_cached = property(
         lambda self: self._d["max_files_cached"],
         lambda self, val: self._set_pos_number("max_files_cached", val, True),
@@ -1201,7 +1194,7 @@ class ManimConfig(MutableMapping):
     assets_dir = property(
         lambda self: self._d["assets_dir"],
         lambda self, val: self._set_dir("assets_dir", val),
-        doc="Directory to locate video assets.",
+        doc="Directory to locate video assets (no flag).",
     )
 
     log_dir = property(
