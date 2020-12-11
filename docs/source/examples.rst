@@ -263,7 +263,7 @@ Animations
             def update_path(path):
                 previous_path = path.copy()
                 previous_path.add_points_as_corners([dot.get_center()])
-                path.become(previous_path) 
+                path.become(previous_path)
             path.add_updater(update_path)
             self.add(path, dot)
             self.play(Rotating(dot, radians=PI, about_point=RIGHT, run_time=2))
