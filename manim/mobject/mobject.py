@@ -171,7 +171,6 @@ class Mobject(Container):
     def get_array_attrs(self):
         return ["points"]
 
-
     def apply_over_attr_arrays(self, func):
         for attr in self.get_array_attrs():
             setattr(self, attr, func(getattr(self, attr)))
