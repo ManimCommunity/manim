@@ -6,8 +6,7 @@ version of manim from this repository.
 -->
 
 ## Motivation
-<!-- Outline your motiviation: why do you feel that your
-changes are required? -->
+<!-- Outline your motivation: In what way do your changes improve the library? -->
 
 ## Overview / Explanation for Changes
 <!-- Give an overview of your changes and explain how they 
