@@ -609,7 +609,6 @@ class Paragraph(VGroup):
             )
 
 
-            
 class Text(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
@@ -1076,24 +1075,24 @@ class Text(SVGMobject):
 # <gradient from="..." to="...">
 class MarkupText(Text):
     def __init__(
-            self,
-            text: str,
-            fill_opacity: int = 1,
-            stroke_width: int = 0,
-            color: str = WHITE,
-            size: int = 1,
-            line_spacing: int = -1,
-            font: str = "",
-            slant = NORMAL,
-            weight = NORMAL,
-            gradient: tuple = None,
-            tab_width: int = 4,
-            height: int = None,
-            width: int = None,
-            should_center: bool = True,
-            unpack_groups: bool = True,
-            disable_ligatures: bool = False,
-            **kwargs,
+        self,
+        text: str,
+        fill_opacity: int = 1,
+        stroke_width: int = 0,
+        color: str = WHITE,
+        size: int = 1,
+        line_spacing: int = -1,
+        font: str = "",
+        slant=NORMAL,
+        weight=NORMAL,
+        gradient: tuple = None,
+        tab_width: int = 4,
+        height: int = None,
+        width: int = None,
+        should_center: bool = True,
+        unpack_groups: bool = True,
+        disable_ligatures: bool = False,
+        **kwargs,
     ):
         self.text = text
         self.size = size
@@ -1103,15 +1102,15 @@ class MarkupText(Text):
         self.weight = weight
         self.gradient = gradient
         self.tab_width = tab_width
-        
+
         self.original_text = text
         self.disable_ligatures = disable_ligatures
         text_without_tabs = text
         if text.find("\t") != -1:
             text_without_tabs = text.replace("\t", " " * self.tab_width)
 
-        colormap=self.extract_color_tags()
-        gradientmap=self.extract_gradient_tags()
+        colormap = self.extract_color_tags()
+        gradientmap = self.extract_gradient_tags()
 
         if self.line_spacing == -1:
             self.line_spacing = self.size + self.size * 0.3
@@ -1154,23 +1153,21 @@ class MarkupText(Text):
                     each.add_line_to(last)
                     last = points[index + 1]
             each.add_line_to(last)
-        
+
         if self.gradient:
             self.set_color_by_gradient(*self.gradient)
         for col in colormap:
-            self.chars[col["start"]:col["end"]].set_color(
+            self.chars[col["start"] : col["end"]].set_color(
                 Colors[col["color"].lower()].value
             )
         for grad in gradientmap:
-            self.chars[grad["start"]:grad["end"]]\
-                .set_color_by_gradient(*(
-                    Colors[grad["from"].lower()].value,
-                    Colors[grad["to"].lower()].value
-                ))
+            self.chars[grad["start"] : grad["end"]].set_color_by_gradient(
+                *(Colors[grad["from"].lower()].value, Colors[grad["to"].lower()].value)
+            )
         # anti-aliasing
         if self.height is None and self.width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
-        
+
     def text2hash(self):
         """Internally used function.
         Generates ``sha256`` hash for file name.
@@ -1183,7 +1180,7 @@ class MarkupText(Text):
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
         return hasher.hexdigest()[:16]
-        
+
     def text2svg(self):
         """Internally used function.
         Convert the text to SVG using Pango
@@ -1213,11 +1210,9 @@ class MarkupText(Text):
         fontdesc.set_style(self.str2style(self.slant))
         fontdesc.set_weight(self.str2weight(self.weight))
         layout.set_font_description(fontdesc)
-            
+
         text = self.text.replace("\n", " ")
-        context.move_to(
-            START_X, START_Y
-        )
+        context.move_to(START_X, START_Y)
         pangocairocffi.update_layout(context, layout)
         if disable_liga:
             layout.set_markup(f"<span font_features='liga=0'>{text}</span>")
@@ -1225,55 +1220,50 @@ class MarkupText(Text):
             layout.set_markup(text)
         logger.debug(f"Setting Text {text}")
         pangocairocffi.show_layout(context, layout)
-        #offset_x += pangocffi.units_to_double(layout.get_size()[0])
+        # offset_x += pangocffi.units_to_double(layout.get_size()[0])
         surface.finish()
         return file_name
 
     # FIXME: doc
     # FIXME: counting of ligatures is off
     def _count_true_chars(self, s):
-        count=0
-        level=0 
+        count = 0
+        level = 0
         for c in s:
-            if c=="<": 
-                level+=1
-            if c==">" and level>0:
-                level-=1
-            elif c!=" " and level==0:
-                count+=1
+            if c == "<":
+                level += 1
+            if c == ">" and level > 0:
+                level -= 1
+            elif c != " " and level == 0:
+                count += 1
         return count
 
     # FIXME: doc
     def extract_gradient_tags(self):
         """Internally used function."""
-        tags=re.finditer('<gradient from="([^"]+)" to="([^"]+)">(.+?)</gradient>',self.original_text)
-        gradientmap=[]
+        tags = re.finditer(
+            '<gradient from="([^"]+)" to="([^"]+)">(.+?)</gradient>', self.original_text
+        )
+        gradientmap = []
         for tag in tags:
-            start=self._count_true_chars(self.original_text[:tag.start(0)])
-            end=start+self._count_true_chars(tag.group(3))
+            start = self._count_true_chars(self.original_text[: tag.start(0)])
+            end = start + self._count_true_chars(tag.group(3))
             gradientmap.append(
-                {"start": start,
-                 "end": end,
-                 "from": tag.group(1),
-                 "to": tag.group(2)
-                }
+                {"start": start, "end": end, "from": tag.group(1), "to": tag.group(2)}
             )
-        self.text = re.sub('<gradient from="([^"]+)" to="([^"]+)">(.+?)</gradient>',r"\3",self.text)
+        self.text = re.sub(
+            '<gradient from="([^"]+)" to="([^"]+)">(.+?)</gradient>', r"\3", self.text
+        )
         return gradientmap
 
     # FIXME: doc
     def extract_color_tags(self):
         """Internally used function."""
-        tags=re.finditer('<color col="([^"]+)">(.+?)</color>',self.original_text)
-        colormap=[]
+        tags = re.finditer('<color col="([^"]+)">(.+?)</color>', self.original_text)
+        colormap = []
         for tag in tags:
-            start=self._count_true_chars(self.original_text[:tag.start(0)])
-            end=start+self._count_true_chars(tag.group(2))
-            colormap.append(
-                {"start": start,
-                 "end": end,
-                 "color": tag.group(1)}
-            )
-        self.text = re.sub('<color col="([^"]+)">(.+?)</color>',r"\2",self.text)
+            start = self._count_true_chars(self.original_text[: tag.start(0)])
+            end = start + self._count_true_chars(tag.group(2))
+            colormap.append({"start": start, "end": end, "color": tag.group(1)})
+        self.text = re.sub('<color col="([^"]+)">(.+?)</color>', r"\2", self.text)
         return colormap
-
