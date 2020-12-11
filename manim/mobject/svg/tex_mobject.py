@@ -306,8 +306,10 @@ class SingleStringMathTex(SVGMobject):
 
     def remove_stray_braces(self, tex):
         r"""
-        Makes MathTex resilient to unmatched braces '{'. This is important when the braces in the
-        tex code are spread over multiple agruments eg. MathTex(r"e^{i", "\tau} =1")
+        Makes :class:`~.MathTex` resilient to unmatched braces.
+        
+        This is important when the braces in the TeX code are spread over 
+        multiple arguments as in, e.g., ``MathTex(r"e^{i", r"\tau} = 1")``.
         """
 
         # "\{" does not count (it's a brace literal), but "\\{" counts (it's a new line and then brace)

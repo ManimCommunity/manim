@@ -136,8 +136,14 @@ class Mobject(Container):
         return self
 
     def add_to_back(self, *mobjects):
-        """Adds (or moves) all *mobjects to the head of the self.submobjects list.
-        The head of the list is rendered first - i.e. at the back of the scene.
+        """Adds (or moves) all passed mobjects to the back of the scene.
+        
+        .. note::
+
+            Technically, this is done by adding (or moving) the mobjects to
+            the head of ``self.submobjects``. The head of this list is rendered
+            first, which places the corresponding mobjects behind the
+            subsequent list members.
         """
         self.remove(*mobjects)
         self.submobjects = list(mobjects) + self.submobjects
