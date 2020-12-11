@@ -252,7 +252,7 @@ class CairoText(SVGMobject):
                 or self.text[char_index] == "\t"
                 or self.text[char_index] == "\n"
             ):
-                space = Dot(redius=0, fill_opacity=0, stroke_opacity=0)
+                space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
                 else:
@@ -806,7 +806,6 @@ class Text(SVGMobject):
         if self.disable_ligatures:
             self.submobjects = [*self.gen_chars()]
         self.chars = VGroup(*self.submobjects)
-        self.chars = VGroup(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         nppc = self.n_points_per_cubic_curve
         for each in self:
@@ -843,7 +842,7 @@ class Text(SVGMobject):
         submobjects_char_index = 0
         for char_index in range(self.text.__len__()):
             if self.text[char_index] in (" ", "\t", "\n"):
-                space = Dot(redius=0, fill_opacity=0, stroke_opacity=0)
+                space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
                 else:
