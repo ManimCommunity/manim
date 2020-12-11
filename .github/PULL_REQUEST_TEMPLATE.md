@@ -43,7 +43,6 @@ that might be useful for reviewers.. -->
 <!-- Do not modify the lines below. -->
 ## Reviewer Checklist
 - [ ] Newly added functions/classes are either private or have a docstring
-- [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs.
+- [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
 - [ ] The oneline summary has been included [in the wiki](https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release)
-
