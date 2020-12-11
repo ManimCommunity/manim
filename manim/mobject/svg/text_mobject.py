@@ -1,3 +1,5 @@
+from manim.utils.color import Colors
+
 """Mobjects used for displaying (non-LaTeX) text.
 
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
@@ -42,7 +44,7 @@ Examples
 
 """
 
-__all__ = ["Text", "Paragraph", "CairoText"]
+__all__ = ["Text", "Paragraph", "CairoText", "MarkupText"]
 
 
 import copy
@@ -607,6 +609,7 @@ class Paragraph(VGroup):
             )
 
 
+            
 class Text(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
@@ -1063,3 +1066,214 @@ class Text(SVGMobject):
             offset_x += pangocffi.units_to_double(layout.get_size()[0])
         surface.finish()
         return file_name
+
+
+# FIXME: documentation
+# <b>, <i>, <tt>, <big>, <small>, <s>, <sub>, <sup>, <u>
+# <span font_family="...">
+# <span underline="..."> single,double,error
+# <color col="..."> with #xxxxxx or manim constant
+# <gradient from="..." to="...">
+class MarkupText(Text):
+    def __init__(
+            self,
+            text: str,
+            fill_opacity: int = 1,
+            stroke_width: int = 0,
+            color: str = WHITE,
+            size: int = 1,
+            line_spacing: int = -1,
+            font: str = "",
+            slant = NORMAL,
+            weight = NORMAL,
+            gradient: tuple = None,
+            tab_width: int = 4,
+            height: int = None,
+            width: int = None,
+            should_center: bool = True,
+            unpack_groups: bool = True,
+            disable_ligatures: bool = False,
+            **kwargs,
+    ):
+        self.text = text
+        self.size = size
+        self.line_spacing = line_spacing
+        self.font = font
+        self.slant = slant
+        self.weight = weight
+        self.gradient = gradient
+        self.tab_width = tab_width
+        
+        self.original_text = text
+        self.disable_ligatures = disable_ligatures
+        text_without_tabs = text
+        if text.find("\t") != -1:
+            text_without_tabs = text.replace("\t", " " * self.tab_width)
+
+        colormap=self.extract_color_tags()
+        gradientmap=self.extract_gradient_tags()
+
+        if self.line_spacing == -1:
+            self.line_spacing = self.size + self.size * 0.3
+        else:
+            self.line_spacing = self.size + self.size * self.line_spacing
+
+        file_name = self.text2svg()
+        self.remove_last_M(file_name)
+        SVGMobject.__init__(
+            self,
+            file_name,
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            height=height,
+            width=width,
+            should_center=should_center,
+            unpack_groups=unpack_groups,
+            **kwargs,
+        )
+        if self.disable_ligatures:
+            self.submobjects = [*self.gen_chars()]
+        self.chars = VGroup(*self.submobjects)
+        self.text = text_without_tabs.replace(" ", "").replace("\n", "")
+
+        nppc = self.n_points_per_cubic_curve
+        for each in self:
+            if len(each.points) == 0:
+                continue
+            points = each.points
+            last = points[0]
+            each.clear_points()
+            for index, point in enumerate(points):
+                each.append_points([point])
+                if (
+                    index != len(points) - 1
+                    and (index + 1) % nppc == 0
+                    and any(point != points[index + 1])
+                ):
+                    each.add_line_to(last)
+                    last = points[index + 1]
+            each.add_line_to(last)
+        
+        if self.gradient:
+            self.set_color_by_gradient(*self.gradient)
+        for col in colormap:
+            self.chars[col["start"]:col["end"]].set_color(
+                Colors[col["color"].lower()].value
+            )
+        for grad in gradientmap:
+            self.chars[grad["start"]:grad["end"]]\
+                .set_color_by_gradient(*(
+                    Colors[grad["from"].lower()].value,
+                    Colors[grad["to"].lower()].value
+                ))
+        # anti-aliasing
+        if self.height is None and self.width is None:
+            self.scale(TEXT_MOB_SCALE_FACTOR)
+        
+    def text2hash(self):
+        """Internally used function.
+        Generates ``sha256`` hash for file name.
+        """
+        settings = (
+            "MARKUPPANGO" + self.font + self.slant + self.weight
+        )  # to differentiate from classical Pango Text
+        settings += str(self.line_spacing) + str(self.size)
+        id_str = self.text + settings
+        hasher = hashlib.sha256()
+        hasher.update(id_str.encode())
+        return hasher.hexdigest()[:16]
+        
+    def text2svg(self):
+        """Internally used function.
+        Convert the text to SVG using Pango
+        """
+        size = self.size * 10
+        line_spacing = self.line_spacing * 10
+        dir_name = config.get_dir("text_dir")
+        disable_liga = self.disable_ligatures
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        hash_name = self.text2hash()
+        file_name = os.path.join(dir_name, hash_name) + ".svg"
+        if os.path.exists(file_name):
+            return file_name
+        surface = cairocffi.SVGSurface(file_name, 600, 400)
+        context = cairocffi.Context(surface)
+        context.move_to(START_X, START_Y)
+        offset_x = 0
+        last_line_num = 0
+        layout = pangocairocffi.create_layout(context)
+        layout.set_width(pangocffi.units_from_double(600))
+
+        fontdesc = pangocffi.FontDescription()
+        fontdesc.set_size(pangocffi.units_from_double(size))
+        if self.font:
+            fontdesc.set_family(self.font)
+        fontdesc.set_style(self.str2style(self.slant))
+        fontdesc.set_weight(self.str2weight(self.weight))
+        layout.set_font_description(fontdesc)
+            
+        text = self.text.replace("\n", " ")
+        context.move_to(
+            START_X, START_Y
+        )
+        pangocairocffi.update_layout(context, layout)
+        if disable_liga:
+            layout.set_markup(f"<span font_features='liga=0'>{text}</span>")
+        else:
+            layout.set_markup(text)
+        logger.debug(f"Setting Text {text}")
+        pangocairocffi.show_layout(context, layout)
+        #offset_x += pangocffi.units_to_double(layout.get_size()[0])
+        surface.finish()
+        return file_name
+
+    # FIXME: doc
+    # FIXME: counting of ligatures is off
+    def _count_true_chars(self, s):
+        count=0
+        level=0 
+        for c in s:
+            if c=="<": 
+                level+=1
+            if c==">" and level>0:
+                level-=1
+            elif c!=" " and level==0:
+                count+=1
+        return count
+
+    # FIXME: doc
+    def extract_gradient_tags(self):
+        """Internally used function."""
+        tags=re.finditer('<gradient from="([^"]+)" to="([^"]+)">(.+?)</gradient>',self.original_text)
+        gradientmap=[]
+        for tag in tags:
+            start=self._count_true_chars(self.original_text[:tag.start(0)])
+            end=start+self._count_true_chars(tag.group(3))
+            gradientmap.append(
+                {"start": start,
+                 "end": end,
+                 "from": tag.group(1),
+                 "to": tag.group(2)
+                }
+            )
+        self.text = re.sub('<gradient from="([^"]+)" to="([^"]+)">(.+?)</gradient>',r"\3",self.text)
+        return gradientmap
+
+    # FIXME: doc
+    def extract_color_tags(self):
+        """Internally used function."""
+        tags=re.finditer('<color col="([^"]+)">(.+?)</color>',self.original_text)
+        colormap=[]
+        for tag in tags:
+            start=self._count_true_chars(self.original_text[:tag.start(0)])
+            end=start+self._count_true_chars(tag.group(2))
+            colormap.append(
+                {"start": start,
+                 "end": end,
+                 "color": tag.group(1)}
+            )
+        self.text = re.sub('<color col="([^"]+)">(.+?)</color>',r"\2",self.text)
+        return colormap
+
