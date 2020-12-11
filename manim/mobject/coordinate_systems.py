@@ -159,35 +159,25 @@ class Axes(VGroup, CoordinateSystem):
         self.y_axis_config = y_axis_config
         self.center_point = center_point
 
-        for entry in ["x_min", "x_max", "y_min", "y_max"]:
-            if entry.startswith("x"):
-                # entries in kwargs takes precedence over config entries
-                if kwargs.get(entry, None) is None:
-                    # If kwargs does not contain the key, search the x_axis_config
-                    if (
-                        self.x_axis_config.get(entry, None) is None
-                    ):  # if the key is not present, create one with value None
-                        self.x_axis_config[entry] = None
-                else:
-                    self.x_axis_config[entry] = kwargs.pop(entry)
-            else:
-                if kwargs.get(entry, None) is None:
-                    if self.y_axis_config.get(entry, None) is None:
-                        self.y_axis_config[entry] = None
-                else:
-                    self.y_axis_config[entry] = kwargs.pop(entry)
-
-        x_min, x_max = self.x_axis_config.get("x_min"), self.x_axis_config.get("x_max")
-        y_min, y_max = self.y_axis_config.get("y_min"), self.y_axis_config.get("y_max")
+        x_min = kwargs.pop("x_min", self.x_axis_config.pop("x_min", None))
+        x_max = kwargs.pop("x_max", self.x_axis_config.pop("x_max", None))
+        y_min = kwargs.pop("y_min", self.y_axis_config.pop("y_min", None))
+        y_max = kwargs.pop("y_max", self.y_axis_config.pop("y_max", None))
 
         CoordinateSystem.__init__(
             self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max
         )
         VGroup.__init__(self, **kwargs)
-        self.x_axis_config["x_min"] = self.x_min
-        self.x_axis_config["x_max"] = self.x_max
-        self.y_axis_config["y_min"] = self.y_min
-        self.y_axis_config["y_max"] = self.y_max
+        
+        self.x_axis_config["x_min"], self.x_axis_config["x_max"] = (
+            self.x_min,
+            self.x_max,
+        )
+        self.y_axis_config["y_min"], self.y_axis_config["y_max"] = (
+            self.y_min,
+            self.y_max,
+        )
+
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
         self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
