@@ -9,7 +9,7 @@ version of manim from this repository.
 <!-- Outline your motivation: In what way do your changes improve the library? -->
 
 ## Overview / Explanation for Changes
-<!-- Give an overview of your changes and explain how they 
+<!-- Give an overview of your changes and explain how they
 resolve the situation described in the previous section.
 
 For PRs introducing new features, please provide code snippets
@@ -17,8 +17,8 @@ using the newly introduced functionality and ideally even the
 expected rendered output. -->
 
 ## Oneline Summary of Changes
-<!-- Please update the lines below with a oneline summary 
-for your changes. It will be included in the list of upcoming changes at 
+<!-- Please update the lines below with a oneline summary
+for your changes. It will be included in the list of upcoming changes at
 https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release -->
 ```
 - Added new feature ... / Fixed bug ... / ... (:pr:`PR NUMBER HERE`)
