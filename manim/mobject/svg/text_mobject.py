@@ -1,5 +1,3 @@
-from manim.utils.color import Colors
-
 """Mobjects used for displaying (non-LaTeX) text.
 
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
@@ -65,6 +63,8 @@ from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE
+from ...utils.color import Colors
+
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 
@@ -1073,7 +1073,7 @@ class Text(SVGMobject):
 # <span underline="..."> single,double,error
 # <color col="..."> with #xxxxxx or manim constant
 # <gradient from="..." to="...">
-class MarkupText(Text):
+class MarkupText(SVGMobject):
     def __init__(
         self,
         text: str,
@@ -1267,3 +1267,35 @@ class MarkupText(Text):
             colormap.append({"start": start, "end": end, "color": tag.group(1)})
         self.text = re.sub('<color col="([^"]+)">(.+?)</color>', r"\2", self.text)
         return colormap
+
+    def __repr__(self):
+        return f"MarkupText({repr(self.original_text)})"
+
+    def gen_chars(self):
+        chars = VGroup()
+        submobjects_char_index = 0
+        for char_index in range(self.text.__len__()):
+            if (
+                self.text[char_index] == " "
+                or self.text[char_index] == "\t"
+                or self.text[char_index] == "\n"
+            ):
+                space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
+                if char_index == 0:
+                    space.move_to(self.submobjects[submobjects_char_index].get_center())
+                else:
+                    space.move_to(
+                        self.submobjects[submobjects_char_index - 1].get_center()
+                    )
+                chars.add(space)
+            else:
+                chars.add(self.submobjects[submobjects_char_index])
+                submobjects_char_index += 1
+        return chars
+
+    def remove_last_M(self, file_name):
+        with open(file_name, "r") as fpr:
+            content = fpr.read()
+        content = re.sub(r'Z M [^A-Za-z]*? "\/>', 'Z "/>', content)
+        with open(file_name, "w") as fpw:
+            fpw.write(content)
