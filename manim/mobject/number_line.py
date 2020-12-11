@@ -24,6 +24,7 @@ class NumberLine(Line):
         color=LIGHT_GREY,
         unit_size=1,
         width=None,
+        rotation=0,
         include_ticks=True,
         tick_size=0.1,
         tick_frequency=1,
@@ -38,7 +39,6 @@ class NumberLine(Line):
         number_at_center=0,
         number_scale_val=0.75,
         label_direction=DOWN,
-        label_rotation=0,
         line_to_number_buff=MED_SMALL_BUFF,
         include_tip=False,
         tip_width=0.25,
@@ -55,6 +55,7 @@ class NumberLine(Line):
         self.include_ticks = include_ticks
         self.tick_size = tick_size
         self.width = width
+        self.rotation = rotation
         self.tick_frequency = tick_frequency
         self.leftmost_tick = leftmost_tick
         self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
@@ -64,7 +65,6 @@ class NumberLine(Line):
         self.number_at_center = number_at_center
         self.number_scale_val = number_scale_val
         self.label_direction = label_direction
-        self.label_rotation = label_rotation
         self.line_to_number_buff = line_to_number_buff
         self.include_tip = include_tip
         self.tip_width = tip_width
@@ -95,6 +95,7 @@ class NumberLine(Line):
             self.add_tip()
         if self.include_ticks:
             self.add_tick_marks()
+        self.rotate(self.rotation)
         if self.include_numbers:
             self.add_numbers()
 
@@ -192,7 +193,6 @@ class NumberLine(Line):
         scale_val=None,
         direction=None,
         buff=None,
-        rotation=None,
     ):
         number_config = merge_dicts_recursively(
             self.decimal_number_config,
@@ -202,12 +202,9 @@ class NumberLine(Line):
             scale_val = self.number_scale_val
         if direction is None:
             direction = self.label_direction
-        if rotation is None:
-            rotation = self.label_rotation
         buff = buff or self.line_to_number_buff
         num_mob = DecimalNumber(number, **number_config)
         num_mob.scale(scale_val)
-        num_mob.rotate(rotation)
         num_mob.next_to(self.number_to_point(number), direction=direction, buff=buff)
         return num_mob
 

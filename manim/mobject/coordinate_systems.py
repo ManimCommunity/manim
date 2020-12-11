@@ -145,7 +145,7 @@ class Axes(VGroup, CoordinateSystem):
                 "exclude_zero_from_default_numbers": True,
             }
         if y_axis_config is None:
-            y_axis_config = {"label_direction": UP, "label_rotation": -90 * DEGREES}
+            y_axis_config = {"label_direction": LEFT, "rotation": 90 * DEGREES}
         self.axis_config = axis_config
         if x_axis_config is None:
             x_axis_config = {}
@@ -156,7 +156,6 @@ class Axes(VGroup, CoordinateSystem):
         VGroup.__init__(self, **kwargs)
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
-        self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
