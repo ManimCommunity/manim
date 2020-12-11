@@ -104,8 +104,8 @@ class GraphScene(Scene):
         y_axis_visibility=True,  # show or hide the y axis
         x_label_position=UP + RIGHT,  # where to place the label of the x axis
         y_label_position=UP + RIGHT,  # where to place the label of the y axis
-        x_axis_config={},
-        y_axis_config={},
+        x_axis_config=None,
+        y_axis_config=None,
         **kwargs,
     ):
         self.x_min = x_min
@@ -135,8 +135,8 @@ class GraphScene(Scene):
         self.y_axis_visibility = y_axis_visibility
         self.x_label_position = x_label_position
         self.y_label_position = y_label_position
-        self.x_axis_config = x_axis_config
-        self.y_axis_config = y_axis_config
+        self.x_axis_config = {} if x_axis_config is None else x_axis_config
+        self.y_axis_config = {} if y_axis_config is None else y_axis_config
         super().__init__(**kwargs)
 
     def setup(self):
@@ -232,11 +232,6 @@ class GraphScene(Scene):
         )
         y_axis.shift(self.graph_origin - y_shift)
         y_axis.rotate(np.pi / 2, about_point=self.graph_origin)
-
-        # rotate numbers in y_axis
-        if y_axis.include_numbers:
-            for num in y_axis.numbers:
-                num.rotate(-90 * DEGREES)
 
         if len(self.y_labeled_nums) > 0:
             if self.exclude_zero_label:

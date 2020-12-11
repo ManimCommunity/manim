@@ -134,7 +134,7 @@ class Axes(VGroup, CoordinateSystem):
         self,
         axis_config=None,
         x_axis_config=None,
-        y_axis_config={"label_direction": LEFT},
+        y_axis_config=None,
         center_point=ORIGIN,
         **kwargs
     ):
@@ -144,6 +144,8 @@ class Axes(VGroup, CoordinateSystem):
                 "include_tip": True,
                 "exclude_zero_from_default_numbers": True,
             }
+        if y_axis_config is None:
+            y_axis_config = {"label_direction": UP, "label_rotation": -90 * DEGREES}
         self.axis_config = axis_config
         if x_axis_config is None:
             x_axis_config = {}
@@ -161,9 +163,6 @@ class Axes(VGroup, CoordinateSystem):
         self.axes = VGroup(self.x_axis, self.y_axis, dim=self.dim)
         self.add(*self.axes)
         self.shift(self.center_point)
-        if self.y_axis.include_numbers:
-            for num in self.y_axis.numbers:
-                num.rotate(-90 * DEGREES)
 
     def create_axis(self, min_val, max_val, axis_config):
         new_config = merge_dicts_recursively(
