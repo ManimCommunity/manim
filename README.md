@@ -9,6 +9,7 @@
     <a href="https://discord.gg/mMRrZQW"><img src="https://img.shields.io/discord/581738731934056449.svg?label=discord&color=yellow" alt="Discord"></a>
     <a href="https://docs.manim.community/"><img src="https://readthedocs.org/projects/manimce/badge/?version=latest" alt="Documentation Status"></a>
     <a href="https://hub.docker.com/r/manimcommunity/manim"><img src="https://img.shields.io/docker/v/manimcommunity/manim?color=%23099cec&label=docker%20image" alt="Docker image"> </a>
+    <a href="https://twitter.com/manim_community/"><img src="https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40manim_community" alt="Twitter">
     <a href="https://pepy.tech/project/manim"><img src="https://pepy.tech/badge/manim/month?" alt="Downloads"> </a>
     <img src="https://github.com/ManimCommunity/manim/workflows/CI/badge.svg" alt="CI">
     <br />
@@ -16,6 +17,7 @@
     <i>An animation engine for explanatory math videos</i>
 </p>
 <hr />
+
 
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
 
