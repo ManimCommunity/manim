@@ -15,7 +15,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: ../../source/reference/manim.scene.moving_camera_scene.MovingCameraScene.rst:2
 msgid "manim.scene.moving\\_camera\\_scene.MovingCameraScene"
@@ -31,9 +31,10 @@ msgid ""
 "suitable for cases where the camera must be moved around."
 msgstr ""
 
+#Detected untranslatable text:
 #: manim.scene.moving_camera_scene.MovingCameraScene:6 of
-msgid ":class:`.MovingCamera`"
-msgstr ""
+#msgid ":class:`.MovingCamera`"
+#msgstr ""
 
 #: ../../source/reference/manim.scene.moving_camera_scene.MovingCameraScene.rst:12
 msgid "Methods"

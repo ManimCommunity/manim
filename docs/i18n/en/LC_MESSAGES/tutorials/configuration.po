@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"POT-Creation-Date: 2020-12-09 21:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: ../../source/tutorials/configuration.rst:2
 msgid "Configuration"
@@ -334,70 +334,70 @@ msgstr ""
 msgid "Order of operations"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:287
+#: ../../source/tutorials/configuration.rst:294
 msgid ""
 "With so many different ways of configuring manim, it can be difficult to "
 "know when each config option is being set.  In fact, this will depend on "
 "how manim is being used."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:291
+#: ../../source/tutorials/configuration.rst:298
 msgid ""
 "If manim is imported from a module, then the configuration system will "
 "follow these steps:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:294
+#: ../../source/tutorials/configuration.rst:301
 msgid "The library-wide config file is loaded."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:295
+#: ../../source/tutorials/configuration.rst:302
 msgid "The user-wide and folder-wide files are loaded, if they exist."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:296
+#: ../../source/tutorials/configuration.rst:303
 msgid ""
 "All files found in the previous two steps are parsed in a single "
 ":class:`ConfigParser` object, called ``parser``.  This is where "
 "*cascading* happens."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:299
+#: ../../source/tutorials/configuration.rst:306
 msgid ""
 ":class:`logging.Logger` is instantiated to create manim's global "
 "``logger`` object. It is configured using the \"logger\" section of the "
 "parser, i.e. ``parser['logger']``."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:302
+#: ../../source/tutorials/configuration.rst:309
 msgid ""
 ":class:`ManimConfig` is instantiated to create the global ``config`` "
 "object."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:303
+#: ../../source/tutorials/configuration.rst:310
 msgid ""
 "The ``parser`` from step 3 is fed into the ``config`` from step 5 via "
 ":meth:`ManimConfig.digest_parser`."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:305
+#: ../../source/tutorials/configuration.rst:312
 msgid "Both ``logger`` and ``config`` are exposed to the user."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:307
+#: ../../source/tutorials/configuration.rst:314
 msgid ""
 "If manim is being invoked from the command line, all of the previous "
 "steps happen, and are complemented by:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:310
+#: ../../source/tutorials/configuration.rst:317
 msgid ""
 "The CLI flags are parsed and fed into ``config`` via "
 ":meth:`~ManimConfig.digest_args`."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:312
+#: ../../source/tutorials/configuration.rst:319
 msgid ""
 "If the ``--config_file`` flag was used, a new :class:`ConfigParser` "
 "object is created with the contents of the library-wide file, the user-"
@@ -405,47 +405,47 @@ msgid ""
 "this case, the folder-wide file, if it exists, is ignored."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:316
+#: ../../source/tutorials/configuration.rst:323
 msgid "The new parser is fed into ``config``."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:317
+#: ../../source/tutorials/configuration.rst:324
 msgid "The rest of the CLI flags are processed."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:319
+#: ../../source/tutorials/configuration.rst:326
 msgid ""
 "To summarize, the order of precedence for configuration options, from "
 "lowest to highest precedence, is:"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:322
+#: ../../source/tutorials/configuration.rst:329
 msgid "Library-wide config file,"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:323
+#: ../../source/tutorials/configuration.rst:330
 msgid "user-wide config file, if it exists,"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:324
+#: ../../source/tutorials/configuration.rst:331
 msgid ""
 "folder-wide config file, if it exists OR custom config file, if passed "
 "via ``--config_file``,"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:326
+#: ../../source/tutorials/configuration.rst:333
 msgid "other CLI flags, and"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:327
+#: ../../source/tutorials/configuration.rst:334
 msgid "any programmatic changes made after the config system is set."
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:331
+#: ../../source/tutorials/configuration.rst:338
 msgid "A list of all config options"
 msgstr ""
 
-#: ../../source/tutorials/configuration.rst:358
+#: ../../source/tutorials/configuration.rst:365
 msgid "A list of all CLI flags"
 msgstr ""
 

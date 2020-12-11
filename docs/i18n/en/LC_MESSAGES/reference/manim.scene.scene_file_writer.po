@@ -15,11 +15,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
+#Detected untranslatable text:
 #: ../../source/reference/manim.scene.scene_file_writer.rst:2
-msgid "manim.scene.scene\\_file\\_writer"
-msgstr ""
+#msgid "manim.scene.scene\\_file\\_writer"
+#msgstr ""
 
 #: manim.scene.scene_file_writer:1 of
 msgid "The interface between scenes and ffmpeg."

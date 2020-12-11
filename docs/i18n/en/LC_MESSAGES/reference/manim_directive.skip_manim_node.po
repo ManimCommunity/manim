@@ -15,11 +15,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
+#Detected untranslatable text:
 #: ../../source/reference/manim_directive.skip_manim_node.rst:2
-msgid "manim\\_directive.skip\\_manim\\_node"
-msgstr ""
+#msgid "manim\\_directive.skip\\_manim\\_node"
+#msgstr ""
 
 #: manim_directive.skip_manim_node:1 of
 msgid "Bases: :class:`docutils.nodes.Admonition`, :class:`docutils.nodes.Element`"

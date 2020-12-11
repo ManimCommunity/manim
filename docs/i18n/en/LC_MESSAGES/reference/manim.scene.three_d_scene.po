@@ -15,11 +15,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
+#Detected untranslatable text:
 #: ../../source/reference/manim.scene.three_d_scene.rst:2
-msgid "manim.scene.three\\_d\\_scene"
-msgstr ""
+#msgid "manim.scene.three\\_d\\_scene"
+#msgstr ""
 
 #: manim.scene.three_d_scene:1 of
 msgid "A scene suitable for rendering three-dimensional objects and animations."

@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-04 23:15+0100\n"
+"POT-Creation-Date: 2020-12-09 21:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: ../../source/reference/manim.mobject.svg.text_mobject.Paragraph.rst:2
 msgid "manim.mobject.svg.text\\_mobject.Paragraph"
@@ -43,12 +43,6 @@ msgid ""
 ":meth:`remove_invisible_chars` to resolve this issue."
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:15 of
-msgid ""
-"Due to issues with the Pango-powered :class:`.Text`, this class uses "
-":class:`.CairoText`."
-msgstr ""
-
 #: manim.mobject.svg.text_mobject.Paragraph
 #: manim.mobject.svg.text_mobject.Paragraph.change_alignment_for_a_line
 #: manim.mobject.svg.text_mobject.Paragraph.gen_chars
@@ -58,25 +52,25 @@ msgstr ""
 msgid "Parameters"
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:18 of
+#: manim.mobject.svg.text_mobject.Paragraph:13 of
 msgid "Represents the spaning betweeb lines. Default to -1, which means auto."
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:20 of
+#: manim.mobject.svg.text_mobject.Paragraph:15 of
 msgid ""
 "Defines the alignment of paragraph. Default to \"left\". Possible values "
 "are \"left\", \"right\", \"center\""
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:24 of
+#: manim.mobject.svg.text_mobject.Paragraph:19 of
 msgid "Examples"
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:25 of
+#: manim.mobject.svg.text_mobject.Paragraph:20 of
 msgid "Normal usage::"
 msgstr ""
 
-#: manim.mobject.svg.text_mobject.Paragraph:32 of
+#: manim.mobject.svg.text_mobject.Paragraph:27 of
 msgid "Remove unwanted invisible characters::"
 msgstr ""
 
@@ -193,8 +187,9 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
+#Detected untranslatable text:
 #: manim.mobject.svg.text_mobject.Paragraph.gen_chars:7 of
-msgid ":class:`~.VGroup`"
-msgstr ""
+#msgid ":class:`~.VGroup`"
+#msgstr ""
 
 

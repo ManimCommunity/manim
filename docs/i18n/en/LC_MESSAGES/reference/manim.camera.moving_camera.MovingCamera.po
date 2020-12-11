@@ -15,7 +15,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: ../../source/reference/manim.camera.moving_camera.MovingCamera.rst:2
 msgid "manim.camera.moving\\_camera.MovingCamera"
@@ -31,9 +31,10 @@ msgid ""
 "is a Rectangle"
 msgstr ""
 
+#Detected untranslatable text:
 #: manim.camera.moving_camera.MovingCamera:5 of
-msgid ":class:`.MovingCameraScene`"
-msgstr ""
+#msgid ":class:`.MovingCameraScene`"
+#msgstr ""
 
 #: manim.camera.moving_camera.MovingCamera:8 of
 msgid ""

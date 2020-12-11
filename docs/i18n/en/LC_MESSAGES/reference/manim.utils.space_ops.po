@@ -15,11 +15,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
+#Detected untranslatable text:
 #: ../../source/reference/manim.utils.space_ops.rst:2
-msgid "manim.utils.space\\_ops"
-msgstr ""
+#msgid "manim.utils.space\\_ops"
+#msgstr ""
 
 #: manim.utils.space_ops:1 of
 msgid "Utility functions for two- and three-dimensional vectors."

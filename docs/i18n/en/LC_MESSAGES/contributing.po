@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-21 01:26+0100\n"
+"POT-Creation-Date: 2020-12-09 21:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: ../../source/contributing.rst:3
 msgid "Contributing"
@@ -343,7 +343,15 @@ msgid ""
 "general as tidy as possible."
 msgstr ""
 
-#: ../../source/contributing.rst:233
+#: ../../source/contributing.rst:232
+msgid ""
+"You can find examples for the ``docs`` in many places: In ``Example "
+"Gallery`` , ``Tutorials`` , ``Reference Classes`` and ``Reference "
+"Modules``. In case you are contributing, please have a look at this "
+"flowchart:"
+msgstr ""
+
+#: ../../source/contributing.rst:241
 msgid "**Thank you for contributing!**"
 msgstr ""
 

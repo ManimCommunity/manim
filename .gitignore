@@ -58,9 +58,13 @@ docs/_build/
 docs/build/
 docs/source/_autosummary/
 docs/source/reference/
-docs/i18n/gettext/.doctrees
+docs/source/_build
+#i18n
+docs/i18n/.doctrees
 docs/i18n/**/*.mo
-docs/source/_build/
+docs/i18n/gettext
+docs/i18n/translatable.po
+docs/i18n/untranslatable.po
 
 # PyBuilder
 target/
