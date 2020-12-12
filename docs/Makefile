@@ -25,7 +25,7 @@ cleanall: clean
 	rm -rf source/media
 i18n:
 	cd source
-	$(SPHINXBUILD) -M gettext "$(SOURCEDIR)" ../i18n/ -tskip-manim $(SPHINXOPTS) $(O)
+	$(SPHINXBUILD) -M gettext "$(SOURCEDIR)" ../i18n/ -t skip-manim $(SPHINXOPTS) $(O)
 	sphinx-intl update --language=en -p ../i18n/gettext/
 
 # Catch-all target: route all unknown targets to Sphinx using the new
