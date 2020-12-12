@@ -1057,7 +1057,7 @@ class Text(SVGMobject):
             pangocairocffi.update_layout(context, layout)
             if disable_liga:
                 text = escape(text)
-                layout.set_markup(f"<span font_features='liga=0'>{text}</span>")
+                layout.set_markup(f"<span font_features='liga=0,dlig=0,clig=0,hlig=0'>{text}</span>")
             else:
                 layout.set_text(text)
             logger.debug(f"Setting Text {text}")
@@ -1225,7 +1225,7 @@ class MarkupText(SVGMobject):
         context.move_to(START_X, START_Y)
         pangocairocffi.update_layout(context, layout)
         if disable_liga:
-            layout.set_markup(f"<span font_features='liga=0'>{text}</span>")
+            layout.set_markup(f"<span font_features='liga=0,dlig=0,clig=0,hlig=0'>{text}</span>")
         else:
             layout.set_markup(text)
         logger.debug(f"Setting Text {text}")
