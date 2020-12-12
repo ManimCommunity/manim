@@ -1071,8 +1071,8 @@ class Text(SVGMobject):
 # <b>, <i>, <tt>, <big>, <small>, <s>, <sub>, <sup>, <u>
 # <span font_family="...">
 # <span underline="..."> single,double,error
-# <color col="..."> with #xxxxxx or manim constant
-# <gradient from="..." to="...">
+# <color col="..." offset="..."> with #xxxxxx or manim constant
+# <gradient from="..." to="..." offset="...">
 class MarkupText(SVGMobject):
     def __init__(
         self,
@@ -1157,11 +1157,21 @@ class MarkupText(SVGMobject):
         if self.gradient:
             self.set_color_by_gradient(*self.gradient)
         for col in colormap:
-            self.chars[col["start"] : col["end"]].set_color(
+            if col["offset"]:
+                offset = int(col["offset"])
+            else:
+                offset = 0
+            self.chars[col["start"] - offset : col["end"] - offset].set_color(
                 Colors[col["color"].lower()].value
             )
         for grad in gradientmap:
-            self.chars[grad["start"] : grad["end"]].set_color_by_gradient(
+            if grad["offset"]:
+                offset = int(grad["offset"])
+            else:
+                offset = 0
+            self.chars[
+                grad["start"] - offset : grad["end"] - offset
+            ].set_color_by_gradient(
                 *(Colors[grad["from"].lower()].value, Colors[grad["to"].lower()].value)
             )
         # anti-aliasing
@@ -1226,7 +1236,7 @@ class MarkupText(SVGMobject):
 
     # FIXME: doc
     # FIXME: counting of ligatures is off
-    def _count_true_chars(self, s):
+    def _count_real_chars(self, s):
         count = 0
         level = 0
         for c in s:
@@ -1242,30 +1252,45 @@ class MarkupText(SVGMobject):
     def extract_gradient_tags(self):
         """Internally used function."""
         tags = re.finditer(
-            '<gradient from="([^"]+)" to="([^"]+)">(.+?)</gradient>', self.original_text
+            '<gradient\s+from="([^"]+)"\s+to="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</gradient>',
+            self.original_text,
         )
         gradientmap = []
         for tag in tags:
-            start = self._count_true_chars(self.original_text[: tag.start(0)])
-            end = start + self._count_true_chars(tag.group(3))
+            start = self._count_real_chars(self.original_text[: tag.start(0)])
+            end = start + self._count_real_chars(tag.group(5))
             gradientmap.append(
-                {"start": start, "end": end, "from": tag.group(1), "to": tag.group(2)}
+                {
+                    "start": start,
+                    "end": end,
+                    "from": tag.group(1),
+                    "to": tag.group(2),
+                    "offset": tag.group(4),
+                }
             )
-        self.text = re.sub(
-            '<gradient from="([^"]+)" to="([^"]+)">(.+?)</gradient>', r"\3", self.text
-        )
+        self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text)
         return gradientmap
 
     # FIXME: doc
     def extract_color_tags(self):
         """Internally used function."""
-        tags = re.finditer('<color col="([^"]+)">(.+?)</color>', self.original_text)
+        tags = re.finditer(
+            '<color\s+col="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</color>',
+            self.original_text,
+        )
         colormap = []
         for tag in tags:
-            start = self._count_true_chars(self.original_text[: tag.start(0)])
-            end = start + self._count_true_chars(tag.group(2))
-            colormap.append({"start": start, "end": end, "color": tag.group(1)})
-        self.text = re.sub('<color col="([^"]+)">(.+?)</color>', r"\2", self.text)
+            start = self._count_real_chars(self.original_text[: tag.start(0)])
+            end = start + self._count_real_chars(tag.group(4))
+            colormap.append(
+                {
+                    "start": start,
+                    "end": end,
+                    "color": tag.group(1),
+                    "offset": tag.group(3),
+                }
+            )
+        self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text)
         return colormap
 
     def __repr__(self):
@@ -1292,6 +1317,46 @@ class MarkupText(SVGMobject):
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars
+
+    def str2style(self, string):
+        """Internally used function. Converts text to Pango Understandable Styles."""
+        if string == NORMAL:
+            return pangocffi.Style.NORMAL
+        elif string == ITALIC:
+            return pangocffi.Style.ITALIC
+        elif string == OBLIQUE:
+            return pangocffi.Style.OBLIQUE
+        else:
+            raise AttributeError("There is no Style Called %s" % string)
+
+    def str2weight(self, string):
+        """Internally used function. Convert text to Pango Understandable Weight"""
+        if string == NORMAL:
+            return pangocffi.Weight.NORMAL
+        elif string == BOLD:
+            return pangocffi.Weight.BOLD
+        elif string == THIN:
+            return pangocffi.Weight.THIN
+        elif string == ULTRALIGHT:
+            return pangocffi.Weight.ULTRALIGHT
+        elif string == LIGHT:
+            return pangocffi.Weight.LIGHT
+        elif string == SEMILIGHT:
+            return pangocffi.Weight.SEMILIGHT
+        elif string == BOOK:
+            return pangocffi.Weight.BOOK
+        elif string == MEDIUM:
+            return pangocffi.Weight.MEDIUM
+        elif string == SEMIBOLD:
+            return pangocffi.Weight.SEMIBOLD
+        elif string == ULTRABOLD:
+            return pangocffi.Weight.ULTRABOLD
+        elif string == HEAVY:
+            return pangocffi.Weight.HEAVY
+        elif string == ULTRAHEAVY:
+            return pangocffi.Weight.ULTRAHEAVY
+        else:
+            raise AttributeError("There is no Font Weight Called %s" % string)
 
     def remove_last_M(self, file_name):
         with open(file_name, "r") as fpr:
