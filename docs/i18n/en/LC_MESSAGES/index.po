@@ -48,19 +48,4 @@ msgstr ""
 msgid "Navigation"
 msgstr ""
 
-#  Detected untranslatable text:
-#  #: ../../source/index.rst:39
-#  msgid ":ref:`genindex`"
-#  msgstr ""
-
-#  Detected untranslatable text:
-#  #: ../../source/index.rst:40
-#  msgid ":ref:`modindex`"
-#  msgstr ""
-
-#  Detected untranslatable text:
-#  #: ../../source/index.rst:41
-#  msgid ":ref:`search`"
-#  msgstr ""
-
 

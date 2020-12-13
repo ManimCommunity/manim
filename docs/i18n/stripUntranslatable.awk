@@ -34,8 +34,8 @@ $0~/^$/ {
 		if(acceptable!=1){
 			print precomment
 		}else{
-			print "#  Detected untranslatable text:"
-			print sharpedprecomment
+			#print "#  Detected untranslatable text:"
+			#print sharpedprecomment
 		}
 		precomment=""
 	}else{
@@ -43,17 +43,17 @@ $0~/^$/ {
 			print precomment
 			print msgidstr
 			print msgstrstr
+			print ""
 		}else{
-			print "#  Detected untranslatable text:"
-			print sharpedprecomment
-			print sharpedmsgidstr
-			print sharpedmsgstrstr
+			#print "#  Detected untranslatable text:"
+			#print sharpedprecomment
+			#print sharpedmsgidstr
+			#print sharpedmsgstrstr
 			print precomment>>untranslatablefile
 			print msgidstr>>untranslatablefile
 			print msgstrstr>>untranslatablefile
 		}
 		# Add the newline currently parsed
-		print ""
 		# Re-initialisation of the variables.
 		state=-1
 		acceptable=-1
