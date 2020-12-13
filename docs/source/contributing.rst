@@ -195,10 +195,34 @@ at least two approving code reviews from core community developers are required.
 
 Internationalization
 ====================
-If you want to translate the program, create a transifex account.
-Then, go to this url, and ask to join the project as a translator for your language.
-You can also ask for new languages if you want.
+If you want help with translating the docs, you will have to first create a
+transifex account on `their website <https://www.transifex.com/>`_.
+Then, you can go to the 
+`manim project page <https://www.transifex.com/manim-community/manim-community-documentation>`_,
+there, you can click on `Join Team` and then select the language you want to help with.
+Congratulations ! You are now a Translator for the Manim Community project !
+You have access to the projects you joined just on the right of your profile picture
+on the top bar. Then you can go the 
+`languages list <https://www.transifex.com/manim-community/manim-community-documentation/languages/>`_
+and select the language you want to help with. Then you have a blue button reading
+`Translate`, click it to get started with translating ! You will get to a list of
+all ressources of the project. You can click on any untranslated ressource, then
+click `Translate` and you will get to a list of strings to be translated. Just
+select the string and type your translation in the right-side panel. Your
+translation will have to be reviewed before getting in the docs.
 
+If you want to become a reviewer, please join the discord server of Manim and 
+you can ping the role @i18nService.
+
+If you want to add a new language, you can go to 
+`the project page <https://www.transifex.com/manim-community/manim-community-documentation>`_
+If you didn't joined the project yet, you will have a link which reads
+`Request language`, and send the request.
+If you are already in the project, go to the languages page and you have a
+blue button reading `Request language` and do your request.
+
+We will have to manually accept the new language, so you will not be able to
+translate instantaneously (for new languages).
 
 Further useful guidelines
 =========================
