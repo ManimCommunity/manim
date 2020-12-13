@@ -1212,7 +1212,7 @@ class MarkupText(SVGMobject):
         class NoLigaturesExample(Scene):
             def construct(self):
                 text1 = MarkupText("floating")
-                text2 = MarkupText("floating", disable_ligatures=True)
+                #text2 = MarkupText("floating", disable_ligatures=True)
                 group = VGroup(text1, text2).arrange(DOWN)
                 self.add(group)
 
