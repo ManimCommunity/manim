@@ -50,17 +50,17 @@ msgstr ""
 
 #  Detected untranslatable text:
 #: ../../source/index.rst:39
-#| msgid ":ref:`genindex`"
-#| msgstr ""
+#  msgid ":ref:`genindex`"
+#  msgstr ""
 
 #  Detected untranslatable text:
 #: ../../source/index.rst:40
-#| msgid ":ref:`modindex`"
-#| msgstr ""
+#  msgid ":ref:`modindex`"
+#  msgstr ""
 
 #  Detected untranslatable text:
 #: ../../source/index.rst:41
-#| msgid ":ref:`search`"
-#| msgstr ""
+#  msgid ":ref:`search`"
+#  msgstr ""
 
 
