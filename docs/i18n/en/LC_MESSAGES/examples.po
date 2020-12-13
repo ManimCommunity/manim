@@ -65,27 +65,27 @@ msgid "Example References"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:40
+#  #: ../../source/examples.rst:40
 #  msgid ":class:`~.MathTex` :class:`~.Circle` :class:`~.Square` :class:`~.Triangle`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:33
+#  #: ../../source/examples.rst:33
 #  msgid ":class:`~.ImageMobject`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:35
+#  #: ../../source/examples.rst:35
 #  msgid ":class:`~.Brace` :func:`~.Brace.get_text` :func:`~.Brace.get_tex`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:33
+#  #: ../../source/examples.rst:33
 #  msgid ":class:`~.Dot` :class:`~.Arrow` :class:`~.NumberPlane` :class:`~.Text`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:101
+#  #: ../../source/examples.rst:101
 #  msgid ""
 #  ":class:`~.Line` :class:`~.VGroup` "
 #  ":func:`~.VMobject.add_cubic_bezier_curve`"
@@ -96,7 +96,7 @@ msgid "Animations"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:40
+#  #: ../../source/examples.rst:40
 #  msgid ""
 #  ":class:`~.Circle` :class:`~.Dot` :class:`~.Line` "
 #  ":class:`~.GrowFromCenter` :class:`~.Transform` :class:`~.MoveAlongPath` "
@@ -104,26 +104,26 @@ msgstr ""
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:33
+#  #: ../../source/examples.rst:33
 #  msgid ""
 #  ":func:`~.Mobject.shift` :func:`~.VMobject.set_fill` "
 #  ":func:`~.Mobject.scale` :func:`~.Mobject.rotate`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:42
+#  #: ../../source/examples.rst:42
 #  msgid ""
 #  ":mod:`~.manim.mobject.svg.tex_mobject` :class:`~.MathTex` "
 #  ":class:`~.SurroundingRectangle`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:41
+#  #: ../../source/examples.rst:41
 #  msgid ":func:`~.Mobject.add_updater` :func:`~.Mobject.remove_updater`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:41
+#  #: ../../source/examples.rst:41
 #  msgid ""
 #  ":class:`~.Rotating` :func:`~.VMobject.set_points_as_corners` "
 #  ":func:`~.Mobject.add_updater`"
@@ -134,7 +134,7 @@ msgid "Plotting with Manim"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:53
+#  #: ../../source/examples.rst:53
 #  msgid ""
 #  ":mod:`~.manim.scene.graph_scene` :class:`~.MathTex` "
 #  ":func:`~.GraphScene.setup_axes` :func:`~.GraphScene.get_graph` "
@@ -143,7 +143,7 @@ msgstr ""
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:45
+#  #: ../../source/examples.rst:45
 #  msgid ""
 #  ":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` "
 #  ":func:`~.GraphScene.get_graph` "
@@ -152,7 +152,7 @@ msgstr ""
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:52
+#  #: ../../source/examples.rst:52
 #  msgid ""
 #  ":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` "
 #  ":func:`~.GraphScene.coords_to_point`"
@@ -163,7 +163,7 @@ msgid "Special Camera Settings"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:52
+#  #: ../../source/examples.rst:52
 #  msgid ""
 #  ":mod:`~.manim.scene.moving_camera_scene` :class:`~.GraphScene` "
 #  ":class:`~.MovingCameraScene` :class:`~.MoveAlongPath` :class:`~.Restore` "
@@ -171,7 +171,7 @@ msgstr ""
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:88
+#  #: ../../source/examples.rst:88
 #  msgid ""
 #  ":mod:`~.manim.scene.zoomed_scene` :class:`~.ZoomedScene` "
 #  ":class:`~.BackgroundRectangle` :class:`~.UpdateFromFunc` "
@@ -180,21 +180,21 @@ msgstr ""
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:34
+#  #: ../../source/examples.rst:34
 #  msgid ""
 #  ":class:`~.ThreeDScene` :func:`~.ThreeDScene.set_camera_orientation` "
 #  ":func:`~.ThreeDScene.add_fixed_in_frame_mobjects`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:39
+#  #: ../../source/examples.rst:39
 #  msgid ""
 #  ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` :class:`~.ParametricSurface`"
 #  " :func:`~.ThreeDScene.set_camera_orientation`"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:36
+#  #: ../../source/examples.rst:36
 #  msgid ""
 #  ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` "
 #  ":func:`~.ThreeDScene.begin_ambient_camera_rotation` "
@@ -202,7 +202,7 @@ msgstr ""
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:34
+#  #: ../../source/examples.rst:34
 #  msgid ""
 #  ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` "
 #  ":func:`~.ThreeDScene.begin_3dillusion_camera_rotation` "
@@ -210,7 +210,7 @@ msgstr ""
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:74
+#  #: ../../source/examples.rst:74
 #  msgid ":class:`~.ThreeDScene` :class:`~.ParametricSurface`"
 #  msgstr ""
 
@@ -219,7 +219,7 @@ msgid "Advanced Projects"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:77
+#  #: ../../source/examples.rst:77
 #  msgid ""
 #  ":class:`~.Tex` :class:`~.MathTex` :class:`~.Write` :class:`~.FadeInFrom` "
 #  ":class:`~.LaggedStart` :class:`~.NumberPlane` :class:`~.ShowCreation` "
@@ -227,7 +227,7 @@ msgstr ""
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/examples.rst:111
+#  #: ../../source/examples.rst:111
 #  msgid ""
 #  ":class:`~.MathTex` :class:`~.Circle` :class:`~.Dot` :class:`~.Line` "
 #  ":class:`~.VGroup` :func:`~.Mobject.add_updater` "

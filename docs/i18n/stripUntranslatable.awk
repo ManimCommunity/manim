@@ -7,6 +7,8 @@ BEGIN {
 	state=-1
 	# The comment preceding the block
 	precomment=""
+	# The same string, but with a space after the sharp to avoid a comment
+	sharpedprecomment=""
 	# The msgid section, containing the string to be translated
 	msgidstr=""
 	# The same string, but with a sharp before every newline (commented  out)
@@ -33,7 +35,7 @@ $0~/^$/ {
 			print precomment
 		}else{
 			print "#  Detected untranslatable text:"
-			print precomment
+			print sharpedprecomment
 		}
 		precomment=""
 	}else{
@@ -43,7 +45,7 @@ $0~/^$/ {
 			print msgstrstr
 		}else{
 			print "#  Detected untranslatable text:"
-			print precomment
+			print sharpedprecomment
 			print sharpedmsgidstr
 			print sharpedmsgstrstr
 			print precomment>>untranslatablefile
@@ -63,6 +65,7 @@ $0~/^$/ {
 # If the line is commented out
 $0~/^#/ {
 	precomment=(state==-1)?$0:precomment"\n"$0
+	sharpedprecomment=(state==-1)?"#  "$0:sharpedprecomment"\n#  "$0
 	state=0
 }
 # If the line starts with "msgid"

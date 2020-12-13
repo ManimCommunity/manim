@@ -130,7 +130,7 @@ msgid ""
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/contributing.rst:98:<autosummary>:1
+#  #: ../../source/contributing.rst:98:<autosummary>:1
 #  msgid ":obj:`manim_directive <manim_directive>`\\"
 #  msgstr ""
 

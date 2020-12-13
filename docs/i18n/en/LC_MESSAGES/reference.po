@@ -38,7 +38,7 @@ msgid "Mobjects"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`changing <manim.mobject.changing>`\\"
 #  msgstr ""
 
@@ -47,7 +47,7 @@ msgid "Animation of a mobject boundary and tracing of points."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`coordinate_systems <manim.mobject.coordinate_systems>`\\"
 #  msgstr ""
 
@@ -56,7 +56,7 @@ msgid "Mobjects that represent coordinate systems."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`frame <manim.mobject.frame>`\\"
 #  msgstr ""
 
@@ -65,7 +65,7 @@ msgid "Special rectangles."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`functions <manim.mobject.functions>`\\"
 #  msgstr ""
 
@@ -74,7 +74,7 @@ msgid "Mobjects representing function graphs."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`geometry <manim.mobject.geometry>`\\"
 #  msgstr ""
 
@@ -83,7 +83,7 @@ msgid "Mobjects that are simple geometric shapes."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`logo <manim.mobject.logo>`\\"
 #  msgstr ""
 
@@ -92,7 +92,7 @@ msgid "Utilities for Manim's logo and banner."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`matrix <manim.mobject.matrix>`\\"
 #  msgstr ""
 
@@ -101,7 +101,7 @@ msgid "Mobjects representing matrices."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`mobject <manim.mobject.mobject>`\\"
 #  msgstr ""
 
@@ -110,7 +110,7 @@ msgid "Base classes for objects that can be displayed."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`mobject_update_utils <manim.mobject.mobject_update_utils>`\\"
 #  msgstr ""
 
@@ -119,7 +119,7 @@ msgid "Utility functions for continuous animation of mobjects."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`number_line <manim.mobject.number_line>`\\"
 #  msgstr ""
 
@@ -128,7 +128,7 @@ msgid "Mobject representing a number line."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`numbers <manim.mobject.numbers>`\\"
 #  msgstr ""
 
@@ -137,7 +137,7 @@ msgid "Mobjects representing numbers."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`probability <manim.mobject.probability>`\\"
 #  msgstr ""
 
@@ -146,7 +146,7 @@ msgid "Mobjects representing objects from probability theory and statistics."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`shape_matchers <manim.mobject.shape_matchers>`\\"
 #  msgstr ""
 
@@ -155,7 +155,7 @@ msgid "Mobjects used to mark and annotate other mobjects."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`three_d_utils <manim.mobject.three_d_utils>`\\"
 #  msgstr ""
 
@@ -164,7 +164,7 @@ msgid "Utility functions for three-dimensional mobjects."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`three_dimensions <manim.mobject.three_dimensions>`\\"
 #  msgstr ""
 
@@ -173,7 +173,7 @@ msgid "Three-dimensional mobjects."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`value_tracker <manim.mobject.value_tracker>`\\"
 #  msgstr ""
 
@@ -182,7 +182,7 @@ msgid "Mobjects that dynamically show the change of a variable."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`vector_field <manim.mobject.vector_field>`\\"
 #  msgstr ""
 
@@ -191,7 +191,7 @@ msgid "Mobjects representing vector fields."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`brace <manim.mobject.svg.brace>`\\"
 #  msgstr ""
 
@@ -200,7 +200,7 @@ msgid "Mobject representing curly braces."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`code_mobject <manim.mobject.svg.code_mobject>`\\"
 #  msgstr ""
 
@@ -209,7 +209,7 @@ msgid "Mobject representing highlighted source code listings."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`svg_mobject <manim.mobject.svg.svg_mobject>`\\"
 #  msgstr ""
 
@@ -218,7 +218,7 @@ msgid "Mobjects generated from an SVG file."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`tex_mobject <manim.mobject.svg.tex_mobject>`\\"
 #  msgstr ""
 
@@ -227,7 +227,7 @@ msgid "Mobjects representing text rendered using LaTeX."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`text_mobject <manim.mobject.svg.text_mobject>`\\"
 #  msgstr ""
 
@@ -236,7 +236,7 @@ msgid "Mobjects used for displaying (non-LaTeX) text."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`image_mobject <manim.mobject.types.image_mobject>`\\"
 #  msgstr ""
 
@@ -245,7 +245,7 @@ msgid "Mobjects representing raster images."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`point_cloud_mobject <manim.mobject.types.point_cloud_mobject>`\\"
 #  msgstr ""
 
@@ -254,7 +254,7 @@ msgid "Mobjects representing point clouds."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:46:<autosummary>:1
+#  #: ../../source/reference.rst:46:<autosummary>:1
 #  msgid ":obj:`vectorized_mobject <manim.mobject.types.vectorized_mobject>`\\"
 #  msgstr ""
 
@@ -267,7 +267,7 @@ msgid "Scenes"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`graph_scene <manim.scene.graph_scene>`\\"
 #  msgstr ""
 
@@ -276,7 +276,7 @@ msgid "A scene for plotting / graphing functions."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`moving_camera_scene <manim.scene.moving_camera_scene>`\\"
 #  msgstr ""
 
@@ -285,12 +285,12 @@ msgid "A scene whose camera can be moved around."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`reconfigurable_scene <manim.scene.reconfigurable_scene>`\\"
 #  msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`sample_space_scene <manim.scene.sample_space_scene>`\\"
 #  msgstr ""
 
@@ -299,7 +299,7 @@ msgid "A scene suitable for usage with :class:`.SampleSpace`."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`scene <manim.scene.scene>`\\"
 #  msgstr ""
 
@@ -308,7 +308,7 @@ msgid "Basic canvas for animations."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`scene_file_writer <manim.scene.scene_file_writer>`\\"
 #  msgstr ""
 
@@ -317,7 +317,7 @@ msgid "The interface between scenes and ffmpeg."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`three_d_scene <manim.scene.three_d_scene>`\\"
 #  msgstr ""
 
@@ -326,7 +326,7 @@ msgid "A scene suitable for rendering three-dimensional objects and animations."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`vector_space_scene <manim.scene.vector_space_scene>`\\"
 #  msgstr ""
 
@@ -335,7 +335,7 @@ msgid "A scene suitable for vector spaces."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:64:<autosummary>:1
+#  #: ../../source/reference.rst:64:<autosummary>:1
 #  msgid ":obj:`zoomed_scene <manim.scene.zoomed_scene>`\\"
 #  msgstr ""
 
@@ -348,7 +348,7 @@ msgid "Animations"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`animation <manim.animation.animation>`\\"
 #  msgstr ""
 
@@ -357,7 +357,7 @@ msgid "Animate mobjects."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`composition <manim.animation.composition>`\\"
 #  msgstr ""
 
@@ -366,7 +366,7 @@ msgid "Tools for displaying multiple animations at once."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`creation <manim.animation.creation>`\\"
 #  msgstr ""
 
@@ -375,7 +375,7 @@ msgid "Animate the display or removal of a mobject from a scene."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`fading <manim.animation.fading>`\\"
 #  msgstr ""
 
@@ -384,7 +384,7 @@ msgid "Fading in and out of view."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`growing <manim.animation.growing>`\\"
 #  msgstr ""
 
@@ -393,7 +393,7 @@ msgid "Animations that grow mobjects."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`indication <manim.animation.indication>`\\"
 #  msgstr ""
 
@@ -402,7 +402,7 @@ msgid "Animations drawing attention to particular mobjects."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`movement <manim.animation.movement>`\\"
 #  msgstr ""
 
@@ -411,7 +411,7 @@ msgid "Animations related to movement."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`numbers <manim.animation.numbers>`\\"
 #  msgstr ""
 
@@ -420,7 +420,7 @@ msgid "Animations for changing numbers."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`rotation <manim.animation.rotation>`\\"
 #  msgstr ""
 
@@ -429,7 +429,7 @@ msgid "Animations related to rotation."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`transform <manim.animation.transform>`\\"
 #  msgstr ""
 
@@ -438,7 +438,7 @@ msgid "Animations transforming one mobject into another."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:84:<autosummary>:1
+#  #: ../../source/reference.rst:84:<autosummary>:1
 #  msgid ":obj:`update <manim.animation.update>`\\"
 #  msgstr ""
 
@@ -451,7 +451,7 @@ msgid "Cameras"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:98:<autosummary>:1
+#  #: ../../source/reference.rst:98:<autosummary>:1
 #  msgid ":obj:`camera <manim.camera.camera>`\\"
 #  msgstr ""
 
@@ -462,7 +462,7 @@ msgid ""
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:98:<autosummary>:1
+#  #: ../../source/reference.rst:98:<autosummary>:1
 #  msgid ":obj:`mapping_camera <manim.camera.mapping_camera>`\\"
 #  msgstr ""
 
@@ -471,7 +471,7 @@ msgid "A camera that allows mapping between objects."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:98:<autosummary>:1
+#  #: ../../source/reference.rst:98:<autosummary>:1
 #  msgid ":obj:`moving_camera <manim.camera.moving_camera>`\\"
 #  msgstr ""
 
@@ -480,7 +480,7 @@ msgid "A camera able to move through a scene."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:98:<autosummary>:1
+#  #: ../../source/reference.rst:98:<autosummary>:1
 #  msgid ":obj:`multi_camera <manim.camera.multi_camera>`\\"
 #  msgstr ""
 
@@ -489,7 +489,7 @@ msgid "A camera supporting multiple perspectives."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:98:<autosummary>:1
+#  #: ../../source/reference.rst:98:<autosummary>:1
 #  msgid ":obj:`three_d_camera <manim.camera.three_d_camera>`\\"
 #  msgstr ""
 
@@ -502,7 +502,7 @@ msgid "Configuration"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:111:<autosummary>:1
+#  #: ../../source/reference.rst:111:<autosummary>:1
 #  msgid ":obj:`_config <manim._config>`\\"
 #  msgstr ""
 
@@ -511,7 +511,7 @@ msgid "Set the global config and logger."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:111:<autosummary>:1
+#  #: ../../source/reference.rst:111:<autosummary>:1
 #  msgid ":obj:`utils <manim._config.utils>`\\"
 #  msgstr ""
 
@@ -520,7 +520,7 @@ msgid "Utilities to create and set the config."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:111:<autosummary>:1
+#  #: ../../source/reference.rst:111:<autosummary>:1
 #  msgid ":obj:`main_utils <manim._config.main_utils>`\\"
 #  msgstr ""
 
@@ -529,7 +529,7 @@ msgid "Utilities called from ``__main__.py`` to interact with the config."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:111:<autosummary>:1
+#  #: ../../source/reference.rst:111:<autosummary>:1
 #  msgid ":obj:`logger_utils <manim._config.logger_utils>`\\"
 #  msgstr ""
 
@@ -542,7 +542,7 @@ msgid "Utilities"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`bezier <manim.utils.bezier>`\\"
 #  msgstr ""
 
@@ -551,7 +551,7 @@ msgid "Utility functions related to Bézier curves."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`color <manim.utils.color>`\\"
 #  msgstr ""
 
@@ -560,7 +560,7 @@ msgid "Utility functions for conversion between color models."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`config_ops <manim.utils.config_ops>`\\"
 #  msgstr ""
 
@@ -569,7 +569,7 @@ msgid "Utilities that mught be useful for configuration dictionaries."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`hashing <manim.utils.hashing>`\\"
 #  msgstr ""
 
@@ -578,7 +578,7 @@ msgid "Utilities for scene caching."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`images <manim.utils.images>`\\"
 #  msgstr ""
 
@@ -587,7 +587,7 @@ msgid "Image manipulation utilities."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`iterables <manim.utils.iterables>`\\"
 #  msgstr ""
 
@@ -596,7 +596,7 @@ msgid "Operations on iterables."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`paths <manim.utils.paths>`\\"
 #  msgstr ""
 
@@ -605,7 +605,7 @@ msgid "Functions determining transformation paths between sets of points."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`rate_functions <manim.utils.rate_functions>`\\"
 #  msgstr ""
 
@@ -614,7 +614,7 @@ msgid "A selection of rate functions, i.e., *speed curves* for animations."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`simple_functions <manim.utils.simple_functions>`\\"
 #  msgstr ""
 
@@ -623,7 +623,7 @@ msgid "A collection of simple functions."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`sounds <manim.utils.sounds>`\\"
 #  msgstr ""
 
@@ -632,7 +632,7 @@ msgid "Sound-related utility functions."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`space_ops <manim.utils.space_ops>`\\"
 #  msgstr ""
 
@@ -641,7 +641,7 @@ msgid "Utility functions for two- and three-dimensional vectors."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`strings <manim.utils.strings>`\\"
 #  msgstr ""
 
@@ -650,7 +650,7 @@ msgid "String manipulation utilities."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`tex <manim.utils.tex>`\\"
 #  msgstr ""
 
@@ -659,7 +659,7 @@ msgid "Utilities for processing LaTeX templates."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`tex_templates <manim.utils.tex_templates>`\\"
 #  msgstr ""
 
@@ -668,7 +668,7 @@ msgid "A library of LaTeX templates."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:135:<autosummary>:1
+#  #: ../../source/reference.rst:135:<autosummary>:1
 #  msgid ":obj:`tex_file_writing <manim.utils.tex_file_writing>`\\"
 #  msgstr ""
 
@@ -681,7 +681,7 @@ msgid "Other modules"
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:144:<autosummary>:1
+#  #: ../../source/reference.rst:144:<autosummary>:1
 #  msgid ":obj:`constants <manim.constants>`\\"
 #  msgstr ""
 
@@ -690,7 +690,7 @@ msgid "Constant definitions."
 msgstr ""
 
 #  Detected untranslatable text:
-#: ../../source/reference.rst:144:<autosummary>:1
+#  #: ../../source/reference.rst:144:<autosummary>:1
 #  msgid ":obj:`container <manim.container>`\\"
 #  msgstr ""
 
