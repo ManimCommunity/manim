@@ -1069,13 +1069,192 @@ class Text(SVGMobject):
         return file_name
 
 
-# FIXME: documentation
-# <b>, <i>, <tt>, <big>, <small>, <s>, <sub>, <sup>, <u>
-# <span font_family="...">
-# <span underline="..."> single,double,error
-# <color col="..." offset="..."> with #xxxxxx or manim constant
-# <gradient from="..." to="..." offset="...">
 class MarkupText(SVGMobject):
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
+
+    Text objects behave like a :class:`.VGroup`-like iterable of all characters
+    in the given text. In particular, slicing is possible. Text can be formatted
+    using different tags:
+
+    - `<b>bold</b>`, `<i>italic</i>` and `<b><i>bold+italic</i></b>`
+    - `<ul>underline</ul>` and `<s>strike through</s>`
+    - `<tt>typewriter font</tt>`
+    - `<big>bigger font</big>` and `<small>smaller font</small>`
+    - `<sup>superscript</sup>` and `<sub>subscript</sub>`
+    - `<span underline="double">double underline</span>`
+    - `<span underline="error">error underline</span>`
+    - `<span font_family="sans">temporary change of font</span>`
+    - `<color col="RED">temporary change of color</color>`;
+       colors can be specified as Manim constants like `RED` or `YELLOW`
+    - `<gradient from="YELLOW" to="RED">temporary gradient</gradient>`;
+       colors specified as above
+
+    When your text contains ligatures, the `MarkupText` class may incorrectly determine
+    the first and last letter to be colored. This is due to the fact that e.g. `fl`
+    are two characters, but will be set as one single glyph. If your language does
+    not depend on ligatures, consider setting `disable_ligatures=True`. If you cannot
+    or do not want to do without ligatures, the `gradient` and `color` tag support
+    an optional attribute `offset` which can be used to compensate for that error.
+    Usage is as follows:
+    - `<color col="RED" offset="1">red text</color>`
+      to *start* coloring one letter earlier
+    - `<color col="RED" offset=",1">red text</color>`
+      to *end* coloring one letter earlier
+    - `<color colr="RED" offset="2,1">red text</color>`
+      to *start* coloring two letters earlier and *end* one letter earlier
+    Specifying a second offset may be necessary if the text to be colored does
+    itself contain ligatures. The same can happen when using HTML entities for
+    special chars.
+
+    Escaping of special characters: `>` *should* be written as `&gt;` whereas `<` and
+    `&` *must* to be written as `&lt;` and `&amp;`.
+
+    You can find more information about Pango markup formatting at the
+    corresponding documentation page:
+    `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
+    Please be aware that not all features are supported by this class and that
+    the `<color>` and `<gradient>` tags are not official ones.
+
+    Parameters
+    ----------
+    text : :class:`str`
+        The text that need to created as mobject.
+    fill_opacity : :class:`int`
+        The fill opacity with 1 meaning opaque and 0 meaning transparent
+    stroke_width : :class:`int`
+        Stroke width.
+    color : :class:`str`
+        Global color setting for the entire text. Local overrides are possible.
+    size : :class:`int`
+        Font size.
+    line_spacing : :class:`int`
+        Line spacing.
+    font : :class:`str`
+        Global font setting for the entire text. Local overrides are possible.
+    slant : :class:`str`
+        Global slant setting, e.g. `NORMAL` or `ITALIC`. Local overrides are possible.
+    weight : :class:`str`
+        Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible.
+    gradient: :class:`tuple`
+        Global gradient setting. Local overrides are possible.
+
+
+    Returns
+    -------
+    :class:`Text`
+        The mobject like :class:`.VGroup`.
+
+    Examples
+    ---------
+
+    .. manim:: BasicMarkupExample
+        :save_last_frame:
+
+        class BasicMarkupExample(Scene):
+            def construct(self):
+                text1 = MarkupText("<b>foo</b> <i>bar</i> <b><i>foobar</i></b>")
+                text2 = MarkupText("<s>foo</s> <u>bar</u> <big>big</big> <small>small</small>")
+                text3 = MarkupText("H<sub>2</sub>O and H<sub>3</sub>O<sup>+</sup>")
+                text4 = MarkupText("type <tt>help</tt> for help")
+                text5 = MarkupText(
+                    '<span underline="double">foo</span> <span underline="error">bar</span>'
+                )
+                group = VGroup(text1,text2,text3,text4,text5).arrange(DOWN)
+                self.add(group)
+
+    .. manim:: ColorExample
+        :save_last_frame:
+
+        class ColorExample(Scene):
+            def construct(self):
+                text1 = MarkupText(
+                    'all in red <color col="YELLOW">except this</color>', color=RED
+                )
+                text2 = MarkupText("nice gradient", gradient=(BLUE, GREEN))
+                text3 = MarkupText(
+                    'nice <gradient from="RED" to="YELLOW">intermediate</gradient> gradient',
+                    gradient=(BLUE, GREEN),
+                )
+                text4 = MarkupText(
+                    'fl ligature <color col="GREEN">causing trouble</color> here'
+                )
+                text5 = MarkupText(
+                    'fl ligature <color col="GREEN" offset="1">defeated</color> with offset'
+                )
+                text6 = MarkupText(
+                    'fl ligature <color col="GREEN" offset="1">floating</color> inside'
+                )
+                text7 = MarkupText(
+                    'fl ligature <color col="GREEN" offset="1,1">floating</color> inside'
+                )
+                group = VGroup(text1, text2, text3, text4, text5, text6, text7).arrange(DOWN)
+                self.add(group)
+
+    .. manim:: FontExample
+        :save_last_frame:
+
+        class FontExample(Scene):
+            def construct(self):
+                text1 = MarkupText(
+                    'all in sans <span font_family="serif">except this</span>', font="sans"
+                )
+                text2 = MarkupText(
+                    '<span font_family="serif">mixing</span> <span font_family="sans">fonts</span> <span font_family="monospace">is ugly</span>'
+                )
+                text3 = MarkupText("special char > or &gt;")
+                text4 = MarkupText("special char &lt; and &amp;")
+                group = VGroup(text1, text2, text3, text4).arrange(DOWN)
+                self.add(group)
+
+    .. manim:: NoLigaturesExample
+        :save_last_frame:
+
+        class NoLigaturesExample(Scene):
+            def construct(self):
+                text1 = MarkupText("floating")
+                text2 = MarkupText("floating", disable_ligatures=True)
+                group = VGroup(text1, text2).arrange(DOWN)
+                self.add(group)
+
+
+    As :class:`MarkupText` uses Pango to render text, rendering non-English
+    characters is easily possible:
+
+    .. manim:: MultiLanguage
+        :save_last_frame:
+
+        class MultiLanguage(Scene):
+            def construct(self):
+                morning = Text("வணக்கம்", font="sans-serif")
+                chin = Text(
+                    "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
+                )  # works as in  ``Text``
+                mess = Text("Multi-Language", style=BOLD)
+                russ = Text("Здравствуйте मस नम म ", font="sans-serif")
+                hin = Text("नमस्ते", font="sans-serif")
+                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
+                self.add(morning,chin,mess,russ,hin,japanese)
+                for i,mobj in enumerate(self.mobjects):
+                    mobj.shift(DOWN*(i-3))
+
+
+
+    Tests
+    -----
+
+    Check that the creation of :class:`~.MarkupText` works::
+
+        >>> MarkupText('The horse does not eat cucumber salad.')
+        MarkupText('The horse does not eat cucumber salad.')
+
+    .. WARNING::
+
+        Using a :class:`.Transform` on text with leading whitespace can look
+        `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
+        :meth:`remove_invisible_chars` to resolve this issue.
+
+    """
+
     def __init__(
         self,
         text: str,
@@ -1159,20 +1338,18 @@ class MarkupText(SVGMobject):
         if self.gradient:
             self.set_color_by_gradient(*self.gradient)
         for col in colormap:
-            if col["offset"]:
-                offset = int(col["offset"])
-            else:
-                offset = 0
-            self.chars[col["start"] - offset : col["end"] - offset].set_color(
-                Colors[col["color"].lower()].value
-            )
-        for grad in gradientmap:
-            if grad["offset"]:
-                offset = int(grad["offset"])
-            else:
-                offset = 0
             self.chars[
-                grad["start"] - offset : grad["end"] - offset
+                col["start"]
+                - col["start_offset"] : col["end"]
+                - col["start_offset"]
+                - col["end_offset"]
+            ].set_color(Colors[col["color"].lower()].value)
+        for grad in gradientmap:
+            self.chars[
+                grad["start"]
+                - grad["start_offset"] : grad["end"]
+                - grad["start_offset"]
+                - grad["end_offset"]
             ].set_color_by_gradient(
                 *(Colors[grad["from"].lower()].value, Colors[grad["to"].lower()].value)
             )
@@ -1212,6 +1389,7 @@ class MarkupText(SVGMobject):
         context.move_to(START_X, START_Y)
         offset_x = 0
         last_line_num = 0
+        # FIXME: do like in Text class
         layout = pangocairocffi.create_layout(context)
         layout.set_width(pangocffi.units_from_double(600))
 
@@ -1238,23 +1416,29 @@ class MarkupText(SVGMobject):
         surface.finish()
         return file_name
 
-    # FIXME: doc
-    # FIXME: counting of ligatures is off
+    # FIXME: special chars &lt; &gt; &amp; --> take into account
     def _count_real_chars(self, s):
+        """Internally used function.
+        Counts characters that will be displayed.
+        This is needed for partial coloring or gradients, because space
+        counts to the text's `len`, but has no corresponding letter"""
         count = 0
         level = 0
+        # temporarily replace HTML entities by single char
+        s = re.sub("&[^;]+;", "x", s)
         for c in s:
             if c == "<":
                 level += 1
             if c == ">" and level > 0:
                 level -= 1
-            elif c != " " and level == 0:
+            elif c != " " and c != "\t" and level == 0:
                 count += 1
         return count
 
-    # FIXME: doc
     def extract_gradient_tags(self):
-        """Internally used function."""
+        """Internally used function.
+        Used to determine what parts (if any) of the string should be formatted with a gradient.
+        Removes the `<gradient>` tag, as it is not part of Pango's markup and would cause an error."""
         tags = re.finditer(
             '<gradient\s+from="([^"]+)"\s+to="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</gradient>',
             self.original_text,
@@ -1263,35 +1447,47 @@ class MarkupText(SVGMobject):
         for tag in tags:
             start = self._count_real_chars(self.original_text[: tag.start(0)])
             end = start + self._count_real_chars(tag.group(5))
+            offsets = tag.group(4).split(",") if tag.group(4) else [0]
+            start_offset = int(offsets[0]) if offsets[0] else 0
+            end_offset = int(offsets[1]) if len(offsets) == 2 and offsets[1] else 0
+
             gradientmap.append(
                 {
                     "start": start,
                     "end": end,
                     "from": tag.group(1),
                     "to": tag.group(2),
-                    "offset": tag.group(4),
+                    "start_offset": start_offset,
+                    "end_offset": end_offset,
                 }
             )
         self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text)
         return gradientmap
 
-    # FIXME: doc
     def extract_color_tags(self):
-        """Internally used function."""
+        """Internally used function.
+        Used to determine what parts (if any) of the string should be formatted with a custom color.
+        Removes the `<color>` tag, as it is not part of Pango's markup and would cause an error."""
         tags = re.finditer(
             '<color\s+col="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</color>',
             self.original_text,
         )
+
         colormap = []
         for tag in tags:
             start = self._count_real_chars(self.original_text[: tag.start(0)])
             end = start + self._count_real_chars(tag.group(4))
+            offsets = tag.group(3).split(",") if tag.group(3) else [0]
+            start_offset = int(offsets[0]) if offsets[0] else 0
+            end_offset = int(offsets[1]) if len(offsets) == 2 and offsets[1] else 0
+
             colormap.append(
                 {
                     "start": start,
                     "end": end,
                     "color": tag.group(1),
-                    "offset": tag.group(3),
+                    "start_offset": start_offset,
+                    "end_offset": end_offset,
                 }
             )
         self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text)
