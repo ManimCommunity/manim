@@ -195,12 +195,16 @@ at least two approving code reviews from core community developers are required.
 
 Internationalization
 ====================
-If you want help with translating the docs, you will have to first create a
-transifex account on `their website <https://www.transifex.com/>`_.
-Then, you can go to the 
-`manim project page <https://www.transifex.com/manim-community/manim-community-documentation>`_,
-there, you can click on `Join Team` and then select the language you want to help with.
-Congratulations ! You are now a Translator for the Manim Community project !
+If you want to help with translating the docs:
+
+#. Make sure you have a `Transifex <https://www.transifex.com/>`_ account. Transifex is a tool for colaborative translation and allows Manim team to review and help to improve suggestions from the community. You will use Transifex to submit your translation suggestions.
+#. Open to the `Manim project page` <https://www.transifex.com/manim-community/manim-community-documentation>_.
+#. Click on Join Team.
+#. Select the language you want to help with.
+
+Congratulations ! You are now a Translator for the Manim Community project!
+
+
 You have access to the projects you joined just on the right of your profile picture
 on the top bar. Then you can go the 
 `languages list <https://www.transifex.com/manim-community/manim-community-documentation/languages/>`_
