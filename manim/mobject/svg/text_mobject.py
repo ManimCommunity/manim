@@ -964,6 +964,7 @@ class Text(SVGMobject):
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w)
         settings += str(self.line_spacing) + str(self.size)
+        settings += str(self.disable_ligatures)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
