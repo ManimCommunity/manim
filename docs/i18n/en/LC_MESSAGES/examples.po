@@ -64,174 +64,174 @@ msgstr ""
 msgid "Example References"
 msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:40
-#.msgid ":class:`~.MathTex` :class:`~.Circle` :class:`~.Square` :class:`~.Triangle`"
-#.msgstr ""
+#| msgid ":class:`~.MathTex` :class:`~.Circle` :class:`~.Square` :class:`~.Triangle`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:33
-#.msgid ":class:`~.ImageMobject`"
-#.msgstr ""
+#| msgid ":class:`~.ImageMobject`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:35
-#.msgid ":class:`~.Brace` :func:`~.Brace.get_text` :func:`~.Brace.get_tex`"
-#.msgstr ""
+#| msgid ":class:`~.Brace` :func:`~.Brace.get_text` :func:`~.Brace.get_tex`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:33
-#.msgid ":class:`~.Dot` :class:`~.Arrow` :class:`~.NumberPlane` :class:`~.Text`"
-#.msgstr ""
+#| msgid ":class:`~.Dot` :class:`~.Arrow` :class:`~.NumberPlane` :class:`~.Text`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:101
-#.msgid ""
-#.":class:`~.Line` :class:`~.VGroup` "
-#.":func:`~.VMobject.add_cubic_bezier_curve`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.Line` :class:`~.VGroup` "
+#| ":func:`~.VMobject.add_cubic_bezier_curve`"
+#| msgstr ""
 
 #: ../../source/examples.rst:178
 msgid "Animations"
 msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:40
-#.msgid ""
-#.":class:`~.Circle` :class:`~.Dot` :class:`~.Line` "
-#.":class:`~.GrowFromCenter` :class:`~.Transform` :class:`~.MoveAlongPath` "
-#.":class:`~.Rotating`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.Circle` :class:`~.Dot` :class:`~.Line` "
+#| ":class:`~.GrowFromCenter` :class:`~.Transform` :class:`~.MoveAlongPath` "
+#| ":class:`~.Rotating`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:33
-#.msgid ""
-#.":func:`~.Mobject.shift` :func:`~.VMobject.set_fill` "
-#.":func:`~.Mobject.scale` :func:`~.Mobject.rotate`"
-#.msgstr ""
+#| msgid ""
+#| ":func:`~.Mobject.shift` :func:`~.VMobject.set_fill` "
+#| ":func:`~.Mobject.scale` :func:`~.Mobject.rotate`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:42
-#.msgid ""
-#.":mod:`~.manim.mobject.svg.tex_mobject` :class:`~.MathTex` "
-#.":class:`~.SurroundingRectangle`"
-#.msgstr ""
+#| msgid ""
+#| ":mod:`~.manim.mobject.svg.tex_mobject` :class:`~.MathTex` "
+#| ":class:`~.SurroundingRectangle`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:41
-#.msgid ":func:`~.Mobject.add_updater` :func:`~.Mobject.remove_updater`"
-#.msgstr ""
+#| msgid ":func:`~.Mobject.add_updater` :func:`~.Mobject.remove_updater`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:41
-#.msgid ""
-#.":class:`~.Rotating` :func:`~.VMobject.set_points_as_corners` "
-#.":func:`~.Mobject.add_updater`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.Rotating` :func:`~.VMobject.set_points_as_corners` "
+#| ":func:`~.Mobject.add_updater`"
+#| msgstr ""
 
 #: ../../source/examples.rst:276
 msgid "Plotting with Manim"
 msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:53
-#.msgid ""
-#.":mod:`~.manim.scene.graph_scene` :class:`~.MathTex` "
-#.":func:`~.GraphScene.setup_axes` :func:`~.GraphScene.get_graph` "
-#.":func:`~.GraphScene.get_vertical_line_to_graph` "
-#.":func:`~.GraphScene.input_to_graph_point`"
-#.msgstr ""
+#| msgid ""
+#| ":mod:`~.manim.scene.graph_scene` :class:`~.MathTex` "
+#| ":func:`~.GraphScene.setup_axes` :func:`~.GraphScene.get_graph` "
+#| ":func:`~.GraphScene.get_vertical_line_to_graph` "
+#| ":func:`~.GraphScene.input_to_graph_point`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:45
-#.msgid ""
-#.":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` "
-#.":func:`~.GraphScene.get_graph` "
-#.":func:`~.GraphScene.get_vertical_line_to_graph` "
-#.":func:`~.GraphScene.get_area`"
-#.msgstr ""
+#| msgid ""
+#| ":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` "
+#| ":func:`~.GraphScene.get_graph` "
+#| ":func:`~.GraphScene.get_vertical_line_to_graph` "
+#| ":func:`~.GraphScene.get_area`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:52
-#.msgid ""
-#.":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` "
-#.":func:`~.GraphScene.coords_to_point`"
-#.msgstr ""
+#| msgid ""
+#| ":mod:`~.manim.scenes.graph_scene` :func:`~.GraphScene.setup_axes` "
+#| ":func:`~.GraphScene.coords_to_point`"
+#| msgstr ""
 
 #: ../../source/examples.rst:374
 msgid "Special Camera Settings"
 msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:52
-#.msgid ""
-#.":mod:`~.manim.scene.moving_camera_scene` :class:`~.GraphScene` "
-#.":class:`~.MovingCameraScene` :class:`~.MoveAlongPath` :class:`~.Restore` "
-#.":func:`~.Mobject.add_updater`"
-#.msgstr ""
+#| msgid ""
+#| ":mod:`~.manim.scene.moving_camera_scene` :class:`~.GraphScene` "
+#| ":class:`~.MovingCameraScene` :class:`~.MoveAlongPath` :class:`~.Restore` "
+#| ":func:`~.Mobject.add_updater`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:88
-#.msgid ""
-#.":mod:`~.manim.scene.zoomed_scene` :class:`~.ZoomedScene` "
-#.":class:`~.BackgroundRectangle` :class:`~.UpdateFromFunc` "
-#.":func:`~.Mobject.add_updater` "
-#.":func:`~.ZoomedScene.get_zoomed_display_pop_out_animation`"
-#.msgstr ""
+#| msgid ""
+#| ":mod:`~.manim.scene.zoomed_scene` :class:`~.ZoomedScene` "
+#| ":class:`~.BackgroundRectangle` :class:`~.UpdateFromFunc` "
+#| ":func:`~.Mobject.add_updater` "
+#| ":func:`~.ZoomedScene.get_zoomed_display_pop_out_animation`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:34
-#.msgid ""
-#.":class:`~.ThreeDScene` :func:`~.ThreeDScene.set_camera_orientation` "
-#.":func:`~.ThreeDScene.add_fixed_in_frame_mobjects`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.ThreeDScene` :func:`~.ThreeDScene.set_camera_orientation` "
+#| ":func:`~.ThreeDScene.add_fixed_in_frame_mobjects`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:39
-#.msgid ""
-#.":class:`~.ThreeDScene` :class:`~.ThreeDAxes` :class:`~.ParametricSurface`"
-#." :func:`~.ThreeDScene.set_camera_orientation`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` :class:`~.ParametricSurface`"
+#| " :func:`~.ThreeDScene.set_camera_orientation`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:36
-#.msgid ""
-#.":class:`~.ThreeDScene` :class:`~.ThreeDAxes` "
-#.":func:`~.ThreeDScene.begin_ambient_camera_rotation` "
-#.":func:`~.ThreeDScene.stop_ambient_camera_rotation`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` "
+#| ":func:`~.ThreeDScene.begin_ambient_camera_rotation` "
+#| ":func:`~.ThreeDScene.stop_ambient_camera_rotation`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:34
-#.msgid ""
-#.":class:`~.ThreeDScene` :class:`~.ThreeDAxes` "
-#.":func:`~.ThreeDScene.begin_3dillusion_camera_rotation` "
-#.":func:`~.ThreeDScene.stop_3dillusion_camera_rotation`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.ThreeDScene` :class:`~.ThreeDAxes` "
+#| ":func:`~.ThreeDScene.begin_3dillusion_camera_rotation` "
+#| ":func:`~.ThreeDScene.stop_3dillusion_camera_rotation`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:74
-#.msgid ":class:`~.ThreeDScene` :class:`~.ParametricSurface`"
-#.msgstr ""
+#| msgid ":class:`~.ThreeDScene` :class:`~.ParametricSurface`"
+#| msgstr ""
 
 #: ../../source/examples.rst:598
 msgid "Advanced Projects"
 msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:77
-#.msgid ""
-#.":class:`~.Tex` :class:`~.MathTex` :class:`~.Write` :class:`~.FadeInFrom` "
-#.":class:`~.LaggedStart` :class:`~.NumberPlane` :class:`~.ShowCreation` "
-#.":func:`~.NumberPlane.prepare_for_nonlinear_transform`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.Tex` :class:`~.MathTex` :class:`~.Write` :class:`~.FadeInFrom` "
+#| ":class:`~.LaggedStart` :class:`~.NumberPlane` :class:`~.ShowCreation` "
+#| ":func:`~.NumberPlane.prepare_for_nonlinear_transform`"
+#| msgstr ""
 
-#.Detected untranslatable text:
+#  Detected untranslatable text:
 #: ../../source/examples.rst:111
-#.msgid ""
-#.":class:`~.MathTex` :class:`~.Circle` :class:`~.Dot` :class:`~.Line` "
-#.":class:`~.VGroup` :func:`~.Mobject.add_updater` "
-#.":func:`~.Mobject.remove_updater` :func:`~.always_redraw`"
-#.msgstr ""
+#| msgid ""
+#| ":class:`~.MathTex` :class:`~.Circle` :class:`~.Dot` :class:`~.Line` "
+#| ":class:`~.VGroup` :func:`~.Mobject.add_updater` "
+#| ":func:`~.Mobject.remove_updater` :func:`~.always_redraw`"
+#| msgstr ""
 
 

@@ -32,7 +32,7 @@ $0~/^$/ {
 		if(acceptable!=1){
 			print precomment
 		}else{
-			print "#.Detected untranslatable text:"
+			print "#  Detected untranslatable text:"
 			print precomment
 		}
 		precomment=""
@@ -42,7 +42,7 @@ $0~/^$/ {
 			print msgidstr
 			print msgstrstr
 		}else{
-			print "#.Detected untranslatable text:"
+			print "#  Detected untranslatable text:"
 			print precomment
 			print sharpedmsgidstr
 			print sharpedmsgstrstr
@@ -69,22 +69,22 @@ $0~/^#/ {
 $0~/^msgid/ {
 	state=1
 	msgidstr=$0
-	sharpedmsgidstr="#."$0
+	sharpedmsgidstr="#| "$0
 }
 # If the line starts with msgstr
 $0~/^msgstr/ {
 	state=2
 	msgstrstr=$0
-	sharpedmsgstrstr="#."$0
+	sharpedmsgstrstr="#| "$0
 }
 # If the line starts with a '"'
 $0~/^\"/ {
 	if(state==1){
 		msgidstr=msgidstr"\n"$0
-		sharpedmsgidstr=sharpedmsgidstr"\n#."$0
+		sharpedmsgidstr=sharpedmsgidstr"\n#| "$0
 	}else{
 		msgstrstr=msgstrstr"\n"$0
-		sharpedmsgstrstr=sharpedmsgstrstr"\n#."$0
+		sharpedmsgstrstr=sharpedmsgstrstr"\n#| "$0
 	}
 }
 # ----------------------------------------------------------------
