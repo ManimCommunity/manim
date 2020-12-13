@@ -1077,42 +1077,41 @@ class MarkupText(SVGMobject):
     in the given text. In particular, slicing is possible. Text can be formatted
     using different tags:
 
-    - `<b>bold</b>`, `<i>italic</i>` and `<b><i>bold+italic</i></b>`
-    - `<ul>underline</ul>` and `<s>strike through</s>`
-    - `<tt>typewriter font</tt>`
-    - `<big>bigger font</big>` and `<small>smaller font</small>`
-    - `<sup>superscript</sup>` and `<sub>subscript</sub>`
-    - `<span underline="double">double underline</span>`
-    - `<span underline="error">error underline</span>`
-    - `<span font_family="sans">temporary change of font</span>`
-    - `<color col="RED">temporary change of color</color>`;
-       colors can be specified as Manim constants like `RED` or `YELLOW`
-    - `<gradient from="YELLOW" to="RED">temporary gradient</gradient>`;
-       colors specified as above
+    - ``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``
+    - ``<ul>underline</ul>`` and ``<s>strike through</s>``
+    - ``<tt>typewriter font</tt>``
+    - ``<big>bigger font</big>`` and ``<small>smaller font</small>``
+    - ``<sup>superscript</sup>`` and ``<sub>subscript</sub>``
+    - ``<span underline="double">double underline</span>``
+    - ``<span underline="error">error underline</span>``
+    - ``<span font_family="sans">temporary change of font</span>``
+    - ``<color col="RED">temporary change of color</color>``; colors can be specified as Manim constants like ``RED`` or ``YELLOW``
+    - ``<gradient from="YELLOW" to="RED">temporary gradient</gradient>``; colors specified as above
 
-    When your text contains ligatures, the `MarkupText` class may incorrectly determine
-    the first and last letter to be colored. This is due to the fact that e.g. `fl`
-    are two characters, but will be set as one single glyph. If your language does
-    not depend on ligatures, consider setting `disable_ligatures=True`. If you cannot
-    or do not want to do without ligatures, the `gradient` and `color` tag support
-    an optional attribute `offset` which can be used to compensate for that error.
+    If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine
+    the first and last letter to be colored. This is due to the fact that e.g. ``fl``
+    are two characters, but can be set as one single glyph, a ligature. If your language does
+    not depend on ligatures, consider setting ``disable_ligatures=True``. If you cannot
+    or do not want to do without ligatures, the ``gradient`` and ``color`` tag support
+    an optional attribute ``offset`` which can be used to compensate for that error.
     Usage is as follows:
-    - `<color col="RED" offset="1">red text</color>` to *start* coloring one letter earlier
-    - `<color col="RED" offset=",1">red text</color>` to *end* coloring one letter earlier
-    - `<color colr="RED" offset="2,1">red text</color>` to *start* coloring two letters earlier and *end* one letter earlier
+
+    - ``<color col="RED" offset="1">red text</color>`` to *start* coloring one letter earlier
+    - ``<color col="RED" offset=",1">red text</color>`` to *end* coloring one letter earlier
+    - ``<color col="RED" offset="2,1">red text</color>`` to *start* coloring two letters earlier and *end* one letter earlier
 
     Specifying a second offset may be necessary if the text to be colored does
     itself contain ligatures. The same can happen when using HTML entities for
     special chars.
 
-    Escaping of special characters: `>` *should* be written as `&gt;` whereas `<` and
-    `&` *must* to be written as `&lt;` and `&amp;`.
+    Escaping of special characters: ``>`` *should* be written as ``&gt;`` whereas ``<`` and
+    ``&`` *must* be written as ``&lt;`` and ``&amp;``.
 
     You can find more information about Pango markup formatting at the
     corresponding documentation page:
     `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
     Please be aware that not all features are supported by this class and that
-    the `<color>` and `<gradient>` tags are not official ones.
+    the ``<color>`` and ``<gradient>`` tags mentioned above are not supported by Pango.
 
     Parameters
     ----------
@@ -1140,7 +1139,7 @@ class MarkupText(SVGMobject):
 
     Returns
     -------
-    :class:`Text`
+    :class:`MarkupText`
         The mobject like :class:`.VGroup`.
 
     Examples
@@ -1224,18 +1223,16 @@ class MarkupText(SVGMobject):
 
         class MultiLanguage(Scene):
             def construct(self):
-                morning = Text("வணக்கம்", font="sans-serif")
-                chin = Text(
-                    "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
-                )  # works as in  ``Text``
-                mess = Text("Multi-Language", style=BOLD)
-                russ = Text("Здравствуйте मस नम म ", font="sans-serif")
-                hin = Text("नमस्ते", font="sans-serif")
-                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
-                self.add(morning,chin,mess,russ,hin,japanese)
-                for i,mobj in enumerate(self.mobjects):
-                    mobj.shift(DOWN*(i-3))
-
+                morning = MarkupText("வணக்கம்", font="sans-serif")
+                chin = MarkupText(
+                    '見 角 言 谷  辛 <color col="BLUE">辰 辵 邑</color> 酉 釆 里!'
+                )  # works as in ``Text``.
+                mess = MarkupText("Multi-Language", style=BOLD)
+                russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
+                hin = MarkupText("नमस्ते", font="sans-serif")
+                japanese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
+                group = VGroup(morning, chin, mess, russ, hin, japanese).arrange(DOWN)
+                self.add(group)
 
 
     Tests
@@ -1438,7 +1435,7 @@ class MarkupText(SVGMobject):
     def extract_gradient_tags(self):
         """Internally used function.
         Used to determine what parts (if any) of the string should be formatted with a gradient.
-        Removes the `<gradient>` tag, as it is not part of Pango's markup and would cause an error."""
+        Removes the ``<gradient>`` tag, as it is not part of Pango's markup and would cause an error."""
         tags = re.finditer(
             '<gradient\s+from="([^"]+)"\s+to="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</gradient>',
             self.original_text,
@@ -1467,7 +1464,7 @@ class MarkupText(SVGMobject):
     def extract_color_tags(self):
         """Internally used function.
         Used to determine what parts (if any) of the string should be formatted with a custom color.
-        Removes the `<color>` tag, as it is not part of Pango's markup and would cause an error."""
+        Removes the ``<color>`` tag, as it is not part of Pango's markup and would cause an error."""
         tags = re.finditer(
             '<color\s+col="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</color>',
             self.original_text,
