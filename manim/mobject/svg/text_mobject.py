@@ -1097,12 +1097,10 @@ class MarkupText(SVGMobject):
     or do not want to do without ligatures, the `gradient` and `color` tag support
     an optional attribute `offset` which can be used to compensate for that error.
     Usage is as follows:
-    - `<color col="RED" offset="1">red text</color>`
-      to *start* coloring one letter earlier
-    - `<color col="RED" offset=",1">red text</color>`
-      to *end* coloring one letter earlier
-    - `<color colr="RED" offset="2,1">red text</color>`
-      to *start* coloring two letters earlier and *end* one letter earlier
+    - `<color col="RED" offset="1">red text</color>` to *start* coloring one letter earlier
+    - `<color col="RED" offset=",1">red text</color>` to *end* coloring one letter earlier
+    - `<color colr="RED" offset="2,1">red text</color>` to *start* coloring two letters earlier and *end* one letter earlier
+
     Specifying a second offset may be necessary if the text to be colored does
     itself contain ligatures. The same can happen when using HTML entities for
     special chars.
@@ -1213,7 +1211,7 @@ class MarkupText(SVGMobject):
         class NoLigaturesExample(Scene):
             def construct(self):
                 text1 = MarkupText("floating")
-                #text2 = MarkupText("floating", disable_ligatures=True)
+                text2 = MarkupText("floating", disable_ligatures=True)
                 group = VGroup(text1, text2).arrange(DOWN)
                 self.add(group)
 
@@ -1366,6 +1364,7 @@ class MarkupText(SVGMobject):
             "MARKUPPANGO" + self.font + self.slant + self.weight
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self.size)
+        settings += str(self.disable_ligatures)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
