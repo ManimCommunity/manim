@@ -1384,9 +1384,6 @@ class MarkupText(SVGMobject):
         surface = cairocffi.SVGSurface(file_name, 600, 400)
         context = cairocffi.Context(surface)
         context.move_to(START_X, START_Y)
-        offset_x = 0
-        last_line_num = 0
-        # FIXME: do like in Text class
         layout = pangocairocffi.create_layout(context)
         layout.set_width(pangocffi.units_from_double(600))
 
@@ -1398,22 +1395,19 @@ class MarkupText(SVGMobject):
         fontdesc.set_weight(self.str2weight(self.weight))
         layout.set_font_description(fontdesc)
 
-        text = self.text.replace("\n", " ")
         context.move_to(START_X, START_Y)
         pangocairocffi.update_layout(context, layout)
         if disable_liga:
             layout.set_markup(
-                f"<span font_features='liga=0,dlig=0,clig=0,hlig=0'>{text}</span>"
+                f"<span font_features='liga=0,dlig=0,clig=0,hlig=0'>{self.text}</span>"
             )
         else:
-            layout.set_markup(text)
-        logger.debug(f"Setting Text {text}")
+            layout.set_markup(self.text)
+        logger.debug(f"Setting Text {self.text}")
         pangocairocffi.show_layout(context, layout)
-        # offset_x += pangocffi.units_to_double(layout.get_size()[0])
         surface.finish()
         return file_name
 
-    # FIXME: special chars &lt; &gt; &amp; --> take into account
     def _count_real_chars(self, s):
         """Internally used function.
         Counts characters that will be displayed.
@@ -1439,6 +1433,7 @@ class MarkupText(SVGMobject):
         tags = re.finditer(
             '<gradient\s+from="([^"]+)"\s+to="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</gradient>',
             self.original_text,
+            re.S,
         )
         gradientmap = []
         for tag in tags:
@@ -1458,7 +1453,7 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 }
             )
-        self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text)
+        self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
         return gradientmap
 
     def extract_color_tags(self):
@@ -1468,7 +1463,9 @@ class MarkupText(SVGMobject):
         tags = re.finditer(
             '<color\s+col="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</color>',
             self.original_text,
+            re.S,
         )
+        print("tags", tags)
 
         colormap = []
         for tag in tags:
@@ -1487,7 +1484,7 @@ class MarkupText(SVGMobject):
                     "end_offset": end_offset,
                 }
             )
-        self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text)
+        self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
         return colormap
 
     def __repr__(self):
