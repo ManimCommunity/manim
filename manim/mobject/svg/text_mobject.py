@@ -1204,6 +1204,14 @@ class MarkupText(SVGMobject):
                 group = VGroup(text1, text2, text3, text4).arrange(DOWN)
                 self.add(group)
 
+    .. manim:: NewlineExample
+        :save_last_frame:
+
+        class NewlineExample(Scene):
+            def construct(self):
+                text = MarkupText('foooo<color col="RED">oo\nbaa</color>aar')
+                self.add(text)
+
     .. manim:: NoLigaturesExample
         :save_last_frame:
 
@@ -1465,7 +1473,6 @@ class MarkupText(SVGMobject):
             self.original_text,
             re.S,
         )
-        print("tags", tags)
 
         colormap = []
         for tag in tags:
