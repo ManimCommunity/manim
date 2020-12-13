@@ -129,10 +129,10 @@ msgid ""
 "examples to the documentation!"
 msgstr ""
 
-#Detected untranslatable text:
+#.Detected untranslatable text:
 #: ../../source/contributing.rst:98:<autosummary>:1
-#msgid ":obj:`manim_directive <manim_directive>`\\"
-#msgstr ""
+#.msgid ":obj:`manim_directive <manim_directive>`\\"
+#.msgstr ""
 
 #: ../../source/contributing.rst:98:<autosummary>:1
 msgid "A directive for including Manim videos in a Sphinx document"
