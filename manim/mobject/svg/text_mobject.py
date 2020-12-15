@@ -153,8 +153,8 @@ class CairoText(SVGMobject):
         gradient=None,
         line_spacing=-1,
         size=1,
-        slant=NORMAL,
-        weight=NORMAL,
+        slant: str = NORMAL,
+        weight: str = NORMAL,
         t2c=None,
         t2f=None,
         t2g=None,
@@ -729,8 +729,8 @@ class Text(SVGMobject):
         size: int = 1,
         line_spacing: int = -1,
         font: str = "",
-        slant=NORMAL,
-        weight=NORMAL,
+        slant: str = NORMAL,
+        weight: str = NORMAL,
         t2c: Dict[str, str] = None,
         t2f: Dict[str, str] = None,
         t2g: Dict[str, tuple] = None,
@@ -1085,7 +1085,7 @@ class MarkupText(SVGMobject):
     - ``<span underline="double">double underline</span>``
     - ``<span underline="error">error underline</span>``
     - ``<span font_family="sans">temporary change of font</span>``
-    - ``<color col="RED">temporary change of color</color>``; colors can be specified as Manim constants like ``RED`` or ``YELLOW``
+    - ``<color col="RED">temporary change of color</color>``; colors can be specified as Manim constants like ``RED`` or ``YELLOW`` or as hex triples like ``#aabbaa``
     - ``<gradient from="YELLOW" to="RED">temporary gradient</gradient>``; colors specified as above
 
     If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine
@@ -1174,10 +1174,10 @@ class MarkupText(SVGMobject):
                     gradient=(BLUE, GREEN),
                 )
                 text4 = MarkupText(
-                    'fl ligature <color col="GREEN">causing trouble</color> here'
+                    'fl ligature <color col="#00ff00">causing trouble</color> here'
                 )
                 text5 = MarkupText(
-                    'fl ligature <color col="GREEN" offset="1">defeated</color> with offset'
+                    'fl ligature <color col="#00ff00" offset="1">defeated</color> with offset'
                 )
                 text6 = MarkupText(
                     'fl ligature <color col="GREEN" offset="1">floating</color> inside'
@@ -1268,8 +1268,8 @@ class MarkupText(SVGMobject):
         size: int = 1,
         line_spacing: int = -1,
         font: str = "",
-        slant=NORMAL,
-        weight=NORMAL,
+        slant: str = NORMAL,
+        weight: str = NORMAL,
         gradient: tuple = None,
         tab_width: int = 4,
         height: int = None,
@@ -1347,7 +1347,7 @@ class MarkupText(SVGMobject):
                 - col["start_offset"] : col["end"]
                 - col["start_offset"]
                 - col["end_offset"]
-            ].set_color(Colors[col["color"].lower()].value)
+            ].set_color(self._parse_color(col["color"]))
         for grad in gradientmap:
             self.chars[
                 grad["start"]
@@ -1355,7 +1355,7 @@ class MarkupText(SVGMobject):
                 - grad["start_offset"]
                 - grad["end_offset"]
             ].set_color_by_gradient(
-                *(Colors[grad["from"].lower()].value, Colors[grad["to"].lower()].value)
+                *(self._parse_color(grad["from"]), self._parse_color(grad["to"]))
             )
         # anti-aliasing
         if self.height is None and self.width is None:
@@ -1463,6 +1463,14 @@ class MarkupText(SVGMobject):
             )
         self.text = re.sub("<gradient[^>]+>(.+?)</gradient>", r"\1", self.text, 0, re.S)
         return gradientmap
+
+    def _parse_color(self, col):
+        """Internally used function.
+        Parse color given in ``<color>`` or ``<gradient>`` tags."""
+        if re.match("#[0-9a-f]{6}", col):
+            return col
+        else:
+            return Colors[col.lower()].value
 
     def extract_color_tags(self):
         """Internally used function.
