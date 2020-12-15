@@ -1094,7 +1094,7 @@ class MarkupText(SVGMobject):
 
     If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine
     the first and last letter to be colored. This is due to the fact that e.g. ``fl``
-    are two characters, but can be set as one single glyph, a ligature. If your language does
+    are two characters, but might be set as one single glyph, a ligature. If your language does
     not depend on ligatures, consider setting ``disable_ligatures=True``. If you cannot
     or do not want to do without ligatures, the ``gradient`` and ``color`` tag support
     an optional attribute ``offset`` which can be used to compensate for that error.
