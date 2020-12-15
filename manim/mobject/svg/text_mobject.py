@@ -1221,8 +1221,8 @@ class MarkupText(SVGMobject):
 
         class NoLigaturesExample(Scene):
             def construct(self):
-                text1 = MarkupText("floating")
-                text2 = MarkupText("floating", disable_ligatures=True)
+                text1 = MarkupText('fl<color col="RED">oat</color>ing')
+                text2 = MarkupText('fl<color col="RED">oat</color>ing', disable_ligatures=True)
                 group = VGroup(text1, text2).arrange(DOWN)
                 self.add(group)
 
