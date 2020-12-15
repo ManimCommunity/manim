@@ -20,13 +20,11 @@ New Features
 ============
 
 - Added a creation animation for our banner, :meth:`~.ManimBanner.create` (via :pr:`814`).
-- Added a class :class:`MarkupText` (via :pr:`855`) for easier and more flexible text formatting
 
 Bugfixes
 ========
 
 - There is nothing here yet, check back later.
-- Take into account ``disable_ligatures`` when hashing a text in :class:`Text`
 
 Other Changes
 =============
