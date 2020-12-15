@@ -1316,8 +1316,6 @@ class MarkupText(SVGMobject):
             unpack_groups=unpack_groups,
             **kwargs,
         )
-        if self.disable_ligatures:
-            self.submobjects = [*self.gen_chars()]
         self.chars = VGroup(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
@@ -1504,28 +1502,6 @@ class MarkupText(SVGMobject):
 
     def __repr__(self):
         return f"MarkupText({repr(self.original_text)})"
-
-    def gen_chars(self):
-        chars = VGroup()
-        submobjects_char_index = 0
-        for char_index in range(self.text.__len__()):
-            if (
-                self.text[char_index] == " "
-                or self.text[char_index] == "\t"
-                or self.text[char_index] == "\n"
-            ):
-                space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
-                if char_index == 0:
-                    space.move_to(self.submobjects[submobjects_char_index].get_center())
-                else:
-                    space.move_to(
-                        self.submobjects[submobjects_char_index - 1].get_center()
-                    )
-                chars.add(space)
-            else:
-                chars.add(self.submobjects[submobjects_char_index])
-                submobjects_char_index += 1
-        return chars
 
     def str2style(self, string):
         """Internally used function. Converts text to Pango Understandable Styles."""
