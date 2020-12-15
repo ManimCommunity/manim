@@ -103,6 +103,50 @@ def remove_invisible_chars(mobject):
     return mobject_without_dots
 
 
+class PangoUtils(object):
+    @staticmethod
+    def str2style(string):
+        """Internally used function. Converts text to Pango Understandable Styles."""
+        if string == NORMAL:
+            return pangocffi.Style.NORMAL
+        elif string == ITALIC:
+            return pangocffi.Style.ITALIC
+        elif string == OBLIQUE:
+            return pangocffi.Style.OBLIQUE
+        else:
+            raise AttributeError("There is no Style Called %s" % string)
+
+    @staticmethod
+    def str2weight(string):
+        """Internally used function. Convert text to Pango Understandable Weight"""
+        if string == NORMAL:
+            return pangocffi.Weight.NORMAL
+        elif string == BOLD:
+            return pangocffi.Weight.BOLD
+        elif string == THIN:
+            return pangocffi.Weight.THIN
+        elif string == ULTRALIGHT:
+            return pangocffi.Weight.ULTRALIGHT
+        elif string == LIGHT:
+            return pangocffi.Weight.LIGHT
+        elif string == SEMILIGHT:
+            return pangocffi.Weight.SEMILIGHT
+        elif string == BOOK:
+            return pangocffi.Weight.BOOK
+        elif string == MEDIUM:
+            return pangocffi.Weight.MEDIUM
+        elif string == SEMIBOLD:
+            return pangocffi.Weight.SEMIBOLD
+        elif string == ULTRABOLD:
+            return pangocffi.Weight.ULTRABOLD
+        elif string == HEAVY:
+            return pangocffi.Weight.HEAVY
+        elif string == ULTRAHEAVY:
+            return pangocffi.Weight.ULTRAHEAVY
+        else:
+            raise AttributeError("There is no Font Weight Called %s" % string)
+
+
 class TextSetting(object):
     def __init__(self, start, end, font, slant, weight, line_num=-1):
         self.start = start
@@ -915,46 +959,6 @@ class Text(SVGMobject):
             for start, end in self.find_indexes(word, self.original_text):
                 self.chars[start:end].set_color_by_gradient(*gradient)
 
-    def str2style(self, string):
-        """Internally used function. Converts text to Pango Understandable Styles."""
-        if string == NORMAL:
-            return pangocffi.Style.NORMAL
-        elif string == ITALIC:
-            return pangocffi.Style.ITALIC
-        elif string == OBLIQUE:
-            return pangocffi.Style.OBLIQUE
-        else:
-            raise AttributeError("There is no Style Called %s" % string)
-
-    def str2weight(self, string):
-        """Internally used function. Convert text to Pango Understandable Weight"""
-        if string == NORMAL:
-            return pangocffi.Weight.NORMAL
-        elif string == BOLD:
-            return pangocffi.Weight.BOLD
-        elif string == THIN:
-            return pangocffi.Weight.THIN
-        elif string == ULTRALIGHT:
-            return pangocffi.Weight.ULTRALIGHT
-        elif string == LIGHT:
-            return pangocffi.Weight.LIGHT
-        elif string == SEMILIGHT:
-            return pangocffi.Weight.SEMILIGHT
-        elif string == BOOK:
-            return pangocffi.Weight.BOOK
-        elif string == MEDIUM:
-            return pangocffi.Weight.MEDIUM
-        elif string == SEMIBOLD:
-            return pangocffi.Weight.SEMIBOLD
-        elif string == ULTRABOLD:
-            return pangocffi.Weight.ULTRABOLD
-        elif string == HEAVY:
-            return pangocffi.Weight.HEAVY
-        elif string == ULTRAHEAVY:
-            return pangocffi.Weight.ULTRAHEAVY
-        else:
-            raise AttributeError("There is no Font Weight Called %s" % string)
-
     def text2hash(self):
         """Internally used function.
         Generates ``sha256`` hash for file name.
@@ -1039,8 +1043,8 @@ class Text(SVGMobject):
         layout.set_width(pangocffi.units_from_double(600))
         for setting in settings:
             family = setting.font
-            style = self.str2style(setting.slant)
-            weight = self.str2weight(setting.weight)
+            style = PangoUtils.str2style(setting.slant)
+            weight = PangoUtils.str2weight(setting.weight)
             text = self.text[setting.start : setting.end].replace("\n", " ")
             fontdesc = pangocffi.FontDescription()
             fontdesc.set_size(pangocffi.units_from_double(size))
@@ -1397,8 +1401,8 @@ class MarkupText(SVGMobject):
         fontdesc.set_size(pangocffi.units_from_double(size))
         if self.font:
             fontdesc.set_family(self.font)
-        fontdesc.set_style(self.str2style(self.slant))
-        fontdesc.set_weight(self.str2weight(self.weight))
+        fontdesc.set_style(PangoUtils.str2style(self.slant))
+        fontdesc.set_weight(PangoUtils.str2weight(self.weight))
         layout.set_font_description(fontdesc)
 
         context.move_to(START_X, START_Y)
@@ -1502,46 +1506,6 @@ class MarkupText(SVGMobject):
 
     def __repr__(self):
         return f"MarkupText({repr(self.original_text)})"
-
-    def str2style(self, string):
-        """Internally used function. Converts text to Pango Understandable Styles."""
-        if string == NORMAL:
-            return pangocffi.Style.NORMAL
-        elif string == ITALIC:
-            return pangocffi.Style.ITALIC
-        elif string == OBLIQUE:
-            return pangocffi.Style.OBLIQUE
-        else:
-            raise AttributeError("There is no Style Called %s" % string)
-
-    def str2weight(self, string):
-        """Internally used function. Convert text to Pango Understandable Weight"""
-        if string == NORMAL:
-            return pangocffi.Weight.NORMAL
-        elif string == BOLD:
-            return pangocffi.Weight.BOLD
-        elif string == THIN:
-            return pangocffi.Weight.THIN
-        elif string == ULTRALIGHT:
-            return pangocffi.Weight.ULTRALIGHT
-        elif string == LIGHT:
-            return pangocffi.Weight.LIGHT
-        elif string == SEMILIGHT:
-            return pangocffi.Weight.SEMILIGHT
-        elif string == BOOK:
-            return pangocffi.Weight.BOOK
-        elif string == MEDIUM:
-            return pangocffi.Weight.MEDIUM
-        elif string == SEMIBOLD:
-            return pangocffi.Weight.SEMIBOLD
-        elif string == ULTRABOLD:
-            return pangocffi.Weight.ULTRABOLD
-        elif string == HEAVY:
-            return pangocffi.Weight.HEAVY
-        elif string == ULTRAHEAVY:
-            return pangocffi.Weight.ULTRAHEAVY
-        else:
-            raise AttributeError("There is no Font Weight Called %s" % string)
 
     def remove_last_M(self, file_name):
         with open(file_name, "r") as fpr:
