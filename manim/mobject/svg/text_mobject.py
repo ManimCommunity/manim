@@ -103,9 +103,9 @@ def remove_invisible_chars(mobject):
     return mobject_without_dots
 
 
-class PangoUtils(object):
+class PangoUtils:
     @staticmethod
-    def str2style(string):
+    def str2style(string: str) -> pangocffi.Style:
         """Internally used function. Converts text to Pango Understandable Styles."""
         if string == NORMAL:
             return pangocffi.Style.NORMAL
@@ -117,7 +117,7 @@ class PangoUtils(object):
             raise AttributeError("There is no Style Called %s" % string)
 
     @staticmethod
-    def str2weight(string):
+    def str2weight(string: str) -> pangocffi.Weight:
         """Internally used function. Convert text to Pango Understandable Weight"""
         if string == NORMAL:
             return pangocffi.Weight.NORMAL
@@ -1295,7 +1295,7 @@ class MarkupText(SVGMobject):
         self.original_text = text
         self.disable_ligatures = disable_ligatures
         text_without_tabs = text
-        if text.find("\t") != -1:
+        if "\t" in text:
             text_without_tabs = text.replace("\t", " " * self.tab_width)
 
         colormap = self.extract_color_tags()
