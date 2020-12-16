@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-16 22:10+0100\n"
+"POT-Creation-Date: 2020-12-16 22:44+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -294,7 +294,7 @@ msgstr ""
 #: ../../source/contributing.rst:201
 msgid ""
 "Open to the `Manim project page <https://www.transifex.com/manim-"
-"community/manim-community-documentation>`_."
+"community/manim-community-documentation>`_ ."
 msgstr ""
 
 #: ../../source/contributing.rst:202
