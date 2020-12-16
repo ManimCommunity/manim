@@ -756,12 +756,6 @@ class Text(SVGMobject):
         >>> Text('The horse does not eat cucumber salad.')
         Text('The horse does not eat cucumber salad.')
 
-    .. WARNING::
-
-        Using a :class:`.Transform` on text with leading whitespace can look
-        `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
-        :meth:`remove_invisible_chars` to resolve this issue.
-
     """
 
     def __init__(
@@ -1254,12 +1248,6 @@ class MarkupText(SVGMobject):
 
         >>> MarkupText('The horse does not eat cucumber salad.')
         MarkupText('The horse does not eat cucumber salad.')
-
-    .. WARNING::
-
-        Using a :class:`.Transform` on text with leading whitespace can look
-        `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
-        :meth:`remove_invisible_chars` to resolve this issue.
 
     """
 
