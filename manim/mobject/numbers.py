@@ -10,21 +10,73 @@ from ..mobject.value_tracker import ValueTracker
 
 
 class DecimalNumber(VMobject):
-    CONFIG = {
-        "num_decimal_places": 2,
-        "include_sign": False,
-        "group_with_commas": True,
-        "digit_to_digit_buff": 0.05,
-        "show_ellipsis": False,
-        "unit": None,  # Aligned to bottom unless it starts with "^"
-        "include_background_rectangle": False,
-        "edge_to_fix": LEFT,
-    }
+    """An mobject representing a decimal number.
 
-    def __init__(self, number=0, **kwargs):
+    Examples
+    --------
+
+    .. manim:: MovingSquareWithUpdaters
+
+        class MovingSquareWithUpdaters(Scene):
+            def construct(self):
+                decimal = DecimalNumber(
+                    0,
+                    show_ellipsis=True,
+                    num_decimal_places=3,
+                    include_sign=True,
+                )
+                square = Square().to_edge(UP)
+
+                decimal.add_updater(lambda d: d.next_to(square, RIGHT))
+                decimal.add_updater(lambda d: d.set_value(square.get_center()[1]))
+                self.add(square, decimal)
+                self.play(
+                    square.to_edge,
+                    DOWN,
+                    rate_func=there_and_back,
+                    run_time=5,
+                )
+                self.wait()
+
+    """
+
+    def __init__(
+        self,
+        number=0,
+        num_decimal_places=2,
+        include_sign=False,
+        group_with_commas=True,
+        digit_to_digit_buff=0.05,
+        show_ellipsis=False,
+        unit=None,  # Aligned to bottom unless it starts with "^"
+        include_background_rectangle=False,
+        edge_to_fix=LEFT,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.number = number
-        self.initial_config = kwargs
+        self.num_decimal_places = num_decimal_places
+        self.include_sign = include_sign
+        self.group_with_commas = group_with_commas
+        self.digit_to_digit_buff = digit_to_digit_buff
+        self.show_ellipsis = show_ellipsis
+        self.unit = unit
+        self.include_background_rectangle = include_background_rectangle
+        self.edge_to_fix = edge_to_fix
+
+        self.initial_config = kwargs.copy()
+        self.initial_config.update(
+            {
+                "num_decimal_places": num_decimal_places,
+                "include_sign": include_sign,
+                "group_with_commas": group_with_commas,
+                "digit_to_digit_buff": digit_to_digit_buff,
+                "show_ellipsis": show_ellipsis,
+                "unit": unit,
+                "include_background_rectangle": include_background_rectangle,
+                "edge_to_fix": edge_to_fix,
+            }
+        )
 
         if isinstance(number, complex):
             formatter = self.get_complex_formatter()
@@ -114,7 +166,7 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number, **config):
-        full_config = dict(self.CONFIG)
+        full_config = dict()
         full_config.update(self.initial_config)
         full_config.update(config)
         new_decimal = DecimalNumber(number, **full_config)
@@ -140,9 +192,10 @@ class DecimalNumber(VMobject):
 
 
 class Integer(DecimalNumber):
-    CONFIG = {
-        "num_decimal_places": 0,
-    }
+    def __init__(self, number=0, num_decimal_places=0, **kwargs):
+        DecimalNumber.__init__(
+            self, number=number, num_decimal_places=num_decimal_places, **kwargs
+        )
 
     def get_value(self):
         return int(np.round(super().get_value()))
@@ -157,7 +210,7 @@ class Variable(VMobject):
     ----------
     var : Union[:class:`int`, :class:`float`]
         The python variable you need to keep track of and display.
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`, :class:`~.MathTexFromPresetString`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
         The label for your variable, for example ``x = ...``. To use math mode, for e.g.
         subscripts, superscripts, etc. simply pass in a raw string.
     var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
@@ -170,7 +223,7 @@ class Variable(VMobject):
 
     Attributes
     ----------
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`, :class:`~.MathTexFromPresetString`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
         The label for your variable, for example ``x = ...``.
     tracker : :class:`~.ValueTracker`
         Useful in updating the value of your variable on-screen.
@@ -189,6 +242,51 @@ class Variable(VMobject):
         on_screen_int_var = Variable(int_var, Text("int_var"), var_type=Integer)
         # Using math mode for the label
         on_screen_int_var = Variable(int_var, "{a}_{i}", var_type=Integer)
+
+    .. manim:: VariablesWithValueTracker
+
+        class VariablesWithValueTracker(Scene):
+            def construct(self):
+                var = 0.5
+                on_screen_var = Variable(var, Text("var"), num_decimal_places=3)
+
+                # You can also change the colours for the label and value
+                on_screen_var.label.set_color(RED)
+                on_screen_var.value.set_color(GREEN)
+
+                self.play(Write(on_screen_var))
+                # The above line will just display the variable with
+                # its initial value on the screen. If you also wish to
+                # update it, you can do so by accessing the `tracker` attribute
+                self.wait()
+                var_tracker = on_screen_var.tracker
+                var = 10.5
+                self.play(var_tracker.set_value, var)
+                self.wait()
+
+                int_var = 0
+                on_screen_int_var = Variable(
+                    int_var, Text("int_var"), var_type=Integer
+                ).next_to(on_screen_var, DOWN)
+                on_screen_int_var.label.set_color(RED)
+                on_screen_int_var.value.set_color(GREEN)
+
+                self.play(Write(on_screen_int_var))
+                self.wait()
+                var_tracker = on_screen_int_var.tracker
+                var = 10.5
+                self.play(var_tracker.set_value, var)
+                self.wait()
+
+                # If you wish to have a somewhat more complicated label for your
+                # variable with subscripts, superscripts, etc. the default class
+                # for the label is MathTex
+                subscript_label_var = 10
+                on_screen_subscript_var = Variable(subscript_label_var, "{a}_{i}").next_to(
+                    on_screen_int_var, DOWN
+                )
+                self.play(Write(on_screen_subscript_var))
+                self.wait()
 
     """
 

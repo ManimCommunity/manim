@@ -6,25 +6,62 @@ __all__ = ["ParametricFunction", "FunctionGraph"]
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.config_ops import digest_config
 from ..utils.color import YELLOW
 
 import math
 
 
 class ParametricFunction(VMobject):
-    CONFIG = {
-        "t_min": 0,
-        "t_max": 1,
-        "step_size": 0.01,  # Use "auto" (lowercase) for automatic step size
-        "dt": 1e-8,
-        # TODO, be smarter about figuring these out?
-        "discontinuities": [],
-    }
+    """A parametric curve.
 
-    def __init__(self, function=None, **kwargs):
-        # either get a function from __init__ or from CONFIG
-        self.function = function or self.function
+    Examples
+    --------
+
+    .. manim:: PlotParametricFunction
+        :save_last_frame:
+
+        class PlotParametricFunction(Scene):
+            def func(self, t):
+                return np.array((np.sin(2 * t), np.sin(3 * t), 0))
+
+            def construct(self):
+                func = ParametricFunction(self.func, t_max = TAU, fill_opacity=0).set_color(RED)
+                self.add(func.scale(3))
+
+    .. manim:: ThreeDParametricSpring
+        :save_last_frame:
+
+        class ThreeDParametricSpring(ThreeDScene):
+            def construct(self):
+                curve1 = ParametricFunction(
+                    lambda u: np.array([
+                        1.2 * np.cos(u),
+                        1.2 * np.sin(u),
+                        u * 0.05
+                    ]), color=RED, t_min=-3 * TAU, t_max=5 * TAU,
+                ).set_shade_in_3d(True)
+                axes = ThreeDAxes()
+                self.add(axes, curve1)
+                self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
+                self.wait()
+    """
+
+    def __init__(
+        self,
+        function=None,
+        t_min=0,
+        t_max=1,
+        step_size=0.01,
+        dt=1e-8,
+        discontinuities=None,
+        **kwargs
+    ):
+        self.function = function
+        self.t_min = t_min
+        self.t_max = t_max
+        self.step_size = step_size
+        self.dt = dt
+        self.discontinuities = [] if discontinuities is None else discontinuities
         VMobject.__init__(self, **kwargs)
 
     def get_function(self):
@@ -82,12 +119,7 @@ class ParametricFunction(VMobject):
 
 
 class FunctionGraph(ParametricFunction):
-    CONFIG = {
-        "color": YELLOW,
-    }
-
-    def __init__(self, function, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, function, color=YELLOW, **kwargs):
         self.x_min = -config["frame_x_radius"]
         self.x_max = config["frame_x_radius"]
         self.parametric_function = lambda t: np.array([t, function(t), 0])

@@ -42,26 +42,20 @@ class Mobject(Container):
 
     """
 
-    CONFIG = {
-        "color": WHITE,
-        "name": None,
-        "dim": 3,
-        "target": None,
-        "z_index": 0,
-    }
-
-    def __init__(self, **kwargs):
-        Container.__init__(self, **kwargs)
+    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
+        self.color = Color(color)
+        self.name = self.__class__.__name__ if name is None else name
+        self.dim = dim
+        self.target = target
+        self.z_index = z_index
         self.point_hash = None
         self.submobjects = []
-        self.color = Color(self.color)
-        if self.name is None:
-            self.name = self.__class__.__name__
         self.updaters = []
         self.updating_suspended = False
         self.reset_points()
         self.generate_points()
         self.init_colors()
+        Container.__init__(self, **kwargs)
 
     def __repr__(self):
         return str(self.name)
@@ -82,6 +76,8 @@ class Mobject(Container):
 
         The mobjects are added to self.submobjects.
 
+        Subclasses of mobject may implement + and += dunder methods.
+
         Parameters
         ----------
         mobjects : :class:`Mobject`
@@ -96,6 +92,9 @@ class Mobject(Container):
         ------
         :class:`ValueError`
             When a mobject tries to add itself.
+        :class:`TypeError`
+            When trying to add an object that is not an instance of :class:`Mobject`.
+
 
         Notes
         -----
@@ -130,12 +129,30 @@ class Mobject(Container):
             ValueError: Mobject cannot contain self
 
         """
-        if self in mobjects:
-            raise ValueError("Mobject cannot contain self")
+        for m in mobjects:
+            if not isinstance(m, Mobject):
+                raise TypeError("All submobjects must be of type Mobject")
+            if m is self:
+                raise ValueError("Mobject cannot contain self")
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
+    def __add__(self, mobject):
+        raise NotImplementedError
+
+    def __iadd__(self, mobject):
+        raise NotImplementedError
+
     def add_to_back(self, *mobjects):
+        """Adds (or moves) all passed mobjects to the back of the scene.
+
+        .. note::
+
+            Technically, this is done by adding (or moving) the mobjects to
+            the head of ``self.submobjects``. The head of this list is rendered
+            first, which places the corresponding mobjects behind the
+            subsequent list members.
+        """
         self.remove(*mobjects)
         self.submobjects = list(mobjects) + self.submobjects
         return self
@@ -144,6 +161,8 @@ class Mobject(Container):
         """Remove submobjects.
 
         The mobjects are removed from self.submobjects, if they exist.
+
+        Subclasses of mobject may implement - and -= dunder methods.
 
         Parameters
         ----------
@@ -165,19 +184,14 @@ class Mobject(Container):
                 self.submobjects.remove(mobject)
         return self
 
+    def __sub__(self, other):
+        raise NotImplementedError
+
+    def __isub__(self, other):
+        raise NotImplementedError
+
     def get_array_attrs(self):
         return ["points"]
-
-    def digest_mobject_attrs(self):
-        """
-        Ensures all attributes which are mobjects are included
-        in the submobjects list.
-        """
-        mobject_attrs = [
-            x for x in list(self.__dict__.values()) if isinstance(x, Mobject)
-        ]
-        self.submobjects = list_update(self.submobjects, mobject_attrs)
-        return self
 
     def apply_over_attr_arrays(self, func):
         for attr in self.get_array_attrs():
@@ -206,9 +220,9 @@ class Mobject(Container):
         return copy.deepcopy(self)
 
     def generate_target(self, use_deepcopy=False):
-        self.target = None  # Prevent exponential explosion
+        self.target = None  # Prevent unbounded linear recursion
         if use_deepcopy:
-            self.target = self.deepcopy()
+            self.target = copy.deepcopy(self)
         else:
             self.target = self.copy()
         return self.target
@@ -245,6 +259,31 @@ class Mobject(Container):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
     def add_updater(self, update_function, index=None, call_updater=False):
+        """Add an update function to this mobject.
+
+        Examples
+        --------
+
+        .. manim:: RotationUpdater
+
+            class RotationUpdater(Scene):
+                def construct(self):
+                    def updater_forth(mobj, dt):
+                        mobj.rotate_about_origin(dt)
+                    def updater_back(mobj, dt):
+                        mobj.rotate_about_origin(-dt)
+                    line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
+                    line_moving = Line(ORIGIN, LEFT).set_color(YELLOW)
+                    line_moving.add_updater(updater_forth)
+                    self.add(line_reference, line_moving)
+                    self.wait(2)
+                    line_moving.remove_updater(updater_forth)
+                    line_moving.add_updater(updater_back)
+                    self.wait(2)
+                    line_moving.remove_updater(updater_back)
+                    self.wait(0.5)
+
+        """
         if index is None:
             self.updaters.append(update_function)
         else:
@@ -473,6 +512,26 @@ class Mobject(Container):
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
     ):
+        """Move this mobject next to another mobject or coordinate.
+
+        Examples
+        --------
+
+        .. manim:: GeometricShapes
+            :save_last_frame:
+
+            class GeometricShapes(Scene):
+                def construct(self):
+                    d = Dot()
+                    c = Circle()
+                    s = Square()
+                    t = Triangle()
+                    d.next_to(c, RIGHT)
+                    s.next_to(c, LEFT)
+                    t.next_to(c, DOWN)
+                    self.add(d, c, s, t)
+
+        """
         if isinstance(mobject_or_point, Mobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
@@ -538,7 +597,7 @@ class Mobject(Container):
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
     def stretch_to_fit_depth(self, depth, **kwargs):
-        return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
+        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def set_width(self, width, stretch=False, **kwargs):
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
@@ -653,7 +712,7 @@ class Mobject(Container):
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, family=family)
-        self.color = color
+        self.color = Color(color)
         return self
 
     def set_color_by_gradient(self, *colors):
@@ -981,9 +1040,32 @@ class Mobject(Container):
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
-    def arrange(self, direction=RIGHT, center=True, **kwargs):
+    def arrange(
+        self,
+        direction=RIGHT,
+        buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+        center=True,
+        **kwargs,
+    ):
+        """sort mobjects next to each other on screen.
+
+        Examples
+        --------
+
+        .. manim:: Example
+            :save_last_frame:
+
+            class Example(Scene):
+                def construct(self):
+                    s1 = Square()
+                    s2 = Square()
+                    s3 = Square()
+                    s4 = Square()
+                    x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
+                    self.add(x)
+        """
         for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
-            m2.next_to(m1, direction, **kwargs)
+            m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()
         return self
@@ -1115,9 +1197,25 @@ class Mobject(Container):
         return submob.copy()
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
-        """
-        Turns self into an interpolation between mobject1
-        and mobject2.
+        """Turns this mobject into an interpolation between ``mobject1``
+        and ``mobject2``.
+
+        Examples
+        --------
+
+        .. manim:: DotInterpolation
+            :save_last_frame:
+
+            class DotInterpolation(Scene):
+                def construct(self):
+                    dotL = Dot(color=DARK_GREY)
+                    dotL.shift(2 * RIGHT)
+                    dotR = Dot(color=WHITE)
+                    dotR.shift(2 * LEFT)
+
+                    dotMiddle = VMobject().interpolate(dotL, dotR, alpha=0.3)
+
+                    self.add(dotL, dotR, dotMiddle)
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
@@ -1131,8 +1229,21 @@ class Mobject(Container):
 
     def become(self, mobject, copy_submobjects=True):
         """
-        Edit points, colors and submobjects to be idential
+        Edit points, colors and submobjects to be identical
         to another mobject
+
+        Examples
+        --------
+        .. manim:: BecomeScene
+
+            class BecomeScene(Scene):
+                def construct(self):
+                    circ= Circle(fill_color=RED)
+                    square = Square(fill_color=BLUE)
+                    self.add(circ)
+                    self.wait(0.5)
+                    circ.become(square)
+                    self.wait(0.5)
         """
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
@@ -1181,7 +1292,5 @@ class Group(Mobject):
     """Groups together multiple Mobjects."""
 
     def __init__(self, *mobjects, **kwargs):
-        if not all([isinstance(m, Mobject) for m in mobjects]):
-            raise TypeError("All submobjects must be of type Mobject")
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)

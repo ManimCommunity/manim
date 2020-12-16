@@ -1,4 +1,46 @@
-"""Mobjects used for displaying (non-LaTeX) text."""
+"""Mobjects used for displaying (non-LaTeX) text.
+
+The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
+With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
+
+Examples
+--------
+
+.. manim:: HelloWorld
+    :save_last_frame:
+
+    class HelloWorld(Scene):
+        def construct(self):
+            text = Text('Hello world').scale(3)
+            self.add(text)
+
+.. manim:: TextAlignement
+    :save_last_frame:
+
+    class TextAlignement(Scene):
+        def construct(self):
+            title = Text("K-means clustering and Logistic Regression", color=WHITE)
+            title.scale_in_place(0.75)
+            self.add(title.to_edge(UP))
+
+            t1 = Text("1. Measuring").set_color(WHITE)
+            t1.next_to(ORIGIN, direction=RIGHT, aligned_edge=UP)
+
+            t2 = Text("2. Clustering").set_color(WHITE)
+            t2.next_to(t1, direction=DOWN, aligned_edge=LEFT)
+
+            t3 = Text("3. Regression").set_color(WHITE)
+            t3.next_to(t2, direction=DOWN, aligned_edge=LEFT)
+
+            t4 = Text("4. Prediction").set_color(WHITE)
+            t4.next_to(t3, direction=DOWN, aligned_edge=LEFT)
+
+            x = VGroup(t1, t2, t3, t4).scale_in_place(0.7)
+            x.set_opacity(0.5)
+            x.submobjects[1].set_opacity(1)
+            self.add(x)
+
+"""
 
 __all__ = ["Text", "Paragraph", "CairoText"]
 
@@ -7,6 +49,8 @@ import copy
 import hashlib
 import os
 import re
+from typing import Dict
+from xml.sax.saxutils import escape
 
 import cairo
 import cairocffi
@@ -15,12 +59,10 @@ import pangocffi
 
 from ... import config, logger
 from ...constants import *
-from ...container import Container
-from ...mobject.geometry import Dot, Rectangle
+from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
-from ...utils.config_ops import digest_config
-from ...utils.color import WHITE, BLACK
+from ...utils.color import WHITE
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 
@@ -93,33 +135,61 @@ class CairoText(SVGMobject):
 
     """
 
-    CONFIG = {
+    def __init__(
+        self,
+        text,
         # Mobject
-        "color": WHITE,
-        "height": None,
-        "width": None,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "should_center": True,
-        "unpack_groups": True,
+        color=WHITE,
+        height=None,
+        width=None,
+        fill_opacity=1,
+        stroke_width=0,
+        should_center=True,
+        unpack_groups=True,
         # Text
-        "font": "",
-        "gradient": None,
-        "line_spacing": -1,
-        "size": 1,
-        "slant": NORMAL,
-        "weight": NORMAL,
-        "t2c": {},
-        "t2f": {},
-        "t2g": {},
-        "t2s": {},
-        "t2w": {},
-        "tab_width": 4,
-    }
-
-    def __init__(self, text, **config):
-        self.full2short(config)
-        digest_config(self, config)
+        font="",
+        gradient=None,
+        line_spacing=-1,
+        size=1,
+        slant=NORMAL,
+        weight=NORMAL,
+        t2c=None,
+        t2f=None,
+        t2g=None,
+        t2s=None,
+        t2w=None,
+        tab_width=4,
+        **kwargs,
+    ):
+        # self.full2short(config)
+        if t2c is None:
+            t2c = {}
+        if t2f is None:
+            t2f = {}
+        if t2g is None:
+            t2g = {}
+        if t2s is None:
+            t2s = {}
+        if t2w is None:
+            t2w = {}
+        # If long form arguments are present, they take precedence
+        t2c = kwargs.pop("text2color", t2c)
+        t2f = kwargs.pop("text2font", t2f)
+        t2g = kwargs.pop("text2gradient", t2g)
+        t2s = kwargs.pop("text2slant", t2s)
+        t2w = kwargs.pop("text2weight", t2w)
+        self.t2c = t2c
+        self.t2f = t2f
+        self.t2g = t2g
+        self.t2s = t2s
+        self.t2w = t2w
+        self.font = font
+        self.gradient = gradient
+        self.line_spacing = line_spacing
+        self.size = size
+        self.slant = slant
+        self.weight = weight
+        self.tab_width = tab_width
         self.original_text = text
         text_without_tabs = text
         if text.find("\t") != -1:
@@ -131,7 +201,18 @@ class CairoText(SVGMobject):
             self.line_spacing = self.size + self.size * self.line_spacing
         file_name = self.text2svg()
         self.remove_last_M(file_name)
-        SVGMobject.__init__(self, file_name, **config)
+        SVGMobject.__init__(
+            self,
+            file_name,
+            height=height,
+            width=width,
+            unpack_groups=unpack_groups,
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            should_center=should_center,
+            **kwargs,
+        )
         self.text = text
         self.submobjects = [*self.gen_chars()]
         self.chars = VGroup(*self.submobjects)
@@ -210,18 +291,18 @@ class CairoText(SVGMobject):
             index = text.find(word, index + len(word))
         return indexes
 
-    def full2short(self, config):
-        for kwargs in [config, self.CONFIG]:
-            if kwargs.__contains__("text2color"):
-                kwargs["t2c"] = kwargs.pop("text2color")
-            if kwargs.__contains__("text2font"):
-                kwargs["t2f"] = kwargs.pop("text2font")
-            if kwargs.__contains__("text2gradient"):
-                kwargs["t2g"] = kwargs.pop("text2gradient")
-            if kwargs.__contains__("text2slant"):
-                kwargs["t2s"] = kwargs.pop("text2slant")
-            if kwargs.__contains__("text2weight"):
-                kwargs["t2w"] = kwargs.pop("text2weight")
+    # def full2short(self, config_args):
+    #     for kwargs in [config_args]:
+    #         if kwargs.__contains__("text2color"):
+    #             kwargs["t2c"] = kwargs.pop("text2color")
+    #         if kwargs.__contains__("text2font"):
+    #             kwargs["t2f"] = kwargs.pop("text2font")
+    #         if kwargs.__contains__("text2gradient"):
+    #             kwargs["t2g"] = kwargs.pop("text2gradient")
+    #         if kwargs.__contains__("text2slant"):
+    #             kwargs["t2s"] = kwargs.pop("text2slant")
+    #         if kwargs.__contains__("text2weight"):
+    #             kwargs["t2w"] = kwargs.pop("text2weight")
 
     def set_color_by_t2c(self, t2c=None):
         t2c = t2c if t2c else self.t2c
@@ -381,12 +462,9 @@ class Paragraph(VGroup):
 
     """
 
-    CONFIG = {
-        "line_spacing": -1,
-        "alignment": None,
-    }
-
-    def __init__(self, *text, **config):
+    def __init__(self, *text, line_spacing=-1, alignment=None, **config):
+        self.line_spacing = line_spacing
+        self.alignment = alignment
         VGroup.__init__(self, **config)
 
         lines_str = "\n".join(list(text))
@@ -644,38 +722,68 @@ class Text(SVGMobject):
 
     """
 
-    CONFIG = {
+    def __init__(
+        self,
+        text: str,
+        fill_opacity: int = 1,
+        stroke_width: int = 0,
+        color: str = WHITE,
+        size: int = 1,
+        line_spacing: int = -1,
+        font: str = "",
+        slant=NORMAL,
+        weight=NORMAL,
+        t2c: Dict[str, str] = None,
+        t2f: Dict[str, str] = None,
+        t2g: Dict[str, tuple] = None,
+        t2s: Dict[str, str] = None,
+        t2w: Dict[str, str] = None,
+        gradient: tuple = None,
+        tab_width: int = 4,
         # Mobject
-        "color": WHITE,
-        "height": None,
-        "width": None,
-        "fill_opacity": 1,
-        "stroke_width": 0,
-        "should_center": True,
-        "unpack_groups": True,
-        # Text
-        "font": "",
-        "gradient": None,
-        "line_spacing": -1,
-        "size": 1,
-        "slant": NORMAL,
-        "weight": NORMAL,
-        "t2c": {},
-        "t2f": {},
-        "t2g": {},
-        "t2s": {},
-        "t2w": {},
-        "tab_width": 4,
-    }
+        height: int = None,
+        width: int = None,
+        should_center: bool = True,
+        unpack_groups: bool = True,
+        disable_ligatures: bool = False,
+        **kwargs,
+    ):
 
-    def __init__(self, text: str, **config):  # pylint: disable=redefined-outer-name
         logger.info(
             "Text now uses Pango for rendering. "
             "In case of problems, the old implementation is available as CairoText."
         )
-        self.full2short(config)
-        digest_config(self, config)
+        self.size = size
+        self.line_spacing = line_spacing
+        self.font = font
+        self.slant = slant
+        self.weight = weight
+        self.gradient = gradient
+        self.tab_width = tab_width
+        if t2c is None:
+            t2c = {}
+        if t2f is None:
+            t2f = {}
+        if t2g is None:
+            t2g = {}
+        if t2s is None:
+            t2s = {}
+        if t2w is None:
+            t2w = {}
+        # If long form arguments are present, they take precedence
+        t2c = kwargs.pop("text2color", t2c)
+        t2f = kwargs.pop("text2font", t2f)
+        t2g = kwargs.pop("text2gradient", t2g)
+        t2s = kwargs.pop("text2slant", t2s)
+        t2w = kwargs.pop("text2weight", t2w)
+        self.t2c = t2c
+        self.t2f = t2f
+        self.t2g = t2g
+        self.t2s = t2s
+        self.t2w = t2w
+
         self.original_text = text
+        self.disable_ligatures = disable_ligatures
         text_without_tabs = text
         if text.find("\t") != -1:
             text_without_tabs = text.replace("\t", " " * self.tab_width)
@@ -686,8 +794,22 @@ class Text(SVGMobject):
             self.line_spacing = self.size + self.size * self.line_spacing
         file_name = self.text2svg()
         self.remove_last_M(file_name)
-        SVGMobject.__init__(self, file_name, **config)
+        SVGMobject.__init__(
+            self,
+            file_name,
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            height=height,
+            width=width,
+            should_center=should_center,
+            unpack_groups=unpack_groups,
+            **kwargs,
+        )
         self.text = text
+        if self.disable_ligatures:
+            self.submobjects = [*self.gen_chars()]
+        self.chars = VGroup(*self.submobjects)
         self.chars = VGroup(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         nppc = self.n_points_per_cubic_curve
@@ -720,6 +842,24 @@ class Text(SVGMobject):
     def __repr__(self):
         return f"Text({repr(self.original_text)})"
 
+    def gen_chars(self):
+        chars = VGroup()
+        submobjects_char_index = 0
+        for char_index in range(self.text.__len__()):
+            if self.text[char_index] in (" ", "\t", "\n"):
+                space = Dot(redius=0, fill_opacity=0, stroke_opacity=0)
+                if char_index == 0:
+                    space.move_to(self.submobjects[submobjects_char_index].get_center())
+                else:
+                    space.move_to(
+                        self.submobjects[submobjects_char_index - 1].get_center()
+                    )
+                chars.add(space)
+            else:
+                chars.add(self.submobjects[submobjects_char_index])
+                submobjects_char_index += 1
+        return chars
+
     def remove_last_M(self, file_name: str):  # pylint: disable=invalid-name
         """Internally used. Use to format the rendered SVG files."""
         with open(file_name, "r") as fpr:
@@ -744,25 +884,24 @@ class Text(SVGMobject):
             index = text.find(word, index + len(word))
         return indexes
 
-    def full2short(self, config):  # pylint: disable=redefined-outer-name
-        """Internally used function. Fomats some exapansion to short forms.
-        text2color -> t2c
-        text2font -> t2f
-        text2gradient -> t2g
-        text2slant -> t2s
-        text2weight -> t2w
-        """
-        for kwargs in [config, self.CONFIG]:
-            if "text2color" in kwargs:
-                kwargs["t2c"] = kwargs.pop("text2color")
-            if "text2font" in kwargs:
-                kwargs["t2f"] = kwargs.pop("text2font")
-            if "text2gradient" in kwargs:
-                kwargs["t2g"] = kwargs.pop("text2gradient")
-            if "text2slant" in kwargs:
-                kwargs["t2s"] = kwargs.pop("text2slant")
-            if "text2weight" in kwargs:
-                kwargs["t2w"] = kwargs.pop("text2weight")
+    # def full2short(self, kwargs):
+    #     """Internally used function. Fomats some exapansion to short forms.
+    #     text2color -> t2c
+    #     text2font -> t2f
+    #     text2gradient -> t2g
+    #     text2slant -> t2s
+    #     text2weight -> t2w
+    #     """
+    #     if "text2color" in kwargs:
+    #         self.t2c = kwargs.pop("text2color")
+    #     if "text2font" in kwargs:
+    #         self.t2f = kwargs.pop("text2font")
+    #     if "text2gradient" in kwargs:
+    #         self.t2g = kwargs.pop("text2gradient")
+    #     if "text2slant" in kwargs:
+    #         self.t2s = kwargs.pop("text2slant")
+    #     if "text2weight" in kwargs:
+    #         self.t2w = kwargs.pop("text2weight")
 
     def set_color_by_t2c(self, t2c=None):
         """Internally used function. Sets colour for specified strings."""
@@ -885,6 +1024,7 @@ class Text(SVGMobject):
         size = self.size * 10
         line_spacing = self.line_spacing * 10
         dir_name = config.get_dir("text_dir")
+        disable_liga = self.disable_ligatures
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         hash_name = self.text2hash()
@@ -897,13 +1037,13 @@ class Text(SVGMobject):
         settings = self.text2settings()
         offset_x = 0
         last_line_num = 0
+        layout = pangocairocffi.create_layout(context)
+        layout.set_width(pangocffi.units_from_double(600))
         for setting in settings:
             family = setting.font
             style = self.str2style(setting.slant)
             weight = self.str2weight(setting.weight)
             text = self.text[setting.start : setting.end].replace("\n", " ")
-            layout = pangocairocffi.create_layout(context)
-            layout.set_width(pangocffi.units_from_double(600))
             fontdesc = pangocffi.FontDescription()
             fontdesc.set_size(pangocffi.units_from_double(size))
             if family:
@@ -917,9 +1057,14 @@ class Text(SVGMobject):
             context.move_to(
                 START_X + offset_x, START_Y + line_spacing * setting.line_num
             )
-            layout.set_text(text)
+            pangocairocffi.update_layout(context, layout)
+            if disable_liga:
+                text = escape(text)
+                layout.set_markup(f"<span font_features='liga=0'>{text}</span>")
+            else:
+                layout.set_text(text)
             logger.debug(f"Setting Text {text}")
             pangocairocffi.show_layout(context, layout)
-            offset_x += layout.get_extents()[0].x
+            offset_x += pangocffi.units_to_double(layout.get_size()[0])
         surface.finish()
         return file_name

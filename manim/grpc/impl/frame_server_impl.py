@@ -1,12 +1,10 @@
 from ... import config
-from ...scene import scene
 from ..gen import frameserver_pb2
 from ..gen import frameserver_pb2_grpc
 from ..gen import renderserver_pb2
 from ..gen import renderserver_pb2_grpc
 from concurrent import futures
-from google.protobuf import json_format
-from watchdog.events import LoggingEventHandler, FileSystemEventHandler
+from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 import grpc
 import subprocess as sp
@@ -124,7 +122,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     frame_response.frame_pending = True
                     selected_scene.renderer_waiting = True
                 return frame_response
-            elif selected_scene.skip_animations:
+            elif selected_scene.renderer.skip_animations:
                 # Do nothing
                 return
             else:
