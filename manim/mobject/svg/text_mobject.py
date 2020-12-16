@@ -146,6 +146,14 @@ class PangoUtils:
         else:
             raise AttributeError("There is no Font Weight Called %s" % string)
 
+    @staticmethod
+    def remove_last_M(file_name: str) -> None:
+        with open(file_name, "r") as fpr:
+            content = fpr.read()
+        content = re.sub(r'Z M [^A-Za-z]*? "\/>', 'Z "/>', content)
+        with open(file_name, "w") as fpw:
+            fpw.write(content)
+
 
 class TextSetting(object):
     def __init__(self, start, end, font, slant, weight, line_num=-1):
@@ -246,7 +254,7 @@ class CairoText(SVGMobject):
         else:
             self.line_spacing = self.size + self.size * self.line_spacing
         file_name = self.text2svg()
-        self.remove_last_M(file_name)
+        PangoUtils.remove_last_M(file_name)
         SVGMobject.__init__(
             self,
             file_name,
@@ -310,13 +318,6 @@ class CairoText(SVGMobject):
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars
-
-    def remove_last_M(self, file_name):
-        with open(file_name, "r") as fpr:
-            content = fpr.read()
-        content = re.sub(r'Z M [^A-Za-z]*? "\/>', 'Z "/>', content)
-        with open(file_name, "w") as fpw:
-            fpw.write(content)
 
     def find_indexes(self, word, text):
         m = re.match(r"\[([0-9\-]{0,}):([0-9\-]{0,})\]", word)
@@ -829,7 +830,7 @@ class Text(SVGMobject):
         else:
             self.line_spacing = self.size + self.size * self.line_spacing
         file_name = self.text2svg()
-        self.remove_last_M(file_name)
+        PangoUtils.remove_last_M(file_name)
         SVGMobject.__init__(
             self,
             file_name,
@@ -894,14 +895,6 @@ class Text(SVGMobject):
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars
-
-    def remove_last_M(self, file_name: str):  # pylint: disable=invalid-name
-        """Internally used. Use to format the rendered SVG files."""
-        with open(file_name, "r") as fpr:
-            content = fpr.read()
-        content = re.sub(r'Z M [^A-Za-z]*? "\/>', 'Z "/>', content)
-        with open(file_name, "w") as fpw:
-            fpw.write(content)
 
     def find_indexes(self, word: str, text: str):
         """Internally used function. Finds the indexes of ``text`` in ``word``."""
@@ -1295,7 +1288,7 @@ class MarkupText(SVGMobject):
             self.line_spacing = self.size + self.size * self.line_spacing
 
         file_name = self.text2svg()
-        self.remove_last_M(file_name)
+        PangoUtils.remove_last_M(file_name)
         SVGMobject.__init__(
             self,
             file_name,
@@ -1494,10 +1487,3 @@ class MarkupText(SVGMobject):
 
     def __repr__(self):
         return f"MarkupText({repr(self.original_text)})"
-
-    def remove_last_M(self, file_name):
-        with open(file_name, "r") as fpr:
-            content = fpr.read()
-        content = re.sub(r'Z M [^A-Za-z]*? "\/>', 'Z "/>', content)
-        with open(file_name, "w") as fpw:
-            fpw.write(content)
