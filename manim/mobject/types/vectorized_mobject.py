@@ -1397,10 +1397,10 @@ class CurvesAsSubmobjects(VGroup):
 
         class LineGradientExample(Scene):
             def construct(self):
-                l = CurvedDoubleArrow(LEFT, RIGHT)
-                new_func = CurvesAsSubmobjects(l, background_stroke_width=0)
-                new_func.set_color_by_gradient(BLUE, RED)
-                self.add(new_func)
+          curve = ParametricFunction(lambda t: [t, np.sin(t), 0], -PI, t_max=PI,stroke_width=10)
+          new_curve = CurvesAsSubmobjects(curve)
+          new_curve.set_color_by_gradient(BLUE, RED)
+          self.add(new_curve.shift(UP), curve)
 
     """
 
