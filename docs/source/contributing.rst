@@ -198,7 +198,7 @@ Internationalization
 If you want to help with translating the docs:
 
 #. Make sure you have a `Transifex <https://www.transifex.com/>`_ account. Transifex is a tool for colaborative translation and allows Manim team to review and help to improve suggestions from the community. You will use Transifex to submit your translation suggestions.
-#. Open to the `Manim project page` <https://www.transifex.com/manim-community/manim-community-documentation>_.
+#. Open to the `Manim project page <https://www.transifex.com/manim-community/manim-community-documentation>`_.
 #. Click on Join Team.
 #. Select the language you want to help with.
 

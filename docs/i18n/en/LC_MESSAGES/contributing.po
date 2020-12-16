@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manim \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-13 16:29+0100\n"
+"POT-Creation-Date: 2020-12-16 22:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
+"Generated-By: Babel 2.9.0\n"
 
 #: ../../source/contributing.rst:3
 msgid "Contributing"
@@ -293,8 +293,8 @@ msgstr ""
 
 #: ../../source/contributing.rst:201
 msgid ""
-"Open to the `Manim project page` <https://www.transifex.com/manim-"
-"community/manim-community-documentation>_."
+"Open to the `Manim project page <https://www.transifex.com/manim-"
+"community/manim-community-documentation>`_."
 msgstr ""
 
 #: ../../source/contributing.rst:202
@@ -314,24 +314,36 @@ msgstr ""
 #: ../../source/contributing.rst:208
 msgid ""
 "You have access to the projects you joined just on the right of your "
-"profile picture on the top bar. Then you can go the `languages list "
-"<https://www.transifex.com/manim-community/manim-community-"
-"documentation/languages/>`_ and select the language you want to help "
-"with. Then you have a blue button reading `Translate`, click it to get "
-"started with translating ! You will get to a list of all ressources of "
-"the project. You can click on any untranslated ressource, then click "
-"`Translate` and you will get to a list of strings to be translated. Just "
-"select the string and type your translation in the right-side panel. Your"
-" translation will have to be reviewed before getting in the docs."
+"profile picture on the top bar."
 msgstr ""
 
-#: ../../source/contributing.rst:218
+#: ../../source/contributing.rst:215
+msgid ""
+"Then you can go the `languages list <https://www.transifex.com/manim-"
+"community/manim-community-documentation/languages/>`_ and select the "
+"language you want to help with. Then you have a blue button reading "
+"`Translate`, click it to get started with translating ! You will get to a"
+" list of all ressources of the project. You can click on any untranslated"
+" ressource, then click `Translate` and you will get the following page:"
+msgstr ""
+
+#: ../../source/contributing.rst:225
+msgid ""
+"The `A` panel is the list of all the strings in the ressource. Click on "
+"any of them to translate it. It will appear in the `B` panel, and you "
+"will be able to set your translation in the `C` panel. Once you're done, "
+"click `Save changes`. Your translation will have to be reviewed before "
+"getting in the docs. You can also get back to the resources list by "
+"clicking `d` or change the destination language in `e`. Your"
+msgstr ""
+
+#: ../../source/contributing.rst:233
 msgid ""
 "If you want to become a reviewer, please join the discord server of Manim"
 " and you can ping the role @i18nService."
 msgstr ""
 
-#: ../../source/contributing.rst:221
+#: ../../source/contributing.rst:236
 msgid ""
 "If you want to add a new language, you can go to `the project page "
 "<https://www.transifex.com/manim-community/manim-community-"
@@ -341,23 +353,23 @@ msgid ""
 "button reading `Request language` and do your request."
 msgstr ""
 
-#: ../../source/contributing.rst:228
+#: ../../source/contributing.rst:243
 msgid ""
 "We will have to manually accept the new language, so you will not be able"
 " to translate instantaneously (for new languages)."
 msgstr ""
 
-#: ../../source/contributing.rst:232
+#: ../../source/contributing.rst:247
 msgid "Further useful guidelines"
 msgstr ""
 
-#: ../../source/contributing.rst:234
+#: ../../source/contributing.rst:249
 msgid ""
 "When submitting a PR, please make special note of whether your proposed "
 "changes will result in breaking changes."
 msgstr ""
 
-#: ../../source/contributing.rst:237
+#: ../../source/contributing.rst:252
 msgid ""
 "When submitting a PR, make sure that your proposed changes are as general"
 " as possible, and ready to be taken advantage of by all of manim's users."
@@ -365,19 +377,19 @@ msgid ""
 "personal information it may contain."
 msgstr ""
 
-#: ../../source/contributing.rst:242
+#: ../../source/contributing.rst:257
 msgid ""
 "If you are a maintainer, please label issues and PRs appropriately and "
 "frequently."
 msgstr ""
 
-#: ../../source/contributing.rst:245
+#: ../../source/contributing.rst:260
 msgid ""
 "When opening a new issue, if there are old issues that are related, link "
 "them in your new issue (even if the old ones are closed)."
 msgstr ""
 
-#: ../../source/contributing.rst:248
+#: ../../source/contributing.rst:263
 msgid ""
 "When submitting a code review, it is highly recommended that you adhere "
 "to `these general guidelines <https://conventionalcomments.org/>`_.  "
@@ -386,20 +398,20 @@ msgid ""
 "<https://www.conventionalcommits.org/en/v1.0.0/>`_."
 msgstr ""
 
-#: ../../source/contributing.rst:253
+#: ../../source/contributing.rst:268
 msgid ""
 "If you find stale or inactive issues that seem to be irrelevant, please "
 "post a comment saying 'This issue should be closed', and a community "
 "developer will take a look."
 msgstr ""
 
-#: ../../source/contributing.rst:257
+#: ../../source/contributing.rst:272
 msgid ""
 "Please do as much as possible to keep issues, PRs, and development in "
 "general as tidy as possible."
 msgstr ""
 
-#: ../../source/contributing.rst:260
+#: ../../source/contributing.rst:275
 msgid ""
 "You can find examples for the ``docs`` in many places: In ``Example "
 "Gallery`` , ``Tutorials`` , ``Reference Classes`` and ``Reference "
@@ -407,7 +419,7 @@ msgid ""
 "flowchart:"
 msgstr ""
 
-#: ../../source/contributing.rst:269
+#: ../../source/contributing.rst:284
 msgid "**Thank you for contributing!**"
 msgstr ""
 
