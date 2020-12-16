@@ -172,13 +172,6 @@ class CairoText(SVGMobject):
     in the given text. In particular, slicing is possible.
 
 
-
-    .. WARNING::
-
-        Using a :class:`.Transform` on text with leading whitespace can look
-        `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
-        :meth:`remove_invisible_chars` to resolve this issue.
-
     Tests
     -----
 
@@ -476,11 +469,6 @@ class Paragraph(VGroup):
     :class:`.VGroup` containing all the lines. In this context, every line is
     constructed as a :class:`.VGroup` of characters contained in the line.
 
-    .. WARNING::
-
-        Using a :class:`.Transform` on text with leading whitespace can look
-        `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using
-        :meth:`remove_invisible_chars` to resolve this issue.
 
     Parameters
     ----------
