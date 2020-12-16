@@ -719,8 +719,8 @@ class DashedLine(Line):
 
         class DashedLineExample(Scene):
             def construct(self):
-                l = DashedLine(config.frame_width/2*LEFT, 4*RIGHT)
-                self.add(l)
+                dashed_line = DashedLine(config.frame_width/2*LEFT, 4*RIGHT)
+                self.add(dashed_line)
 
     """
 
