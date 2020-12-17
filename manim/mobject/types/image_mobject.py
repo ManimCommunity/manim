@@ -34,12 +34,6 @@ class AbstractImageMobject(Mobject):
         self.scale_to_resolution = scale_to_resolution
         Mobject.__init__(self, **kwargs)
 
-    def __init__(self, scale_to_resolution, **kwargs):
-        digest_config(self, kwargs)
-        self.scale_to_resolution = scale_to_resolution
-
-        Mobject.__init__(self, **kwargs)
-
     def get_pixel_array(self):
         raise NotImplementedError()
 
