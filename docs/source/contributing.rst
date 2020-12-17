@@ -205,7 +205,7 @@ If you want to help with translating the docs:
 Congratulations ! You are now a Translator for the Manim Community project!
 
 
-You have access to the projects you joined just on the right of your profile picture
+You have access to the projects you joined just on the left of your profile picture
 on the top bar.
 
 .. image:: /_static/select_transifex_repo.png
