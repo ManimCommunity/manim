@@ -1097,7 +1097,7 @@ class MarkupText(SVGMobject):
     text : :class:`str`
         The text that need to created as mobject.
     fill_opacity : :class:`int`
-        The fill opacity with 1 meaning opaque and 0 meaning transparent
+        The fill opacity with 1 meaning opaque and 0 meaning transparent.
     stroke_width : :class:`int`
         Stroke width.
     color : :class:`str`
@@ -1119,7 +1119,7 @@ class MarkupText(SVGMobject):
     Returns
     -------
     :class:`MarkupText`
-        The mobject like :class:`.VGroup`.
+        The text displayed in form of a :class:`.VGroup`-like mobject.
 
     Examples
     ---------
@@ -1136,7 +1136,7 @@ class MarkupText(SVGMobject):
                 text5 = MarkupText(
                     '<span underline="double">foo</span> <span underline="error">bar</span>'
                 )
-                group = VGroup(text1,text2,text3,text4,text5).arrange(DOWN)
+                group = VGroup(text1, text2, text3, text4, text5).arrange(DOWN)
                 self.add(group)
 
     .. manim:: ColorExample
