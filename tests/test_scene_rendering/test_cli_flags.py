@@ -92,6 +92,31 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
+def test_no_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
+    scene_name = "NoAnimations"
+    command = [
+        "python",
+        "-m",
+        "manim",
+        simple_scenes_path,
+        scene_name,
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    # As of right now, video folder would still be created, as folder creation is done prior to rendering
+
+    # exists = (tmp_path / "videos").exists()
+    # assert not exists, "running manim without -s flag rendered a video"
+
+    is_empty = not any((tmp_path / "videos" / "simple_scenes").iterdir())
+    assert not is_empty, "running manim on scene with no animation scene without -s flag did not render successfully"
+
+
+@pytest.mark.slow
 def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
