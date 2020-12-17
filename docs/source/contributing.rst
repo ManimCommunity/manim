@@ -217,7 +217,7 @@ Then you can go the
 and select the language you want to help with. Then you have a blue button reading
 `Translate`, click it to get started with translating ! You will get to a list of
 all ressources of the project. You can click on any untranslated ressource, then
-click `Translate` and you will get the following page:
+click on `Translate` and you will get the following page:
 
 .. image:: /_static/transifex_explanation.png
     :align: center
