@@ -11,7 +11,6 @@ import subprocess as sp
 import threading
 import time
 import traceback
-import ctypes
 from ...utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
@@ -29,7 +28,7 @@ from ...mobject.types.vectorized_mobject import VMobject
 from ...mobject.types.image_mobject import ImageMobject
 
 
-class MyEventHandler(FileSystemEventHandler):
+class ScriptUpdateHandler(FileSystemEventHandler):
     def __init__(self, frame_server):
         super().__init__()
         self.frame_server = frame_server
@@ -66,7 +65,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         self.load_scene_module()
 
         observer = Observer()
-        event_handler = MyEventHandler(self)
+        event_handler = ScriptUpdateHandler(self)
         path = self.input_file_path
         observer.schedule(event_handler, path)
         observer.start()  # When / where to stop?
