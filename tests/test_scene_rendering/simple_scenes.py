@@ -34,3 +34,9 @@ class NoAnimations(Scene):
         dot = Dot().set_color(GREEN)
         self.add(dot)
         self.wait(1)
+
+
+class NoAnimationText(Scene):
+    def construct(self):
+        text = Text('Hello world').scale(3)
+        self.add(text)
