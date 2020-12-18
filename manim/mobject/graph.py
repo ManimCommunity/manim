@@ -186,7 +186,6 @@ class Graph(VMobject):
             # the random layout places coordinates in [0, 1)
             # we need to rescale manually afterwards...
             self._layout = automatic_layouts["random"](nx_graph, **layout_config)
-            print(self._layout)
             for k, v in self._layout.items():
                 self._layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
         elif isinstance(layout, dict):
@@ -204,7 +203,6 @@ class Graph(VMobject):
                 self._labels = dict(
                     [(v, MathTex(v, fill_color=label_fill_color)) for v in vertices]
                 )
-                print(self._labels)
             else:
                 self._labels = dict()
 
@@ -241,7 +239,6 @@ class Graph(VMobject):
                 for k, v in edge_config.items()
                 if k not in edges and k[::-1] not in edges
             )
-            print(default_edge_config)
         self._edge_config = {}
         for e in edges:
             if e in edge_config:
