@@ -1,6 +1,6 @@
 """Debugging utilities."""
 
-__all__ = ["print_family", "get_submobject_index_labels"]
+__all__ = ["print_family", "index_labels"]
 
 from .color import BLACK
 from ..mobject.numbers import Integer
@@ -14,7 +14,7 @@ def print_family(mobject, n_tabs=0):
         print_family(submob, n_tabs + 1)
 
 
-def get_submobject_index_labels(mobject, label_height=0.15):
+def index_labels(mobject, label_height=0.15):
     labels = VGroup()
     for n, submob in enumerate(mobject):
         label = Integer(n)
