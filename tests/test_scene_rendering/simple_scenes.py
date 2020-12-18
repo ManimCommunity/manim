@@ -36,7 +36,7 @@ class NoAnimations(Scene):
         self.wait(1)
 
 
-class Text(Scene):
+class NoAnimationText(Scene):
     def construct(self):
         text = Text('Hello world').scale(3)
         self.add(text)

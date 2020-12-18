@@ -93,7 +93,7 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
 
 @pytest.mark.slow
 def test_no_s_flag_text(tmp_path, manim_cfg_file, simple_scenes_path):
-    scene_name = "Text"
+    scene_name = "NoAnimationText"
     command = [
         "python",
         "-m",
@@ -112,7 +112,7 @@ def test_no_s_flag_text(tmp_path, manim_cfg_file, simple_scenes_path):
     assert is_empty, "running manim on text scene without -s flag rendered a video"
 
     is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert not is_empty, "running manim on scene with no animation without -s flag did not render an image"
+    assert not is_empty, "running manim on text scene without -s flag did not render an image"
 
 
 @pytest.mark.slow
