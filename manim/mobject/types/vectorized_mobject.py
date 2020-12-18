@@ -418,11 +418,9 @@ class VMobject(Mobject):
         self.color_using_background_image(vmobject.get_background_image_file())
         return self
 
-    def set_shade_in_3d(self, value=True, z_index_as_group=False):
+    def set_shade_in_3d(self, value=True):
         for submob in self.get_family():
             submob.shade_in_3d = value
-            if z_index_as_group:
-                submob.z_index_group = self
         return self
 
     # Points

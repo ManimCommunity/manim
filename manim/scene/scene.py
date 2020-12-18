@@ -229,9 +229,7 @@ class Scene(Container):
         list
             List of mobject family members.
         """
-        return extract_mobject_family_members(
-            self.mobjects, use_z_index=self.renderer.camera.use_z_index
-        )
+        return extract_mobject_family_members(self.mobjects)
 
     def add(self, *mobjects):
         """
@@ -311,9 +309,7 @@ class Scene(Container):
             The Scene mobject with restructured Mobjects.
         """
         if extract_families:
-            to_remove = extract_mobject_family_members(
-                to_remove, use_z_index=self.renderer.camera.use_z_index
-            )
+            to_remove = extract_mobject_family_members(to_remove)
         _list = getattr(self, mobject_list_name)
         new_list = self.get_restructured_mobject_list(_list, to_remove)
         setattr(self, mobject_list_name, new_list)
@@ -517,14 +513,10 @@ class Scene(Container):
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
             all_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
             only_those_with_points=True,
         )
         moving_mobjects = self.get_moving_mobjects(*animations)
-        all_moving_mobject_families = extract_mobject_family_members(
-            moving_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
-        )
+        all_moving_mobject_families = extract_mobject_family_members(moving_mobjects)
         stationary_mobjects = list_difference_update(
             all_mobject_families, all_moving_mobject_families
         )
