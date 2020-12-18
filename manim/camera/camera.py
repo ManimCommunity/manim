@@ -55,7 +55,6 @@ class Camera(object):
         pixel_array_dtype="uint8",
         z_buff_func=lambda m: np.round(m.get_center()[2], 2),
         cairo_line_width_multiple=0.01,
-        use_z_index=True,
         background=None,
         pixel_height=None,
         pixel_width=None,
@@ -80,7 +79,6 @@ class Camera(object):
         self.pixel_array_dtype = pixel_array_dtype
         self.z_buff_func = z_buff_func
         self.cairo_line_width_multiple = cairo_line_width_multiple
-        self.use_z_index = use_z_index
         self.background = background
 
         if pixel_height is None:
@@ -416,12 +414,10 @@ class Camera(object):
         """
         if include_submobjects:
             mobjects = extract_mobject_family_members(
-                mobjects, use_z_index=self.use_z_index, only_those_with_points=True
+                mobjects, only_those_with_points=True
             )
             if excluded_mobjects:
-                all_excluded = extract_mobject_family_members(
-                    excluded_mobjects, use_z_index=self.use_z_index
-                )
+                all_excluded = extract_mobject_family_members(excluded_mobjects)
                 mobjects = list_difference_update(mobjects, all_excluded)
         return mobjects
 
