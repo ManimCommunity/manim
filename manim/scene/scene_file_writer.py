@@ -123,7 +123,7 @@ class SceneFileWriter(object):
             image_dir, add_extension_if_not_present(default_name, ".png")
         )
         logger.info(
-                "Rendered 0 animations."
+                "Rendered 0 animations"
             )
 
     def add_partial_movie_file(self, hash_animation):
