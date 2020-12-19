@@ -14,22 +14,8 @@ Upcoming release
 
 :Date: TBD
 
-Changes since the latest released version.
+Changes for the upcoming release are tracked `in our GitHub wiki <https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release>`_.
 
-New Features
-============
-
-- Added a creation animation for our banner, :meth:`~.ManimBanner.create` (via :pr:`814`).
-
-Bugfixes
-========
-
-- There is nothing here yet, check back later.
-
-Other Changes
-=============
-
-#. Removed temp partial movie file from SceneFileWriter (ffmpeg directly renders partial movie files instead of temp files)
 
 ******
 v0.1.1
@@ -93,6 +79,7 @@ Mobjects, Scenes, and Animations
 #. Added BraceBetweenPoints (via :pr:`693`).
 #. Added ArcPolygon and ArcPolygonFromArcs (via :pr:`707`).
 #. Added Cutout (via :pr:`760`).
+#. Added Mobject raise not implemented errors for dunder methods and implementations for VGroup dunder methods (via :pr:`790`).
 #. Added :class:`~.ManimBanner` for a animated version of our logo and banner (via :pr:`729`)
 #. The background color of a scene can now be changed reliably by setting, e.g.,
    ``self.camera.background_color = RED`` (via :pr:`716`).
