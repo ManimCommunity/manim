@@ -101,6 +101,10 @@ class SceneFileWriter(object):
             )
 
     def init_save_image(self, scene_name):
+        """Save images to the output file directory or the path of the scene. 
+        It does this after automatically detecting no animations are present and 
+        making the output an image instead of a video. 
+        """
         if config["output_file"]:
             default_name = config.get_dir("output_file")
         else:
@@ -118,6 +122,9 @@ class SceneFileWriter(object):
         self.image_file_path = os.path.join(
             image_dir, add_extension_if_not_present(default_name, ".png")
         )
+        logger.info(
+                "Rendered 0 animations."
+            )
 
     def add_partial_movie_file(self, hash_animation):
         """Adds a new partial movie file path to scene.partial_movie_files from an hash. This method will compute the path from the hash.
