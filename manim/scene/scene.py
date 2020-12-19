@@ -28,13 +28,6 @@ from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 
 
-def get_random_name(name_map):
-    while True:
-        random_name = "".join(random.sample(string.ascii_lowercase, k=10))
-        if random_name not in name_map:
-            return random_name
-
-
 class Scene(Container):
     """A Scene is the canvas of your animation.
 
