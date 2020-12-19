@@ -677,7 +677,7 @@ class Scene(Container):
         time_progression.set_description(
             "".join(
                 [
-                    "Animation {}: ".format(self.renderer.num_plays),
+                    f"Animation {self.renderer.num_plays}: ",
                     str(animations[0]),
                     (", etc." if len(animations) > 1 else ""),
                 ]
@@ -710,14 +710,10 @@ class Scene(Container):
                 n_iterations=-1,  # So it doesn't show % progress
                 override_skip_animations=True,
             )
-            time_progression.set_description(
-                "Waiting for {}".format(stop_condition.__name__)
-            )
+            time_progression.set_description(f"Waiting for {stop_condition.__name__}")
         else:
             time_progression = self.get_time_progression(duration)
-            time_progression.set_description(
-                "Waiting {}".format(self.renderer.num_plays)
-            )
+            time_progression.set_description(f"Waiting {self.renderer.num_plays}")
         return time_progression
 
     def get_run_time(self, animations):
