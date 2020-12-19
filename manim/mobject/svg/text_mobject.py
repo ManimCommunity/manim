@@ -1333,8 +1333,7 @@ class MarkupText(SVGMobject):
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def text2hash(self):
-        """Internally used function.
-        Generates ``sha256`` hash for file name.
+        """Generates ``sha256`` hash for file name.
         """
         settings = (
             "MARKUPPANGO" + self.font + self.slant + self.weight
@@ -1347,8 +1346,7 @@ class MarkupText(SVGMobject):
         return hasher.hexdigest()[:16]
 
     def text2svg(self):
-        """Internally used function.
-        Convert the text to SVG using Pango
+        """Convert the text to SVG using Pango.
         """
         size = self.size * 10
         line_spacing = self.line_spacing * 10
@@ -1388,10 +1386,10 @@ class MarkupText(SVGMobject):
         return file_name
 
     def _count_real_chars(self, s):
-        """Internally used function.
-        Counts characters that will be displayed.
+        """Counts characters that will be displayed.
+
         This is needed for partial coloring or gradients, because space
-        counts to the text's `len`, but has no corresponding letter"""
+        counts to the text's `len`, but has no corresponding character."""
         count = 0
         level = 0
         # temporarily replace HTML entities by single char
@@ -1406,9 +1404,11 @@ class MarkupText(SVGMobject):
         return count
 
     def extract_gradient_tags(self):
-        """Internally used function.
-        Used to determine what parts (if any) of the string should be formatted with a gradient.
-        Removes the ``<gradient>`` tag, as it is not part of Pango's markup and would cause an error."""
+        """Used to determine which parts (if any) of the string should be formatted
+        with a gradient.
+
+        Removes the ``<gradient>`` tag, as it is not part of Pango's markup and would cause an error.
+        """
         tags = re.finditer(
             '<gradient\s+from="([^"]+)"\s+to="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</gradient>',
             self.original_text,
@@ -1436,17 +1436,18 @@ class MarkupText(SVGMobject):
         return gradientmap
 
     def _parse_color(self, col):
-        """Internally used function.
-        Parse color given in ``<color>`` or ``<gradient>`` tags."""
+        """Parse color given in ``<color>`` or ``<gradient>`` tags."""
         if re.match("#[0-9a-f]{6}", col):
             return col
         else:
             return Colors[col.lower()].value
 
     def extract_color_tags(self):
-        """Internally used function.
-        Used to determine what parts (if any) of the string should be formatted with a custom color.
-        Removes the ``<color>`` tag, as it is not part of Pango's markup and would cause an error."""
+        """Used to determine which parts (if any) of the string should be formatted
+        with a custom color.
+
+        Removes the ``<color>`` tag, as it is not part of Pango's markup and would cause an error.
+        """
         tags = re.finditer(
             '<color\s+col="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</color>',
             self.original_text,
