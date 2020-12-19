@@ -30,6 +30,7 @@ Other Changes
 =============
 
 #. Removed temp partial movie file from SceneFileWriter (ffmpeg directly renders partial movie files instead of temp files)
+#. Improved handling of scenes without animations by detecting when no animations are present and outputting an image instead of a video 
 
 ******
 v0.1.1
