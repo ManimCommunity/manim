@@ -11,7 +11,6 @@ import subprocess as sp
 import threading
 import time
 import traceback
-import ctypes
 from ...utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
@@ -29,7 +28,7 @@ from ...mobject.types.vectorized_mobject import VMobject
 from ...mobject.types.image_mobject import ImageMobject
 
 
-class MyEventHandler(FileSystemEventHandler):
+class ScriptUpdateHandler(FileSystemEventHandler):
     def __init__(self, frame_server):
         super().__init__()
         self.frame_server = frame_server
@@ -47,10 +46,7 @@ class MyEventHandler(FileSystemEventHandler):
         self.catch_all_handler(event)
 
     def on_modified(self, event):
-        self.frame_server.scene_class = scene_classes_from_file(
-            self.frame_server.input_file_path, require_single_scene=True
-        )
-        self.frame_server.generate_keyframe_data()
+        self.frame_server.load_scene_module()
 
         with grpc.insecure_channel("localhost:50052") as channel:
             stub = renderserver_pb2_grpc.RenderServerStub(channel)
@@ -65,13 +61,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
     def __init__(self, server, input_file_path):
         self.server = server
         self.input_file_path = input_file_path
-        self.scene_class = scene_classes_from_file(
-            self.input_file_path, require_single_scene=True
-        )
-        self.generate_keyframe_data()
+        self.exception = None
+        self.load_scene_module()
 
         observer = Observer()
-        event_handler = MyEventHandler(self)
+        event_handler = ScriptUpdateHandler(self)
         path = self.input_file_path
         observer.schedule(event_handler, path)
         observer.start()  # When / where to stop?
@@ -186,6 +180,16 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         except Exception as e:
             traceback.print_exc()
 
+    def load_scene_module(self):
+        self.exception = None
+        try:
+            self.scene_class = scene_classes_from_file(
+                self.input_file_path, require_single_scene=True
+            )
+            self.generate_keyframe_data()
+        except Exception as e:
+            self.exception = e
+
     def generate_keyframe_data(self):
         self.keyframes = []
         self.previous_scene_index = None
@@ -199,18 +203,26 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         # not, spawn one and it will request the scene when it starts.
         with grpc.insecure_channel("localhost:50052") as channel:
             stub = renderserver_pb2_grpc.RenderServerStub(channel)
-            request = renderserver_pb2.UpdateSceneDataRequest(
-                scene=renderserver_pb2.Scene(
-                    name=str(self.scene),
-                    animations=[
-                        renderserver_pb2.Animation(
-                            name=animations_to_name(scene.animations),
-                            duration=scene.duration,
-                        )
-                        for scene in self.keyframes
-                    ],
-                ),
-            )
+            if not self.exception:
+                request = renderserver_pb2.UpdateSceneDataRequest(
+                    scene=renderserver_pb2.Scene(
+                        name=str(self.scene),
+                        animations=[
+                            renderserver_pb2.Animation(
+                                name=animations_to_name(scene.animations),
+                                duration=scene.duration,
+                            )
+                            for scene in self.keyframes
+                        ],
+                    ),
+                )
+            else:
+                lines = traceback.format_exception(
+                    None, self.exception, self.exception.__traceback__
+                )
+                request = renderserver_pb2.UpdateSceneDataRequest(
+                    has_exception=True, exception="\n".join(lines)
+                )
             stub.UpdateSceneData(request)
 
 
