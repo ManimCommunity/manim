@@ -6,785 +6,1254 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
+
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-
-
 DESCRIPTOR = _descriptor.FileDescriptor(
-  name='frameserver.proto',
-  package='frameserver',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11\x66rameserver.proto\x12\x0b\x66rameserver\";\n\x16\x46\x65tchSceneDataResponse\x12!\n\x05scene\x18\x01 \x01(\x0b\x32\x12.frameserver.Scene\"A\n\x05Scene\x12\x0c\n\x04name\x18\x01 \x01(\t\x12*\n\nanimations\x18\x02 \x03(\x0b\x32\x16.frameserver.Animation\"+\n\tAnimation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x64uration\x18\x02 \x01(\x02\"\xd5\x01\n\x0c\x46rameRequest\x12\x13\n\x0btime_offset\x18\x01 \x01(\x02\x12\x13\n\x0bstart_index\x18\x02 \x01(\x05\x12\x11\n\tend_index\x18\x03 \x01(\x05\x12\x13\n\x0bimage_index\x18\x04 \x01(\x05\x12;\n\x0cpreview_mode\x18\x05 \x01(\x0e\x32%.frameserver.FrameRequest.PreviewMode\"6\n\x0bPreviewMode\x12\x07\n\x03\x41LL\x10\x00\x12\x13\n\x0f\x41NIMATION_RANGE\x10\x01\x12\t\n\x05IMAGE\x10\x02\"u\n\x05Style\x12\x12\n\nfill_color\x18\x01 \x01(\t\x12\x14\n\x0c\x66ill_opacity\x18\x02 \x01(\x02\x12\x14\n\x0cstroke_color\x18\x03 \x01(\t\x12\x16\n\x0estroke_opacity\x18\x04 \x01(\x02\x12\x14\n\x0cstroke_width\x18\x05 \x01(\x02\"(\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\"\x97\x02\n\x0bMobjectData\x12\n\n\x02id\x18\x01 \x01(\x03\x12!\n\x05style\x18\x02 \x01(\x0b\x32\x12.frameserver.Style\x12\x32\n\x04type\x18\x03 \x01(\x0e\x32$.frameserver.MobjectData.MobjectType\x12:\n\x17vectorized_mobject_data\x18\x04 \x01(\x0b\x32\x19.frameserver.VMobjectData\x12\x39\n\x12image_mobject_data\x18\x05 \x01(\x0b\x32\x1d.frameserver.ImageMobjectData\".\n\x0bMobjectType\x12\x0c\n\x08VMOBJECT\x10\x00\x12\x11\n\rIMAGE_MOBJECT\x10\x01\"H\n\x0cVMobjectData\x12\"\n\x06points\x18\x01 \x03(\x0b\x32\x12.frameserver.Point\x12\x14\n\x0cneeds_redraw\x18\x02 \x01(\x08\"c\n\x10ImageMobjectData\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\x0e\n\x06height\x18\x02 \x01(\x02\x12\r\n\x05width\x18\x03 \x01(\x02\x12\"\n\x06\x63\x65nter\x18\x04 \x01(\x0b\x32\x12.frameserver.Point\"\xdf\x01\n\rFrameResponse\x12*\n\x08mobjects\x18\x01 \x03(\x0b\x32\x18.frameserver.MobjectData\x12\x15\n\rframe_pending\x18\x02 \x01(\x08\x12\x1a\n\x12\x61nimation_finished\x18\x03 \x01(\x08\x12\x16\n\x0escene_finished\x18\x04 \x01(\x08\x12\x10\n\x08\x64uration\x18\x05 \x01(\x02\x12\x12\n\nanimations\x18\x06 \x03(\t\x12\x17\n\x0f\x61nimation_index\x18\x07 \x01(\x05\x12\x18\n\x10\x61nimation_offset\x18\x08 \x01(\x02\"\x0e\n\x0c\x45mptyRequest\"\x0f\n\rEmptyResponse2\xa8\x01\n\x0b\x46rameServer\x12G\n\x0eGetFrameAtTime\x12\x19.frameserver.FrameRequest\x1a\x1a.frameserver.FrameResponse\x12P\n\x0e\x46\x65tchSceneData\x12\x19.frameserver.EmptyRequest\x1a#.frameserver.FetchSceneDataResponseb\x06proto3'
+    name="frameserver.proto",
+    package="frameserver",
+    syntax="proto3",
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+    serialized_pb=b'\n\x11\x66rameserver.proto\x12\x0b\x66rameserver";\n\x16\x46\x65tchSceneDataResponse\x12!\n\x05scene\x18\x01 \x01(\x0b\x32\x12.frameserver.Scene"A\n\x05Scene\x12\x0c\n\x04name\x18\x01 \x01(\t\x12*\n\nanimations\x18\x02 \x03(\x0b\x32\x16.frameserver.Animation"+\n\tAnimation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x64uration\x18\x02 \x01(\x02"\xd5\x01\n\x0c\x46rameRequest\x12\x13\n\x0btime_offset\x18\x01 \x01(\x02\x12\x13\n\x0bstart_index\x18\x02 \x01(\x05\x12\x11\n\tend_index\x18\x03 \x01(\x05\x12\x13\n\x0bimage_index\x18\x04 \x01(\x05\x12;\n\x0cpreview_mode\x18\x05 \x01(\x0e\x32%.frameserver.FrameRequest.PreviewMode"6\n\x0bPreviewMode\x12\x07\n\x03\x41LL\x10\x00\x12\x13\n\x0f\x41NIMATION_RANGE\x10\x01\x12\t\n\x05IMAGE\x10\x02"u\n\x05Style\x12\x12\n\nfill_color\x18\x01 \x01(\t\x12\x14\n\x0c\x66ill_opacity\x18\x02 \x01(\x02\x12\x14\n\x0cstroke_color\x18\x03 \x01(\t\x12\x16\n\x0estroke_opacity\x18\x04 \x01(\x02\x12\x14\n\x0cstroke_width\x18\x05 \x01(\x02"(\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02"\x97\x02\n\x0bMobjectData\x12\n\n\x02id\x18\x01 \x01(\x03\x12!\n\x05style\x18\x02 \x01(\x0b\x32\x12.frameserver.Style\x12\x32\n\x04type\x18\x03 \x01(\x0e\x32$.frameserver.MobjectData.MobjectType\x12:\n\x17vectorized_mobject_data\x18\x04 \x01(\x0b\x32\x19.frameserver.VMobjectData\x12\x39\n\x12image_mobject_data\x18\x05 \x01(\x0b\x32\x1d.frameserver.ImageMobjectData".\n\x0bMobjectType\x12\x0c\n\x08VMOBJECT\x10\x00\x12\x11\n\rIMAGE_MOBJECT\x10\x01"H\n\x0cVMobjectData\x12"\n\x06points\x18\x01 \x03(\x0b\x32\x12.frameserver.Point\x12\x14\n\x0cneeds_redraw\x18\x02 \x01(\x08"c\n\x10ImageMobjectData\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\x0e\n\x06height\x18\x02 \x01(\x02\x12\r\n\x05width\x18\x03 \x01(\x02\x12"\n\x06\x63\x65nter\x18\x04 \x01(\x0b\x32\x12.frameserver.Point"\xdf\x01\n\rFrameResponse\x12*\n\x08mobjects\x18\x01 \x03(\x0b\x32\x18.frameserver.MobjectData\x12\x15\n\rframe_pending\x18\x02 \x01(\x08\x12\x1a\n\x12\x61nimation_finished\x18\x03 \x01(\x08\x12\x16\n\x0escene_finished\x18\x04 \x01(\x08\x12\x10\n\x08\x64uration\x18\x05 \x01(\x02\x12\x12\n\nanimations\x18\x06 \x03(\t\x12\x17\n\x0f\x61nimation_index\x18\x07 \x01(\x05\x12\x18\n\x10\x61nimation_offset\x18\x08 \x01(\x02"\x0e\n\x0c\x45mptyRequest"\x0f\n\rEmptyResponse2\xa8\x01\n\x0b\x46rameServer\x12G\n\x0eGetFrameAtTime\x12\x19.frameserver.FrameRequest\x1a\x1a.frameserver.FrameResponse\x12P\n\x0e\x46\x65tchSceneData\x12\x19.frameserver.EmptyRequest\x1a#.frameserver.FetchSceneDataResponseb\x06proto3',
 )
 
 
-
 _FRAMEREQUEST_PREVIEWMODE = _descriptor.EnumDescriptor(
-  name='PreviewMode',
-  full_name='frameserver.FrameRequest.PreviewMode',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='ALL', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='ANIMATION_RANGE', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='IMAGE', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=367,
-  serialized_end=421,
+    name="PreviewMode",
+    full_name="frameserver.FrameRequest.PreviewMode",
+    filename=None,
+    file=DESCRIPTOR,
+    create_key=_descriptor._internal_create_key,
+    values=[
+        _descriptor.EnumValueDescriptor(
+            name="ALL",
+            index=0,
+            number=0,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.EnumValueDescriptor(
+            name="ANIMATION_RANGE",
+            index=1,
+            number=1,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.EnumValueDescriptor(
+            name="IMAGE",
+            index=2,
+            number=2,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    containing_type=None,
+    serialized_options=None,
+    serialized_start=367,
+    serialized_end=421,
 )
 _sym_db.RegisterEnumDescriptor(_FRAMEREQUEST_PREVIEWMODE)
 
 _MOBJECTDATA_MOBJECTTYPE = _descriptor.EnumDescriptor(
-  name='MobjectType',
-  full_name='frameserver.MobjectData.MobjectType',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='VMOBJECT', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='IMAGE_MOBJECT', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=818,
-  serialized_end=864,
+    name="MobjectType",
+    full_name="frameserver.MobjectData.MobjectType",
+    filename=None,
+    file=DESCRIPTOR,
+    create_key=_descriptor._internal_create_key,
+    values=[
+        _descriptor.EnumValueDescriptor(
+            name="VMOBJECT",
+            index=0,
+            number=0,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.EnumValueDescriptor(
+            name="IMAGE_MOBJECT",
+            index=1,
+            number=1,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    containing_type=None,
+    serialized_options=None,
+    serialized_start=818,
+    serialized_end=864,
 )
 _sym_db.RegisterEnumDescriptor(_MOBJECTDATA_MOBJECTTYPE)
 
 
 _FETCHSCENEDATARESPONSE = _descriptor.Descriptor(
-  name='FetchSceneDataResponse',
-  full_name='frameserver.FetchSceneDataResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='scene', full_name='frameserver.FetchSceneDataResponse.scene', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=34,
-  serialized_end=93,
+    name="FetchSceneDataResponse",
+    full_name="frameserver.FetchSceneDataResponse",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="scene",
+            full_name="frameserver.FetchSceneDataResponse.scene",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=34,
+    serialized_end=93,
 )
 
 
 _SCENE = _descriptor.Descriptor(
-  name='Scene',
-  full_name='frameserver.Scene',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='name', full_name='frameserver.Scene.name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='animations', full_name='frameserver.Scene.animations', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=95,
-  serialized_end=160,
+    name="Scene",
+    full_name="frameserver.Scene",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="name",
+            full_name="frameserver.Scene.name",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="animations",
+            full_name="frameserver.Scene.animations",
+            index=1,
+            number=2,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=95,
+    serialized_end=160,
 )
 
 
 _ANIMATION = _descriptor.Descriptor(
-  name='Animation',
-  full_name='frameserver.Animation',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='name', full_name='frameserver.Animation.name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='duration', full_name='frameserver.Animation.duration', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=162,
-  serialized_end=205,
+    name="Animation",
+    full_name="frameserver.Animation",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="name",
+            full_name="frameserver.Animation.name",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="duration",
+            full_name="frameserver.Animation.duration",
+            index=1,
+            number=2,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=162,
+    serialized_end=205,
 )
 
 
 _FRAMEREQUEST = _descriptor.Descriptor(
-  name='FrameRequest',
-  full_name='frameserver.FrameRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='time_offset', full_name='frameserver.FrameRequest.time_offset', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='start_index', full_name='frameserver.FrameRequest.start_index', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='end_index', full_name='frameserver.FrameRequest.end_index', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='image_index', full_name='frameserver.FrameRequest.image_index', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='preview_mode', full_name='frameserver.FrameRequest.preview_mode', index=4,
-      number=5, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-    _FRAMEREQUEST_PREVIEWMODE,
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=208,
-  serialized_end=421,
+    name="FrameRequest",
+    full_name="frameserver.FrameRequest",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="time_offset",
+            full_name="frameserver.FrameRequest.time_offset",
+            index=0,
+            number=1,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="start_index",
+            full_name="frameserver.FrameRequest.start_index",
+            index=1,
+            number=2,
+            type=5,
+            cpp_type=1,
+            label=1,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="end_index",
+            full_name="frameserver.FrameRequest.end_index",
+            index=2,
+            number=3,
+            type=5,
+            cpp_type=1,
+            label=1,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="image_index",
+            full_name="frameserver.FrameRequest.image_index",
+            index=3,
+            number=4,
+            type=5,
+            cpp_type=1,
+            label=1,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="preview_mode",
+            full_name="frameserver.FrameRequest.preview_mode",
+            index=4,
+            number=5,
+            type=14,
+            cpp_type=8,
+            label=1,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[
+        _FRAMEREQUEST_PREVIEWMODE,
+    ],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=208,
+    serialized_end=421,
 )
 
 
 _STYLE = _descriptor.Descriptor(
-  name='Style',
-  full_name='frameserver.Style',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='fill_color', full_name='frameserver.Style.fill_color', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='fill_opacity', full_name='frameserver.Style.fill_opacity', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='stroke_color', full_name='frameserver.Style.stroke_color', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='stroke_opacity', full_name='frameserver.Style.stroke_opacity', index=3,
-      number=4, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='stroke_width', full_name='frameserver.Style.stroke_width', index=4,
-      number=5, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=423,
-  serialized_end=540,
+    name="Style",
+    full_name="frameserver.Style",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="fill_color",
+            full_name="frameserver.Style.fill_color",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="fill_opacity",
+            full_name="frameserver.Style.fill_opacity",
+            index=1,
+            number=2,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="stroke_color",
+            full_name="frameserver.Style.stroke_color",
+            index=2,
+            number=3,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="stroke_opacity",
+            full_name="frameserver.Style.stroke_opacity",
+            index=3,
+            number=4,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="stroke_width",
+            full_name="frameserver.Style.stroke_width",
+            index=4,
+            number=5,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=423,
+    serialized_end=540,
 )
 
 
 _POINT = _descriptor.Descriptor(
-  name='Point',
-  full_name='frameserver.Point',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='x', full_name='frameserver.Point.x', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='y', full_name='frameserver.Point.y', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='z', full_name='frameserver.Point.z', index=2,
-      number=3, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=542,
-  serialized_end=582,
+    name="Point",
+    full_name="frameserver.Point",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="x",
+            full_name="frameserver.Point.x",
+            index=0,
+            number=1,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="y",
+            full_name="frameserver.Point.y",
+            index=1,
+            number=2,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="z",
+            full_name="frameserver.Point.z",
+            index=2,
+            number=3,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=542,
+    serialized_end=582,
 )
 
 
 _MOBJECTDATA = _descriptor.Descriptor(
-  name='MobjectData',
-  full_name='frameserver.MobjectData',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='id', full_name='frameserver.MobjectData.id', index=0,
-      number=1, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='style', full_name='frameserver.MobjectData.style', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='type', full_name='frameserver.MobjectData.type', index=2,
-      number=3, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='vectorized_mobject_data', full_name='frameserver.MobjectData.vectorized_mobject_data', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='image_mobject_data', full_name='frameserver.MobjectData.image_mobject_data', index=4,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-    _MOBJECTDATA_MOBJECTTYPE,
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=585,
-  serialized_end=864,
+    name="MobjectData",
+    full_name="frameserver.MobjectData",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="id",
+            full_name="frameserver.MobjectData.id",
+            index=0,
+            number=1,
+            type=3,
+            cpp_type=2,
+            label=1,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="style",
+            full_name="frameserver.MobjectData.style",
+            index=1,
+            number=2,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="type",
+            full_name="frameserver.MobjectData.type",
+            index=2,
+            number=3,
+            type=14,
+            cpp_type=8,
+            label=1,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="vectorized_mobject_data",
+            full_name="frameserver.MobjectData.vectorized_mobject_data",
+            index=3,
+            number=4,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="image_mobject_data",
+            full_name="frameserver.MobjectData.image_mobject_data",
+            index=4,
+            number=5,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[
+        _MOBJECTDATA_MOBJECTTYPE,
+    ],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=585,
+    serialized_end=864,
 )
 
 
 _VMOBJECTDATA = _descriptor.Descriptor(
-  name='VMobjectData',
-  full_name='frameserver.VMobjectData',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='points', full_name='frameserver.VMobjectData.points', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='needs_redraw', full_name='frameserver.VMobjectData.needs_redraw', index=1,
-      number=2, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=866,
-  serialized_end=938,
+    name="VMobjectData",
+    full_name="frameserver.VMobjectData",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="points",
+            full_name="frameserver.VMobjectData.points",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="needs_redraw",
+            full_name="frameserver.VMobjectData.needs_redraw",
+            index=1,
+            number=2,
+            type=8,
+            cpp_type=7,
+            label=1,
+            has_default_value=False,
+            default_value=False,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=866,
+    serialized_end=938,
 )
 
 
 _IMAGEMOBJECTDATA = _descriptor.Descriptor(
-  name='ImageMobjectData',
-  full_name='frameserver.ImageMobjectData',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='path', full_name='frameserver.ImageMobjectData.path', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='height', full_name='frameserver.ImageMobjectData.height', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='width', full_name='frameserver.ImageMobjectData.width', index=2,
-      number=3, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='center', full_name='frameserver.ImageMobjectData.center', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=940,
-  serialized_end=1039,
+    name="ImageMobjectData",
+    full_name="frameserver.ImageMobjectData",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="path",
+            full_name="frameserver.ImageMobjectData.path",
+            index=0,
+            number=1,
+            type=9,
+            cpp_type=9,
+            label=1,
+            has_default_value=False,
+            default_value=b"".decode("utf-8"),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="height",
+            full_name="frameserver.ImageMobjectData.height",
+            index=1,
+            number=2,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="width",
+            full_name="frameserver.ImageMobjectData.width",
+            index=2,
+            number=3,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="center",
+            full_name="frameserver.ImageMobjectData.center",
+            index=3,
+            number=4,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=940,
+    serialized_end=1039,
 )
 
 
 _FRAMERESPONSE = _descriptor.Descriptor(
-  name='FrameResponse',
-  full_name='frameserver.FrameResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='mobjects', full_name='frameserver.FrameResponse.mobjects', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='frame_pending', full_name='frameserver.FrameResponse.frame_pending', index=1,
-      number=2, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='animation_finished', full_name='frameserver.FrameResponse.animation_finished', index=2,
-      number=3, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='scene_finished', full_name='frameserver.FrameResponse.scene_finished', index=3,
-      number=4, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='duration', full_name='frameserver.FrameResponse.duration', index=4,
-      number=5, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='animations', full_name='frameserver.FrameResponse.animations', index=5,
-      number=6, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='animation_index', full_name='frameserver.FrameResponse.animation_index', index=6,
-      number=7, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='animation_offset', full_name='frameserver.FrameResponse.animation_offset', index=7,
-      number=8, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1042,
-  serialized_end=1265,
+    name="FrameResponse",
+    full_name="frameserver.FrameResponse",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="mobjects",
+            full_name="frameserver.FrameResponse.mobjects",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="frame_pending",
+            full_name="frameserver.FrameResponse.frame_pending",
+            index=1,
+            number=2,
+            type=8,
+            cpp_type=7,
+            label=1,
+            has_default_value=False,
+            default_value=False,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="animation_finished",
+            full_name="frameserver.FrameResponse.animation_finished",
+            index=2,
+            number=3,
+            type=8,
+            cpp_type=7,
+            label=1,
+            has_default_value=False,
+            default_value=False,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="scene_finished",
+            full_name="frameserver.FrameResponse.scene_finished",
+            index=3,
+            number=4,
+            type=8,
+            cpp_type=7,
+            label=1,
+            has_default_value=False,
+            default_value=False,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="duration",
+            full_name="frameserver.FrameResponse.duration",
+            index=4,
+            number=5,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="animations",
+            full_name="frameserver.FrameResponse.animations",
+            index=5,
+            number=6,
+            type=9,
+            cpp_type=9,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="animation_index",
+            full_name="frameserver.FrameResponse.animation_index",
+            index=6,
+            number=7,
+            type=5,
+            cpp_type=1,
+            label=1,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="animation_offset",
+            full_name="frameserver.FrameResponse.animation_offset",
+            index=7,
+            number=8,
+            type=2,
+            cpp_type=6,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=1042,
+    serialized_end=1265,
 )
 
 
 _EMPTYREQUEST = _descriptor.Descriptor(
-  name='EmptyRequest',
-  full_name='frameserver.EmptyRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1267,
-  serialized_end=1281,
+    name="EmptyRequest",
+    full_name="frameserver.EmptyRequest",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=1267,
+    serialized_end=1281,
 )
 
 
 _EMPTYRESPONSE = _descriptor.Descriptor(
-  name='EmptyResponse',
-  full_name='frameserver.EmptyResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1283,
-  serialized_end=1298,
+    name="EmptyResponse",
+    full_name="frameserver.EmptyResponse",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=1283,
+    serialized_end=1298,
 )
 
-_FETCHSCENEDATARESPONSE.fields_by_name['scene'].message_type = _SCENE
-_SCENE.fields_by_name['animations'].message_type = _ANIMATION
-_FRAMEREQUEST.fields_by_name['preview_mode'].enum_type = _FRAMEREQUEST_PREVIEWMODE
+_FETCHSCENEDATARESPONSE.fields_by_name["scene"].message_type = _SCENE
+_SCENE.fields_by_name["animations"].message_type = _ANIMATION
+_FRAMEREQUEST.fields_by_name["preview_mode"].enum_type = _FRAMEREQUEST_PREVIEWMODE
 _FRAMEREQUEST_PREVIEWMODE.containing_type = _FRAMEREQUEST
-_MOBJECTDATA.fields_by_name['style'].message_type = _STYLE
-_MOBJECTDATA.fields_by_name['type'].enum_type = _MOBJECTDATA_MOBJECTTYPE
-_MOBJECTDATA.fields_by_name['vectorized_mobject_data'].message_type = _VMOBJECTDATA
-_MOBJECTDATA.fields_by_name['image_mobject_data'].message_type = _IMAGEMOBJECTDATA
+_MOBJECTDATA.fields_by_name["style"].message_type = _STYLE
+_MOBJECTDATA.fields_by_name["type"].enum_type = _MOBJECTDATA_MOBJECTTYPE
+_MOBJECTDATA.fields_by_name["vectorized_mobject_data"].message_type = _VMOBJECTDATA
+_MOBJECTDATA.fields_by_name["image_mobject_data"].message_type = _IMAGEMOBJECTDATA
 _MOBJECTDATA_MOBJECTTYPE.containing_type = _MOBJECTDATA
-_VMOBJECTDATA.fields_by_name['points'].message_type = _POINT
-_IMAGEMOBJECTDATA.fields_by_name['center'].message_type = _POINT
-_FRAMERESPONSE.fields_by_name['mobjects'].message_type = _MOBJECTDATA
-DESCRIPTOR.message_types_by_name['FetchSceneDataResponse'] = _FETCHSCENEDATARESPONSE
-DESCRIPTOR.message_types_by_name['Scene'] = _SCENE
-DESCRIPTOR.message_types_by_name['Animation'] = _ANIMATION
-DESCRIPTOR.message_types_by_name['FrameRequest'] = _FRAMEREQUEST
-DESCRIPTOR.message_types_by_name['Style'] = _STYLE
-DESCRIPTOR.message_types_by_name['Point'] = _POINT
-DESCRIPTOR.message_types_by_name['MobjectData'] = _MOBJECTDATA
-DESCRIPTOR.message_types_by_name['VMobjectData'] = _VMOBJECTDATA
-DESCRIPTOR.message_types_by_name['ImageMobjectData'] = _IMAGEMOBJECTDATA
-DESCRIPTOR.message_types_by_name['FrameResponse'] = _FRAMERESPONSE
-DESCRIPTOR.message_types_by_name['EmptyRequest'] = _EMPTYREQUEST
-DESCRIPTOR.message_types_by_name['EmptyResponse'] = _EMPTYRESPONSE
+_VMOBJECTDATA.fields_by_name["points"].message_type = _POINT
+_IMAGEMOBJECTDATA.fields_by_name["center"].message_type = _POINT
+_FRAMERESPONSE.fields_by_name["mobjects"].message_type = _MOBJECTDATA
+DESCRIPTOR.message_types_by_name["FetchSceneDataResponse"] = _FETCHSCENEDATARESPONSE
+DESCRIPTOR.message_types_by_name["Scene"] = _SCENE
+DESCRIPTOR.message_types_by_name["Animation"] = _ANIMATION
+DESCRIPTOR.message_types_by_name["FrameRequest"] = _FRAMEREQUEST
+DESCRIPTOR.message_types_by_name["Style"] = _STYLE
+DESCRIPTOR.message_types_by_name["Point"] = _POINT
+DESCRIPTOR.message_types_by_name["MobjectData"] = _MOBJECTDATA
+DESCRIPTOR.message_types_by_name["VMobjectData"] = _VMOBJECTDATA
+DESCRIPTOR.message_types_by_name["ImageMobjectData"] = _IMAGEMOBJECTDATA
+DESCRIPTOR.message_types_by_name["FrameResponse"] = _FRAMERESPONSE
+DESCRIPTOR.message_types_by_name["EmptyRequest"] = _EMPTYREQUEST
+DESCRIPTOR.message_types_by_name["EmptyResponse"] = _EMPTYRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-FetchSceneDataResponse = _reflection.GeneratedProtocolMessageType('FetchSceneDataResponse', (_message.Message,), {
-  'DESCRIPTOR' : _FETCHSCENEDATARESPONSE,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.FetchSceneDataResponse)
-  })
+FetchSceneDataResponse = _reflection.GeneratedProtocolMessageType(
+    "FetchSceneDataResponse",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _FETCHSCENEDATARESPONSE,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.FetchSceneDataResponse)
+    },
+)
 _sym_db.RegisterMessage(FetchSceneDataResponse)
 
-Scene = _reflection.GeneratedProtocolMessageType('Scene', (_message.Message,), {
-  'DESCRIPTOR' : _SCENE,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.Scene)
-  })
+Scene = _reflection.GeneratedProtocolMessageType(
+    "Scene",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _SCENE,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.Scene)
+    },
+)
 _sym_db.RegisterMessage(Scene)
 
-Animation = _reflection.GeneratedProtocolMessageType('Animation', (_message.Message,), {
-  'DESCRIPTOR' : _ANIMATION,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.Animation)
-  })
+Animation = _reflection.GeneratedProtocolMessageType(
+    "Animation",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _ANIMATION,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.Animation)
+    },
+)
 _sym_db.RegisterMessage(Animation)
 
-FrameRequest = _reflection.GeneratedProtocolMessageType('FrameRequest', (_message.Message,), {
-  'DESCRIPTOR' : _FRAMEREQUEST,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.FrameRequest)
-  })
+FrameRequest = _reflection.GeneratedProtocolMessageType(
+    "FrameRequest",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _FRAMEREQUEST,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.FrameRequest)
+    },
+)
 _sym_db.RegisterMessage(FrameRequest)
 
-Style = _reflection.GeneratedProtocolMessageType('Style', (_message.Message,), {
-  'DESCRIPTOR' : _STYLE,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.Style)
-  })
+Style = _reflection.GeneratedProtocolMessageType(
+    "Style",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _STYLE,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.Style)
+    },
+)
 _sym_db.RegisterMessage(Style)
 
-Point = _reflection.GeneratedProtocolMessageType('Point', (_message.Message,), {
-  'DESCRIPTOR' : _POINT,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.Point)
-  })
+Point = _reflection.GeneratedProtocolMessageType(
+    "Point",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _POINT,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.Point)
+    },
+)
 _sym_db.RegisterMessage(Point)
 
-MobjectData = _reflection.GeneratedProtocolMessageType('MobjectData', (_message.Message,), {
-  'DESCRIPTOR' : _MOBJECTDATA,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.MobjectData)
-  })
+MobjectData = _reflection.GeneratedProtocolMessageType(
+    "MobjectData",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _MOBJECTDATA,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.MobjectData)
+    },
+)
 _sym_db.RegisterMessage(MobjectData)
 
-VMobjectData = _reflection.GeneratedProtocolMessageType('VMobjectData', (_message.Message,), {
-  'DESCRIPTOR' : _VMOBJECTDATA,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.VMobjectData)
-  })
+VMobjectData = _reflection.GeneratedProtocolMessageType(
+    "VMobjectData",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _VMOBJECTDATA,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.VMobjectData)
+    },
+)
 _sym_db.RegisterMessage(VMobjectData)
 
-ImageMobjectData = _reflection.GeneratedProtocolMessageType('ImageMobjectData', (_message.Message,), {
-  'DESCRIPTOR' : _IMAGEMOBJECTDATA,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.ImageMobjectData)
-  })
+ImageMobjectData = _reflection.GeneratedProtocolMessageType(
+    "ImageMobjectData",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _IMAGEMOBJECTDATA,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.ImageMobjectData)
+    },
+)
 _sym_db.RegisterMessage(ImageMobjectData)
 
-FrameResponse = _reflection.GeneratedProtocolMessageType('FrameResponse', (_message.Message,), {
-  'DESCRIPTOR' : _FRAMERESPONSE,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.FrameResponse)
-  })
+FrameResponse = _reflection.GeneratedProtocolMessageType(
+    "FrameResponse",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _FRAMERESPONSE,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.FrameResponse)
+    },
+)
 _sym_db.RegisterMessage(FrameResponse)
 
-EmptyRequest = _reflection.GeneratedProtocolMessageType('EmptyRequest', (_message.Message,), {
-  'DESCRIPTOR' : _EMPTYREQUEST,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.EmptyRequest)
-  })
+EmptyRequest = _reflection.GeneratedProtocolMessageType(
+    "EmptyRequest",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _EMPTYREQUEST,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.EmptyRequest)
+    },
+)
 _sym_db.RegisterMessage(EmptyRequest)
 
-EmptyResponse = _reflection.GeneratedProtocolMessageType('EmptyResponse', (_message.Message,), {
-  'DESCRIPTOR' : _EMPTYRESPONSE,
-  '__module__' : 'frameserver_pb2'
-  # @@protoc_insertion_point(class_scope:frameserver.EmptyResponse)
-  })
+EmptyResponse = _reflection.GeneratedProtocolMessageType(
+    "EmptyResponse",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _EMPTYRESPONSE,
+        "__module__": "frameserver_pb2"
+        # @@protoc_insertion_point(class_scope:frameserver.EmptyResponse)
+    },
+)
 _sym_db.RegisterMessage(EmptyResponse)
 
 
-
 _FRAMESERVER = _descriptor.ServiceDescriptor(
-  name='FrameServer',
-  full_name='frameserver.FrameServer',
-  file=DESCRIPTOR,
-  index=0,
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_start=1301,
-  serialized_end=1469,
-  methods=[
-  _descriptor.MethodDescriptor(
-    name='GetFrameAtTime',
-    full_name='frameserver.FrameServer.GetFrameAtTime',
+    name="FrameServer",
+    full_name="frameserver.FrameServer",
+    file=DESCRIPTOR,
     index=0,
-    containing_service=None,
-    input_type=_FRAMEREQUEST,
-    output_type=_FRAMERESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-  ),
-  _descriptor.MethodDescriptor(
-    name='FetchSceneData',
-    full_name='frameserver.FrameServer.FetchSceneData',
-    index=1,
-    containing_service=None,
-    input_type=_EMPTYREQUEST,
-    output_type=_FETCHSCENEDATARESPONSE,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-])
+    serialized_start=1301,
+    serialized_end=1469,
+    methods=[
+        _descriptor.MethodDescriptor(
+            name="GetFrameAtTime",
+            full_name="frameserver.FrameServer.GetFrameAtTime",
+            index=0,
+            containing_service=None,
+            input_type=_FRAMEREQUEST,
+            output_type=_FRAMERESPONSE,
+            serialized_options=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.MethodDescriptor(
+            name="FetchSceneData",
+            full_name="frameserver.FrameServer.FetchSceneData",
+            index=1,
+            containing_service=None,
+            input_type=_EMPTYREQUEST,
+            output_type=_FETCHSCENEDATARESPONSE,
+            serialized_options=None,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+)
 _sym_db.RegisterServiceDescriptor(_FRAMESERVER)
 
-DESCRIPTOR.services_by_name['FrameServer'] = _FRAMESERVER
+DESCRIPTOR.services_by_name["FrameServer"] = _FRAMESERVER
 
 # @@protoc_insertion_point(module_scope)
