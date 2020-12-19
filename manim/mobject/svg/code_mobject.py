@@ -263,7 +263,10 @@ class Code(VGroup):
             if os.path.exists(path):
                 self.file_path = path
                 return
-        error = f"From: {os.getcwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
+        error = (
+            f"From: {os.getcwd()}, could not find {self.file_name} at either "
+            + "of these locations: {possible_paths}"
+        )
         raise IOError(error)
 
     def gen_line_numbers(self):
