@@ -1333,8 +1333,7 @@ class MarkupText(SVGMobject):
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def text2hash(self):
-        """Generates ``sha256`` hash for file name.
-        """
+        """Generates ``sha256`` hash for file name."""
         settings = (
             "MARKUPPANGO" + self.font + self.slant + self.weight
         )  # to differentiate from classical Pango Text
@@ -1346,8 +1345,7 @@ class MarkupText(SVGMobject):
         return hasher.hexdigest()[:16]
 
     def text2svg(self):
-        """Convert the text to SVG using Pango.
-        """
+        """Convert the text to SVG using Pango."""
         size = self.size * 10
         line_spacing = self.line_spacing * 10
         dir_name = config.get_dir("text_dir")
