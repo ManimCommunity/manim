@@ -76,7 +76,7 @@ class GraphicalUnitTester:
             The pre-rendered frame.
         """
         frame_data_path = os.path.join(
-            os.path.join(self.path_control_data, f"{str(self.scene)}.npz")
+            os.path.join(self.path_control_data, f"{self.scene}.npz")
         )
         return np.load(frame_data_path)["frame_data"]
 
