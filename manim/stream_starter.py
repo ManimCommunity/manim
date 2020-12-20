@@ -68,8 +68,8 @@ def _disable_logging(func):
     """Decorator for running trigger Wait() animations without showing the
     usual output expected from this action
     """
-    functools.wraps(func)
 
+    functools.wraps(func)
     def action(*args, **kwargs):
         logger.disabled = True
         func(*args, **kwargs)
@@ -81,7 +81,7 @@ def _disable_logging(func):
 @_disable_logging
 def _guarantee_sdp_file(*args):
     """Ensures, if required, that the sdp file exists,
-    while supressing the loud info message given out by this process
+    while supressing the loud info message given out by this process 
     """
     if not os.path.exists(sdp_path):
         kicker = get_streamer()
@@ -90,17 +90,21 @@ def _guarantee_sdp_file(*args):
 
 
 @_disable_logging
-def _popup_window(shell):
+def _popup_window():
     """Triggers the opening of the window. May lack utility for a streaming
     client like vlc
     """
-    shell.push("get_streamer().wait(0.5)")
+    get_streamer().wait(0.5)
 
 
-def livestream():
+def livestream(use_ipython=False):
     """Main function, intended for use from module execution
     Also has its application in a REPL, though the less activated version of this
     might be more suitable for quick sanity and testing checks."""
+    if use_ipython:
+        from . import stream_ipython
+        os.system(f"ipython -i \"{stream_ipython.__file__}\"")
+        return
     variables = {
         "manim": get_streamer(),
         "get_streamer": get_streamer,
@@ -118,7 +122,7 @@ def livestream():
     open_client()
 
     logger.debug("Triggering streaming client window: Running Wait() animation")
-    _popup_window(shell)
+    _popup_window()
 
     shell.interact(banner=f"{Fore.GREEN}{info}{Style.RESET_ALL}")
 

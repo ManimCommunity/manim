@@ -78,7 +78,7 @@ def main():
         config.digest_args(args)
 
         if args.livestream:
-            livestream()
+            livestream(use_ipython=args.use_ipython)
             return
 
         module = get_module(config.get_dir("input_file"))

@@ -442,6 +442,13 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
         help="Run in streaming mode",
     )
 
+    # Optional use of IPython for streaming
+    parser.add_argument(
+        "--use-ipython",
+        action="store_true",
+        help="Use IPython for streaming",
+    )
+
     # Specify the verbosity
     parser.add_argument(
         "-v",

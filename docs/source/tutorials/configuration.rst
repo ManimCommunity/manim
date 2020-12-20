@@ -436,6 +436,7 @@ A list of all CLI flags
                            Specify the configuration file
      --custom_folders      Use the folders defined in the [custom_folders] section of the config file to define the output folder structure
      --livestream          Run in streaming mode
+     --use_ipython         Use IPython for streaming
      -v {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --verbosity {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                            Verbosity level. Also changes the ffmpeg log level unless the latter is specified in the config
      --progress_bar True/False
