@@ -10,6 +10,7 @@ from manim.stream_starter import open_client
 def main():
     from colorama import Fore, Style
     from manim.stream_starter import info, _guarantee_sdp_file, _popup_window
+
     open_client()
     _guarantee_sdp_file()
     _popup_window()

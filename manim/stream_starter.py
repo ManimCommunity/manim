@@ -70,6 +70,7 @@ def _disable_logging(func):
     """
 
     functools.wraps(func)
+
     def action(*args, **kwargs):
         logger.disabled = True
         func(*args, **kwargs)
@@ -81,7 +82,7 @@ def _disable_logging(func):
 @_disable_logging
 def _guarantee_sdp_file(*args):
     """Ensures, if required, that the sdp file exists,
-    while supressing the loud info message given out by this process 
+    while supressing the loud info message given out by this process
     """
     if not os.path.exists(sdp_path):
         kicker = get_streamer()
@@ -103,7 +104,8 @@ def livestream(use_ipython=False):
     might be more suitable for quick sanity and testing checks."""
     if use_ipython:
         from . import stream_ipython
-        os.system(f"ipython -i \"{stream_ipython.__file__}\"")
+
+        os.system(f'ipython -i "{stream_ipython.__file__}"')
         return
     variables = {
         "manim": get_streamer(),
