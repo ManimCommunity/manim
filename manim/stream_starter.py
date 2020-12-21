@@ -52,6 +52,8 @@ def open_client(client=None):
         "1280",
         "-y",
         "360",  # For a resizeable window
+        "-window_title",  # Name of the window
+        "Livestream",
         "-loglevel",
         "quiet",
         "-protocol_whitelist",
