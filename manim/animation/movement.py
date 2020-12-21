@@ -110,8 +110,8 @@ class PhaseFlow(Animation):
 
 
 class MoveAlongPath(Animation):
-    """
-    Examples
+    """Make Mobject m1 move along path of Mobject m2.
+    Example
     --------
     .. manim:: MoveAlongPathExample
 
@@ -124,6 +124,7 @@ class MoveAlongPath(Animation):
                 l2.add_updater(lambda x: x.become(Line(LEFT, d1.get_center()).set_color(ORANGE)))
                 self.play(MoveAlongPath(d1,l1), rate_func= linear)
     """
+
     def __init__(
         self,
         mobject: "Mobject",
