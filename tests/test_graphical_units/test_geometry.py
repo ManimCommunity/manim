@@ -134,6 +134,16 @@ class ArrangeTest(Scene):
         self.add(x)
         self.wait()
 
+class ZIndexTest(Scene):
+    def construct(self):
+        circle = Circle().set_fill(RED, opacity=1)
+        square = Square(side_length=1.7).set_fill(BLUE, opacity=1)
+        square.z_index = circle.z_index - 1
+
+        self.play(FadeIn(VGroup(circle, square)))
+        self.play(ApplyMethod(circle.shift, UP))
+        self.wait(1)
+
 
 MODULE_NAME = "geometry"
 
