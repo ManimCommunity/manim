@@ -35,8 +35,8 @@ pydub = "*"
 pygments = "*"
 rich = "^6.0"
 pycairo = "^1.19"
-pangocffi = "^0.8.0"
-pangocairocffi = "^0.4.0"
+pangocffi = "^0.9.0"
+pangocairocffi = "^0.5.0"
 cairocffi = "^1.1.0"
 grpcio =  { version = "*", optional = true }
 grpcio-tools = { version = "*", optional = true }
