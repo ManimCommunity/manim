@@ -138,10 +138,14 @@ class ZIndexTest(Scene):
     def construct(self):
         circle = Circle().set_fill(RED, opacity=1)
         square = Square(side_length=1.7).set_fill(BLUE, opacity=1)
-        square.z_index = circle.z_index - 1
+        triangle = Triangle().set_fill(GREEN, opacity=1)
+        square.z_index = 0
+        triangle.z_index = 1
+        circle.z_index = 2
 
-        self.play(FadeIn(VGroup(circle, square)))
+        self.play(FadeIn(VGroup(circle, square, triangle)))
         self.play(ApplyMethod(circle.shift, UP))
+        self.play(ApplyMethod(triangle.shift, 2*UP))
         self.wait(1)
 
 
