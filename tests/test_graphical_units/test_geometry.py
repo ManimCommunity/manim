@@ -134,6 +134,7 @@ class ArrangeTest(Scene):
         self.add(x)
         self.wait()
 
+
 class ZIndexTest(Scene):
     def construct(self):
         circle = Circle().set_fill(RED, opacity=1)
@@ -145,7 +146,7 @@ class ZIndexTest(Scene):
 
         self.play(FadeIn(VGroup(circle, square, triangle)))
         self.play(ApplyMethod(circle.shift, UP))
-        self.play(ApplyMethod(triangle.shift, 2*UP))
+        self.play(ApplyMethod(triangle.shift, 2 * UP))
         self.wait(1)
 
 
