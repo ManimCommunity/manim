@@ -69,7 +69,7 @@ class ComplexHomotopy(Homotopy):
         **kwargs
     ) -> None:
         """
-        Complex Hootopy a function Cx[0, 1] to C
+        Complex Homotopy a function Cx[0, 1] to C
         """
 
         def homotopy(
