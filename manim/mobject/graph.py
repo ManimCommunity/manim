@@ -4,12 +4,11 @@ __all__ = [
     "Graph",
 ]
 
+from ..constants import UP
 from ..utils.color import BLACK
 from .types.vectorized_mobject import VMobject
 from .geometry import Dot, Line, LabeledDot
 from .svg.tex_mobject import MathTex
-
-from manim import UP
 
 from copy import copy
 import networkx as nx
