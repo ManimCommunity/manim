@@ -254,6 +254,7 @@ class Graph(VMobject):
                     edge_type(
                         self[u].get_center(),
                         self[v].get_center(),
+                        z_index=-1,
                         **self._edge_config[(u, v)],
                     ),
                 )
@@ -261,8 +262,8 @@ class Graph(VMobject):
             ]
         )
 
-        self.add(*self.edges.values())
         self.add(*self.vertices.values())
+        self.add(*self.edges.values())
 
         for (u, v), edge in self.edges.items():
 
