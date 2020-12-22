@@ -80,6 +80,7 @@ def main():
 
         if args.livestream:
             livestream(use_ipython=args.use_ipython)
+            return
 
         input_file = config.get_dir("input_file")
         if config["use_js_renderer"]:
