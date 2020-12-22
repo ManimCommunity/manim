@@ -4,7 +4,7 @@ from ..scene.stream_file_writer import StreamFileWriter
 
 
 class StreamCairoRenderer(CairoRenderer):
-    def init(self, scene):
+    def init_scene(self, scene):
         """For compatibility with the __init__ from scene that's not being
         directly overridden
         """

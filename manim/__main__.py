@@ -78,6 +78,9 @@ def main():
     else:
         config.digest_args(args)
 
+        if args.livestream:
+            livestream(use_ipython=args.use_ipython)
+
         input_file = config.get_dir("input_file")
         if config["use_js_renderer"]:
             try:
