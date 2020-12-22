@@ -76,7 +76,7 @@ class GraphicalUnitTester:
             The pre-rendered frame.
         """
         frame_data_path = os.path.join(
-            os.path.join(self.path_control_data, "{}.npz".format(str(self.scene)))
+            os.path.join(self.path_control_data, f"{self.scene}.npz")
         )
         return np.load(frame_data_path)["frame_data"]
 
@@ -113,6 +113,7 @@ class GraphicalUnitTester:
         ax.set_title("Differences summary : (red = got, green = expected)")
 
         plt.show()
+        plt.savefig(f"{self.scene}.png")
 
     def test(self, show_diff=False):
         """Compare pre-rendered frame to the frame rendered during the test."""
