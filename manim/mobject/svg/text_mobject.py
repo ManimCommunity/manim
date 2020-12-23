@@ -42,7 +42,7 @@ Examples
 
 """
 
-__all__ = ["Text", "Paragraph", "CairoText", "MarkupText"]
+__all__ = ["Text", "Paragraph", "CairoText"]
 
 
 import copy
