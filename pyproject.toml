@@ -41,6 +41,7 @@ cairocffi = "^1.1.0"
 grpcio =  { version = "*", optional = true }
 grpcio-tools = { version = "*", optional = true }
 watchdog = { version = "*", optional = true }
+manimpango = "^0.1.0"
 
 [tool.poetry.extras]
 js_renderer = ["grpcio","grpcio-tools","watchdog"]
