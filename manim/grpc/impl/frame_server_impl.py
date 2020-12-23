@@ -215,9 +215,12 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                             )
                             for scene in self.keyframes
                         ],
-                        background_color=self.scene.camera.background_color,
                     ),
                 )
+                if hasattr(self.scene.camera, "background_color"):
+                    request.scene.background_color = self.scene.camera.background_color
+                else:
+                    request.scene.background_color = "#000000"
             else:
                 lines = traceback.format_exception(
                     None, self.exception, self.exception.__traceback__
