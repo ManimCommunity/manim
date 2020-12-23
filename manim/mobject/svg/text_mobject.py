@@ -383,7 +383,7 @@ class CairoText(SVGMobject):
         offset_x = 0
         last_line_num = 0
         for setting in settings:
-            font = setting.font.decode('utf-8')
+            font = setting.font.decode("utf-8")
             slant = self.str2slant(setting.slant)
             weight = self.str2weight(setting.weight)
             text = self.text[setting.start : setting.end].replace("\n", " ")
