@@ -46,13 +46,13 @@ class VMobject(Mobject):
         self,
         fill_color=None,
         fill_opacity=0.0,
-        stroke_color=None,
+        stroke_color=BLACK,
         stroke_opacity=1.0,
         stroke_width=DEFAULT_STROKE_WIDTH,
         # The purpose of background stroke is to have
         # something that won't overlap the fill, e.g.
         # For text against some textured background
-        background_stroke_color=BLACK,
+        background_stroke_color=WHITE,
         background_stroke_opacity=1.0,
         background_stroke_width=0,
         # When a color c is set, there will be a second color

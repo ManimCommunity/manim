@@ -180,7 +180,7 @@ from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VectorizedPoint
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
-from ...utils.color import BLACK
+from ...utils.color import BLACK, WHITE
 from ...utils.tex import TexTemplate
 
 TEX_MOB_SCALE_FACTOR = 0.05
@@ -210,6 +210,8 @@ class SingleStringMathTex(SVGMobject):
         fill_opacity=1.0,
         background_stroke_width=0,
         background_stroke_color=BLACK,
+        fill_color=BLACK,
+        stroke_color=BLACK,
         should_center=True,
         height=None,
         organize_left_to_right=False,
@@ -235,6 +237,8 @@ class SingleStringMathTex(SVGMobject):
             file_name=file_name,
             should_center=should_center,
             stroke_width=stroke_width,
+            fill_color=fill_color,
+            stroke_color=stroke_color,
             height=height,
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,

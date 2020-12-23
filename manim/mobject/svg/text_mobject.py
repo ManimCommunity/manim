@@ -62,7 +62,7 @@ from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
-from ...utils.color import WHITE
+from ...utils.color import WHITE, BLACK
 from ...utils.color import Colors
 
 
@@ -756,7 +756,7 @@ class Text(SVGMobject):
         text: str,
         fill_opacity: int = 1,
         stroke_width: int = 0,
-        color: str = WHITE,
+        # color: str = WHITE,
         size: int = 1,
         line_spacing: int = -1,
         font: str = "",
@@ -775,6 +775,8 @@ class Text(SVGMobject):
         should_center: bool = True,
         unpack_groups: bool = True,
         disable_ligatures: bool = False,
+        fill_color=BLACK,
+        stroke_color=BLACK,
         **kwargs,
     ):
 
@@ -826,7 +828,9 @@ class Text(SVGMobject):
         SVGMobject.__init__(
             self,
             file_name,
-            color=color,
+            # color=color,
+            fill_color=fill_color,
+            stroke_color=stroke_color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             height=height,
