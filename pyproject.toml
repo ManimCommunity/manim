@@ -36,9 +36,9 @@ pygments = "*"
 rich = "^6.0"
 pycairo = "^1.19"
 manimpango = "^0"
-grpcio =  { version = "*", optional = true }
+grpcio =  { version = "^1.33", optional = true }
 grpcio-tools = { version = "*", optional = true }
-watchdog = { version = "*", optional = true }
+watchdog = { version = "^0", optional = true }
 
 [tool.poetry.extras]
 js_renderer = ["grpcio","grpcio-tools","watchdog"]
