@@ -165,7 +165,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
     def FetchSceneData(self, request, context):
         try:
-            return frameserver_pb2.FetchSceneDataResponse(
+            request = frameserver_pb2.FetchSceneDataResponse(
                 scene=frameserver_pb2.Scene(
                     name=str(self.scene),
                     animations=[
@@ -175,9 +175,13 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                         )
                         for scene in self.keyframes
                     ],
-                    background_color=self.scene.camera.background_color,
                 ),
             )
+            if hasattr(self.scene.camera, "background_color"):
+                request.scene.background_color = self.scene.camera.background_color
+            else:
+                request.scene.background_color = "#000000"
+            return request
         except Exception as e:
             traceback.print_exc()
 
