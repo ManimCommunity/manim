@@ -220,6 +220,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                             )
                             for scene in self.keyframes
                         ],
+                        background_color=self.scene.camera.background_color,
                     ),
                 )
                 if hasattr(self.scene.camera, "background_color"):
