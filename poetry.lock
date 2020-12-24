@@ -287,7 +287,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "manimpango"
-version = "0.1.1"
+version = "0.1.2"
 description = "Bindings for Pango for using with Manim."
 category = "main"
 optional = false
@@ -583,7 +583,7 @@ python-versions = "*"
 
 [[package]]
 name = "sphinx"
-version = "3.4.0"
+version = "3.4.1"
 description = "Python documentation generator"
 category = "dev"
 optional = false
@@ -1015,23 +1015,27 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win_amd64.whl", hash = "sha256:59f79fef100b09564bc2df42ea2d8d21a64fdcda64979c0fa3db7bdaabaf6239"},
 ]
 manimpango = [
-    {file = "manimpango-0.1.1-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:bedd1bf5be4f3e27175226e7cc95d45ef943ef2ef05b6d6bd1feb2da0ea2fc7e"},
-    {file = "manimpango-0.1.1-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:5fad9f14058cb8a707d5bcaac7c254e3e72ab1754c49fa4e51beb787b808f3d3"},
-    {file = "manimpango-0.1.1-cp36-cp36m-win32.whl", hash = "sha256:0c593c93a3bcb9bab7d9f8678bc5783faf6ae256a6009a4954c759ea63a9a356"},
-    {file = "manimpango-0.1.1-cp36-cp36m-win_amd64.whl", hash = "sha256:8e08a5023b83db85ff0890afa551f81a72a83d66a74ecbafad01ee245cd0ea52"},
-    {file = "manimpango-0.1.1-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:eaddcc8a54e97cc58eee9a10dad459fc62d2201fd1d9ff3722decbb936bb3911"},
-    {file = "manimpango-0.1.1-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:1c7dc7eeeff7dc624e6e23ff6d35794252d608c2b9fe30aad99127f6ae2dad9f"},
-    {file = "manimpango-0.1.1-cp37-cp37m-win32.whl", hash = "sha256:214cf126df84d8bdc9043e905a30293941330d8f3798e5bccb25a292958dfcfc"},
-    {file = "manimpango-0.1.1-cp37-cp37m-win_amd64.whl", hash = "sha256:eea8d98c0cd9c960863c0b8254245a0be2e4c78d77f48e700db170ae27f11ea7"},
-    {file = "manimpango-0.1.1-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:9377d4fb00567afebcc371af85cf422f7cd05f420e6f277d7e6c4aa0f93f24a9"},
-    {file = "manimpango-0.1.1-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:a5491894567fe095337a1007b5650d5e9c9d22360530cf33a1736d2d44514068"},
-    {file = "manimpango-0.1.1-cp38-cp38-win32.whl", hash = "sha256:dcdac61dd57b1bc49bd92e67b806cb013c756c27bf00471039537069e55c3c10"},
-    {file = "manimpango-0.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:eb41de07c24c4eb6e5d1c2e4234d14012f68fdeadb8c8a0ef942b608e4d423b1"},
-    {file = "manimpango-0.1.1-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:188477df24d667798ce874a6beb83b5c9eab6900d487967b22527ecee1b88601"},
-    {file = "manimpango-0.1.1-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:1e311e343aa82e5d813b72ac083575a57eba9f7c0d01eda32bb795c57236eb04"},
-    {file = "manimpango-0.1.1-cp39-cp39-win32.whl", hash = "sha256:1d41cf62595472adc2c2aa2c68da613dec7d4334a7fa84d18fb5148c1cdb9bbc"},
-    {file = "manimpango-0.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:1049a3030cd70875102323cb865ef6d9c571a6f8b471aaef857f355b07ec28f2"},
-    {file = "manimpango-0.1.1.tar.gz", hash = "sha256:7384764487da7fd5202d39c8c153c159bcd50cf8ea42aeef8186ab7ea1eb0dc5"},
+    {file = "manimpango-0.1.2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:561772f12c6e16360fb4a0dac2f92832d24b1c43a7efd78d41fb287abba02fe1"},
+    {file = "manimpango-0.1.2-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:53366f9d29344351debc403d934a5f1265bbec090799af9a2091e0d98316a517"},
+    {file = "manimpango-0.1.2-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:18b8309ae9463fd3777cce56764c2a2bee0f2e15d1d0b54feb1366a21dd26d11"},
+    {file = "manimpango-0.1.2-cp36-cp36m-win32.whl", hash = "sha256:ea6cc893dc57865d16da79b68b29366b91b21ed2b70d5bf6ea6a65d598cddbd2"},
+    {file = "manimpango-0.1.2-cp36-cp36m-win_amd64.whl", hash = "sha256:69d2d4cb85c14215593364ac46ea3decd5c3343e56b3f00bd7c588ec890afa5e"},
+    {file = "manimpango-0.1.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:0a5ec342098cb1c987653f8803ccd405a7d7d88edf286526e2c41415aa075741"},
+    {file = "manimpango-0.1.2-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:d8a003a3cc91fccf59a460071eb813779177498b34021460ee864ade15d16be3"},
+    {file = "manimpango-0.1.2-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:684824afc923fc8c532d15316e0646a2bb0421c9c91b1f4d2279e082e017838a"},
+    {file = "manimpango-0.1.2-cp37-cp37m-win32.whl", hash = "sha256:fc5d2f675ea38d3afe193b3bd92c441e179a0abc9ccaf17bd38b128d15402852"},
+    {file = "manimpango-0.1.2-cp37-cp37m-win_amd64.whl", hash = "sha256:3a29dd49165c2304a58dd32c9936154d3557f4885225e64fb149c5fb2e3682e3"},
+    {file = "manimpango-0.1.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:53eb5dab820876456c76bb0d9ede146d6835088b6c59c576af2d54f894637052"},
+    {file = "manimpango-0.1.2-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:d4294e3b1f24b32a6673d0220293a89de428d82f7834f5df143c8a4c6d267723"},
+    {file = "manimpango-0.1.2-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:1a9036efdc52e1ad3526a99e6b9d4fbde4ac4eb2888e5843935a42406c7e7439"},
+    {file = "manimpango-0.1.2-cp38-cp38-win32.whl", hash = "sha256:b6d16b7098b77b2e80e84fb9f8571d2d1e73977cae7ed765d8feadef9cd560d8"},
+    {file = "manimpango-0.1.2-cp38-cp38-win_amd64.whl", hash = "sha256:ffcd5e0a03347dd7fd0b4064afeb958adb23b19e9cb5057e66da9574f903073e"},
+    {file = "manimpango-0.1.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:4bb2a6467c52b4cbf6caae2a2bc557edbde65a2cc4fa3d9f3dfde5278ee3ab2e"},
+    {file = "manimpango-0.1.2-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:6367dfb60967489ce1aab5edfbf10b76524866e1c624dd411830d9c020932a6c"},
+    {file = "manimpango-0.1.2-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:a18c59f0d622b11887acfefc94587a964c79051afb63c983b8096e86c069a4ae"},
+    {file = "manimpango-0.1.2-cp39-cp39-win32.whl", hash = "sha256:1178ad5bf75daaee6c050197df79e3550a9b5497dce453f18c1f53d2e4336ddb"},
+    {file = "manimpango-0.1.2-cp39-cp39-win_amd64.whl", hash = "sha256:0fb42b82f883740d487ea50a98e30c0fd388e7e1a151beec5452601155a4bbbc"},
+    {file = "manimpango-0.1.2.tar.gz", hash = "sha256:ab281db42b37bd75ec58b9cecdd412ac0691610d9d74f7ebd00a46a1e49501d3"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -1338,8 +1342,8 @@ snowballstemmer = [
     {file = "snowballstemmer-2.0.0.tar.gz", hash = "sha256:df3bac3df4c2c01363f3dd2cfa78cce2840a79b9f1c2d2de9ce8d31683992f52"},
 ]
 sphinx = [
-    {file = "Sphinx-3.4.0-py3-none-any.whl", hash = "sha256:77c801947eb86457822e01eadd5c2e2de020db0201f1f9fc98b0927980b6d212"},
-    {file = "Sphinx-3.4.0.tar.gz", hash = "sha256:4dcde313801f23ea4789ac31e5405e240cb758b5d375804807f2f3cc3c396bfa"},
+    {file = "Sphinx-3.4.1-py3-none-any.whl", hash = "sha256:aeef652b14629431c82d3fe994ce39ead65b3fe87cf41b9a3714168ff8b83376"},
+    {file = "Sphinx-3.4.1.tar.gz", hash = "sha256:e450cb205ff8924611085183bf1353da26802ae73d9251a8fcdf220a8f8712ef"},
 ]
 sphinxcontrib-applehelp = [
     {file = "sphinxcontrib-applehelp-1.0.2.tar.gz", hash = "sha256:a072735ec80e7675e3f432fcae8610ecf509c5f1869d17e2eecff44389cdbc58"},
