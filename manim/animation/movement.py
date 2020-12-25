@@ -117,7 +117,7 @@ class MoveAlongPath(Animation):
 
         class MoveAlongPathExample(Scene):
             def construct(self):
-                d1 = Dot()
+                d1 = Dot().set_color(ORANGE)
                 l1 = Line(LEFT, RIGHT)
                 l2 = VMobject()
                 self.add(d1, l1, l2)
