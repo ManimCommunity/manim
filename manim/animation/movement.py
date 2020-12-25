@@ -110,7 +110,7 @@ class PhaseFlow(Animation):
 
 
 class MoveAlongPath(Animation):
-    """Make Mobject m1 move along path of Mobject m2.
+    """Make one mobject move along the path of another mobject.
     Example
     --------
     .. manim:: MoveAlongPathExample
