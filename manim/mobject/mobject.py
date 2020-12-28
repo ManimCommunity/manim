@@ -57,6 +57,17 @@ class Mobject(Container):
         self.init_colors()
         Container.__init__(self, **kwargs)
 
+    @property
+    def animate(self):
+        """
+        Used to animate the application of a method.
+
+        Examples
+        --------
+        self.play(mobject.animate.shift(RIGHT))
+        """
+        return _AnimationBuilder(self)
+
     def __repr__(self):
         return str(self.name)
 
@@ -1295,3 +1306,20 @@ class Group(Mobject):
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)
+
+
+class _AnimationBuilder:
+    def __init__(self, mobject):
+        self.mobject = mobject
+
+    def __call__(self, *method_args, **method_kwargs):
+        self.method_args = method_args
+        self.method_kwargs = method_kwargs
+        return self
+
+    def __getattr__(self, method_name):
+        self.method_name = method_name
+        return self
+
+    def animation_data(self):
+        return self.mobject, self.method_name, self.method_args, self.method_kwargs
