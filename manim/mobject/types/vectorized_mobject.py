@@ -1508,7 +1508,7 @@ class DashedVMobject(VMobject):
 
             # Rescale so that the last point of vmobject will
             # be the end of the last dash
-            if not vmobject.is_closed():
+            else:
                 alphas /= 1 - full_d_alpha + partial_d_alpha
 
             self.add(
