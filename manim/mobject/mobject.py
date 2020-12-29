@@ -1314,6 +1314,7 @@ class _AnimationBuilder:
 
     def __getattr__(self, method_name):
         from ..animation.transform import _MethodAnimation
+
         self.method = getattr(self.mobject.generate_target(), method_name)
 
         def build(*method_args, **method_kwargs):
