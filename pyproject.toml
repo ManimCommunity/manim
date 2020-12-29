@@ -46,6 +46,7 @@ ipython = {version = "^7.19.0", python = "3.7"}
 
 [tool.poetry.extras]
 js_renderer = ["grpcio","grpcio-tools","watchdog"]
+livestreaming = ["ipython"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
