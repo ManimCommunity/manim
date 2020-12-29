@@ -42,11 +42,12 @@ pyreadline = { version = "*", markers = "sys_platform == 'win32'" }
 grpcio =  { version = "*", optional = true }
 grpcio-tools = { version = "*", optional = true }
 watchdog = { version = "*", optional = true }
-ipython = {version = "^7.19.0", python = "3.7"}
+ipython = {version = "^7.19.0", optional = true, python = ">=3.7,<4.0"}
 
 [tool.poetry.extras]
 js_renderer = ["grpcio","grpcio-tools","watchdog"]
 livestreaming = ["ipython"]
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
