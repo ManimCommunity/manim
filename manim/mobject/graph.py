@@ -10,6 +10,8 @@ from .types.vectorized_mobject import VMobject
 from .geometry import Dot, Line, LabeledDot
 from .svg.tex_mobject import MathTex
 
+from typing import Hashable, Union, List, Tuple
+
 from copy import copy
 import networkx as nx
 import numpy as np
@@ -144,18 +146,18 @@ class Graph(VMobject):
 
     def __init__(
         self,
-        vertices,
-        edges,
-        labels=False,
-        label_fill_color=BLACK,
-        layout="spring",
-        layout_scale=2,
-        layout_config=None,
-        vertex_type=Dot,
-        vertex_config=None,
-        edge_type=Line,
-        edge_config=None,
-    ):
+        vertices: List[Hashable],
+        edges: List[Tuple[Hashable, Hashable]],
+        labels: bool = False,
+        label_fill_color: str = BLACK,
+        layout: Union[str, dict] = "spring",
+        layout_scale: float = 2,
+        layout_config: Union[dict, None] = None,
+        vertex_type: "Mobject" = Dot,
+        vertex_config: Union[dict, None] = None,
+        edge_type: "Mobject" = Line,
+        edge_config: Union[dict, None] = None,
+    ) -> None:
         VMobject.__init__(self)
 
         nx_graph = nx.Graph()
@@ -274,8 +276,8 @@ class Graph(VMobject):
             update_edge(edge)
             edge.add_updater(update_edge)
 
-    def __getitem__(self, v):
+    def __getitem__(self: "Graph", v: Hashable) -> "Mobject":
         return self.vertices[v]
 
-    def __repr__(self):
+    def __repr__(self: "Graph") -> str:
         return f"Graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
