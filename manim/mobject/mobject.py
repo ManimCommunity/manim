@@ -1312,14 +1312,12 @@ class _AnimationBuilder:
     def __init__(self, mobject):
         self.mobject = mobject
 
-    def __call__(self, *method_args, **method_kwargs):
-        self.method_args = method_args
-        self.method_kwargs = method_kwargs
-        return self
-
     def __getattr__(self, method_name):
-        self.method_name = method_name
-        return self
+        from ..animation.transform import _MethodAnimation
+        self.method = getattr(self.mobject.generate_target(), method_name)
 
-    def animation_data(self):
-        return self.mobject, self.method_name, self.method_args, self.method_kwargs
+        def build(*method_args, **method_kwargs):
+            self.method(*method_args, **method_kwargs)
+            return _MethodAnimation(self.mobject)
+
+        return build

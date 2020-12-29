@@ -596,46 +596,33 @@ class Scene(Container):
         )
         return all_moving_mobject_families, static_mobjects
 
-    def compile_animations(self, *args, **kwargs):
+    def compile_animations(self, *animations, **play_kwargs):
         """
         Creates _MethodAnimations from any _AnimationBuilders and updates animation
         kwargs with kwargs passed to play().
 
         Parameters
         ----------
-        *args : Union[:class:`Animation`, :class:`AnimationBuilder`]
-            Animations and AnimationBuilders to be played.
+        *animations : Tuple[:class:`Animation`]
+            Animations to be played.
 
-        **kwargs
+        **play_kwargs
             Configuration for the call to play().
 
         Returns
         -------
-        List[:class:`Animation`]
-            List of Animations to be played.
+        Tuple[:class:`Animation`]
+            Animations to be played.
         """
-        animations = []
-        for arg in args:
-            if isinstance(arg, _AnimationBuilder):
-                animations.append(self.build_animation(arg))
-            elif isinstance(arg, Animation):
-                animations.append(arg)
-            else:
-                raise ValueError(f"Invalid play argument {arg}")
-
         for animation in animations:
-            animation.__dict__.update(**kwargs)
+            if inspect.ismethod(animation):
+                raise TypeError(
+                    "Passing mobject methods to Scene.play is no longer supported. Use "
+                    "Mobject.animate instead."
+                )
+            for k, v in play_kwargs.items():
+                setattr(animation, k, v)
         return animations
-
-    def build_animation(self, animation_builder):
-        (
-            mobject,
-            method_name,
-            method_args,
-            method_kwargs,
-        ) = animation_builder.animation_data()
-        getattr(mobject.generate_target(), method_name)(*method_args, **method_kwargs)
-        return _MethodAnimation(mobject)
 
     def _get_animation_time_progression(self, animations, duration):
         """
@@ -776,15 +763,15 @@ class Scene(Container):
         """
         self.wait(max_time, stop_condition=stop_condition)
 
-    def compile_animation_data(self, *args, skip_rendering=False, **kwargs):
-        if len(args) == 0:
+    def compile_animation_data(self, *animations, skip_rendering=False, **play_kwargs):
+        if len(animations) == 0:
             warnings.warn("Called Scene.play with no animations")
             return None
 
-        self.last_t = 0
-        self.animations = self.compile_animations(*args, **kwargs)
+        self.animations = self.compile_animations(*animations, **play_kwargs)
         self.add_mobjects_from_animations(self.animations)
 
+        self.last_t = 0
         self.stop_condition = None
         self.moving_mobjects = None
         self.static_mobjects = None
