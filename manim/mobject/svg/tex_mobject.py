@@ -329,7 +329,7 @@ class SingleStringMathTex(SVGMobject):
     def path_string_to_mobject(self, path_string):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string)
+        return TexSymbol(path_string, z_index=self.z_index)
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
@@ -417,6 +417,7 @@ class MathTex(SingleStringMathTex):
                 tex_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
+                z_index=self.z_index,
             )
             num_submobs = len(sub_tex_mob.submobjects)
             new_index = curr_index + num_submobs
@@ -534,7 +535,7 @@ class BulletedList(Tex):
         elif isinstance(arg, int):
             part = self.submobjects[arg]
         else:
-            raise TypeError("Expected int or string, got {0}".format(arg))
+            raise TypeError(f"Expected int or string, got {arg}")
         for other_part in self.submobjects:
             if other_part is part:
                 other_part.set_fill(opacity=1)
