@@ -192,21 +192,24 @@ class Graph(VMobject):
         if layout_config is None:
             layout_config = {}
 
-
         if isinstance(layout, dict):
             self._layout = layout
         elif layout in automatic_layouts and layout != "random":
             self._layout = automatic_layouts[layout](
                 nx_graph, scale=layout_scale, **layout_config
             )
-            self._layout = dict([(k, np.append(v, [0])) for k, v in self._layout.items()])
+            self._layout = dict(
+                [(k, np.append(v, [0])) for k, v in self._layout.items()]
+            )
         elif layout == "random":
             # the random layout places coordinates in [0, 1)
             # we need to rescale manually afterwards...
             self._layout = automatic_layouts["random"](nx_graph, **layout_config)
             for k, v in self._layout.items():
                 self._layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
-            self._layout = dict([(k, np.append(v, [0])) for k, v in self._layout.items()])
+            self._layout = dict(
+                [(k, np.append(v, [0])) for k, v in self._layout.items()]
+            )
         else:
             raise ValueError(
                 f"The layout '{layout}' is neither a recognized automatic layout, "
