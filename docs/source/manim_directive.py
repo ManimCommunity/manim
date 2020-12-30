@@ -231,7 +231,6 @@ class ManimDirective(Directive):
             *user_code,
             f"{clsname}().render()",
         ]
-        print(code)
         exec("\n".join(code), globals())
 
         # copy video file to output directory
