@@ -116,6 +116,19 @@ class Graph(VMobject):
                 r3 = VGroup(*graphs[6:]).arrange()
                 self.add(VGroup(r1, r2, r3).arrange(direction=DOWN))
 
+    Vertices can also be positioned manually:
+
+    .. manim:: GraphManualPosition
+        :save_last_frame:
+
+        class GraphManualPosition(Scene):
+            def construct(self):
+                vertices = [1, 2, 3, 4]
+                edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+                lt = {1: [0, 0, 0], 2: [1, 1, 0], 3: [1, -1, 0], 4: [-1, 0, 0]}
+                G = Graph(vertices, edges, layout=lt)
+                self.add(G)
+
     The vertices in graphs can be labeled, and configurations for vertices
     and edges can be modified both by default and for specific vertices and
     edges.
@@ -179,18 +192,21 @@ class Graph(VMobject):
         if layout_config is None:
             layout_config = {}
 
-        if layout in automatic_layouts and layout != "random":
+
+        if isinstance(layout, dict):
+            self._layout = layout
+        elif layout in automatic_layouts and layout != "random":
             self._layout = automatic_layouts[layout](
                 nx_graph, scale=layout_scale, **layout_config
             )
+            self._layout = dict([(k, np.append(v, [0])) for k, v in self._layout.items()])
         elif layout == "random":
             # the random layout places coordinates in [0, 1)
             # we need to rescale manually afterwards...
             self._layout = automatic_layouts["random"](nx_graph, **layout_config)
             for k, v in self._layout.items():
                 self._layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
-        elif isinstance(layout, dict):
-            self._layout = layout
+            self._layout = dict([(k, np.append(v, [0])) for k, v in self._layout.items()])
         else:
             raise ValueError(
                 f"The layout '{layout}' is neither a recognized automatic layout, "
@@ -228,7 +244,7 @@ class Graph(VMobject):
             [(v, vertex_type(**self._vertex_config[v])) for v in vertices]
         )
         for v in self.vertices:
-            self[v].move_to(np.append(self._layout[v], [1]))
+            self[v].move_to(self._layout[v])
 
         # build edge_config
         if edge_config is None:
