@@ -64,7 +64,9 @@ class Mobject(Container):
 
         Examples
         --------
-        self.play(mobject.animate.shift(RIGHT))
+        ::
+
+            self.play(mobject.animate.shift(RIGHT))
         """
         return _AnimationBuilder(self)
 
@@ -1315,7 +1317,12 @@ class _AnimationBuilder:
     def __getattr__(self, method_name):
         from ..animation.transform import _MethodAnimation
 
-        self.method = getattr(self.mobject.generate_target(), method_name)
+        if self.mobject.target is None:
+            target = self.mobject.generate_target()
+        else:
+            target = self.mobject.target
+
+        self.method = getattr(target, method_name)
 
         def build(*method_args, **method_kwargs):
             self.method(*method_args, **method_kwargs)
