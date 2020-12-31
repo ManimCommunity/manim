@@ -59,12 +59,46 @@ class Mobject(Container):
 
     @property
     def animate(self):
-        """
-        Used to animate the application of a method.
+        """Used to animate the application of a method.
+
+        .. warning::
+
+            Passing multiple animations for the same :class:`~.Mobject` in one
+            call to :meth:`~.Scene.play` is discouraged and will most likely
+            not work properly. Instead of writing an animation like
+
+            ::
+
+                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
+
+            make use of method chaining for ``animate``, meaning::
+
+                self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
 
         Examples
         --------
-        self.play(mobject.animate.shift(RIGHT))
+
+        .. manim:: AnimateExample
+
+            class AnimateExample(Scene):
+                def construct(self):
+                    s = Square()
+                    self.play(ShowCreation(s))
+                    self.play(s.animate.shift(RIGHT))
+                    self.play(s.animate.scale(2))
+                    self.play(s.animate.rotate(PI / 2))
+                    self.play(Uncreate(s))
+
+
+        .. manim:: AnimateChainExample
+
+            class AnimateChainExample(Scene):
+                def construct(self):
+                    s = Square()
+                    self.play(ShowCreation(s))
+                    self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
+                    self.play(Uncreate(s))
+
         """
         return _AnimationBuilder(self)
 
@@ -1316,12 +1350,15 @@ class _AnimationBuilder:
             self.mobject.generate_target()
 
     def __getattr__(self, method_name):
-        from ..animation.transform import _MethodAnimation
-
-        self.methods.append(getattr(self.mobject.target, method_name))
+        method = getattr(self.mobject.target, method_name)
 
         def update_target(*method_args, **method_kwargs):
-            self.methods[-1](*method_args, **method_kwargs)
-            return _AnimationBuilder(self.mobject, generate_target=False, methods=self.methods)
+            method(*method_args, **method_kwargs)
+            return _AnimationBuilder(self.mobject, generate_target=False)
 
         return update_target
+
+    def build(self):
+        from ..animation.transform import _MethodAnimation
+
+        return _MethodAnimation(self.mobject)
