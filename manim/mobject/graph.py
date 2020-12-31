@@ -89,10 +89,10 @@ class Graph(VMobject):
                 g = Graph(vertices, edges)
                 self.play(ShowCreation(g))
                 self.wait()
-                self.play(g[1].move_to, [1, 1, 0],
-                          g[2].move_to, [-1, 1, 0],
-                          g[3].move_to, [1, -1, 0],
-                          g[4].move_to, [-1, -1, 0])
+                self.play(g[1].animate.move_to([1, 1, 0]),
+                          g[2].animate.move_to([-1, 1, 0]),
+                          g[3].animate.move_to([1, -1, 0]),
+                          g[4].animate.move_to([-1, -1, 0]))
                 self.wait()
 
     There are several automatic positioning algorithms to choose from:
