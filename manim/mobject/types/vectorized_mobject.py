@@ -1063,18 +1063,18 @@ class VGroup(VMobject):
                     self.wait()
                     gr += gr2 # Add group to another
                     self.play(
-                        gr.shift, DOWN,
+                        gr.animate.shift(DOWN),
                     )
                     gr -= gr2 # Remove group
                     self.play( # Animate groups separately
-                        gr.shift, LEFT,
-                        gr2.shift, UP,
+                        gr.animate.shift(LEFT),
+                        gr2.animate.shift(UP),
                     )
                     self.play( #Animate groups without modification
-                        (gr+gr2).shift, RIGHT
+                        (gr+gr2).animate.shift(RIGHT)
                     )
                     self.play( # Animate group without component
-                        (gr-circle_red).shift, RIGHT
+                        (gr-circle_red).animate.shift(RIGHT)
                     )
         """
         if not all(isinstance(m, VMobject) for m in vmobjects):
@@ -1156,7 +1156,7 @@ class VDict(VMobject):
 
                 # access submobjects like a python dict
                 my_dict["t"].set_color(PURPLE)
-                self.play(my_dict["t"].scale, 3)
+                self.play(my_dict["t"].animate.scale(3))
                 self.wait()
 
                 # also supports python dict styled reassignment
@@ -1500,9 +1500,16 @@ class DashedVMobject(VMobject):
             full_d_alpha = 1.0 / num_dashes
             partial_d_alpha = full_d_alpha * ps_ratio
 
+            # Shifts the alphas and removes the last dash
+            # to give closed shapes even spacing
+            if vmobject.is_closed():
+                alphas += partial_d_alpha / 2
+                np.delete(alphas, -1)
+
             # Rescale so that the last point of vmobject will
             # be the end of the last dash
-            alphas /= 1 - full_d_alpha + partial_d_alpha
+            else:
+                alphas /= 1 - full_d_alpha + partial_d_alpha
 
             self.add(
                 *[
