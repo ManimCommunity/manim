@@ -134,7 +134,7 @@ class TipableVMobject(VMobject):
 
     def create_tip(self, tip_shape=None, tip_length=None, at_start=False):
         """
-        Stylises the tip, positions it specially, and returns
+        Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
         tip = self.get_unpositioned_tip(tip_shape, tip_length)
