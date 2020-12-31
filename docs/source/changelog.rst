@@ -105,7 +105,7 @@ Command line
 
 #. Output of 'manim --help' has been improved
 #. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol' prints
-#. Added a flag :code:`--dry_run`, which doesn’t write any media
+#. Added a flag :code:`--dry_run`, which doesn't write any media
 #. Allow for running manim with :code:`python3 -m manim`
 #. Refactored Tex Template management. You can now use custom templates with command line args using :code:`--tex_template`!
 #. Re-add :code:`--save_frames` flag, which will save each frame as a png

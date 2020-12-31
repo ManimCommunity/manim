@@ -681,7 +681,7 @@ Advanced Projects
             self.add(x_axis, y_axis)
             self.add_x_labels()
 
-            self.orgin_point = np.array([-4,0,0])
+            self.origin_point = np.array([-4,0,0])
             self.curve_start = np.array([-3,0,0])
 
         def add_x_labels(self):
@@ -696,14 +696,14 @@ Advanced Projects
 
         def show_circle(self):
             circle = Circle(radius=1)
-            circle.move_to(self.orgin_point)
+            circle.move_to(self.origin_point)
 
             self.add(circle)
             self.circle = circle
 
         def move_dot_and_draw_curve(self):
             orbit = self.circle
-            orgin_point = self.orgin_point
+            origin_point = self.origin_point
 
             dot = Dot(radius=0.08, color=YELLOW)
             dot.move_to(orbit.point_from_proportion(0))
@@ -716,7 +716,7 @@ Advanced Projects
                 mob.move_to(orbit.point_from_proportion(self.t_offset % 1))
 
             def get_line_to_circle():
-                return Line(orgin_point, dot.get_center(), color=BLUE)
+                return Line(origin_point, dot.get_center(), color=BLUE)
 
             def get_line_to_curve():
                 x = self.curve_start[0] + self.t_offset * 4
