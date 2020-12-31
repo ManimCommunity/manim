@@ -12,7 +12,7 @@ RTL_TEXT: str = """صباح الخير
 مرحبا جميعا"""
 
 WIDTH: int = 600
-HEIGTH: int = 400
+HEIGHT: int = 400
 folder: str = os.path.abspath(os.path.join("media", "texts"))
 filename: str = os.path.join(folder, "hello.svg")
 
@@ -54,7 +54,7 @@ def test_general_text_svgobject() -> None:
     text = "hello"
     size = 1
     temp_pango_text = Text(text, size=size)
-    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGTH)
+    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGHT)
     context = cairocffi.Context(surface)
     context.move_to(START_X, START_Y)
     layout = pangocairocffi.create_layout(context)
@@ -74,7 +74,7 @@ def test_rtl_text_to_svgobject() -> None:
     size = 1
     text = RTL_TEXT.replace("\n", "")
     temp_pango_text = Text(text, size=1)
-    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGTH)
+    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGHT)
     context = cairocffi.Context(surface)
     context.move_to(START_X, START_Y)
     layout = pangocairocffi.create_layout(context)
@@ -94,7 +94,7 @@ def test_font_face() -> None:
     text = RTL_TEXT.replace("\n", "")
     font_face = "sans"
     temp_pango_text = Text(text, size=1, font=font_face)
-    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGTH)
+    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGHT)
     context = cairocffi.Context(surface)
     context.move_to(START_X, START_Y)
     layout = pangocairocffi.create_layout(context)
@@ -125,7 +125,7 @@ def test_tabs_replace() -> None:
     size = 1
     temp_pango_text = Text("hello\thi\nf")
     assert temp_pango_text.text == "hellohif"
-    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGTH)
+    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGHT)
     context = cairocffi.Context(surface)
     context.move_to(START_X, START_Y)
     layout = pangocairocffi.create_layout(context)
@@ -142,7 +142,7 @@ def test_tabs_replace() -> None:
 def test_t2s() -> None:
     size = 1
     temp_pango_text = Text("Helloworld", t2s={"world": ITALIC})
-    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGTH)
+    surface = cairocffi.SVGSurface(filename, WIDTH, HEIGHT)
     context = cairocffi.Context(surface)
     context.move_to(START_X, START_Y)
     layout = pangocairocffi.create_layout(context)

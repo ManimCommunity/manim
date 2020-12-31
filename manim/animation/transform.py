@@ -361,7 +361,7 @@ class Swap(CyclicReplace):
     pass  # Renaming, more understandable for two entries
 
 
-# TODO, this may be depricated...worth reimplementing?
+# TODO, this may be deprecated...worth reimplementing?
 class TransformAnimations(Transform):
     def __init__(
         self,
