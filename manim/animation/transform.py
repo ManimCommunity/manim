@@ -127,11 +127,11 @@ class Transform(Animation):
     def interpolate_submobject(
         self,
         submobject: Mobject,
-        starting_sumobject: Mobject,
+        starting_submobject: Mobject,
         target_copy: Mobject,
         alpha: float,
     ) -> "Transform":  # doesn't match the parent class?
-        submobject.interpolate(starting_sumobject, target_copy, alpha, self.path_func)
+        submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 
 

@@ -9,15 +9,15 @@ from manim import *
 # Use -s to skip to the end and just save the final frame
 # Use the -p to have preview of the animation (or image, if -s was
 # used) pop up once done.
-# Use -n <number> to skip ahead to the n'th animation of a scene.
+# Use -n <number> to skip ahead to the nth animation of a scene.
 # Use -r <number> to specify a resolution (for example, -r 1080
 # for a 1920x1080 video)
 
 
 class OpeningManim(Scene):
     def construct(self):
-        title = Tex("This is some \\LaTeX")
-        basel = MathTex("\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}")
+        title = Tex(r"This is some \LaTeX")
+        basel = MathTex(r"\sum_{n=1}^\\infty ", r"\frac{1}{n^2} = \frac{\pi^2}{6}")
         VGroup(title, basel).arrange(DOWN)
         self.play(
             Write(title),
@@ -47,7 +47,7 @@ class OpeningManim(Scene):
         self.wait()
 
         grid_transform_title = Tex(
-            "That was a non-linear function \\\\" "applied to the grid"
+            r"That was a non-linear function \\\\" "applied to the grid"
         )
         grid_transform_title.move_to(grid_title, UL)
         grid.prepare_for_nonlinear_transform()
@@ -130,3 +130,10 @@ class UpdatersExample(Scene):
 
 
 # See many more examples at https://docs.manim.community/en/latest/examples.html
+
+import os ; import sys
+from pathlib import Path
+if __name__ == "__main__":
+    project_path = Path(sys.path[1]).parent
+    script_name = f"{Path(__file__).resolve()}"
+    os.system(f"manim  -l --custom_folders  --disable_caching -s -p -c 'BLACK' --config_file '{project_path}/manim_settings.cfg' " + script_name)
