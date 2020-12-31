@@ -16,8 +16,8 @@ from manim import *
 
 class OpeningManim(Scene):
     def construct(self):
-        title = Tex("This is some \\LaTeX")
-        basel = MathTex("\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}")
+        title = Tex(r"This is some \LaTeX")
+        basel = MathTex(r"\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}")
         VGroup(title, basel).arrange(DOWN)
         self.play(
             Write(title),
@@ -47,7 +47,7 @@ class OpeningManim(Scene):
         self.wait()
 
         grid_transform_title = Tex(
-            "That was a non-linear function \\\\" "applied to the grid"
+            r"That was a non-linear function \\ applied to the grid"
         )
         grid_transform_title.move_to(grid_title, UL)
         grid.prepare_for_nonlinear_transform()
