@@ -44,6 +44,9 @@ class Graph(VMobject):
         custom labels can be specified by passing a dictionary whose keys are
         the vertices, and whose values are the corresponding vertex labels
         (rendered via, e.g., :class:`~.Text` or :class:`~.Tex`).
+    label_fill_color
+        Sets the fill color of the default labels generated when ``labels``
+        is set to ``True``. Has no effect for other values of ``labels``.
     layout
         Either one of ``"spring"`` (the default), ``"circular"``, ``"kamada_kawai"``,
         ``"planar"``, ``"random"``, ``"shell"``, ``"spectral"``, and ``"spiral"``
