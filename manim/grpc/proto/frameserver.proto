@@ -23,6 +23,15 @@ message Scene {
 message Animation {
     string name = 1;
     float duration = 2;
+    repeated int64 mobject_ids = 3;
+
+    message TweenData {
+        string attribute = 1;
+        repeated float start_data = 2;
+        repeated float end_data = 3;
+        string easing_function = 4;
+    }
+    TweenData tween_data = 4;
 }
 
 message FrameRequest {
@@ -83,7 +92,7 @@ message FrameResponse {
     bool animation_finished = 3;
     bool scene_finished = 4;
     float duration = 5;
-    repeated string animations = 6;
+    repeated Animation animations = 6;
     int32 animation_index = 7;
     float animation_offset = 8;
 }

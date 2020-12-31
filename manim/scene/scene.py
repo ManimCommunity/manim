@@ -619,7 +619,7 @@ class Scene(Container):
         animations = []
         for arg in args:
             if type(arg) == _AnimationBuilder:
-                animations.append(_MethodAnimation(arg.mobject))
+                animations.append(_MethodAnimation(arg.mobject, arg.methods))
             elif isinstance(arg, Animation):
                 animations.append(arg)
             elif inspect.ismethod(arg):

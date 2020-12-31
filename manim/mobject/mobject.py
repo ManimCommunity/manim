@@ -1309,18 +1309,19 @@ class Group(Mobject):
 
 
 class _AnimationBuilder:
-    def __init__(self, mobject, generate_target=True):
+    def __init__(self, mobject, generate_target=True, methods=None):
         self.mobject = mobject
+        self.methods = [] if methods is None else methods
         if generate_target:
             self.mobject.generate_target()
 
     def __getattr__(self, method_name):
         from ..animation.transform import _MethodAnimation
 
-        self.method = getattr(self.mobject.target, method_name)
+        self.methods.append(getattr(self.mobject.target, method_name))
 
         def update_target(*method_args, **method_kwargs):
-            self.method(*method_args, **method_kwargs)
-            return _AnimationBuilder(self.mobject, generate_target=False)
+            self.methods[-1](*method_args, **method_kwargs)
+            return _AnimationBuilder(self.mobject, generate_target=False, methods=self.methods)
 
         return update_target

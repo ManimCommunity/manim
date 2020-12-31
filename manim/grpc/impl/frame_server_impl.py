@@ -145,6 +145,20 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 if not isinstance(mobject, ValueTracker)
             ]
 
+            animations = []
+            for animation in requested_scene.animations:
+                animation_proto = frameserver_pb2.Animation(
+                    name=animation.__class__.__name__,
+                    mobject_ids=[
+                        id(mobject)
+                        for mobject in extract_mobject_family_members(
+                            animation.mobject, only_those_with_points=True
+                        )
+                    ],
+                    tween_data=generate_tween_data(animation),
+                )
+                animations.append(animation_proto)
+
             resp = frameserver_pb2.FrameResponse(
                 mobjects=serialized_mobjects,
                 frame_pending=False,
@@ -153,9 +167,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 or request.preview_mode
                 == frameserver_pb2.FrameRequest.PreviewMode.IMAGE,
                 duration=requested_scene.duration,
-                animations=map(
-                    lambda anim: anim.__class__.__name__, requested_scene.animations
-                ),
+                animations=animations,
                 animation_index=requested_scene_index,
                 animation_offset=animation_offset,
             )
@@ -235,10 +247,24 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             stub.UpdateSceneData(request)
 
 
+def generate_tween_data(animation):
+    animation_name = animation.__class__.__name__
+    if animation_name == "_MethodAnimation":
+        for method in animation.methods:
+            if method.__name__ == "shift":
+                return frameserver_pb2.Animation.TweenData(
+                    attribute="position",
+                    start_data=animation.starting_mobject.get_center(),
+                    end_data=animation.target_mobject.get_center(),
+                    easing_function=animation.rate_func.__name__,
+                )
+    return None
+
+
 def animations_to_name(animations):
     if len(animations) == 1:
         return str(animations[0].__class__.__name__)
-    return f"{str(animations[0])}..."
+    return f"{str(animations[0].__class__.__name__)}..."
 
 
 def serialize_mobject(mobject):
