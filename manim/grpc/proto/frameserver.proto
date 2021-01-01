@@ -24,14 +24,14 @@ message Animation {
     string name = 1;
     float duration = 2;
     repeated int64 mobject_ids = 3;
+    string easing_function = 4;
 
     message TweenData {
         string attribute = 1;
         repeated float start_data = 2;
         repeated float end_data = 3;
-        string easing_function = 4;
     }
-    TweenData tween_data = 4;
+    repeated TweenData tween_data = 5;
 }
 
 message FrameRequest {
@@ -72,6 +72,7 @@ message MobjectData {
     MobjectType type = 3;
     VMobjectData vectorized_mobject_data = 4;
     ImageMobjectData image_mobject_data = 5;
+    repeated float root_mobject_offset = 6;
 }
 
 message VMobjectData {

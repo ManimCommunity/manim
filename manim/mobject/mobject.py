@@ -1350,15 +1350,15 @@ class _AnimationBuilder:
             self.mobject.generate_target()
 
     def __getattr__(self, method_name):
-        method = getattr(self.mobject.target, method_name)
+        self.methods.append(getattr(self.mobject.target, method_name))
 
         def update_target(*method_args, **method_kwargs):
-            method(*method_args, **method_kwargs)
-            return _AnimationBuilder(self.mobject, generate_target=False)
+            self.methods[-1](*method_args, **method_kwargs)
+            return _AnimationBuilder(self.mobject, generate_target=False, methods=self.methods)
 
         return update_target
 
     def build(self):
         from ..animation.transform import _MethodAnimation
 
-        return _MethodAnimation(self.mobject)
+        return _MethodAnimation(self.mobject, self.methods)

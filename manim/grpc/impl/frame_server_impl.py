@@ -145,16 +145,29 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 if not isinstance(mobject, ValueTracker)
             ]
 
+            mobject_dict = {}
+            for serialized_mobject in serialized_mobjects:
+                mobject_dict[serialized_mobject.id] = serialized_mobject
+
             animations = []
             for animation in requested_scene.animations:
+                # Add offset vector to submobjects.
+                root_mobject_center = animation.mobject.get_center()
+                mobject_ids = []
+                for mobject in extract_mobject_family_members(
+                    animation.mobject, only_those_with_points=True
+                ):
+                    mobject_id = id(mobject)
+                    mobject_ids.append(mobject_id)
+                    mobject_dict[mobject_id].root_mobject_offset[:] = (
+                        mobject.get_center() - root_mobject_center
+                    )
+
                 animation_proto = frameserver_pb2.Animation(
                     name=animation.__class__.__name__,
-                    mobject_ids=[
-                        id(mobject)
-                        for mobject in extract_mobject_family_members(
-                            animation.mobject, only_those_with_points=True
-                        )
-                    ],
+                    duration=requested_scene.duration,
+                    mobject_ids=mobject_ids,
+                    easing_function=animation.rate_func.__name__,
                     tween_data=generate_tween_data(animation),
                 )
                 animations.append(animation_proto)
@@ -250,15 +263,18 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 def generate_tween_data(animation):
     animation_name = animation.__class__.__name__
     if animation_name == "_MethodAnimation":
+        tween_data_array = []
         for method in animation.methods:
             if method.__name__ == "shift":
-                return frameserver_pb2.Animation.TweenData(
-                    attribute="position",
-                    start_data=animation.starting_mobject.get_center(),
-                    end_data=animation.target_mobject.get_center(),
-                    easing_function=animation.rate_func.__name__,
+                tween_data_array.append(
+                    frameserver_pb2.Animation.TweenData(
+                        attribute="position",
+                        start_data=animation.starting_mobject.get_center(),
+                        end_data=animation.target_mobject.get_center(),
+                    )
                 )
-    return None
+        return tween_data_array
+    return []
 
 
 def animations_to_name(animations):
