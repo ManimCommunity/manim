@@ -21,7 +21,7 @@ Changes for the upcoming release are tracked `in our GitHub wiki <https://github
 v0.2.0
 ******
 
-:Date: January 1, 2020
+:Date: January 1, 2021
 
 The changes since Manim Community release v0.1.1 are listed below.
 
