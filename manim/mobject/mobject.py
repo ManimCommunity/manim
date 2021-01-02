@@ -57,6 +57,51 @@ class Mobject(Container):
         self.init_colors()
         Container.__init__(self, **kwargs)
 
+    @property
+    def animate(self):
+        """Used to animate the application of a method.
+
+        .. warning::
+
+            Passing multiple animations for the same :class:`~.Mobject` in one
+            call to :meth:`~.Scene.play` is discouraged and will most likely
+            not work properly. Instead of writing an animation like
+
+            ::
+
+                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
+
+            make use of method chaining for ``animate``, meaning::
+
+                self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
+
+        Examples
+        --------
+
+        .. manim:: AnimateExample
+
+            class AnimateExample(Scene):
+                def construct(self):
+                    s = Square()
+                    self.play(ShowCreation(s))
+                    self.play(s.animate.shift(RIGHT))
+                    self.play(s.animate.scale(2))
+                    self.play(s.animate.rotate(PI / 2))
+                    self.play(Uncreate(s))
+
+
+        .. manim:: AnimateChainExample
+
+            class AnimateChainExample(Scene):
+                def construct(self):
+                    s = Square()
+                    self.play(ShowCreation(s))
+                    self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
+                    self.play(Uncreate(s))
+
+        """
+        return _AnimationBuilder(self)
+
     def __repr__(self):
         return str(self.name)
 
@@ -1238,7 +1283,7 @@ class Mobject(Container):
 
             class BecomeScene(Scene):
                 def construct(self):
-                    circ= Circle(fill_color=RED)
+                    circ = Circle(fill_color=RED)
                     square = Square(fill_color=BLUE)
                     self.add(circ)
                     self.wait(0.5)
@@ -1295,3 +1340,24 @@ class Group(Mobject):
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)
+
+
+class _AnimationBuilder:
+    def __init__(self, mobject, generate_target=True):
+        self.mobject = mobject
+        if generate_target:
+            self.mobject.generate_target()
+
+    def __getattr__(self, method_name):
+        method = getattr(self.mobject.target, method_name)
+
+        def update_target(*method_args, **method_kwargs):
+            method(*method_args, **method_kwargs)
+            return _AnimationBuilder(self.mobject, generate_target=False)
+
+        return update_target
+
+    def build(self):
+        from ..animation.transform import _MethodAnimation
+
+        return _MethodAnimation(self.mobject)
