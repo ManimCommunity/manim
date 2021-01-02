@@ -99,7 +99,7 @@ class Animation:
 
     def get_all_mobjects(self) -> typing.Tuple[Mobject, typing.Union[Mobject, None]]:
         """
-        Ordering must match the ording of arguments to interpolate_submobject
+        Ordering must match the ordering of arguments to interpolate_submobject
         """
         return self.mobject, self.starting_mobject
 
@@ -128,10 +128,6 @@ class Animation:
     def copy(self) -> "Animation":
         return deepcopy(self)
 
-    def update_config(self, **kwargs: typing.Dict[str, typing.Any]) -> "Animation":
-        self.__dict__.update(kwargs)
-        return self
-
     # Methods for interpolation, the mean of an Animation
     def interpolate(self, alpha: float) -> None:
         alpha = np.clip(alpha, 0, 1)
@@ -155,13 +151,13 @@ class Animation:
             self.interpolate_submobject(*mobs, sub_alpha)
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_sumobject: Mobject, alpha: float
+        self, submobject: Mobject, starting_submobject: Mobject, alpha: float
     ) -> None:
         # Typically implemented by subclass
         pass
 
     def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int):
-        # TODO, make this more understanable, and/or combine
+        # TODO, make this more understandable, and/or combine
         # its functionality with AnimationGroup's method
         # build_animations_with_timings
         lag_ratio = self.lag_ratio
