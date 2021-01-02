@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.1.1"
+version = "0.2.0"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers","3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -35,19 +35,17 @@ pydub = "*"
 pygments = "*"
 rich = "^6.0"
 pycairo = "^1.19"
-pangocffi = "^0.8.0"
-pangocairocffi = "^0.4.0"
-cairocffi = "^1.1.0"
-pyreadline = { version = "*", markers = "sys_platform == 'win32'" }
-grpcio =  { version = "*", optional = true }
-grpcio-tools = { version = "*", optional = true }
+manimpango = "^0.1.4"
+grpcio =  { version = "1.33.*", optional = true }
+grpcio-tools = { version = "1.33.*", optional = true }
 watchdog = { version = "*", optional = true }
+networkx = "^2.5"
 ipython = {version = "^7.19.0", optional = true, python = ">=3.7,<4.0"}
+pyreadline = {version = "^2.1", platform = "win32"}
 
 [tool.poetry.extras]
 js_renderer = ["grpcio","grpcio-tools","watchdog"]
 livestreaming = ["ipython"]
-
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
