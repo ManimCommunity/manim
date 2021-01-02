@@ -73,7 +73,7 @@ class VMobject(Mobject):
         # varying zoom levels?
         tolerance_for_point_equality=1e-6,
         n_points_per_cubic_curve=4,
-        **kwargs
+        **kwargs,
     ):
         self.fill_color = fill_color
         self.fill_opacity = fill_opacity
@@ -485,7 +485,7 @@ class VMobject(Mobject):
 
     def add_smooth_curve_to(self, *points):
         """
-        If two points are passed in, the first is intepretted
+        If two points are passed in, the first is interpreted
         as a handle, the second as an anchor
         """
         if len(points) == 1:
@@ -495,7 +495,7 @@ class VMobject(Mobject):
             handle2, new_anchor = points
         else:
             name = sys._getframe(0).f_code.co_name
-            raise ValueError("Only call {} with 1 or 2 points".format(name))
+            raise ValueError(f"Only call {name} with 1 or 2 points")
 
         if self.has_new_path_started():
             self.add_line_to(new_anchor)
@@ -744,7 +744,7 @@ class VMobject(Mobject):
 
         for mob in self, vmobject:
             # If there are no points, add one to
-            # whereever the "center" is
+            # wherever the "center" is
             if mob.has_no_points():
                 mob.start_new_path(mob.get_center())
             # If there's only one point, turn it into
@@ -1063,18 +1063,18 @@ class VGroup(VMobject):
                     self.wait()
                     gr += gr2 # Add group to another
                     self.play(
-                        gr.shift, DOWN,
+                        gr.animate.shift(DOWN),
                     )
                     gr -= gr2 # Remove group
                     self.play( # Animate groups separately
-                        gr.shift, LEFT,
-                        gr2.shift, UP,
+                        gr.animate.shift(LEFT),
+                        gr2.animate.shift(UP),
                     )
                     self.play( #Animate groups without modification
-                        (gr+gr2).shift, RIGHT
+                        (gr+gr2).animate.shift(RIGHT)
                     )
                     self.play( # Animate group without component
-                        (gr-circle_red).shift, RIGHT
+                        (gr-circle_red).animate.shift(RIGHT)
                     )
         """
         if not all(isinstance(m, VMobject) for m in vmobjects):
@@ -1156,14 +1156,14 @@ class VDict(VMobject):
 
                 # access submobjects like a python dict
                 my_dict["t"].set_color(PURPLE)
-                self.play(my_dict["t"].scale, 3)
+                self.play(my_dict["t"].animate.scale(3))
                 self.wait()
 
                 # also supports python dict styled reassignment
                 my_dict["t"] = Tex("Some other text").set_color(BLUE)
                 self.wait()
 
-                # remove submoject by key
+                # remove submobject by key
                 my_dict.remove("t")
                 self.wait()
 
@@ -1431,7 +1431,7 @@ class VectorizedPoint(VMobject):
         stroke_width=0,
         artificial_width=0.01,
         artificial_height=0.01,
-        **kwargs
+        **kwargs,
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
@@ -1440,7 +1440,7 @@ class VectorizedPoint(VMobject):
             color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
-            **kwargs
+            **kwargs,
         )
         self.set_points(np.array([location]))
 
@@ -1458,6 +1458,22 @@ class VectorizedPoint(VMobject):
 
 
 class CurvesAsSubmobjects(VGroup):
+    """Convert a curve's elements to submobjects.
+
+    Examples
+    --------
+    .. manim:: LineGradientExample
+        :save_last_frame:
+
+        class LineGradientExample(Scene):
+            def construct(self):
+                curve = ParametricFunction(lambda t: [t, np.sin(t), 0], t_min = -PI, t_max=PI,stroke_width=10)
+                new_curve = CurvesAsSubmobjects(curve)
+                new_curve.set_color_by_gradient(BLUE, RED)
+                self.add(new_curve.shift(UP), curve)
+
+    """
+
     def __init__(self, vmobject, **kwargs):
         VGroup.__init__(self, **kwargs)
         tuples = vmobject.get_cubic_bezier_tuples()
@@ -1484,9 +1500,16 @@ class DashedVMobject(VMobject):
             full_d_alpha = 1.0 / num_dashes
             partial_d_alpha = full_d_alpha * ps_ratio
 
+            # Shifts the alphas and removes the last dash
+            # to give closed shapes even spacing
+            if vmobject.is_closed():
+                alphas += partial_d_alpha / 2
+                np.delete(alphas, -1)
+
             # Rescale so that the last point of vmobject will
             # be the end of the last dash
-            alphas /= 1 - full_d_alpha + partial_d_alpha
+            else:
+                alphas /= 1 - full_d_alpha + partial_d_alpha
 
             self.add(
                 *[

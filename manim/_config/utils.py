@@ -392,7 +392,7 @@ class ManimConfig(MutableMapping):
         c = ManimConfig()
         # Deepcopying the underlying dict is enough because all properties
         # either read directly from it or compute their value on the fly from
-        # vaulues read directly from it.
+        # values read directly from it.
         c._d = copy.deepcopy(self._d, memo)
         return c
 
@@ -450,7 +450,7 @@ class ManimConfig(MutableMapping):
         ----------
         parser : :class:`ConfigParser`
             An object reflecting the contents of one or many ``.cfg`` files.  In
-            particular, it may reflect the contents of mulitple files that have
+            particular, it may reflect the contents of multiple files that have
             been parsed in a cascading fashion.
 
         Returns
@@ -612,6 +612,7 @@ class ManimConfig(MutableMapping):
             "scene_names",
             "verbosity",
             "background_color",
+            "use_js_renderer",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1011,14 +1012,14 @@ class ManimConfig(MutableMapping):
             raise ValueError(
                 "It is unclear what it means to set dry_run to "
                 "False.  Instead, try setting each option "
-                "individually. (write_to_movie, write_alll, "
+                "individually. (write_to_movie, write_all, "
                 "save_last_frame, save_pngs, or save_as_gif)"
             )
 
     @property
     def use_js_renderer(self):
         """Whether to use JS renderer or not (default)."""
-        self._d["use_js_renderer"]
+        return self._d["use_js_renderer"]
 
     @use_js_renderer.setter
     def use_js_renderer(self, val: bool) -> None:

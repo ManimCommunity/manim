@@ -153,14 +153,14 @@ class Code(VGroup):
         style="vim",
         language=None,
         generate_html_file=False,
-        **kwargs
+        **kwargs,
     ):
         VGroup.__init__(
             self,
             stroke_width=stroke_width,
             background_stroke_color=background_stroke_color,
             background_stroke_width=background_stroke_width,
-            **kwargs
+            **kwargs,
         )
         self.tab_width = tab_width
         self.line_spacing = line_spacing
@@ -191,11 +191,11 @@ class Code(VGroup):
             self.line_numbers.next_to(self.code, direction=LEFT, buff=self.line_no_buff)
         if self.background == "rectangle":
             if self.insert_line_no:
-                forground = VGroup(self.code, self.line_numbers)
+                foreground = VGroup(self.code, self.line_numbers)
             else:
-                forground = self.code
+                foreground = self.code
             rect = SurroundingRectangle(
-                forground,
+                foreground,
                 buff=self.margin,
                 color=self.background_color,
                 fill_color=self.background_color,
@@ -207,11 +207,11 @@ class Code(VGroup):
             self.background_mobject = VGroup(rect)
         else:
             if self.insert_line_no:
-                forground = VGroup(self.code, self.line_numbers)
+                foreground = VGroup(self.code, self.line_numbers)
             else:
-                forground = self.code
-            height = forground.get_height() + 0.1 * 3 + 2 * self.margin
-            width = forground.get_width() + 0.1 * 3 + 2 * self.margin
+                foreground = self.code
+            height = foreground.get_height() + 0.1 * 3 + 2 * self.margin
+            width = foreground.get_width() + 0.1 * 3 + 2 * self.margin
 
             rect = RoundedRectangle(
                 corner_radius=self.corner_radius,
@@ -234,8 +234,8 @@ class Code(VGroup):
             )
 
             self.background_mobject = VGroup(rect, buttons)
-            x = (height - forground.get_height()) / 2 - 0.1 * 3
-            self.background_mobject.shift(forground.get_center())
+            x = (height - foreground.get_height()) / 2 - 0.1 * 3
+            self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
         if self.insert_line_no:
             VGroup.__init__(
@@ -247,7 +247,7 @@ class Code(VGroup):
                 self.background_mobject,
                 Dot(fill_opacity=0, stroke_opacity=0),
                 self.code,
-                **kwargs
+                **kwargs,
             )
         self.move_to(np.array([0, 0, 0]))
 
@@ -263,8 +263,9 @@ class Code(VGroup):
             if os.path.exists(path):
                 self.file_path = path
                 return
-        error = "From: {}, could not find {} at either of these locations: {}".format(
-            os.getcwd(), self.file_name, possible_paths
+        error = (
+            f"From: {os.getcwd()}, could not find {self.file_name} at either "
+            + "of these locations: {possible_paths}"
         )
         raise IOError(error)
 
@@ -286,7 +287,7 @@ class Code(VGroup):
             alignment="right",
             font=self.font,
             disable_ligatures=True,
-            stroke_width=self.stroke_width
+            stroke_width=self.stroke_width,
         ).scale(self.scale_factor)
         for i in line_numbers:
             i.set_color(self.default_color)
@@ -312,7 +313,7 @@ class Code(VGroup):
             tab_width=self.tab_width,
             font=self.font,
             disable_ligatures=True,
-            stroke_width=self.stroke_width
+            stroke_width=self.stroke_width,
         ).scale(self.scale_factor)
         for line_no in range(code.__len__()):
             line = code.chars[line_no]

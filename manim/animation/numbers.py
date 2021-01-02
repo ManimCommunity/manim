@@ -17,10 +17,10 @@ class ChangingDecimal(Animation):
         decimal_mob: DecimalNumber,
         number_update_func: typing.Callable[[float], float],
         suspend_mobject_updating: typing.Optional[bool] = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.check_validity_of_input(decimal_mob)
-        self.yell_about_depricated_configuration(**kwargs)
+        self.yell_about_deprecated_configuration(**kwargs)
         self.number_update_func = number_update_func
         super().__init__(
             decimal_mob, suspend_mobject_updating=suspend_mobject_updating, **kwargs
@@ -30,20 +30,18 @@ class ChangingDecimal(Animation):
         if not isinstance(decimal_mob, DecimalNumber):
             raise TypeError("ChangingDecimal can only take in a DecimalNumber")
 
-    def yell_about_depricated_configuration(self, **kwargs) -> None:
+    def yell_about_deprecated_configuration(self, **kwargs) -> None:
         # Obviously this would optimally be removed at
         # some point.
         for attr in ["tracked_mobject", "position_update_func"]:
             if attr in kwargs:
                 warnings.warn(
-                    """
-                    Don't use {} for ChangingDecimal,
-                    that functionality has been depricated
+                    f"""
+                    Don't use {attr} for ChangingDecimal,
+                        that functionality has been deprecated
                     and you should use a mobject updater
                     instead
-                """.format(
-                        attr
-                    )
+                """
                 )
 
     def interpolate_mobject(self, alpha: float) -> None:
