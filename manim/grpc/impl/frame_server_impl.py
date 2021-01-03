@@ -274,7 +274,7 @@ def generate_tween_data(animation):
                     )
                 )
         return tween_data_array
-    return []
+    return None
 
 
 def animations_to_name(animations):
@@ -284,7 +284,7 @@ def animations_to_name(animations):
 
 
 def serialize_mobject(mobject):
-    mob_proto = frameserver_pb2.MobjectData()
+    mob_proto = frameserver_pb2.MobjectData(id=id(mobject))
 
     if isinstance(mobject, VMobject):
         needs_redraw = False
@@ -306,8 +306,6 @@ def serialize_mobject(mobject):
         mob_proto.style.stroke_color = mob_style["stroke_color"]
         mob_proto.style.stroke_opacity = float(mob_style["stroke_opacity"])
         mob_proto.style.stroke_width = float(mob_style["stroke_width"])
-
-        mob_proto.id = id(mobject)
     elif isinstance(mobject, ImageMobject):
         mob_proto.type = frameserver_pb2.MobjectData.MobjectType.IMAGE_MOBJECT
         mob_style = mobject.get_style()
