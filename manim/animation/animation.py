@@ -36,7 +36,7 @@ class Animation:
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
-        **kwargs
+        **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time = run_time
@@ -229,6 +229,7 @@ def prepare_animation(anim: Union["Animation", "_AnimationBuilder"]) -> "Animati
         return anim
 
     raise TypeError(f"Object {anim} cannot be converted to an animation")
+
 
 class Wait(Animation):
     def __init__(

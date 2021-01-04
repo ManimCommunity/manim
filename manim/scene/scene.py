@@ -627,7 +627,9 @@ class Scene(Container):
                         " supported. Use Mobject.animate instead."
                     )
                 else:
-                    raise TypeError(f"Unexpected argument {arg} passed to Scene.play().")
+                    raise TypeError(
+                        f"Unexpected argument {arg} passed to Scene.play()."
+                    )
 
         for animation in animations:
             for k, v in kwargs.items():
