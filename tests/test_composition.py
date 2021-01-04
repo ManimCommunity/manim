@@ -77,6 +77,7 @@ def test_succession_in_succession_timing():
     assert nested_succession.active_index == 2
     assert nested_succession.active_animation is None
 
+
 def test_animationbuilder_in_group():
     sqr = Square()
     circ = Circle()
