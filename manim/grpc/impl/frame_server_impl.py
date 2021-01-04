@@ -146,22 +146,23 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             ]
 
             mobject_dict = {}
+            mobject_ids = []
             for serialized_mobject in serialized_mobjects:
                 mobject_dict[serialized_mobject.id] = serialized_mobject
 
             animations = []
             for animation in requested_scene.animations:
                 # Add offset vector to submobjects.
-                root_mobject_center = animation.mobject.get_center()
-                mobject_ids = []
-                for mobject in extract_mobject_family_members(
-                    animation.mobject, only_those_with_points=True
-                ):
-                    mobject_id = id(mobject)
-                    mobject_ids.append(mobject_id)
-                    mobject_dict[mobject_id].root_mobject_offset[:] = (
-                        mobject.get_center() - root_mobject_center
-                    )
+                if animation.mobject is not None:
+                    root_mobject_center = animation.mobject.get_center()
+                    for mobject in extract_mobject_family_members(
+                        animation.mobject, only_those_with_points=True
+                    ):
+                        mobject_id = id(mobject)
+                        mobject_ids.append(mobject_id)
+                        mobject_dict[mobject_id].root_mobject_offset[:] = (
+                            mobject.get_center() - root_mobject_center
+                        )
 
                 animation_proto = frameserver_pb2.Animation(
                     name=animation.__class__.__name__,
@@ -274,6 +275,14 @@ def generate_tween_data(animation):
                     )
                 )
         return tween_data_array
+    elif animation_name == "FadeIn":
+        return [
+            frameserver_pb2.Animation.TweenData(
+                attribute="opacity",
+                start_data=[animation.starting_mobject.fill_opacity],
+                end_data=[animation.target_copy.fill_opacity],
+            )
+        ]
     return None
 
 
