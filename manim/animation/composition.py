@@ -3,7 +3,7 @@ import typing
 
 import numpy as np
 
-from ..animation.animation import Animation
+from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject, _AnimationBuilder
 from ..scene.scene import Scene
 from ..utils.bezier import interpolate
@@ -31,9 +31,7 @@ class AnimationGroup(Animation):
     ) -> None:
         self.animations = []
         for anim in animations:
-            if isinstance(anim, _AnimationBuilder):
-                anim = anim.build()
-            self.animations.append(anim)
+            self.animations.append(prepare_animation(anim))
         self.group = group
         if self.group is None:
             self.group = Group(
