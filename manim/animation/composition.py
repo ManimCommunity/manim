@@ -4,7 +4,7 @@ import typing
 import numpy as np
 
 from ..animation.animation import Animation
-from ..mobject.mobject import Group, Mobject
+from ..mobject.mobject import Group, Mobject, _AnimationBuilder
 from ..scene.scene import Scene
 from ..utils.bezier import interpolate
 from ..utils.iterables import remove_list_redundancies
@@ -29,7 +29,11 @@ class AnimationGroup(Animation):
         lag_ratio: float = 0,
         **kwargs
     ) -> None:
-        self.animations = animations
+        self.animations = []
+        for anim in animations:
+            if isinstance(anim, _AnimationBuilder):
+                anim = anim.build()
+            self.animations.append(anim)
         self.group = group
         if self.group is None:
             self.group = Group(
