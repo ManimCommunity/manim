@@ -29,9 +29,7 @@ class AnimationGroup(Animation):
         lag_ratio: float = 0,
         **kwargs
     ) -> None:
-        self.animations = []
-        for anim in animations:
-            self.animations.append(prepare_animation(anim))
+        self.animations = [prepare_animation(anim) for anim in animations]
         self.group = group
         if self.group is None:
             self.group = Group(
