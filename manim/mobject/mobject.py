@@ -1,7 +1,7 @@
 """Base classes for objects that can be displayed."""
 
 
-__all__ = ["Mobject", "Group"]
+__all__ = ["Mobject", "Group", "animation_override"]
 
 
 from functools import reduce
@@ -13,6 +13,7 @@ import sys
 
 from pathlib import Path
 from colour import Color
+from types import MethodType
 import numpy as np
 
 from .. import config
@@ -1351,6 +1352,9 @@ class _AnimationBuilder:
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
 
+        if hasattr(method, "_animation_override"):
+            return MethodType(method._animation_override, self.mobject)
+
         def update_target(*method_args, **method_kwargs):
             method(*method_args, **method_kwargs)
             return _AnimationBuilder(self.mobject, generate_target=False)
@@ -1361,3 +1365,48 @@ class _AnimationBuilder:
         from ..animation.transform import _MethodAnimation
 
         return _MethodAnimation(self.mobject)
+
+
+def animation_override(method):
+    r"""Decorator for overriding method animations.
+
+    Examples
+    --------
+
+    .. manim:: AnimationOverrideExample
+
+        from manim import Circle, Scene, ShowCreation, Text, Uncreate, VGroup
+
+        class CircleWithContent(VGroup):
+            def __init__(self, content):
+                super().__init__()
+                self.circle = Circle()
+                self.content = content
+                self.add(self.circle, content)
+                content.move_to(self.circle.get_center())
+
+            def clear_content(self):
+                self.remove(self.content)
+                self.content = None
+
+            @animation_override(clear_content)
+            def _clear_content_animation(self):
+                anim = Uncreate(self.content)
+                self.clear_content()
+                return anim
+
+        class AnimationOverrideExample(Scene):
+            def construct(self):
+                t = Text("hello!")
+                my_mobject = CircleWithContent(t)
+                self.play(ShowCreation(my_mobject))
+                self.play(my_mobject.animate.clear_content())
+                self.wait()
+
+    """
+
+    def decorator(animation_method):
+        method._animation_override = animation_method
+        return animation_method
+
+    return decorator
