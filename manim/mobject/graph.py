@@ -158,6 +158,21 @@ class Graph(VMobject):
                                        (4, 7): {"stroke_color": RED}})
                 self.add(g)
 
+    You can also lay out a bipartite graph on two columns by specifying 
+    a list of the vertices on one side and choosing the bipartite layout.
+
+    .. manim:: BipartiteGraph
+        :save_last_frame:
+
+        class BipartiteGraph(Scene):
+            def construct(self):
+                G = nx.Graph()
+                G.add_nodes_from([0, 1, 2, 3], bipartite=0)
+                G.add_nodes_from([4, 5, 6, 7], bipartite=1)
+                G.add_edges_from([(0, 4), (0, 6), (1, 6), (2, 5), (3, 7)])
+                graph = Graph(list(G.nodes), list(G.edges), layout="bipartite", partitions=[
+                      {n for n, d in G.nodes(data=True) if d["bipartite"] == 0}])
+
     """
 
     def __init__(
@@ -172,6 +187,7 @@ class Graph(VMobject):
         vertex_type: "Mobject" = Dot,
         vertex_config: Union[dict, None] = None,
         edge_type: "Mobject" = Line,
+        partitions: List[List[Hashable]] = None,
         edge_config: Union[dict, None] = None,
     ) -> None:
         VMobject.__init__(self)
@@ -188,6 +204,7 @@ class Graph(VMobject):
             "random": nx.layout.random_layout,
             "shell": nx.layout.shell_layout,
             "spectral": nx.layout.spectral_layout,
+            "bipartite": nx.layout.bipartite_layout,
             "spiral": nx.layout.spiral_layout,
             "spring": nx.layout.spring_layout,
         }
@@ -198,6 +215,12 @@ class Graph(VMobject):
         if isinstance(layout, dict):
             self._layout = layout
         elif layout in automatic_layouts and layout != "random":
+            if layout == "bipartite":
+                if not partitions or len(partitions) == 0:
+                    raise ValueError(
+                        "The bipartite layout requires specification of all the vertices in one side"
+                    )
+                layout_config["nodes"] = partitions[0]
             self._layout = automatic_layouts[layout](
                 nx_graph, scale=layout_scale, **layout_config
             )
@@ -207,7 +230,8 @@ class Graph(VMobject):
         elif layout == "random":
             # the random layout places coordinates in [0, 1)
             # we need to rescale manually afterwards...
-            self._layout = automatic_layouts["random"](nx_graph, **layout_config)
+            self._layout = automatic_layouts["random"](
+                nx_graph, **layout_config)
             for k, v in self._layout.items():
                 self._layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
             self._layout = dict(
@@ -224,7 +248,8 @@ class Graph(VMobject):
         elif isinstance(labels, bool):
             if labels:
                 self._labels = dict(
-                    [(v, MathTex(v, fill_color=label_fill_color)) for v in vertices]
+                    [(v, MathTex(v, fill_color=label_fill_color))
+                     for v in vertices]
                 )
             else:
                 self._labels = dict()
@@ -241,7 +266,8 @@ class Graph(VMobject):
                 [(k, v) for k, v in vertex_config.items() if k not in vertices]
             )
         self._vertex_config = dict(
-            [(v, vertex_config.get(v, copy(default_vertex_config))) for v in vertices]
+            [(v, vertex_config.get(v, copy(default_vertex_config)))
+             for v in vertices]
         )
         for v, label in self._labels.items():
             self._vertex_config[v]["label"] = label
@@ -292,7 +318,8 @@ class Graph(VMobject):
         for (u, v), edge in self.edges.items():
 
             def update_edge(e, u=u, v=v):
-                e.set_start_and_end_attrs(self[u].get_center(), self[v].get_center())
+                e.set_start_and_end_attrs(
+                    self[u].get_center(), self[v].get_center())
                 e.generate_points()
 
             update_edge(edge)
