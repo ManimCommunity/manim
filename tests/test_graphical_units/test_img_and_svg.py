@@ -9,24 +9,41 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 # Tests for the modules image_mobject and svg_mobject
 
+# to add a test, run a line of code like this:
+# from ..helpers.graphical_units import set_test_scene
+# set_test_scene(RhomboidTest, "img_and_svg")
+
+
+def get_test_resource(filename):
+    return str(
+            get_project_root()
+            / "tests/test_graphical_units/img_svg_resources"
+            / filename
+        )
+
 
 class SVGMobjectTest(Scene):
     def construct(self):
-        path = (
-            get_project_root()
-            / "tests/test_graphical_units/img_svg_resources/weight.svg"
-        )
-        svg_obj = SVGMobject(str(path))
+        path = get_test_resource("weight.svg")
+        svg_obj = SVGMobject(path)
         self.add(svg_obj)
+        self.wait()
+
+
+class RhomboidTest(Scene):
+    def construct(self):
+        # TODO: Fix behavior such that the polygon results in a closed shape, even without the closing z.
+        # TODO: Discuss whether, upon loading an SVG, whether to obey the fill and stroke properties.
+        rhomboid = SVGMobject(get_test_resource("rhomboid.svg")).shift(UP * 2)
+        rhomboid_no_fill = rhomboid.copy().set_fill(opacity=0).set_stroke(color=WHITE, width=1).shift(DOWN * 4)
+        self.add(rhomboid, rhomboid_no_fill)
         self.wait()
 
 
 class ImageMobjectTest(Scene):
     def construct(self):
-        file_path = (
-            get_project_root()
-            / "tests/test_graphical_units/img_svg_resources/tree_img_640x351.png"
-        )
+        file_path = get_test_resource("tree_img_640x351.png")
+
         im1 = ImageMobject(file_path).shift(4 * LEFT + UP)
         im2 = ImageMobject(file_path, scale_to_resolution=1080).shift(
             4 * LEFT + 2 * DOWN
