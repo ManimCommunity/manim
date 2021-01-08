@@ -7,11 +7,9 @@ from ..helpers.path_utils import get_project_root
 from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
-# Tests for the modules image_mobject and svg_mobject
-
-# to add a test, run a line of code like this:
-# from ..helpers.graphical_units import set_test_scene
-# set_test_scene(RhomboidTest, "img_and_svg")
+from ..helpers.graphical_units import set_test_scene
+# To update the reference object after a visual inspection, use this line:
+# set_test_scene(NameOfTestScene, "img_and_svg")
 
 
 def get_test_resource(filename):
@@ -37,6 +35,13 @@ class RhomboidTest(Scene):
         rhomboid = SVGMobject(get_test_resource("rhomboid.svg")).shift(UP * 2)
         rhomboid_no_fill = rhomboid.copy().set_fill(opacity=0).set_stroke(color=WHITE, width=1).shift(DOWN * 4)
         self.add(rhomboid, rhomboid_no_fill)
+        self.wait()
+
+
+class SingleUSStateTest(Scene):
+    def construct(self):
+        states = SVGMobject(get_test_resource("single_state.svg"))
+        self.add(states)
         self.wait()
 
 

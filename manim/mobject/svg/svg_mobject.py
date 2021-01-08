@@ -595,7 +595,7 @@ class VMobjectFromSVGPathstring(VMobject):
                 self.add_line_to(p)
             return
 
-        elif command in ["L", "H", "V"]:  # lineto
+        elif command in ["H", "V"]: # horz or vert lineto
             if command == "H":
                 new_points[0, 1] = points[-1, 1]
             elif command == "V":
@@ -605,6 +605,16 @@ class VMobjectFromSVGPathstring(VMobject):
                 new_points[0, 1] = new_points[0, 0]
                 new_points[0, 0] = points[-1, 0]
             self.add_line_to(new_points[0])
+            return
+
+        elif command == "L":  # lineto
+            # each point needs to be relative to THE PREVIOUS POINT.
+            for p in new_points:
+                if isLower:
+                    # note that points[-1] was added at the beginning of the call,
+                    # and self.points[-1] was the most recently added point (due to the add_line_to call)
+                    p += self.points[-1] - points[-1]
+                self.add_line_to(p)
             return
 
         if command == "C":  # curveto
