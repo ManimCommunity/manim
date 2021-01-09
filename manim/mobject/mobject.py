@@ -1346,7 +1346,7 @@ class Group(Mobject):
 class _AnimationBuilder:
     def __init__(self, mobject, overridden_animations, generate_target=True):
         self.mobject = mobject
-        self.overridden_animations = []
+        self.overridden_animations = overridden_animations
         if generate_target:
             self.mobject.generate_target()
 
