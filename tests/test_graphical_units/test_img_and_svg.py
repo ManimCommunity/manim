@@ -58,6 +58,11 @@ class MultiPartPathTest(Scene):
         self.wait()
 
 
+# TODO: test in a 3D Scene
+class ThreeDSVGTest(ThreeDScene):
+    pytest_skip = True
+
+
 # Second are the visual tests - these are probably too complex to verify step-by-step, so
 # these are really more of a spot-check
 
@@ -67,6 +72,36 @@ class WeightSVGTest(Scene):
         path = get_test_resource("weight.svg")
         svg_obj = SVGMobject(path)
         self.add(svg_obj)
+        self.wait()
+
+
+class BrachistochroneCurveTest(Scene):
+    pytest_skip = True
+
+    def construct(self):
+        # TODO: There's a <rect> object with fill="none" that turns everything white.
+        # TODO: the path has an implicit fill, too - even though the code says fill="none" and color="black"
+        brach_curve = SVGMobject(get_test_resource("curve.svg")).set_fill(opacity=0)
+        self.add(brach_curve)
+        self.wait()
+
+
+class DesmosGraph1Test(Scene):
+    pytest_skip = True
+
+    def construct(self):
+        # TODO: white rect background, and stroke / fill colors aren't parsed.
+        dgraph = SVGMobject(get_test_resource("desmos-graph_1.svg")).set_fill(opacity=0)
+        self.add(dgraph)
+        self.wait()
+
+
+class Drawing4(Scene):
+
+    def construct(self):
+        # TODO: white hex background, and stroke / fill colors aren't parsed.
+        draw4 = SVGMobject(get_test_resource("drawing4.svg"))
+        self.add(draw4)
         self.wait()
 
 
