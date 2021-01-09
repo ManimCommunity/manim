@@ -176,7 +176,7 @@ class Graph(VMobject):
                 G = nx.Graph()
                 G.add_nodes_from([0, 1, 2, 3])
                 G.add_edges_from([(0, 2), (0,3), (1, 2)])
-                graph = Graph(list(G.nodes), list(G.edges), layout="bipartite", partitions=[[0, 1]])
+                graph = Graph(list(G.nodes), list(G.edges), layout="partite", partitions=[[0, 1]])
                 self.play(ShowCreation(graph))
 
     """
