@@ -178,7 +178,6 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 scene_finished=scene_finished
                 or request.preview_mode
                 == frameserver_pb2.FrameRequest.PreviewMode.IMAGE,
-                duration=requested_scene.duration,
                 animations=animations,
                 animation_index=requested_scene_index,
                 animation_offset=animation_offset,

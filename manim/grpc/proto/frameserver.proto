@@ -90,10 +90,9 @@ message ImageMobjectData {
 message FrameResponse {
     repeated MobjectData mobjects = 1;
     bool scene_finished = 2;
-    float duration = 3;
-    repeated Animation animations = 4;
-    int32 animation_index = 5;
-    float animation_offset = 6;
+    repeated Animation animations = 3;
+    int32 animation_index = 4;
+    float animation_offset = 5;
 }
 
 message EmptyRequest {}
