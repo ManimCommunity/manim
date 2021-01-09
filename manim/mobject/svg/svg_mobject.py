@@ -521,6 +521,7 @@ class VMobjectFromSVGPathstring(VMobject):
     def __init__(self, path_string, **kwargs):
         self.path_string = path_string
         VMobject.__init__(self, **kwargs)
+        self.current_path_start = np.zeros((1, self.dim))
 
     def get_path_commands(self):
         """Returns a list of possible path commands used within an SVG ``d``
@@ -559,7 +560,6 @@ class VMobjectFromSVGPathstring(VMobject):
             )
         )
         # Which mobject should new points be added to
-        self = self
         for command, coord_string in pairs:
             self.handle_command(command, coord_string)
         # people treat y-coordinate differently
@@ -567,95 +567,103 @@ class VMobjectFromSVGPathstring(VMobject):
 
     def handle_command(self, command, coord_string):
         """Core logic for handling each of the various path commands."""
-        isLower = command.islower()
+        # Relative SVG commands are specified as lowercase letters
+        is_relative = command.islower()
         command = command.upper()
-        # new_points are the points that will be added to the curr_points
-        # list. This variable may get modified in the conditionals below.
-        points = self.points
-        new_points = self.string_to_points(coord_string)
 
-        if isLower and len(points) > 0:
-            new_points += points[-1]
+        # Keep track of the most recently completed point
+        start_point = self.points[-1] if len(self.points) > 0 else np.zeros((1, self.dim))
+
+        new_points = self.string_to_points(command, is_relative, coord_string, start_point)
 
         if command == "M":  # moveto
             self.start_new_path(new_points[0])
-            if len(new_points) <= 1:
-                return
-
-            # Draw relative line-to values.
-            points = self.points
-            new_points = new_points[1:]
-            command = "L"
-
-            for p in new_points:
-                if isLower:
-                    # Treat everything as relative line-to until empty
-                    p[0] += self.points[-1, 0]
-                    p[1] += self.points[-1, 1]
+            for p in new_points[1:]:
                 self.add_line_to(p)
             return
 
-        elif command in ["H", "V"]: # horz or vert lineto
-            if command == "H":
-                new_points[0, 1] = points[-1, 1]
-            elif command == "V":
-                if isLower:
-                    new_points[0, 0] -= points[-1, 0]
-                    new_points[0, 0] += points[-1, 1]
-                new_points[0, 1] = new_points[0, 0]
-                new_points[0, 0] = points[-1, 0]
-            self.add_line_to(new_points[0])
-            return
-
-        elif command == "L":  # lineto
-            # each point needs to be relative to THE PREVIOUS POINT.
+        elif command in ["H", "V", "L"]:  # lineto of any kind
             for p in new_points:
-                if isLower:
-                    # note that points[-1] was added at the beginning of the call,
-                    # and self.points[-1] was the most recently added point (due to the add_line_to call)
-                    p += self.points[-1] - points[-1]
                 self.add_line_to(p)
             return
 
-        if command == "C":  # curveto
-            pass  # Yay! No action required
+        if command == "C":  # Cubic
+            self.add_cubic_bezier_curve_to(*new_points[0:3])
+            # Handle situations where there's multiple relative control points
+            if len(new_points) > 3:
+                # Add subsequent offset points relatively.
+                for i in range(3, len(new_points), 3):
+                    self.add_cubic_bezier_curve_to(*new_points[i: i + 3])
+
         elif command in ["S", "T"]:  # smooth curveto
             self.add_smooth_curve_to(*new_points)
             # handle1 = points[-1] + (points[-1] - points[-2])
             # new_points = np.append([handle1], new_points, axis=0)
             return
+
         elif command == "Q":  # quadratic Bezier curve
             # TODO, this is a suboptimal approximation
             new_points = np.append([new_points[0]], new_points, axis=0)
+
         elif command == "A":  # elliptical Arc
             raise NotImplementedError()
+
         elif command == "Z":  # closepath
+            self.add_line_to(self.current_path_start)
             return
 
-        # Add first three points
-        self.add_cubic_bezier_curve_to(*new_points[0:3])
-
-        # Handle situations where there's multiple relative control points
-        if len(new_points) > 3:
-            # Add subsequent offset points relatively.
-            for i in range(3, len(new_points), 3):
-                if isLower:
-                    new_points[i : i + 3] -= points[-1]
-                    new_points[i : i + 3] += new_points[i - 1]
-                self.add_cubic_bezier_curve_to(*new_points[i : i + 3])
-
-    def string_to_points(self, coord_string):
+    def string_to_points(self, command, is_relative, coord_string, start_point):
         """Since the SVG file's path command is provided as a string, this
-        converts the coordinates into numbers.
+        converts the coordinates into numbers. If the command is lower,
+        it also converts the values from values relative to values relative to the previous final point
         """
+
+        # this call to "string to numbers" where problems like parsing 0.5.6 lie
         numbers = string_to_numbers(coord_string)
-        if len(numbers) % 2 == 1:
-            numbers.append(0)
-        num_points = len(numbers) // 2
-        result = np.zeros((num_points, self.dim))
-        result[:, :2] = np.array(numbers).reshape((num_points, 2))
+
+        # H and V expect a sequence of single coords, not coord pairs like the rest of the commands.
+        if command == "H":
+            result = np.zeros((len(numbers), self.dim))
+            result[:, 0] = numbers
+
+        elif command == "V":
+            result = np.zeros((len(numbers), self.dim))
+            result[:, 1] = numbers
+
+        # This is where the A command must be included.
+        # It has special numbers (angles?) that don't translate to points.
+        else:
+            num_points = len(numbers) // 2
+            result = np.zeros((num_points, self.dim))
+            result[:, :2] = np.array(numbers).reshape((num_points, 2))
+
+        # If it's not relative, we don't have any more work!
+        if not is_relative:
+            return result
+
+        # Each control / target point is calculated relative to the ending position of the previous curve.
+        # Curves consist of multiple point listings depending on the command.
+        entries = None
+        if command in ["H", "V", "L", "M"]:  # expects one value
+            entries = 1
+        elif command in ["Q", "T"]:
+            entries = 2
+        elif command in ["C", "S"]:
+            entries = 3
+
+        offset = start_point
+        for i in range(result.shape[0]):
+            result[i, :] = result[i, :] + offset
+            if (i+1) % entries == 0:
+                offset = result[i, :]
+
         return result
 
     def get_original_path_string(self):
         """A simple getter for the path's ``d`` attribute."""
         return self.path_string
+
+    def start_new_path(self, point):
+        self.current_path_start = point
+        super().start_new_path(point)
+        return self

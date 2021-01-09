@@ -28,6 +28,20 @@ class SVGMobjectTest(Scene):
         self.wait()
 
 
+class CubicPathTest(Scene):
+    def construct(self):
+        cubic_demo = SVGMobject(get_test_resource("cubic_demo.svg"))
+        self.add(cubic_demo)
+        self.wait()
+
+
+class CubicAndLinetoTest(Scene):
+    def construct(self):
+        cubic_lineto = SVGMobject(get_test_resource("cubic_and_lineto.svg"))
+        self.add(cubic_lineto)
+        self.wait()
+
+
 class RhomboidTest(Scene):
     pytest_skip = True
 
@@ -41,6 +55,8 @@ class RhomboidTest(Scene):
 
 
 class SingleUSStateTest(Scene):
+    pytest_skip = True
+
     def construct(self):
         single_state = SVGMobject(get_test_resource("single_state.svg"))
         self.add(single_state)
@@ -48,8 +64,6 @@ class SingleUSStateTest(Scene):
 
 
 class MultiPartPathTest(Scene):
-    pytest_skip = True
-
     def construct(self):
         mpp = SVGMobject(get_test_resource("multi_part_path.svg"))
         self.add(mpp)
