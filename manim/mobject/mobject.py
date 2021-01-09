@@ -101,7 +101,7 @@ class Mobject(Container):
                     self.play(Uncreate(s))
 
         """
-        return _AnimationBuilder(self)
+        return _AnimationBuilder(self, overridden_animations=[])
 
     def __repr__(self):
         return str(self.name)
@@ -1344,8 +1344,9 @@ class Group(Mobject):
 
 
 class _AnimationBuilder:
-    def __init__(self, mobject, generate_target=True):
+    def __init__(self, mobject, overridden_animations, generate_target=True):
         self.mobject = mobject
+        self.overridden_animations = []
         if generate_target:
             self.mobject.generate_target()
 
@@ -1356,15 +1357,26 @@ class _AnimationBuilder:
             return MethodType(method._animation_override, self.mobject)
 
         def update_target(*method_args, **method_kwargs):
-            method(*method_args, **method_kwargs)
-            return _AnimationBuilder(self.mobject, generate_target=False)
+            if hasattr(method, "_animation_override"):
+                self.overridden_animations.append(
+                    method._animation_override(*method_args, **method_kwargs)
+                )
+            else:
+                method(*method_args, **method_kwargs)
+            return _AnimationBuilder(
+                self.mobject, self.overridden_animations, generate_target=False
+            )
 
         return update_target
 
     def build(self):
         from ..animation.transform import _MethodAnimation
 
-        return _MethodAnimation(self.mobject)
+        built_animation = _MethodAnimation(self.mobject)
+
+        if self.overridden_animations:
+            return AnimationGroup(built_animation, *self.overridden_animations)
+        return built_animation
 
 
 def override_animate(method):
