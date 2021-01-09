@@ -58,6 +58,13 @@ class MultiPartPathTest(Scene):
         self.wait()
 
 
+class QuadraticPathTest(Scene):
+    def construct(self):
+        quad = SVGMobject(get_test_resource("qcurve_demo.svg"))
+        self.add(quad)
+        self.wait()
+
+
 # TODO: test in a 3D Scene
 class ThreeDSVGTest(ThreeDScene):
     pytest_skip = True
@@ -97,6 +104,7 @@ class DesmosGraph1Test(Scene):
 
 
 class Drawing4(Scene):
+    pytest_skip = True
 
     def construct(self):
         # TODO: white hex background, and stroke / fill colors aren't parsed.

@@ -576,11 +576,10 @@ class VMobjectFromSVGPathstring(VMobject):
         # Keep track of the most recently completed point
         start_point = self.points[-1] if len(self.points) > 0 else np.zeros((1, self.dim))
 
+        # Produce the (absolute) coordinates of the relative handles
         new_points = self.string_to_points(command, is_relative, coord_string, start_point)
 
         if command == "M":  # moveto
-            if new_points[0, 0] == 10.51:
-                print("a thing")
             self.start_new_path(new_points[0])
             for p in new_points[1:]:
                 self.add_line_to(p)
@@ -595,6 +594,7 @@ class VMobjectFromSVGPathstring(VMobject):
             # points must be added in groups of 3.
             for i in range(0, len(new_points), 3):
                 self.add_cubic_bezier_curve_to(*new_points[i: i + 3])
+            return
 
         elif command in ["S", "T"]:  # smooth curveto
             self.add_smooth_curve_to(*new_points)
@@ -603,8 +603,20 @@ class VMobjectFromSVGPathstring(VMobject):
             return
 
         elif command == "Q":  # quadratic Bezier curve
-            # TODO, this is a suboptimal approximation
-            new_points = np.append([new_points[0]], new_points, axis=0)
+            for i in range(0, len(new_points), 2):
+                # How does one approximate a quadratic with a cubic?
+                # refer to the Wikipedia page on Bezier curves.
+                # 1. Copy the end points, and then
+                # 2. Place the 2 middle control points 2/3 along the line segments
+                # from the end points to the quadratic curve's middle control point.
+                # I think that's beautiful.
+                self.add_cubic_bezier_curve_to(
+                    2/3 * new_points[i] + 1/3 * start_point,
+                    2/3 * new_points[i] + 1/3 * new_points[i+1],
+                    new_points[i+1]
+                )
+                start_point = new_points[i+1]
+            return
 
         elif command == "A":  # elliptical Arc
             raise NotImplementedError()
