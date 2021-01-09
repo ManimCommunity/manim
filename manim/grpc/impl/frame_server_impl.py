@@ -175,8 +175,6 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
             resp = frameserver_pb2.FrameResponse(
                 mobjects=serialized_mobjects,
-                frame_pending=False,
-                animation_finished=False,
                 scene_finished=scene_finished
                 or request.preview_mode
                 == frameserver_pb2.FrameRequest.PreviewMode.IMAGE,
