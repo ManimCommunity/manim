@@ -29,6 +29,8 @@ class SVGMobjectTest(Scene):
 
 
 class RhomboidTest(Scene):
+    pytest_skip = True
+
     def construct(self):
         # TODO: Fix behavior such that the polygon results in a closed shape, even without the closing z.
         # TODO: Discuss whether, upon loading an SVG, whether to obey the fill and stroke properties.
@@ -40,7 +42,25 @@ class RhomboidTest(Scene):
 
 class SingleUSStateTest(Scene):
     def construct(self):
-        states = SVGMobject(get_test_resource("single_state.svg"))
+        single_state = SVGMobject(get_test_resource("single_state.svg"))
+        self.add(single_state)
+        self.wait()
+
+
+class MultiPartPathTest(Scene):
+    pytest_skip = True
+
+    def construct(self):
+        mpp = SVGMobject(get_test_resource("multi_part_path.svg"))
+        self.add(mpp)
+        self.wait()
+
+
+class ContiguousUSMapTest(Scene):
+    pytest_skip = True
+
+    def construct(self):
+        states = SVGMobject(get_test_resource("states_map.svg"))
         self.add(states)
         self.wait()
 
@@ -63,4 +83,4 @@ MODULE_NAME = "img_and_svg"
 
 @pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
 def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
+    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=True)
