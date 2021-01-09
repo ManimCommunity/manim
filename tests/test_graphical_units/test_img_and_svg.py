@@ -8,22 +8,22 @@ from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 from ..helpers.graphical_units import set_test_scene
+
 # To update the reference object after a visual inspection, use this line:
 # set_test_scene(NameOfTestScene, "img_and_svg")
 
 
 def get_test_resource(filename):
     return str(
-            get_project_root()
-            / "tests/test_graphical_units/img_svg_resources"
-            / filename
-        )
+        get_project_root() / "tests/test_graphical_units/img_svg_resources" / filename
+    )
 
 
 # Tests break down into two kinds: one where the SVG is simple enough to step through
 # and ones where the SVG is realistically complex, and the output should be visually inspected.
 
 # First are the simple tests.
+
 
 class CubicPathTest(Scene):
     def construct(self):
@@ -46,7 +46,12 @@ class RhomboidTest(Scene):
         # TODO: Fix behavior such that the polygon results in a closed shape, even without the closing z.
         # TODO: Discuss whether, upon loading an SVG, whether to obey the fill and stroke properties.
         rhomboid = SVGMobject(get_test_resource("rhomboid.svg")).shift(UP * 2)
-        rhomboid_no_fill = rhomboid.copy().set_fill(opacity=0).set_stroke(color=WHITE, width=1).shift(DOWN * 4)
+        rhomboid_no_fill = (
+            rhomboid.copy()
+            .set_fill(opacity=0)
+            .set_stroke(color=WHITE, width=1)
+            .shift(DOWN * 4)
+        )
         self.add(rhomboid, rhomboid_no_fill)
         self.wait()
 

@@ -574,10 +574,14 @@ class VMobjectFromSVGPathstring(VMobject):
         command = command.upper()
 
         # Keep track of the most recently completed point
-        start_point = self.points[-1] if len(self.points) > 0 else np.zeros((1, self.dim))
+        start_point = (
+            self.points[-1] if len(self.points) > 0 else np.zeros((1, self.dim))
+        )
 
         # Produce the (absolute) coordinates of the relative handles
-        new_points = self.string_to_points(command, is_relative, coord_string, start_point)
+        new_points = self.string_to_points(
+            command, is_relative, coord_string, start_point
+        )
 
         if command == "M":  # moveto
             self.start_new_path(new_points[0])
@@ -593,7 +597,7 @@ class VMobjectFromSVGPathstring(VMobject):
         if command == "C":  # Cubic
             # points must be added in groups of 3.
             for i in range(0, len(new_points), 3):
-                self.add_cubic_bezier_curve_to(*new_points[i: i + 3])
+                self.add_cubic_bezier_curve_to(*new_points[i : i + 3])
             return
 
         elif command in ["S", "T"]:  # smooth curveto
@@ -611,11 +615,11 @@ class VMobjectFromSVGPathstring(VMobject):
                 # from the end points to the quadratic curve's middle control point.
                 # I think that's beautiful.
                 self.add_cubic_bezier_curve_to(
-                    2/3 * new_points[i] + 1/3 * start_point,
-                    2/3 * new_points[i] + 1/3 * new_points[i+1],
-                    new_points[i+1]
+                    2 / 3 * new_points[i] + 1 / 3 * start_point,
+                    2 / 3 * new_points[i] + 1 / 3 * new_points[i + 1],
+                    new_points[i + 1],
                 )
-                start_point = new_points[i+1]
+                start_point = new_points[i + 1]
             return
 
         elif command == "A":  # elliptical Arc
@@ -671,7 +675,7 @@ class VMobjectFromSVGPathstring(VMobject):
         offset = start_point
         for i in range(result.shape[0]):
             result[i, :] = result[i, :] + offset
-            if (i+1) % entries == 0:
+            if (i + 1) % entries == 0:
                 offset = result[i, :]
 
         return result
