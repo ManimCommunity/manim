@@ -477,6 +477,23 @@ class VMobject(Mobject):
         else:
             self.append_points([self.get_last_point()] + new_points)
 
+    def add_quadratic_bezier_curve_to(self, handle, anchor):
+        """
+        Add Quadratic bezier curve to the path
+        """
+        # How does one approximate a quadratic with a cubic?
+        # refer to the Wikipedia page on Bezier curves.
+        # 1. Copy the end points, and then
+        # 2. Place the 2 middle control points 2/3 along the line segments
+        # from the end points to the quadratic curve's middle control point.
+        # I think that's beautiful.
+        self.add_cubic_bezier_curve_to(
+            2 / 3 * handle + 1 / 3 * self.get_last_point(),
+            2 / 3 * handle + 1 / 3 * anchor,
+            anchor,
+        )
+        return self
+
     def add_line_to(self, point):
         nppcc = self.n_points_per_cubic_curve
         self.add_cubic_bezier_curve_to(

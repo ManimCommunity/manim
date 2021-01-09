@@ -562,12 +562,14 @@ class VMobjectFromSVGPathstring(VMobject):
             )
         )
         # Which mobject should new points be added to
+        prev_command = None
         for command, coord_string in pairs:
-            self.handle_command(command, coord_string)
+            self.handle_command(command, coord_string, prev_command)
+            prev_command = command.upper()
         # people treat y-coordinate differently
         self.rotate(np.pi, RIGHT, about_point=ORIGIN)
 
-    def handle_command(self, command, coord_string):
+    def handle_command(self, command, coord_string, prev_command):
         """Core logic for handling each of the various path commands."""
         # Relative SVG commands are specified as lowercase letters
         is_relative = command.islower()
@@ -578,7 +580,7 @@ class VMobjectFromSVGPathstring(VMobject):
             self.points[-1] if len(self.points) > 0 else np.zeros((1, self.dim))
         )
 
-        # Produce the (absolute) coordinates of the relative handles
+        # Produce the (absolute) coordinates of the controls and handles
         new_points = self.string_to_points(
             command, is_relative, coord_string, start_point
         )
@@ -594,33 +596,39 @@ class VMobjectFromSVGPathstring(VMobject):
                 self.add_line_to(p)
             return
 
-        if command == "C":  # Cubic
+        elif command == "C":  # Cubic
             # points must be added in groups of 3.
             for i in range(0, len(new_points), 3):
                 self.add_cubic_bezier_curve_to(*new_points[i : i + 3])
             return
 
-        elif command in ["S", "T"]:  # smooth curveto
-            self.add_smooth_curve_to(*new_points)
-            # handle1 = points[-1] + (points[-1] - points[-2])
-            # new_points = np.append([handle1], new_points, axis=0)
+        elif command == "S":  # Smooth cubic
+            prev_handle = start_point
+            if prev_command in ["C", "S"]:
+                prev_handle = self.points[-2]
+            for i in range(0, len(new_points), 2):
+                new_handle = 2 * start_point - prev_handle
+                self.add_cubic_bezier_curve_to(new_handle, new_points[i], new_points[i+1])
+                start_point = new_points[i+1]
+                prev_handle = new_points[i]
             return
 
         elif command == "Q":  # quadratic Bezier curve
             for i in range(0, len(new_points), 2):
-                # How does one approximate a quadratic with a cubic?
-                # refer to the Wikipedia page on Bezier curves.
-                # 1. Copy the end points, and then
-                # 2. Place the 2 middle control points 2/3 along the line segments
-                # from the end points to the quadratic curve's middle control point.
-                # I think that's beautiful.
-                self.add_cubic_bezier_curve_to(
-                    2 / 3 * new_points[i] + 1 / 3 * start_point,
-                    2 / 3 * new_points[i] + 1 / 3 * new_points[i + 1],
-                    new_points[i + 1],
-                )
-                start_point = new_points[i + 1]
+                self.add_quadratic_bezier_curve_to(new_points[i], new_points[i+1])
             return
+
+        elif command == "T":  # smooth quadratic
+            prev_quad_handle = start_point
+            if prev_command in ["Q", "T"]:
+                # because of the conversion from quadratic to cubic,
+                # our actual previous handle was 3/2 in the direction of p[-2] from p[-1]
+                prev_quad_handle = 1.5 * self.points[-2] - 0.5 * self.points[-1]
+            for p in new_points:
+                new_quad_handle = 2 * start_point - prev_quad_handle
+                self.add_quadratic_bezier_curve_to(new_quad_handle, p)
+                start_point = p
+                prev_quad_handle = new_quad_handle
 
         elif command == "A":  # elliptical Arc
             raise NotImplementedError()
@@ -664,12 +672,12 @@ class VMobjectFromSVGPathstring(VMobject):
 
         # Each control / target point is calculated relative to the ending position of the previous curve.
         # Curves consist of multiple point listings depending on the command.
-        entries = None
-        if command in ["H", "V", "L", "M"]:  # expects one value
-            entries = 1
-        elif command in ["Q", "T"]:
+        entries = 1
+        # Quadratic curves expect pairs, S expects 3 (cubic) but one is implied by smoothness
+        if command in ["Q", "S"]:
             entries = 2
-        elif command in ["C", "S"]:
+        # Only cubic curves expect three points.
+        elif command == "C":
             entries = 3
 
         offset = start_point

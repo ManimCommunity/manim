@@ -70,6 +70,13 @@ class QuadraticPathTest(Scene):
         self.wait()
 
 
+class SmoothCurvesTest(Scene):
+    def construct(self):
+        smooths = SVGMobject(get_test_resource("smooth_curves.svg")).set_fill(opacity=0)
+        self.add(smooths)
+        self.wait()
+
+
 # TODO: test in a 3D Scene
 class ThreeDSVGTest(ThreeDScene):
     pytest_skip = True
