@@ -163,11 +163,12 @@ class Graph(VMobject):
 
     .. note::
 
-        All of the vertices which are not in one of the sides you provide
-        will be put into another column.
+        All vertices in your graph which are not listed in any of the partitions
+        are collected in their own partition and rendered in the rightmost column.
 
     .. manim:: PartiteGraph
         :save_last_frame:
+
         import networkx as nx
 
         class PartiteGraph(Scene):
