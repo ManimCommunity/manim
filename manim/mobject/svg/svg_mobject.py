@@ -12,6 +12,8 @@ import warnings
 
 from xml.dom import minidom
 
+from colour import Color
+
 from ... import config
 from ...constants import *
 from ...mobject.geometry import Circle
@@ -577,6 +579,8 @@ class VMobjectFromSVGPathstring(VMobject):
         new_points = self.string_to_points(command, is_relative, coord_string, start_point)
 
         if command == "M":  # moveto
+            if new_points[0, 0] == 10.51:
+                print("a thing")
             self.start_new_path(new_points[0])
             for p in new_points[1:]:
                 self.add_line_to(p)
@@ -625,10 +629,14 @@ class VMobjectFromSVGPathstring(VMobject):
         if command == "H":
             result = np.zeros((len(numbers), self.dim))
             result[:, 0] = numbers
+            if not is_relative:
+                result[:, 1] = start_point[1]
 
         elif command == "V":
             result = np.zeros((len(numbers), self.dim))
             result[:, 1] = numbers
+            if not is_relative:
+                result[:, 0] = start_point[0]
 
         # This is where the A command must be included.
         # It has special numbers (angles?) that don't translate to points.
