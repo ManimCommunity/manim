@@ -168,6 +168,7 @@ class Graph(VMobject):
 
     .. manim:: PartiteGraph
         :save_last_frame:
+        import networkx as nx
 
         class PartiteGraph(Scene):
             def construct(self):
