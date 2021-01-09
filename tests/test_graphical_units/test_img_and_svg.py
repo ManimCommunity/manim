@@ -20,13 +20,10 @@ def get_test_resource(filename):
         )
 
 
-class SVGMobjectTest(Scene):
-    def construct(self):
-        path = get_test_resource("weight.svg")
-        svg_obj = SVGMobject(path)
-        self.add(svg_obj)
-        self.wait()
+# Tests break down into two kinds: one where the SVG is simple enough to step through
+# and ones where the SVG is realistically complex, and the output should be visually inspected.
 
+# First are the simple tests.
 
 class CubicPathTest(Scene):
     def construct(self):
@@ -54,19 +51,31 @@ class RhomboidTest(Scene):
         self.wait()
 
 
+class MultiPartPathTest(Scene):
+    def construct(self):
+        mpp = SVGMobject(get_test_resource("multi_part_path.svg"))
+        self.add(mpp)
+        self.wait()
+
+
+# Second are the visual tests - these are probably too complex to verify step-by-step, so
+# these are really more of a spot-check
+
+
+class WeightSVGTest(Scene):
+    def construct(self):
+        path = get_test_resource("weight.svg")
+        svg_obj = SVGMobject(path)
+        self.add(svg_obj)
+        self.wait()
+
+
 class SingleUSStateTest(Scene):
     pytest_skip = True
 
     def construct(self):
         single_state = SVGMobject(get_test_resource("single_state.svg"))
         self.add(single_state)
-        self.wait()
-
-
-class MultiPartPathTest(Scene):
-    def construct(self):
-        mpp = SVGMobject(get_test_resource("multi_part_path.svg"))
-        self.add(mpp)
         self.wait()
 
 
