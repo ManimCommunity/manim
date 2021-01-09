@@ -49,7 +49,7 @@ class Graph(VMobject):
         is set to ``True``. Has no effect for other values of ``labels``.
     layout
         Either one of ``"spring"`` (the default), ``"circular"``, ``"kamada_kawai"``,
-        ``"planar"``, ``"random"``, ``"shell"``, ``"spectral"``, and ``"spiral"``
+        ``"planar"``, ``"random"``, ``"shell"``, ``"spectral"``, ``"spiral"``, and ``"partite"``
         for automatic vertex positioning using ``networkx``
         (see `their documentation <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`_
         for more details), or a dictionary specifying a coordinate (value)
