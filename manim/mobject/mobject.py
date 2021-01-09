@@ -1,7 +1,7 @@
 """Base classes for objects that can be displayed."""
 
 
-__all__ = ["Mobject", "Group", "animation_override"]
+__all__ = ["Mobject", "Group", "override_animate"]
 
 
 from functools import reduce
@@ -1367,7 +1367,7 @@ class _AnimationBuilder:
         return _MethodAnimation(self.mobject)
 
 
-def animation_override(method):
+def override_animate(method):
     r"""Decorator for overriding method animations.
 
     Examples
@@ -1389,7 +1389,7 @@ def animation_override(method):
                 self.remove(self.content)
                 self.content = None
 
-            @animation_override(clear_content)
+            @override_animate(clear_content)
             def _clear_content_animation(self):
                 anim = Uncreate(self.content)
                 self.clear_content()
