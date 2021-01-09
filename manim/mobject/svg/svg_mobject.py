@@ -592,12 +592,9 @@ class VMobjectFromSVGPathstring(VMobject):
             return
 
         if command == "C":  # Cubic
-            self.add_cubic_bezier_curve_to(*new_points[0:3])
-            # Handle situations where there's multiple relative control points
-            if len(new_points) > 3:
-                # Add subsequent offset points relatively.
-                for i in range(3, len(new_points), 3):
-                    self.add_cubic_bezier_curve_to(*new_points[i: i + 3])
+            # points must be added in groups of 3.
+            for i in range(0, len(new_points), 3):
+                self.add_cubic_bezier_curve_to(*new_points[i: i + 3])
 
         elif command in ["S", "T"]:  # smooth curveto
             self.add_smooth_curve_to(*new_points)
