@@ -1187,7 +1187,9 @@ class MarkupText(SVGMobject):
         gradientmap = self.extract_gradient_tags()
 
         if not MarkupUtils.validate(self.text):
-            raise ValueError(f"Pango cannot parse your markup in {self.text}.")
+            raise ValueError(
+                f"Pango cannot parse your markup in {self.text}. Please check for typos, unmatched tags or unescaped special chars like < and &."
+            )
 
         if self.line_spacing == -1:
             self.line_spacing = self.size + self.size * 0.3
