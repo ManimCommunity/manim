@@ -102,6 +102,15 @@ class Mobject(Container):
         """
         return _AnimationBuilder(self)
 
+    def __deepcopy__(self, clone_from_id):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        clone_from_id[id(self)] = result
+        for k, v in self.__dict__.items():
+            setattr(result, k, copy.deepcopy(v, clone_from_id))
+        result.original_id = id(self)
+        return result
+
     def __repr__(self):
         return str(self.name)
 

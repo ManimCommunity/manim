@@ -120,10 +120,10 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
             if requested_scene_index == self.previous_scene_index:
                 requested_scene = self.previous_scene
+                update_previous_scene = False
             else:
                 requested_scene = copy.deepcopy(requested_scene)
-                self.previous_scene = requested_scene
-                self.previous_scene_index = requested_scene_index
+                update_previous_scene = True
 
             # Update to the requested time.
             if not scene_finished:
@@ -135,53 +135,89 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 animation_offset = requested_scene.duration
             requested_scene.update_to_time(animation_offset)
 
-            # Serialize the scene's mobjects.
-            mobjects = extract_mobject_family_members(
-                requested_scene.mobjects, only_those_with_points=True
-            )
-            serialized_mobjects = [
-                serialize_mobject(mobject)
-                for mobject in mobjects
-                if not isinstance(mobject, ValueTracker)
-            ]
-
-            mobject_dict = {}
-            mobject_ids = []
-            for serialized_mobject in serialized_mobjects:
-                mobject_dict[serialized_mobject.id] = serialized_mobject
-
+            ids_to_remove = []
+            mobjects_to_add = []
             animations = []
-            for animation in requested_scene.animations:
-                # Add offset vector to submobjects.
-                if animation.mobject is not None:
-                    root_mobject_center = animation.mobject.get_center()
+            update_data = []
+            if self.previous_scene is not None and (
+                request.first_request or self.previous_scene != requested_scene
+            ):
+                previous_mobjects = extract_mobject_family_members(
+                    self.previous_scene.mobjects, only_those_with_points=True
+                )
+                # Remove everything from the previous scene.
+                ids_to_remove = [
+                    mob.original_id
+                    for mob in previous_mobjects
+                    if not isinstance(mob, ValueTracker)
+                ]
+
+            if request.first_request or self.previous_scene != requested_scene:
+                # Add everything from the requested scene.
+                mobjects_to_add = [
+                    serialize_mobject(mobject)
                     for mobject in extract_mobject_family_members(
-                        animation.mobject, only_those_with_points=True
-                    ):
-                        mobject_id = id(mobject)
-                        mobject_ids.append(mobject_id)
-                        mobject_dict[mobject_id].root_mobject_offset[:] = (
-                            mobject.get_center() - root_mobject_center
+                        requested_scene.mobjects, only_those_with_points=True
+                    )
+                    if not isinstance(mobject, ValueTracker)
+                ]
+
+                # Send tween info.
+                all_animations_tweened = True
+                for animation in requested_scene.animations:
+                    # Add offset vector to submobjects.
+                    tween_data = generate_tween_data(animation)
+                    if tween_data is None:
+                        all_animations_tweened = False
+                        continue
+                    if animation.mobject is not None:
+                        root_mobject_center = animation.mobject.get_center()
+                        tween_info_list = []
+                        for mobject in extract_mobject_family_members(
+                            animation.mobject, only_those_with_points=True
+                        ):
+                            tween_info = frameserver_pb2.TweenInfo(
+                                id=mobject.original_id,
+                                root_mobject_offset=mobject.get_center()
+                                - root_mobject_center,
+                            )
+                            tween_info_list.append(tween_info)
+
+                    animation_proto = frameserver_pb2.Animation(
+                        name=animation.__class__.__name__,
+                        duration=requested_scene.duration,
+                        easing_function=animation.rate_func.__name__,
+                        tween_data=tween_data,
+                        tween_info=tween_info_list,
+                    )
+                    animations.append(animation_proto)
+            else:
+                all_animations_tweened = False
+                for index, animation in enumerate(requested_scene.animations):
+                    if generate_tween_data(animation) is None:
+                        update_data.append(
+                            frameserver_pb2.UpdateData(
+                                id=animation.mobject.original_id,
+                                type=frameserver_pb2.UpdateData.UpdateType.REDRAW,
+                                redraw_data=serialize_mobject(animation.mobject),
+                            )
                         )
 
-                animation_proto = frameserver_pb2.Animation(
-                    name=animation.__class__.__name__,
-                    duration=requested_scene.duration,
-                    mobject_ids=mobject_ids,
-                    easing_function=animation.rate_func.__name__,
-                    tween_data=generate_tween_data(animation),
-                )
-                animations.append(animation_proto)
-
             resp = frameserver_pb2.FrameResponse(
-                mobjects=serialized_mobjects,
+                frame_data=frameserver_pb2.FrameData(
+                    remove=ids_to_remove, add=mobjects_to_add, update=update_data
+                ),
                 scene_finished=scene_finished
                 or request.preview_mode
                 == frameserver_pb2.FrameRequest.PreviewMode.IMAGE,
                 animations=animations,
                 animation_index=requested_scene_index,
                 animation_offset=animation_offset,
+                all_animations_tweened=all_animations_tweened,
             )
+            if update_previous_scene:
+                self.previous_scene = requested_scene
+                self.previous_scene_index = requested_scene_index
             return resp
         except Exception as e:
             traceback.print_exc()
@@ -290,7 +326,7 @@ def animations_to_name(animations):
 
 
 def serialize_mobject(mobject):
-    mob_proto = frameserver_pb2.MobjectData(id=id(mobject))
+    mob_proto = frameserver_pb2.MobjectData(id=mobject.original_id)
 
     if isinstance(mobject, VMobject):
         needs_redraw = False
