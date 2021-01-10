@@ -179,6 +179,39 @@ class Graph(VMobject):
                 graph = Graph(list(G.nodes), list(G.edges), layout="partite", partitions=[[0, 1]])
                 self.play(ShowCreation(graph))
 
+    The tree layout, based on ``graphviz``, can be used to show the graph
+    by distance from the root vertex.
+
+    .. note::
+
+        Graphviz automatically detects the root vertex.
+
+    .. manim:: Tree
+
+        import networkx as nx
+
+        class Tree(Scene):
+            def construct(self):
+                G = nx.Graph()
+
+                G.add_node("ROOT")
+
+                for i in range(5):
+                    G.add_node("Child_%i" % i)
+                    G.add_node("Grandchild_%i" % i)
+                    G.add_node("Greatgrandchild_%i" % i)
+
+                    G.add_edge("ROOT", "Child_%i" % i)
+                    G.add_edge("Child_%i" % i, "Grandchild_%i" % i)
+                    G.add_edge("Grandchild_%i" % i, "Greatgrandchild_%i" % i)
+
+                self.play(ShowCreation(
+                    Graph(list(G.nodes), list(G.edges), layout="tree")))
+
+    .. warning::
+
+        You must have graphviz installed on your system (it is available on Chocolatey, Homebrew)
+        and pygraphviz installed (available with pip) to use the tree layout.
     """
 
     def __init__(
@@ -211,36 +244,65 @@ class Graph(VMobject):
             "shell": nx.layout.shell_layout,
             "spectral": nx.layout.spectral_layout,
             "partite": nx.layout.multipartite_layout,
+            "tree": nx.drawing.nx_agraph.graphviz_layout,
             "spiral": nx.layout.spiral_layout,
             "spring": nx.layout.spring_layout,
         }
+
+        custom_layouts = ["random", "partite", "tree"]
 
         if layout_config is None:
             layout_config = {}
 
         if isinstance(layout, dict):
             self._layout = layout
-        elif layout in automatic_layouts and layout != "random":
-            if layout == "partite":
-                if partitions is None or len(partitions) == 0:
-                    raise ValueError(
-                        "The partite layout requires the 'partitions' parameter to contain the partition of the vertices"
-                    )
-                partition_count = len(partitions)
-                for i in range(partition_count):
-                    for v in partitions[i]:
-                        if nx_graph.nodes[v] is None:
-                            raise ValueError(
-                                "The partition must contain arrays of vertices in the graph"
-                            )
-                        nx_graph.nodes[v]["subset"] = i
-                # Add missing vertices to their own side
-                for v in nx_graph.nodes:
-                    if "subset" not in nx_graph.nodes[v]:
-                        nx_graph.nodes[v]["subset"] = partition_count
+        elif layout in automatic_layouts and layout not in custom_layouts:
             self._layout = automatic_layouts[layout](
                 nx_graph, scale=layout_scale, **layout_config
             )
+            self._layout = dict(
+                [(k, np.append(v, [0])) for k, v in self._layout.items()]
+            )
+        elif layout == "partite":
+            if partitions is None or len(partitions) == 0:
+                raise ValueError(
+                    "The partite layout requires the 'partitions' parameter to contain the partition of the vertices"
+                )
+            partition_count = len(partitions)
+            for i in range(partition_count):
+                for v in partitions[i]:
+                    if nx_graph.nodes[v] is None:
+                        raise ValueError(
+                            "The partition must contain arrays of vertices in the graph"
+                        )
+                    nx_graph.nodes[v]["subset"] = i
+            # Add missing vertices to their own side
+            for v in nx_graph.nodes:
+                if "subset" not in nx_graph.nodes[v]:
+                    nx_graph.nodes[v]["subset"] = partition_count
+
+            self._layout = automatic_layouts["partite"](
+                nx_graph, scale=layout_scale, **layout_config
+            )
+            self._layout = dict(
+                [(k, np.append(v, [0])) for k, v in self._layout.items()]
+            )
+        elif layout == "tree":
+            # the tree layout places 2d coordinates without any known scale
+            # we need to rescale manually afterwards...
+            if "prog" not in layout_config:
+                layout_config["prog"] = "dot"
+            try:
+                self._layout = automatic_layouts["tree"](nx_graph, **layout_config)
+            except ModuleNotFoundError:
+                raise Exception(
+                    "You need to have graphviz installed on your system to use the tree layout"
+                )
+            max_value = max(map(lambda x: max(x), self._layout.values()))
+            for k, v in self._layout.items():
+                v = np.array(v)
+                v /= max_value
+                self._layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
             self._layout = dict(
                 [(k, np.append(v, [0])) for k, v in self._layout.items()]
             )
