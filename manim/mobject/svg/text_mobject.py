@@ -1186,6 +1186,9 @@ class MarkupText(SVGMobject):
         colormap = self.extract_color_tags()
         gradientmap = self.extract_gradient_tags()
 
+        if not MarkupUtils.validate(self.text):
+            raise ValueError(f"Pango cannot parse your markup in {self.text}.")
+
         if self.line_spacing == -1:
             self.line_spacing = self.size + self.size * 0.3
         else:
