@@ -125,6 +125,38 @@ class Drawing4(Scene):
         self.wait()
 
 
+class LogoTest(Scene):
+    def construct(self):
+        logo = SVGMobject(get_test_resource("logo.svg"))
+        self.add(logo)
+        self.wait()
+
+
+class MSModelTest(Scene):
+    # TODO: Have to specify no fill, and possibly mitre issues?
+    def construct(self):
+        ms_model = SVGMobject(get_test_resource("ms_model.svg")).set_fill(opacity=0)
+        self.add(ms_model)
+        self.wait()
+
+
+"""
+
+At the moment, we're having syntax issues with this test... 
+we're diving into the deep world of things other than paths.
+
+class RCTest(Scene):
+    pytest_skip = True
+
+    def construct(self):
+        rc_svg = SVGMobject(get_test_resource("RC.svg"))
+        self.add(rc_svg)
+        self.wait()
+
+# set_test_scene(RCTest, "img_and_svg")
+"""
+
+
 class SingleUSStateTest(Scene):
     pytest_skip = True
 
@@ -135,10 +167,8 @@ class SingleUSStateTest(Scene):
 
 
 class ContiguousUSMapTest(Scene):
-    pytest_skip = True
-
     def construct(self):
-        states = SVGMobject(get_test_resource("states_map.svg"))
+        states = SVGMobject(get_test_resource("states_map.svg")).set_fill(opacity=0).scale(3)
         self.add(states)
         self.wait()
 
