@@ -36,6 +36,10 @@ You can replace ``pip`` with ``pip3`` if you need to in your system.
 Alternatively, you can work with Manim using our Docker image that can be
 found at `Docker Hub <https://hub.docker.com/r/manimcommunity/manim>`_.
 
+
+Installation for Contributers
+*****************************
+
 If you'd like to contribute to and/or help develop ``manim-community``, you can
 clone this repository to your local device.  To do this, first make sure you
 have ``git`` installed. Then, clone this repo by executing either
