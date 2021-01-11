@@ -78,6 +78,7 @@ class Matrix(VMobject):
         element_alignment_corner=DR,
         left_bracket="\\big[",
         right_bracket="\\big]",
+        transpose=False,
         **kwargs
     ):
         """
@@ -95,8 +96,11 @@ class Matrix(VMobject):
         self.element_alignment_corner = element_alignment_corner
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
+        self.transpose = transpose
         VMobject.__init__(self, **kwargs)
-        matrix = np.array(matrix, ndmin=1)
+        matrix = np.array(matrix, ndmin=2)
+        if self.transpose:
+            matrix = matrix.transpose()
         mob_matrix = self.matrix_to_mob_matrix(matrix)
         self.organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*mob_matrix.flatten())
