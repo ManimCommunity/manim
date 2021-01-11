@@ -659,6 +659,9 @@ class VMobjectFromSVGPathstring(VMobject):
             if not is_relative:
                 result[:, 0] = start_point[0]
 
+        elif command == "A":
+            raise NotImplementedError("Arcs are not implemented.")
+
         # This is where the A command must be included.
         # It has special numbers (angles?) that don't translate to points.
         else:
