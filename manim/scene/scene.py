@@ -876,8 +876,26 @@ class Scene(Container):
             The offset in the sound file after which
             the sound can be played.
 
-        gain :
+        gain : Amplification of the sound.
 
+        Examples
+        --------
+        .. manim:: SoundExample
+            :save_last_frame:
+
+            class SoundExample(Scene):
+                # Source of sound under Creative Commons 0 License. https://freesound.org/people/Druminfected/sounds/250551/
+                def construct(self):
+                    dot = Dot().set_color(GREEN)
+                    self.add_sound("/docs/source/_static/click.wav")
+                    self.add(dot)
+                    self.wait()
+                    self.add_sound("/docs/source/_static/click.wav")
+                    dot.set_color(BLUE)
+                    self.wait()
+                    self.add_sound("/docs/source/_static/click.wav")
+                    dot.set_color(RED)
+                    self.wait()
         """
         if self.renderer.skip_animations:
             return
