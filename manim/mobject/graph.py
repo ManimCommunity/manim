@@ -186,8 +186,9 @@ class Graph(VMobject):
 
         Graphviz automatically detects the root vertex.
 
-    .. manim:: Tree
+    .. code-block:: python
 
+        from manim import *
         import networkx as nx
 
         class Tree(Scene):
@@ -293,7 +294,8 @@ class Graph(VMobject):
             if "prog" not in layout_config:
                 layout_config["prog"] = "dot"
             try:
-                self._layout = automatic_layouts["tree"](nx_graph, **layout_config)
+                self._layout = automatic_layouts["tree"](
+                    nx_graph, **layout_config)
             except ModuleNotFoundError:
                 raise Exception(
                     "You need to have graphviz installed on your system to use the tree layout"
@@ -309,7 +311,8 @@ class Graph(VMobject):
         elif layout == "random":
             # the random layout places coordinates in [0, 1)
             # we need to rescale manually afterwards...
-            self._layout = automatic_layouts["random"](nx_graph, **layout_config)
+            self._layout = automatic_layouts["random"](
+                nx_graph, **layout_config)
             for k, v in self._layout.items():
                 self._layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
             self._layout = dict(
@@ -326,7 +329,8 @@ class Graph(VMobject):
         elif isinstance(labels, bool):
             if labels:
                 self._labels = dict(
-                    [(v, MathTex(v, fill_color=label_fill_color)) for v in vertices]
+                    [(v, MathTex(v, fill_color=label_fill_color))
+                     for v in vertices]
                 )
             else:
                 self._labels = dict()
@@ -343,7 +347,8 @@ class Graph(VMobject):
                 [(k, v) for k, v in vertex_config.items() if k not in vertices]
             )
         self._vertex_config = dict(
-            [(v, vertex_config.get(v, copy(default_vertex_config))) for v in vertices]
+            [(v, vertex_config.get(v, copy(default_vertex_config)))
+             for v in vertices]
         )
         for v, label in self._labels.items():
             self._vertex_config[v]["label"] = label
@@ -394,7 +399,8 @@ class Graph(VMobject):
         for (u, v), edge in self.edges.items():
 
             def update_edge(e, u=u, v=v):
-                e.set_start_and_end_attrs(self[u].get_center(), self[v].get_center())
+                e.set_start_and_end_attrs(
+                    self[u].get_center(), self[v].get_center())
                 e.generate_points()
 
             update_edge(edge)
