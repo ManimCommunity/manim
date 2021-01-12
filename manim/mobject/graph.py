@@ -4,8 +4,6 @@ __all__ = [
     "Graph",
 ]
 
-from networkx.algorithms.cuts import volume
-from ..constants import UP
 from ..utils.color import BLACK
 from .types.vectorized_mobject import VMobject
 from .geometry import Dot, Line, LabeledDot
