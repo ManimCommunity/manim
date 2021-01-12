@@ -4,6 +4,7 @@ __all__ = [
     "Graph",
 ]
 
+from networkx.algorithms.cuts import volume
 from ..constants import UP
 from ..utils.color import BLACK
 from .types.vectorized_mobject import VMobject
@@ -179,14 +180,11 @@ class Graph(VMobject):
                 graph = Graph(list(G.nodes), list(G.edges), layout="partite", partitions=[[0, 1]])
                 self.play(ShowCreation(graph))
 
-    The tree layout, based on ``graphviz``, can be used to show the graph
-    by distance from the root vertex.
+    The custom tree layout can be used to show the graph
+    by distance from the root vertex. You must pass the root vertex
+    of the tree.
 
-    .. note::
-
-        Graphviz automatically detects the root vertex.
-
-    .. code-block:: python
+    .. manim:: Tree
 
         from manim import *
         import networkx as nx
@@ -207,12 +205,7 @@ class Graph(VMobject):
                     G.add_edge("Grandchild_%i" % i, "Greatgrandchild_%i" % i)
 
                 self.play(ShowCreation(
-                    Graph(list(G.nodes), list(G.edges), layout="tree")))
-
-    .. warning::
-
-        You must have graphviz installed on your system (it is available on Chocolatey, Homebrew)
-        and pygraphviz installed (available with pip) to use the tree layout.
+                    Graph(list(G.nodes), list(G.edges), layout="tree", root_vertex="ROOT")))
     """
 
     def __init__(
@@ -228,6 +221,7 @@ class Graph(VMobject):
         vertex_config: Union[dict, None] = None,
         edge_type: "Mobject" = Line,
         partitions: Union[List[List[Hashable]], None] = None,
+        root_vertex: Union[Hashable, None] = None,
         edge_config: Union[dict, None] = None,
     ) -> None:
         VMobject.__init__(self)
@@ -245,7 +239,7 @@ class Graph(VMobject):
             "shell": nx.layout.shell_layout,
             "spectral": nx.layout.spectral_layout,
             "partite": nx.layout.multipartite_layout,
-            "tree": nx.drawing.nx_agraph.graphviz_layout,
+            "tree": self._tree_layout,
             "spiral": nx.layout.spiral_layout,
             "spring": nx.layout.spring_layout,
         }
@@ -258,11 +252,18 @@ class Graph(VMobject):
         if isinstance(layout, dict):
             self._layout = layout
         elif layout in automatic_layouts and layout not in custom_layouts:
+
             self._layout = automatic_layouts[layout](
                 nx_graph, scale=layout_scale, **layout_config
             )
             self._layout = dict(
                 [(k, np.append(v, [0])) for k, v in self._layout.items()]
+            )
+        elif layout == "tree":
+            self._layout = automatic_layouts[layout](
+                nx_graph,
+                root_vertex=root_vertex,
+                scale=layout_scale,
             )
         elif layout == "partite":
             if partitions is None or len(partitions) == 0:
@@ -285,25 +286,6 @@ class Graph(VMobject):
             self._layout = automatic_layouts["partite"](
                 nx_graph, scale=layout_scale, **layout_config
             )
-            self._layout = dict(
-                [(k, np.append(v, [0])) for k, v in self._layout.items()]
-            )
-        elif layout == "tree":
-            # the tree layout places 2d coordinates without any known scale
-            # we need to rescale manually afterwards...
-            if "prog" not in layout_config:
-                layout_config["prog"] = "dot"
-            try:
-                self._layout = automatic_layouts["tree"](nx_graph, **layout_config)
-            except ModuleNotFoundError:
-                raise Exception(
-                    "You need to have graphviz installed on your system to use the tree layout"
-                )
-            max_value = max(map(lambda x: max(x), self._layout.values()))
-            for k, v in self._layout.items():
-                v = np.array(v)
-                v /= max_value
-                self._layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
             self._layout = dict(
                 [(k, np.append(v, [0])) for k, v in self._layout.items()]
             )
@@ -400,6 +382,68 @@ class Graph(VMobject):
 
             update_edge(edge)
             edge.add_updater(update_edge)
+
+    def _tree_layout(
+        self,
+        G: nx.classes.graph.Graph,
+        root_vertex: Union[Hashable, None],
+        scale: float,
+    ) -> dict:
+        result = {root_vertex: np.array([0, 0, 0])}
+
+        if not nx.is_tree(G):
+            print(
+                "Warning: The tree layout should be used with tree graphs only. Graphs which contain a cycle may cause infinite recursion."
+            )
+        if root_vertex is None:
+            raise ValueError("The tree layout requires the root_vertex parameter")
+
+        def _recursive_position_for_row(
+            G: nx.classes.graph.Graph,
+            result: dict,
+            two_rows_before: List[Hashable],
+            last_row: List[Hashable],
+            current_height: float,
+        ):
+            new_row = []
+            for v in last_row:
+                for x in G.neighbors(v):
+                    if x not in two_rows_before:
+                        new_row.append(x)
+
+            new_row_length = len(new_row)
+
+            if new_row_length == 0:
+                return
+
+            if new_row_length == 1:
+                result[new_row[0]] = np.array([0, current_height, 0])
+            else:
+                for i in range(new_row_length):
+                    result[new_row[i]] = np.array(
+                        [-1 + 2 * i / (new_row_length - 1), current_height, 0]
+                    )
+
+            _recursive_position_for_row(
+                G,
+                result,
+                two_rows_before=last_row,
+                last_row=new_row,
+                current_height=current_height + 1,
+            )
+
+        _recursive_position_for_row(
+            G, result, two_rows_before=[], last_row=[root_vertex], current_height=1
+        )
+
+        height = max(map(lambda v: result[v][1], result))
+
+        return dict(
+            [
+                (v, np.array([pos[0], 1 - 2 * pos[1] / height, pos[2]]))
+                for v, pos in result.items()
+            ]
+        )
 
     def __getitem__(self: "Graph", v: Hashable) -> "Mobject":
         return self.vertices[v]
