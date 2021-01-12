@@ -1188,7 +1188,9 @@ class MarkupText(SVGMobject):
 
         if not MarkupUtils.validate(self.text):
             raise ValueError(
-                f"Pango cannot parse your markup in {self.text}. Please check for typos, unmatched tags or unescaped special chars like < and &."
+                f"Pango cannot parse your markup in {self.text}. "
+                "Please check for typos, unmatched tags or unescaped "
+                "special chars like < and &."
             )
 
         if self.line_spacing == -1:
