@@ -13,6 +13,19 @@ def test_good_markup():
     assert success, "'<b>foo</b>' and 'foo' should not fail validation"
 
 
+def test_special_tags_markup():
+    """Test creation of valid :class:`MarkupText` object with unofficial tags"""
+    try:
+        text1 = MarkupText('<color col="RED">foo</color>')
+        text1 = MarkupText('<gradient from="RED" to="YELLOW">foo</gradient>')
+        success = True
+    except ValueError:
+        success = False
+    assert (
+        success
+    ), '\'<color col="RED">foo</color>\' and \'<gradient from="RED" to="YELLOW">foo</gradient>\' should not fail validation'
+
+
 def test_unbalanced_tag_markup():
     """Test creation of invalid :class:`MarkupText` object (unbalanced tag)"""
     try:
