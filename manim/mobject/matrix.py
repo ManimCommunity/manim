@@ -78,7 +78,7 @@ class Matrix(VMobject):
         element_alignment_corner=DR,
         left_bracket="\\big[",
         right_bracket="\\big]",
-        **kwargs
+        **kwargs,
     ):
         """
         Matrix can either either include numbers, tex_strings,
@@ -202,14 +202,14 @@ class DecimalMatrix(Matrix):
         matrix,
         element_to_mobject=DecimalNumber,
         element_to_mobject_config={"num_decimal_places": 1},
-        **kwargs
+        **kwargs,
     ):
         Matrix.__init__(
             self,
             matrix,
             element_to_mobject=element_to_mobject,
             element_to_mobject_config=element_to_mobject_config,
-            **kwargs
+            **kwargs,
         )
 
 
