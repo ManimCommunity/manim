@@ -887,13 +887,13 @@ class Scene(Container):
                 # Source of sound under Creative Commons 0 License. https://freesound.org/people/Druminfected/sounds/250551/
                 def construct(self):
                     dot = Dot().set_color(GREEN)
-                    self.add_sound("/docs/source/_static/click.wav")
+                    self.add_sound("click.wav")
                     self.add(dot)
                     self.wait()
-                    self.add_sound("/docs/source/_static/click.wav")
+                    self.add_sound("click.wav")
                     dot.set_color(BLUE)
                     self.wait()
-                    self.add_sound("/docs/source/_static/click.wav")
+                    self.add_sound("click.wav")
                     dot.set_color(RED)
                     self.wait()
         """
