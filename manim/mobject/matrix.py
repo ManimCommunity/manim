@@ -98,7 +98,9 @@ class Matrix(VMobject):
         VMobject.__init__(self, **kwargs)
         matrix = np.array(matrix)
         if len(matrix.shape) < 2:
-            raise ValueError(f"{self.__str__()} class requires a two-dimensional array!")
+            raise ValueError(
+                f"{self.__str__()} class requires a two-dimensional array!"
+            )
         mob_matrix = self.matrix_to_mob_matrix(matrix)
         self.organize_mob_matrix(mob_matrix)
         self.elements = VGroup(*mob_matrix.flatten())
