@@ -50,12 +50,6 @@ Ensure that the TeXLiveManager tool ``tlmgr`` works, by running ``tlmgr
    sudo tlmgr install standalone preview doublestroke relsize fundus-calligra \
    wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
 
-To install graphviz & pygraphviz for the 'tree' layout:
-
-.. code-block:: bash
-
-   brew install graphviz
-   python3 -m pip install pygraphviz
 
 Certifying a clean install
 **************************
