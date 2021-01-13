@@ -250,7 +250,6 @@ class Graph(VMobject):
         if isinstance(layout, dict):
             self._layout = layout
         elif layout in automatic_layouts and layout not in custom_layouts:
-
             self._layout = automatic_layouts[layout](
                 nx_graph, scale=layout_scale, **layout_config
             )
