@@ -1031,7 +1031,7 @@ class VGroup(VMobject):
 
     def __str__(self):
         return (
-            f"self.__class__.__name__({len(self.submobjects)})"
+            f"{self.__class__.__name__} of {len(self.submobjects)} submobjects"
         )
 
     def add(self, *vmobjects):
