@@ -83,21 +83,9 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
     def GetFrameAtTime(self, request, context):
         try:
-            # Determine start and end indices.
             if (
                 request.preview_mode
                 == frameserver_pb2.FrameRequest.PreviewMode.ANIMATION_RANGE
-            ):
-                requested_scene_index = request.start_index
-            elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.ALL:
-                requested_scene_index = 0
-            elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.IMAGE:
-                requested_scene_index = request.image_index
-
-            if (
-                request.preview_mode
-                == frameserver_pb2.FrameRequest.PreviewMode.ANIMATION_RANGE
-                and request.end_index > request.start_index
             ):
                 requested_end_index = request.end_index
             elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.ALL:
@@ -107,20 +95,22 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
             # Find the requested scene.
             scene_finished = False
+            requested_scene_index = request.animation_index
+            if request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.IMAGE:
+                scene_finished = True
+
             if (
                 request.animation_offset
-                <= self.keyframes[request.animation_index].duration
+                <= self.keyframes[requested_scene_index].duration
             ):
-                requested_scene_index = request.animation_index
                 animation_offset = request.animation_offset
             else:
-                if request.animation_index + 1 < requested_end_index:
-                    requested_scene_index = request.animation_index + 1
+                if requested_scene_index + 1 < requested_end_index:
+                    requested_scene_index += 1
                     animation_offset = 0
                 else:
                     scene_finished = True
-                    requested_scene_index = request.animation_index
-                    animation_offset = self.keyframes[request.animation_index].duration
+                    animation_offset = self.keyframes[requested_scene_index].duration
 
             if requested_scene_index == self.previous_scene_index:
                 requested_scene = self.previous_scene

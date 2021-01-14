@@ -35,20 +35,17 @@ message Animation {
 }
 
 message FrameRequest {
-    float time_offset = 1;
-    int32 start_index = 2;
-    int32 end_index = 3;
-    int32 image_index = 4;
+    int32 end_index = 1;
 
     enum PreviewMode {
       ALL = 0;
       ANIMATION_RANGE = 1;
       IMAGE = 2;
     }
-    PreviewMode preview_mode = 5;
-    bool first_request = 6;
-    int32 animation_index = 7;
-    float animation_offset = 8;
+    PreviewMode preview_mode = 2;
+    bool first_request = 3;
+    int32 animation_index = 4;
+    float animation_offset = 5;
 }
 
 message Style {
