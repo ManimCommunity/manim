@@ -106,33 +106,29 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 requested_end_index = len(self.keyframes)
 
             # Find the requested scene.
-            requested_scene = self.keyframes[requested_scene_index]
-            requested_scene_end_time = requested_scene.duration
             scene_finished = False
-            while requested_scene_end_time < request.time_offset:
-                if requested_scene_index + 1 < requested_end_index:
-                    requested_scene_index += 1
-                    requested_scene = self.keyframes[requested_scene_index]
-                    requested_scene_end_time += requested_scene.duration
+            if (
+                request.animation_offset
+                <= self.keyframes[request.animation_index].duration
+            ):
+                requested_scene_index = request.animation_index
+                animation_offset = request.animation_offset
+            else:
+                if request.animation_index + 1 < requested_end_index:
+                    requested_scene_index = request.animation_index + 1
+                    animation_offset = 0
                 else:
                     scene_finished = True
-                    break
+                    requested_scene_index = request.animation_index
+                    animation_offset = self.keyframes[request.animation_index].duration
 
             if requested_scene_index == self.previous_scene_index:
                 requested_scene = self.previous_scene
                 update_previous_scene = False
             else:
-                requested_scene = copy.deepcopy(requested_scene)
+                requested_scene = copy.deepcopy(self.keyframes[requested_scene_index])
                 update_previous_scene = True
 
-            # Update to the requested time.
-            if not scene_finished:
-                requested_scene_start_time = (
-                    requested_scene_end_time - requested_scene.duration
-                )
-                animation_offset = request.time_offset - requested_scene_start_time
-            else:
-                animation_offset = requested_scene.duration
             requested_scene.update_to_time(animation_offset)
 
             ids_to_remove = []

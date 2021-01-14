@@ -47,6 +47,8 @@ message FrameRequest {
     }
     PreviewMode preview_mode = 5;
     bool first_request = 6;
+    int32 animation_index = 7;
+    float animation_offset = 8;
 }
 
 message Style {
