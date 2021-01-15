@@ -1362,8 +1362,8 @@ class _AnimationBuilder:
             )
 
         def update_target(*method_args, **method_kwargs):
-            if hasattr(method, "_animation_override"):
-                self.overridden_animation = method._animation_override(
+            if hasattr(method, "_override_animate"):
+                self.overridden_animation = method._override_animate(
                     self.mobject, *method_args, **method_kwargs
                 )
             else:
@@ -1434,7 +1434,7 @@ def override_animate(method):
     """
 
     def decorator(animation_method):
-        method._animation_override = animation_method
+        method._override_animate = animation_method
         return animation_method
 
     return decorator
