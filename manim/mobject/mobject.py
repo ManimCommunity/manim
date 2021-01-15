@@ -13,7 +13,6 @@ import sys
 
 from pathlib import Path
 from colour import Color
-from types import MethodType
 import numpy as np
 
 from .. import config
@@ -28,7 +27,6 @@ from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix
-
 
 # TODO: Explain array_attrs
 
@@ -76,6 +74,11 @@ class Mobject(Container):
 
                 self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
 
+        .. seealso::
+
+            :meth:`~.Mobject.override_animate`
+
+
         Examples
         --------
 
@@ -101,7 +104,7 @@ class Mobject(Container):
                     self.play(Uncreate(s))
 
         """
-        return _AnimationBuilder(self, overridden_animations=[])
+        return _AnimationBuilder(self)
 
     def __repr__(self):
         return str(self.name)
@@ -1344,27 +1347,32 @@ class Group(Mobject):
 
 
 class _AnimationBuilder:
-    def __init__(self, mobject, overridden_animations, generate_target=True):
+    def __init__(self, mobject, generate_target=True, overridden_animation=None):
         self.mobject = mobject
-        self.overridden_animations = overridden_animations
+        self.overridden_animation = overridden_animation
         if generate_target:
             self.mobject.generate_target()
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
 
-        if hasattr(method, "_animation_override"):
-            return MethodType(method._animation_override, self.mobject)
-
         def update_target(*method_args, **method_kwargs):
+            if self.overridden_animation:
+                raise NotImplementedError(
+                    "Method chaining is currently not supported for "
+                    "overridden animations"
+                )
+
             if hasattr(method, "_animation_override"):
-                self.overridden_animations.append(
-                    method._animation_override(*method_args, **method_kwargs)
+                self.overridden_animation = method._animation_override(
+                    self.mobject, *method_args, **method_kwargs
                 )
             else:
                 method(*method_args, **method_kwargs)
             return _AnimationBuilder(
-                self.mobject, self.overridden_animations, generate_target=False
+                self.mobject,
+                generate_target=False,
+                overridden_animation=self.overridden_animation,
             )
 
         return update_target
@@ -1372,15 +1380,28 @@ class _AnimationBuilder:
     def build(self):
         from ..animation.transform import _MethodAnimation
 
-        built_animation = _MethodAnimation(self.mobject)
+        if self.overridden_animation:
+            return self.overridden_animation
 
-        if self.overridden_animations:
-            return AnimationGroup(built_animation, *self.overridden_animations)
-        return built_animation
+        return _MethodAnimation(self.mobject)
 
 
 def override_animate(method):
     r"""Decorator for overriding method animations.
+
+    This allows to specify a method (returning an :class:`~.Animation`)
+    which is called when the decorated method is used with the ``.animate`` syntax
+    for animating the application of a method.
+
+    .. seealso::
+
+        :prop:`~.Mobject.animate`
+
+    .. note::
+
+        Overridden methods cannot be combined with normal or other overridden
+        methods using method chaining with the ``.animate`` syntax.
+
 
     Examples
     --------
