@@ -16,6 +16,66 @@ import networkx as nx
 import numpy as np
 
 
+def _tree_layout(
+    G: nx.classes.graph.Graph,
+    root_vertex: Union[Hashable, None],
+    scale: float,
+) -> dict:
+    result = {root_vertex: np.array([0, 0, 0])}
+
+    if not nx.is_tree(G):
+        raise ValueError("The tree layout must be used with trees")
+    if root_vertex is None:
+        raise ValueError("The tree layout requires the root_vertex parameter")
+
+    def _recursive_position_for_row(
+        G: nx.classes.graph.Graph,
+        result: dict,
+        two_rows_before: List[Hashable],
+        last_row: List[Hashable],
+        current_height: float,
+    ):
+        new_row = []
+        for v in last_row:
+            for x in G.neighbors(v):
+                if x not in two_rows_before:
+                    new_row.append(x)
+
+        new_row_length = len(new_row)
+
+        if new_row_length == 0:
+            return
+
+        if new_row_length == 1:
+            result[new_row[0]] = np.array([0, current_height, 0])
+        else:
+            for i in range(new_row_length):
+                result[new_row[i]] = np.array(
+                    [-1 + 2 * i / (new_row_length - 1), current_height, 0]
+                )
+
+        _recursive_position_for_row(
+            G,
+            result,
+            two_rows_before=last_row,
+            last_row=new_row,
+            current_height=current_height + 1,
+        )
+
+    _recursive_position_for_row(
+        G, result, two_rows_before=[], last_row=[root_vertex], current_height=1
+    )
+
+    height = max(map(lambda v: result[v][1], result))
+
+    return dict(
+        [
+            (v, np.array([pos[0], 1 - 2 * pos[1] / height, pos[2]]) * scale / 2)
+            for v, pos in result.items()
+        ]
+    )
+
+
 class Graph(VMobject):
     """An undirected graph (that is, a collection of vertices connected with edges).
 
@@ -237,7 +297,7 @@ class Graph(VMobject):
             "shell": nx.layout.shell_layout,
             "spectral": nx.layout.spectral_layout,
             "partite": nx.layout.multipartite_layout,
-            "tree": self._tree_layout,
+            "tree": _tree_layout,
             "spiral": nx.layout.spiral_layout,
             "spring": nx.layout.spring_layout,
         }
@@ -379,68 +439,6 @@ class Graph(VMobject):
 
             update_edge(edge)
             edge.add_updater(update_edge)
-
-    def _tree_layout(
-        self,
-        G: nx.classes.graph.Graph,
-        root_vertex: Union[Hashable, None],
-        scale: float,
-    ) -> dict:
-        result = {root_vertex: np.array([0, 0, 0])}
-
-        if not nx.is_tree(G):
-            print(
-                "Warning: The tree layout should be used with tree graphs only. Graphs which contain a cycle may cause infinite recursion."
-            )
-        if root_vertex is None:
-            raise ValueError("The tree layout requires the root_vertex parameter")
-
-        def _recursive_position_for_row(
-            G: nx.classes.graph.Graph,
-            result: dict,
-            two_rows_before: List[Hashable],
-            last_row: List[Hashable],
-            current_height: float,
-        ):
-            new_row = []
-            for v in last_row:
-                for x in G.neighbors(v):
-                    if x not in two_rows_before:
-                        new_row.append(x)
-
-            new_row_length = len(new_row)
-
-            if new_row_length == 0:
-                return
-
-            if new_row_length == 1:
-                result[new_row[0]] = np.array([0, current_height, 0])
-            else:
-                for i in range(new_row_length):
-                    result[new_row[i]] = np.array(
-                        [-1 + 2 * i / (new_row_length - 1), current_height, 0]
-                    )
-
-            _recursive_position_for_row(
-                G,
-                result,
-                two_rows_before=last_row,
-                last_row=new_row,
-                current_height=current_height + 1,
-            )
-
-        _recursive_position_for_row(
-            G, result, two_rows_before=[], last_row=[root_vertex], current_height=1
-        )
-
-        height = max(map(lambda v: result[v][1], result))
-
-        return dict(
-            [
-                (v, np.array([pos[0], 1 - 2 * pos[1] / height, pos[2]]))
-                for v, pos in result.items()
-            ]
-        )
 
     def __getitem__(self: "Graph", v: Hashable) -> "Mobject":
         return self.vertices[v]
