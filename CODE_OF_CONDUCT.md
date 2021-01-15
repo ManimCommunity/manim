@@ -93,7 +93,7 @@ This Code of Conduct applies to every member in official Manim Community online 
 
 ## Consequences
 
-If a member's behavior violates this code of conduct, the Manim Community Code of Conduct team may take any action they deem appropriate, including, but not limited to: warning the offender, temporary bans, deletion of offending messages, and expulsion from the community and its online spaces. The full list of consequences for inappropriate behavior is listed below in the Manim Community Code of Conduct Enforcement Procedures.
+If a member's behavior violates this code of conduct, the Manim Community Code of Conduct team may take any action they deem appropriate, including, but not limited to: warning the offender, temporary bans, deletion of offending messages, and expulsion from the community and its online spaces. The full list of consequences for inappropriate behavior is listed below in the Enforcement Procedures.
 
 
 
@@ -109,7 +109,7 @@ If you believe someone is violating the code of conduct, or have any other conce
 
 
 
-# Manim Community Code of Conduct Team Enforcement Procedures
+# Enforcement Procedures
 
 This document summarizes the procedures the Manim Community Code of Conduct team uses to enforce the Code of Conduct.
 
@@ -231,7 +231,7 @@ The follow up should be sent no later than one week after the receipt of the rep
 
 ## Changes to Code of Conduct
 
-When discussing a change to the Manim Community code of conduct or enforcement policies, the Manim Community Code of Conduct team will follow this decision-making process:
+When discussing a change to the Manim Community code of conduct or enforcement procedures, the Manim Community Code of Conduct team will follow this decision-making process:
 
    * **Brainstorm options.** Team members should discuss any relevant context and brainstorm a set of possible options. It is important to provide constructive feedback without getting side-tracked from the main question.
    * **Vote.** Proposed changes to the code of conduct will be decided by a two-thirds majority of all voting members of the Code of Conduct team. Team members are listed in the charter. Currently active voting members are listed in the following section.

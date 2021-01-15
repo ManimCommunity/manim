@@ -134,8 +134,7 @@ Community Code of Conduct team may take any action they deem
 appropriate, including, but not limited to: warning the offender,
 temporary bans, deletion of offending messages, and expulsion from the
 community and its online spaces. The full list of consequences for
-inappropriate behavior is listed below in the Manim Community Code of
-Conduct Enforcement Procedures.
+inappropriate behavior is listed below in the Enforcement Procedures.
 
 Thank you for helping make this a welcoming, friendly community for
 everyone.
@@ -148,7 +147,7 @@ other concerns, please contact a Manim Community Dev, or Moderator
 immediately. They can be reached on Manim's Community
 `Discord <https://discord.gg/mMRrZQW>`__.
 
-Manim Community Code of Conduct Team Enforcement Procedures
+Enforcement Procedures
 ===========================================================
 
 This document summarizes the procedures the Manim Community Code of
@@ -333,7 +332,7 @@ Changes to Code of Conduct
 --------------------------
 
 When discussing a change to the Manim Community code of conduct or
-enforcement policies, the Manim Community Code of Conduct team will
+enforcement procedures, the Manim Community Code of Conduct team will
 follow this decision-making process:
 
 -  **Brainstorm options.** Team members should discuss any relevant
