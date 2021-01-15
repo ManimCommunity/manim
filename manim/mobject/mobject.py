@@ -1356,13 +1356,13 @@ class _AnimationBuilder:
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
 
-        def update_target(*method_args, **method_kwargs):
-            if self.overridden_animation:
-                raise NotImplementedError(
-                    "Method chaining is currently not supported for "
-                    "overridden animations"
-                )
+        if self.overridden_animation:
+            raise NotImplementedError(
+                "Method chaining is currently not supported for "
+                "overridden animations"
+            )
 
+        def update_target(*method_args, **method_kwargs):
             if hasattr(method, "_animation_override"):
                 self.overridden_animation = method._animation_override(
                     self.mobject, *method_args, **method_kwargs
