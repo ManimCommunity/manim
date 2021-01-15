@@ -1347,11 +1347,10 @@ class Group(Mobject):
 
 
 class _AnimationBuilder:
-    def __init__(self, mobject, generate_target=True, overridden_animation=None):
+    def __init__(self, mobject):
         self.mobject = mobject
-        self.overridden_animation = overridden_animation
-        if generate_target:
-            self.mobject.generate_target()
+        self.overridden_animation = None
+        self.mobject.generate_target()
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
@@ -1369,11 +1368,7 @@ class _AnimationBuilder:
                 )
             else:
                 method(*method_args, **method_kwargs)
-            return _AnimationBuilder(
-                self.mobject,
-                generate_target=False,
-                overridden_animation=self.overridden_animation,
-            )
+            return self
 
         return update_target
 
