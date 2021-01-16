@@ -881,7 +881,6 @@ class Scene(Container):
         Examples
         --------
         .. manim:: SoundExample
-            :save_last_frame:
 
             class SoundExample(Scene):
                 # Source of sound under Creative Commons 0 License. https://freesound.org/people/Druminfected/sounds/250551/
