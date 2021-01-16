@@ -1423,8 +1423,9 @@ def register_font(font_file: typing.Union[str, Path]):
     path.
 
     .. code-block:: python
-       >>> with register_font(...):
-       ...     a=Text("Hello",font=...)
+
+        with register_font("path/to/font_file.ttf"):
+           a=Text("Hello",font="Custom Font Name")
 
     Raises
     ------
