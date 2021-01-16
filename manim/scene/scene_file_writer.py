@@ -461,9 +461,7 @@ class SceneFileWriter(object):
 
         if self.includes_sound:
             extension = config["movie_file_extension"]
-            sound_file_path = movie_file_path.replace(
-                extension, ".wav"
-            )
+            sound_file_path = movie_file_path.replace(extension, ".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
             self.audio_segment.export(
