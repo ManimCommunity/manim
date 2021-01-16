@@ -13,6 +13,6 @@ from ..utils.file_ops import seek_full_path_from_defaults
 def get_full_sound_file_path(sound_file_name):
     return seek_full_path_from_defaults(
         sound_file_name,
-        default_dir=config.get_dir("asset_dir"),
+        default_dir=config.get_dir("assets_dir"),
         extensions=[".wav", ".mp3"],
     )
