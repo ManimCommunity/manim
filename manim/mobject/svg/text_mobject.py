@@ -1403,7 +1403,7 @@ def register_font(font_file: typing.Union[str, Path]):
     4. In the same directory.
 
     .. note ::
-      
+
         This method of adding font files also works with
         :class:`CairoText`
 
