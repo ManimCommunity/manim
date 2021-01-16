@@ -1434,7 +1434,7 @@ def register_font(font_file: typing.Union[str, Path]):
 
     input_folder = Path(config.input_file).parent.resolve()
     possible_paths = [
-        font_file,
+        Path(font_file),
         input_folder / "assets/fonts" / font_file,
         input_folder / "fonts" / font_file,
         input_folder / font_file,
