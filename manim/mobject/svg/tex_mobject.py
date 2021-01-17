@@ -263,7 +263,7 @@ class SingleStringMathTex(SVGMobject):
                 # Fraction line needs something to be over
                 tex == "\\over",
                 tex == "\\overline",
-                # Makesure sqrt has overbar
+                # Make sure sqrt has overbar
                 tex == "\\sqrt",
                 # Need to add blank subscript or superscript
                 tex.endswith("_"),
@@ -406,7 +406,7 @@ class MathTex(SingleStringMathTex):
 
     def break_up_by_substrings(self):
         """
-        Reorganize existing submojects one layer
+        Reorganize existing submobjects one layer
         deeper based on the structure of tex_strings (as a list
         of tex_strings)
         """
@@ -422,7 +422,7 @@ class MathTex(SingleStringMathTex):
             num_submobs = len(sub_tex_mob.submobjects)
             new_index = curr_index + num_submobs
             if num_submobs == 0:
-                # For cases like empty tex_strings, we want the corresponing
+                # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
                 sub_tex_mob.submobjects = [VectorizedPoint()]
@@ -521,7 +521,9 @@ class BulletedList(Tex):
         self.dot_scale_factor = dot_scale_factor
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
-        Tex.__init__(self, *line_separated_items, **kwargs)
+        Tex.__init__(
+            self, *line_separated_items, tex_environment=tex_environment, **kwargs
+        )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
             dot.next_to(part[0], LEFT, SMALL_BUFF)

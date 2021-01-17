@@ -392,7 +392,7 @@ class ManimConfig(MutableMapping):
         c = ManimConfig()
         # Deepcopying the underlying dict is enough because all properties
         # either read directly from it or compute their value on the fly from
-        # vaulues read directly from it.
+        # values read directly from it.
         c._d = copy.deepcopy(self._d, memo)
         return c
 
@@ -450,7 +450,7 @@ class ManimConfig(MutableMapping):
         ----------
         parser : :class:`ConfigParser`
             An object reflecting the contents of one or many ``.cfg`` files.  In
-            particular, it may reflect the contents of mulitple files that have
+            particular, it may reflect the contents of multiple files that have
             been parsed in a cascading fashion.
 
         Returns
@@ -753,8 +753,9 @@ class ManimConfig(MutableMapping):
     def log_to_file(self, val: str) -> None:
         self._set_boolean("log_to_file", val)
         if val:
-            if not os.path.exists(self["log_dir"]):
-                os.makedirs(self["log_dir"])
+            log_dir = self.get_dir("log_dir")
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
             set_file_logger(self, self["verbosity"])
 
     sound = property(
@@ -1012,7 +1013,7 @@ class ManimConfig(MutableMapping):
             raise ValueError(
                 "It is unclear what it means to set dry_run to "
                 "False.  Instead, try setting each option "
-                "individually. (write_to_movie, write_alll, "
+                "individually. (write_to_movie, write_all, "
                 "save_last_frame, save_pngs, or save_as_gif)"
             )
 
