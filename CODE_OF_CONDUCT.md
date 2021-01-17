@@ -109,7 +109,11 @@ If you believe someone is violating the code of conduct, or have any other conce
 
 
 
-## **Enforcement Procedures**
+<hr style="border:2px solid gray"> </hr>
+<hr style="border:2px solid gray"> </hr>
+
+
+## Enforcement Procedures
 
 This document summarizes the procedures the Manim Community Code of Conduct team uses to enforce the Code of Conduct.
 
