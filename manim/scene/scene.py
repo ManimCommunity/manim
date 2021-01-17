@@ -876,7 +876,7 @@ class Scene(Container):
             The offset in the sound file after which
             the sound can be played.
 
-        gain : 
+        gain : float
             Amplification of the sound.
 
         Examples
@@ -896,10 +896,9 @@ class Scene(Container):
                     self.add_sound("click.wav")
                     dot.set_color(RED)
                     self.wait()
-        
-        Download the resource for the following example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>` . 
+
+        Download the resource for the following example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>`_ .
         """
-        
         if self.renderer.skip_animations:
             return
         time = self.renderer.time + time_offset
