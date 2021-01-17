@@ -109,7 +109,7 @@ If you believe someone is violating the code of conduct, or have any other conce
 
 
 
-# Enforcement Procedures
+## **Enforcement Procedures**
 
 This document summarizes the procedures the Manim Community Code of Conduct team uses to enforce the Code of Conduct.
 
