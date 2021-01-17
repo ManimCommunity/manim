@@ -86,10 +86,9 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             if (
                 request.preview_mode
                 == frameserver_pb2.FrameRequest.PreviewMode.ANIMATION_RANGE
+                or request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.ALL
             ):
                 requested_end_index = request.end_index
-            elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.ALL:
-                requested_end_index = len(self.keyframes)
             elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.IMAGE:
                 requested_end_index = len(self.keyframes)
 
