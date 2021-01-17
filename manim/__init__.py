@@ -89,4 +89,14 @@ from .utils.tex import *
 from .utils.tex_templates import *
 from .utils import unit
 
+try:
+    from IPython import get_ipython
+    from .utils.ipython_magic import ManimMagic
+except ImportError:
+    pass
+else:
+    ipy = get_ipython()
+    if ipy is not None:
+        ipy.register_magics(ManimMagic)
+
 from .plugins import *
