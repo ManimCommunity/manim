@@ -119,7 +119,7 @@ This document summarizes the procedures the Manim Community Code of Conduct team
 
 
 
-## Summary of processes
+### Summary of processes
 
 When the team receives a report of a possible Code of Conduct violation, it will:
 
@@ -136,13 +136,13 @@ When the team receives a report of a possible Code of Conduct violation, it will
    1. Follow up with the reporter.
 
 
-## Acknowledge the report
+### Acknowledge the report
 
 Reporters should receive an acknowledgment of the receipt of their report within 48 hours.
 
 
 
-## Conflict of interest policy
+### Conflict of interest policy
 
 Examples of conflicts of interest include:
 
@@ -157,18 +157,18 @@ Anyone who has a conflict of interest will remove themselves from the discussion
 
 
 
-## Evaluating a report
+### Evaluating a report
 
-### Jurisdiction
+#### Jurisdiction
 
    * *Is this a Code of Conduct violation?* Is this behavior on our list of inappropriate behavior? Is it borderline inappropriate behavior? Does it violate our community norms?
    * *Did this occur in a space that is within our Code of Conduct's scope?* If the incident occurred outside the community, but a community member's mental health or physical safety may be negatively impacted if no action is taken, the incident may be in scope. Private conversations in community spaces are also in scope.
-## Impact
+#### Impact
 
    * *Did this incident occur in a private conversation or in a public space?* Incidents that all community members can see will have more negative impact.
    * *Does this behavior negatively impact a marginalized group in our community?* Is the reporter a person from a marginalized group in our community? How is the reporter being negatively impacted by the reported person's behavior? Are members of the marginalized group likely to disengage with the community if no action was taken on this report?
    * *Does this incident involve a community leader?* Community members often look up to community leaders to set the standard of acceptable behavior
-## Risk
+#### Risk
 
    * *Does this incident include sexual harrasment?*
    * *Does this pose a safety risk?* Does the behavior put a person's physical safety at risk? Will this incident severely negatively impact someone's mental health?
@@ -179,7 +179,7 @@ Reports which involve higher risk or higher impact may face more severe conseque
 
 
 
-## Propose consequences
+### Propose consequences
 
 What follows are examples of possible consequences to an incident report. This consequences list is not inclusive, and the Manim Community Code of Conduct team reserves the right to take any action it deems necessary.
 
@@ -193,13 +193,13 @@ Possible private responses to an incident include:
    * Publishing an account of the incident
 
 
-## Team vote
+### Team vote
 
 Some team members may have a conflict of interest and may be excluded from discussions of a particular incident report. Excluding those members, decisions on the behavioral modification plans and consequences will be determined by a two-thirds majority vote of the Manim Community Code of Conduct team.
 
 
 
-## Moderators approval
+### Moderators approval
 
 Once the team has approved the behavioral modification plans and consequences, they will communicate the recommended response to the Manim Community moderators. The team should not state who reported this incident. They should attempt to anonymize any identifying information from the report.
 
@@ -209,7 +209,7 @@ In cases where the moderators disagree on the suggested resolution for a report,
 
 
 
-## Follow up with the reported person
+### Follow up with the reported person
 
 The Manim Community Code of Conduct team will work with Manim Community moderators to draft a response to the reported person. The response should contain:
 
@@ -221,11 +221,11 @@ The team should not state who reported this incident. They should attempt to ano
 
 
 
-## Decide further responses
+### Decide further responses
 
 If the reported person provides additional context, the Manim Community Code of Conduct team may need to re-evaluate the behavioral modification plan and consequences.
 
-## Follow up with the reporter
+### Follow up with the reporter
 
 A person who makes a report should receive a follow up response stating what action was taken in response to the report. If the team decided no response was needed, they should provide an explanation why it was not a Code of Conduct violation. Reports that are not made in good faith (such as "reverse sexism" or "reverse racism") may receive no response.
 
@@ -233,7 +233,7 @@ The follow up should be sent no later than one week after the receipt of the rep
 
 
 
-## Changes to Code of Conduct
+### Changes to Code of Conduct
 
 When discussing a change to the Manim Community code of conduct or enforcement procedures, the Manim Community Code of Conduct team will follow this decision-making process:
 
@@ -242,7 +242,7 @@ When discussing a change to the Manim Community code of conduct or enforcement p
    * **Board Vote.** Once a working draft is in place for the Code of Conduct and procedures, the Code of Conduct team shall provide the Manim Community Moderators with a draft of the changes. The Manim Community Moderators will vote on the changes at a board meeting.
 
 
-## Current list of voting members
+### Current list of voting members
 
 - All available Community Developers (i.e. those with "write" permissions, or above, on the Manim Community GitHub organization).
 
