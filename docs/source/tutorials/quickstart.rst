@@ -28,7 +28,7 @@ that manim needs.
    In case you like to work with Jupyterlab / Jupyter notebooks, there is good news:
    Manim ships with a ``%%manim`` IPython magic command which makes it easy to use
    in such a setting as well. Find out more in the
-   :meth:`corresponding documentation <~.utils.ipython_magic.ManimMagic.manim>`.
+   :meth:`corresponding documentation <manim.utils.ipython_magic.ManimMagic.manim>`.
 
 
 Your first Scene
