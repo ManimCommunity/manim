@@ -1392,7 +1392,7 @@ class MarkupText(SVGMobject):
 @contextmanager
 def register_font(font_file: typing.Union[str, Path]):
     """Temporarily add a font file to Pango's search path.
-    
+
     This searches for the font_file at various places. The order it searches it described below.
 
     1. Absolute path.
@@ -1422,7 +1422,7 @@ def register_font(font_file: typing.Union[str, Path]):
 
     AttributeError:
         If this method is used on macOS.
-    
+
     Notes
     -----
     This method of adding font files also works with :class:`CairoText`.
