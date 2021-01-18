@@ -23,15 +23,20 @@ message Scene {
 message Animation {
     string name = 1;
     float duration = 2;
-    string easing_function = 4;
+    string easing_function = 3;
 
-    message TweenData {
+    message AttributeTweenData {
         string attribute = 1;
         repeated float start_data = 2;
         repeated float end_data = 3;
     }
-    repeated TweenData tween_data = 5;
-    repeated TweenInfo tween_info = 6;
+    repeated AttributeTweenData attribute_tween_data = 4;
+
+    message MobjectTweenData {
+        int64 id = 1;
+        repeated float root_mobject_offset = 2;
+    }
+    repeated MobjectTweenData mobject_tween_data = 5;
 }
 
 message FrameRequest {
@@ -80,27 +85,10 @@ message ImageMobjectData {
     Point center = 4;
 }
 
-message UpdateData {
-    int64 id = 1;
-    enum UpdateType {
-        TWEEN = 0;
-        REDRAW = 1;
-    }
-    UpdateType type = 2;
-    TweenInfo tween_data = 3;
-    MobjectData redraw_data = 4;
-}
-
-message TweenInfo {
-    int64 id = 1;
-    int32 animation_index = 2;
-    repeated float root_mobject_offset = 3;
-}
-
 message FrameData {
     repeated int64 remove = 1;
     repeated MobjectData add = 2;
-    repeated UpdateData update = 3;
+    repeated MobjectData update = 3;
 }
 
 message FrameResponse {

@@ -143,29 +143,30 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 all_animations_tweened = True
                 for animation in requested_scene.animations:
                     # Add offset vector to submobjects.
-                    tween_data = generate_tween_data(animation)
-                    if tween_data is None:
+                    attribute_tween_data = generate_attribute_tween_data(animation)
+                    if attribute_tween_data is None:
                         all_animations_tweened = False
                         continue
                     if animation.mobject is not None:
                         root_mobject_center = animation.mobject.get_center()
-                        tween_info_list = []
+                        mobject_tween_data_list = []
                         for mobject in extract_mobject_family_members(
                             animation.mobject, only_those_with_points=True
                         ):
-                            tween_info = frameserver_pb2.TweenInfo(
-                                id=mobject.original_id,
-                                root_mobject_offset=mobject.get_center()
-                                - root_mobject_center,
+                            mobject_tween_data_list.append(
+                                frameserver_pb2.Animation.MobjectTweenData(
+                                    id=mobject.original_id,
+                                    root_mobject_offset=mobject.get_center()
+                                    - root_mobject_center,
+                                )
                             )
-                            tween_info_list.append(tween_info)
 
                     animation_proto = frameserver_pb2.Animation(
                         name=animation.__class__.__name__,
                         duration=requested_scene.duration,
                         easing_function=animation.rate_func.__name__,
-                        tween_data=tween_data,
-                        tween_info=tween_info_list,
+                        attribute_tween_data=attribute_tween_data,
+                        mobject_tween_data=mobject_tween_data_list,
                     )
                     animations.append(animation_proto)
             else:
@@ -173,17 +174,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 for index, animation in enumerate(requested_scene.animations):
                     # Only send update data for animations that don't have tween data.
                     if (
-                        generate_tween_data(animation) is None
+                        generate_attribute_tween_data(animation) is None
                         and animation.mobject
                         is not None  # TODO: Add tween data for wait.
                     ):
-                        update_data.append(
-                            frameserver_pb2.UpdateData(
-                                id=animation.mobject.original_id,
-                                type=frameserver_pb2.UpdateData.UpdateType.REDRAW,
-                                redraw_data=serialize_mobject(animation.mobject),
-                            )
-                        )
+                        update_data.append(serialize_mobject(animation.mobject))
 
             resp = frameserver_pb2.FrameResponse(
                 frame_data=frameserver_pb2.FrameData(
@@ -274,14 +269,14 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             stub.UpdateSceneData(request)
 
 
-def generate_tween_data(animation):
+def generate_attribute_tween_data(animation):
     animation_name = animation.__class__.__name__
     if animation_name == "_MethodAnimation":
         tween_data_array = []
         for method in animation.methods:
             if method.__name__ == "shift":
                 tween_data_array.append(
-                    frameserver_pb2.Animation.TweenData(
+                    frameserver_pb2.Animation.AttributeTweenData(
                         attribute="position",
                         start_data=animation.starting_mobject.get_center(),
                         end_data=animation.target_mobject.get_center(),
@@ -290,12 +285,12 @@ def generate_tween_data(animation):
         return tween_data_array
     elif animation_name == "FadeIn":
         return [
-            frameserver_pb2.Animation.TweenData(
+            frameserver_pb2.Animation.AttributeTweenData(
                 attribute="fill_opacity",
                 start_data=[animation.starting_mobject.fill_opacity],
                 end_data=[animation.target_copy.fill_opacity],
             ),
-            frameserver_pb2.Animation.TweenData(
+            frameserver_pb2.Animation.AttributeTweenData(
                 attribute="stroke_opacity",
                 start_data=[animation.starting_mobject.stroke_opacity],
                 end_data=[animation.target_copy.stroke_opacity],
