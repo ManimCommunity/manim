@@ -116,6 +116,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             mobjects_to_add = []
             animations = []
             update_data = []
+            # TODO: Only remove/add changed mobjects rather than all of them.
             if self.previous_scene is not None and (
                 request.first_request or self.previous_scene != requested_scene
             ):
