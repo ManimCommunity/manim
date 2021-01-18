@@ -147,9 +147,9 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     if attribute_tween_data is None:
                         all_animations_tweened = False
                         continue
+                    mobject_tween_data_list = []
                     if animation.mobject is not None:
                         root_mobject_center = animation.mobject.get_center()
-                        mobject_tween_data_list = []
                         for mobject in extract_mobject_family_members(
                             animation.mobject, only_those_with_points=True
                         ):
@@ -173,11 +173,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 all_animations_tweened = False
                 for index, animation in enumerate(requested_scene.animations):
                     # Only send update data for animations that don't have tween data.
-                    if (
-                        generate_attribute_tween_data(animation) is None
-                        and animation.mobject
-                        is not None  # TODO: Add tween data for wait.
-                    ):
+                    if generate_attribute_tween_data(animation) is None:
                         update_data.append(serialize_mobject(animation.mobject))
 
             resp = frameserver_pb2.FrameResponse(
@@ -296,7 +292,10 @@ def generate_attribute_tween_data(animation):
                 end_data=[animation.target_copy.stroke_opacity],
             ),
         ]
-    return None
+    elif animation_name == "Wait":
+        return []
+    else:
+        return None
 
 
 def animations_to_name(animations):
