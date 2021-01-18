@@ -46,7 +46,7 @@ class ManimMagic(Magics):
         except SystemExit:
             return  # probably manim -h was called, process ended preemptively
 
-        with tempconfig({}):
+        with tempconfig(local_ns.get("config", {})):
             config.digest_args(args)
 
             exec(f"{config['scene_names'][0]}().render()", local_ns)
