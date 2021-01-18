@@ -54,8 +54,12 @@ class ManimMagic(Magics):
 
             file_type = mimetypes.guess_type(Path(config["output_file"]))[0]
             if file_type.startswith("image"):
-                return Image(filename=config["output_file"])
+                display(Image(filename=config["output_file"]))
+                return
 
-            return HTML(
-                f'<video src="{local_path}" controls autoplay repeat style="max-width: 100%;">Not supported <code>video</code> tag.</video>'
+            display(
+                Video(
+                    local_path,
+                    html_attributes='controls autoplay loop style="max-width: 100%;"',
+                )
             )
