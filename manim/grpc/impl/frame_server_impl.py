@@ -83,19 +83,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
 
     def GetFrameAtTime(self, request, context):
         try:
-            if (
-                request.preview_mode
-                == frameserver_pb2.FrameRequest.PreviewMode.ANIMATION_RANGE
-                or request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.ALL
-            ):
-                requested_end_index = request.end_index
-            elif request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.IMAGE:
-                requested_end_index = len(self.keyframes)
+            requested_scene_index = request.animation_index
 
             # Find the requested scene.
             scene_finished = False
-            requested_scene_index = request.animation_index
-            if request.preview_mode == frameserver_pb2.FrameRequest.PreviewMode.IMAGE:
+            if requested_scene_index == request.end_index:
                 scene_finished = True
 
             if (
@@ -104,7 +96,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             ):
                 animation_offset = request.animation_offset
             else:
-                if requested_scene_index + 1 < requested_end_index:
+                if requested_scene_index + 1 < request.end_index:
                     requested_scene_index += 1
                     animation_offset = 0
                 else:
@@ -192,9 +184,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 frame_data=frameserver_pb2.FrameData(
                     remove=ids_to_remove, add=mobjects_to_add, update=update_data
                 ),
-                scene_finished=scene_finished
-                or request.preview_mode
-                == frameserver_pb2.FrameRequest.PreviewMode.IMAGE,
+                scene_finished=scene_finished,
                 animations=animations,
                 animation_index=requested_scene_index,
                 animation_offset=animation_offset,

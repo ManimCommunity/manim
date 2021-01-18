@@ -19,40 +19,10 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11\x66rameserver.proto\x12\x0b\x66rameserver\";\n\x16\x46\x65tchSceneDataResponse\x12!\n\x05scene\x18\x01 \x01(\x0b\x32\x12.frameserver.Scene\"[\n\x05Scene\x12\x0c\n\x04name\x18\x01 \x01(\t\x12*\n\nanimations\x18\x02 \x03(\x0b\x32\x16.frameserver.Animation\x12\x18\n\x10\x62\x61\x63kground_color\x18\x03 \x01(\t\"\xec\x01\n\tAnimation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x64uration\x18\x02 \x01(\x02\x12\x17\n\x0f\x65\x61sing_function\x18\x04 \x01(\t\x12\x34\n\ntween_data\x18\x05 \x03(\x0b\x32 .frameserver.Animation.TweenData\x12*\n\ntween_info\x18\x06 \x03(\x0b\x32\x16.frameserver.TweenInfo\x1a\x44\n\tTweenData\x12\x11\n\tattribute\x18\x01 \x01(\t\x12\x12\n\nstart_data\x18\x02 \x03(\x02\x12\x10\n\x08\x65nd_data\x18\x03 \x03(\x02\"\xe0\x01\n\x0c\x46rameRequest\x12\x11\n\tend_index\x18\x01 \x01(\x05\x12;\n\x0cpreview_mode\x18\x02 \x01(\x0e\x32%.frameserver.FrameRequest.PreviewMode\x12\x15\n\rfirst_request\x18\x03 \x01(\x08\x12\x17\n\x0f\x61nimation_index\x18\x04 \x01(\x05\x12\x18\n\x10\x61nimation_offset\x18\x05 \x01(\x02\"6\n\x0bPreviewMode\x12\x07\n\x03\x41LL\x10\x00\x12\x13\n\x0f\x41NIMATION_RANGE\x10\x01\x12\t\n\x05IMAGE\x10\x02\"u\n\x05Style\x12\x12\n\nfill_color\x18\x01 \x01(\t\x12\x14\n\x0c\x66ill_opacity\x18\x02 \x01(\x02\x12\x14\n\x0cstroke_color\x18\x03 \x01(\t\x12\x16\n\x0estroke_opacity\x18\x04 \x01(\x02\x12\x14\n\x0cstroke_width\x18\x05 \x01(\x02\"(\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\"\xb4\x02\n\x0bMobjectData\x12\n\n\x02id\x18\x01 \x01(\x03\x12!\n\x05style\x18\x02 \x01(\x0b\x32\x12.frameserver.Style\x12\x32\n\x04type\x18\x03 \x01(\x0e\x32$.frameserver.MobjectData.MobjectType\x12:\n\x17vectorized_mobject_data\x18\x04 \x01(\x0b\x32\x19.frameserver.VMobjectData\x12\x39\n\x12image_mobject_data\x18\x05 \x01(\x0b\x32\x1d.frameserver.ImageMobjectData\x12\x1b\n\x13root_mobject_offset\x18\x06 \x03(\x02\".\n\x0bMobjectType\x12\x0c\n\x08VMOBJECT\x10\x00\x12\x11\n\rIMAGE_MOBJECT\x10\x01\"H\n\x0cVMobjectData\x12\"\n\x06points\x18\x01 \x03(\x0b\x32\x12.frameserver.Point\x12\x14\n\x0cneeds_redraw\x18\x02 \x01(\x08\"c\n\x10ImageMobjectData\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\x0e\n\x06height\x18\x02 \x01(\x02\x12\r\n\x05width\x18\x03 \x01(\x02\x12\"\n\x06\x63\x65nter\x18\x04 \x01(\x0b\x32\x12.frameserver.Point\"\xca\x01\n\nUpdateData\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x30\n\x04type\x18\x02 \x01(\x0e\x32\".frameserver.UpdateData.UpdateType\x12*\n\ntween_data\x18\x03 \x01(\x0b\x32\x16.frameserver.TweenInfo\x12-\n\x0bredraw_data\x18\x04 \x01(\x0b\x32\x18.frameserver.MobjectData\"#\n\nUpdateType\x12\t\n\x05TWEEN\x10\x00\x12\n\n\x06REDRAW\x10\x01\"M\n\tTweenInfo\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x17\n\x0f\x61nimation_index\x18\x02 \x01(\x05\x12\x1b\n\x13root_mobject_offset\x18\x03 \x03(\x02\"k\n\tFrameData\x12\x0e\n\x06remove\x18\x01 \x03(\x03\x12%\n\x03\x61\x64\x64\x18\x02 \x03(\x0b\x32\x18.frameserver.MobjectData\x12\'\n\x06update\x18\x03 \x03(\x0b\x32\x17.frameserver.UpdateData\"\xd2\x01\n\rFrameResponse\x12*\n\nframe_data\x18\x01 \x01(\x0b\x32\x16.frameserver.FrameData\x12\x16\n\x0escene_finished\x18\x02 \x01(\x08\x12*\n\nanimations\x18\x03 \x03(\x0b\x32\x16.frameserver.Animation\x12\x17\n\x0f\x61nimation_index\x18\x04 \x01(\x05\x12\x18\n\x10\x61nimation_offset\x18\x05 \x01(\x02\x12\x1e\n\x16\x61ll_animations_tweened\x18\x06 \x01(\x08\"\x0e\n\x0c\x45mptyRequest\"\x0f\n\rEmptyResponse2\xa8\x01\n\x0b\x46rameServer\x12G\n\x0eGetFrameAtTime\x12\x19.frameserver.FrameRequest\x1a\x1a.frameserver.FrameResponse\x12P\n\x0e\x46\x65tchSceneData\x12\x19.frameserver.EmptyRequest\x1a#.frameserver.FetchSceneDataResponseb\x06proto3'
+  serialized_pb=b'\n\x11\x66rameserver.proto\x12\x0b\x66rameserver\";\n\x16\x46\x65tchSceneDataResponse\x12!\n\x05scene\x18\x01 \x01(\x0b\x32\x12.frameserver.Scene\"[\n\x05Scene\x12\x0c\n\x04name\x18\x01 \x01(\t\x12*\n\nanimations\x18\x02 \x03(\x0b\x32\x16.frameserver.Animation\x12\x18\n\x10\x62\x61\x63kground_color\x18\x03 \x01(\t\"\xec\x01\n\tAnimation\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08\x64uration\x18\x02 \x01(\x02\x12\x17\n\x0f\x65\x61sing_function\x18\x04 \x01(\t\x12\x34\n\ntween_data\x18\x05 \x03(\x0b\x32 .frameserver.Animation.TweenData\x12*\n\ntween_info\x18\x06 \x03(\x0b\x32\x16.frameserver.TweenInfo\x1a\x44\n\tTweenData\x12\x11\n\tattribute\x18\x01 \x01(\t\x12\x12\n\nstart_data\x18\x02 \x03(\x02\x12\x10\n\x08\x65nd_data\x18\x03 \x03(\x02\"k\n\x0c\x46rameRequest\x12\x11\n\tend_index\x18\x01 \x01(\x05\x12\x15\n\rfirst_request\x18\x02 \x01(\x08\x12\x17\n\x0f\x61nimation_index\x18\x03 \x01(\x05\x12\x18\n\x10\x61nimation_offset\x18\x04 \x01(\x02\"u\n\x05Style\x12\x12\n\nfill_color\x18\x01 \x01(\t\x12\x14\n\x0c\x66ill_opacity\x18\x02 \x01(\x02\x12\x14\n\x0cstroke_color\x18\x03 \x01(\t\x12\x16\n\x0estroke_opacity\x18\x04 \x01(\x02\x12\x14\n\x0cstroke_width\x18\x05 \x01(\x02\"(\n\x05Point\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\"\xb4\x02\n\x0bMobjectData\x12\n\n\x02id\x18\x01 \x01(\x03\x12!\n\x05style\x18\x02 \x01(\x0b\x32\x12.frameserver.Style\x12\x32\n\x04type\x18\x03 \x01(\x0e\x32$.frameserver.MobjectData.MobjectType\x12:\n\x17vectorized_mobject_data\x18\x04 \x01(\x0b\x32\x19.frameserver.VMobjectData\x12\x39\n\x12image_mobject_data\x18\x05 \x01(\x0b\x32\x1d.frameserver.ImageMobjectData\x12\x1b\n\x13root_mobject_offset\x18\x06 \x03(\x02\".\n\x0bMobjectType\x12\x0c\n\x08VMOBJECT\x10\x00\x12\x11\n\rIMAGE_MOBJECT\x10\x01\"H\n\x0cVMobjectData\x12\"\n\x06points\x18\x01 \x03(\x0b\x32\x12.frameserver.Point\x12\x14\n\x0cneeds_redraw\x18\x02 \x01(\x08\"c\n\x10ImageMobjectData\x12\x0c\n\x04path\x18\x01 \x01(\t\x12\x0e\n\x06height\x18\x02 \x01(\x02\x12\r\n\x05width\x18\x03 \x01(\x02\x12\"\n\x06\x63\x65nter\x18\x04 \x01(\x0b\x32\x12.frameserver.Point\"\xca\x01\n\nUpdateData\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x30\n\x04type\x18\x02 \x01(\x0e\x32\".frameserver.UpdateData.UpdateType\x12*\n\ntween_data\x18\x03 \x01(\x0b\x32\x16.frameserver.TweenInfo\x12-\n\x0bredraw_data\x18\x04 \x01(\x0b\x32\x18.frameserver.MobjectData\"#\n\nUpdateType\x12\t\n\x05TWEEN\x10\x00\x12\n\n\x06REDRAW\x10\x01\"M\n\tTweenInfo\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x17\n\x0f\x61nimation_index\x18\x02 \x01(\x05\x12\x1b\n\x13root_mobject_offset\x18\x03 \x03(\x02\"k\n\tFrameData\x12\x0e\n\x06remove\x18\x01 \x03(\x03\x12%\n\x03\x61\x64\x64\x18\x02 \x03(\x0b\x32\x18.frameserver.MobjectData\x12\'\n\x06update\x18\x03 \x03(\x0b\x32\x17.frameserver.UpdateData\"\xd2\x01\n\rFrameResponse\x12*\n\nframe_data\x18\x01 \x01(\x0b\x32\x16.frameserver.FrameData\x12\x16\n\x0escene_finished\x18\x02 \x01(\x08\x12*\n\nanimations\x18\x03 \x03(\x0b\x32\x16.frameserver.Animation\x12\x17\n\x0f\x61nimation_index\x18\x04 \x01(\x05\x12\x18\n\x10\x61nimation_offset\x18\x05 \x01(\x02\x12\x1e\n\x16\x61ll_animations_tweened\x18\x06 \x01(\x08\"\x0e\n\x0c\x45mptyRequest\"\x0f\n\rEmptyResponse2\xa8\x01\n\x0b\x46rameServer\x12G\n\x0eGetFrameAtTime\x12\x19.frameserver.FrameRequest\x1a\x1a.frameserver.FrameResponse\x12P\n\x0e\x46\x65tchSceneData\x12\x19.frameserver.EmptyRequest\x1a#.frameserver.FetchSceneDataResponseb\x06proto3'
 )
 
 
-
-_FRAMEREQUEST_PREVIEWMODE = _descriptor.EnumDescriptor(
-  name='PreviewMode',
-  full_name='frameserver.FrameRequest.PreviewMode',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='ALL', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='ANIMATION_RANGE', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='IMAGE', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=598,
-  serialized_end=652,
-)
-_sym_db.RegisterEnumDescriptor(_FRAMEREQUEST_PREVIEWMODE)
 
 _MOBJECTDATA_MOBJECTTYPE = _descriptor.EnumDescriptor(
   name='MobjectType',
@@ -74,8 +44,8 @@ _MOBJECTDATA_MOBJECTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1078,
-  serialized_end=1124,
+  serialized_start=960,
+  serialized_end=1006,
 )
 _sym_db.RegisterEnumDescriptor(_MOBJECTDATA_MOBJECTTYPE)
 
@@ -99,8 +69,8 @@ _UPDATEDATA_UPDATETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1469,
-  serialized_end=1504,
+  serialized_start=1351,
+  serialized_end=1386,
 )
 _sym_db.RegisterEnumDescriptor(_UPDATEDATA_UPDATETYPE)
 
@@ -304,29 +274,22 @@ _FRAMEREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='preview_mode', full_name='frameserver.FrameRequest.preview_mode', index=1,
-      number=2, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='first_request', full_name='frameserver.FrameRequest.first_request', index=2,
-      number=3, type=8, cpp_type=7, label=1,
+      name='first_request', full_name='frameserver.FrameRequest.first_request', index=1,
+      number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='animation_index', full_name='frameserver.FrameRequest.animation_index', index=3,
-      number=4, type=5, cpp_type=1, label=1,
+      name='animation_index', full_name='frameserver.FrameRequest.animation_index', index=2,
+      number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='animation_offset', full_name='frameserver.FrameRequest.animation_offset', index=4,
-      number=5, type=2, cpp_type=6, label=1,
+      name='animation_offset', full_name='frameserver.FrameRequest.animation_offset', index=3,
+      number=4, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -336,7 +299,6 @@ _FRAMEREQUEST = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
-    _FRAMEREQUEST_PREVIEWMODE,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -344,8 +306,8 @@ _FRAMEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=428,
-  serialized_end=652,
+  serialized_start=427,
+  serialized_end=534,
 )
 
 
@@ -404,8 +366,8 @@ _STYLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=654,
-  serialized_end=771,
+  serialized_start=536,
+  serialized_end=653,
 )
 
 
@@ -450,8 +412,8 @@ _POINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=773,
-  serialized_end=813,
+  serialized_start=655,
+  serialized_end=695,
 )
 
 
@@ -518,8 +480,8 @@ _MOBJECTDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=816,
-  serialized_end=1124,
+  serialized_start=698,
+  serialized_end=1006,
 )
 
 
@@ -557,8 +519,8 @@ _VMOBJECTDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1126,
-  serialized_end=1198,
+  serialized_start=1008,
+  serialized_end=1080,
 )
 
 
@@ -610,8 +572,8 @@ _IMAGEMOBJECTDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1200,
-  serialized_end=1299,
+  serialized_start=1082,
+  serialized_end=1181,
 )
 
 
@@ -664,8 +626,8 @@ _UPDATEDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1302,
-  serialized_end=1504,
+  serialized_start=1184,
+  serialized_end=1386,
 )
 
 
@@ -710,8 +672,8 @@ _TWEENINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1506,
-  serialized_end=1583,
+  serialized_start=1388,
+  serialized_end=1465,
 )
 
 
@@ -756,8 +718,8 @@ _FRAMEDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1585,
-  serialized_end=1692,
+  serialized_start=1467,
+  serialized_end=1574,
 )
 
 
@@ -823,8 +785,8 @@ _FRAMERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1695,
-  serialized_end=1905,
+  serialized_start=1577,
+  serialized_end=1787,
 )
 
 
@@ -848,8 +810,8 @@ _EMPTYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1907,
-  serialized_end=1921,
+  serialized_start=1789,
+  serialized_end=1803,
 )
 
 
@@ -873,8 +835,8 @@ _EMPTYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1923,
-  serialized_end=1938,
+  serialized_start=1805,
+  serialized_end=1820,
 )
 
 _FETCHSCENEDATARESPONSE.fields_by_name['scene'].message_type = _SCENE
@@ -882,8 +844,6 @@ _SCENE.fields_by_name['animations'].message_type = _ANIMATION
 _ANIMATION_TWEENDATA.containing_type = _ANIMATION
 _ANIMATION.fields_by_name['tween_data'].message_type = _ANIMATION_TWEENDATA
 _ANIMATION.fields_by_name['tween_info'].message_type = _TWEENINFO
-_FRAMEREQUEST.fields_by_name['preview_mode'].enum_type = _FRAMEREQUEST_PREVIEWMODE
-_FRAMEREQUEST_PREVIEWMODE.containing_type = _FRAMEREQUEST
 _MOBJECTDATA.fields_by_name['style'].message_type = _STYLE
 _MOBJECTDATA.fields_by_name['type'].enum_type = _MOBJECTDATA_MOBJECTTYPE
 _MOBJECTDATA.fields_by_name['vectorized_mobject_data'].message_type = _VMOBJECTDATA
@@ -1038,8 +998,8 @@ _FRAMESERVER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1941,
-  serialized_end=2109,
+  serialized_start=1823,
+  serialized_end=1991,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetFrameAtTime',
