@@ -1400,16 +1400,6 @@ def register_font(font_file: typing.Union[str, Path]):
     3. In ``font/`` folder.
     4. In the same directory.
 
-    .. note ::
-
-        This method of adding font files also works with
-        :class:`CairoText`
-
-    .. important ::
-
-        This method isn't available for macOS. Using this
-        method on macOS will raise an :class:`AttributeError`.
-
     Parameters
     ----------
     font_file :
@@ -1429,6 +1419,18 @@ def register_font(font_file: typing.Union[str, Path]):
     ------
     FileNotFoundError:
         If the font doesn't exists.
+
+    AttributeError:
+        If this method is used on macOS.
+    
+    Notes
+    -----
+    This method of adding font files also works with :class:`CairoText`.
+
+    .. important ::
+
+        This method isn't available for macOS. Using this
+        method on macOS will raise an :class:`AttributeError`.
     """
 
     input_folder = Path(config.input_file).parent.resolve()
