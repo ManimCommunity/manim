@@ -289,10 +289,15 @@ def generate_tween_data(animation):
     elif animation_name == "FadeIn":
         return [
             frameserver_pb2.Animation.TweenData(
-                attribute="opacity",
+                attribute="fill_opacity",
                 start_data=[animation.starting_mobject.fill_opacity],
                 end_data=[animation.target_copy.fill_opacity],
-            )
+            ),
+            frameserver_pb2.Animation.TweenData(
+                attribute="stroke_opacity",
+                start_data=[animation.starting_mobject.stroke_opacity],
+                end_data=[animation.target_copy.stroke_opacity],
+            ),
         ]
     return None
 
