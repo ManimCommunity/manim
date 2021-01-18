@@ -4,7 +4,7 @@ import mimetypes
 from pathlib import Path
 
 from IPython.core.magic import Magics, magics_class, line_cell_magic, needs_local_scope
-from IPython.display import HTML, Image
+from IPython.display import display, Image, Video
 
 from manim import config, tempconfig
 
