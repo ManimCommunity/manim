@@ -490,3 +490,43 @@ class Graph(VMobject):
 
         """
         return Graph(list(nxgraph.nodes), list(nxgraph.edges), **kwargs)
+
+    def change_layout(
+        self,
+        layout: Union[str, dict] = "spring",
+        layout_scale: float = 2,
+        layout_config: Union[dict, None] = None,
+        partitions: Union[List[List[Hashable]], None] = None,
+        root_vertex: Union[Hashable, None] = None,
+    ) -> "Graph":
+        """Change the layout of this graph.
+
+        See the documentation of :class:`~.Graph` for details about the
+        keyword arguments.
+
+        Examples
+        --------
+
+        .. manim:: ChangeGraphLayout
+
+            class ChangeGraphLayout(Scene):
+                def construct(self):
+                    G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3), (3, 4), (4, 5)],
+                              layout={1: [-2, 0, 0], 2: [-1, 0, 0], 3: [0, 0, 0],
+                                      4: [1, 0, 0], 5: [2, 0, 0]}
+                              )
+                    self.play(ShowCreation(G))
+                    self.play(G.animate.change_layout("circular"))
+                    self.wait()
+        """
+        self._layout = _determine_graph_layout(
+            self._graph,
+            layout=layout,
+            layout_scale=layout_scale,
+            layout_config=layout_config,
+            partitions=partitions,
+            root_vertex=root_vertex,
+        )
+        for v in self.vertices:
+            self[v].move_to(self._layout[v])
+        return self
