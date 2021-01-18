@@ -171,7 +171,10 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             else:
                 all_animations_tweened = False
                 for index, animation in enumerate(requested_scene.animations):
-                    if generate_tween_data(animation) is None:
+                    if (
+                        generate_tween_data(animation) is None
+                        and animation.mobject is not None
+                    ):
                         update_data.append(
                             frameserver_pb2.UpdateData(
                                 id=animation.mobject.original_id,
