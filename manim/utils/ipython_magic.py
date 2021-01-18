@@ -16,14 +16,26 @@ class ManimMagic(Magics):
     @needs_local_scope
     @line_cell_magic
     def manim(self, line, cell=None, local_ns=None):
-        r"""Render Manim scenes contained in Jupyter cells.
+        r"""Render Manim scenes contained in IPython cells.
         Works as a line or cell magic.
 
-        Usage, in line mode::
+        .. note::
+
+            This line and cell magic works best when used in a JupyterLab environment:
+            while all of the functionality is available for classic Jupyter notebooks
+            as well, it is possible that videos sometimes don't update on repeated
+            execution of the same cell if the scene name stays the same.
+
+            This problem does not occur when using JupyterLab.
+
+        Please refer to `<https://jupyter.org/>`_ for more information about JupyterLab
+        and Jupyter notebooks.
+
+        Usage in line mode::
 
             %manim MyAwesomeScene [CLI options]
 
-        Usage, in cell mode::
+        Usage in cell mode::
 
             %%manim MyAwesomeScene [CLI options]
 
