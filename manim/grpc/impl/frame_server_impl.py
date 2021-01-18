@@ -171,9 +171,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             else:
                 all_animations_tweened = False
                 for index, animation in enumerate(requested_scene.animations):
+                    # Only send update data for animations that don't have tween data.
                     if (
                         generate_tween_data(animation) is None
-                        and animation.mobject is not None
+                        and animation.mobject
+                        is not None  # TODO: Add tween data for wait.
                     ):
                         update_data.append(
                             frameserver_pb2.UpdateData(
