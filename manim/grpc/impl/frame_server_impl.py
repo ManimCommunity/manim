@@ -172,10 +172,18 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     animations.append(animation_proto)
             else:
                 all_animations_tweened = False
-                for index, animation in enumerate(requested_scene.animations):
+                for animation in requested_scene.animations:
                     # Only send update data for animations that don't have tween data.
                     if generate_attribute_tween_data(animation) is None:
-                        update_data.append(serialize_mobject(animation.mobject))
+                        update_data.extend(
+                            [
+                                serialize_mobject(mobject)
+                                for mobject in extract_mobject_family_members(
+                                    animation.mobject, only_those_with_points=True
+                                )
+                                if not isinstance(mobject, ValueTracker)
+                            ]
+                        )
 
             resp = frameserver_pb2.FrameResponse(
                 frame_data=frameserver_pb2.FrameData(
