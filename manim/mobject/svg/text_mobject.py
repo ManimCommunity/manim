@@ -1442,7 +1442,6 @@ def register_font(font_file: typing.Union[str, Path]):
     ]
     for path in possible_paths:
         path = path.resolve()
-        print(path)
         if path.exists():
             file_path = path
             logger.debug("Found file at %s", file_path.absolute())
