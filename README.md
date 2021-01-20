@@ -49,6 +49,7 @@ Manim is an extremely versatile package. The following is an example `Scene` you
 ```python
 from manim import *
 
+
 class SquareToCircle(Scene):
     def construct(self):
         circle = Circle()
@@ -101,6 +102,10 @@ Server](https://discord.gg/mMRrZQW) or [Reddit Community](https://www.reddit.com
 Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/latest/contributing.html).
 
 Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more `poetry` and how to use it at its [documentation](https://docs.manim.community/en/latest/installation/for_dev.html).
+
+## Code of Conduct
+
+Our full code of conduct, and how we enforce it, can be read on [our website](https://docs.manim.community/en/latest/conduct.html).
 
 ## License
 
