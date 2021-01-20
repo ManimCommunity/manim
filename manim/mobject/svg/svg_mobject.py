@@ -576,9 +576,7 @@ class VMobjectFromSVGPathstring(VMobject):
         command = command.upper()
 
         # Keep track of the most recently completed point
-        start_point = (
-            self.points[-1] if len(self.points) > 0 else np.zeros((1, self.dim))
-        )
+        start_point = self.points[-1] if self.points else np.zeros((1, self.dim))
 
         # Produce the (absolute) coordinates of the controls and handles
         new_points = self.string_to_points(

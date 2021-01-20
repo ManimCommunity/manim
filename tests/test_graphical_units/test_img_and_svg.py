@@ -24,7 +24,6 @@ def get_test_resource(filename):
 
 # First are the simple tests.
 
-
 class CubicPathTest(Scene):
     def construct(self):
         cubic_demo = SVGMobject(get_test_resource("cubic_demo.svg"))
