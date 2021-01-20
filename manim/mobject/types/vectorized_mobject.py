@@ -480,7 +480,8 @@ class VMobject(Mobject):
     def add_quadratic_bezier_curve_to(self, handle, anchor):
         """Add Quadratic bezier curve to the path."""
         # How does one approximate a quadratic with a cubic?
-        # refer to the Wikipedia page on Bezier curves.
+        # refer to the Wikipedia page on Bezier curves
+        # https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Degree_elevation, accessed Jan 20, 2021
         # 1. Copy the end points, and then
         # 2. Place the 2 middle control points 2/3 along the line segments
         # from the end points to the quadratic curve's middle control point.

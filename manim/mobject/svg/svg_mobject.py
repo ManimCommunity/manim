@@ -565,7 +565,7 @@ class VMobjectFromSVGPathstring(VMobject):
         prev_command = None
         for command, coord_string in pairs:
             self.handle_command(command, coord_string, prev_command)
-            prev_command = command.upper()
+            prev_command = command
         # people treat y-coordinate differently
         self.rotate(np.pi, RIGHT, about_point=ORIGIN)
 
@@ -602,7 +602,7 @@ class VMobjectFromSVGPathstring(VMobject):
 
         elif command == "S":  # Smooth cubic
             prev_handle = start_point
-            if prev_command in ["C", "S"]:
+            if prev_command.upper() in ["C", "S"]:
                 prev_handle = self.points[-2]
             for i in range(0, len(new_points), 2):
                 new_handle = 2 * start_point - prev_handle
@@ -618,7 +618,7 @@ class VMobjectFromSVGPathstring(VMobject):
 
         elif command == "T":  # smooth quadratic
             prev_quad_handle = start_point
-            if prev_command in ["Q", "T"]:
+            if prev_command.upper() in ["Q", "T"]:
                 # because of the conversion from quadratic to cubic,
                 # our actual previous handle was 3/2 in the direction of p[-2] from p[-1]
                 prev_quad_handle = 1.5 * self.points[-2] - 0.5 * self.points[-1]
