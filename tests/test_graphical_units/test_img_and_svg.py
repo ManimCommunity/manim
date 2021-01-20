@@ -75,11 +75,15 @@ class SmoothCurvesTest(Scene):
         self.add(smooths)
         self.wait()
 
+"""
+class WatchTheDecimals(Scene):
+    def construct(self):
+        decimal = SVGMobject(get_test_resource("watch_the_decimals.svg"))
+        self.add(decimal)
+        self.wait()
 
-# TODO: test in a 3D Scene
-class ThreeDSVGTest(ThreeDScene):
-    pytest_skip = True
-
+set_test_scene(WatchTheDecimals, "img_and_svg")
+"""
 
 # Second are the visual tests - these are probably too complex to verify step-by-step, so
 # these are really more of a spot-check
@@ -115,38 +119,10 @@ class DesmosGraph1Test(Scene):
         self.wait()
 
 
-class Drawing4(Scene):
-    pytest_skip = True
-
-    def construct(self):
-        # TODO: There is a linear gradient specified. That sounds complicated, and that also makes it not a VMobject
-        #  without some vector gradient object. That seems complicated.
-        # TODO: Should the engine handle url calls in fill/stroke?
-        # TODO: white hex background, and stroke / fill colors aren't parsed.
-        draw4 = SVGMobject(get_test_resource("drawing4.svg")).scale(3)
-        self.add(draw4)
-        self.wait()
-
-
-class FancyGTest(Scene):
-    def construct(self):
-        fancy_g = SVGMobject(get_test_resource("fancy_g.svg")).scale(3)
-        self.add(fancy_g)
-        self.wait()
-
-
 class LogoTest(Scene):
     def construct(self):
         logo = SVGMobject(get_test_resource("logo.svg"))
         self.add(logo)
-        self.wait()
-
-
-class MSModelTest(Scene):
-    # TODO: Have to specify no fill, and possibly mitre issues?
-    def construct(self):
-        ms_model = SVGMobject(get_test_resource("ms_model.svg")).set_fill(opacity=0)
-        self.add(ms_model)
         self.wait()
 
 
@@ -172,24 +148,6 @@ class PeriodicTableTest(Scene):
     def construct(self):
         ptable = SVGMobject(get_test_resource("Periodic_table_1.svg")).scale(3)
         self.add(ptable)
-        self.wait()
-
-
-class SomethingSmileTest(Scene):
-    pytest_skip = True
-
-    # TODO: Looks like it's a fill / color issue.
-    # fill and stroke is in the path element.
-    def construct(self):
-        smile = SVGMobject(get_test_resource("something.svg"))
-        self.add(smile)
-        self.wait()
-
-
-class StarchTest(Scene):
-    def construct(self):
-        starch = SVGMobject(get_test_resource("starch.svg"))
-        self.add(starch)
         self.wait()
 
 
@@ -255,4 +213,4 @@ MODULE_NAME = "img_and_svg"
 
 @pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
 def test_scene(scene_to_test, tmpdir, show_diff):
-    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=True)
+    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
