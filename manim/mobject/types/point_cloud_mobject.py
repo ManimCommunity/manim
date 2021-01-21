@@ -236,7 +236,8 @@ class PointCloudDot(Mobject1D):
             [
                 r * (np.cos(theta) * RIGHT + np.sin(theta) * UP)
                 for r in np.arange(self.epsilon, self.radius, self.epsilon)
-                for theta in np.arange(0, 2 * np.pi, self.epsilon / r)
+                # Num is equal to int(stop - start)/ (step + 1) reformulated.
+                for theta in np.linspace(0, 2 * np.pi, num= int(2 * np.pi * (r + self.epsilon) / self.epsilon))
             ]
         )
 
