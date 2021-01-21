@@ -124,7 +124,7 @@ class Code(VGroup):
     .. manim:: CodeFromString
         :save_last_frame:
 
-        class CodeExample(Scene):
+        class CodeFromString(Scene):
             def construct(self):
                 code = '''from manim import Scene, Square
 
