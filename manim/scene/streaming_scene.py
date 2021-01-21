@@ -31,7 +31,6 @@ class Stream:
         super().__init__(renderer=renderer, **kwargs)
         # To identify the frame in a black background
         self.add(Frame())
-        # TODO: What happens when setup actually has play arguments?
         self.setup()
 
     @classmethod

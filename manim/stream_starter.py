@@ -14,7 +14,12 @@ from .scene.streaming_scene import get_streamer, play_scene
 __all__ = ["livestream", "stream", "open_client"]
 
 
-globals().update(config.streaming_config)
+streaming_client = config.streaming_config["streaming_client"]
+streaming_protocol = config.streaming_config["streaming_protocol"]
+streaming_ip = config.streaming_config["streaming_ip"]
+streaming_port = config.streaming_config["streaming_port"]
+streaming_url = config.streaming_config["streaming_url"]
+sdp_path = config.streaming_config["sdp_path"]
 
 
 info = """
