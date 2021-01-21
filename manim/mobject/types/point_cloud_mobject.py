@@ -216,7 +216,7 @@ class PointCloudDot(Mobject1D):
         center=ORIGIN,
         radius=2.0,
         stroke_width=2,
-        density=10,
+        density=DEFAULT_POINT_DENSITY_1D,
         color=YELLOW,
         **kwargs
     ):
