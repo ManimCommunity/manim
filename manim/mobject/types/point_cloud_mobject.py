@@ -214,9 +214,9 @@ class PointCloudDot(Mobject1D):
     def __init__(
         self,
         center=ORIGIN,
-        radius=0.075,
+        radius=2.0,
         stroke_width=2,
-        density=DEFAULT_POINT_DENSITY_1D,
+        density=10,
         color=YELLOW,
         **kwargs
     ):
