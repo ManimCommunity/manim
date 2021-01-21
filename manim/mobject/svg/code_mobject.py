@@ -136,6 +136,7 @@ class Code(VGroup):
     def __init__(
         self,
         file_name=None,
+        code=None,
         tab_width=3,
         line_spacing=0.3,
         scale_factor=0.5,
@@ -177,8 +178,16 @@ class Code(VGroup):
         self.language = language
         self.generate_html_file = generate_html_file
 
-        self.file_name = file_name or self.file_name
+        self.file_path = None
+        self.file_name = file_name
+        if self.file_name:
         self.ensure_valid_file()
+            with open(self.file_path, "r") as f:
+                self.code_string = f.read()
+        if code:
+            self.code_string = code
+        if self.code_string is None:
+            raise ValueError("Neither a code file nor a code string have been specified.")
         self.style = self.style.lower()
         self.gen_html_string()
         strati = self.html_string.find("background:")
@@ -328,11 +337,8 @@ class Code(VGroup):
 
     def gen_html_string(self):
         """Function to generate html string with code highlighted and stores in variable html_string."""
-        file = open(self.file_path, "r")
-        code_str = file.read()
-        file.close()
         self.html_string = hilite_me(
-            code_str,
+            self.code_string,
             self.language,
             self.style,
             self.insert_line_no,
@@ -533,9 +539,11 @@ def hilite_me(
         cssstyles=defstyles + divstyles,
         prestyles="margin: 0",
     )
-    if language is None:
+    if language is None and file_path:
         lexer = guess_lexer_for_filename(file_path, code)
         html = highlight(code, lexer, formatter)
+    elif language is None:
+        raise ValueError("Please specify the code language when rendering a code string")
     else:
         html = highlight(code, get_lexer_by_name(language, **{}), formatter)
     if insert_line_no:
