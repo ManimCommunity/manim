@@ -203,7 +203,9 @@ class Code(VGroup):
         if code:
             self.code_string = code
         if self.code_string is None:
-            raise ValueError("Neither a code file nor a code string have been specified.")
+            raise ValueError(
+                "Neither a code file nor a code string have been specified."
+            )
         self.style = self.style.lower()
         self.gen_html_string()
         strati = self.html_string.find("background:")
@@ -559,7 +561,9 @@ def hilite_me(
         lexer = guess_lexer_for_filename(file_path, code)
         html = highlight(code, lexer, formatter)
     elif language is None:
-        raise ValueError("Please specify the code language when rendering a code string")
+        raise ValueError(
+            "The code language has to be specified when rendering a code string"
+        )
     else:
         html = highlight(code, get_lexer_by_name(language, **{}), formatter)
     if insert_line_no:
