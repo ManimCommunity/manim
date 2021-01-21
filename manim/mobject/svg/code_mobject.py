@@ -52,6 +52,9 @@ class Code(VGroup):
     ----------
     file_name : :class:`str`
         Name of the code file to display.
+    code : :class:`str`
+        If ``file_name`` is not specified, a code string can be
+        passed directly.
     tab_width : :class:`int`, optional
         Number of space characters corresponding to a tab character. Defaults to 3.
     line_spacing : :class:`float`, optional
@@ -115,13 +118,26 @@ class Code(VGroup):
             language="cpp",
         )
 
-    Remove unwanted invisible characters::
+    We can also render code passed as a string (but note that)
+    the language has to be specified in this case:
 
-        self.play(Transform(remove_invisible_chars(listing.code.chars[0:2]),
-                            remove_invisible_chars(listing.code.chars[3][0:3])))
+    .. manim:: CodeFromString
+        :save_last_frame:
 
-        remove_invisible_chars(listing.code)
-        remove_invisible_chars(listing)
+        class CodeExample(Scene):
+            def construct(self):
+                code = '''from manim import Scene, Square
+
+        class FadeInSquare(Scene):
+            def construct(self):
+                s = Square()
+                self.play(FadeIn(s))
+                self.play(s.animate.scale(2))
+                self.wait()
+        '''
+                rendered_code = Code(code=code, tab_width=4, background="window",
+                                    language="Python", font="Monospace")
+                self.add(rendered_code)
 
     """
 
@@ -181,7 +197,7 @@ class Code(VGroup):
         self.file_path = None
         self.file_name = file_name
         if self.file_name:
-        self.ensure_valid_file()
+            self.ensure_valid_file()
             with open(self.file_path, "r") as f:
                 self.code_string = f.read()
         if code:
