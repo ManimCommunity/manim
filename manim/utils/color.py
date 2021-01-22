@@ -85,8 +85,8 @@ __all__ = [
 ]
 
 import random
-import typing
 import re
+import typing
 from enum import Enum
 
 import numpy as np
@@ -455,6 +455,20 @@ def color_gradient(
 
 
 def interpolate_color(color1: Colour, color2: Colour, alpha: float) -> Color:
+    """
+    Blend two colours using RGB interpolation
+
+    Return a colour whose value is (alpha)-way between `color1` and `color2`
+
+    :param color1: The base colour
+    :type color1: colour.Color | str
+    :param color2: The target colour
+    :type color2: colour.Color | str
+    :param alpha: How much of `color2` to blend into `color1`, in the range [0, 1]
+    :type alpha: float
+    :return: The blended colour
+    :rtype: colour.Color
+    """
     rgb = interpolate(color_to_rgb(color1), color_to_rgb(color2), alpha)
     return rgb_to_color(rgb)
 
