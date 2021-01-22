@@ -224,6 +224,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     updater_list,
                 ) in requested_scene.mobject_updater_lists:
                     for updater in updater_list:
+                        # Only send update data for updaters that don't have tween data.
                         if generate_attribute_tween_data(updater) is None:
                             update_data.extend(
                                 [
