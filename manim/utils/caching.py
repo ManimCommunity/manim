@@ -26,7 +26,8 @@ def handle_caching_play(func):
             logger.debug(f"Skipping animation {self.num_plays}")
             func(self, scene, *args, **kwargs)
             # If the animation is skipped, we mark its hash as None.
-            # When sceneFileWriter will start combining partial movie files, it won't take into account None hashes.
+            # When sceneFileWriter will start combining partial movie files,
+            # it won't take into account None hashes.
             self.animations_hashes.append(None)
             self.file_writer.add_partial_movie_file(None)
             return
@@ -37,7 +38,11 @@ def handle_caching_play(func):
             )
             if self.file_writer.is_already_cached(hash_play):
                 logger.info(
-                    f"Animation {self.num_plays} : Using cached data (hash : %(hash_play)s)",
+                    f"Animation {self.num_plays} : "
+                    "Using cached data (hash : %(hash_play)s)",
+                    # an f-string is being used here; couldn't
+                    # the format dictionary be replaced with a
+                    # second interpolation?
                     {"hash_play": hash_play},
                 )
                 self.skip_animations = True
