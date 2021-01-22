@@ -149,15 +149,12 @@ def get_smooth_handle_points(
         b[0] = 2 * points[0]
         b[-1] = np.zeros(dim)
 
-        def closed_curve_solve_func(b: np.ndarray) -> np.ndarray:
+        def solve_func(b: np.ndarray) -> np.ndarray:
             return linalg.solve(matrix, b)
 
     handle_pairs = np.zeros((2 * num_handles, dim))
     for i in range(dim):
-        if use_closed_solve_function:
-            handle_pairs[:, i] = closed_curve_solve_func(b[:, i])
-        else:
-            handle_pairs[:, i] = solve_func(b[:, i])
+        handle_pairs[:, i] = solve_func(b[:, i])
     return handle_pairs[0::2], handle_pairs[1::2]
 
 
