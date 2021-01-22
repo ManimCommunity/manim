@@ -2,15 +2,15 @@ import os
 import sys
 import traceback
 
-from manim import logger, config
+from manim import config, logger
+from manim._config.main_utils import parse_args
+from manim.utils.file_ops import open_file as open_media_file
 from manim.utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
     get_scenes_to_render,
     scene_classes_from_file,
 )
-from manim.utils.file_ops import open_file as open_media_file
-from manim._config.main_utils import parse_args
 
 try:
     from manim.grpc.impl import frame_server_impl
@@ -19,8 +19,8 @@ except ImportError:
 
 
 def open_file_if_needed(file_writer):
+    curr_stdout = sys.stdout
     if config["verbosity"] != "DEBUG":
-        curr_stdout = sys.stdout
         sys.stdout = open(os.devnull, "w")
 
     open_file = any([config["preview"], config["show_in_file_browser"]])
