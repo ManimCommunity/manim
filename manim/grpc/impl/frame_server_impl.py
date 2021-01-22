@@ -116,6 +116,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             ids_to_remove = []
             mobjects_to_add = []
             animations = []
+            updaters = []
             update_data = []
             # TODO: Only remove/add changed mobjects rather than all of them.
             if self.previous_scene is not None and (
@@ -141,43 +142,69 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                     if not isinstance(mobject, ValueTracker)
                 ]
 
-                # Send tween info.
+                # Send animation and updater info.
                 all_animations_tweened = True
                 for animation in requested_scene.animations:
                     attribute_tween_data = generate_attribute_tween_data(animation)
+                    mobject_tween_data_list = []
+                    flickered_mobject_ids = []
                     if attribute_tween_data is None:
                         all_animations_tweened = False
-                        continue
-                    mobject_tween_data_list = []
-                    if animation.mobject is not None:
-                        # Add offset vector to submobjects.
-                        root_mobject_center = animation.mobject.get_center()
-                        for mobject in extract_mobject_family_members(
-                            animation.mobject, only_those_with_points=True
-                        ):
-                            mobject_tween_data_list.append(
-                                frameserver_pb2.Animation.MobjectTweenData(
-                                    id=mobject.original_id,
-                                    root_mobject_offset=mobject.get_center()
-                                    - root_mobject_center,
-                                )
+                        flickered_mobject_ids = [
+                            mob.original_id
+                            for mob in extract_mobject_family_members(
+                                animation.mobject, only_those_with_points=True
                             )
+                        ]
+                    else:
+                        if animation.mobject is not None:
+                            # Add offset vector to submobjects.
+                            root_mobject_center = animation.mobject.get_center()
+                            for updated_mobject in extract_mobject_family_members(
+                                animation.mobject, only_those_with_points=True
+                            ):
+                                mobject_tween_data_list.append(
+                                    frameserver_pb2.Animation.MobjectTweenData(
+                                        id=updated_mobject.original_id,
+                                        root_mobject_offset=updated_mobject.get_center()
+                                        - root_mobject_center,
+                                    )
+                                )
                     animation_proto = frameserver_pb2.Animation(
                         name=animation.__class__.__name__,
                         duration=requested_scene.duration,
                         easing_function=animation.rate_func.__name__,
                         attribute_tween_data=attribute_tween_data,
                         mobject_tween_data=mobject_tween_data_list,
+                        flickered_mobject_ids=flickered_mobject_ids,
                     )
                     animations.append(animation_proto)
-                for mobject, updaters in requested_scene.mobject_updater_lists:
-                    for updater in updaters:
+                for (
+                    updated_mobject,
+                    updater_list,
+                ) in requested_scene.mobject_updater_lists:
+                    all_updaters_tweened = True
+                    for updater in updater_list:
                         attribute_tween_data = generate_attribute_tween_data(updater)
                         if attribute_tween_data is None:
                             all_animations_tweened = False
-                            continue
+                            all_updaters_tweened = False
+                            updaters.append(
+                                frameserver_pb2.Updater(
+                                    flickered_mobject_ids=[
+                                        mob.original_id
+                                        for mob in extract_mobject_family_members(
+                                            updated_mobject, only_those_with_points=True
+                                        )
+                                    ]
+                                )
+                            )
+                            break
                         else:
                             raise NotImplementedError("Add tween data for updaters.")
+                    if all_updaters_tweened:
+                        # Append an updater with tween data.
+                        pass
             else:
                 all_animations_tweened = False
                 for animation in requested_scene.animations:
@@ -192,8 +219,11 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                                 if not isinstance(mobject, ValueTracker)
                             ]
                         )
-                for updated_mobject, updaters in requested_scene.mobject_updater_lists:
-                    for updater in updaters:
+                for (
+                    updated_mobject,
+                    updater_list,
+                ) in requested_scene.mobject_updater_lists:
+                    for updater in updater_list:
                         if generate_attribute_tween_data(updater) is None:
                             update_data.extend(
                                 [
@@ -211,6 +241,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 ),
                 scene_finished=scene_finished,
                 animations=animations,
+                updaters=updaters,
                 animation_index=requested_scene_index,
                 animation_offset=animation_offset,
                 all_animations_tweened=all_animations_tweened,

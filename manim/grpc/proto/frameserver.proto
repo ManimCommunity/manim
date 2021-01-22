@@ -37,6 +37,11 @@ message Animation {
         repeated float root_mobject_offset = 2;
     }
     repeated MobjectTweenData mobject_tween_data = 5;
+    repeated string flickered_mobject_ids = 6;
+}
+
+message Updater {
+    repeated string flickered_mobject_ids = 1;
 }
 
 message FrameRequest {
@@ -95,9 +100,10 @@ message FrameResponse {
     FrameData frame_data = 1;
     bool scene_finished = 2;
     repeated Animation animations = 3;
-    int32 animation_index = 4;
-    float animation_offset = 5;
-    bool all_animations_tweened = 6;
+    repeated Updater updaters = 4;
+    int32 animation_index = 5;
+    float animation_offset = 6;
+    bool all_animations_tweened = 7;
 }
 
 message EmptyRequest {}
