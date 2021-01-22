@@ -1,6 +1,9 @@
 """Utilities for using Manim with IPython (in particular: Jupyter notebooks)"""
 
+import hashlib
 import mimetypes
+import os
+import shutil
 from pathlib import Path
 
 from manim import config, tempconfig
@@ -21,6 +24,10 @@ else:
 
     @magics_class
     class ManimMagic(Magics):
+        def __init__(self, shell):
+            super(ManimMagic, self).__init__(shell)
+            self.rendered_files = dict()
+
         @needs_local_scope
         @line_cell_magic
         def manim(self, line, cell=None, local_ns=None):
@@ -72,6 +79,17 @@ else:
 
                 exec(f"{config['scene_names'][0]}().render()", local_ns)
                 local_path = Path(config["output_file"]).relative_to(Path.cwd())
+                tmpfile = (
+                    Path(config["media_dir"])
+                    / "jupyter"
+                    / f"{_video_hash(local_path)}{local_path.suffix}"
+                )
+
+                if local_path in self.rendered_files:
+                    self.rendered_files[local_path].unlink()
+                self.rendered_files[local_path] = tmpfile
+                os.makedirs(tmpfile.parent, exist_ok=True)
+                shutil.copy(local_path, tmpfile)
 
                 file_type = mimetypes.guess_type(Path(config["output_file"]))[0]
                 if file_type.startswith("image"):
@@ -80,7 +98,18 @@ else:
 
                 display(
                     Video(
-                        local_path,
+                        tmpfile,
                         html_attributes='controls autoplay loop style="max-width: 100%;"',
                     )
                 )
+
+
+def _video_hash(path):
+    sha1 = hashlib.sha1()
+    with open(path, "rb") as f:
+        while True:
+            data = f.read(65536)
+            if not data:
+                break
+            sha1.update(data)
+    return sha1.hexdigest()
