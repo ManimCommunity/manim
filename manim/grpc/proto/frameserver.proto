@@ -33,7 +33,7 @@ message Animation {
     repeated AttributeTweenData attribute_tween_data = 4;
 
     message MobjectTweenData {
-        int64 id = 1;
+        string id = 1;
         repeated float root_mobject_offset = 2;
     }
     repeated MobjectTweenData mobject_tween_data = 5;
@@ -61,7 +61,7 @@ message Point {
 }
 
 message MobjectData {
-    int64 id = 1;
+    string id = 1;
     Style style = 2;
     enum MobjectType {
         VMOBJECT = 0;
@@ -86,7 +86,7 @@ message ImageMobjectData {
 }
 
 message FrameData {
-    repeated int64 remove = 1;
+    repeated string remove = 1;
     repeated MobjectData add = 2;
     repeated MobjectData update = 3;
 }

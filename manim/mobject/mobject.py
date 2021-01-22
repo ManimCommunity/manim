@@ -108,7 +108,7 @@ class Mobject(Container):
         clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
             setattr(result, k, copy.deepcopy(v, clone_from_id))
-        result.original_id = id(self)
+        result.original_id = str(id(self))
         return result
 
     def __repr__(self):
