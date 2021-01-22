@@ -72,7 +72,7 @@ class GraphicalUnitTester:
 
         Returns
         -------
-        :class:`numpy.array`
+        :class:`numpy.ndarray`
             The pre-rendered frame.
         """
         frame_data_path = os.path.join(
@@ -135,7 +135,9 @@ class GraphicalUnitTester:
             if show_diff:
                 self._show_diff_helper(frame_data, expected_frame_data)
             assert test_result, (
-                f"The frames don't match. {str(self.scene).replace('Test', '')} has been modified."
+                f"The frames don't match. {str(self.scene).replace('Test', '')} has"
+                " been modified."
                 + "\nPlease ignore if it was intended."
-                + f"\nFirst unmatched index is at {first_incorrect_index}: {first_incorrect_point} != {expected_point}"
+                + f"\nFirst unmatched index is at {first_incorrect_index}:"
+                f" {first_incorrect_point} != {expected_point}"
             )

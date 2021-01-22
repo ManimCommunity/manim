@@ -26,7 +26,7 @@ class Brace(MathTex):
     ----------
     mobject : :class:`~.Mobject`
         The mobject adjacent to which the brace is placed.
-    direction : Optional[Union[:class:`list`, :class:`numpy.array`]]
+    direction : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
         The direction from which the brace faces the mobject.
 
     See Also
@@ -185,11 +185,11 @@ class BraceBetweenPoints(Brace):
 
     Parameters
     ----------
-    point_1 : Union[:class:`list`, :class:`numpy.array`]
+    point_1 : Union[:class:`list`, :class:`numpy.ndarray`]
         The first point.
-    point_2 : Union[:class:`list`, :class:`numpy.array`]
+    point_2 : Union[:class:`list`, :class:`numpy.ndarray`]
         The second point.
-    direction : Optional[Union[:class:`list`, :class:`numpy.array`]]
+    direction : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
         The direction from which the brace faces towards the points.
 
     Examples

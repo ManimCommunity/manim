@@ -57,11 +57,29 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
 # Linear interpolation variants
 
 
-def interpolate(start: int, end: int, alpha: float) -> float:
+def interpolate(
+    start: typing.Union[float, np.ndarray],
+    end: typing.Union[float, np.ndarray],
+    alpha: float,
+) -> typing.Union[float, np.ndarray]:
+    """
+    Interpolate `start` and `end` given a relative position `alpha`
+
+    :param start: The start of the interpolation range
+    :type start: int | numpy.ndarray[numpy.float64]
+    :param end: The end of the interpolation range
+    :type end: int | numpy.ndarray[numpy.float64]
+    :param alpha: The position to interpolate, in the range [0, 1]
+    :type alpha: float
+    :return: The interpolated value
+    :rtype: float | numpy.ndarray[numpy.float64]
+    """
     return (1 - alpha) * start + alpha * end
 
 
-def integer_interpolate(start: float, end: float, alpha: float) -> int:
+def integer_interpolate(
+    start: float, end: float, alpha: float
+) -> typing.Tuple[int, float]:
     """
     alpha is a float between 0 and 1.  This returns
     an integer between start and end (inclusive) representing

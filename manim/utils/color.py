@@ -84,11 +84,13 @@ __all__ = [
     "ORANGE",
 ]
 
-from enum import Enum
 import random
+import typing
+import re
+from enum import Enum
 
-from colour import Color
 import numpy as np
+from colour import Color
 
 from ..utils.bezier import interpolate
 from ..utils.simple_functions import clip_in_place
@@ -257,58 +259,188 @@ LIGHT_PINK = Colors.light_pink.value
 GREEN_SCREEN = Colors.green_screen.value
 ORANGE = Colors.orange.value
 
+Colour = typing.Union[str, Color]
+# numpy doesn't support generics so this is the best I can do
+RGB = np.array
+RGBA = np.array
+INT_RGB = np.array
+INT_RGBA = np.array
 
-def color_to_rgb(color):
+
+def color_to_rgb(color: Colour) -> RGB:
+    """
+    Convert `color` to RGB
+
+    `color` must be either a `colour.Color` or a hexadecimal colour string.
+
+    :param color: The colour to convert
+    :type color: colour.Color | str
+    :raises ValueError: `color` is not a valid colour
+    :return: RGB colour
+    :rtype: numpy.ndarray[numpy.float64]
+    """
     if isinstance(color, str):
-        return hex_to_rgb(color)
+        try:
+            return hex_to_rgb(color)
+        except ValueError as exc:
+            # the default message is not meaningful
+            # so here's a custom one
+            raise ValueError("Invalid hex colour") from exc
     elif isinstance(color, Color):
         return np.array(color.get_rgb())
     else:
         raise ValueError("Invalid color type")
 
 
-def color_to_rgba(color, alpha=1):
+def color_to_rgba(color: Colour, alpha: float = 1) -> RGBA:
+    """
+    Convert `color` to RGBA using the given `alpha`
+
+    `color` must be either a `colour.Color` or a hexadecimal colour string.
+
+    :param color: The colour to convert
+    :type color: colour.Color | str
+    :param alpha: The alpha value, in the range [0, 1]
+    :raises ValueError: `color` is not a valid colour
+    :return: RGB colour
+    :rtype: numpy.ndarray[numpy.float64]
+    """
     return np.array([*color_to_rgb(color), alpha])
 
 
-def rgb_to_color(rgb):
+def rgb_to_color(rgb: RGB) -> Color:
+    """
+    Convert `rgb` to a `colour.Color`
+
+    :param rgb: 3-array of floats in the range [0, 1]
+    :type rgb: numpy.ndarray[numpy.float64]
+    :raises ValueError: `rgb` is not a valid RGB colour
+    :return: The converted colour
+    :rtype: colour.Color
+    """
     try:
         return Color(rgb=rgb)
-    except:
-        return Color(WHITE)
+    except ValueError as exc:
+        raise ValueError("Not a valid RGB colour") from exc
 
 
-def rgba_to_color(rgba):
+def rgba_to_color(rgba: RGBA) -> Color:
+    """
+    Convert `rgba` to a `colour.Color`
+
+    The alpha channel is stripped (and is therefore lost).
+
+    :param rgba: 4-array of floats in the range [0, 1]
+    :type rgba: numpy.ndarray[numpy.float64]
+    :raises ValueError: `rgba` is not a valid RGB colour
+    :return: The converted colour
+    :rtype: colour.Color
+    """
     return rgb_to_color(rgba[:3])
 
 
-def rgb_to_hex(rgb):
+def rgb_to_hex(rgb: typing.Union[RGB, RGBA]) -> str:
+    """
+    Convert `rgb` to a (web-safe) hexadecimal colour string
+
+    `rgb` may also be an RGBA value, but for backwards compatibility
+    I have left its name as `rgb`
+
+    :param rgb: 3- or 4- array of floats in the range [0, 1]
+    :type rgb: numpy.ndarray[numpy.float64]
+    :raises ValueError: `rgb` is not a valid RGB/RGBA colour
+    :return: Hexadecimal colour string
+    :rtype: str
+    """
+    if not (3 <= len(rgb) <= 4):
+        raise ValueError("Not an RGB/RGBA colour")
     return "#" + "".join("%02x" % int(255 * x) for x in rgb)
 
 
-def hex_to_rgb(hex_code):
+def hex_to_rgb(hex_code: str) -> RGB:
+    """
+    Convert `hex_code` to an RGB array
+
+    :param hex_code: Hexadecimal colour string
+    :type hex_code: str
+    :raises ValueError: `hex_code` is not a valid hexadecimal colour
+    :return: RGB array
+    :rtype: numpy.ndarray[numpy.float64]
+    """
+    if not re.fullmatch(r"#([0-9a-f]{3}|[0-9a-f]{6})", hex_code, flags=re.I):
+        raise ValueError("Not a valid hexadecimal colour")
     hex_part = hex_code[1:]
     if len(hex_part) == 3:
-        "".join([2 * c for c in hex_part])
+        hex_part = "".join([2 * c for c in hex_part])
     return np.array([int(hex_part[i : i + 2], 16) / 255 for i in range(0, 6, 2)])
 
 
-def invert_color(color):
+def invert_color(color: Colour) -> Color:
+    """
+    Invert `color`
+
+    `color` must be a `colour.Color` or a hexadecimal colour string
+
+    :param color: The colour to invert
+    :type color: colour.Color | str
+    :return: The inverted colour
+    :rtype: colour.Color
+    """
     return rgb_to_color(1.0 - color_to_rgb(color))
 
 
-def color_to_int_rgb(color):
+def color_to_int_rgb(color: Colour) -> INT_RGB:
+    """
+    Convert `color` to an integer RGB array
+
+    `color` must be a `colour.Color` or a hexadecimal colour string
+
+    :param color: The colour to convert
+    :type color: colour.Color | str
+    :return: Integer RGB array
+    :rtype: numpy.ndarray[numpy.uint8]
+    """
     return (255 * color_to_rgb(color)).astype("uint8")
 
 
-def color_to_int_rgba(color, opacity=1.0):
+def color_to_int_rgba(color: Colour, opacity: float = 1.0) -> INT_RGBA:
+    """
+    Convert `color` to an integer RGBA array with the given `opacity`
+
+    `color` must be a `colour.Color` or a hexadecimal colour string
+
+    :param color: The colour to convert
+    :type color: colour.Color | str
+    :param opacity: The opacity of the converted colour, in the range [0, 1]
+    :type opacity: float
+    :return: Integer RGBA array
+    :rtype: numpy.ndarray[numpy.uint8]
+    """
     alpha = int(255 * opacity)
     return np.append(color_to_int_rgb(color), alpha)
 
 
-def color_gradient(reference_colors, length_of_output):
-    if length_of_output == 0:
-        return reference_colors[0]
+def color_gradient(
+    reference_colors: typing.List[Colour], length_of_output: int
+) -> typing.List[Color]:
+    """
+    Compute and return a gradient based on `reference_colors`
+
+    The reference colours will be turned into a `length_of_output`-long
+    list of colours
+
+    :param reference_colors: The colours with which to generate the gradient
+    :type reference_colors: list[colour.Color | str]
+    :param length_of_output: How many colours to return
+    :type length_of_output: int
+    :return: A list of colours in the gradient
+    :rtype: list[colour.Color]
+    """
+    if length_of_output < 1:
+        # I believe this to make more sense than just returning the first.
+        # Should be backwards-compatible as I don't see why anyone would be
+        # doing this in the first place
+        return []
     rgbs = list(map(color_to_rgb, reference_colors))
     alphas = np.linspace(0, (len(rgbs) - 1), length_of_output)
     floors = alphas.astype("int")
@@ -322,7 +454,7 @@ def color_gradient(reference_colors, length_of_output):
     ]
 
 
-def interpolate_color(color1, color2, alpha):
+def interpolate_color(color1: Colour, color2: Colour, alpha: float) -> Color:
     rgb = interpolate(color_to_rgb(color1), color_to_rgb(color2), alpha)
     return rgb_to_color(rgb)
 
