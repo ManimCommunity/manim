@@ -72,9 +72,7 @@ def open_client(client=None):
 
 
 def _disable_logging(func):
-    """Decorator for running trigger Wait() animations without showing the
-    usual output expected from this action
-    """
+    """Decorator for disabling logging output of a function."""
 
     functools.wraps(func)
 
