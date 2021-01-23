@@ -54,8 +54,7 @@ class Stream:
         raise AttributeError("Object does not contain scene protocol")
 
     def show_frame(self):
-        """
-        Opens the current frame in the Default Image Viewer
+        """Opens the current frame in the Default Image Viewer
         of your system.
         """
         self.renderer.update_frame(self, ignore_skipping=True)
