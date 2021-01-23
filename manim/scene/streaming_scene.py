@@ -64,13 +64,17 @@ class Stream:
 def get_streamer(*scene):
     """Creates an instance of a class that has streaming services.
 
-    Optional arguments:
-        scene: The scene whose methods can be used in the resulting
+    Parameters
+    ----------
+    scene
+        The scene whose methods can be used in the resulting
         instance, such as zooming in and arbitrary method constructions.
         Defaults to just Scene
 
-    Returns:
-        StreamingScene: It's a Scene that Streams. Name deconstruction.
+    Returns
+    -------
+    StreamingScene
+        A scene suited for streaming.
     """
     bases = (Stream,) + (scene or (Scene,))
     cls = type("StreamingScene", bases, {})
