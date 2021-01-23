@@ -44,9 +44,9 @@ Want to render the animation of an entire pre-baked scene? Here's an example:
 
 To view an image of the current state of the scene or mobject, use: 
 
->>> manim.show_frame()        #For Scene
+>>> manim.show_frame()        # view image of current scene
 >>> c = Circle()
->>> c.show()                  #For mobject
+>>> c.show()                  # view image of Mobject
 """
 
 
