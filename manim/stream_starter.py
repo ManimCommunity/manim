@@ -143,7 +143,10 @@ def livestream(use_ipython=False):
 
 
 def stream():
-    """For a quick import and livestream eg:
+    """Convenience function for setting up streaming from a running REPL.
+    
+    Example
+    -------
 
     >>> from manim import stream, open_client, Circle, ShowCreation
     >>> manim = stream()
