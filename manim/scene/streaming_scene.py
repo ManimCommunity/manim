@@ -6,12 +6,14 @@ from .scene import Scene
 
 
 class Stream:
-    """This class is really intended for inheritance of the style:
+    """Abstract base class.
+    
+    This class is really intended for inheritance of the style::
 
-    >>> class Streamer(Stream, Scene): # doctest: +SKIP
-    ...     pass
-    ...
-    >>>
+        >>> class Streamer(Stream, Scene): # doctest: +SKIP
+        ...     pass
+        ...
+        >>>
 
     This order is paramount. This :class:`Stream` class does the switch to
     the specialized renderer, which uses the :class:`StreamFileWriter` to
