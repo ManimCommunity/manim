@@ -104,9 +104,17 @@ def _popup_window():
 
 
 def livestream(use_ipython=False):
-    """Main function, intended for use from module execution
-    Also has its application in a REPL, though the less activated version of this
-    might be more suitable for quick sanity and testing checks."""
+    """Main function, enables livestream mode.
+    
+    This is called when running ``manim --livestream`` from the command line.
+    
+    Can also be called in a REPL, though the less activated version of this
+    might be more suitable for quick sanity and testing checks.
+    
+    .. seealso::
+
+        :func:`~.stream`
+    """
     if use_ipython:
         from . import stream_ipython
 
