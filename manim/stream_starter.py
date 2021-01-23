@@ -98,7 +98,7 @@ def _guarantee_sdp_file(*args):
 @_disable_logging
 def _popup_window():
     """Triggers the opening of the window. May lack utility for a streaming
-    client like vlc
+    client like VLC.
     """
     get_streamer().wait(0.5)
 
