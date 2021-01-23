@@ -200,9 +200,9 @@ class Code(VGroup):
             self.ensure_valid_file()
             with open(self.file_path, "r") as f:
                 self.code_string = f.read()
-        if code:
+        elif code:
             self.code_string = code
-        if self.code_string is None:
+        else:
             raise ValueError(
                 "Neither a code file nor a code string have been specified."
             )
