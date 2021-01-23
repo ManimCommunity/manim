@@ -34,7 +34,6 @@ original Scene class. To create a streaming class which inherits from
 another scene class, e.g. MovingCameraScene, create it with the syntax:
 
 >>> manim2 = get_streamer(MovingCameraScene)
->>> 
 
 Want to render the animation of an entire pre-baked scene? Here's an example:
 
