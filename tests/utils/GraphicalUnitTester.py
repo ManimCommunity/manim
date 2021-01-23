@@ -76,12 +76,12 @@ class GraphicalUnitTester:
             The pre-rendered frame.
         """
         frame_data_path = os.path.join(
-            os.path.join(self.path_control_data, "{}.npz".format(str(self.scene)))
+            os.path.join(self.path_control_data, f"{self.scene}.npz")
         )
         return np.load(frame_data_path)["frame_data"]
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
-        """Will visually display with matplotlib differences between frame generared and the one expected."""
+        """Will visually display with matplotlib differences between frame generated and the one expected."""
         import matplotlib.pyplot as plt
         import matplotlib.gridspec as gridspec
 

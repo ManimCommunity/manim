@@ -79,7 +79,7 @@ class SVGMobject(VMobject):
         unpack_groups=True,  # if False, creates a hierarchy of VGroups
         stroke_width=DEFAULT_STROKE_WIDTH,
         fill_opacity=1.0,
-        **kwargs
+        **kwargs,
     ):
         self.file_name = file_name or self.file_name
         self.ensure_valid_file()
@@ -120,9 +120,7 @@ class SVGMobject(VMobject):
             if os.path.exists(path):
                 self.file_path = path
                 return
-        error = "From: {}, could not find {} at either of these locations: {}".format(
-            os.getcwd(), self.file_name, possible_paths
-        )
+        error = f"From: {os.getcwd()}, could not find {self.file_name} at either of these locations: {possible_paths}"
         raise IOError(error)
 
     def generate_points(self):
@@ -199,7 +197,7 @@ class SVGMobject(VMobject):
         Returns
         -------
         List[VMobject]
-            A list of VMobject reprsented by the group.
+            A list of VMobject represented by the group.
         """
         mob = VGroup(*self.get_mobjects_from(g_element))
         self.handle_transforms(g_element, mob)
@@ -348,7 +346,7 @@ class SVGMobject(VMobject):
             WHITE
         ):
             opacity = 0
-            fill_color = BLACK  # shdn't be necessary but avoids error msgs
+            fill_color = BLACK  # shouldn't be necessary but avoids error msgs
         if fill_color in ["#000", "#000000"]:
             fill_color = WHITE
         if stroke_color in ["", "none", "#FFF", "#FFFFFF"] or Color(
@@ -390,7 +388,7 @@ class SVGMobject(VMobject):
         return mob
 
     def handle_transforms(self, element, mobject):
-        """Applies the SVG transform to the specified mobject. Tranforms include:
+        """Applies the SVG transform to the specified mobject. Transforms include:
         ``rotate``, ``translate``, ``scale``, and ``skew``.
 
         Parameters

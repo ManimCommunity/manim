@@ -47,7 +47,7 @@ class Transform(Animation):
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
         replace_mobject_with_target_in_scene: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.path_arc = path_arc
         self.path_func = path_func
@@ -87,8 +87,9 @@ class Transform(Animation):
 
     def check_target_mobject_validity(self) -> None:
         if self.target_mobject is None:
-            message = "{}.create_target not properly implemented"
-            raise NotImplementedError(message.format(self.__class__.__name__))
+            raise NotImplementedError(
+                f"{self.__class__.__name__}.create_target not properly implemented"
+            )
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
         super().clean_up_from_scene(scene)
@@ -126,11 +127,11 @@ class Transform(Animation):
     def interpolate_submobject(
         self,
         submobject: Mobject,
-        starting_sumobject: Mobject,
+        starting_submobject: Mobject,
         target_copy: Mobject,
         alpha: float,
     ) -> "Transform":  # doesn't match the parent class?
-        submobject.interpolate(starting_sumobject, target_copy, alpha, self.path_func)
+        submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 
 
@@ -159,7 +160,7 @@ class ClockwiseTransform(Transform):
         mobject: Mobject,
         target_mobject: Mobject,
         path_arc: float = -np.pi,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject, target_mobject, path_arc=path_arc, **kwargs)
 
@@ -170,7 +171,7 @@ class CounterclockwiseTransform(Transform):
         mobject: Mobject,
         target_mobject: Mobject,
         path_arc: float = np.pi,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject, target_mobject, path_arc=path_arc, **kwargs)
 
@@ -185,6 +186,11 @@ class MoveToTarget(Transform):
             raise ValueError(
                 "MoveToTarget called on mobject" "without attribute 'target'"
             )
+
+
+class _MethodAnimation(MoveToTarget):
+    def __init__(self, mobject):
+        super().__init__(mobject)
 
 
 class ApplyMethod(Transform):
@@ -252,7 +258,7 @@ class ApplyPointwiseFunction(ApplyMethod):
         function: types.MethodType,
         mobject: Mobject,
         run_time: float = DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject.apply_function, function, run_time=run_time, **kwargs)
 
@@ -355,14 +361,14 @@ class Swap(CyclicReplace):
     pass  # Renaming, more understandable for two entries
 
 
-# TODO, this may be depricated...worth reimplementing?
+# TODO, this may be deprecated...worth reimplementing?
 class TransformAnimations(Transform):
     def __init__(
         self,
         start_anim: Animation,
         end_anim: Animation,
         rate_func: typing.Callable = squish_rate_func(smooth),
-        **kwargs
+        **kwargs,
     ) -> None:
         self.start_anim = start_anim
         self.end_anim = end_anim

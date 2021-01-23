@@ -5,6 +5,7 @@ __all__ = ["Animation", "Wait"]
 
 
 import typing
+from typing import Union
 from copy import deepcopy
 
 import numpy as np
@@ -13,7 +14,7 @@ if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 
 from .. import logger
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
@@ -35,7 +36,7 @@ class Animation:
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
-        **kwargs
+        **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time = run_time
@@ -66,7 +67,10 @@ class Animation:
     def __str__(self) -> str:
         if self.name:
             return self.name
-        return self.__class__.__name__ + str(self.mobject)
+        return f"{self.__class__.__name__}({str(self.mobject)})"
+
+    def __repr__(self) -> str:
+        return str(self)
 
     def begin(self) -> None:
         # This is called right as an animation is being
@@ -99,7 +103,7 @@ class Animation:
 
     def get_all_mobjects(self) -> typing.Tuple[Mobject, typing.Union[Mobject, None]]:
         """
-        Ordering must match the ording of arguments to interpolate_submobject
+        Ordering must match the ordering of arguments to interpolate_submobject
         """
         return self.mobject, self.starting_mobject
 
@@ -128,10 +132,6 @@ class Animation:
     def copy(self) -> "Animation":
         return deepcopy(self)
 
-    def update_config(self, **kwargs: typing.Dict[str, typing.Any]) -> "Animation":
-        self.__dict__.update(kwargs)
-        return self
-
     # Methods for interpolation, the mean of an Animation
     def interpolate(self, alpha: float) -> None:
         alpha = np.clip(alpha, 0, 1)
@@ -155,13 +155,13 @@ class Animation:
             self.interpolate_submobject(*mobs, sub_alpha)
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_sumobject: Mobject, alpha: float
+        self, submobject: Mobject, starting_submobject: Mobject, alpha: float
     ) -> None:
         # Typically implemented by subclass
         pass
 
     def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int):
-        # TODO, make this more understanable, and/or combine
+        # TODO, make this more understandable, and/or combine
         # its functionality with AnimationGroup's method
         # build_animations_with_timings
         lag_ratio = self.lag_ratio
@@ -193,6 +193,42 @@ class Animation:
 
     def is_remover(self) -> bool:
         return self.remover
+
+
+def prepare_animation(anim: Union["Animation", "_AnimationBuilder"]) -> "Animation":
+    r"""Returns either an unchanged animation, or the animation built
+    from a passed animation factory.
+
+    Examples
+    --------
+
+    ::
+
+        >>> from manim import Square, FadeIn
+        >>> s = Square()
+        >>> prepare_animation(FadeIn(s))
+        FadeIn(Square)
+
+    ::
+
+        >>> prepare_animation(s.animate.scale(2).rotate(42))
+        _MethodAnimation(Square)
+
+    ::
+
+        >>> prepare_animation(42)
+        Traceback (most recent call last):
+        ...
+        TypeError: Object 42 cannot be converted to an animation
+
+    """
+    if isinstance(anim, _AnimationBuilder):
+        return anim.build()
+
+    if isinstance(anim, Animation):
+        return anim
+
+    raise TypeError(f"Object {anim} cannot be converted to an animation")
 
 
 class Wait(Animation):

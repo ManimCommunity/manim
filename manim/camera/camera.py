@@ -29,7 +29,7 @@ from ..utils.space_ops import get_norm
 from ..utils.family import extract_mobject_family_members
 
 
-class Camera(object):
+class Camera:
     """Base camera class.
 
     This is the object which takes care of what exactly is displayed
@@ -191,7 +191,7 @@ class Camera(object):
 
     def reset_pixel_shape(self, new_height, new_width):
         """This method resets the height and width
-        of a single pixel to the passed new_heigh and new_width.
+        of a single pixel to the passed new_height and new_width.
 
         Parameters
         ----------
@@ -342,7 +342,7 @@ class Camera(object):
         Parameters
         ----------
         coords_to_colors_func : function
-            The function whose input is an (x,y) pair of coordinats and
+            The function whose input is an (x,y) pair of coordinates and
             whose return values must be the colors for that point
         Returns
         -------
@@ -372,7 +372,7 @@ class Camera(object):
         Parameters
         ----------
         coords_to_colors_func : function
-            The function whose input is an (x,y) pair of coordinats and
+            The function whose input is an (x,y) pair of coordinates and
             whose return values must be the colors for that point
         """
         self.set_background(self.make_background_from_func(coords_to_colors_func))
@@ -879,7 +879,7 @@ class Camera(object):
         pixel_array[:, :] = new_pa.reshape((ph, pw, rgba_len))
 
     def display_multiple_image_mobjects(self, image_mobjects, pixel_array):
-        """Displays multiple image mobjects by modifiying the passed pixel_array.
+        """Displays multiple image mobjects by modifying the passed pixel_array.
 
         Parameters
         ----------
@@ -926,7 +926,7 @@ class Camera(object):
 
         # TODO, there is no accounting for a shear...
 
-        # Paste into an image as large as the camear's pixel array
+        # Paste into an image as large as the camera's pixel array
         full_image = Image.fromarray(
             np.zeros((self.pixel_height, self.pixel_width)), mode="RGBA"
         )
@@ -1003,7 +1003,7 @@ class Camera(object):
         # NOTE: There seems to be an unused argument `mobject`.
 
         # Subclasses (like ThreeDCamera) may want to
-        # adjust points futher before they're shown
+        # adjust points further before they're shown
         if not np.all(np.isfinite(points)):
             # TODO, print some kind of warning about
             # mobject having invalid points?
@@ -1148,7 +1148,7 @@ class Camera(object):
 
 # NOTE: The methods of the following class have not been mentioned outside of their definitons.
 # Their DocStrings are not as detailed as preferred.
-class BackgroundColoredVMobjectDisplayer(object):
+class BackgroundColoredVMobjectDisplayer:
     def __init__(self, camera):
         """
         Parameters
@@ -1167,7 +1167,7 @@ class BackgroundColoredVMobjectDisplayer(object):
     def resize_background_array(
         self, background_array, new_width, new_height, mode="RGBA"
     ):
-        """Resizes the pixel array represinting the background.
+        """Resizes the pixel array representing the background.
 
         Parameters
         ----------
