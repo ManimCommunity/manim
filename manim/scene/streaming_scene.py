@@ -96,12 +96,19 @@ def play_scene(scene, start=None, end=None):
     Hence the function clears everything after it's finished for more use. Or
     something like that.
 
-    Arguments:
-        scene: The scene to be played.
-        start: The animation to start with. Default original start point.
-        end: The animation to end with. Default original endpoint
-             Note: The animations use endpoint-inclusive indexing, meaning (0, 5) would
-             play 0 upto 5 inclusive of both.
+    Parameters
+    ----------
+    scene
+        The scene to be played.
+    start
+        The animation to start with. Default original start point.
+    end
+        The animation to end with. Default original endpoint
+
+    .. note:: 
+
+        The animations use endpoint-inclusive indexing, meaning (0, 5) would
+        play 0 upto 5 inclusive of both.
     """
     manim = get_streamer(scene)
     original = (config.from_animation_number, config.upto_animation_number)
