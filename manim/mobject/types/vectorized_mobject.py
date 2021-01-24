@@ -367,6 +367,23 @@ class VMobject(Mobject):
         return self.get_fill_color()
 
     def set_sheen_direction(self, direction, family=True):
+        """Changes the direction of the sheen applied, use set_sheen() to apply
+        
+        Parameters
+        --------
+        direction : :class:`numpy.ndarray`, optional
+            Direction from where the gradient is applied.
+            
+        Examples
+        --------
+        Normal usage::
+
+            Circle().set_sheen_direction(UP)
+            
+        See Also
+        --------
+        :meth:`set_sheen`
+        """
         direction = np.array(direction)
         if family:
             for submob in self.get_family():
@@ -376,6 +393,27 @@ class VMobject(Mobject):
         return self
 
     def set_sheen(self, factor, direction=None, family=True):
+        """Applies a gradient from a direction to introduce a soft lustre.
+
+        Parameters
+        --------
+        factor : :class:`float`
+            The extent of lustre/gradient to apply. If negative, the gradient starts from black, \
+            if positive the gradient starts from white (to current color)
+        direction : :class:`numpy.ndarray`, optional
+            Direction from where the gradient is applied
+        family : :class:`boolean`, optional
+           
+        Examples
+        ---------
+        .. manim:: SetSheen
+            :save_last_frame:
+
+            class SetSheen(Scene):
+                def construct(self):
+                    circle = Circle(fill_opacity=1).set_sheen(-0.3, DR)
+                    self.add(circle)
+        """
         if family:
             for submob in self.submobjects:
                 submob.set_sheen(factor, direction, family)
