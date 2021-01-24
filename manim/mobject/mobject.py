@@ -1363,7 +1363,9 @@ class _AnimationBuilder:
 
         def update_target(*method_args, **method_kwargs):
             self.methods[-1](*method_args, **method_kwargs)
-            return _AnimationBuilder(self.mobject, generate_target=False, methods=self.methods)
+            return _AnimationBuilder(
+                self.mobject, generate_target=False, methods=self.methods
+            )
 
         return update_target
 

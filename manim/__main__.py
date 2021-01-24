@@ -12,12 +12,6 @@ from manim.utils.module_ops import (
 from manim.utils.file_ops import open_file as open_media_file
 from manim._config.main_utils import parse_args
 
-try:
-    from manim.grpc.impl import frame_server_impl
-except ImportError as e:
-    logger.info(e)
-    frame_server_impl = None
-
 
 def open_file_if_needed(file_writer):
     if config["verbosity"] != "DEBUG":
@@ -80,8 +74,8 @@ def main():
         input_file = config.get_dir("input_file")
         if config["use_webgl_renderer"]:
             try:
-                if frame_server_impl is None:
-                    raise ImportError("Dependencies for JS renderer are not installed.")
+                from manim.grpc.impl import frame_server_impl
+
                 server = frame_server_impl.get(input_file)
                 server.start()
                 server.wait_for_termination()

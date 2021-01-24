@@ -15,87 +15,110 @@ class FrameServerStub(object):
             channel: A grpc.Channel.
         """
         self.GetFrameAtTime = channel.unary_unary(
-                '/frameserver.FrameServer/GetFrameAtTime',
-                request_serializer=frameserver__pb2.FrameRequest.SerializeToString,
-                response_deserializer=frameserver__pb2.FrameResponse.FromString,
-                )
+            "/frameserver.FrameServer/GetFrameAtTime",
+            request_serializer=frameserver__pb2.FrameRequest.SerializeToString,
+            response_deserializer=frameserver__pb2.FrameResponse.FromString,
+        )
         self.FetchSceneData = channel.unary_unary(
-                '/frameserver.FrameServer/FetchSceneData',
-                request_serializer=frameserver__pb2.EmptyRequest.SerializeToString,
-                response_deserializer=frameserver__pb2.FetchSceneDataResponse.FromString,
-                )
+            "/frameserver.FrameServer/FetchSceneData",
+            request_serializer=frameserver__pb2.EmptyRequest.SerializeToString,
+            response_deserializer=frameserver__pb2.FetchSceneDataResponse.FromString,
+        )
 
 
 class FrameServerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def GetFrameAtTime(self, request, context):
-        """Returns a serialization of the scene at the specified time.
-        """
+        """Returns a serialization of the scene at the specified time."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
 
     def FetchSceneData(self, request, context):
-        """Returns a list of the names and durations of all animations in the scene.
-        """
+        """Returns a list of the names and durations of all animations in the scene."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
 
 
 def add_FrameServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'GetFrameAtTime': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetFrameAtTime,
-                    request_deserializer=frameserver__pb2.FrameRequest.FromString,
-                    response_serializer=frameserver__pb2.FrameResponse.SerializeToString,
-            ),
-            'FetchSceneData': grpc.unary_unary_rpc_method_handler(
-                    servicer.FetchSceneData,
-                    request_deserializer=frameserver__pb2.EmptyRequest.FromString,
-                    response_serializer=frameserver__pb2.FetchSceneDataResponse.SerializeToString,
-            ),
+        "GetFrameAtTime": grpc.unary_unary_rpc_method_handler(
+            servicer.GetFrameAtTime,
+            request_deserializer=frameserver__pb2.FrameRequest.FromString,
+            response_serializer=frameserver__pb2.FrameResponse.SerializeToString,
+        ),
+        "FetchSceneData": grpc.unary_unary_rpc_method_handler(
+            servicer.FetchSceneData,
+            request_deserializer=frameserver__pb2.EmptyRequest.FromString,
+            response_serializer=frameserver__pb2.FetchSceneDataResponse.SerializeToString,
+        ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'frameserver.FrameServer', rpc_method_handlers)
+        "frameserver.FrameServer", rpc_method_handlers
+    )
     server.add_generic_rpc_handlers((generic_handler,))
 
 
- # This class is part of an EXPERIMENTAL API.
+# This class is part of an EXPERIMENTAL API.
 class FrameServer(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def GetFrameAtTime(request,
+    def GetFrameAtTime(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
             target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/frameserver.FrameServer/GetFrameAtTime',
+            "/frameserver.FrameServer/GetFrameAtTime",
             frameserver__pb2.FrameRequest.SerializeToString,
             frameserver__pb2.FrameResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
 
     @staticmethod
-    def FetchSceneData(request,
+    def FetchSceneData(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
             target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/frameserver.FrameServer/FetchSceneData',
+            "/frameserver.FrameServer/FetchSceneData",
             frameserver__pb2.EmptyRequest.SerializeToString,
             frameserver__pb2.FetchSceneDataResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
