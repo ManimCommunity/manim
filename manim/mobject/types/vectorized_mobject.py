@@ -46,13 +46,13 @@ class VMobject(Mobject):
         self,
         fill_color=None,
         fill_opacity=0.0,
-        stroke_color=BLACK,
+        stroke_color=None,
         stroke_opacity=1.0,
         stroke_width=DEFAULT_STROKE_WIDTH,
         # The purpose of background stroke is to have
         # something that won't overlap the fill, e.g.
         # For text against some textured background
-        background_stroke_color=WHITE,
+        background_stroke_color=BLACK,
         background_stroke_opacity=1.0,
         background_stroke_width=0,
         # When a color c is set, there will be a second color
@@ -489,7 +489,7 @@ class VMobject(Mobject):
 
     def add_smooth_curve_to(self, *points):
         """
-        If two points are passed in, the first is intepretted
+        If two points are passed in, the first is interpreted
         as a handle, the second as an anchor
         """
         if len(points) == 1:
@@ -748,7 +748,7 @@ class VMobject(Mobject):
 
         for mob in self, vmobject:
             # If there are no points, add one to
-            # whereever the "center" is
+            # wherever the "center" is
             if mob.has_no_points():
                 mob.start_new_path(mob.get_center())
             # If there's only one point, turn it into
@@ -1033,6 +1033,12 @@ class VGroup(VMobject):
             + ")"
         )
 
+    def __str__(self):
+        return (
+            f"{self.__class__.__name__} of {len(self.submobjects)} "
+            f"submobject{'s' if len(self.submobjects) > 0 else ''}"
+        )
+
     def add(self, *vmobjects):
         """Checks if all passed elements are an instance of VMobject and then add them to submobjects
 
@@ -1167,7 +1173,7 @@ class VDict(VMobject):
                 my_dict["t"] = Tex("Some other text").set_color(BLUE)
                 self.wait()
 
-                # remove submoject by key
+                # remove submobject by key
                 my_dict.remove("t")
                 self.wait()
 
@@ -1504,9 +1510,16 @@ class DashedVMobject(VMobject):
             full_d_alpha = 1.0 / num_dashes
             partial_d_alpha = full_d_alpha * ps_ratio
 
+            # Shifts the alphas and removes the last dash
+            # to give closed shapes even spacing
+            if vmobject.is_closed():
+                alphas += partial_d_alpha / 2
+                np.delete(alphas, -1)
+
             # Rescale so that the last point of vmobject will
             # be the end of the last dash
-            alphas /= 1 - full_d_alpha + partial_d_alpha
+            else:
+                alphas /= 1 - full_d_alpha + partial_d_alpha
 
             self.add(
                 *[

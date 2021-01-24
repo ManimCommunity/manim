@@ -392,7 +392,7 @@ class ManimConfig(MutableMapping):
         c = ManimConfig()
         # Deepcopying the underlying dict is enough because all properties
         # either read directly from it or compute their value on the fly from
-        # vaulues read directly from it.
+        # values read directly from it.
         c._d = copy.deepcopy(self._d, memo)
         return c
 
@@ -450,7 +450,7 @@ class ManimConfig(MutableMapping):
         ----------
         parser : :class:`ConfigParser`
             An object reflecting the contents of one or many ``.cfg`` files.  In
-            particular, it may reflect the contents of mulitple files that have
+            particular, it may reflect the contents of multiple files that have
             been parsed in a cascading fashion.
 
         Returns
@@ -517,6 +517,7 @@ class ManimConfig(MutableMapping):
             "upto_animation_number",
             "frame_rate",
             "max_files_cached",
+            # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
         ]:
@@ -543,15 +544,23 @@ class ManimConfig(MutableMapping):
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
         # float keys
-        for key in ["background_opacity"]:
+        for key in [
+            "background_opacity",
+            # the next two are floats but have their own logic, applied later
+            # "frame_width",
+            # "frame_height",
+        ]:
             setattr(self, key, parser["CLI"].getfloat(key))
 
-        # other logic
-        self["frame_height"] = 8.0
-        self["frame_width"] = (
-            self["frame_height"] * self["pixel_width"] / self["pixel_height"]
-        )
+        # the next two must be set AFTER digesting pixel_width and pixel_height
+        self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
+        width = parser["CLI"].getfloat("frame_width", None)
+        if width is None:
+            self["frame_width"] = self["frame_height"] * self["aspect_ratio"]
+        else:
+            self["frame_width"] = width
 
+        # other logic
         val = parser["CLI"].get("tex_template_file")
         if val:
             setattr(self, "tex_template_file", val)
@@ -592,7 +601,7 @@ class ManimConfig(MutableMapping):
         if args.config_file:
             self.digest_file(args.config_file)
 
-        self.input_file = args.file
+        self.input_file = Path(args.file).absolute()
         self.scene_names = args.scene_names if args.scene_names is not None else []
         self.output_file = args.output_file
 
@@ -753,8 +762,9 @@ class ManimConfig(MutableMapping):
     def log_to_file(self, val: str) -> None:
         self._set_boolean("log_to_file", val)
         if val:
-            if not os.path.exists(self["log_dir"]):
-                os.makedirs(self["log_dir"])
+            log_dir = self.get_dir("log_dir")
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
             set_file_logger(self, self["verbosity"])
 
     sound = property(
@@ -1012,7 +1022,7 @@ class ManimConfig(MutableMapping):
             raise ValueError(
                 "It is unclear what it means to set dry_run to "
                 "False.  Instead, try setting each option "
-                "individually. (write_to_movie, write_alll, "
+                "individually. (write_to_movie, write_all, "
                 "save_last_frame, save_pngs, or save_as_gif)"
             )
 

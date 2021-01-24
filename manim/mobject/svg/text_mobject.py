@@ -14,10 +14,10 @@ Examples
             text = Text('Hello world').scale(3)
             self.add(text)
 
-.. manim:: TextAlignement
+.. manim:: TextAlignment
     :save_last_frame:
 
-    class TextAlignement(Scene):
+    class TextAlignment(Scene):
         def construct(self):
             title = Text("K-means clustering and Logistic Regression", color=WHITE)
             title.scale_in_place(0.75)
@@ -42,29 +42,31 @@ Examples
 
 """
 
-__all__ = ["Text", "Paragraph", "CairoText", "MarkupText"]
+__all__ = ["Text", "Paragraph", "CairoText", "MarkupText", "register_font"]
 
 
 import copy
 import hashlib
 import os
 import re
+import sys
+import typing
+from contextlib import contextmanager
+from pathlib import Path
 from typing import Dict
 from xml.sax.saxutils import escape
 
 import cairo
-import cairocffi
-import pangocairocffi
-import pangocffi
+import manimpango
+from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
+from ..._config.utils import ManimConfig
 from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
-from ...utils.color import WHITE, BLACK
-from ...utils.color import Colors
-
+from ...utils.color import WHITE, Colors
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 
@@ -101,68 +103,6 @@ def remove_invisible_chars(mobject):
         code.code = mobject_without_dots
         return code
     return mobject_without_dots
-
-
-class PangoUtils:
-    @staticmethod
-    def str2style(string: str) -> pangocffi.Style:
-        """Internally used function. Converts text to Pango Understandable Styles."""
-        if string == NORMAL:
-            return pangocffi.Style.NORMAL
-        elif string == ITALIC:
-            return pangocffi.Style.ITALIC
-        elif string == OBLIQUE:
-            return pangocffi.Style.OBLIQUE
-        else:
-            raise AttributeError("There is no Style Called %s" % string)
-
-    @staticmethod
-    def str2weight(string: str) -> pangocffi.Weight:
-        """Internally used function. Convert text to Pango Understandable Weight"""
-        if string == NORMAL:
-            return pangocffi.Weight.NORMAL
-        elif string == BOLD:
-            return pangocffi.Weight.BOLD
-        elif string == THIN:
-            return pangocffi.Weight.THIN
-        elif string == ULTRALIGHT:
-            return pangocffi.Weight.ULTRALIGHT
-        elif string == LIGHT:
-            return pangocffi.Weight.LIGHT
-        elif string == SEMILIGHT:
-            return pangocffi.Weight.SEMILIGHT
-        elif string == BOOK:
-            return pangocffi.Weight.BOOK
-        elif string == MEDIUM:
-            return pangocffi.Weight.MEDIUM
-        elif string == SEMIBOLD:
-            return pangocffi.Weight.SEMIBOLD
-        elif string == ULTRABOLD:
-            return pangocffi.Weight.ULTRABOLD
-        elif string == HEAVY:
-            return pangocffi.Weight.HEAVY
-        elif string == ULTRAHEAVY:
-            return pangocffi.Weight.ULTRAHEAVY
-        else:
-            raise AttributeError("There is no Font Weight Called %s" % string)
-
-    @staticmethod
-    def remove_last_M(file_name: str) -> None:
-        with open(file_name, "r") as fpr:
-            content = fpr.read()
-        content = re.sub(r'Z M [^A-Za-z]*? "\/>', 'Z "/>', content)
-        with open(file_name, "w") as fpw:
-            fpw.write(content)
-
-
-class TextSetting(object):
-    def __init__(self, start, end, font, slant, weight, line_num=-1):
-        self.start = start
-        self.end = end
-        self.font = font
-        self.slant = slant
-        self.weight = weight
-        self.line_num = line_num
 
 
 class CairoText(SVGMobject):
@@ -448,7 +388,7 @@ class CairoText(SVGMobject):
         offset_x = 0
         last_line_num = 0
         for setting in settings:
-            font = setting.font
+            font = setting.font.decode("utf-8")
             slant = self.str2slant(setting.slant)
             weight = self.str2weight(setting.weight)
             text = self.text[setting.start : setting.end].replace("\n", " ")
@@ -477,7 +417,7 @@ class Paragraph(VGroup):
     Parameters
     ----------
     line_spacing : :class:`int`, optional
-        Represents the spaning betweeb lines. Default to -1, which means auto.
+        Represents the spacing between lines. Default to -1, which means auto.
     alignment : :class:`str`, optional
         Defines the alignment of paragraph. Default to "left". Possible values are "left", "right", "center"
 
@@ -564,7 +504,7 @@ class Paragraph(VGroup):
         return chars
 
     def set_all_lines_alignments(self, alignment):
-        """Function to set all line's aligment to a specific value.
+        """Function to set all line's alignment to a specific value.
 
         Parameters
         ----------
@@ -576,7 +516,7 @@ class Paragraph(VGroup):
         return self
 
     def set_line_alignment(self, alignment, line_no):
-        """Function to set one line's aligment to a specific value.
+        """Function to set one line's alignment to a specific value.
 
         Parameters
         ----------
@@ -610,7 +550,7 @@ class Paragraph(VGroup):
         return self
 
     def change_alignment_for_a_line(self, alignment, line_no):
-        """Function to change one line's aligment to a specific value.
+        """Function to change one line's alignment to a specific value.
 
         Parameters
         ----------
@@ -756,7 +696,7 @@ class Text(SVGMobject):
         text: str,
         fill_opacity: int = 1,
         stroke_width: int = 0,
-        # color: str = WHITE,
+        color: str = WHITE,
         size: int = 1,
         line_spacing: int = -1,
         font: str = "",
@@ -775,15 +715,8 @@ class Text(SVGMobject):
         should_center: bool = True,
         unpack_groups: bool = True,
         disable_ligatures: bool = False,
-        fill_color=BLACK,
-        stroke_color=BLACK,
         **kwargs,
     ):
-
-        logger.info(
-            "Text now uses Pango for rendering. "
-            "In case of problems, the old implementation is available as CairoText."
-        )
         self.size = size
         self.line_spacing = line_spacing
         self.font = font
@@ -828,9 +761,7 @@ class Text(SVGMobject):
         SVGMobject.__init__(
             self,
             file_name,
-            # color=color,
-            fill_color=fill_color,
-            stroke_color=stroke_color,
+            color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             height=height,
@@ -909,7 +840,7 @@ class Text(SVGMobject):
         return indexes
 
     # def full2short(self, kwargs):
-    #     """Internally used function. Fomats some exapansion to short forms.
+    #     """Internally used function. Formats some expansion to short forms.
     #     text2color -> t2c
     #     text2font -> t2f
     #     text2gradient -> t2g
@@ -1016,45 +947,22 @@ class Text(SVGMobject):
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
             return file_name
-        surface = cairocffi.SVGSurface(file_name, 600, 400)
-        context = cairocffi.Context(surface)
-        context.move_to(START_X, START_Y)
         settings = self.text2settings()
-        offset_x = 0
-        last_line_num = 0
-        layout = pangocairocffi.create_layout(context)
-        layout.set_width(pangocffi.units_from_double(600))
-        for setting in settings:
-            family = setting.font
-            style = PangoUtils.str2style(setting.slant)
-            weight = PangoUtils.str2weight(setting.weight)
-            text = self.text[setting.start : setting.end].replace("\n", " ")
-            fontdesc = pangocffi.FontDescription()
-            fontdesc.set_size(pangocffi.units_from_double(size))
-            if family:
-                fontdesc.set_family(family)
-            fontdesc.set_style(style)
-            fontdesc.set_weight(weight)
-            layout.set_font_description(fontdesc)
-            if setting.line_num != last_line_num:
-                offset_x = 0
-                last_line_num = setting.line_num
-            context.move_to(
-                START_X + offset_x, START_Y + line_spacing * setting.line_num
-            )
-            pangocairocffi.update_layout(context, layout)
-            if disable_liga:
-                text = escape(text)
-                layout.set_markup(
-                    f"<span font_features='liga=0,dlig=0,clig=0,hlig=0'>{text}</span>"
-                )
-            else:
-                layout.set_text(text)
-            logger.debug(f"Setting Text {text}")
-            pangocairocffi.show_layout(context, layout)
-            offset_x += pangocffi.units_to_double(layout.get_size()[0])
-        surface.finish()
-        return file_name
+        width = 600
+        height = 400
+
+        return manimpango.text2svg(
+            settings,
+            size,
+            line_spacing,
+            disable_liga,
+            file_name,
+            START_X,
+            START_Y,
+            width,
+            height,
+            self.text,
+        )
 
 
 class MarkupText(SVGMobject):
@@ -1278,6 +1186,13 @@ class MarkupText(SVGMobject):
         colormap = self.extract_color_tags()
         gradientmap = self.extract_gradient_tags()
 
+        if not MarkupUtils.validate(self.text):
+            raise ValueError(
+                f"Pango cannot parse your markup in {self.text}. "
+                "Please check for typos, unmatched tags or unescaped "
+                "special chars like < and &."
+            )
+
         if self.line_spacing == -1:
             self.line_spacing = self.size + self.size * 0.3
         else:
@@ -1364,32 +1279,22 @@ class MarkupText(SVGMobject):
         file_name = os.path.join(dir_name, hash_name) + ".svg"
         if os.path.exists(file_name):
             return file_name
-        surface = cairocffi.SVGSurface(file_name, 600, 400)
-        context = cairocffi.Context(surface)
-        context.move_to(START_X, START_Y)
-        layout = pangocairocffi.create_layout(context)
-        layout.set_width(pangocffi.units_from_double(600))
 
-        fontdesc = pangocffi.FontDescription()
-        fontdesc.set_size(pangocffi.units_from_double(size))
-        if self.font:
-            fontdesc.set_family(self.font)
-        fontdesc.set_style(PangoUtils.str2style(self.slant))
-        fontdesc.set_weight(PangoUtils.str2weight(self.weight))
-        layout.set_font_description(fontdesc)
-
-        context.move_to(START_X, START_Y)
-        pangocairocffi.update_layout(context, layout)
-        if disable_liga:
-            layout.set_markup(
-                f"<span font_features='liga=0,dlig=0,clig=0,hlig=0'>{self.text}</span>"
-            )
-        else:
-            layout.set_markup(self.text)
         logger.debug(f"Setting Text {self.text}")
-        pangocairocffi.show_layout(context, layout)
-        surface.finish()
-        return file_name
+        return MarkupUtils.text2svg(
+            self.text,
+            self.font,
+            self.slant,
+            self.weight,
+            size,
+            line_spacing,
+            disable_liga,
+            file_name,
+            START_X,
+            START_Y,
+            600,  # width
+            400,  # height
+        )
 
     def _count_real_chars(self, s):
         """Counts characters that will be displayed.
@@ -1482,3 +1387,74 @@ class MarkupText(SVGMobject):
 
     def __repr__(self):
         return f"MarkupText({repr(self.original_text)})"
+
+
+@contextmanager
+def register_font(font_file: typing.Union[str, Path]):
+    """Temporarily add a font file to Pango's search path.
+
+    This searches for the font_file at various places. The order it searches it described below.
+
+    1. Absolute path.
+    2. In ``assets/fonts`` folder.
+    3. In ``font/`` folder.
+    4. In the same directory.
+
+    Parameters
+    ----------
+    font_file :
+        The font file to add.
+
+    Examples
+    --------
+    Use ``with register_font(...)`` to add a font file to search
+    path.
+
+    .. code-block:: python
+
+        with register_font("path/to/font_file.ttf"):
+           a = Text("Hello", font="Custom Font Name")
+
+    Raises
+    ------
+    FileNotFoundError:
+        If the font doesn't exists.
+
+    AttributeError:
+        If this method is used on macOS.
+
+    Notes
+    -----
+    This method of adding font files also works with :class:`CairoText`.
+
+    .. important ::
+
+        This method isn't available for macOS. Using this
+        method on macOS will raise an :class:`AttributeError`.
+    """
+
+    input_folder = Path(config.input_file).parent.resolve()
+    possible_paths = [
+        Path(font_file),
+        input_folder / "assets/fonts" / font_file,
+        input_folder / "fonts" / font_file,
+        input_folder / font_file,
+    ]
+    for path in possible_paths:
+        path = path.resolve()
+        if path.exists():
+            file_path = path
+            logger.debug("Found file at %s", file_path.absolute())
+            break
+    else:
+        error = f"Can't find {font_file}." f"Tried these : {possible_paths}"
+        raise FileNotFoundError(error)
+
+    try:
+        assert manimpango.register_font(str(file_path))
+        yield
+    finally:
+        if sys.platform.startswith("linux"):
+            manimpango.unregister_font()
+        else:
+            manimpango.unregister_font(str(file_path))

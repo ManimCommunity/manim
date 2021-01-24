@@ -33,6 +33,7 @@ from .mobject.changing import *
 from .mobject.frame import *
 from .mobject.functions import *
 from .mobject.geometry import *
+from .mobject.graph import *
 from .mobject.logo import *
 from .mobject.matrix import *
 from .mobject.mobject import *
@@ -86,5 +87,6 @@ from .utils.space_ops import *
 from .utils.strings import *
 from .utils.tex import *
 from .utils.tex_templates import *
+from .utils import unit
 
 from .plugins import *

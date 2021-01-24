@@ -16,7 +16,7 @@ from tqdm import tqdm
 import numpy as np
 
 from .. import config, logger
-from ..animation.animation import Animation, Wait
+from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.transform import MoveToTarget, _MethodAnimation
 from ..camera.camera import Camera
 from ..constants import *
@@ -33,7 +33,7 @@ class Scene(Container):
 
     The primary role of :class:`Scene` is to provide the user with tools to manage
     mobjects and animations.  Generally speaking, a manim script consists of a class
-    that derives from :class:`Scene` whose :meth:`Scene.construct` method is overriden
+    that derives from :class:`Scene` whose :meth:`Scene.construct` method is overridden
     by the user's code.
 
     Mobjects are displayed on screen by calling :meth:`Scene.add` and removed from
@@ -179,7 +179,7 @@ class Scene(Container):
     def setup(self):
         """
         This is meant to be implemented by any scenes which
-        are comonly subclassed, and have some common setup
+        are commonly subclassed, and have some common setup
         involved before the construct method is called.
         """
         pass
@@ -187,7 +187,7 @@ class Scene(Container):
     def tear_down(self):
         """
         This is meant to be implemented by any scenes which
-        are comonly subclassed, and have some common method
+        are commonly subclassed, and have some common method
         to be invoked before the scene ends.
         """
         pass
@@ -208,7 +208,7 @@ class Scene(Container):
         Examples
         --------
         A typical manim script includes a class derived from :class:`Scene` with an
-        overriden :meth:`Scene.contruct` method:
+        overridden :meth:`Scene.contruct` method:
 
         .. code-block:: python
 
@@ -622,17 +622,18 @@ class Scene(Container):
         """
         animations = []
         for arg in args:
-            if isinstance(arg, _AnimationBuilder):
-                animations.append(arg.build())
-            elif isinstance(arg, Animation):
-                animations.append(arg)
-            elif inspect.ismethod(arg):
-                raise TypeError(
-                    "Passing Mobject methods to Scene.play is no longer supported. Use "
-                    "Mobject.animate instead."
-                )
-            else:
-                raise TypeError(f"Unexpected argument {arg} passed to Scene.play().")
+            try:
+                animations.append(prepare_animation(arg))
+            except TypeError:
+                if inspect.ismethod(arg):
+                    raise TypeError(
+                        "Passing Mobject methods to Scene.play is no longer"
+                        " supported. Use Mobject.animate instead."
+                    )
+                else:
+                    raise TypeError(
+                        f"Unexpected argument {arg} passed to Scene.play()."
+                    )
 
         for animation in animations:
             for k, v in kwargs.items():
@@ -725,6 +726,7 @@ class Scene(Container):
             times = np.arange(0, run_time, step)
         time_progression = tqdm(
             times,
+            desc=description,
             total=n_iterations,
             leave=config["leave_progress_bars"],
             ascii=True if platform.system() == "Windows" else None,
@@ -884,5 +886,5 @@ class Scene(Container):
         """
         if self.renderer.skip_animations:
             return
-        time = self.time + time_offset
+        time = self.renderer.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
