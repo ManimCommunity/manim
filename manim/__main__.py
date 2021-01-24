@@ -15,7 +15,7 @@ from manim._config.main_utils import parse_args
 try:
     from manim.grpc.impl import frame_server_impl
 except ImportError as e:
-    print(e)
+    logger.info(e)
     frame_server_impl = None
 
 
