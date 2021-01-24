@@ -1,11 +1,11 @@
 import copy
 
 
-class JsRenderer:
+class WebGLRenderer:
     def __init__(self, frame_server):
         self.skip_animations = True
         self.frame_server = frame_server
-        self.camera = JsCamera()
+        self.camera = WebGLCamera()
         self.num_plays = 0
 
     def init_scene(self, scene):
@@ -46,6 +46,6 @@ class JsRenderer:
         pass
 
 
-class JsCamera:
+class WebGLCamera:
     def __init__(self, use_z_index=True):
         self.use_z_index = use_z_index

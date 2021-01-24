@@ -788,7 +788,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [extras]
-js_renderer = ["grpcio", "grpcio-tools", "watchdog"]
+webgl_renderer = ["grpcio", "grpcio-tools", "watchdog"]
 
 [metadata]
 lock-version = "1.1"

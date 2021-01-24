@@ -19,8 +19,8 @@ from ...utils.module_ops import (
     scene_classes_from_file,
 )
 from ... import logger
-from ...constants import JS_RENDERER_INFO
-from ...renderer.js_renderer import JsRenderer
+from ...constants import WEBGL_RENDERER_INFO
+from ...renderer.webgl_renderer import WebGLRenderer
 from ...utils.family import extract_mobject_family_members
 import logging
 import copy
@@ -55,7 +55,7 @@ class ScriptUpdateHandler(FileSystemEventHandler):
                 self.frame_server.update_renderer_scene_data()
             except grpc._channel._InactiveRpcError:
                 logger.warning("No frontend was detected at localhost:50052.")
-                sp.Popen(config["js_renderer_path"])
+                sp.Popen(config["webgl_renderer_path"])
 
 
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
@@ -76,7 +76,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         except grpc._channel._InactiveRpcError:
             logger.warning("No frontend was detected at localhost:50052.")
             try:
-                sp.Popen(config["js_renderer_path"])
+                sp.Popen(config["webgl_renderer_path"])
             except PermissionError:
                 logger.info(JS_RENDERER_INFO)
                 self.server.stop(None)
@@ -290,7 +290,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
         self.keyframes = []
         self.previous_scene_index = None
         self.previous_scene = None
-        self.renderer = JsRenderer(self)
+        self.renderer = WebGLRenderer(self)
         self.scene = self.scene_class(self.renderer)
         self.scene.render()
 

@@ -14,7 +14,8 @@ from manim._config.main_utils import parse_args
 
 try:
     from manim.grpc.impl import frame_server_impl
-except ImportError:
+except ImportError as e:
+    print(e)
     frame_server_impl = None
 
 
@@ -77,10 +78,10 @@ def main():
     else:
         config.digest_args(args)
         input_file = config.get_dir("input_file")
-        if config["use_js_renderer"]:
+        if config["use_webgl_renderer"]:
             try:
                 if frame_server_impl is None:
-                    raise ImportError("Dependencies for JS renderer is not installed.")
+                    raise ImportError("Dependencies for JS renderer are not installed.")
                 server = frame_server_impl.get(input_file)
                 server.start()
                 server.wait_for_termination()

@@ -41,7 +41,7 @@ watchdog = { version = "*", optional = true }
 networkx = "^2.5"
 
 [tool.poetry.extras]
-js_renderer = ["grpcio","grpcio-tools","watchdog"]
+webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"

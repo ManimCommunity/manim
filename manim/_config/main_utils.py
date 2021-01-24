@@ -408,14 +408,14 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "--use_js_renderer",
+        "--use_webgl_renderer",
         help="Render animations using the javascript frontend",
         action="store_const",
         const=True,
     )
 
     parser.add_argument(
-        "--js_renderer_path",
+        "--webgl_renderer_path",
         help="Path to the javascript frontend",
     )
 
