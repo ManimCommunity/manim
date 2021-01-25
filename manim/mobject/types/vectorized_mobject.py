@@ -166,7 +166,7 @@ class VMobject(Mobject):
             curr_rgbas[:, 3] = rgbas[:, 3]
         return self
 
-    def set_fill(self, color=None, opacity=None, family=True):
+    def set_fill(self, color=None, opacity=1, family=True):
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
@@ -176,7 +176,7 @@ class VMobject(Mobject):
         return self
 
     def set_stroke(
-        self, color=None, width=None, opacity=None, background=False, family=True
+        self, color=None, width=None, opacity=1, background=False, family=True
     ):
         if family:
             for submobject in self.submobjects:
