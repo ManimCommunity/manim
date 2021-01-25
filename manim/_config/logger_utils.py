@@ -11,11 +11,12 @@ format.
 """
 import configparser
 import copy
+from functools import wraps
 import json
 import logging
 import os
 import typing
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Any
 
 from rich import color, errors
 from rich import print as printf
@@ -176,6 +177,19 @@ def set_file_logger(config: "ManimConfig", verbosity: str) -> None:
 
     config.verbosity = verbosity
     logger.setLevel(verbosity)
+
+
+def disable_logging(func: Callable[[Any], Any]) -> Callable[[Any], Any]:
+    """Decorator for disabling logging output of a function."""
+
+    wraps(func)
+
+    def action(*args, **kwargs):
+        logging.disable(50)
+        func(*args, **kwargs)
+        logging.disable(0)
+
+    return action
 
 
 class JSONFormatter(logging.Formatter):

@@ -8,6 +8,7 @@ import subprocess
 from colorama import Fore, Style
 
 from . import config, logger
+from ._config.logger_utils import disable_logging
 from .scene.streaming_scene import get_streamer, play_scene
 
 
@@ -34,7 +35,6 @@ original Scene class. To create a streaming class which inherits from
 another scene class, e.g. MovingCameraScene, create it with the syntax:
 
 >>> manim2 = get_streamer(MovingCameraScene)
->>> 
 
 Want to render the animation of an entire pre-baked scene? Here's an example:
 
@@ -44,13 +44,20 @@ Want to render the animation of an entire pre-baked scene? Here's an example:
 
 To view an image of the current state of the scene or mobject, use: 
 
->>> manim.show_frame()        #For Scene
+>>> manim.show_frame()        # view image of current scene
 >>> c = Circle()
->>> c.show()                  #For mobject
+>>> c.show()                  # view image of Mobject
 """
 
 
 def open_client(client=None):
+    """Opens the window for the streaming protocol player.
+
+    Default player is ``ffplay``. Optional to be used on any other player
+    that works similar to ``ffplay``.
+
+    Note: Also useful to call when the player hangs to run it again.
+    """
     command = [
         client or streaming_client,
         "-x",
@@ -71,22 +78,7 @@ def open_client(client=None):
     subprocess.Popen(command)
 
 
-def _disable_logging(func):
-    """Decorator for running trigger Wait() animations without showing the
-    usual output expected from this action
-    """
-
-    functools.wraps(func)
-
-    def action(*args, **kwargs):
-        logger.disabled = True
-        func(*args, **kwargs)
-        logger.disabled = False
-
-    return action
-
-
-@_disable_logging
+@disable_logging
 def _guarantee_sdp_file(*args):
     """Ensures, if required, that the sdp file exists,
     while supressing the loud info message given out by this process
@@ -97,18 +89,25 @@ def _guarantee_sdp_file(*args):
         del kicker
 
 
-@_disable_logging
+@disable_logging
 def _popup_window():
     """Triggers the opening of the window. May lack utility for a streaming
-    client like vlc
+    client like VLC.
     """
     get_streamer().wait(0.5)
 
 
 def livestream(use_ipython=False):
-    """Main function, intended for use from module execution
-    Also has its application in a REPL, though the less activated version of this
-    might be more suitable for quick sanity and testing checks."""
+    """Main function, enables livestream mode.
+
+    This is called when running ``manim --livestream`` from the command line.
+
+    Can also be called in a REPL, though the less activated version of this
+    might be more suitable for quick sanity and testing checks.
+
+    .. seealso::
+        :func:`~.stream`
+    """
     if use_ipython:
         from . import stream_ipython
 
@@ -137,11 +136,14 @@ def livestream(use_ipython=False):
 
 
 def stream():
-    """For a quick import and livestream eg:
+    """Convenience function for setting up streaming from a running REPL.
 
-    >>> from manim import stream, open_client, Circle, ShowCreation
+    Example
+    -------
+
+
+    >>> from manim import stream, Circle, ShowCreation
     >>> manim = stream()
-    >>> open_client()
     >>> circ = Circle()
     >>> manim.play(ShowCreation(circ))
     """
