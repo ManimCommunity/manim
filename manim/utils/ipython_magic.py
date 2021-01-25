@@ -91,7 +91,7 @@ else:
                 os.makedirs(tmpfile.parent, exist_ok=True)
                 shutil.copy(local_path, tmpfile)
 
-                file_type = mimetypes.guess_type(Path(config["output_file"]))[0]
+                file_type = mimetypes.guess_type(config["output_file"])[0]
                 if file_type.startswith("image"):
                     display(Image(filename=config["output_file"]))
                     return
