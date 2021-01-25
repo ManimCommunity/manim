@@ -24,7 +24,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.2"
 colour = "*"
 numpy = "*"
 Pillow = "*"
@@ -39,9 +39,11 @@ grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
 watchdog = { version = "*", optional = true }
 networkx = "^2.5"
+jupyterlab = "^3.0"
 
 [tool.poetry.extras]
 js_renderer = ["grpcio","grpcio-tools","watchdog"]
+jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
