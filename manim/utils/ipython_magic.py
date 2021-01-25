@@ -11,6 +11,7 @@ from manim import config, tempconfig
 from .._config.main_utils import parse_args
 
 try:
+    from IPython import get_ipython
     from IPython.core.magic import (
         Magics,
         magics_class,
@@ -96,10 +97,14 @@ else:
                     display(Image(filename=config["output_file"]))
                     return
 
+                # videos need to be embedded when running in google colab
+                video_embed = "google.colab" in str(get_ipython())
+
                 display(
                     Video(
                         tmpfile,
                         html_attributes='controls autoplay loop style="max-width: 100%;"',
+                        embed=video_embed,
                     )
                 )
 
