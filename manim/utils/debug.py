@@ -1,6 +1,12 @@
 """Debugging utilities."""
 
+<<<<<<< HEAD
 __all__ = ["print_family", "index_labels", "get_submobject_index_labels"]
+=======
+
+__all__ = ["print_family", "index_labels", "get_submobject_index_labels"]
+
+>>>>>>> 0d2a001e5edf6fae6f5959f30ac9ff76d4958929
 
 from .color import BLACK
 from ..mobject.numbers import Integer
@@ -30,4 +36,7 @@ def get_submobject_index_labels(mobject, label_height=0.15):
     logging.getLogger("manim").warning(
         "get_submobject_index_labels has been deprecated and has been replaced by index_labels, which does the same thing, and will thus be removed in a future release."
     )
+
     return index_labels(mobject, label_height)
+
+
