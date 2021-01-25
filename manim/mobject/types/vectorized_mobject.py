@@ -442,7 +442,7 @@ class VMobject(Mobject):
         handles2: Iterable[float],
         anchors2: Iterable[float],
     ) -> "VMobject":
-        """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject. 
+        """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
 
         anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded paramaters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
 
