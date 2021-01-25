@@ -578,7 +578,6 @@ class VMobject(Mobject):
         return self.consider_points_equals(self.points[0], self.points[-1])
 
     def add_points_as_corners(self, points: np.ndarray) -> "VMobject":
-    def add_points_as_corners(self, points):
         for point in points:
             self.add_line_to(point)
         return points
