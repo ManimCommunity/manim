@@ -167,10 +167,24 @@ class VMobject(Mobject):
         return self
 
     def set_fill(self, color=None, opacity=None, family=True):
+        """Sets the fill color, (not the outline color) \
+        If the fill has zero opacity, and opacity \
+        is not mentioned then it will be set to 1 \
+
+        you can set opacity to objects get_fill_opacity() \
+        to avoid this.
+
+        Parameters
+        --------
+        color : :class:`str`, optional
+            Color to fill, like RED, BLUE, #ededed
+        opacity : :class:`float`, optional
+            Opacity to set.
+        """
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
-        if (self.get_fill_opacity() == 0 and opacity == None):
+        if self.get_fill_opacity() == 0 and opacity == None:
             opacity = 1
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
@@ -180,6 +194,22 @@ class VMobject(Mobject):
     def set_stroke(
         self, color=None, width=None, opacity=None, background=False, family=True
     ):
+        """Sets the stroke color \
+        If the stroke has zero opacity, and opacity \
+        is not mentioned then it will be set to 1 \
+
+        you can set opacity to objects get_stroke_opacity() \
+        to avoid this.
+
+        Parameters
+        --------
+        color : :class:`str`, optional
+            Color for the outline
+        width: :class:`float`, optional
+            Width of the stroke
+        opacity : :class:`float`, optional
+            Opacity to set
+        """
         if family:
             for submobject in self.submobjects:
                 submobject.set_stroke(color, width, opacity, background, family)
@@ -189,7 +219,7 @@ class VMobject(Mobject):
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
-        if (self.get_stroke_opacity() == 0 and opacity == None):
+        if self.get_stroke_opacity() == 0 and opacity == None:
             opacity = 1
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
@@ -279,9 +309,33 @@ class VMobject(Mobject):
                 sm1.match_style(sm2)
         return self
 
-    def set_color(self, color, family=True):
-        self.set_fill(color, family=family)
-        self.set_stroke(color, family=family)
+    def set_color(self, color, opacity=None, family=True):
+        """Equivalent of running set_fill() and set_stroke()
+
+        Parameters
+        --------
+        color : :class:`str`, optional
+            Color for fill and stroke
+        opacity : :class:`float`, optional
+            Opacity to fill and stroke
+        """
+        self.set_fill(color, opacity, family=family)
+        self.set_stroke(color, opacity, family=family)
+        self.color = colour.Color(color)
+        return self
+
+    def set_color_only(self, color, family=True):
+        """Equivalent of running set_color() but the \
+        opacities remain unaltered even if fill/stroke color \
+        is fully transparent
+
+        Parameters
+        --------
+        color : :class:`str`, optional
+            Color for fill and stroke
+        """
+        self.set_fill(color, opacity=0, family=family)
+        self.set_stroke(color, opacity=1, family=family)
         self.color = colour.Color(color)
         return self
 
@@ -372,18 +426,18 @@ class VMobject(Mobject):
 
     def set_sheen_direction(self, direction, family=True):
         """Changes the direction of the sheen applied, use set_sheen() to apply
-        
+
         Parameters
         --------
         direction : :class:`numpy.ndarray`, optional
             Direction from where the gradient is applied.
-            
+
         Examples
         --------
         Normal usage::
 
             Circle().set_sheen_direction(UP)
-            
+
         See Also
         --------
         :meth:`set_sheen`
