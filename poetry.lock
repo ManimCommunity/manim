@@ -1416,7 +1416,7 @@ jupyterlab = ["jupyterlab"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "b6dee7a558030bdc7f164aa88061cceca1c85db6fcd19e11f0db582fc34e9f1b"
+content-hash = "72495ee2f173e96f95fab8357b4c90d1041acc967298cac012ec0a45c4788090"
 
 [metadata.files]
 alabaster = [

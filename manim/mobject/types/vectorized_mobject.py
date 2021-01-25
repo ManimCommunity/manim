@@ -171,6 +171,8 @@ class VMobject(Mobject):
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
         self.update_rgbas_array("fill_rgbas", color, opacity)
+        if opacity is not None:
+            self.fill_opacity = opacity
         return self
 
     def set_stroke(
@@ -188,6 +190,8 @@ class VMobject(Mobject):
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
             setattr(self, width_name, width)
+        if opacity is not None:
+            self.stroke_opacity = opacity
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -1027,6 +1031,12 @@ class VGroup(VMobject):
             + "("
             + ", ".join(str(mob) for mob in self.submobjects)
             + ")"
+        )
+
+    def __str__(self):
+        return (
+            f"{self.__class__.__name__} of {len(self.submobjects)} "
+            f"submobject{'s' if len(self.submobjects) > 0 else ''}"
         )
 
     def add(self, *vmobjects):
