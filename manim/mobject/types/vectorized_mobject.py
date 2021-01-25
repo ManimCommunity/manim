@@ -159,12 +159,9 @@ class VMobject(Mobject):
         elif len(rgbas) < len(curr_rgbas):
             rgbas = stretch_array_to_length(rgbas, len(curr_rgbas))
         # Only update rgb if color was not None, and only
-        # set opacity 1 if it was 0
         # update alpha channel if opacity was passed in
         if color is not None:
             curr_rgbas[:, :3] = rgbas[:, :3]
-        if curr_rgbas[:, 3] != 0 and opacity is None:
-            curr_rgbas[:, 3] = 1.
         if opacity is not None:
             curr_rgbas[:, 3] = rgbas[:, 3]
         return self
@@ -173,6 +170,8 @@ class VMobject(Mobject):
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
+        if (self.get_fill_opacity == 0 and opacity == None):
+            opacity = 1
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
             self.fill_opacity = opacity
@@ -190,6 +189,8 @@ class VMobject(Mobject):
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
+        if (self.get_stroke_opacity == 0 and opacity == None):
+            opacity = 1
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
             setattr(self, width_name, width)
