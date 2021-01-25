@@ -118,8 +118,8 @@ class Code(VGroup):
             language="cpp",
         )
 
-    We can also render code passed as a string (but note that)
-    the language has to be specified in this case:
+    We can also render code passed as a string (but note that
+    the language has to be specified in this case):
 
     .. manim:: CodeFromString
         :save_last_frame:
