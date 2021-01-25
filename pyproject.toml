@@ -39,7 +39,7 @@ grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
 watchdog = { version = "*", optional = true }
 networkx = "^2.5"
-jupyterlab = "^3.0"
+jupyterlab = { version = "^3.0", optional = true }
 
 [tool.poetry.extras]
 js_renderer = ["grpcio","grpcio-tools","watchdog"]
