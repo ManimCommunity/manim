@@ -141,7 +141,6 @@ def stream():
     Example
     -------
 
-
     >>> from manim import stream, Circle, ShowCreation
     >>> manim = stream()
     >>> circ = Circle()
