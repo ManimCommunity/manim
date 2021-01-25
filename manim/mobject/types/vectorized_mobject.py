@@ -460,7 +460,6 @@ class VMobject(Mobject):
             if positive the gradient starts from white (to current color)
         direction : :class:`numpy.ndarray`, optional
             Direction from where the gradient is applied
-        family : :class:`boolean`, optional
            
         Examples
         ---------
