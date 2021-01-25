@@ -578,7 +578,6 @@ class VMobject(Mobject):
         return self.consider_points_equals(self.points[0], self.points[-1])
 
     def add_points_as_corners(self, points: np.ndarray) -> "VMobject":
-    def add_points_as_corners(self, points):
         for point in points:
             self.add_line_to(point)
         return points
@@ -654,7 +653,6 @@ class VMobject(Mobject):
         return self.change_anchor_mode("jagged")
 
     def add_subpath(self, points: np.ndarray) -> "VMobject":
-    def add_subpath(self, points):
         assert len(points) % 4 == 0
         self.points = np.append(self.points, points, axis=0)
         return self
@@ -945,7 +943,7 @@ class VMobject(Mobject):
         )
 
     def get_points_defining_boundary(self):
-        # Probably returns all anchors, but this is weird regarding  the name of the method. 
+        # Probably returns all anchors, but this is weird regarding  the name of the method.
         return np.array(list(it.chain(*[sm.get_anchors() for sm in self.get_family()])))
 
     def get_arc_length(self, n_sample_points=None):
@@ -1044,6 +1042,7 @@ class VMobject(Mobject):
         np.ndarray
             Points generated.
         """
+
     def insert_n_curves_to_point_list(self, n, points):
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
