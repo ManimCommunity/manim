@@ -163,7 +163,7 @@ class VMobject(Mobject):
         # update alpha channel if opacity was passed in
         if color is not None:
             curr_rgbas[:, :3] = rgbas[:, :3]
-        if not curr_rgbas[:, 3]:
+        if curr_rgbas[:, 3] != 0 and opacity is None:
             curr_rgbas[:, 3] = 1.
         if opacity is not None:
             curr_rgbas[:, 3] = rgbas[:, 3]
