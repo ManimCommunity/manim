@@ -170,7 +170,7 @@ class VMobject(Mobject):
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
-        if (self.get_fill_opacity == 0 and opacity == None):
+        if (self.get_fill_opacity() == 0 and opacity == None):
             opacity = 1
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
@@ -189,7 +189,7 @@ class VMobject(Mobject):
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
-        if (self.get_stroke_opacity == 0 and opacity == None):
+        if (self.get_stroke_opacity() == 0 and opacity == None):
             opacity = 1
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
