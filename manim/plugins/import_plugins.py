@@ -9,7 +9,8 @@ module_type = type(pkg_resources)
 function_type = type(import_module)
 
 plugins_requested: list = config["plugins"]
-
+if "" in plugins_requested:
+    plugins_requested.remove("")
 for plugin in pkg_resources.iter_entry_points("manim.plugins"):
     if plugin.name in plugins_requested:
         loaded_plugin = plugin.load()
