@@ -11,18 +11,19 @@ class SetColorTest(ThreeDScene):
         s.set_color(BLUE)
         self.play(Animation(s))
 
+
 class SetStokeTest(ThreeDScene):
     def construct(self):
         s = Square()
         s.set_stroke(BLUE)
         self.play(Animation(s))
 
+
 class SetFillTest(ThreeDScene):
     def construct(self):
         s = Square()
         s.set_fill(BLUE)
         self.play(Animation(s))
-
 
 
 MODULE_NAME = "modifier_methods"
