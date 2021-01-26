@@ -272,6 +272,7 @@ class ManimConfig(MutableMapping):
         "partial_movie_dir",
         "pixel_height",
         "pixel_width",
+        "plugins",
         "png_mode",
         "preview",
         "progress_bar",
@@ -551,7 +552,12 @@ class ManimConfig(MutableMapping):
             # "frame_height",
         ]:
             setattr(self, key, parser["CLI"].getfloat(key))
-
+        # plugins
+        setattr(
+            self,
+            "plugins",
+            parser["CLI"].get("plugins", fallback="", raw=True).split(","),
+        )
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
         width = parser["CLI"].getfloat("frame_width", None)
@@ -622,6 +628,7 @@ class ManimConfig(MutableMapping):
             "verbosity",
             "background_color",
             "use_js_renderer",
+            "plugins",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1303,6 +1310,12 @@ class ManimConfig(MutableMapping):
         else:
             self._d["tex_template_file"] = val  # actually set the falsy value
             self._tex_template = TexTemplate()  # but don't use it
+
+    plugins = property(
+        lambda self: self._d["plugins"],
+        lambda self, val: self._d.__setitem__("plugins", val),
+        doc="List of Plugins to Enable.",
+    )
 
 
 class ManimFrame(Mapping):

@@ -84,6 +84,11 @@ def _str2bool(s: str) -> bool:
         raise argparse.ArgumentTypeError("True or False expected")
 
 
+def _split(s: str) -> list:
+    """Helper function that handles list like CLI arguments."""
+    return s.split(",")
+
+
 def parse_args(args: list) -> argparse.Namespace:
     """Parse CLI arguments.
 
@@ -451,6 +456,12 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
         type=_str2bool,
         help="Display the progress bar",
         metavar="True/False",
+    )
+
+    parser.add_argument(
+        "--plugins",
+        type=_split,
+        help="Enable plugins",
     )
 
     return parser.parse_args(args[1:])

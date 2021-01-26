@@ -102,3 +102,30 @@ specified in poetry as:
 
     [tool.poetry.plugins."manim.plugins"]
     "name" = "object_reference"
+
+Here ``object_reference`` can point to either a function in a module or a module
+itself. For example,
+
+.. code-block:: toml
+
+    [tool.poetry.plugins."manim.plugins"]
+    "manim_plugintemplate" = "manim_plugintemplate"
+
+Here a module is used as ``object_reference``, and when this plugin is enabled,
+Manim will look for ``__all__`` keyword defined in ``manim_plugintemplate`` and
+everything as a global variable one by one.
+
+If ``object_reference`` is a function, Manim calls the function and expects the
+function returns a list of modules or functions that needs to defined globally and
+it defined it.
+
+For example,
+
+.. code-block:: toml
+
+    [tool.poetry.plugins."manim.plugins"]
+    "manim_plugintemplate" = "manim_awesomeplugin.imports:setup_things"
+
+Here, Manim will call the function ``setup_things`` defined in
+``manim_awesomeplugin.imports`` and calls that. It returns a list of function or
+modules which will be imported globally.
