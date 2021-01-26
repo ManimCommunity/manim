@@ -8,9 +8,9 @@ Manim Installation For Developers
 Manim Installation For Developers with pip
 ******************************************
 
-If you'd like to contribute to and/or help develop ``manim-community``, you can
-clone this repository to your local device.  To do this, first make sure you
-have ``git`` installed.
+If you'd like to contribute to and/or help develop the community maintained
+version of ``manim``, you can clone this repository to your local device.  To do this,
+first make sure you have ``git`` installed.
 
 .. code-block:: bash
 
@@ -173,4 +173,3 @@ For example, if you have written some new example and want to format it and see 
 .. code-block:: bash
 
     poetry run black example_scenes
-
