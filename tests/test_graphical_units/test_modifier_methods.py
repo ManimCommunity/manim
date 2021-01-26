@@ -1,0 +1,33 @@
+import pytest
+
+from manim import *
+from ..utils.testing_utils import get_scenes_to_test
+from ..utils.GraphicalUnitTester import GraphicalUnitTester
+
+
+class SetColorTest(ThreeDScene):
+    def construct(self):
+        s = Square()
+        s.set_color(BLUE)
+        self.play(Animation(s))
+
+class SetStokeTest(ThreeDScene):
+    def construct(self):
+        s = Square()
+        s.set_stroke(BLUE)
+        self.play(Animation(s))
+
+class SetFillTest(ThreeDScene):
+    def construct(self):
+        s = Square()
+        s.set_fill(BLUE)
+        self.play(Animation(s))
+
+
+
+MODULE_NAME = "modifier_methods"
+
+
+@pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
+def test_scene(scene_to_test, tmpdir, show_diff):
+    GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir).test(show_diff=show_diff)
