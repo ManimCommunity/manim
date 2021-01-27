@@ -55,27 +55,37 @@ You can list plugins as such:
 
 Using Plugins in Projects
 *************************
-Plugins specified in ``plugins/__init__.py`` are imported automatically by
-manim's ``__init__.py``. As such, writing:
+For enabling a plugin ``manim.cfg`` or command line parameters should be used.
 
-.. code-block:: python
+.. important::
 
-    from manim import *
+    The plugins should be module name of the plugin and not PyPi name.
 
-in your projects will import any of the plugins imported in
-``plugins/__init__.py``.
+Enabling plugins through ``manim.cfg`` 
 
-By default, ``plugins/__init__.py`` is not provided; although, there are
-plans to support subcommands that would manage this file. It is especially
-useful to create this file for projects that involve usage of the same
-plugins. Alternatively, you may manually specify the plugins in your project
-scripts.
+.. code-block:: ini
 
-.. code-block:: python
+    [CLI]
+    plugins = manim_rubikscube
 
-    import manim_cool_plugin
-    # or
-    from manim_cool_plugin import feature_x, feature_y, ...
+For specifing multiple plugins, command separated values must be used.
+
+.. code-block:: ini
+
+    [CLI]
+    plugins = manim_rubikscube, manim_plugintemplate
+
+Enabling Plugins through CLI
+
+.. code-block:: bash
+
+    manim basic.py --plugins=manim_plugintemplate
+
+For multiple plugins
+
+.. code-block:: bash
+
+    manim basic.py --plugins=manim_rubikscube,manim_plugintemplate
 
 Creating Plugins
 ****************
@@ -102,6 +112,8 @@ specified in poetry as:
 
     [tool.poetry.plugins."manim.plugins"]
     "name" = "object_reference"
+
+Here ``name`` is the name of the module of the plugin.
 
 Here ``object_reference`` can point to either a function in a module or a module
 itself. For example,
