@@ -450,7 +450,9 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "--version", help="Print the current version of Manim you are using"
+        "--version",
+        action="store_true",
+        help="Print the current version of Manim you are using",
     )
 
     # Specify if the progress bar should be displayed
