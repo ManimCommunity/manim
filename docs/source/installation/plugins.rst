@@ -20,6 +20,10 @@ install, use, and create your own plugins.
     for the best practices on installing, using, and creating plugins; as
     well as new subcommands/flags for ``manim plugins``
 
+.. tip::
+
+    See https://plugins.manim.community/ for the list of plugins available.
+
 Installing Plugins
 ******************
 Plugins can be easily installed via the ``pip``
