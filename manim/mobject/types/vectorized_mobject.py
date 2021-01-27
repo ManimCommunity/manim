@@ -167,24 +167,25 @@ class VMobject(Mobject):
         return self
 
     def set_fill(self, color=None, opacity=None, family=True):
-        """Sets the fill color, (not the outline color) \
-        If the fill has zero opacity, and opacity \
-        is not mentioned then it will be set to 1 \
-
-        you can set opacity to objects get_fill_opacity() \
-        to avoid this.
+        """Sets the fill color, (not the outline color).
+        
+        .. note::
+        
+            If the mobject currently has an opacity value of 0, this
+            method will set the opacity to 1 if no other value is
+            passed.
 
         Parameters
         --------
         color : :class:`str`, optional
-            Color to fill, like RED, BLUE, #ededed
+            Color to fill, like ``RED``, ``BLUE``, ``"#ededed"``
         opacity : :class:`float`, optional
             Opacity to set.
         """
         if family:
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
-        if self.get_fill_opacity() == 0 and opacity == None:
+        if self.get_fill_opacity() == 0 and opacity is None:
             opacity = 1
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
@@ -194,21 +195,21 @@ class VMobject(Mobject):
     def set_stroke(
         self, color=None, width=None, opacity=None, background=False, family=True
     ):
-        """Sets the stroke color \
-        If the stroke has zero opacity, and opacity \
-        is not mentioned then it will be set to 1 \
+        """Sets the stroke color.
 
-        you can set opacity to objects get_stroke_opacity() \
-        to avoid this.
+        .. note::
+
+            If the stroke opacity of the mobject is currently 0,
+            this method will set it to 1 if no other value is passed.
 
         Parameters
-        --------
+        ----------
         color : :class:`str`, optional
-            Color for the outline
+            Color for the outline.
         width: :class:`float`, optional
-            Width of the stroke
+            Width of the stroke.
         opacity : :class:`float`, optional
-            Opacity to set
+            Opacity to set.
         """
         if family:
             for submobject in self.submobjects:
@@ -219,7 +220,7 @@ class VMobject(Mobject):
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
-        if self.get_stroke_opacity() == 0 and opacity == None:
+        if self.get_stroke_opacity() == 0 and opacity is None:
             opacity = 1
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
@@ -310,14 +311,19 @@ class VMobject(Mobject):
         return self
 
     def set_color(self, color, opacity=None, family=True):
-        """Equivalent of running set_fill() and set_stroke()
+        """Sets both fill and stroke color.
+        
+        .. seealso::
+        
+            :meth:`~.VMobject.set_fill`
+            :meth:`~.VMobject.set_stroke`
 
         Parameters
-        --------
+        ----------
         color : :class:`str`, optional
-            Color for fill and stroke
+            Color for fill and stroke.
         opacity : :class:`float`, optional
-            Opacity to fill and stroke
+            Opacity to set for fill and stroke.
         """
         self.set_fill(color, opacity, family=family)
         self.set_stroke(color, opacity, family=family)
@@ -425,10 +431,10 @@ class VMobject(Mobject):
         return self.get_fill_color()
 
     def set_sheen_direction(self, direction, family=True):
-        """Changes the direction of the sheen applied, use set_sheen() to apply
+        """Changes the direction of the applied sheen.
 
         Parameters
-        --------
+        ----------
         direction : :class:`numpy.ndarray`, optional
             Direction from where the gradient is applied.
 
@@ -440,7 +446,7 @@ class VMobject(Mobject):
 
         See Also
         --------
-        :meth:`set_sheen`
+        :meth:`~.VMobject.set_sheen`
         """
         direction = np.array(direction)
         if family:
@@ -451,18 +457,19 @@ class VMobject(Mobject):
         return self
 
     def set_sheen(self, factor, direction=None, family=True):
-        """Applies a gradient from a direction to introduce a soft lustre.
+        """Applies a color gradient from a direction.
 
         Parameters
         --------
         factor : :class:`float`
-            The extent of lustre/gradient to apply. If negative, the gradient starts from black, \
-            if positive the gradient starts from white (to current color)
+            The extent of lustre/gradient to apply. If negative, the gradient
+            starts from black, if positive the gradient starts from white and
+            changes to the current color.
         direction : :class:`numpy.ndarray`, optional
-            Direction from where the gradient is applied
+            Direction from where the gradient is applied.
            
         Examples
-        ---------
+        --------
         .. manim:: SetSheen
             :save_last_frame:
 
