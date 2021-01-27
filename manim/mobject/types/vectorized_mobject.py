@@ -341,7 +341,7 @@ class VMobject(Mobject):
         Parameters
         --------
         color : :class:`str`, optional
-            Color for fill and stroke
+            Color for fill and stroke.
         """
         self.set_fill(color, opacity=self.get_fill_opacity(), family=family)
         self.set_stroke(color, opacity=self.get_stroke_opacity(), family=family)
@@ -604,7 +604,7 @@ class VMobject(Mobject):
             handle2, new_anchor = points
         else:
             name = sys._getframe(0).f_code.co_name
-            raise ValueError(f"call {name} with 1 or 2 points")
+            raise ValueError(f"Only call {name} with 1 or 2 points")
 
         if self.has_new_path_started():
             self.add_line_to(new_anchor)
