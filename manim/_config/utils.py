@@ -1311,11 +1311,15 @@ class ManimConfig(MutableMapping):
             self._d["tex_template_file"] = val  # actually set the falsy value
             self._tex_template = TexTemplate()  # but don't use it
 
-    plugins = property(
-        lambda self: self._d["plugins"],
-        lambda self, val: self._d.__setitem__("plugins", val),
-        doc="List of Plugins to Enable.",
-    )
+    @property
+    def plugins(self):
+        """List of plugins to enable."""
+
+        return self._d["plugins"]
+
+    @plugins.setter
+    def plugins(self, value):
+        self._d["plugins"] = value
 
 
 class ManimFrame(Mapping):
