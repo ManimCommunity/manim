@@ -429,9 +429,9 @@ A list of all CLI flags
      -n FROM_ANIMATION_NUMBER, --from_animation_number FROM_ANIMATION_NUMBER
                            Start rendering at the specified animation index, instead of the first animation. If you pass in two comma separated values, e.g. '3,6', it will end
                            the rendering at the second value
-     --use_webgl_renderer     Render animations using the javascript frontend
+     --use_webgl_renderer     Render animations using the WebGL frontend
      --webgl_renderer_path WEBGL_RENDERER_PATH
-                           Path to the javascript frontend
+                           Path to the WebGL frontend
      --webgl_updater_fps WEBGL_UPDATER_FPS
                            Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend
      --config_file CONFIG_FILE
