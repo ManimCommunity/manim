@@ -24,6 +24,7 @@ import numpy as np
 
 from .. import constants
 from ..utils.tex import TexTemplate, TexTemplateFromFile
+from ..utils.tex_templates import TexTemplateLibrary
 from .logger_utils import set_file_logger
 
 
@@ -691,6 +692,17 @@ class ManimConfig(MutableMapping):
             # --media_dir overrides the deaful.cfg file
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
+
+        # Handle --tex_template
+        if args.tex_template:
+            if args.tex_template == "ctex":
+                self.tex_template = TexTemplateLibrary.ctex
+            elif args.tex_template == "simple":
+                self.tex_template = TexTemplateLibrary.simple
+            elif args.tex_template == "threeb1b":
+                self.tex_template = TexTemplateLibrary.threeb1b
+            elif args.tex_template == "default":
+                self.tex_template = TexTemplateLibrary.default
 
         return self
 
