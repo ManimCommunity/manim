@@ -166,6 +166,10 @@ class TipableVMobject(VMobject):
             handle = self.get_last_handle()
             anchor = self.get_end()
         tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
+        tip.rotate(
+            angle_between_vectors(tip.vector, anchor - handle), 
+            axis=rotate_vector(tip.vector, -PI/2)
+        )
         tip.shift(anchor - tip.tip_point)
         return tip
 
