@@ -409,14 +409,20 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
 
     parser.add_argument(
         "--use_webgl_renderer",
-        help="Render animations using the javascript frontend",
+        help="Render animations using the WebGL frontend",
         action="store_const",
         const=True,
     )
 
     parser.add_argument(
         "--webgl_renderer_path",
-        help="Path to the javascript frontend",
+        help="Path to the WebGL frontend",
+    )
+
+    parser.add_argument(
+        "--webgl_updater_fps",
+        type=int,
+        help="Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend",
     )
 
     # Specify the manim.cfg file

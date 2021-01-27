@@ -432,6 +432,8 @@ A list of all CLI flags
      --use_webgl_renderer     Render animations using the javascript frontend
      --webgl_renderer_path WEBGL_RENDERER_PATH
                            Path to the javascript frontend
+     --webgl_updater_fps WEBGL_UPDATER_FPS
+                           Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend
      --config_file CONFIG_FILE
                            Specify the configuration file
      --custom_folders      Use the folders defined in the [custom_folders] section of the config file to define the output folder structure

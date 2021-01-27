@@ -286,6 +286,7 @@ class ManimConfig(MutableMapping):
         "text_dir",
         "upto_animation_number",
         "use_webgl_renderer",
+        "webgl_updater_fps",
         "verbosity",
         "video_dir",
         "write_all",
@@ -520,6 +521,7 @@ class ManimConfig(MutableMapping):
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
+            "webgl_updater_fps",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -622,6 +624,7 @@ class ManimConfig(MutableMapping):
             "verbosity",
             "background_color",
             "use_webgl_renderer",
+            "webgl_updater_fps",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1041,6 +1044,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["webgl_renderer_path"],
         lambda self, val: self._d.__setitem__("webgl_renderer_path", val),
         doc="Path to JS renderer.",
+    )
+
+    webgl_updater_fps = property(
+        lambda self: self._d["webgl_updater_fps"],
+        lambda self, val: self._d.__setitem__("webgl_updater_fps", val),
+        doc="Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend.",
     )
 
     media_dir = property(
