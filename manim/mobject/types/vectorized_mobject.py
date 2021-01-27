@@ -168,9 +168,9 @@ class VMobject(Mobject):
 
     def set_fill(self, color=None, opacity=None, family=True):
         """Sets the fill color, (not the outline color).
-        
+
         .. note::
-        
+
             If the mobject currently has an opacity value of 0, this
             method will set the opacity to 1 if no other value is
             passed.
@@ -312,9 +312,9 @@ class VMobject(Mobject):
 
     def set_color(self, color, opacity=None, family=True):
         """Sets both fill and stroke color.
-        
+
         .. seealso::
-        
+
             :meth:`~.VMobject.set_fill`
             :meth:`~.VMobject.set_stroke`
 
@@ -333,9 +333,9 @@ class VMobject(Mobject):
     def set_color_only(self, color, family=True):
         """Sets both fill and stroke color, but opacities remain
         unaltered even if stroke/fill color is fully transparent.
-        
+
         .. seealso::
-        
+
             :meth:`~.VMobject.set_color`
 
         Parameters
@@ -470,7 +470,7 @@ class VMobject(Mobject):
             changes to the current color.
         direction : :class:`numpy.ndarray`, optional
             Direction from where the gradient is applied.
-           
+
         Examples
         --------
         .. manim:: SetSheen
