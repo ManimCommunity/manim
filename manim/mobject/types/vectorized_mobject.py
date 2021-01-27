@@ -331,17 +331,20 @@ class VMobject(Mobject):
         return self
 
     def set_color_only(self, color, family=True):
-        """Equivalent of running set_color() but the \
-        opacities remain unaltered even if fill/stroke color \
-        is fully transparent
+        """Sets both fill and stroke color, but opacities remain
+        unaltered even if stroke/fill color is fully transparent.
+        
+        .. seealso::
+        
+            :meth:`~.VMobject.set_color`
 
         Parameters
         --------
         color : :class:`str`, optional
             Color for fill and stroke
         """
-        self.set_fill(color, opacity=0, family=family)
-        self.set_stroke(color, opacity=1, family=family)
+        self.set_fill(color, opacity=self.get_fill_opacity(), family=family)
+        self.set_stroke(color, opacity=self.get_stroke_opacity(), family=family)
         self.color = colour.Color(color)
         return self
 
@@ -601,7 +604,8 @@ class VMobject(Mobject):
             handle2, new_anchor = points
         else:
             name = sys._getframe(0).f_code.co_name
-            raise ValueError(f"Only call {name} with 1 or 2 points")
+            raise ValueError(f"
+                             call {name} with 1 or 2 points")
 
         if self.has_new_path_started():
             self.add_line_to(new_anchor)
