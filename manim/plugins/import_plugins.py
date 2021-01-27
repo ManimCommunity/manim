@@ -1,12 +1,14 @@
-import pkg_resources
+import types
 from importlib import import_module
+
+import pkg_resources
+
 from .. import config, logger
 
 __all__ = []
 
-# don't know what is better to do here!
-module_type = type(pkg_resources)
-function_type = type(import_module)
+module_type = types.ModuleType
+function_type = types.FunctionType
 
 plugins_requested: list = config["plugins"]
 if "" in plugins_requested:
@@ -25,7 +27,7 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
                     exec(f"{thing}=loaded_plugin.{thing}")
                     __all__.append(thing)
             else:
-                exec(plugin.name + "=loaded_plugin")
+                exec(f"{plugin.name}=loaded_plugin")
                 __all__.append(plugin.name)
         elif isinstance(loaded_plugin, function_type):
             # call the function first
@@ -33,7 +35,7 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
             # finally add it
             lists = loaded_plugin()
             for l in lists:
-                exec(l.__name__ + "=l")
+                exec(f"{l.__name__}=l")
                 __all__.append(l.__name__)
         plugins_requested.remove(plugin.name)
 else:
