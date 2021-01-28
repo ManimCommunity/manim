@@ -7,20 +7,23 @@ class SquareToCircle(Scene):
         circle = Circle()
         self.play(Transform(square, circle))
 
+
 class FunctionLikeTest(Scene):
     def contruct(self):
-        assert 'FunctionLike' in globals()
-        a=FunctionLike()
+        assert "FunctionLike" in globals()
+        a = FunctionLike()
         self.play(FadeIn(a))
+
 
 class NoAllTest(Scene):
     def construct(self):
-        assert 'test_plugin' in globals()
-        a=test_plugin.NoAll()
+        assert "test_plugin" in globals()
+        a = test_plugin.NoAll()
         self.play(FadeIn(a))
+
 
 class WithAllTest(Scene):
     def construct(self):
-        assert 'WithAll' in globals()
-        a=WithAll()
+        assert "WithAll" in globals()
+        a = WithAll()
         self.play(FadeIn(a))
