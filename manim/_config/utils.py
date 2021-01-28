@@ -1031,7 +1031,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def use_webgl_renderer(self):
-        """Whether to use JS renderer or not (default)."""
+        """Whether to use WebGL renderer or not (default)."""
         return self._d["use_webgl_renderer"]
 
     @use_webgl_renderer.setter
@@ -1043,7 +1043,7 @@ class ManimConfig(MutableMapping):
     webgl_renderer_path = property(
         lambda self: self._d["webgl_renderer_path"],
         lambda self, val: self._d.__setitem__("webgl_renderer_path", val),
-        doc="Path to JS renderer.",
+        doc="Path to WebGL renderer.",
     )
 
     webgl_updater_fps = property(
