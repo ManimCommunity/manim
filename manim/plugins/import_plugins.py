@@ -7,8 +7,6 @@ from .. import config, logger
 
 __all__ = []
 
-module_type = types.ModuleType
-function_type = types.FunctionType
 
 plugins_requested: list = config["plugins"]
 if "" in plugins_requested:
@@ -17,7 +15,7 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
     if plugin.name not in plugins_requested:
         continue
     loaded_plugin = plugin.load()
-    if isinstance(loaded_plugin, module_type):
+    if isinstance(loaded_plugin, types.ModuleType):
         # it is a module so it can't be called
         # see if __all__ is defined
         # if it is defined use that to load all the modules necessary
@@ -30,7 +28,7 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
         else:
             exec(f"{plugin.name}=loaded_plugin")
             __all__.append(plugin.name)
-    elif isinstance(loaded_plugin, function_type):
+    elif isinstance(loaded_plugin, types.FunctionType):
         # call the function first
         # it will return a list of modules to add globally
         # finally add it
