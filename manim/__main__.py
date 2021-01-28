@@ -1,6 +1,7 @@
 import os
 import sys
 import traceback
+import click
 
 from manim import logger, config
 from manim.utils.module_ops import (
@@ -9,6 +10,8 @@ from manim.utils.module_ops import (
     get_scenes_to_render,
     scene_classes_from_file,
 )
+from manim._config import cfg_subcmds
+from manim.plugins.plugins_flags import list_plugins
 from manim.utils.file_ops import open_file as open_media_file
 from manim._config.main_utils import parse_args
 
@@ -98,6 +101,83 @@ def main():
                     print("\n\n")
                     traceback.print_exc()
                     print("\n\n")
+
+
+class SkipArg(click.Group):
+    def parse_args(self, ctx, args):
+        if not args:
+            return click.Group().parse_args(ctx, [])
+        if args[0] in self.commands:
+            if len(args) == 1 or args[1] not in self.commands:
+                args.insert(0, "")
+        super(SkipArg, self).parse_args(ctx, args)
+
+
+EPILOG = "Made with <3 by the manim community devs"
+HELP_OPTIONS = dict(help_option_names=["-h", "--help"])
+
+
+@click.group(
+    cls=SkipArg,
+    invoke_without_command=True,
+    context_settings=HELP_OPTIONS,
+    no_args_is_help=True,
+    help="Animation engine for explanatory math videos",
+    epilog=EPILOG,
+)
+@click.argument("file", required=False)
+@click.version_option()
+@click.pass_context
+def cli(ctx, file):
+    """The main entry point for the manim command."""
+    print("main", ctx, file)
+
+
+@cli.command(
+    context_settings=HELP_OPTIONS,
+    no_args_is_help=True,
+    epilog=EPILOG,
+    help="Manages plugins",
+)
+@click.option("-l", "--list", is_flag=True, help="List available plugins")
+def plugins(list):
+    if list:
+        list_plugins()
+
+
+@cli.group(
+    context_settings=HELP_OPTIONS,
+    invoke_without_command=True,
+    no_args_is_help=True,
+    epilog=EPILOG,
+    help="Manages config files",
+)
+def cfg():
+    pass
+
+
+@cfg.command(context_settings=HELP_OPTIONS, no_args_is_help=True)
+@click.option(
+    "-l",
+    "--level",
+    type=click.Choice(["user", "cwd"], case_sensitive=False),
+    default="cwd",
+    help="Specify if this config is for user or the working directory.",
+)
+@click.option("-o", "--open", is_flag=True)
+def write(level, open):
+    pass
+
+
+@cfg.command(context_settings=HELP_OPTIONS)
+def show():
+    cfg_subcmds.show()
+
+
+@cfg.command(context_settings=HELP_OPTIONS)
+@click.option("-d", "--dir", default=os.getcwd())
+def export(dir):
+    cfg_subcmds.export(dir)
 
 
 if __name__ == "__main__":

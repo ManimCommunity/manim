@@ -25,6 +25,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
+click = "*"
 colour = "*"
 numpy = "*"
 Pillow = "*"
@@ -63,6 +64,7 @@ markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
 [tool.poetry.plugins."console_scripts"]
 "manim" = "manim.__main__:main"
 "manimce" = "manim.__main__:main"
+"cli" = "manim.__main__:cli"
 
 [build-system]
 requires = ["setuptools","poetry_core>=1.0.0"]
