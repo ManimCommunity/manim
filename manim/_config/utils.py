@@ -553,11 +553,7 @@ class ManimConfig(MutableMapping):
         ]:
             setattr(self, key, parser["CLI"].getfloat(key))
         # plugins
-        setattr(
-            self,
-            "plugins",
-            parser["CLI"].get("plugins", fallback="", raw=True).split(","),
-        )
+        self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
         # the next two must be set AFTER digesting pixel_width and pixel_height
         self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
         width = parser["CLI"].getfloat("frame_width", None)
@@ -1313,7 +1309,6 @@ class ManimConfig(MutableMapping):
     @property
     def plugins(self):
         """List of plugins to enable."""
-
         return self._d["plugins"]
 
     @plugins.setter
