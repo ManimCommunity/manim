@@ -628,7 +628,6 @@ class ManimConfig(MutableMapping):
             "verbosity",
             "background_color",
             "use_js_renderer",
-            "plugins",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
