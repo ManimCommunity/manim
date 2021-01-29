@@ -101,7 +101,7 @@ DEFAULT_WAIT_TIME: float = 1.0
 
 # Misc
 DEFAULT_POINT_DENSITY_2D: int = 25
-DEFAULT_POINT_DENSITY_1D: int = 250
+DEFAULT_POINT_DENSITY_1D: int = 10
 DEFAULT_STROKE_WIDTH: int = 4
 
 # Mathematical constants
@@ -128,11 +128,11 @@ FFMPEG_VERBOSITY_MAP: typing.Dict[str, str] = {
     "CRITICAL": "fatal",
 }
 VERBOSITY_CHOICES = FFMPEG_VERBOSITY_MAP.keys()
-JS_RENDERER_INFO: str = (
+WEBGL_RENDERER_INFO: str = (
     "The Electron frontend to Manim is hosted at "
     "https://github.com/ManimCommunity/manim-renderer. After cloning and building it, "
     "you can either start it prior to running Manim or specify the path to the "
-    "executable with the --js_renderer_path flag."
+    "executable with the --webgl_renderer_path flag."
 )
 
 # Video qualities
