@@ -36,11 +36,11 @@ $ docker exec -it --user="$(id -u):$(id -g)" my-manim-container manim test.py Ci
 ```
 
 ## Jupyterlab
-Another alternative is to use the `manimcommunity/manim:jupyterlab` image, which spins up a local webserver running
-JupyterLab in whose Python kernel manim is installed and can be accessed via the `%%manim` cell magic. To use this container,
-run
+Another alternative is to use the docker image to spin up a local webserver running
+JupyterLab in whose Python kernel manim is installed and can be accessed via the `%%manim` cell magic.
+To use JupyterLab, run
 ```
-$ docker run -it -p 8888:88888 manimcommunity/manim:jupyterlab
+$ docker run -it -p 8888:8888 manimcommunity/manim jupyter lab --ip=0.0.0.0
 ```
 and then follow the instructions in the terminal.
 
