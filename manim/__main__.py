@@ -5,9 +5,9 @@ import click
 from click.testing import CliRunner
 from click_default_group import DefaultGroup
 from manim.constants import EPILOG
-from manim.constants import HELP_OPTIONS
+from manim.constants import CONTEXT_SETTINGS
 from manim.cli.cfg.commands import cfg
-from manim.cli.plugins.commands import plugins
+from manim.cli.plugin.commands import plugin
 from manim.cli.render.commands import render
 
 from manim import logger, config
@@ -114,8 +114,8 @@ def main():
     cls=DefaultGroup,
     default="render",
     no_args_is_help=True,
-    context_settings=HELP_OPTIONS,
-    help="Animation engine for explanatory math videos.",
+    context_settings=CONTEXT_SETTINGS,
+    help="Animation engine for explanatory math videos",
     epilog=EPILOG,
 )
 @click.version_option()
@@ -127,7 +127,7 @@ def cli(ctx):
 
 
 cli.add_command(cfg)
-cli.add_command(plugins)
+cli.add_command(plugin)
 cli.add_command(render)
 
 if __name__ == "__main__":

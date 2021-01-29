@@ -2,7 +2,7 @@ import os
 import click
 
 from manim.constants import EPILOG
-from manim.constants import HELP_OPTIONS
+from manim.constants import CONTEXT_SETTINGS
 
 from manim._config import cfg_subcmds
 
@@ -10,7 +10,7 @@ __all__ = ["cfg", "write", "show", "export"]
 
 
 @click.group(
-    context_settings=HELP_OPTIONS,
+    context_settings=CONTEXT_SETTINGS,
     invoke_without_command=True,
     no_args_is_help=True,
     epilog=EPILOG,
@@ -21,7 +21,7 @@ def cfg():
     pass
 
 
-@cfg.command(context_settings=HELP_OPTIONS, no_args_is_help=True)
+@cfg.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
 @click.option(
     "-l",
     "--level",
@@ -34,13 +34,13 @@ def write(level, open):
     click.echo("write")
 
 
-@cfg.command(context_settings=HELP_OPTIONS)
+@cfg.command(context_settings=CONTEXT_SETTINGS)
 def show():
     click.echo("show")
     cfg_subcmds.show()
 
 
-@cfg.command(context_settings=HELP_OPTIONS)
+@cfg.command(context_settings=CONTEXT_SETTINGS)
 @click.option("-d", "--dir", default=os.getcwd())
 def export(dir):
     click.echo("export")
