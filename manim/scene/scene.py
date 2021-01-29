@@ -863,6 +863,12 @@ class Scene(Container):
             num_frames=int(duration / dt),
         )
 
+    def add_click_sound(self, **kwargs):
+        """
+        This method is used to add a click sound to the animation.
+        """
+        self.add_sound("../manim/asserts/click.wav", **kwargs)
+
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
         This method is used to add a sound to the animation.
