@@ -17,7 +17,7 @@ RUN wget -O /tmp/install-tl-unx.tar.gz http://mirror.ctan.org/systems/texlive/tl
     tar -xzf /tmp/install-tl-unx.tar.gz -C /tmp/install-tl --strip-components=1 && \
     /tmp/install-tl/install-tl --profile=/tmp/texlive-profile.txt \
     && tlmgr install \
-        amsmath babel-english cm-super doublestroke dvisvgm fundus-calligra \
+        amsmath babel-english cm-super doublestroke dvisvgm everysel fundus-calligra \
         jknapltx latex-bin microtype ms physics preview ragged2e relsize rsfs \
         setspace standalone tipa wasy wasysym xcolor xkeyval
 
