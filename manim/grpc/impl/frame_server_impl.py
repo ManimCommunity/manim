@@ -231,7 +231,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                         for scene in self.keyframes
                     ],
                 ),
-                path=f"{str(os.getcwd())}\\{str(self.input_file_path)}"
+                path=f"{str(os.getcwd())}\\{str(self.input_file_path)}",
             )
             if hasattr(self.scene.camera, "background_color"):
                 request.scene.background_color = self.scene.camera.background_color
