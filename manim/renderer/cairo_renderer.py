@@ -76,7 +76,7 @@ class CairoRenderer:
             scene.__class__.__name__,
         )
         # TODO Condition here
-        if True:
+        if config["debug"]:
             debugger.set_renderer_vars(MappingProxyType(vars(self)))
             debugger.set_scene_vars(MappingProxyType(vars(scene)))
 
@@ -131,13 +131,14 @@ class CairoRenderer:
     def render(self, scene, moving_mobjects):
         self.update_frame(scene, moving_mobjects)
         rendered_frame = self.get_frame()
-        # TODO Condition here
-        if True:
+        if config["debug"]:
             debugger.update()
             debug_layout = debugger.get_layout(
                 rendered_frame.shape[1::-1],
             )
-        self.add_frame(rendered_frame + debug_layout)
+            self.add_frame(rendered_frame + debug_layout)
+        else: 
+            self.add_frame(rendered_frame)
 
     def get_frame(self):
         """

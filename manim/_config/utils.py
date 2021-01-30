@@ -291,6 +291,7 @@ class ManimConfig(MutableMapping):
         "video_dir",
         "write_all",
         "write_to_movie",
+        "debug",
     }
 
     def __init__(self) -> None:
@@ -509,6 +510,7 @@ class ManimConfig(MutableMapping):
             "flush_cache",
             "custom_folders",
             "use_js_renderer",
+            "debug",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -624,6 +626,7 @@ class ManimConfig(MutableMapping):
             "verbosity",
             "background_color",
             "use_js_renderer",
+            "debug",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1050,6 +1053,17 @@ class ManimConfig(MutableMapping):
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
     )
+    @property
+    def debug(self):
+        """Whether to use debug mode.
+        """
+        return self._d["debug"]
+    
+    @debug.setter
+    def debug(self, val:bool) -> None:
+        self._d["debug"] = val 
+        if val:
+            self._d["disable_caching"] = True
 
     def get_dir(self, key: str, **kwargs: str) -> Path:
         """Resolve a config option that stores a directory.

@@ -422,6 +422,13 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
         "--js_renderer_path",
         help="Path to the javascript frontend",
     )
+    
+    parser.add_argument(
+        "--debug",
+        action="store_const",
+        help="triggers visual debug mode.", 
+        const=True
+    )
 
     # Specify the manim.cfg file
     parser.add_argument(
