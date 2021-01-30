@@ -46,7 +46,7 @@ def parse_color_string(color_spec):
 
     if color_spec[0:3] == "rgb":
         # these are only in integer form, but the Colour module wants them in floats.
-        parsed_rgbs = [int(i) / 255. for i in color_spec[4:-1].split(",")]
+        parsed_rgbs = [int(i) / 255.0 for i in color_spec[4:-1].split(",")]
         hex_color = rgb_to_hex(parsed_rgbs)
 
     elif color_spec[0] == "#":
@@ -143,7 +143,7 @@ class SVGMobject(VMobject):
         "fill": "black",
         "fill-opacity": "1",
         "stroke": "none",
-        "stroke-opacity": "1"
+        "stroke-opacity": "1",
     }
 
     def __init__(
@@ -247,7 +247,8 @@ class SVGMobject(VMobject):
             if temp != "":
                 result.append(self.path_string_to_mobject(temp, style))
         elif element.tagName == "use":
-            result += self.use_to_mobjects(element) # note, style is not passed down to "use" elements
+            # note, style is not passed down to "use" elements
+            result += self.use_to_mobjects(element)
         elif element.tagName == "rect":
             result.append(self.rect_to_mobject(element, style))
         elif element.tagName == "circle":
@@ -306,7 +307,9 @@ class SVGMobject(VMobject):
         try:
             return self.def_id_to_mobject[ref].copy()
         except KeyError:
-            warnings.warn("svg file contains a reference to id #%s, which is not recognized" % ref)
+            warnings.warn(
+                "svg file contains a reference to id #%s, which is not recognized" % ref
+            )
             return VGroup()
 
     def attribute_to_float(self, attr):
@@ -425,7 +428,7 @@ class SVGMobject(VMobject):
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
                 stroke_width=stroke_width,
-                **parse_style(style)
+                **parse_style(style),
             )
         else:
             mob = RoundedRectangle(
@@ -433,7 +436,7 @@ class SVGMobject(VMobject):
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
                 stroke_width=stroke_width,
                 corner_radius=corner_radius,
-                **parse_style(style)
+                **parse_style(style),
             )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
@@ -522,8 +525,7 @@ class SVGMobject(VMobject):
         return output_list
 
     def update_defs(self, defs, style):
-        """TODO: redocument.
-        """
+        """TODO: redocument."""
 
         for child in defs.childNodes:
             if isinstance(child, minidom.Element) and child.hasAttribute("id"):
@@ -603,7 +605,9 @@ class VMobjectFromSVGPathstring(VMobject):
         command = command.upper()
 
         # Keep track of the most recently completed point
-        start_point = self.points[-1] if len(self.points) > 0 else np.zeros((1, self.dim))
+        start_point = (
+            self.points[-1] if self.points.shape[0] else np.zeros((1, self.dim))
+        )
 
         # Produce the (absolute) coordinates of the controls and handles
         new_points = self.string_to_points(
@@ -633,14 +637,16 @@ class VMobjectFromSVGPathstring(VMobject):
                 prev_handle = self.points[-2]
             for i in range(0, len(new_points), 2):
                 new_handle = 2 * start_point - prev_handle
-                self.add_cubic_bezier_curve_to(new_handle, new_points[i], new_points[i+1])
-                start_point = new_points[i+1]
+                self.add_cubic_bezier_curve_to(
+                    new_handle, new_points[i], new_points[i + 1]
+                )
+                start_point = new_points[i + 1]
                 prev_handle = new_points[i]
             return
 
         elif command == "Q":  # quadratic Bezier curve
             for i in range(0, len(new_points), 2):
-                self.add_quadratic_bezier_curve_to(new_points[i], new_points[i+1])
+                self.add_quadratic_bezier_curve_to(new_points[i], new_points[i + 1])
             return
 
         elif command == "T":  # smooth quadratic

@@ -104,24 +104,24 @@ class VMobject(Mobject):
         self.set_fill(
             color=self.fill_color or self.color,
             opacity=self.fill_opacity,
-            family=propagate_colors
+            family=propagate_colors,
         )
         self.set_stroke(
             color=self.stroke_color or self.color,
             width=self.stroke_width,
             opacity=self.stroke_opacity,
-            family=propagate_colors
+            family=propagate_colors,
         )
         self.set_background_stroke(
             color=self.background_stroke_color,
             width=self.background_stroke_width,
             opacity=self.background_stroke_opacity,
-            family=propagate_colors
+            family=propagate_colors,
         )
         self.set_sheen(
             factor=self.sheen_factor,
             direction=self.sheen_direction,
-            family=propagate_colors
+            family=propagate_colors,
         )
 
         if not propagate_colors:

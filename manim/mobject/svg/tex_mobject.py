@@ -208,7 +208,7 @@ class SingleStringMathTex(SVGMobject):
         "fill": "white",
         "fill-opacity": "1",
         "stroke": "none",
-        "stroke-opacity": "1"
+        "stroke-opacity": "1",
     }
 
     def __init__(
