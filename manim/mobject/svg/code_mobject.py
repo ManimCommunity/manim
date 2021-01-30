@@ -206,7 +206,8 @@ class Code(VGroup):
             raise ValueError(
                 "Neither a code file nor a code string have been specified."
             )
-        self.style = self.style.lower()
+        if isinstance(self.style, str):
+            self.style = self.style.lower()
         self.gen_html_string()
         strati = self.html_string.find("background:")
         self.background_color = self.html_string[strati + 12 : strati + 19]
@@ -292,7 +293,7 @@ class Code(VGroup):
                 return
         error = (
             f"From: {os.getcwd()}, could not find {self.file_name} at either "
-            + "of these locations: {possible_paths}"
+            + f"of these locations: {possible_paths}"
         )
         raise IOError(error)
 
