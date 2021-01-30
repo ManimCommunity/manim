@@ -161,32 +161,6 @@ class VideoIconTest(Scene):
         self.wait()
 
 
-"""
-
-At the moment, we're having syntax issues with this test... 
-we're diving into the deep world of things other than paths.
-
-class RCTest(Scene):
-    pytest_skip = True
-
-    def construct(self):
-        rc_svg = SVGMobject(get_test_resource("RC.svg"))
-        self.add(rc_svg)
-        self.wait()
-
-# set_test_scene(RCTest, "img_and_svg")
-"""
-
-"""
-class WhiteLogoTest(Scene):
-    # TODO: Arc issues. Also, probably fill/stroke stuff too.
-    def construct(self):
-        white_logo = SVGMobject(get_test_resource("white.svg"))
-        self.add(white_logo)
-        self.wait()
-"""
-
-
 class ImageMobjectTest(Scene):
     def construct(self):
         file_path = get_test_resource("tree_img_640x351.png")

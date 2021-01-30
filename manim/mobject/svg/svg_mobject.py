@@ -13,8 +13,6 @@ import warnings
 from xml.dom import minidom
 from colour import web2hex
 
-from colour import Color
-
 from ... import config
 from ...constants import *
 from ...mobject.geometry import Circle
@@ -23,16 +21,6 @@ from ...mobject.geometry import RoundedRectangle
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import *
-
-# these are the default styling specifications,
-# according to https://www.w3.org/TR/SVG/painting.html
-# ctrl-F for "initial"
-BASE_SVG_STYLE = {
-    "fill": "black",
-    "fill-opacity": "1",
-    "stroke": "none",
-    "stroke-opacity": "1"
-}
 
 
 def string_to_numbers(num_string):
@@ -124,7 +112,6 @@ class SVGMobject(VMobject):
                 self.play(
                     FadeIn(SVGMobject("manim-logo-sidebar.svg"))
                 )
-
     Parameters
     --------
     file_name : :class:`str`
@@ -148,6 +135,17 @@ class SVGMobject(VMobject):
         Specifies the opacity of the image. `1` is opaque, `0` is transparent. Defaults to `1`.
     """
 
+    # these are the default styling specifications for SVG images,
+    # according to https://www.w3.org/TR/SVG/painting.html, ctrl-F for "initial"
+    # This value can be overridden in more specific classes
+    # TODO: documentation
+    DEFAULT_SVG_STYLE = {
+        "fill": "black",
+        "fill-opacity": "1",
+        "stroke": "none",
+        "stroke-opacity": "1"
+    }
+
     def __init__(
         self,
         file_name=None,
@@ -159,6 +157,7 @@ class SVGMobject(VMobject):
         fill_opacity=1.0,
         **kwargs,
     ):
+        self.def_id_to_mobject = {}
         self.file_name = file_name or self.file_name
         self.ensure_valid_file()
         self.should_center = should_center
@@ -207,9 +206,8 @@ class SVGMobject(VMobject):
         any submobjects within self.mobjects.
         """
         doc = minidom.parse(self.file_path)
-        self.ref_to_element = {}
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(svg, BASE_SVG_STYLE)
+            mobjects = self.get_mobjects_from(svg, self.DEFAULT_SVG_STYLE)
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -221,7 +219,7 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        element : :class:`str`
+        element : :class:`minidom.Element`
             The SVG data in the XML to be parsed.
 
         Returns
@@ -237,7 +235,7 @@ class SVGMobject(VMobject):
 
         style = cascade_element_style(element, inherited_style)
         if element.tagName == "defs":
-            self.update_ref_to_element(element)
+            self.update_defs(element, style)
         elif element.tagName == "style":
             pass  # TODO, handle style
         elif element.tagName in ["g", "svg", "symbol"]:
@@ -249,7 +247,7 @@ class SVGMobject(VMobject):
             if temp != "":
                 result.append(self.path_string_to_mobject(temp, style))
         elif element.tagName == "use":
-            result += self.use_to_mobjects(element)
+            result += self.use_to_mobjects(element) # note, style is not passed down to "use" elements
         elif element.tagName == "rect":
             result.append(self.rect_to_mobject(element, style))
         elif element.tagName == "circle":
@@ -269,23 +267,6 @@ class SVGMobject(VMobject):
 
         return result
 
-    def g_to_mobjects(self, g_element):
-        """Converts the ``g`` SVG element into VMobjects.
-
-        Parameters
-        ----------
-        g_element : :class:`str`
-            A ``g`` element is a group of other SVG elements. As such a ``g`` element is equivalent to a VGroup.
-
-        Returns
-        -------
-        List[VMobject]
-            A list of VMobject represented by the group.
-        """
-        mob = VGroup(*self.get_mobjects_from(g_element))
-        self.handle_transforms(g_element, mob)
-        return mob.submobjects
-
     def path_string_to_mobject(self, path_string, style):
         """Converts a SVG path element's ``d`` attribute to a mobject.
 
@@ -293,6 +274,9 @@ class SVGMobject(VMobject):
         ----------
         path_string : str
             A path with potentially multiple path commands to create a shape.
+
+        style : dict
+            Style specification, using the SVG names for properties.
 
         Returns
         -------
@@ -306,7 +290,7 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        use_element : str
+        use_element : minidom.Element
             An SVG <use> element which represents nodes that should be
             duplicated elsewhere.
 
@@ -315,12 +299,15 @@ class SVGMobject(VMobject):
         VMobject
             A VMobject
         """
+
         # Remove initial "#" character
         ref = use_element.getAttribute("xlink:href")[1:]
-        if ref not in self.ref_to_element:
-            warnings.warn("%s not recognized" % ref)
+
+        try:
+            return self.def_id_to_mobject[ref].copy()
+        except KeyError:
+            warnings.warn("svg file contains a reference to id #%s, which is not recognized" % ref)
             return VGroup()
-        return self.get_mobjects_from(self.ref_to_element[ref])
 
     def attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.
@@ -345,7 +332,7 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        polygon_element : str
+        polygon_element : minidom.Element
             An SVG polygon element.
 
         Returns
@@ -369,7 +356,7 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        circle_element : str
+        circle_element : minidom.Element
             A SVG circle path command.
 
         Returns
@@ -391,7 +378,7 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        circle_element : str
+        circle_element : minidom.Element
             A SVG circle path command.
 
         Returns
@@ -412,7 +399,7 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        rect_element : str
+        rect_element : minidom.Element
             A SVG rect path command.
 
         Returns
@@ -458,7 +445,7 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        element : str
+        element : minidom.Element
             The transform command to perform
 
         mobject : Mobject
@@ -534,40 +521,14 @@ class SVGMobject(VMobject):
                 output_list.append(i)
         return output_list
 
-    def get_all_childNodes_have_id(self, element):
-        """Gets all child nodes containing the `id` attribute and returns
-        them in a flattened list.
-
-        Parameters
-        --------
-        element : :class:`str`
-            An element from SVG XML data. Elements use a unique `id`.
-
-        Returns
-        -------
-        List[DOM element]
-            A flattened list of DOM elements containing the `id` attribute.
+    def update_defs(self, defs, style):
+        """TODO: redocument.
         """
-        all_childNodes_have_id = []
-        if not isinstance(element, minidom.Element):
-            return
-        if element.hasAttribute("id") and element.tagName not in ("g", "defs"):
-            return [element]
-        for e in element.childNodes:
-            all_childNodes_have_id.append(self.get_all_childNodes_have_id(e))
-        return self.flatten([e for e in all_childNodes_have_id if e])
 
-    def update_ref_to_element(self, defs):
-        """Updates the ``ref_to_element`` dictionary.
-        Parameters
-        --------
-        defs : :class:`defs`
-            The new defs
-        """
-        new_refs = dict(
-            [(e.getAttribute("id"), e) for e in self.get_all_childNodes_have_id(defs)]
-        )
-        self.ref_to_element.update(new_refs)
+        for child in defs.childNodes:
+            if isinstance(child, minidom.Element) and child.hasAttribute("id"):
+                child_as_mobject = self.get_mobjects_from(child, style)
+                self.def_id_to_mobject[child.getAttribute("id")] = child_as_mobject
 
     def move_into_position(self):
         """Uses the SVGMobject's config dictionary to set the Mobject's
