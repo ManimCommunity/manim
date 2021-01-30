@@ -55,9 +55,7 @@ class SceneDebugger:
     def _get_scene_dict_info(self) -> dict:
         debug_dict_info = {}
         # NOTE : There is no way provided by the API to get the current animation.
-        debug_dict_info["Played Animation"] = self._scene_info["animations"][
-            self._renderer_info["num_plays"]
-        ]
+        debug_dict_info["Played Animations"] = self._scene_info["animations"]
         debug_dict_info["time"] = self._renderer_info["time"]
         debug_dict_info["frame"] = self._renderer_info["number_frame"]
         # NOTE : There is no way provided by the API to get the current animation hash.
@@ -89,14 +87,13 @@ class SceneDebugger:
     def _get_current_animation_dict_info(self) -> dict:
         # NOTE the API does not provide a way to get the current animation. This is to be changed when
         # there is a way.
-        current_animation = MappingProxyType(
-            vars(self._scene_info["animations"][self._renderer_info["num_plays"]])
-        )
-        debug_dict_animation = {}
-        for key, value in current_animation.items():
-            if key in self.debug_animation_attributes:
-                debug_dict_animation[key] = value
-        return debug_dict_animation if len(debug_dict_animation) > 0 else None
+        debug_dict_animations = {}
+        for animation in self._scene_info["animations"]:
+            debug_dict_animations[str(animation)] = {}
+            for key, value in vars(animation).items():
+                if key in self.debug_animation_attributes:
+                    debug_dict_animations[str(animation)][key] = value
+        return debug_dict_animations if len(debug_dict_animations) > 0 else None
 
     def get_layout(
         self,
@@ -127,7 +124,7 @@ class SceneDebugger:
         )
         self._draw_debug_box(
             draw_layer,
-            "CURRENT ANIMATION ATTR.",
+            "CURRENT ANIMATIONS ATTR.",
             self._get_current_animation_dict_info(),
             position,
         )
