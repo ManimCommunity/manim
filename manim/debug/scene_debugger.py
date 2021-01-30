@@ -211,7 +211,7 @@ class SceneDebugger:
             raise ValueError("Only functions can be spied.")
         self._record_spied_functions[func.__name__] = "Not called"
         if force_call:
-            self._force_called_spied_functions.add(lambda: func(*args, **kwargs))
+            self._force_called_spied_functions.add(lambda: self._place_spy(func)(*args, **kwargs))
 
     def update(self):
         """Used internally to update some debug values."""
