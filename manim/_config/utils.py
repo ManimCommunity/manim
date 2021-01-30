@@ -1064,15 +1064,15 @@ class ManimConfig(MutableMapping):
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
     )
+
     @property
     def debug(self):
-        """Whether to use debug mode.
-        """
+        """Whether to use debug mode."""
         return self._d["debug"]
-    
+
     @debug.setter
-    def debug(self, val:bool) -> None:
-        self._d["debug"] = val 
+    def debug(self, val: bool) -> None:
+        self._d["debug"] = val
         if val:
             self._d["disable_caching"] = True
 

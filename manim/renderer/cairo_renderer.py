@@ -137,7 +137,7 @@ class CairoRenderer:
                 rendered_frame.shape[1::-1],
             )
             self.add_frame(rendered_frame + debug_layout)
-        else: 
+        else:
             self.add_frame(rendered_frame)
 
     def get_frame(self):

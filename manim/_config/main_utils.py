@@ -428,12 +428,9 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
         type=int,
         help="Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend",
     )
-    
+
     parser.add_argument(
-        "--debug",
-        action="store_const",
-        help="triggers visual debug mode.", 
-        const=True
+        "--debug", action="store_const", help="triggers visual debug mode.", const=True
     )
 
     # Specify the manim.cfg file
