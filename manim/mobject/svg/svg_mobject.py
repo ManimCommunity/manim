@@ -11,6 +11,7 @@ import string
 import warnings
 
 from xml.dom import minidom
+from colour import web2hex
 
 from colour import Color
 
@@ -23,11 +24,86 @@ from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import *
 
+# these are the default styling specifications,
+# according to https://www.w3.org/TR/SVG/painting.html
+# ctrl-F for "initial"
+BASE_SVG_STYLE = {
+    "fill": "black",
+    "fill-opacity": "1",
+    "stroke": "none",
+    "stroke-opacity": "1"
+}
+
 
 def string_to_numbers(num_string):
     num_string = num_string.replace("-", ",-")
     num_string = num_string.replace("e,-", "e-")
     return [float(s) for s in re.split("[ ,]", num_string) if s != ""]
+
+
+def cascade_element_style(element, inherited):
+    style = dict(inherited)
+
+    # copy everything over, don't worry about making sense of it. that's for parse_element_style
+    styling_attributes = ["fill", "stroke", "style", "fill-opacity", "stroke-opacity"]
+    for attr in styling_attributes:
+        entry = element.getAttribute(attr)
+        if entry:
+            style[attr] = entry
+
+    return style
+
+
+def parse_color_string(color_spec):
+
+    if color_spec[0:3] == "rgb":
+        # these are only in integer form, but the Colour module wants them in floats.
+        parsed_rgbs = [int(i) / 255. for i in color_spec[4:-1].split(",")]
+        hex_color = rgb_to_hex(parsed_rgbs)
+
+    elif color_spec[0] == "#":
+        # its OK, parse as hex color standard.
+        hex_color = color_spec
+
+    else:
+        # attempt to convert color names like "red" to hex color
+        hex_color = web2hex(color_spec, force_long=True)
+
+    return hex_color
+
+
+def parse_style(svg_style):
+    manim_style = dict()
+
+    # style attributes trump other element-level attributes,
+    # see https://www.w3.org/TR/SVG11/styling.html section 6.4, search "priority"
+    # so overwrite the other attribute dictionary values.
+
+    if "style" in svg_style:
+        for style_spec in svg_style["style"].split(";"):
+            key, value = style_spec.split(":")
+            svg_style[key] = value
+
+    if "fill-opacity" in svg_style:
+        manim_style["fill_opacity"] = float(svg_style["fill-opacity"])
+
+    if "stroke-opacity" in svg_style:
+        manim_style["stroke_opacity"] = float(svg_style["stroke-opacity"])
+
+    # nones need to be handled specially
+    if "fill" in svg_style:
+        if svg_style["fill"] == "none":
+            manim_style["fill_opacity"] = 0
+        else:
+            manim_style["fill_color"] = parse_color_string(svg_style["fill"])
+
+    if "stroke" in svg_style:
+        if svg_style["stroke"] == "none":
+            manim_style["stroke_opacity"] = 0
+        else:
+            manim_style["stroke_color"] = parse_color_string(svg_style["stroke"])
+
+    return manim_style
 
 
 class SVGMobject(VMobject):
@@ -133,14 +209,14 @@ class SVGMobject(VMobject):
         doc = minidom.parse(self.file_path)
         self.ref_to_element = {}
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(svg)
+            mobjects = self.get_mobjects_from(svg, BASE_SVG_STYLE)
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
                 self.add(*mobjects[0].submobjects)
         doc.unlink()
 
-    def get_mobjects_from(self, element):
+    def get_mobjects_from(self, element, inherited_style):
         """Parses a given SVG element into a Mobject.
 
         Parameters
@@ -153,34 +229,39 @@ class SVGMobject(VMobject):
         VMobject
             A VMobject representing the associated SVG element.
         """
+
         result = []
+        # First, let all non-elements pass (like text entries)
         if not isinstance(element, minidom.Element):
             return result
+
+        style = cascade_element_style(element, inherited_style)
         if element.tagName == "defs":
             self.update_ref_to_element(element)
         elif element.tagName == "style":
             pass  # TODO, handle style
         elif element.tagName in ["g", "svg", "symbol"]:
             result += it.chain(
-                *[self.get_mobjects_from(child) for child in element.childNodes]
+                *[self.get_mobjects_from(child, style) for child in element.childNodes]
             )
         elif element.tagName == "path":
             temp = element.getAttribute("d")
             if temp != "":
-                result.append(self.path_string_to_mobject(temp))
+                result.append(self.path_string_to_mobject(temp, style))
         elif element.tagName == "use":
             result += self.use_to_mobjects(element)
         elif element.tagName == "rect":
-            result.append(self.rect_to_mobject(element))
+            result.append(self.rect_to_mobject(element, style))
         elif element.tagName == "circle":
-            result.append(self.circle_to_mobject(element))
+            result.append(self.circle_to_mobject(element, style))
         elif element.tagName == "ellipse":
-            result.append(self.ellipse_to_mobject(element))
+            result.append(self.ellipse_to_mobject(element, style))
         elif element.tagName in ["polygon", "polyline"]:
-            result.append(self.polygon_to_mobject(element))
+            result.append(self.polygon_to_mobject(element, style))
         else:
             pass  # TODO
             # warnings.warn("Unknown element type: " + element.tagName)
+
         result = [m for m in result if m is not None]
         self.handle_transforms(element, VGroup(*result))
         if len(result) > 1 and not self.unpack_groups:
@@ -205,7 +286,7 @@ class SVGMobject(VMobject):
         self.handle_transforms(g_element, mob)
         return mob.submobjects
 
-    def path_string_to_mobject(self, path_string):
+    def path_string_to_mobject(self, path_string, style):
         """Converts a SVG path element's ``d`` attribute to a mobject.
 
         Parameters
@@ -218,7 +299,7 @@ class SVGMobject(VMobject):
         VMobjectFromSVGPathstring
             A VMobject from the given path string, or d attribute.
         """
-        return VMobjectFromSVGPathstring(path_string)
+        return VMobjectFromSVGPathstring(path_string, **parse_style(style))
 
     def use_to_mobjects(self, use_element):
         """Converts a SVG <use> element to VMobject.
@@ -259,7 +340,7 @@ class SVGMobject(VMobject):
         )
         return float(stripped_attr)
 
-    def polygon_to_mobject(self, polygon_element):
+    def polygon_to_mobject(self, polygon_element, style):
         """Constructs a VMobject from a SVG <polygon> element.
 
         Parameters
@@ -277,11 +358,13 @@ class SVGMobject(VMobject):
         for digit in string.digits:
             path_string = path_string.replace(" " + digit, " L" + digit)
         path_string = "M" + path_string
-        return self.path_string_to_mobject(path_string)
+        if polygon_element.tagName == "polygon":
+            path_string = path_string + "Z"
+        return self.path_string_to_mobject(path_string, style)
 
     # <circle class="st1" cx="143.8" cy="268" r="22.6"/>
 
-    def circle_to_mobject(self, circle_element):
+    def circle_to_mobject(self, circle_element, style):
         """Creates a Circle VMobject from a SVG <circle> command.
 
         Parameters
@@ -302,7 +385,7 @@ class SVGMobject(VMobject):
         ]
         return Circle(radius=r).shift(x * RIGHT + y * DOWN)
 
-    def ellipse_to_mobject(self, circle_element):
+    def ellipse_to_mobject(self, circle_element, style):
         """Creates a stretched Circle VMobject from a SVG <circle> path
         command.
 
@@ -324,7 +407,7 @@ class SVGMobject(VMobject):
         ]
         return Circle().scale(rx * RIGHT + ry * UP).shift(x * RIGHT + y * DOWN)
 
-    def rect_to_mobject(self, rect_element):
+    def rect_to_mobject(self, rect_element, style):
         """Converts a SVG <rect> command to a VMobject.
 
         Parameters
@@ -338,26 +421,10 @@ class SVGMobject(VMobject):
             Creates either a Rectangle, or RoundRectangle, VMobject from a
             rect element.
         """
-        fill_color = rect_element.getAttribute("fill")
-        stroke_color = rect_element.getAttribute("stroke")
+
         stroke_width = rect_element.getAttribute("stroke-width")
         corner_radius = rect_element.getAttribute("rx")
 
-        # input preprocessing
-        if fill_color in ["", "none", "#FFF", "#FFFFFF"] or Color(fill_color) == Color(
-            WHITE
-        ):
-            opacity = 0
-            fill_color = BLACK  # shouldn't be necessary but avoids error msgs
-        if fill_color in ["#000", "#000000"]:
-            fill_color = WHITE
-        if stroke_color in ["", "none", "#FFF", "#FFFFFF"] or Color(
-            stroke_color
-        ) == Color(WHITE):
-            stroke_width = 0
-            stroke_color = BLACK
-        if stroke_color in ["#000", "#000000"]:
-            stroke_color = WHITE
         if stroke_width in ["", "none", "0"]:
             stroke_width = 0
 
@@ -371,19 +438,15 @@ class SVGMobject(VMobject):
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
                 stroke_width=stroke_width,
-                stroke_color=stroke_color,
-                fill_color=fill_color,
-                fill_opacity=opacity,
+                **parse_style(style)
             )
         else:
             mob = RoundedRectangle(
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
                 stroke_width=stroke_width,
-                stroke_color=stroke_color,
-                fill_color=fill_color,
-                fill_opacity=opacity,
                 corner_radius=corner_radius,
+                **parse_style(style)
             )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
@@ -517,6 +580,9 @@ class SVGMobject(VMobject):
             self.set_height(self.height)
         if self.width is not None:
             self.set_width(self.width)
+
+    def init_colors(self, propagate_colors=False):
+        VMobject.init_colors(self, propagate_colors=propagate_colors)
 
 
 class VMobjectFromSVGPathstring(VMobject):

@@ -39,19 +39,19 @@ class CubicAndLinetoTest(Scene):
 
 
 class RhomboidTest(Scene):
-    pytest_skip = True
-
     def construct(self):
-        # TODO: Fix behavior such that the polygon results in a closed shape, even without the closing z.
-        # TODO: Discuss whether, upon loading an SVG, whether to obey the fill and stroke properties.
-        rhomboid = SVGMobject(get_test_resource("rhomboid.svg")).shift(UP * 2)
-        rhomboid_no_fill = (
-            rhomboid.copy()
-            .set_fill(opacity=0)
-            .set_stroke(color=WHITE, width=1)
-            .shift(DOWN * 4)
-        )
-        self.add(rhomboid, rhomboid_no_fill)
+        rhomboid = SVGMobject(get_test_resource("rhomboid.svg")).scale(0.5)
+        rhomboid_fill = rhomboid.copy().set_fill(opacity=1).shift(UP * 2)
+        rhomboid_no_fill = rhomboid.copy().set_fill(opacity=0).shift(DOWN * 2)
+
+        self.add(rhomboid, rhomboid_fill, rhomboid_no_fill)
+        self.wait()
+
+
+class InheritanceTest(Scene):
+    def construct(self):
+        three_arrows = SVGMobject(get_test_resource("inheritance_test.svg")).scale(0.5)
+        self.add(three_arrows)
         self.wait()
 
 
@@ -71,9 +71,10 @@ class QuadraticPathTest(Scene):
 
 class SmoothCurvesTest(Scene):
     def construct(self):
-        smooths = SVGMobject(get_test_resource("smooth_curves.svg")).set_fill(opacity=0)
+        smooths = SVGMobject(get_test_resource("smooth_curves.svg"))
         self.add(smooths)
         self.wait()
+
 
 """
 class WatchTheDecimals(Scene):
@@ -98,31 +99,24 @@ class WeightSVGTest(Scene):
 
 
 class BrachistochroneCurveTest(Scene):
-    pytest_skip = True
-
     def construct(self):
-        # TODO: The stroke option of the path has an RGB color specified.
-        # TODO: The rect's fill="none" attribute should be obeyed.
-        # TODO: The path's fill is unstated, and should not be obeyed.
-        brach_curve = SVGMobject(get_test_resource("curve.svg")).set_fill(opacity=0)
+        brach_curve = SVGMobject(get_test_resource("curve.svg"))
         self.add(brach_curve)
         self.wait()
 
 
 class DesmosGraph1Test(Scene):
-    pytest_skip = True
-
     def construct(self):
-        # TODO: fill and stroke attributes of the rectangle and paths.
-        dgraph = SVGMobject(get_test_resource("desmos-graph_1.svg")).set_fill(opacity=0)
+        dgraph = SVGMobject(get_test_resource("desmos-graph_1.svg")).scale(3)
         self.add(dgraph)
         self.wait()
 
 
 class LogoTest(Scene):
     def construct(self):
+        background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(2)
         logo = SVGMobject(get_test_resource("logo.svg"))
-        self.add(logo)
+        self.add(background_rect, logo)
         self.wait()
 
 
@@ -135,7 +129,7 @@ class SingleUSStateTest(Scene):
 
 class ContiguousUSMapTest(Scene):
     def construct(self):
-        states = SVGMobject(get_test_resource("states_map.svg")).set_fill(opacity=0).scale(3)
+        states = SVGMobject(get_test_resource("states_map.svg")).scale(3)
         self.add(states)
         self.wait()
 
@@ -143,26 +137,24 @@ class ContiguousUSMapTest(Scene):
 class PeriodicTableTest(Scene):
     pytest_skip = True
 
-    # TODO: I'm sure there will be issues of fill and stroke.
-    # color is in the style attribute of the parent element (g)
+    # TODO: fill and stroke have been (mostly) resolved, now there are issues
+    #  that we don't render text.
     def construct(self):
+        background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(4)
         ptable = SVGMobject(get_test_resource("Periodic_table_1.svg")).scale(3)
-        self.add(ptable)
+        self.add(background_rect, ptable)
         self.wait()
 
 
 class PixelizedTextTest(Scene):
-    pytest_skip = True
-
-    # TODO: Obey the fill and fill-opacity attributes
     def construct(self):
-        rgb_svg = SVGMobject(get_test_resource("test.svg"))
-        self.add(rgb_svg)
+        background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(2)
+        rgb_svg = SVGMobject(get_test_resource("pixelated_text.svg"))
+        self.add(background_rect, rgb_svg)
         self.wait()
 
 
 class VideoIconTest(Scene):
-    # TODO: Obey the fill attribute, technically.
     def construct(self):
         video_icon = SVGMobject(get_test_resource("video_icon.svg"))
         self.add(video_icon)
