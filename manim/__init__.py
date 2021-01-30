@@ -3,6 +3,7 @@
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
+from .debug import *
 
 from .constants import *
 

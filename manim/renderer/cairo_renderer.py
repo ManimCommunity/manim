@@ -1,10 +1,13 @@
+from types import MappingProxyType
 import numpy as np
+
 from .. import config
 from ..utils.iterables import list_update
 from ..utils.exceptions import EndSceneEarlyException
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.caching import handle_caching_play
 from ..camera.camera import Camera
+from ..debug import debugger
 
 
 def pass_scene_reference(func):
@@ -58,10 +61,12 @@ class CairoRenderer:
         self.file_writer = None
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera_cls()
+
         self.original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
+        self.number_frame = 0
         self.time = 0
         self.static_image = None
 
@@ -70,6 +75,10 @@ class CairoRenderer:
             self,
             scene.__class__.__name__,
         )
+        # TODO Condition here
+        if True:
+            debugger.set_renderer_vars(MappingProxyType(vars(self)))
+            debugger.set_scene_vars(MappingProxyType(vars(scene)))
 
     @pass_scene_reference
     @handle_caching_play
@@ -117,10 +126,18 @@ class CairoRenderer:
 
         kwargs["include_submobjects"] = include_submobjects
         self.camera.capture_mobjects(mobjects, **kwargs)
+        self.number_frame += 1
 
     def render(self, scene, moving_mobjects):
         self.update_frame(scene, moving_mobjects)
-        self.add_frame(self.get_frame())
+        rendered_frame = self.get_frame()
+        # TODO Condition here
+        if True:
+            debugger.update()
+            debug_layout = debugger.get_layout(
+                rendered_frame.shape[1::-1],
+            )
+        self.add_frame(rendered_frame + debug_layout)
 
     def get_frame(self):
         """
