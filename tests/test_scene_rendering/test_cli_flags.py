@@ -138,7 +138,9 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     is_not_empty = any((tmp_path / "images").iterdir())
     assert is_not_empty, "running manim with -s, -r flag did not render a file"
 
-    filename = add_version_before_extension(tmp_path / "images" / "simple_scenes" / "SquareToCircle.png")
+    filename = add_version_before_extension(
+        tmp_path / "images" / "simple_scenes" / "SquareToCircle.png"
+    )
     assert np.asarray(Image.open(filename)).shape == (100, 200, 4)
 
 
