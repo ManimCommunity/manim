@@ -294,7 +294,7 @@ class SceneFileWriter(object):
         file_path = self.image_file_path
         if not config["output_file"]:
             file_path = add_version_before_extension(file_path)
-        
+
         image.save(file_path)
         self.print_file_ready_message(file_path)
 
