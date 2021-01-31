@@ -40,6 +40,8 @@ class CubicAndLinetoTest(Scene):
 
 
 class RhomboidTest(Scene):
+    """Test the default fill and parsed stroke of a rhomboid"""
+
     def construct(self):
         rhomboid = SVGMobject(get_test_resource("rhomboid.svg")).scale(0.5)
         rhomboid_fill = rhomboid.copy().set_fill(opacity=1).shift(UP * 2)
@@ -50,6 +52,8 @@ class RhomboidTest(Scene):
 
 
 class InheritanceTest(Scene):
+    """Ensure SVG inheritance is followed"""
+
     def construct(self):
         three_arrows = SVGMobject(get_test_resource("inheritance_test.svg")).scale(0.5)
         self.add(three_arrows)
@@ -76,16 +80,6 @@ class SmoothCurvesTest(Scene):
         self.add(smooths)
         self.wait()
 
-
-"""
-class WatchTheDecimals(Scene):
-    def construct(self):
-        decimal = SVGMobject(get_test_resource("watch_the_decimals.svg"))
-        self.add(decimal)
-        self.wait()
-
-set_test_scene(WatchTheDecimals, "img_and_svg")
-"""
 
 # Second are the visual tests - these are probably too complex to verify step-by-step, so
 # these are really more of a spot-check
