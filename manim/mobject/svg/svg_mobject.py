@@ -482,22 +482,21 @@ class SVGMobject(VMobject):
         mobject : Mobject
             The Mobject to transform.
         """
-        x, y = 0, 0
-        try:
+
+        if element.hasAttribute("x") and element.hasAttribute("y"):
             x = self.attribute_to_float(element.getAttribute("x"))
             # Flip y
             y = -self.attribute_to_float(element.getAttribute("y"))
             mobject.shift(x * RIGHT + y * UP)
-        except:
-            pass
 
         transform = element.getAttribute("transform")
+        suffix = ")"
 
-        try:  # transform matrix
-            prefix = "matrix("
-            suffix = ")"
-            if not transform.startswith(prefix) or not transform.endswith(suffix):
-                raise Exception()
+        # igve me a syntax error.
+
+        # Transform matrix
+        prefix = "matrix("
+        if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix) : -len(suffix)]
             transform = string_to_numbers(transform)
             transform = np.array(transform).reshape([3, 2])
@@ -511,14 +510,10 @@ class SVGMobject(VMobject):
             for mob in mobject.family_members_with_points():
                 mob.points = np.dot(mob.points, matrix)
             mobject.shift(x * RIGHT + y * UP)
-        except:
-            pass
 
-        try:  # transform scale
-            prefix = "scale("
-            suffix = ")"
-            if not transform.startswith(prefix) or not transform.endswith(suffix):
-                raise Exception()
+        # transform scale
+        prefix = "scale("
+        if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix) : -len(suffix)]
             scale_values = string_to_numbers(transform)
             if len(scale_values) == 2:
@@ -527,20 +522,13 @@ class SVGMobject(VMobject):
             elif len(scale_values) == 1:
                 scale = scale_values[0]
                 mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
-        except:
-            pass
 
-        try:  # transform translate
-            prefix = "translate("
-            suffix = ")"
-            if not transform.startswith(prefix) or not transform.endswith(suffix):
-                raise Exception()
+        # transform translate
+        prefix = "translate("
+        if transform.startswith(prefix) and transform.endswith(suffix):
             transform = transform[len(prefix) : -len(suffix)]
             x, y = string_to_numbers(transform)
             mobject.shift(x * RIGHT + y * DOWN)
-        except:
-            pass
-        # TODO, ...
 
     def flatten(self, input_list):
         """A helper method to flatten the ``input_list`` into an 1D array."""
