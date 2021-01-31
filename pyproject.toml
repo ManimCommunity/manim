@@ -27,6 +27,7 @@ packages = [
 python = "^3.6.2"
 click = "*"
 click-default-group = "*"
+click-option-group = "*"
 colour = "*"
 numpy = "*"
 Pillow = "*"

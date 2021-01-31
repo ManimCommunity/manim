@@ -206,6 +206,21 @@ python-versions = "*"
 click = "*"
 
 [[package]]
+name = "click-option-group"
+version = "0.5.2"
+description = "Option groups missing in Click"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4"
+
+[package.dependencies]
+Click = ">=7.0,<8"
+
+[package.extras]
+docs = ["sphinx (>=2.3,<3)", "pallets-sphinx-themes", "m2r"]
+tests = ["coverage (<6)", "pytest", "pytest-cov", "coveralls"]
+
+[[package]]
 name = "colorama"
 version = "0.4.4"
 description = "Cross-platform colored terminal text."
@@ -542,7 +557,7 @@ traitlets = "*"
 
 [[package]]
 name = "jupyter-server"
-version = "1.2.2"
+version = "1.2.3"
 description = "The backend—i.e. core services, APIs, and REST endpoints—to Jupyter web applications."
 category = "main"
 optional = true
@@ -846,7 +861,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "packaging"
-version = "20.8"
+version = "20.9"
 description = "Core utilities for Python packages"
 category = "main"
 optional = false
@@ -1461,7 +1476,7 @@ webgl_renderer = ["grpcio", "grpcio-tools", "watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "7013e5d4aa5a1f0d0a2c31cb52df27f4e9d0bd0388d2b0087177fb7a3d32e77b"
+content-hash = "43992472aef47a68c59fdfa833564561545ae2a921a73c24682b9def2641f11f"
 
 [metadata.files]
 alabaster = [
@@ -1583,6 +1598,10 @@ click = [
 ]
 click-default-group = [
     {file = "click-default-group-1.2.2.tar.gz", hash = "sha256:d9560e8e8dfa44b3562fbc9425042a0fd6d21956fcc2db0077f63f34253ab904"},
+]
+click-option-group = [
+    {file = "click-option-group-0.5.2.tar.gz", hash = "sha256:743733a0f564438b6b761f49ddf37d845f9a662294ecabe0e832e597208bcf31"},
+    {file = "click_option_group-0.5.2-py3-none-any.whl", hash = "sha256:1b4b2ecf87ba8dea78060cffd294b38eea5af81f28a5f9be223c01b8c5ea9ab0"},
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
@@ -1793,8 +1812,8 @@ jupyter-core = [
     {file = "jupyter_core-4.7.0.tar.gz", hash = "sha256:aa1f9496ab3abe72da4efe0daab0cb2233997914581f9a071e07498c6add8ed3"},
 ]
 jupyter-server = [
-    {file = "jupyter_server-1.2.2-py3-none-any.whl", hash = "sha256:49fd3f9f6f4e866c2b8d7494baa2b6e6a7e44236006e443f2c04c407f7f55918"},
-    {file = "jupyter_server-1.2.2.tar.gz", hash = "sha256:26a98cd5c45b8ebd1e10215586c350a8fa3ca2971e757ee6bf517a180f9933ae"},
+    {file = "jupyter_server-1.2.3-py3-none-any.whl", hash = "sha256:e33b1e00d9981e3c1a31c7f610f75ac070f3379f97133cdf2cddabb7a2579501"},
+    {file = "jupyter_server-1.2.3.tar.gz", hash = "sha256:d8a723668725be65cc81c2bfe8a805d3e53d26dbe29953cb0fe4d8ae69d71b00"},
 ]
 jupyterlab = [
     {file = "jupyterlab-3.0.6-py3-none-any.whl", hash = "sha256:f87d3534da2b281e147cb32b9dfaf8f7208715f337db972f0048715a5177d79f"},
@@ -2031,8 +2050,8 @@ numpy = [
     {file = "numpy-1.19.5.zip", hash = "sha256:a76f502430dd98d7546e1ea2250a7360c065a5fdea52b2dffe8ae7180909b6f4"},
 ]
 packaging = [
-    {file = "packaging-20.8-py2.py3-none-any.whl", hash = "sha256:24e0da08660a87484d1602c30bb4902d74816b6985b93de36926f5bc95741858"},
-    {file = "packaging-20.8.tar.gz", hash = "sha256:78598185a7008a470d64526a8059de9aaa449238f280fc9eb6b13ba6c4109093"},
+    {file = "packaging-20.9-py2.py3-none-any.whl", hash = "sha256:67714da7f7bc052e064859c05c595155bd1ee9f69f76557e21f051443c20947a"},
+    {file = "packaging-20.9.tar.gz", hash = "sha256:5b327ac1320dc863dca72f4514ecc086f31186744b84a230374cc1fd776feae5"},
 ]
 pandocfilters = [
     {file = "pandocfilters-1.4.3.tar.gz", hash = "sha256:bc63fbb50534b4b1f8ebe1860889289e8af94a23bff7445259592df25a3906eb"},

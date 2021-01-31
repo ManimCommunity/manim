@@ -1,121 +1,143 @@
+import os
 import click
 
 from manim.constants import EPILOG
 from manim.constants import CONTEXT_SETTINGS
 
+import click
+from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
 
-@click.command(
-    context_settings={"max_content_width": 2000}.update(CONTEXT_SETTINGS),
-    help="Renders scene(s) from the input file",
+
+@click.group(
+    invoke_without_command=True,
+    context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
 @click.argument("file", required=False)
 @click.argument("scenes", required=False, nargs=-1)
-@click.option(
-    "-o",
-    "--output",
-    multiple=True,
-    help="Specify the filename(s) of the output scene(s)"
+@optgroup.group("Global options")
+@optgroup.option(
+    "--config_file", type=click.File(), help="Specify the configuration file."
 )
-@click.option(
-    "-p",
-    "--preview",
+@optgroup.option(
+    "--custom_folders",
     is_flag=True,
-    help="Automatically open the file(s) when rendered",
+    help="Use the folders defined in the [custom_folders] section of the config file to define the output folder structure.",
 )
-@click.option(
-    "-f",
-    "--show_in_file_browser",
-    is_flag=True,
-    help="Show the output file in the File Browse",
-)
-@click.option("--sound", is_flag=True, help="Play a success/failure sound")
-# @click.option("--leave_progress_bars", help="Leave progress bars displayed in terminal")
-@click.option(
-    "-a", "--write_all", is_flag=True, help="Write all the scenes from a file"
-)
-@click.option(
-    "-w",
-    "--write_to_movie",
-    is_flag=True,
-    default=True,
-    help="Render the scene as a movie file",
-)
-@click.option(
-    "-s",
-    "--save_last_frame",
-    is_flag=True,
-    help="Save only the last frame",
-)
-@click.option("-g", "--save_pngs", is_flag=True, help="Save each frame as a png")
-@click.option("-i", "--save_as_gif", is_flag=True, help="Save the video as gif")
-@click.option(
+@optgroup.option(
     "--disable_caching",
     is_flag=True,
-    help="Disable caching (will generate partial-movie-files anyway)",
+    help="Disable the use of the cache (still generates cache files).",
 )
-@click.option(
-    "--flush_cache", is_flag=True, help="Remove all cached partial-movie-files"
+@optgroup.option(
+    "--tex_template", type=click.File(), help="Specify a custom TeX template file."
 )
-@click.option("--log_to_file", is_flag=True, help="Log terminal output to file")
-@click.option("-c", "--background_color", help="Specify background color")
-@click.option("--media_dir", help="Directory to store media (including video files)")
-@click.option("--log_dir", help="Directory to store log files")
-@click.option("--tex_template", help="Specify a custom TeX template file")
-@click.option(
-    "--dry_run",
-    is_flag=True,
-    help="Do a dry run (render scenes but generate no output files)",
-)
-@click.option(
-    "-t", "--transparent", is_flag=True, help="Render a scene with an alpha channel"
-)
-@click.option(
-    "-q",
-    "--quality",
-    help="Render at specific quality, short form of the --*_quality flags",
-)
-# @click.option("--low_quality", help="Renderatlowquality")
-# @click.option("--medium_quality", help="Renderatmediumquality")
-# @click.option("--high_quality", help="Renderathighquality")
-# @click.option("--production_quality", help="Renderatdefaultproductionquality")
-# @click.option("--fourk_quality", help="Renderat4Kquality")
-# @click.option("-l", help="DEPRECATED:USE-qlor--qualityl")
-# @click.option("-m", help="DEPRECATED:USE-qmor--qualitym")
-# @click.option("-e", help="DEPRECATED:USE-qhor--qualityh")
-# @click.option("-k", help="DEPRECATED:USE-qkor--qualityk")
-@click.option(
-    "-r",
-    "--resolution",
-    help="Resolution, passed as 'height,width'. Overrides the -l, -m, -e, and -k flags, if present",
-)
-@click.option(
-    "-n",
-    "--from_animation_number",
-    help="Start rendering at the specified animation index, instead of the first animation. If you pass in two comma separated values, e.g. '3,6', it will end the rendering at the second value ",
-)
-@click.option(
-    "--use_js_renderer",
-    is_flag=True,
-    help="Render animations using the javascript frontend",
-)
-@click.option("--js_renderer_path", help="Path to the javascript frontend")
-@click.option("--config_file", help="Specify the configuration file")
-@click.option(
-    "--custom_folders",
-    help="Use the folders defined in the [custom_folders] section of the config file to define the output folder structure",
-)
-@click.option(
+@optgroup.option(
     "-v",
     "--verbose",
     count=True,
     show_default=True,
     help="""
-    Verbosity counter (-vv...). Changes ffmpeg log level unless 5+\n
+    Verbosity counter (-vv...). Changes ffmpeg log level unless 5+.
+   
     {0:NONE,1:DEBUG,2:INFO,3:WARNING,4:ERROR,5+:CRITICAL}
     """,
 )
-@click.option(
+@optgroup.group("Output options")
+@optgroup.option(
+    "-o",
+    "--output",
+    multiple=True,
+    help="Specify the filename(s) of the rendered scene(s).",
+)
+@optgroup.option(
+    "--media_dir", type=click.Path(), help="Path to store rendered videos and latex."
+)
+@optgroup.option("--log_dir", type=click.Path(), help="Path to store render logs.")
+@optgroup.option(
+    "--log_to_file",
+    default=True,
+    show_default=True,
+    is_flag=True,
+    help="Log terminal output to file",
+)
+@optgroup.group("Rendering Options")
+@optgroup.option(
+    "-n",
+    "--from_animation_number",
+    nargs=2,
+    type=int,
+    help="Start rendering from n_0 until n_1. If n_1 is left unspecified, renders all scenes after n_0.",
+)
+@optgroup.option(
+    "-f",
+    "--format",
+    default="mp4",
+    type=click.Choice(
+        [
+            "png",
+            "gif",
+            "mp4",
+        ],
+        case_sensitive=False,
+    ),
+)
+@optgroup.option(
+    "-q",
+    "--quality",
+    default="p",
+    type=click.Choice(
+        [
+            "l",
+            "m",
+            "h",
+            "p",
+            "k",
+        ],
+        case_sensitive=False,
+    ),
+    help="""
+    Render quality at the follow resolution framerates, respectively:
+    854x480 30FPS, 
+    1280x720 30FPS,
+    1920x1080 60FPS,
+    2560x1440 60FPS,
+    3840x2160 60FPS
+    """,
+)
+@optgroup.option(
+    "-r",
+    "--resolution",
+    nargs=2,
+    type=int,
+    help="Resolution in (W,H) for when 16:9 aspect ratio isn't possible.",
+)
+@optgroup.option(
+    "--fps",
+    default=30,
+    show_default=True,
+    type=float,
+    help="Render at this frame rate.",
+)
+@optgroup.option(
+    "--webgl_renderer",
+    show_default=True,
+    default=os.getcwd(),
+    type=click.Path(),
+    help="Render scenes using the WebGL frontend. Requires a path to the WebGL frontend."
+)
+@optgroup.option(
+    "-t", "--transparent", is_flag=True, help="Render scenes with alpha channel."
+)
+@optgroup.option(
+    "-c",
+    "--background_color",
+    show_default=True,
+    default="000000",
+    help="Render scenes with background color.",
+)
+@optgroup.group("Ease of access options")
+@optgroup.option(
     "--progress_bar",
     default="display",
     show_default=True,
@@ -123,71 +145,90 @@ from manim.constants import CONTEXT_SETTINGS
         [
             "display",
             "leave",
+            "none",
         ],
         case_sensitive=False,
     ),
-    help="Display progress bars, and/or keep them displayed",
+    help="Display progress bars and/or keep them displayed.",
 )
+@optgroup.option(
+    "-p",
+    "--preview",
+    is_flag=True,
+    help="Preview the rendered file(s) in default player.",
+)
+@optgroup.option(
+    "-f",
+    "--show_in_file_browser",
+    is_flag=True,
+    help="Show the output file in the file browser.",
+)
+@optgroup.option("--sound", is_flag=True, help="Play a success/failure sound.")
+@click.pass_context
 def render(
+    ctx,
     file,
     scenes,
+    config_file,
+    custom_folders,
+    disable_caching,
+    tex_template,
+    verbose,
     output,
+    media_dir,
+    log_dir,
+    log_to_file,
+    from_animation_number,
+    format,
+    quality,
+    resolution,
+    fps,
+    webgl_renderer,
+    transparent,
+    background_color,
+    progress_bar,
     preview,
     show_in_file_browser,
     sound,
-    write_all,
-    write_to_movie,
-    save_last_frame,
-    save_pngs,
-    save_as_gif,
-    disable_caching,
-    flush_cache,
-    log_to_file,
-    background_color,
-    media_dir,
-    log_dir,
-    tex_template,
-    dry_run,
-    transparent,
-    quality,
-    resolution,
-    from_animation_number,
-    use_js_renderer,
-    js_renderer_path,
-    config_file,
-    custom_folders,
-    verbose,
-    progress_bar,
 ):
+    """Render SCENE(S) from the input FILE.
+
+    FILE is the file path of the script.
+
+    SCENES is an optional list of scenes in the file.
+    """
     click.echo("render")
     print(
+        ctx,
         file,
         scenes,
+        config_file,
+        custom_folders,
+        disable_caching,
+        tex_template,
+        verbose,
         output,
+        media_dir,
+        log_dir,
+        log_to_file,
+        from_animation_number,
+        format,
+        quality,
+        resolution,
+        fps,
+        webgl_renderer,
+        transparent,
+        background_color,
+        progress_bar,
         preview,
         show_in_file_browser,
         sound,
-        write_all,
-        write_to_movie,
-        save_last_frame,
-        save_pngs,
-        save_as_gif,
-        disable_caching,
-        flush_cache,
-        log_to_file,
-        background_color,
-        media_dir,
-        log_dir,
-        tex_template,
-        dry_run,
-        transparent,
-        quality,
-        resolution,
-        from_animation_number,
-        use_js_renderer,
-        js_renderer_path,
-        config_file,
-        custom_folders,
-        verbose,
-        progress_bar,
+        sep="\n",
     )
+
+
+@render.command(
+    context_settings=CONTEXT_SETTINGS, help="Remove cached partial movie files."
+)
+def clear():
+    click.echo("clearing cache")
