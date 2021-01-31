@@ -9,9 +9,6 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 from ..helpers.graphical_units import set_test_scene
 
-# To update the reference object after a visual inspection, use this line:
-# set_test_scene(NameOfTestScene, "img_and_svg")
-
 
 def get_test_resource(filename):
     return str(
