@@ -143,18 +143,6 @@ class ContiguousUSMapTest(Scene):
         self.wait()
 
 
-class PeriodicTableTest(Scene):
-    pytest_skip = True
-
-    # TODO: fill and stroke have been (mostly) resolved, now there are issues
-    #  that we don't render text.
-    def construct(self):
-        background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(4)
-        ptable = SVGMobject(get_test_resource("Periodic_table_1.svg")).scale(3)
-        self.add(background_rect, ptable)
-        self.wait()
-
-
 class PixelizedTextTest(Scene):
     def construct(self):
         background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(2)
