@@ -208,7 +208,9 @@ class ManimDirective(Directive):
         config.media_dir = Path(setup.confdir) / "media"
         config.images_dir = "{media_dir}/images"
         config.video_dir = "{media_dir}/videos/{quality}"
-        output_file = add_version_before_extension(f"{clsname}-{classnamedict[clsname]}")
+        output_file = add_version_before_extension(
+            f"{clsname}-{classnamedict[clsname]}"
+        )
         config.assets_dir = Path("_static")
 
         config_code = [
