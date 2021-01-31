@@ -6,6 +6,13 @@ from ._config import *
 
 from .constants import *
 
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
+
+__version__ = importlib_metadata.version(__name__)
+
 from .container import *
 
 from .animation.animation import *
@@ -96,10 +103,3 @@ else:
         ipy.register_magics(ManimMagic)
 
 from .plugins import *
-
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
-
-__version__ = importlib_metadata.version(__name__)

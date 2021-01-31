@@ -15,12 +15,20 @@ import time
 import subprocess as sp
 from pathlib import Path
 
+from manim import __version__
+
 
 def add_extension_if_not_present(file_name, extension):
     if file_name.suffix != extension:
         return file_name.with_suffix(extension)
     else:
         return file_name
+
+
+def add_version_before_extension(file_name):
+    index = str(file_name).index(Path(file_name).suffix)
+    file_name = str(file_name)
+    return Path(f"{file_name[:index]} - ManimCE v{__version__}{file_name[index:]}")
 
 
 def guarantee_existence(path):

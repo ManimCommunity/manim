@@ -13,10 +13,11 @@ import datetime
 from PIL import Image
 from pathlib import Path
 
+from manim import __version__
 from .. import config, logger
 from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
 from ..utils.file_ops import guarantee_existence
-from ..utils.file_ops import add_extension_if_not_present
+from ..utils.file_ops import add_extension_if_not_present, add_version_before_extension
 from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
 
@@ -77,8 +78,10 @@ class SceneFileWriter(object):
                 image_dir = guarantee_existence(
                     config.get_dir("images_dir", module_name=module_name)
                 )
-            self.image_file_path = os.path.join(
-                image_dir, add_extension_if_not_present(default_name, ".png")
+            self.image_file_path = Path(
+                os.path.join(
+                    image_dir, add_extension_if_not_present(default_name, ".png")
+                )
             )
 
         if config["write_to_movie"]:
@@ -290,7 +293,7 @@ class SceneFileWriter(object):
         image : np.array
             The pixel array of the image to save.
         """
-        file_path = self.image_file_path
+        file_path = add_version_before_extension(self.image_file_path)
         image.save(file_path)
         self.print_file_ready_message(file_path)
 
@@ -359,6 +362,8 @@ class SceneFileWriter(object):
             "-an",  # Tells FFMPEG not to expect any audio
             "-loglevel",
             config["ffmpeg_loglevel"].lower(),
+            "-metadata",
+            f"comment=Rendered with Manim Community Edition v{__version__}",
         ]
         if config["transparent"]:
             command += ["-vcodec", "qtrle"]
@@ -445,12 +450,16 @@ class SceneFileWriter(object):
             file_list,
             "-loglevel",
             config["ffmpeg_loglevel"].lower(),
+            "-metadata",
+            f"comment=Rendered with Manim Community Edition v{__version__}",
         ]
 
         if config["write_to_movie"] and not config["save_as_gif"]:
+            movie_file_path = add_version_before_extension(movie_file_path)
             commands += ["-c", "copy", movie_file_path]
 
         if config["save_as_gif"]:
+            self.gif_file_path = add_version_before_extension(self.gif_file_path)
             commands += [self.gif_file_path]
 
         if not self.includes_sound:
@@ -491,6 +500,8 @@ class SceneFileWriter(object):
                 "1:a:0",
                 "-loglevel",
                 config["ffmpeg_loglevel"].lower(),
+                "-metadata",
+                f"comment=Rendered with Manim Community Edition v{__version__}",
                 # "-shortest",
                 temp_file_path,
             ]
