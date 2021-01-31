@@ -291,11 +291,10 @@ class SceneFileWriter(object):
         image : np.array
             The pixel array of the image to save.
         """
-        file_path = (
-            self.image_file_path
-            if config["output_file"]
-            else add_version_before_extension(self.image_file_path)
-        )
+        file_path = self.image_file_path
+        if not config["output_file"]:
+            file_path = add_version_before_extension(file_path)
+        
         image.save(file_path)
         self.print_file_ready_message(file_path)
 
