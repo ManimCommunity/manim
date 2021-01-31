@@ -119,13 +119,6 @@ class GraphicalUnitTester:
     def test(self, show_diff=False):
         """Compare pre-rendered frame to the frame rendered during the test."""
 
-        # If the class has the pytest_skip attribute, mark this test as skipped.
-        try:
-            if self.scene.pytest_skip:
-                return pytest.skip("Scene flagged with skipped test.")
-        except AttributeError:
-            pass
-
         frame_data = self.scene.renderer.get_frame()
         expected_frame_data = self._load_data()
 
