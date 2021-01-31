@@ -46,7 +46,7 @@ New Features
 Bugfixes and Enhancements
 =========================
 
-- :pr:`961`: added typings and docs for vectorized mobjects and bezier related functions
+- :pr:`961`: Added typings and docs for vectorized mobjects and bezier related functions
 - :pr:`977`: JupyterLab docker image and documentation for manim and IPython
 - :pr:`985`: Fix variable name for webgl renderer
 - :pr:`954`: Fix edges lagging behind vertices in animations of graphs
@@ -76,7 +76,7 @@ Bugfixes and Enhancements
 - :pr:`929`: Raise an error if a :class:`~.Matrix` object is created with < 2-dimensional input
 - :pr:`907`: Make Scene.add_sound work again (when running with ``--disable_caching``)
 - :pr:`906`: Allow new-style method animation to be used in animation groups
-- :pr:`908`: removed deprecated command line arguments from documentation
+- :pr:`908`: Removed deprecated command line arguments from documentation
 - :pr:`903`: Tiny grammar improvements
 - :pr:`904`: Added blank line between imports and class example
 - :pr:`898`: CI: fix publish workflow
