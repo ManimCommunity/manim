@@ -200,7 +200,10 @@ class VMobject(Mobject):
         if width is not None:
             setattr(self, width_name, width)
         if opacity is not None:
-            self.stroke_opacity = opacity
+            if background:
+                self.background_stroke_opacity = opacity
+            else:
+                self.stroke_opacity = opacity
         return self
 
     def set_background_stroke(self, **kwargs):
