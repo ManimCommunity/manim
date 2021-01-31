@@ -81,7 +81,7 @@ from typing import List
 import shutil
 
 from manim import QUALITIES
-from manim.file_ops import add_version_before_extension
+from manim.utils.file_ops import add_version_before_extension
 
 classnamedict = {}
 

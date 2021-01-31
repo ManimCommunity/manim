@@ -374,7 +374,7 @@ A list of all CLI flags
    print(result.stdout.decode('utf-8'))
 
 .. testoutput::
-   :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
+   :options: +ELLIPSIS, +NORMALIZE_WHITESPACE
    Manim Community Edition v...
    usage: manim file [flags] [scene [scene ...]]
           manim {cfg,init,plugins} [opts]
