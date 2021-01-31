@@ -30,9 +30,17 @@ def string_to_numbers(num_string):
 
 
 def cascade_element_style(element, inherited):
+    """Collect the element's style attributes based upon both its inheritance and its own attributes.
+
+    SVG uses cascading element styles. A closer ancestor's style takes precedence over a more distant ancestor's
+    style. In order to correctly calculate the styles, the attributes must be passed down through the inheritance tree,
+    updating where necessary.
+
+    Note that this method only copies, see :meth:`parse_color_string` for converting from SVG
+    attributes to manim keyword arguments."""
+
     style = dict(inherited)
 
-    # copy everything over, don't worry about making sense of it. that's for parse_element_style
     styling_attributes = ["fill", "stroke", "style", "fill-opacity", "stroke-opacity"]
     for attr in styling_attributes:
         entry = element.getAttribute(attr)
@@ -43,6 +51,7 @@ def cascade_element_style(element, inherited):
 
 
 def parse_color_string(color_spec):
+    """Handle the SVG-specific color strings and convert them to HTML #rrggbb format."""
 
     if color_spec[0:3] == "rgb":
         # these are only in integer form, but the Colour module wants them in floats.
@@ -61,12 +70,13 @@ def parse_color_string(color_spec):
 
 
 def parse_style(svg_style):
+    """Convert a dictionary of SVG attributes to Manim VMobject keyword arguments."""
+
     manim_style = dict()
 
     # style attributes trump other element-level attributes,
     # see https://www.w3.org/TR/SVG11/styling.html section 6.4, search "priority"
     # so overwrite the other attribute dictionary values.
-
     if "style" in svg_style:
         for style_spec in svg_style["style"].split(";"):
             key, value = style_spec.split(":")
@@ -138,7 +148,6 @@ class SVGMobject(VMobject):
     # these are the default styling specifications for SVG images,
     # according to https://www.w3.org/TR/SVG/painting.html, ctrl-F for "initial"
     # This value can be overridden in more specific classes
-    # TODO: documentation
     DEFAULT_SVG_STYLE = {
         "fill": "black",
         "fill-opacity": "1",
@@ -221,6 +230,9 @@ class SVGMobject(VMobject):
         ----------
         element : :class:`minidom.Element`
             The SVG data in the XML to be parsed.
+
+        inherited_style : `dict`
+            Dictionary of the SVG attributes for children to inherit.
 
         Returns
         -------
@@ -338,12 +350,15 @@ class SVGMobject(VMobject):
         polygon_element : minidom.Element
             An SVG polygon element.
 
+        style : dict
+            Style specification, using the SVG names for properties.
+
         Returns
         -------
         VMobjectFromSVGPathstring
             A VMobject representing the polygon.
         """
-        # TODO, This seems hacky... yes it is.
+        # This seems hacky... yes it is.
         path_string = polygon_element.getAttribute("points")
         for digit in string.digits:
             path_string = path_string.replace(" " + digit, " L" + digit)
@@ -361,6 +376,9 @@ class SVGMobject(VMobject):
         ----------
         circle_element : minidom.Element
             A SVG circle path command.
+
+        style : dict
+            Style specification, using the SVG names for properties.
 
         Returns
         -------
@@ -384,6 +402,9 @@ class SVGMobject(VMobject):
         circle_element : minidom.Element
             A SVG circle path command.
 
+        style : dict
+            Style specification, using the SVG names for properties.
+
         Returns
         -------
         Circle
@@ -395,7 +416,11 @@ class SVGMobject(VMobject):
             else 0.0
             for key in ("cx", "cy", "rx", "ry")
         ]
-        return Circle().scale(rx * RIGHT + ry * UP).shift(x * RIGHT + y * DOWN)
+        return (
+            Circle(**parse_style(style))
+            .scale(rx * RIGHT + ry * UP)
+            .shift(x * RIGHT + y * DOWN)
+        )
 
     def rect_to_mobject(self, rect_element, style):
         """Converts a SVG <rect> command to a VMobject.
@@ -404,6 +429,9 @@ class SVGMobject(VMobject):
         ----------
         rect_element : minidom.Element
             A SVG rect path command.
+
+        style : dict
+            Style specification, using the SVG names for properties.
 
         Returns
         -------
@@ -525,7 +553,16 @@ class SVGMobject(VMobject):
         return output_list
 
     def update_defs(self, defs, style):
-        """TODO: redocument."""
+        """Update the definitions other <use> tags may reference
+
+        Parameters
+        -------
+        defs : minidom.Element
+            A `defs` element from an SVG file.
+
+        style : dict
+            The `defs` element's inherited style, which will be cascaded down to every child.
+        """
 
         for child in defs.childNodes:
             if isinstance(child, minidom.Element) and child.hasAttribute("id"):
@@ -669,9 +706,22 @@ class VMobjectFromSVGPathstring(VMobject):
             return
 
     def string_to_points(self, command, is_relative, coord_string, start_point):
-        """Since the SVG file's path command is provided as a string, this
-        converts the coordinates into numbers. If the command is lower,
-        it also converts the values from values relative to values relative to the previous final point
+        """Convert an SVG command string into a sequence of absolute-positioned control points.
+
+        Parameters
+        -----
+        command : `str`
+            A string containing a single uppercase letter representing the SVG command.
+
+        is_relative : `bool`
+            Whether the command is relative to the end of the previous command
+
+        coord_string : `str`
+            A string that contains many comma- or space-separated numbers that defined the control points. Different
+            commands require different numbers of numbers as arguments.
+
+        start_point : `ndarray`
+            If the command is relative, the position to begin the relations from.
         """
 
         # this call to "string to numbers" where problems like parsing 0.5.6 lie
