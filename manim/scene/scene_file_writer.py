@@ -78,10 +78,8 @@ class SceneFileWriter(object):
                 image_dir = guarantee_existence(
                     config.get_dir("images_dir", module_name=module_name)
                 )
-            self.image_file_path = Path(
-                os.path.join(
-                    image_dir, add_extension_if_not_present(default_name, ".png")
-                )
+            self.image_file_path = os.path.join(
+                image_dir, add_extension_if_not_present(default_name, ".png")
             )
 
         if config["write_to_movie"]:
