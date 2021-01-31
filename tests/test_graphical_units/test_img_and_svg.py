@@ -121,6 +121,14 @@ class LogoTest(Scene):
         self.wait()
 
 
+class ManimLogoTest(Scene):
+    def construct(self):
+        background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(2)
+        manim_logo = SVGMobject(get_test_resource("manim-logo-sidebar.svg"))
+        self.add(background_rect, manim_logo)
+        self.wait()
+
+
 class SingleUSStateTest(Scene):
     def construct(self):
         single_state = SVGMobject(get_test_resource("single_state.svg"))

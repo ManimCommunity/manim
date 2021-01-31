@@ -373,7 +373,7 @@ class SVGMobject(VMobject):
             else 0.0
             for key in ("cx", "cy", "r")
         ]
-        return Circle(radius=r).shift(x * RIGHT + y * DOWN)
+        return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
 
     def ellipse_to_mobject(self, circle_element, style):
         """Creates a stretched Circle VMobject from a SVG <circle> path
