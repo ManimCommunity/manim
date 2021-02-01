@@ -18,7 +18,7 @@ Changes for the upcoming release are tracked `in our GitHub wiki <https://github
 
 
 ******
-v0.2.1
+v0.3.0
 ******
 
 :Date: February 1, 2021
