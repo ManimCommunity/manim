@@ -164,6 +164,8 @@ def compile_tex(tex_file, tex_compiler, output_format):
         exit_code = os.system(command)
         if exit_code != 0:
             log_file = tex_file.replace(".tex", ".log")
+            with open(log_file, 'r') as f:
+                logger.error(f.read())
             raise ValueError(
                 f"{tex_compiler} error converting to"
                 f" {output_format[1:]}. See log output above or"
