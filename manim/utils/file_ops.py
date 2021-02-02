@@ -29,6 +29,7 @@ def add_version_before_extension(file_name):
     file_name = Path(file_name)
     path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
     return Path(f"{path}\\{name}_ManimCE_v{__version__}{suffix}")
+    return Path(f"{path}/{name}_ManimCE_v{__version__}{suffix}")
 
 
 def guarantee_existence(path):
