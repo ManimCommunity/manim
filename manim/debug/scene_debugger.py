@@ -24,7 +24,14 @@ class SceneDebugger:
 
         self.debug_mobjects_attributes = {"color"}
 
-        self.debug_scene_attributes = {"num_plays", "time", "animations", "number_frame", "time", "current_animation_hash"}
+        self.debug_scene_attributes = {
+            "num_plays",
+            "time",
+            "animations",
+            "number_frame",
+            "time",
+            "current_animation_hash",
+        }
 
         self._record_spied_functions = {}
         self._force_called_spied_functions = set()
@@ -55,10 +62,16 @@ class SceneDebugger:
         self._renderer_info = renderer_vars
 
     def _get_scene_dict_info(self) -> dict:
-        # NOTE : Renderer vars ar mixed up with scene vars here. 
+        # NOTE : Renderer vars ar mixed up with scene vars here.
         # This is done on purpose, as there are attributes that the user could need (current hash, etc) but that are in renderer_vars.
         debug_dict_info = {}
-        for key, value in it.chain(self._scene_info.items(), self._renderer_info.items()):
+        if self._scene_info is None:
+            self._scene_info = {}
+        if self._renderer_info is None:
+            self._renderer_info = {}
+        for key, value in it.chain(
+            self._scene_info.items(), self._renderer_info.items()
+        ):
             if key in self.debug_scene_attributes:
                 debug_dict_info[key] = value
         return debug_dict_info
@@ -82,8 +95,6 @@ class SceneDebugger:
         return debug_dict_mobjects
 
     def _get_current_animations_dict_info(self) -> dict:
-        # NOTE the API does not provide a way to get the current animation. This is to be changed when
-        # there is a way.
         debug_dict_animations = {}
         for animation in self._scene_info["animations"]:
             if not hasattr(animation, "__dict__"):
@@ -167,7 +178,7 @@ class SceneDebugger:
             if hasattr(res, "__str__"):
                 self._record_spied_functions[
                     spied_func.__name__
-                ] = f"{res}  (fra. {self._renderer_info['number_frame']})"
+                ] = f"{res} (fra. {self._renderer_info['number_frame']})"
             else:
                 self._record_spied_functions[
                     spied_func.__name__
@@ -200,20 +211,24 @@ class SceneDebugger:
         Raises
         ------
         ValueError
-            If ``func`` is not callable.
+            If ``func`` is not callable, or if func is an inner function.
         """
+        if "locals" in func.__qualname__ and not force_call:
+            # Using force call with a nested funciton will still work, because there is no need to monkey-patch the function because it's the debugger that forces call it.
+            raise ValueError(
+                "Inner functions are not yet supported by scene-debugger. Nevertheless, you can force call inner functions."
+            )
         # Redefine the old function by a decorated one.
+        new_func = self._place_spy(func)
         if ismethod(func):
-            setattr(func.__self__, func.__name__, self._place_spy(func))
+            setattr(func.__self__, func.__name__, new_func)
         elif isfunction(func):
-            setattr(getmodule(func), "tes", self._place_spy(func))
+            setattr(getmodule(func), func.__name__, new_func)
         else:
             raise ValueError("Only functions can be spied.")
         self._record_spied_functions[func.__name__] = "Not called"
         if force_call:
-            self._force_called_spied_functions.add(
-                lambda: self._place_spy(func)(*args, **kwargs)
-            )
+            self._force_called_spied_functions.add(lambda: new_func(*args, **kwargs))
 
     def update(self):
         """Used internally to update some debug values."""
