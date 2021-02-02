@@ -24,7 +24,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.2"
 colour = "*"
 numpy = "*"
 Pillow = "*"
@@ -38,12 +38,13 @@ manimpango = "^0.1.7"
 grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
 watchdog = { version = "*", optional = true }
-networkx = "^2.5"
+jupyterlab = { version = "^3.0", optional = true }
 ipython = {version = "^7.19.0", optional = true, python = ">=3.7,<4.0"}
 pyreadline = {version = "^2.1", platform = "win32"}
 
 [tool.poetry.extras]
-js_renderer = ["grpcio","grpcio-tools","watchdog"]
+webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
+jupyterlab = ["jupyterlab"]
 livestreaming = ["ipython"]
 
 [tool.poetry.dev-dependencies]

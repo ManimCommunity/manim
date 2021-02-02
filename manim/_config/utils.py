@@ -539,7 +539,7 @@ class ManimConfig(MutableMapping):
             "png_mode",
             "movie_file_extension",
             "background_color",
-            "js_renderer_path",
+            "webgl_renderer_path",
             "streaming_dir",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
