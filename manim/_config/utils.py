@@ -626,8 +626,7 @@ class ManimConfig(MutableMapping):
             "verbosity",
             "background_color",
             "fps",
-            "webgl_renderer"
-            "use_webgl_renderer",
+            "webgl_renderer" "use_webgl_renderer",
             "webgl_updater_fps",
         ]:
             if hasattr(args, key):
@@ -690,7 +689,6 @@ class ManimConfig(MutableMapping):
         if type(rflag) == tuple and len(nflag):
             self.pixel_width = int(rflag[0])
             self.pixel_height = int(rflag[1])
-
 
         # Handle --custom_folders
         if args.custom_folders:

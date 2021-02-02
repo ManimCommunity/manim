@@ -7,19 +7,13 @@ from manim import config, logger
 
 from manim.constants import EPILOG
 from manim.constants import CONTEXT_SETTINGS
-from manim.utils.module_ops import (
-    get_module,
-    get_scene_classes_from_module,
-    get_scenes_to_render,
-    scene_classes_from_file,
-)
-from manim.plugins.plugins_flags import list_plugins
+from manim.utils.module_ops import scene_classes_from_file
 from manim.utils.file_ops import open_file as open_media_file
-from manim._config.main_utils import parse_args
 
 from pathlib import Path
 
 from click_option_group import optgroup
+
 
 def open_file_if_needed(file_writer):
     if config["verbosity"] != "DEBUG":
@@ -48,6 +42,7 @@ def open_file_if_needed(file_writer):
         sys.stdout.close()
         sys.stdout = curr_stdout
 
+
 class _AttributeHolder(object):
     """Abstract base class that provides __repr__.
 
@@ -65,12 +60,12 @@ class _AttributeHolder(object):
             arg_strings.append(repr(arg))
         for name, value in self._get_kwargs():
             if name.isidentifier():
-                arg_strings.append('%s=%r' % (name, value))
+                arg_strings.append("%s=%r" % (name, value))
             else:
                 star_args[name] = value
         if star_args:
-            arg_strings.append('**%s' % repr(star_args))
-        return '%s(%s)' % (type_name, ', '.join(arg_strings))
+            arg_strings.append("**%s" % repr(star_args))
+        return "%s(%s)" % (type_name, ", ".join(arg_strings))
 
     def _get_kwargs(self):
         return list(self.__dict__.items())
@@ -78,8 +73,8 @@ class _AttributeHolder(object):
     def _get_args(self):
         return []
 
-class ClickSpace(_AttributeHolder):
 
+class ClickSpace(_AttributeHolder):
     def __init__(self, **kwargs):
         for name in kwargs:
             setattr(self, name, kwargs[name])
@@ -107,6 +102,9 @@ class ClickSpace(_AttributeHolder):
     "--disable_caching",
     is_flag=True,
     help="Disable the use of the cache (still generates cache files).",
+)
+@optgroup.option(
+    "--flush_cache", is_flag=True, help="Remove cached partial movie files."
 )
 @optgroup.option(
     "--tex_template", type=click.File(), help="Specify a custom TeX template file."
@@ -251,6 +249,7 @@ def render(
     config_file,
     custom_folders,
     disable_caching,
+    flush_cache,
     tex_template,
     verbose,
     output,
@@ -277,7 +276,6 @@ def render(
     SCENES is an optional list of scenes in the file.
     """
 
-
     click.echo("render")
     args = {
         "ctx": ctx,
@@ -286,6 +284,7 @@ def render(
         "config_file": config_file,
         "custom_folders": custom_folders,
         "disable_caching": disable_caching,
+        "flush_cache": flush_cache,
         "tex_template": tex_template,
         "verbose": verbose,
         "output_file": output,
@@ -305,7 +304,8 @@ def render(
         "show_in_file_browser": show_in_file_browser,
         "sound": sound,
     }
-    class ClickArgs():
+
+    class ClickArgs:
         def __init__(self, args):
             for name in args:
                 setattr(self, name, args[name])
@@ -323,6 +323,7 @@ def render(
 
         def __contains__(self, key):
             return key in self.__dict__
+
     click_args = ClickArgs(args)
     config.digest_args(click_args)
 
@@ -349,10 +350,3 @@ def render(
                 open_file_if_needed(scene.renderer.file_writer)
             except Exception as e:
                 print(f"Exception {e}")
-
-
-@render.command(
-    context_settings=CONTEXT_SETTINGS, help="Remove cached partial movie files."
-)
-def clear():
-    click.echo("clearing cache")
