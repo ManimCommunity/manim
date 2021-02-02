@@ -46,6 +46,7 @@ New Features
 Bugfixes and Enhancements
 =========================
 
+- :pr:`988`: Fix Windows CI pipeline by adding missing LaTeX package
 - :pr:`961`: Added typings and docs for vectorized mobjects and bezier related functions
 - :pr:`977`: JupyterLab docker image and documentation for manim and IPython
 - :pr:`985`: Fix variable name for webgl renderer
