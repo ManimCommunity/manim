@@ -625,6 +625,8 @@ class ManimConfig(MutableMapping):
             "scene_names",
             "verbosity",
             "background_color",
+            "fps",
+            "webgl_renderer"
             "use_webgl_renderer",
             "webgl_updater_fps",
         ]:
@@ -663,7 +665,11 @@ class ManimConfig(MutableMapping):
                 start, end = nflag.split(",")
                 self.from_animation_number = int(start)
                 self.upto_animation_number = int(end)
-            else:
+            elif type(nflag) == tuple and len(nflag):
+                self.from_animation_number = int(nflag[0])
+                if len(nflag) >= 2:
+                    self.upto_animation_number = int(nflag[1])
+            elif type(nflag) != tuple:
                 self.from_animation_number = int(nflag)
 
         # Handle the quality flags
@@ -673,13 +679,18 @@ class ManimConfig(MutableMapping):
         rflag = args.resolution
         if rflag is not None:
             try:
-                h, w = rflag.split(",")
-                self.pixel_height = int(h)
-                self.pixel_width = int(w)
+                if "," in nflag:
+                    h, w = rflag.split(",")
+                    self.pixel_height = int(h)
+                    self.pixel_width = int(w)
             except ValueError:
                 raise ValueError(
                     f'invalid argument {rflag} for -r flag (must have a comma ",")'
                 )
+        if type(rflag) == tuple and len(nflag):
+            self.pixel_width = int(rflag[0])
+            self.pixel_height = int(rflag[1])
+
 
         # Handle --custom_folders
         if args.custom_folders:

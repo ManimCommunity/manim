@@ -1,23 +1,102 @@
+from inspect import Traceback
 import os
+import sys
 import click
+
+from manim import config, logger
 
 from manim.constants import EPILOG
 from manim.constants import CONTEXT_SETTINGS
+from manim.utils.module_ops import (
+    get_module,
+    get_scene_classes_from_module,
+    get_scenes_to_render,
+    scene_classes_from_file,
+)
+from manim.plugins.plugins_flags import list_plugins
+from manim.utils.file_ops import open_file as open_media_file
+from manim._config.main_utils import parse_args
 
-import click
-from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
+from pathlib import Path
+
+from click_option_group import optgroup
+
+def open_file_if_needed(file_writer):
+    if config["verbosity"] != "DEBUG":
+        curr_stdout = sys.stdout
+        sys.stdout = open(os.devnull, "w")
+
+    open_file = any([config["preview"], config["show_in_file_browser"]])
+
+    if open_file:
+        file_paths = []
+
+        if config["save_last_frame"]:
+            file_paths.append(file_writer.image_file_path)
+        if config["write_to_movie"] and not config["save_as_gif"]:
+            file_paths.append(file_writer.movie_file_path)
+        if config["save_as_gif"]:
+            file_paths.append(file_writer.gif_file_path)
+
+        for file_path in file_paths:
+            if config["show_in_file_browser"]:
+                open_media_file(file_path, True)
+            if config["preview"]:
+                open_media_file(file_path, False)
+
+    if config["verbosity"] != "DEBUG":
+        sys.stdout.close()
+        sys.stdout = curr_stdout
+
+class _AttributeHolder(object):
+    """Abstract base class that provides __repr__.
+
+    The __repr__ method returns a string in the format::
+        ClassName(attr=name, attr=name, ...)
+    The attributes are determined either by a class-level attribute,
+    '_kwarg_names', or by inspecting the instance __dict__.
+    """
+
+    def __repr__(self):
+        type_name = type(self).__name__
+        arg_strings = []
+        star_args = {}
+        for arg in self._get_args():
+            arg_strings.append(repr(arg))
+        for name, value in self._get_kwargs():
+            if name.isidentifier():
+                arg_strings.append('%s=%r' % (name, value))
+            else:
+                star_args[name] = value
+        if star_args:
+            arg_strings.append('**%s' % repr(star_args))
+        return '%s(%s)' % (type_name, ', '.join(arg_strings))
+
+    def _get_kwargs(self):
+        return list(self.__dict__.items())
+
+    def _get_args(self):
+        return []
+
+class ClickSpace(_AttributeHolder):
+
+    def __init__(self, **kwargs):
+        for name in kwargs:
+            setattr(self, name, kwargs[name])
 
 
 @click.group(
     invoke_without_command=True,
-    context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
 @click.argument("file", required=False)
 @click.argument("scenes", required=False, nargs=-1)
 @optgroup.group("Global options")
 @optgroup.option(
-    "--config_file", type=click.File(), help="Specify the configuration file."
+    "-c",
+    "--config_file",
+    type=click.File(),
+    help="Specify the configuration file to use for render settings.",
 )
 @optgroup.option(
     "--custom_folders",
@@ -61,7 +140,7 @@ from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
     is_flag=True,
     help="Log terminal output to file",
 )
-@optgroup.group("Rendering Options")
+@optgroup.group("Render Options")
 @optgroup.option(
     "-n",
     "--from_animation_number",
@@ -121,10 +200,10 @@ from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
 )
 @optgroup.option(
     "--webgl_renderer",
-    show_default=True,
-    default=os.getcwd(),
+    # show_default=f"Current directory {os.getcwd()}",
+    default=None,
     type=click.Path(),
-    help="Render scenes using the WebGL frontend. Requires a path to the WebGL frontend."
+    help="Render scenes using the WebGL frontend. Requires a path to the WebGL frontend.",
 )
 @optgroup.option(
     "-t", "--transparent", is_flag=True, help="Render scenes with alpha channel."
@@ -133,7 +212,7 @@ from click_option_group import optgroup, RequiredMutuallyExclusiveOptionGroup
     "-c",
     "--background_color",
     show_default=True,
-    default="000000",
+    default="#000000",
     help="Render scenes with background color.",
 )
 @optgroup.group("Ease of access options")
@@ -197,34 +276,79 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
+
+
     click.echo("render")
-    print(
-        ctx,
-        file,
-        scenes,
-        config_file,
-        custom_folders,
-        disable_caching,
-        tex_template,
-        verbose,
-        output,
-        media_dir,
-        log_dir,
-        log_to_file,
-        from_animation_number,
-        format,
-        quality,
-        resolution,
-        fps,
-        webgl_renderer,
-        transparent,
-        background_color,
-        progress_bar,
-        preview,
-        show_in_file_browser,
-        sound,
-        sep="\n",
-    )
+    args = {
+        "ctx": ctx,
+        "file": file,
+        "scene_names": scenes,
+        "config_file": config_file,
+        "custom_folders": custom_folders,
+        "disable_caching": disable_caching,
+        "tex_template": tex_template,
+        "verbose": verbose,
+        "output_file": output,
+        "media_dir": media_dir,
+        "log_dir": log_dir,
+        "log_to_file": log_to_file,
+        "from_animation_number": from_animation_number,
+        "format": format,
+        "quality": quality,
+        "resolution": resolution,
+        "frame_rate": fps,
+        "webgl_renderer": webgl_renderer,
+        "transparent": transparent,
+        "background_color": background_color,
+        "progress_bar": progress_bar,
+        "preview": preview,
+        "show_in_file_browser": show_in_file_browser,
+        "sound": sound,
+    }
+    class ClickArgs():
+        def __init__(self, args):
+            for name in args:
+                setattr(self, name, args[name])
+
+        def _get_kwargs(self):
+            return list(self.__dict__.items())
+
+        def _get_args(self):
+            return []
+
+        def __eq__(self, other):
+            if not isinstance(other, ClickArgs):
+                return NotImplemented
+            return vars(self) == vars(other)
+
+        def __contains__(self, key):
+            return key in self.__dict__
+    click_args = ClickArgs(args)
+    config.digest_args(click_args)
+
+    if webgl_renderer:
+        try:
+            from manim.grpc.impl import frame_server_impl
+
+            server = frame_server_impl.get(file)
+            server.start()
+            server.wait_for_termination()
+        except ModuleNotFoundError as e:
+            print("\n\n")
+            print(
+                "Dependencies for the WebGL render are missing. Run "
+                "pip install manim[webgl_renderer] to install them."
+            )
+            print(e)
+            print("\n\n")
+    else:
+        for SceneClass in scene_classes_from_file(Path(file)):
+            try:
+                scene = SceneClass()
+                scene.render()
+                open_file_if_needed(scene.renderer.file_writer)
+            except Exception as e:
+                print(f"Exception {e}")
 
 
 @render.command(

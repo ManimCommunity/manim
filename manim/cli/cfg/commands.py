@@ -31,17 +31,15 @@ def cfg():
 )
 @click.option("-o", "--open", is_flag=True)
 def write(level, open):
-    click.echo("write")
+    cfg_subcmds.write(level, open)
 
 
 @cfg.command(context_settings=CONTEXT_SETTINGS)
 def show():
-    click.echo("show")
     cfg_subcmds.show()
 
 
 @cfg.command(context_settings=CONTEXT_SETTINGS)
 @click.option("-d", "--dir", default=os.getcwd())
 def export(dir):
-    click.echo("export")
     cfg_subcmds.export(dir)

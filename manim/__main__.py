@@ -17,7 +17,6 @@ from manim.utils.module_ops import (
     get_scenes_to_render,
     scene_classes_from_file,
 )
-from manim._config import cfg_subcmds
 from manim.plugins.plugins_flags import list_plugins
 from manim.utils.file_ops import open_file as open_media_file
 from manim._config.main_utils import parse_args
@@ -53,7 +52,7 @@ def open_file_if_needed(file_writer):
 
 def main():
     args = parse_args(sys.argv)
-
+    print("ARGS:", type(args),args, sep="\n")
     if hasattr(args, "cmd"):
         if args.cmd == "cfg":
             if args.subcmd:
@@ -80,7 +79,9 @@ def main():
         #     something_else_here()
 
     else:
+        print("config",config)
         config.digest_args(args)
+        print("config",config)
         input_file = config.get_dir("input_file")
         if config["use_webgl_renderer"]:
             try:
@@ -121,8 +122,7 @@ def main():
 @click.pass_context
 def cli(ctx):
     """The entry point for manim."""
-    click.echo("cli")
-    print("main", ctx)
+    pass
 
 
 cli.add_command(cfg)
