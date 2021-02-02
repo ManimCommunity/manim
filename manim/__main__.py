@@ -52,7 +52,6 @@ def open_file_if_needed(file_writer):
 
 def main():
     args = parse_args(sys.argv)
-    print("ARGS:", type(args),args, sep="\n")
     if hasattr(args, "cmd"):
         if args.cmd == "cfg":
             if args.subcmd:
@@ -79,9 +78,7 @@ def main():
         #     something_else_here()
 
     else:
-        print("config",config)
         config.digest_args(args)
-        print("config",config)
         input_file = config.get_dir("input_file")
         if config["use_webgl_renderer"]:
             try:
