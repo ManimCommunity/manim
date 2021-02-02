@@ -12,7 +12,7 @@ from ._config.logger_utils import disable_logging
 from .scene.streaming_scene import get_streamer, play_scene
 
 
-__all__ = ["livestream", "stream", "open_client"]
+__all__ = ["livestream", "stream"]
 
 
 streaming_client = config.streaming_config["streaming_client"]
@@ -108,21 +108,6 @@ def livestream(use_ipython=False):
     .. seealso::
         :func:`~.stream`
     """
-    if use_ipython:
-        from . import stream_ipython
-
-        os.system(f'ipython -i "{stream_ipython.__file__}"')
-        return
-    variables = {
-        "manim": get_streamer(),
-        "get_streamer": get_streamer,
-        "play_scene": play_scene,
-        "open_client": open_client,
-    }
-    readline.set_completer(rlcompleter.Completer(variables).complete)
-    readline.parse_and_bind("tab: complete")
-    shell = code.InteractiveConsole(variables)
-    shell.push("from manim import *")
 
     logger.debug("Ensuring sdp file exists: Running Wait() animation")
     _guarantee_sdp_file()
@@ -132,6 +117,26 @@ def livestream(use_ipython=False):
     logger.debug("Triggering streaming client window: Running Wait() animation")
     _popup_window()
 
+    variables = {
+        "manim": get_streamer(),
+        "get_streamer": get_streamer,
+        "play_scene": play_scene,
+        "open_client": open_client,
+    }
+
+    if use_ipython:
+        from IPython import start_ipython
+        import manim
+
+        print(f"{Fore.GREEN}{info}{Style.RESET_ALL}")
+        variables.update(vars(manim).copy())
+        start_ipython(argv=[], user_ns=variables)
+        return
+
+    readline.set_completer(rlcompleter.Completer(variables).complete)
+    readline.parse_and_bind("tab: complete")
+    shell = code.InteractiveConsole(variables)
+    shell.push("from manim import *")
     shell.interact(banner=f"{Fore.GREEN}{info}{Style.RESET_ALL}")
 
 
