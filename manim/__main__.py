@@ -42,7 +42,7 @@ def open_file_if_needed(file_writer):
 
 
 def main():
-    console.print(f"Manim Community Edition [green]v{__version__}[/green]")
+    console.print(f"Manim Community [green]v{__version__}[/green]")
     args = parse_args(sys.argv)
 
     if hasattr(args, "cmd"):

@@ -375,7 +375,7 @@ A list of all CLI flags
 
 .. testoutput::
    :options: +ELLIPSIS, +NORMALIZE_WHITESPACE
-   Manim Community Edition v...
+   Manim Community v...
    usage: manim file [flags] [scene [scene ...]]
           manim {cfg,init,plugins} [opts]
 
