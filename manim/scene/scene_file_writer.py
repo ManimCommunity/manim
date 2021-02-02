@@ -364,7 +364,7 @@ class SceneFileWriter(object):
             "-loglevel",
             config["ffmpeg_loglevel"].lower(),
             "-metadata",
-            f"comment=Rendered with Manim Community Edition v{__version__}",
+            f"comment=Rendered with Manim Community v{__version__}",
         ]
         if config["transparent"]:
             command += ["-vcodec", "qtrle"]
@@ -452,7 +452,7 @@ class SceneFileWriter(object):
             "-loglevel",
             config["ffmpeg_loglevel"].lower(),
             "-metadata",
-            f"comment=Rendered with Manim Community Edition v{__version__}",
+            f"comment=Rendered with Manim Community v{__version__}",
         ]
 
         if config["write_to_movie"] and not config["save_as_gif"]:
@@ -506,7 +506,7 @@ class SceneFileWriter(object):
                 "-loglevel",
                 config["ffmpeg_loglevel"].lower(),
                 "-metadata",
-                f"comment=Rendered with Manim Community Edition v{__version__}",
+                f"comment=Rendered with Manim Community v{__version__}",
                 # "-shortest",
                 temp_file_path,
             ]
