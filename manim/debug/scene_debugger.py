@@ -1,6 +1,7 @@
+import itertools as it
 import typing
 from functools import wraps
-from inspect import isfunction, ismethod, getmodule
+from inspect import getmodule, isfunction, ismethod
 from types import MappingProxyType
 
 import numpy as np
@@ -18,11 +19,12 @@ class SceneDebugger:
         self._scene_info = None
         self._renderer_info = None
 
+        # Default values. they can be modified through self.debug_<>_attribues.add(element)/remove(element) etc
         self.debug_animation_attributes = {"run_time", "lag_ratio"}
 
         self.debug_mobjects_attributes = {"color"}
 
-        self.debug_scene_attributes = {"num_plays", "time"}
+        self.debug_scene_attributes = {"num_plays", "time", "animations", "number_frame", "time", "current_animation_hash"}
 
         self._record_spied_functions = {}
         self._force_called_spied_functions = set()
@@ -53,42 +55,40 @@ class SceneDebugger:
         self._renderer_info = renderer_vars
 
     def _get_scene_dict_info(self) -> dict:
+        # NOTE : Renderer vars ar mixed up with scene vars here. 
+        # This is done on purpose, as there are attributes that the user could need (current hash, etc) but that are in renderer_vars.
         debug_dict_info = {}
-        # NOTE : There is no way provided by the API to get the current animation.
-        debug_dict_info["Played Animations"] = self._scene_info["animations"]
-        debug_dict_info["time"] = self._renderer_info["time"]
-        debug_dict_info["frame"] = self._renderer_info["number_frame"]
-        # NOTE : There is no way provided by the API to get the current animation hash.
-        debug_dict_info["Cur. Animation hash"] = self._renderer_info[
-            "animations_hashes"
-        ][self._renderer_info["num_plays"]]
-
-        for key, value in self._scene_info.items():
+        for key, value in it.chain(self._scene_info.items(), self._renderer_info.items()):
             if key in self.debug_scene_attributes:
                 debug_dict_info[key] = value
         return debug_dict_info
 
     def _get_mobjects_dict_info(self) -> dict:
         mobjects = set(self._scene_info.get("mobjects"))
-        if mobjects is None:
+        if mobjects is None or len(mobjects) == 0:
             return None
         debug_dict_mobjects = {}
         for mobject in mobjects:
             temp_mobject_info = {}
-
+            # If the mobject can't be vars. (this shouldn't in theory happen)
+            if not hasattr(mobject, "__dict__"):
+                debug_dict_mobjects[str(mobject)] = "Not displayable"
+                continue
             for k, v in vars(mobject).items():
-                # TODO here, put user choice to what to display.
                 if k in self.debug_mobjects_attributes:
                     temp_mobject_info[k] = v
 
             debug_dict_mobjects[str(mobject)] = temp_mobject_info
         return debug_dict_mobjects
 
-    def _get_current_animation_dict_info(self) -> dict:
+    def _get_current_animations_dict_info(self) -> dict:
         # NOTE the API does not provide a way to get the current animation. This is to be changed when
         # there is a way.
         debug_dict_animations = {}
         for animation in self._scene_info["animations"]:
+            if not hasattr(animation, "__dict__"):
+                debug_dict_animations[str(animation)] = "Not displayable"
+                continue
             debug_dict_animations[str(animation)] = {}
             for key, value in vars(animation).items():
                 if key in self.debug_animation_attributes:
@@ -125,7 +125,7 @@ class SceneDebugger:
         self._draw_debug_box(
             draw_layer,
             "CURRENT ANIMATIONS ATTR.",
-            self._get_current_animation_dict_info(),
+            self._get_current_animations_dict_info(),
             position,
         )
 

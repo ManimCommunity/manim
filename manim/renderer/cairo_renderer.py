@@ -65,6 +65,7 @@ class CairoRenderer:
         self.original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animations_hashes = []
+        self.current_animation_hash = None
         self.num_plays = 0
         self.number_frame = 0
         self.time = 0

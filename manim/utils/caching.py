@@ -43,6 +43,7 @@ def handle_caching_play(func):
                 self.skip_animations = True
         else:
             hash_play = f"uncached_{self.num_plays:05}"
+        self.current_animation_hash = hash_play
         self.animations_hashes.append(hash_play)
         self.file_writer.add_partial_movie_file(hash_play)
         logger.debug(
