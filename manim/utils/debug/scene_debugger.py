@@ -8,8 +8,8 @@ import numpy as np
 from manim.mobject.mobject import Mobject
 from PIL import Image, ImageDraw, ImageFont
 
-from .. import logger
-from ..constants import DOWN, LEFT, RIGHT, UP
+from ... import logger
+from ...constants import DOWN, LEFT, RIGHT, UP
 
 __all__ = ["SceneDebugger"]
 

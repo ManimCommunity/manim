@@ -2,7 +2,7 @@ from types import MappingProxyType
 
 import pytest
 from manim.animation.animation import Animation
-from manim.debug.scene_debugger import SceneDebugger
+from manim.utils.debug.scene_debugger import SceneDebugger
 from manim.mobject.geometry import Square
 
 s = Square()

@@ -7,7 +7,7 @@ from ..utils.exceptions import EndSceneEarlyException
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.caching import handle_caching_play
 from ..camera.camera import Camera
-from ..debug import debugger
+from ..utils.debug import debugger
 
 
 def pass_scene_reference(func):
