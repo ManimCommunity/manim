@@ -37,7 +37,7 @@ def set_test_scene(scene_object, module_name):
         os.makedirs(os.path.join(tmpdir, "tex"))
         config["text_dir"] = os.path.join(tmpdir, "text")
         config["tex_dir"] = os.path.join(tmpdir, "tex")
-        scene = scene_object(skip_animations=True)
+        scene = scene_object(skip_animations=False)
         scene.render()
         data = scene.renderer.get_frame()
 
