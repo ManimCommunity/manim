@@ -271,6 +271,7 @@ class Mobject(Container):
 
             >>> mob = Mobject()
             >>> mob.set(foo=0)
+            Mobject
             >>> mob.foo
             0
         """
