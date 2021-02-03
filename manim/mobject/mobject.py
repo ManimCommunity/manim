@@ -10,6 +10,7 @@ import itertools as it
 import operator as op
 import random
 import sys
+import types
 
 from pathlib import Path
 from colour import Color
@@ -247,6 +248,70 @@ class Mobject(Container):
 
     def __isub__(self, other):
         raise NotImplementedError
+
+    def set(self, **kwargs):
+        """Sets attributes.
+
+        Mainly to be used along with :attr:`animate` to
+        animate setting attributes.
+
+        Parameters
+        ----------
+        **kwargs
+            The attributes and corresponding values to set.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> mob = Mobject()
+            >>> mob.set(foo=0)
+            >>> mob.foo
+            0
+        """
+
+        for attr, value in kwargs.items():
+            setattr(self, attr, value)
+
+        return self
+
+    def __getattr__(self, attr):
+        # Add automatic compatibility layer
+        # between properties and get_* and set_*
+        # methods.
+        #
+        # In python 3.9+ we could change this
+        # logic to use str.remove_prefix instead.
+
+        if attr.startswith("get_"):
+            # Remove the "get_" prefix
+            to_get = attr[4:]
+
+            def getter(self):
+                return getattr(self, to_get)
+
+            # Return a bound method
+            return types.MethodType(getter, self)
+
+        if attr.startswith("set_"):
+            # Remove the "set_" prefix
+            to_set = attr[4:]
+
+            def setter(self, value):
+                setattr(self, to_set, value)
+
+                return self
+
+            # Return a bound method
+            return types.MethodType(setter, self)
+
+        # Unhandled attribute, therefore error
+        raise AttributeError
 
     def get_array_attrs(self):
         return ["points"]
