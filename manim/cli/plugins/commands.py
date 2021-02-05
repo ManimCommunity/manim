@@ -13,7 +13,7 @@ from manim.plugins.plugins_flags import list_plugins
     help="Manages Manim plugins.",
 )
 @click.option("-l", "--list", is_flag=True, help="List available plugins")
-def plugin(list):
+def plugins(list):
     click.echo("plugin")
     if list:
         list_plugins()

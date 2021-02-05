@@ -276,7 +276,6 @@ def render(
     SCENES is an optional list of scenes in the file.
     """
 
-    click.echo("render")
     args = {
         "ctx": ctx,
         "file": file,
@@ -307,21 +306,22 @@ def render(
 
     class ClickArgs:
         def __init__(self, args):
+            print("INIT")
             for name in args:
                 setattr(self, name, args[name])
 
         def _get_kwargs(self):
+            print("GET KWARGS")
             return list(self.__dict__.items())
 
-        def _get_args(self):
-            return []
-
         def __eq__(self, other):
+            print("EQQQQQQQQQQQQQ")
             if not isinstance(other, ClickArgs):
                 return NotImplemented
             return vars(self) == vars(other)
 
         def __contains__(self, key):
+            print("CONTAINSSSS")
             return key in self.__dict__
 
     click_args = ClickArgs(args)
