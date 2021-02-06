@@ -132,14 +132,7 @@ class CairoRenderer:
     def render(self, scene, moving_mobjects):
         self.update_frame(scene, moving_mobjects)
         rendered_frame = self.get_frame()
-        if config["debug"]:
-            debugger.update()
-            debug_layout = debugger.get_layout(
-                rendered_frame.shape[1::-1],
-            )
-            self.add_frame(rendered_frame + debug_layout)
-        else:
-            self.add_frame(rendered_frame)
+        self.add_frame(rendered_frame)
 
     def get_frame(self):
         """
@@ -169,7 +162,14 @@ class CairoRenderer:
         if self.skip_animations:
             return
         for _ in range(num_frames):
-            self.file_writer.write_frame(frame)
+            if config["debug"]:
+                debugger.update()
+                debug_layout = debugger.get_layout(
+                    frame.shape[1::-1],
+                )
+                self.file_writer.write_frame(frame + debug_layout)
+            else:
+                self.file_writer.write_frame(frame)
 
     def show_frame(self):
         """
