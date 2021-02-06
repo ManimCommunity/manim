@@ -169,7 +169,7 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
 @pytest.mark.slow
 def test_dash_as_filename(tmp_path):
     code = "class Test(Scene):\n    def construct(self):\n        self.add(Circle())\n        self.wait(1)"
-    command =[
+    command = [
         "python",
         "-m",
         "manim",
@@ -178,8 +178,8 @@ def test_dash_as_filename(tmp_path):
         "--media_dir",
         str(tmp_path),
         "-",
-        ]
-    out, err, exit_code = capture(command,command_input=code)
+    ]
+    out, err, exit_code = capture(command, command_input=code)
     assert exit_code == 0, err
     exists = (tmp_path / "images" / "-" / "Test.png").exists()
     assert exists, out
