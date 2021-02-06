@@ -164,3 +164,27 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
 
     exists = (tmp_path / "SquareToCircle.png").exists()
     assert exists, "--custom_folders did not produce the output file"
+
+
+@pytest.mark.slow
+def test_dash_as_filename(tmp_path):
+    code = "class Test(Scene):\n    def construct(self):\n        self.add(Circle())\n        self.wait(1)"
+    command = " ".join(
+        [
+            "echo",
+            f'"{code}"',
+            "|",
+            "python",
+            "-m",
+            "manim",
+            "-ql",
+            "-s",
+            "--media_dir",
+            str(tmp_path),
+            "-",
+        ]
+    )
+    out, err, exit_code = capture(command, shell=True)
+    assert exit_code == 0, err
+    exists = (tmp_path / "images" / "-" / "Test.png").exists()
+    assert exists, "Output was not found at expected location."
