@@ -147,14 +147,15 @@ class SceneDebugger:
 
         last_position = starting_position
         direction = RIGHT
-        for mob, mobject_info in self._get_mobjects_dict_info().items():
-            # Element-wise product between the direction vector (tronqued so it is in 2 dim) to get
-            # an offset vector, that we add to he previous pos to get the new one.
-            last_position += np.multiply(offset + self.VECTOR_OFFSET, direction[:2])
-            offset = self._draw_debug_box(
-                draw_layer, str(mob), mobject_info, last_position
-            )
-
+        mobjects_info = self._get_mobjects_dict_info()
+        if  mobjects_info is not None and len(mobjects_info) > 0: 
+            for mob, mobject_info in mobjects_info.items():
+                # Element-wise product between the direction vector (tronqued so it is in 2 dim) to get
+                # an offset vector, that we add to he previous pos to get the new one.
+                last_position += np.multiply(offset + self.VECTOR_OFFSET, direction[:2])
+                offset = self._draw_debug_box(
+                    draw_layer, str(mob), mobject_info, last_position
+                )
         return np.asarray(out)
 
     def _draw_debug_box(
