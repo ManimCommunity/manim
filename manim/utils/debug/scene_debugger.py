@@ -222,6 +222,8 @@ class SceneDebugger:
         # Redefine the old function by a decorated one.
         new_func = self._place_spy(func)
         if ismethod(func):
+            if not hasattr(func.__self__, func.__name__): 
+                raise ValueError(f"{func.__name__} is not a member of {func.__self__}: Cannot spy")
             setattr(func.__self__, func.__name__, new_func)
         elif isfunction(func):
             setattr(getmodule(func), func.__name__, new_func)
