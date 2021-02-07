@@ -262,6 +262,7 @@ class Mobject(Container):
         In addition to this method, there is a compatibility
         layer that allows ``get_*`` and ``set_*`` methods to
         get and set attributes. For instance::
+
             >>> mob = Mobject()
             >>> mob.set_foo(0)
             Mobject
