@@ -35,6 +35,10 @@ from ..utils.space_ops import rotation_matrix
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
+    There is a compatibility layer that allows for
+    getting and setting attributes with ``get_*`` and
+    ``set_*`` methods. See :meth:`set` for more details.
+
     Attributes
     ----------
     submobjects : :class:`list`
@@ -254,6 +258,28 @@ class Mobject(Container):
 
         Mainly to be used along with :attr:`animate` to
         animate setting attributes.
+
+        In addition to this method, there is a compatibility
+        layer that allows ``get_*`` and ``set_*`` methods to
+        get and set attributes. For instance::
+            >>> mob = Mobject()
+            >>> mob.set_foo(0)
+            Mobject
+            >>> mob.get_foo()
+            0
+            >>> mob.foo
+            0
+
+        This compatibility layer does not interfere with any
+        ``get_*`` or ``set_*`` methods that are explicitly
+        defined.
+
+        .. warning::
+
+            This compatibility layer is for backwards compatibility
+            and is not guaranteed to stay around. Where applicable,
+            please prefer getting/setting attributes normally or with
+            the :meth:`set` method.
 
         Parameters
         ----------

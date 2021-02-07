@@ -24,6 +24,8 @@ def test_get_compat_layer():
 
 def test_set_compat_layer():
     m = Mobject()
+
+    assert isinstance(m.set_test, types.MethodType)
     m.set_test(0)
 
     assert m.test == 0
