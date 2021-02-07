@@ -5,21 +5,21 @@ from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 
-class SetColorTest(ThreeDScene):
+class SetColorTest(Scene):
     def construct(self):
         s = Square()
         s.set_color(BLUE)
         self.play(Animation(s))
 
 
-class SetStokeTest(ThreeDScene):
+class SetStrokeTest(Scene):
     def construct(self):
         s = Square()
         s.set_stroke(BLUE)
         self.play(Animation(s))
 
 
-class SetFillTest(ThreeDScene):
+class SetFillTest(Scene):
     def construct(self):
         s = Square()
         s.set_fill(BLUE)
