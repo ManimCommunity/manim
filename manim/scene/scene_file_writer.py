@@ -453,6 +453,7 @@ class SceneFileWriter(object):
             config["ffmpeg_loglevel"].lower(),
             "-metadata",
             f"comment=Rendered with Manim Community v{__version__}",
+            "-nostdin",
         ]
 
         if config["write_to_movie"] and not config["save_as_gif"]:

@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
+
+__version__ = importlib_metadata.version(__name__)
+
+
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
