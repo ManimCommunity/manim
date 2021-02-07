@@ -4,7 +4,6 @@ from functools import wraps
 import os
 
 from ..utils.commands import capture
-from manim.utils.file_ops import add_version_before_extension
 
 
 def _get_config_from_video(path_to_video):
@@ -70,9 +69,7 @@ def video_comparison(control_data_file, scene_path_from_media_dir):
             path_control_data = os.path.join(
                 tests_directory, "control_data", "videos_data", control_data_file
             )
-            path_video_generated = tmp_path / add_version_before_extension(
-                scene_path_from_media_dir
-            )
+            path_video_generated = tmp_path / scene_path_from_media_dir
             if not os.path.exists(path_video_generated):
                 for parent in reversed(path_video_generated.parents):
                     if not parent.exists():

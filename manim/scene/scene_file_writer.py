@@ -456,8 +456,6 @@ class SceneFileWriter(object):
         ]
 
         if config["write_to_movie"] and not config["save_as_gif"]:
-            if not config["output_file"]:
-                movie_file_path = str(add_version_before_extension(movie_file_path))
             commands += ["-c", "copy", movie_file_path]
 
         if config["save_as_gif"]:
