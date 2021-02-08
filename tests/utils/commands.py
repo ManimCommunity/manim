@@ -1,13 +1,7 @@
-import subprocess
+from subprocess import run
 
 
-def capture(command, cwd=None):
-    proc = subprocess.Popen(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        encoding="utf8",
-        cwd=cwd,
-    )
-    out, err = proc.communicate()
-    return out, err, proc.returncode
+def capture(command, cwd=None, command_input=None):
+    p = run(command, cwd=cwd, input=command_input, capture_output=True, text=True)
+    out, err = p.stdout, p.stderr
+    return out, err, p.returncode

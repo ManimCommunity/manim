@@ -611,7 +611,9 @@ class ManimConfig(MutableMapping):
         if args.config_file:
             self.digest_file(args.config_file)
 
-        self.input_file = Path(args.file).absolute()
+        # If args.file is `-`, the animation code has to be taken from STDIN, so the
+        # input file path shouldn't be absolute, since that file won't be read.
+        self.input_file = Path(args.file).absolute() if args.file != "-" else args.file
         self.scene_names = args.scene_names if args.scene_names is not None else []
         self.output_file = args.output_file
 
@@ -698,6 +700,10 @@ class ManimConfig(MutableMapping):
             # --media_dir overrides the default.cfg file
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
+
+        # Handle --tex_template
+        if args.tex_template:
+            self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
         return self
 

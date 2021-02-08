@@ -26,20 +26,28 @@ def validate_scene_range(ctx, param, value):
     if value:
         try:
             start, end = map(int, re.split(";|,|-", value))
-            return (start, end,)
+            return (
+                start,
+                end,
+            )
         except:
             logger.error("Couldn't determine a range for -n option.")
             exit()
+
 
 def validate_resolution(ctx, param, value):
     if value:
         try:
             start, end = map(int, re.split(";|,|-", value))
-            return (start, end,)
+            return (
+                start,
+                end,
+            )
         except:
             logger.error("Resolution option is invalid.")
             exit()
-    
+
+
 def open_file_if_needed(file_writer):
     if config["verbosity"] != "DEBUG":
         curr_stdout = sys.stdout
@@ -156,11 +164,7 @@ def open_file_if_needed(file_writer):
         case_sensitive=False,
     ),
 )
-@optgroup.option(
-    "-s",
-    "--save_last_frame",
-    is_flag= True
-)
+@optgroup.option("-s", "--save_last_frame", is_flag=True)
 @optgroup.option(
     "-q",
     "--quality",
