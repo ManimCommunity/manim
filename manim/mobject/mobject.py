@@ -11,6 +11,7 @@ import operator as op
 import random
 import sys
 import types
+import warnings
 
 from pathlib import Path
 from colour import Color
@@ -36,8 +37,8 @@ class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
-    getting and setting attributes with ``get_*`` and
-    ``set_*`` methods. See :meth:`set` for more details.
+    getting and setting generic attributes with ``get_*``
+    and ``set_*`` methods. See :meth:`set` for more details.
 
     Attributes
     ----------
@@ -261,7 +262,7 @@ class Mobject(Container):
 
         In addition to this method, there is a compatibility
         layer that allows ``get_*`` and ``set_*`` methods to
-        get and set attributes. For instance::
+        get and set generic attributes. For instance::
 
             >>> mob = Mobject()
             >>> mob.set_foo(0)
@@ -321,6 +322,12 @@ class Mobject(Container):
             to_get = attr[4:]
 
             def getter(self):
+                warnings.warn(
+                    "This method is not guaranteed to stay around. Please prefer getting the attribute normally.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
                 return getattr(self, to_get)
 
             # Return a bound method
@@ -331,6 +338,12 @@ class Mobject(Container):
             to_set = attr[4:]
 
             def setter(self, value):
+                warnings.warn(
+                    "This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
                 setattr(self, to_set, value)
 
                 return self

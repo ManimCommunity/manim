@@ -11,6 +11,7 @@ def test_generic_set():
     assert m.test == 0
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_get_compat_layer():
     m = Mobject()
 
@@ -22,6 +23,7 @@ def test_get_compat_layer():
     assert m.get_test() == 0
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_set_compat_layer():
     m = Mobject()
 
