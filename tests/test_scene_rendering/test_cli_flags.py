@@ -2,6 +2,8 @@ import pytest
 import numpy as np
 from PIL import Image
 from pathlib import Path
+from manim.__main__ import main
+from click.testing import CliRunner
 
 from ..utils.video_tester import *
 
@@ -168,18 +170,16 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
 
 @pytest.mark.slow
 def test_dash_as_filename(tmp_path):
-    code = "class Test(Scene):\n    def construct(self):\n      self.add(Circle())\n        self.wait()\n\x1a\n"
+    code = "class Test(Scene):\n    def construct(self):\n        self.add(Circle())\n        self.wait()"
     command = [
-        "python",
-        "-m",
-        "manim",
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
         "-",
     ]
-    out, err, exit_code = capture(command, command_input=code)
-    assert exit_code == 0, err
+    runner = CliRunner()
+    result = runner.invoke(main, command, input=code)
+    assert result.exit_code == 0
     exists = (tmp_path / "images" / "-" / "Test.png").exists()
-    assert exists, out
+    assert exists, result.output

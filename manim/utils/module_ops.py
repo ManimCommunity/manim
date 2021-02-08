@@ -16,7 +16,7 @@ def get_module(file_name: Path):
         )
         code = sys.stdin.read()
         if not code.startswith("from manim import"):
-            logger.warn(
+            logger.warning(
                 "Didn't find an import statement for Manim. Importing automatically..."
             )
             code = "from manim import *\n" + code
