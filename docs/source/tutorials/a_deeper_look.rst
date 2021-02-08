@@ -167,3 +167,73 @@ extension.
 
 This was a quick review of some of the most frequent command line flags.  For a
 thorough review of all flags available, see :doc:`configuration`.
+
+
+*****************
+Debugging a scene
+*****************
+
+You may need to access some attributes of some mobjects, of the scene or of 
+the animation, and you may want to see these values at each frame. 
+
+:class:`.SceneDebugger` can do it for you, by enabling the user to display at 
+each frame debug information. You can access it by using either ``--debug`` flag, ``debug = True`` in a config file or 
+by putting ``config.debug = True`` in your code file.  
+
+By default, the debugger shows some insights such as the frame number, mobjects on the scene, etc: 
+
+.. manim:: DebugWithDefaultValues
+
+    config.debug = True
+
+    class DebugWithDefaultValues(Scene): 
+       def construct(self): 
+          square = Square()
+          self.play(ShowCreation(square))
+
+
+You can debug attributes by adding their names in these 
+three ``set`` ``debug_animation_attributes``, 
+``debug_mobjects_attributes`` or 
+``debug_scene_attributes`` of :class:`.SceneDebugger`. 
+
+Example: 
+
+.. manim:: DebugWithCustomAttributes
+
+    from manim.utils.debug import debugger
+
+    config.debug = True
+    
+    debugger.debug_animation_attributes.add("mobject")
+    debugger.debug_mobjects_attributes.update(["stroke_opacity","z_index"])
+
+    class DebugWithCustomAttributes(Scene): 
+       def construct(self): 
+          square = Square()
+          self.play(ShowCreation(square))
+
+Spying functions or methods is also possible. You can achieve this by using :meth:`~.SceneDebugger.spy_function`.
+
+If needed, the debugger can artificially call the function at each frame. 
+This can be done by using the ``force_call`` parameter (you can additonnaly 
+pass function's parameters in ``args`` and ``kwargs`` arguments).
+
+Example : 
+
+.. manim:: SpyFunctionDebug
+    
+    config.debug = True
+
+    class SpyFunctionDebug(Scene):
+       def construct(self):
+          square = Square()
+          debugger.spy_function(square.get_color, force_call = True)
+          self.play(square.animate.set_color(RED))
+
+.. warning::
+   Spying inner functions is not yet supported.
+
+
+You can as well record values that will be displayed on the debug layout with :meth:`~.SceneDebugger.record_value`. 
+The usage is similar to :meth:`~.SceneDebugger.spy_function`. 

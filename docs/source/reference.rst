@@ -135,6 +135,16 @@ Utilities
    ~utils.tex_file_writing
 
 
+************
+Debug 
+************
+
+.. autosummary::
+   :toctree: reference
+
+   ~utils.debug.scene_debugger
+
+
 *************
 Other modules
 *************

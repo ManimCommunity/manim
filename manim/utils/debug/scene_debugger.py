@@ -1,3 +1,6 @@
+"""Implementation of the scene-debugger."""
+
+
 import itertools as it
 import typing
 from functools import wraps
@@ -24,6 +27,20 @@ class _RecordInFrame(typing.NamedTuple):
 
 
 class SceneDebugger:
+    """SceneDebugger allows an easier debugging by displaying directly on the screen debug informations.
+
+    One can use it by simply passing ``--debug`` flag or by adding ``debug = True`` to config file. The debugger is highly customizable, as shown below.
+
+    You can display attributes of some entities : ``debug_animation_attributes``, ``debug_mobjects_attributes``, ``debug_scene_attributes`` are three public atttributes that can be modified to change which attributes of repectively the played animations objects, mobjects within the scene and the current scene object.
+
+    You can spy functions, by using :meth:`~.SceneDebugger.spy_function`. Return values of the spied function will be displayed on the debug layout. One can as well make the debugger call at each frame a function, by using force_call.
+    This is particularly useful when you want to get informations from a getter that is not called during the rendering process.
+    
+    You can record value that will be displayed on the debug layout with :meth:`~.SceneDebugger.record_value`
+
+    See :doc:`/tutorials/building_blocks` for pratical examples.
+    """
+
     def __init__(self) -> None:
         self._scene_info = None
         self._renderer_info = None
@@ -121,7 +138,7 @@ class SceneDebugger:
         self,
         shape_original_frame: tuple,
     ) -> np.array:
-        """Retrieves the debug-layout, as a numpy array for convenience.
+        """gets the debug layout that will be displayed at the top right corner of the frame.
 
         Parameters
         ----------
@@ -204,7 +221,6 @@ class SceneDebugger:
     def _place_spy(self, spied_func):
         @wraps(spied_func)
         def wrapper(*args, **kwargs):
-            # TODO : keep a track of the current frame from where the functions has been called?
             res = spied_func(*args, **kwargs)
             if hasattr(res, "__str__"):
                 self._record_spied_functions[
@@ -221,10 +237,10 @@ class SceneDebugger:
     def spy_function(
         self, func: typing.Callable, force_call=False, args=[], kwargs={}
     ) -> None:
-        """Enable listening for a given function. Its return value(s) will then be displayed in the debug layout.
+        """Spies a given function. Return value(s) of the function will then be recorded and displayed on the debug layout.
 
-        If the function is not called by manim, you can force the debugger to call it and to display its return value(s) by setting
-        ``force_call`` to true. Put as well eventual args and kwargs if needed.
+        If the function is not called by manim, you can force the debugger to call it at each frame and to display its return value(s) by setting
+        ``force_call`` to true. Put as well eventual args and kwargs, if needed.
 
         WARNING: When ``force_call`` is enabled, the debugger will call the function and keep a track of return value(s). Beware of side effects of the force-called function!
 
