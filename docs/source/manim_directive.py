@@ -217,7 +217,7 @@ class ManimDirective(Directive):
             f'config["save_last_frame"] = {save_last_frame}',
             f'config["save_as_gif"] = {save_as_gif}',
             f'config["output_file"] = r"{output_file}"',
-            # NOTE this resets at every new scene the debug config attribute. 
+            # NOTE this resets at every new scene the debug config attribute.
             # To change when manim_directive uses tempconfig.
             f'config["debug"] = False',
         ]

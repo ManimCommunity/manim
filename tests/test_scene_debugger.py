@@ -99,7 +99,8 @@ def test_spy_inner_function():
     ):
         s.spy_function(inner_func)
 
-def test_record_value(): 
+
+def test_record_value():
     s = SceneDebugger()
     s.set_renderer_vars(dummy_renderer_vars)
     s.record_value("testing_value", 4)

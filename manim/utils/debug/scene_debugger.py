@@ -35,7 +35,7 @@ class SceneDebugger:
 
     You can spy functions, by using :meth:`~.SceneDebugger.spy_function`. Return values of the spied function will be displayed on the debug layout. One can as well make the debugger call at each frame a function, by using force_call.
     This is particularly useful when you want to get informations from a getter that is not called during the rendering process.
-    
+
     You can record value that will be displayed on the debug layout with :meth:`~.SceneDebugger.record_value`
 
     See :doc:`/tutorials/building_blocks` for pratical examples.
@@ -167,12 +167,12 @@ class SceneDebugger:
             self._get_current_animations_dict_info(),
             position,
         )
-        
+
         position += np.multiply(offset + self.VECTOR_OFFSET, -DOWN[:2])
         self._draw_debug_box(
             draw_layer, "SPIED FUNCTIONS:", self._record_spied_functions, position
         )
-        
+
         position += np.multiply(offset + self.VECTOR_OFFSET, -DOWN[:2])
         self._draw_debug_box(
             draw_layer, "RECORDED VALUES", self._recorded_values, position
@@ -223,13 +223,14 @@ class SceneDebugger:
         def wrapper(*args, **kwargs):
             res = spied_func(*args, **kwargs)
             if hasattr(res, "__str__"):
-                self._record_spied_functions[
-                    spied_func.__name__
-                ] = _RecordAtFrame(value = res, frame = self._renderer_info["number_frame"])
+                self._record_spied_functions[spied_func.__name__] = _RecordAtFrame(
+                    value=res, frame=self._renderer_info["number_frame"]
+                )
             else:
-                self._record_spied_functions[
-                    spied_func.__name__
-                ] = _RecordAtFrame(value = "Not convert. to str", frame = self._renderer_info["number_frame"])
+                self._record_spied_functions[spied_func.__name__] = _RecordAtFrame(
+                    value="Not convert. to str",
+                    frame=self._renderer_info["number_frame"],
+                )
             return res
 
         return wrapper
@@ -277,7 +278,9 @@ class SceneDebugger:
             setattr(getmodule(func), func.__name__, new_func)
         else:
             raise ValueError("Only functions can be spied.")
-        self._record_spied_functions[func.__name__] = _RecordAtFrame(value = "Not called", frame=None)
+        self._record_spied_functions[func.__name__] = _RecordAtFrame(
+            value="Not called", frame=None
+        )
         if force_call:
             self._force_called_spied_functions.add(lambda: new_func(*args, **kwargs))
 
