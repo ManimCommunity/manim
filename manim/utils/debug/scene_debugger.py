@@ -3,6 +3,7 @@ import typing
 from functools import wraps
 from inspect import getmodule, isfunction, ismethod
 from types import MappingProxyType
+from collections import namedtuple
 
 import numpy as np
 from manim.mobject.mobject import Mobject
@@ -12,6 +13,14 @@ from ... import logger
 from ...constants import DOWN, LEFT, RIGHT, UP
 
 __all__ = ["SceneDebugger"]
+
+
+class _RecordInFrame(typing.NamedTuple):
+    value: typing.Any
+    frame: int
+
+    def __str__(self):
+        return f"{self.value} (fra. {self.frame})"
 
 
 class SceneDebugger:
@@ -32,6 +41,8 @@ class SceneDebugger:
             "time",
             "current_animation_hash",
         }
+
+        self._recorded_values = {}
 
         self._record_spied_functions = {}
         self._force_called_spied_functions = set()
@@ -139,16 +150,21 @@ class SceneDebugger:
             self._get_current_animations_dict_info(),
             position,
         )
-
+        
         position += np.multiply(offset + self.VECTOR_OFFSET, -DOWN[:2])
         self._draw_debug_box(
-            draw_layer, "SPIED FUNCTIONS", self._record_spied_functions, position
+            draw_layer, "SPIED FUNCTIONS:", self._record_spied_functions, position
+        )
+        
+        position += np.multiply(offset + self.VECTOR_OFFSET, -DOWN[:2])
+        self._draw_debug_box(
+            draw_layer, "RECORDED VALUES", self._recorded_values, position
         )
 
         last_position = starting_position
         direction = RIGHT
         mobjects_info = self._get_mobjects_dict_info()
-        if  mobjects_info is not None and len(mobjects_info) > 0: 
+        if mobjects_info is not None and len(mobjects_info) > 0:
             for mob, mobject_info in mobjects_info.items():
                 # Element-wise product between the direction vector (tronqued so it is in 2 dim) to get
                 # an offset vector, that we add to he previous pos to get the new one.
@@ -162,7 +178,7 @@ class SceneDebugger:
         self,
         draw_layer: ImageDraw,
         title: str,
-        debug_content: str,
+        debug_content: dict,
         start_position: np.array,
     ) -> np.array:
         text = f"{title} : \n"
@@ -170,6 +186,20 @@ class SceneDebugger:
             text += f"{key} : {value}\n"
         draw_layer.multiline_text(start_position, text)
         return np.asarray(draw_layer.multiline_textsize(text))
+
+    def record_value(self, name: str, value: typing.Any) -> None:
+        """Records a value to be displayed on the debug layout.
+
+        Parameters
+        ----------
+        name : str
+            Name of the value (will be displayed)
+        value : typing.Any
+            The value.
+        """
+        self._recorded_values[name] = _RecordInFrame(
+            value=value, frame=self._renderer_info["number_frame"]
+        )
 
     def _place_spy(self, spied_func):
         @wraps(spied_func)
@@ -179,11 +209,11 @@ class SceneDebugger:
             if hasattr(res, "__str__"):
                 self._record_spied_functions[
                     spied_func.__name__
-                ] = f"{res} (fra. {self._renderer_info['number_frame']})"
+                ] = _RecordInFrame(value = res, frame = self._renderer_info["number_frame"])
             else:
                 self._record_spied_functions[
                     spied_func.__name__
-                ] = f"Not conv. to str. {self._renderer_info['number_frame']}"
+                ] = _RecordInFrame(value = "Not convert. to str", frame = self._renderer_info["number_frame"])
             return res
 
         return wrapper
@@ -222,8 +252,10 @@ class SceneDebugger:
         # Redefine the old function by a decorated one.
         new_func = self._place_spy(func)
         if ismethod(func):
-            if not hasattr(func.__self__, func.__name__): 
-                raise ValueError(f"{func.__name__} is not a member of {func.__self__}: Cannot spy")
+            if not hasattr(func.__self__, func.__name__):
+                raise ValueError(
+                    f"{func.__name__} is not a member of {func.__self__}: Cannot spy"
+                )
             setattr(func.__self__, func.__name__, new_func)
         elif isfunction(func):
             setattr(getmodule(func), func.__name__, new_func)
