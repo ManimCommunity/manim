@@ -1,5 +1,6 @@
 from inspect import Traceback
 import os
+import re
 import sys
 import click
 
@@ -15,6 +16,30 @@ from pathlib import Path
 from click_option_group import optgroup
 
 
+def validate_scene_range(ctx, param, value):
+    try:
+        start = int(value)
+        return (start,)
+    except:
+        pass
+
+    if value:
+        try:
+            start, end = map(int, re.split(";|,|-", value))
+            return (start, end,)
+        except:
+            logger.error("Couldn't determine a range for -n option.")
+            exit()
+
+def validate_resolution(ctx, param, value):
+    if value:
+        try:
+            start, end = map(int, re.split(";|,|-", value))
+            return (start, end,)
+        except:
+            logger.error("Resolution option is invalid.")
+            exit()
+    
 def open_file_if_needed(file_writer):
     if config["verbosity"] != "DEBUG":
         curr_stdout = sys.stdout
@@ -43,45 +68,9 @@ def open_file_if_needed(file_writer):
         sys.stdout = curr_stdout
 
 
-class _AttributeHolder(object):
-    """Abstract base class that provides __repr__.
-
-    The __repr__ method returns a string in the format::
-        ClassName(attr=name, attr=name, ...)
-    The attributes are determined either by a class-level attribute,
-    '_kwarg_names', or by inspecting the instance __dict__.
-    """
-
-    def __repr__(self):
-        type_name = type(self).__name__
-        arg_strings = []
-        star_args = {}
-        for arg in self._get_args():
-            arg_strings.append(repr(arg))
-        for name, value in self._get_kwargs():
-            if name.isidentifier():
-                arg_strings.append("%s=%r" % (name, value))
-            else:
-                star_args[name] = value
-        if star_args:
-            arg_strings.append("**%s" % repr(star_args))
-        return "%s(%s)" % (type_name, ", ".join(arg_strings))
-
-    def _get_kwargs(self):
-        return list(self.__dict__.items())
-
-    def _get_args(self):
-        return []
-
-
-class ClickSpace(_AttributeHolder):
-    def __init__(self, **kwargs):
-        for name in kwargs:
-            setattr(self, name, kwargs[name])
-
-
 @click.group(
     invoke_without_command=True,
+    context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
 @click.argument("file", required=False)
@@ -112,13 +101,17 @@ class ClickSpace(_AttributeHolder):
 @optgroup.option(
     "-v",
     "--verbose",
-    count=True,
-    show_default=True,
-    help="""
-    Verbosity counter (-vv...). Changes ffmpeg log level unless 5+.
-   
-    {0:NONE,1:DEBUG,2:INFO,3:WARNING,4:ERROR,5+:CRITICAL}
-    """,
+    type=click.Choice(
+        [
+            "DEBUG",
+            "INFO",
+            "WARNING",
+            "ERROR",
+            "CRITICAL",
+        ],
+        case_sensitive=False,
+    ),
+    help=" Verbosity of CLI output. Changes ffmpeg log level unless 5+.",
 )
 @optgroup.group("Output options")
 @optgroup.option(
@@ -142,9 +135,13 @@ class ClickSpace(_AttributeHolder):
 @optgroup.option(
     "-n",
     "--from_animation_number",
-    nargs=2,
-    type=int,
+    callback=validate_scene_range,
     help="Start rendering from n_0 until n_1. If n_1 is left unspecified, renders all scenes after n_0.",
+)
+@optgroup.option(
+    "-a",
+    "--write_all",
+    help="Render all scenes in the input file.",
 )
 @optgroup.option(
     "-f",
@@ -160,9 +157,14 @@ class ClickSpace(_AttributeHolder):
     ),
 )
 @optgroup.option(
+    "-s",
+    "--save_last_frame",
+    is_flag= True
+)
+@optgroup.option(
     "-q",
     "--quality",
-    default="p",
+    default="h",
     type=click.Choice(
         [
             "l",
@@ -185,8 +187,7 @@ class ClickSpace(_AttributeHolder):
 @optgroup.option(
     "-r",
     "--resolution",
-    nargs=2,
-    type=int,
+    callback=validate_resolution,
     help="Resolution in (W,H) for when 16:9 aspect ratio isn't possible.",
 )
 @optgroup.option(
@@ -257,7 +258,9 @@ def render(
     log_dir,
     log_to_file,
     from_animation_number,
+    write_all,
     format,
+    save_last_frame,
     quality,
     resolution,
     fps,
@@ -275,7 +278,6 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
-
     args = {
         "ctx": ctx,
         "file": file,
@@ -285,13 +287,15 @@ def render(
         "disable_caching": disable_caching,
         "flush_cache": flush_cache,
         "tex_template": tex_template,
-        "verbose": verbose,
+        "verbosity": verbose,
         "output_file": output,
         "media_dir": media_dir,
         "log_dir": log_dir,
         "log_to_file": log_to_file,
         "from_animation_number": from_animation_number,
+        "write_all": write_all,
         "format": format,
+        "save_last_frame": save_last_frame,
         "quality": quality,
         "resolution": resolution,
         "frame_rate": fps,
@@ -306,22 +310,18 @@ def render(
 
     class ClickArgs:
         def __init__(self, args):
-            print("INIT")
             for name in args:
                 setattr(self, name, args[name])
 
         def _get_kwargs(self):
-            print("GET KWARGS")
             return list(self.__dict__.items())
 
         def __eq__(self, other):
-            print("EQQQQQQQQQQQQQ")
             if not isinstance(other, ClickArgs):
                 return NotImplemented
             return vars(self) == vars(other)
 
         def __contains__(self, key):
-            print("CONTAINSSSS")
             return key in self.__dict__
 
     click_args = ClickArgs(args)
@@ -350,3 +350,4 @@ def render(
                 open_file_if_needed(scene.renderer.file_writer)
             except Exception as e:
                 print(f"Exception {e}")
+    return args

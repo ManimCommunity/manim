@@ -29,7 +29,5 @@ main.add_command(plugins)
 main.add_command(render)
 
 if __name__ == "__main__":
-    print(sys.argv)
     runner = CliRunner()
-    result = runner.invoke(main, sys.argv)
-    assert result.exit_code == 0
+    manim = runner.invoke(main, sys.argv[1:])

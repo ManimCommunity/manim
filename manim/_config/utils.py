@@ -440,6 +440,12 @@ class ManimConfig(MutableMapping):
                 f"{key} must be a non-negative integer (use -1 for infinity)"
             )
 
+    def __repr__(self) -> str:
+        rep = ""
+        for k, v in sorted(self._d.items(), key=lambda x: x[0]):
+            rep += f"{k}: {v}, "
+        return rep
+
     # builders
     def digest_parser(self, parser: configparser.ConfigParser) -> "ManimConfig":
         """Process the config options present in a :class:`ConfigParser` object.
@@ -659,34 +665,21 @@ class ManimConfig(MutableMapping):
 
         # Handle the -n flag.
         nflag = args.from_animation_number
-        if nflag is not None:
-            if "," in nflag:
-                start, end = nflag.split(",")
-                self.from_animation_number = int(start)
-                self.upto_animation_number = int(end)
-            elif type(nflag) == tuple and len(nflag):
-                self.from_animation_number = int(nflag[0])
-                if len(nflag) >= 2:
-                    self.upto_animation_number = int(nflag[1])
-            elif type(nflag) != tuple:
-                self.from_animation_number = int(nflag)
+        if nflag:
+            self.from_animation_number = nflag[0]
+            try:
+                self.upto_animation_number = nflag[1]
+            except:
+                logging.getLogger("manim").info(
+                    f"No end scene number specified in -n option. Rendering from {nflag[0]} onwards..."
+                )
 
         # Handle the quality flags
         self.quality = _determine_quality(args)
 
         # Handle the -r flag.
         rflag = args.resolution
-        if rflag is not None:
-            try:
-                if "," in nflag:
-                    h, w = rflag.split(",")
-                    self.pixel_height = int(h)
-                    self.pixel_width = int(w)
-            except ValueError:
-                raise ValueError(
-                    f'invalid argument {rflag} for -r flag (must have a comma ",")'
-                )
-        if type(rflag) == tuple and len(nflag):
+        if rflag:
             self.pixel_width = int(rflag[0])
             self.pixel_height = int(rflag[1])
 
@@ -702,7 +695,7 @@ class ManimConfig(MutableMapping):
                 "partial_movie_dir",
             ]:
                 self[opt] = self._parser["custom_folders"].get(opt, raw=True)
-            # --media_dir overrides the deaful.cfg file
+            # --media_dir overrides the default.cfg file
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
 

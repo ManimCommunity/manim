@@ -17,10 +17,10 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -36,11 +36,11 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -57,11 +57,11 @@ def test_n_flag(tmp_path, simple_scenes_path):
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-n 3,6",
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -74,12 +74,12 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -98,12 +98,12 @@ def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -122,14 +122,14 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
         "-r",
-        "100, 200",
+        "200,100",
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -148,13 +148,13 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
         "--custom_folders",
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err

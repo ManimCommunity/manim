@@ -17,14 +17,13 @@ def test_logging_to_file(tmp_path, python_version):
         python_version,
         "-m",
         "manim",
-        path_basic_scene,
-        "SquareToCircle",
         "-ql",
-        "--log_to_file",
         "-v",
         "DEBUG",
         "--media_dir",
         str(tmp_path),
+        path_basic_scene,
+        "SquareToCircle",
     ]
     _, err, exitcode = capture(command)
     assert exitcode == 0, err
@@ -42,13 +41,12 @@ def test_logging_when_scene_is_not_specified(tmp_path, python_version):
         python_version,
         "-m",
         "manim",
-        path_basic_scene,
         "-ql",
-        "--log_to_file",
         "-v",
         "DEBUG",
         "--media_dir",
         str(tmp_path),
+        path_basic_scene,
     ]
     _, err, exitcode = capture(command)
     assert exitcode == 0, err

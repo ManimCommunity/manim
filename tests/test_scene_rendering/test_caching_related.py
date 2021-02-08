@@ -18,13 +18,13 @@ def test_wait_skip(tmp_path, manim_cfg_file, simple_scenes_path):
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
-        "-l",
+        "-ql",
         "--media_dir",
         str(tmp_path),
         "-n",
         "3",
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -42,13 +42,13 @@ def test_play_skip(tmp_path, manim_cfg_file, simple_scenes_path):
         "python",
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
-        "-l",
+        "-ql",
         "--media_dir",
         str(tmp_path),
         "-n",
         "3",
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
