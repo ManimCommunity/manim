@@ -18,7 +18,7 @@ from ...constants import DOWN, LEFT, RIGHT, UP
 __all__ = ["SceneDebugger"]
 
 
-class _RecordInFrame(typing.NamedTuple):
+class _RecordAtFrame(typing.NamedTuple):
     value: typing.Any
     frame: int
 
@@ -214,7 +214,7 @@ class SceneDebugger:
         value : typing.Any
             The value.
         """
-        self._recorded_values[name] = _RecordInFrame(
+        self._recorded_values[name] = _RecordAtFrame(
             value=value, frame=self._renderer_info["number_frame"]
         )
 
@@ -225,11 +225,11 @@ class SceneDebugger:
             if hasattr(res, "__str__"):
                 self._record_spied_functions[
                     spied_func.__name__
-                ] = _RecordInFrame(value = res, frame = self._renderer_info["number_frame"])
+                ] = _RecordAtFrame(value = res, frame = self._renderer_info["number_frame"])
             else:
                 self._record_spied_functions[
                     spied_func.__name__
-                ] = _RecordInFrame(value = "Not convert. to str", frame = self._renderer_info["number_frame"])
+                ] = _RecordAtFrame(value = "Not convert. to str", frame = self._renderer_info["number_frame"])
             return res
 
         return wrapper
@@ -277,7 +277,7 @@ class SceneDebugger:
             setattr(getmodule(func), func.__name__, new_func)
         else:
             raise ValueError("Only functions can be spied.")
-        self._record_spied_functions[func.__name__] = "Not called"
+        self._record_spied_functions[func.__name__] = _RecordAtFrame(value = "Not called", frame=None)
         if force_call:
             self._force_called_spied_functions.add(lambda: new_func(*args, **kwargs))
 
