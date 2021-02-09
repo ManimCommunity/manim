@@ -781,10 +781,25 @@ class Scene(Container):
         """
         self.wait(max_time, stop_condition=stop_condition)
 
-    def compile_animation_data(self, *animations, skip_rendering=False, **play_kwargs):
+    def compile_animation_data(self, *animations: Animation, **play_kwargs):
+        """Given a list of animatoins, compile statics and moving mobjects, duration from them.
+
+        This also begin the animations.
+
+        Parameters
+        ----------
+        skip_rendering : bool, optional
+            Whether the rendering should be skipped, by default False
+
+        Returns
+        -------
+        self, None
+            None if there is nothing to play, or self otherwise.
+        """
+        # NOTE TODO : returns statement of this method are wrong. It should return nothing, as it makes a little sense to get any information from this method.
+        # The return are kept to keep the wbgl from breaking.
         if len(animations) == 0:
-            warnings.warn("Called Scene.play with no animations")
-            return None
+            raise ValueError("Called Scene.play with no animations")
 
         self.animations = self.compile_animations(*animations, **play_kwargs)
         self.add_mobjects_from_animations(self.animations)
@@ -796,14 +811,11 @@ class Scene(Container):
         if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
             self.update_mobjects(dt=0)  # Any problems with this?
             if self.should_update_mobjects():
-                # TODO, be smart about setting a static image
-                # the same way Scene.play does
-                self.renderer.static_image = None
                 self.stop_condition = self.animations[0].stop_condition
             else:
                 self.duration = self.animations[0].duration
-                if not skip_rendering:
-                    self.add_static_frames(self.animations[0].duration)
+                # Static image logic when the wait is static is done by the renderer, not here.
+                self.animations[0].is_static_wait = True
                 return None
         else:
             # Paint all non-moving objects onto the screen, so they don't
@@ -812,17 +824,26 @@ class Scene(Container):
                 self.moving_mobjects,
                 self.static_mobjects,
             ) = self.get_moving_and_static_mobjects(self.animations)
-            self.renderer.save_static_frame_data(self, self.static_mobjects)
 
+        # TODO encapsulate this in a proper method.
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
             self.animations, self.duration
         )
+        return self
 
+    def begin_animations(self) -> None:
+        """Start the animations of the scene."""
         for animation in self.animations:
             animation.begin()
 
-        return self
+    def is_current_animation_frozen_frame(self) -> bool:
+        """Returns wether the current animation produces a static frame (generally a Wait)."""
+        return (
+            isinstance(self.animations[0], Wait)
+            and len(self.animations) == 1
+            and self.animations[0].is_static_wait
+        )
 
     def play_internal(self, skip_rendering=False):
         """
@@ -859,6 +880,8 @@ class Scene(Container):
             alpha = t / animation.run_time
             animation.interpolate(alpha)
         self.update_mobjects(dt)
+
+    # TODO REMOVE THIS
 
     def add_static_frames(self, duration):
         self.renderer.update_frame(self)
