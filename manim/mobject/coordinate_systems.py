@@ -28,16 +28,25 @@ class CoordinateSystem:
     Abstract class for Axes and NumberPlane
     """
 
-    def __init__(self, dim=2):
+    def __init__(self, x_min=None, x_max=None, y_min=None, y_max=None, dim=2):
         self.dimension = dim
-        if not hasattr(self, "x_min"):
+        if x_min is None:
             self.x_min = -config["frame_x_radius"]
-        if not hasattr(self, "x_max"):
+        else:
+            self.x_min = x_min
+        if x_max is None:
             self.x_max = config["frame_x_radius"]
-        if not hasattr(self, "y_min"):
+        else:
+            self.x_max = x_max
+        if y_min is None:
             self.y_min = -config["frame_y_radius"]
-        if not hasattr(self, "y_max"):
+        else:
+            self.y_min = y_min
+        if y_max is None:
             self.y_max = config["frame_y_radius"]
+        else:
+            self.y_max = y_max
+
 
     def coords_to_point(self, *coords):
         raise NotImplementedError()
@@ -150,8 +159,26 @@ class Axes(VGroup, CoordinateSystem):
         self.x_axis_config = x_axis_config
         self.y_axis_config = y_axis_config
         self.center_point = center_point
-        CoordinateSystem.__init__(self)
+        #Extraction
+        self.x_min = kwargs.pop("x_min", self.x_axis_config.pop("x_min", None))
+        self.x_max = kwargs.pop("x_max", self.x_axis_config.pop("x_max", None))
+        self.y_min = kwargs.pop("y_min", self.y_axis_config.pop("y_min", None))
+        self.y_max = kwargs.pop("y_max", self.y_axis_config.pop("y_max", None))
+
+        CoordinateSystem.__init__(
+            self, x_min=self.x_min, x_max=self.x_max, y_min=self.y_min, y_max=self.y_max
+        )
         VGroup.__init__(self, **kwargs)
+        
+        self.x_axis_config["x_min"], self.x_axis_config["x_max"] = (
+            self.x_min,
+            self.x_max,
+        )
+        self.y_axis_config["y_min"], self.y_axis_config["y_max"] = (
+            self.y_min,
+            self.y_max,
+        )
+        
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
         self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
