@@ -47,7 +47,6 @@ class CoordinateSystem:
         else:
             self.y_max = y_max
 
-
     def coords_to_point(self, *coords):
         raise NotImplementedError()
 
@@ -159,7 +158,7 @@ class Axes(VGroup, CoordinateSystem):
         self.x_axis_config = x_axis_config
         self.y_axis_config = y_axis_config
         self.center_point = center_point
-        #Extraction
+        # Extraction
         self.x_min = kwargs.pop("x_min", self.x_axis_config.pop("x_min", None))
         self.x_max = kwargs.pop("x_max", self.x_axis_config.pop("x_max", None))
         self.y_min = kwargs.pop("y_min", self.y_axis_config.pop("y_min", None))
@@ -169,7 +168,7 @@ class Axes(VGroup, CoordinateSystem):
             self, x_min=self.x_min, x_max=self.x_max, y_min=self.y_min, y_max=self.y_max
         )
         VGroup.__init__(self, **kwargs)
-        
+
         self.x_axis_config["x_min"], self.x_axis_config["x_max"] = (
             self.x_min,
             self.x_max,
@@ -178,7 +177,7 @@ class Axes(VGroup, CoordinateSystem):
             self.y_min,
             self.y_max,
         )
-        
+
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
         self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
