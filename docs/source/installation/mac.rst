@@ -42,8 +42,14 @@ To install LaTeX:
 
    brew install --cask basictex
 
-Ensure that the TeXLiveManager tool ``tlmgr`` works, by running ``tlmgr
---version`` in the terminal.  Now run
+Reboot your computer and ensure that the TeXLiveManager tool ``tlmgr`` works, by running ``tlmgr
+--version`` in the terminal.  Now update ``tlmgr``
+
+.. code-block:: bash
+   
+   sudo tlmgr update --self
+
+Finnaly, run
 
 .. code-block:: bash
 
