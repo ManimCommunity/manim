@@ -8,8 +8,6 @@ from pathlib import Path
 
 from manim import config, tempconfig
 
-from .._config.main_utils import parse_args
-
 try:
     from IPython import get_ipython
     from IPython.core.magic import (
@@ -70,8 +68,24 @@ else:
                 # empty line.split(): no commands have been passed, call with -h
                 cli_args.append("-h")
 
+            class ClickArgs:
+                def __init__(self, args):
+                    for name in args:
+                        setattr(self, name, args[name])
+
+                def _get_kwargs(self):
+                    return list(self.__dict__.items())
+
+                def __eq__(self, other):
+                    if not isinstance(other, ClickArgs):
+                        return NotImplemented
+                    return vars(self) == vars(other)
+
+                def __contains__(self, key):
+                    return key in self.__dict__
+
             try:
-                args = parse_args(cli_args)
+                args = ClickArgs(cli_args)
             except SystemExit:
                 return  # probably manim -h was called, process ended preemptively
 
