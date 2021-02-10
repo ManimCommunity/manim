@@ -238,7 +238,7 @@ class Wait(Animation):
         self.duration = duration
         self.mobject = None
         self.stop_condition = stop_condition
-        self.is_static_animation = False
+        self.is_static_wait = False
         super().__init__(None, **kwargs)
 
     def begin(self) -> None:
