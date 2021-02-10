@@ -189,13 +189,28 @@ class Axes(VGroup, CoordinateSystem):
         x_shift = self.x_axis.number_to_point(
             0 if self.x_min <= 0 <= self.x_max else self.x_min
         )
+        # Appropriate shift
         self.x_axis.shift(self.center_point - x_shift)
+
+        # Make sure numbers appear to the left on y-axis and upright
+        if self.y_axis_config.get("include_numbers", False) == True:
+            self.y_axis_config[
+                "include_numbers"
+            ] = False  # avoids rotation of numbers with y-axis
+            include_numbers = True  # used later on for displaying numbers upright
+        else:
+            include_numbers = False
+
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
+        # Appropriate shift
         y_shift = self.y_axis.number_to_point(
             0 if self.y_min <= 0 <= self.y_max else self.y_min
         )
         self.y_axis.shift(self.center_point - y_shift)
         self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
+        if include_numbers:
+            self.y_axis.add_numbers(direction=LEFT)
+
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
