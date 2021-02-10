@@ -1,4 +1,5 @@
 from manim import *
+import pytest
 
 
 class SquareToCircle(Scene):
@@ -13,8 +14,7 @@ class SceneWithMultipleCalls(Scene):
         number = Integer(0)
         self.add(number)
         for i in range(10):
-            number.become(Integer(i))
-            self.play(Animation(number))
+            self.play(Animation(Square()))
 
 
 class SceneWithMultipleWaitCalls(Scene):
@@ -34,3 +34,18 @@ class NoAnimations(Scene):
         dot = Dot().set_color(GREEN)
         self.add(dot)
         self.wait(1)
+
+
+class SceneWithStaticWait(Scene):
+    def construct(self):
+        self.add(Square())
+        self.wait()
+
+
+class SceneWithNonStaticWait(Scene):
+    def construct(self):
+        s = Square()
+        # Non static wait are triggered by mobject with time based updaters.
+        s.add_updater(lambda mob, dt: None)
+        self.add(s)
+        self.wait()
