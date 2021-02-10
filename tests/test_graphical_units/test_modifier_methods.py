@@ -24,8 +24,8 @@ class SetFillTest(Scene):
         s = Square()
         s.set_fill(BLUE)
         self.play(Animation(s))
-        
-        
+
+
 class GradientTest(Scene):
     def construct(self):
         c = Circle(fill_opacity=1).set_color(color=[YELLOW, GREEN])
