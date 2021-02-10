@@ -122,6 +122,13 @@ class CairoText(SVGMobject):
 
     """
 
+    DEFAULT_SVG_STYLE = {
+        "fill": "white",
+        "fill-opacity": "1",
+        "stroke": "none",
+        "stroke-opacity": "1",
+    }
+
     def __init__(
         self,
         text,
@@ -690,6 +697,13 @@ class Text(SVGMobject):
         Text('The horse does not eat cucumber salad.')
 
     """
+
+    DEFAULT_SVG_STYLE = {
+        "fill": "white",
+        "fill-opacity": "1",
+        "stroke": "none",
+        "stroke-opacity": "1",
+    }
 
     def __init__(
         self,
