@@ -13,30 +13,32 @@ classifiers= [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
+	"Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+	"Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3 :: Only",
     "Natural Language :: English",
     ]
-exclude = ["scripts/","logo/","readme-assets/"]
+exclude = ["scripts/","logo/"]
 packages = [
     { include = "manim" },
 ]
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-colour = "*"
+colour = "^0.1.5"
 numpy = "*"
 Pillow = "*"
 scipy = "*"
 tqdm = "*"
 pydub = "*"
 pygments = "*"
-rich = "^6.0"
+rich = "^9.0"
 pycairo = "^1.19"
 manimpango = "^0.2.0"
 networkx = "^2.5"
-setuptools = "*"
 importlib-metadata = {version = "^1.0", python = "<3.8"}
 grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
@@ -46,18 +48,22 @@ jupyterlab = { version = "^3.0", optional = true }
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
 jupyterlab = ["jupyterlab"]
+all = ["grpcio","grpcio-tools","watchdog","jupyterlab"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
 pylint = "*"
+Sphinx = "^3.1.2"
 guzzle_sphinx_theme = "*"
-recommonmark = "*"
+recommonmark = ">=0.5.0"
+sphinx-copybutton = "*"
+sphinxext-opengraph = "*"
 matplotlib = "^3.3.2"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
 allow-prereleases = false
-python = "^3.6"
+python = "^3.7"
 markers = "platform_python_implementation == 'CPython'"
 
 [tool.pytest.ini_options]
