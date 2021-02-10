@@ -79,8 +79,16 @@ def parse_style(svg_style):
     # so overwrite the other attribute dictionary values.
     if "style" in svg_style:
         for style_spec in svg_style["style"].split(";"):
-            key, value = style_spec.split(":")
-            svg_style[key] = value
+            try:
+                key, value = style_spec.split(":")
+            except ValueError as e:
+                if not style_spec:
+                    # there was just a stray semicolon at the end, producing an emptystring
+                    pass
+                else:
+                    raise e
+            else:
+                svg_style[key] = value
 
     if "fill-opacity" in svg_style:
         manim_style["fill_opacity"] = float(svg_style["fill-opacity"])
@@ -359,7 +367,7 @@ class SVGMobject(VMobject):
             A VMobject representing the polygon.
         """
         # This seems hacky... yes it is.
-        path_string = polygon_element.getAttribute("points")
+        path_string = polygon_element.getAttribute("points").lstrip()
         for digit in string.digits:
             path_string = path_string.replace(" " + digit, " L" + digit)
         path_string = "M" + path_string

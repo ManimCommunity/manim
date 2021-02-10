@@ -104,11 +104,10 @@ class DesmosGraph1Test(Scene):
         self.wait()
 
 
-class LogoTest(Scene):
+class PenroseTest(Scene):
     def construct(self):
-        background_rect = Rectangle(color=WHITE, fill_opacity=1).scale(2)
-        logo = SVGMobject(get_test_resource("logo.svg"))
-        self.add(background_rect, logo)
+        penrose = SVGMobject(get_test_resource("penrose.svg"))
+        self.add(penrose)
         self.wait()
 
 
