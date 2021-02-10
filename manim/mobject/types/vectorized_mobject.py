@@ -526,7 +526,6 @@ class VMobject(Mobject):
         else:
             self.append_points([self.get_last_point()] + new_points)
 
-
     def add_quadratic_bezier_curve_to(self, handle, anchor):
         """Add Quadratic bezier curve to the path."""
         # How does one approximate a quadratic with a cubic?
