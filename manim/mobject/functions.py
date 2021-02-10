@@ -127,9 +127,13 @@ class FunctionGraph(ParametricFunction):
         self.x_min = x_min
         self.x_max = x_max
         self.parametric_function = lambda t: np.array([t, function(t), 0])
-        kwargs["color"] = color
         ParametricFunction.__init__(
-            self, self.parametric_function, t_min=self.x_min, t_max=self.x_max, **kwargs
+            self,
+            self.parametric_function,
+            t_min=self.x_min,
+            t_max=self.x_max,
+            color=color,
+            **kwargs
         )
         self.function = function
 
