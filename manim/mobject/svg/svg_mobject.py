@@ -231,7 +231,7 @@ class SVGMobject(VMobject):
                 self.add(*mobjects[0].submobjects)
         doc.unlink()
 
-    def get_mobjects_from(self, element, inherited_style):
+    def get_mobjects_from(self, element, inherited_style, within_defs=False):
         """Parses a given SVG element into a Mobject.
 
         Parameters
@@ -254,13 +254,13 @@ class SVGMobject(VMobject):
             return result
 
         style = cascade_element_style(element, inherited_style)
-        if element.tagName == "defs":
-            self.update_defs(element, style)
-        elif element.tagName == "style":
+        is_defs = element.tagName == "defs"
+
+        if element.tagName == "style":
             pass  # TODO, handle style
-        elif element.tagName in ["g", "svg", "symbol"]:
+        elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
-                *[self.get_mobjects_from(child, style) for child in element.childNodes]
+                *[self.get_mobjects_from(child, style, within_defs or is_defs) for child in element.childNodes]
             )
         elif element.tagName == "path":
             temp = element.getAttribute("d")
@@ -285,6 +285,12 @@ class SVGMobject(VMobject):
         self.handle_transforms(element, VGroup(*result))
         if len(result) > 1 and not self.unpack_groups:
             result = [VGroup(*result)]
+
+        if within_defs and element.hasAttribute("id"):
+            self.def_id_to_mobject[element.getAttribute("id")] = result
+        if is_defs:
+            # defs shouldn't be part of the result tree, only the id dictionary.
+            return []
 
         return result
 
@@ -327,9 +333,8 @@ class SVGMobject(VMobject):
         try:
             return [i.copy() for i in self.def_id_to_mobject[ref]]
         except KeyError:
-            warnings.warn(
-                "svg file contains a reference to id #%s, which is not recognized" % ref
-            )
+            warning_text = f"{self.file_name} contains a reference to id #{ref}, which is not recognized"
+            warnings.warn(warning_text)
             return []
 
     def attribute_to_float(self, attr):
@@ -547,23 +552,6 @@ class SVGMobject(VMobject):
             else:
                 output_list.append(i)
         return output_list
-
-    def update_defs(self, defs, style):
-        """Update the definitions other <use> tags may reference
-
-        Parameters
-        -------
-        defs : minidom.Element
-            A `defs` element from an SVG file.
-
-        style : dict
-            The `defs` element's inherited style, which will be cascaded down to every child.
-        """
-
-        for child in defs.childNodes:
-            if isinstance(child, minidom.Element) and child.hasAttribute("id"):
-                child_as_mobject = self.get_mobjects_from(child, style)
-                self.def_id_to_mobject[child.getAttribute("id")] = child_as_mobject
 
     def move_into_position(self):
         """Uses the SVGMobject's config dictionary to set the Mobject's
