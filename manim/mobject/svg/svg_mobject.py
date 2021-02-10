@@ -260,7 +260,10 @@ class SVGMobject(VMobject):
             pass  # TODO, handle style
         elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
-                *[self.get_mobjects_from(child, style, within_defs or is_defs) for child in element.childNodes]
+                *[
+                    self.get_mobjects_from(child, style, within_defs or is_defs)
+                    for child in element.childNodes
+                ]
             )
         elif element.tagName == "path":
             temp = element.getAttribute("d")
