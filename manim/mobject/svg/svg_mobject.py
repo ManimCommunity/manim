@@ -244,7 +244,7 @@ class SVGMobject(VMobject):
 
         Returns
         -------
-        VMobject
+        List[VMobject]
             A VMobject representing the associated SVG element.
         """
 
@@ -317,20 +317,20 @@ class SVGMobject(VMobject):
 
         Returns
         -------
-        VMobject
-            A VMobject
+        List[VMobject]
+            A collection of VMobjects that are copies of the defined objects
         """
 
         # Remove initial "#" character
         ref = use_element.getAttribute("xlink:href")[1:]
 
         try:
-            return self.def_id_to_mobject[ref].copy()
+            return [i.copy() for i in self.def_id_to_mobject[ref]]
         except KeyError:
             warnings.warn(
                 "svg file contains a reference to id #%s, which is not recognized" % ref
             )
-            return VGroup()
+            return []
 
     def attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.
