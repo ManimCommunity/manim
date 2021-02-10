@@ -263,7 +263,6 @@ class ManimConfig(MutableMapping):
         "images_dir",
         "input_file",
         "webgl_renderer_path",
-        "leave_progress_bars",
         "log_dir",
         "log_to_file",
         "max_files_cached",
@@ -508,9 +507,7 @@ class ManimConfig(MutableMapping):
             "save_as_gif",
             "preview",
             "show_in_file_browser",
-            "progress_bar",
             "sound",
-            "leave_progress_bars",
             "log_to_file",
             "disable_caching",
             "flush_cache",
@@ -575,6 +572,10 @@ class ManimConfig(MutableMapping):
         if val:
             setattr(self, "tex_template_file", val)
 
+        val = parser["CLI"].get("progress_bar")
+        if val:
+            setattr(self, "progress_bar", val)
+
         val = parser["ffmpeg"].get("loglevel")
         if val:
             setattr(self, "ffmpeg_loglevel", val)
@@ -621,7 +622,6 @@ class ManimConfig(MutableMapping):
             "preview",
             "show_in_file_browser",
             "sound",
-            "leave_progress_bars",
             "write_to_movie",
             "save_last_frame",
             "save_pngs",
@@ -629,6 +629,7 @@ class ManimConfig(MutableMapping):
             "write_all",
             "disable_caching",
             "flush_cache",
+            "progress_bar",
             "transparent",
             "scene_names",
             "verbosity",
@@ -756,14 +757,10 @@ class ManimConfig(MutableMapping):
 
     progress_bar = property(
         lambda self: self._d["progress_bar"],
-        lambda self, val: self._set_boolean("progress_bar", val),
+        lambda self, val: self._set_from_list(
+            "progress_bar", val, ["none", "show", "leave"]
+        ),
         doc="Whether to show progress bars while rendering animations.",
-    )
-
-    leave_progress_bars = property(
-        lambda self: self._d["leave_progress_bars"],
-        lambda self, val: self._set_boolean("leave_progress_bars", val),
-        doc="Whether to leave the progress bar for each animation.",
     )
 
     @property

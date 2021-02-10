@@ -1,6 +1,4 @@
-import sys
 import click
-from click.testing import CliRunner
 from click_default_group import DefaultGroup
 from manim.constants import EPILOG
 from manim.constants import CONTEXT_SETTINGS
@@ -29,5 +27,4 @@ main.add_command(plugins)
 main.add_command(render)
 
 if __name__ == "__main__":
-    runner = CliRunner()
-    manim = runner.invoke(main, sys.argv[1:])
+    main()

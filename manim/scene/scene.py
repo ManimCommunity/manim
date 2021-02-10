@@ -728,9 +728,9 @@ class Scene(Container):
             times,
             desc=description,
             total=n_iterations,
-            leave=config["leave_progress_bars"],
+            leave=config["progress_bar"] == "leave",
             ascii=True if platform.system() == "Windows" else None,
-            disable=not config["progress_bar"],
+            disable=config["progress_bar"] == "none",
         )
         return time_progression
 
