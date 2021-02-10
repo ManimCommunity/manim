@@ -41,7 +41,6 @@ class CairoRenderer:
         )
 
     def play(self, scene, *args, **kwargs):
-
         # Reset skip_animations to the original state.
         # Needed when rendering only some animations, ans skipping others.
         self.skip_animations = self._original_skipping_status

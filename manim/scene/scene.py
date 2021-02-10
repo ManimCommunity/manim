@@ -859,6 +859,10 @@ class Scene(Container):
             named parameters affecting what was passed in ``args``,
             e.g. ``run_time``, ``lag_ratio`` and so on.
         """
+        self.duration = self.get_run_time(self.animations)
+        self.time_progression = self._get_animation_time_progression(
+            self.animations, self.duration
+        )
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering:
@@ -871,6 +875,8 @@ class Scene(Container):
             animation.finish()
             animation.clean_up_from_scene(self)
         self.renderer.static_image = None
+        # Closing the progress bar at the end of the play.
+        self.time_progression.close()
 
     def update_to_time(self, t):
         dt = t - self.last_t
@@ -880,16 +886,6 @@ class Scene(Container):
             alpha = t / animation.run_time
             animation.interpolate(alpha)
         self.update_mobjects(dt)
-
-    # TODO REMOVE THIS
-
-    def add_static_frames(self, duration):
-        self.renderer.update_frame(self)
-        dt = 1 / self.renderer.camera.frame_rate
-        self.renderer.add_frame(
-            self.renderer.get_frame(),
-            num_frames=int(duration / dt),
-        )
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
