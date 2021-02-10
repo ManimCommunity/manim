@@ -177,9 +177,24 @@ class Axes(VGroup, CoordinateSystem):
             self.y_min,
             self.y_max,
         )
+        self.x_axis_config["numbers_with_elongated_ticks"] = [
+            0 if self.x_min <= 0 <= self.x_max else self.x_min
+        ]
+
+        self.y_axis_config["numbers_with_elongated_ticks"] = [
+            0 if self.y_min <= 0 <= self.y_max else self.y_min
+        ]
 
         self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
+        x_shift = self.x_axis.number_to_point(
+            0 if self.x_min <= 0 <= self.x_max else self.x_min
+        )
+        self.x_axis.shift(self.center_point - x_shift)
         self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
+        y_shift = self.y_axis.number_to_point(
+            0 if self.y_min <= 0 <= self.y_max else self.y_min
+        )
+        self.y_axis.shift(self.center_point - y_shift)
         self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
