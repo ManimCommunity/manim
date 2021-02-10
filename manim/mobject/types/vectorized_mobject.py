@@ -329,7 +329,11 @@ class VMobject(Mobject):
         """
         self.set_fill(color, opacity, family=family)
         self.set_stroke(color, opacity, family=family)
-        self.color = colour.Color(color)
+        # check if a list of colors is passed to color
+        if isinstance(color, str):
+            self.color = colour.Color(color)
+        else:
+            self.color = color
         return self
 
     def set_color_only(self, color, family=True):
@@ -347,7 +351,11 @@ class VMobject(Mobject):
         """
         self.set_fill(color, opacity=self.get_fill_opacity(), family=family)
         self.set_stroke(color, opacity=self.get_stroke_opacity(), family=family)
-        self.color = colour.Color(color)
+        # check if a list of colors is passed to color
+        if isinstance(color, str):
+            self.color = colour.Color(color)
+        else:
+            self.color = color
         return self
 
     def set_opacity(self, opacity, family=True):
