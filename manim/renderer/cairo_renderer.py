@@ -76,7 +76,6 @@ class CairoRenderer:
             self,
             scene.__class__.__name__,
         )
-        # TODO Condition here
         if config["debug"]:
             debugger.set_renderer_vars(MappingProxyType(vars(self)))
             debugger.set_scene_vars(MappingProxyType(vars(scene)))

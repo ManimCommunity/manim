@@ -201,7 +201,7 @@ Example:
 
 .. manim:: DebugWithCustomAttributes
 
-    from manim.utils.debug import debugger
+    from manim import debugger
 
     config.debug = True
     
@@ -222,6 +222,8 @@ pass function's parameters in ``args`` and ``kwargs`` arguments).
 Example : 
 
 .. manim:: SpyFunctionDebug
+
+    from manim import debugger
     
     config.debug = True
 

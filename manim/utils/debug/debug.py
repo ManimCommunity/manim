@@ -4,9 +4,9 @@
 __all__ = ["print_family", "index_labels", "get_submobject_index_labels"]
 
 
-from .color import BLACK
-from ..mobject.numbers import Integer
-from ..mobject.types.vectorized_mobject import VGroup
+from ..color import BLACK
+from ...mobject.numbers import Integer
+from ...mobject.types.vectorized_mobject import VGroup
 import logging
 
 
