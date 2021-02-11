@@ -22,7 +22,7 @@ class ScreenRectangle(Rectangle):
     def aspect_ratio(self):
         """The aspect ratio.
 
-        When set, the width is stretched to accomodate
+        When set, the width is stretched to accommodate
         the new aspect ratio.
         """
 
@@ -58,7 +58,7 @@ class PictureInPictureFrame(Rectangle):
     def aspect_ratio(self):
         """The aspect ratio.
 
-        When set, the width is stretched to accomodate
+        When set, the width is stretched to accommodate
         the new aspect ratio.
         """
 
