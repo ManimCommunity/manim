@@ -1,8 +1,5 @@
 import typing
 import numpy as np
-from manim.mobject.mobject import Mobject
-
-# from manim.scene.scene import Scene
 
 from manim.utils.hashing import get_hash_from_play_call
 
@@ -11,6 +8,7 @@ from ..camera.camera import Camera
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
+from ..mobject.mobject import Mobject
 
 
 class CairoRenderer:
