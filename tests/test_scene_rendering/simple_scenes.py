@@ -1,5 +1,4 @@
 from manim import *
-import pytest
 
 
 class SquareToCircle(Scene):
