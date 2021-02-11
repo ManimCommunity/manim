@@ -142,7 +142,7 @@ Debug
 .. autosummary::
    :toctree: reference
 
-   ~utils.debug.scene_debugger
+   ~utils.debug
 
 
 *************

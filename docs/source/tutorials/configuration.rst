@@ -348,7 +348,7 @@ A list of all config options
    :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
 
    ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity', 'bottom',
-   'custom_folders', 'disable_caching', 'dry_run', 'ffmpeg_loglevel', 'flush_cache',
+   'custom_folders', 'debug', 'disable_caching', 'dry_run', 'ffmpeg_loglevel', 'flush_cache',
    'frame_height', 'frame_rate', 'frame_size', 'frame_width', 'frame_x_radius',
    'frame_y_radius', 'from_animation_number', 'images_dir', 'input_file',
    'leave_progress_bars', 'left_side', 'log_dir', 'log_to_file',
@@ -434,6 +434,7 @@ A list of all CLI flags
                            Path to the WebGL frontend
      --webgl_updater_fps WEBGL_UPDATER_FPS
                            Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend
+     --debug               triggers visual debug mode.
      --config_file CONFIG_FILE
                            Specify the configuration file
      --custom_folders      Use the folders defined in the [custom_folders] section of the config file to define the output folder structure
