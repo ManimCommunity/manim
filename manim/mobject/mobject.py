@@ -830,6 +830,7 @@ class Mobject(Container):
             >>> sq.height
             2.0
             >>> sq.stretch_to_fit_width(5)
+            Square
             >>> sq.width
             5.0
             >>> sq.height
@@ -881,6 +882,7 @@ class Mobject(Container):
             >>> sq.width
             2.0
             >>> sq.stretch_to_fit_height(5)
+            Square
             >>> sq.height
             5.0
             >>> sq.width
