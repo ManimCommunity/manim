@@ -864,8 +864,11 @@ class Scene(Container):
         )
 
     def add_click_sound(self, **kwargs):
-        """
-        This method is used to add a click sound to the animation.
+        """Add a click sound to the animation.
+
+        .. seealso::
+
+            :meth:`~.add_sound`
         """
         self.add_sound("../manim/asserts/click.wav", **kwargs)
 
