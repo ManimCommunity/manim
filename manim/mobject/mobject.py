@@ -799,6 +799,7 @@ class Mobject(Container):
         --------
         ::
 
+            >>> from manim import *
             >>> sq = Square()
             >>> sq.height
             2.0
@@ -824,6 +825,7 @@ class Mobject(Container):
         --------
         ::
 
+            >>> from manim import *
             >>> sq = Square()
             >>> sq.height
             2.0
@@ -848,6 +850,7 @@ class Mobject(Container):
         --------
         ::
 
+            >>> from manim import *
             >>> sq = Square()
             >>> sq.width
             2.0
@@ -873,6 +876,7 @@ class Mobject(Container):
         --------
         ::
 
+            >>> from manim import *
             >>> sq = Square()
             >>> sq.width
             2.0
