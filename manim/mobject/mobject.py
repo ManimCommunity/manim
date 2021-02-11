@@ -801,13 +801,13 @@ class Mobject(Container):
 
             >>> sq = Square()
             >>> sq.height
-            2
+            2.0
             >>> sq.scale_to_fit_width(5)
             Square
             >>> sq.width
-            5
+            5.0
             >>> sq.height
-            5
+            5.0
         """
 
         return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
@@ -826,12 +826,12 @@ class Mobject(Container):
 
             >>> sq = Square()
             >>> sq.height
-            2
+            2.0
             >>> sq.stretch_to_fit_width(5)
             >>> sq.width
-            5
+            5.0
             >>> sq.height
-            2
+            2.0
         """
 
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
@@ -850,13 +850,13 @@ class Mobject(Container):
 
             >>> sq = Square()
             >>> sq.width
-            2
+            2.0
             >>> sq.scale_to_fit_height(5)
             Square
             >>> sq.height
-            5
+            5.0
             >>> sq.width
-            5
+            5.0
         """
 
         return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
@@ -875,12 +875,12 @@ class Mobject(Container):
 
             >>> sq = Square()
             >>> sq.width
-            2
+            2.0
             >>> sq.stretch_to_fit_height(5)
             >>> sq.height
-            5
+            5.0
             >>> sq.width
-            2
+            2.0
         """
 
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
