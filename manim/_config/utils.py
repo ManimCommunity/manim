@@ -758,7 +758,7 @@ class ManimConfig(MutableMapping):
     progress_bar = property(
         lambda self: self._d["progress_bar"],
         lambda self, val: self._set_from_list(
-            "progress_bar", val, ["none", "show", "leave"]
+            "progress_bar", val, ["none", "display", "leave"]
         ),
         doc="Whether to show progress bars while rendering animations.",
     )

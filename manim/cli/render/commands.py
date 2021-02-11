@@ -246,6 +246,7 @@ def open_file_if_needed(file_writer):
     help="Show the output file in the file browser.",
 )
 @optgroup.option("--sound", is_flag=True, help="Play a success/failure sound.")
+@optgroup.option("--jupyter", is_flag=True, help="Using jupyter notebook magic.")
 @click.pass_context
 def render(
     ctx,
@@ -275,6 +276,7 @@ def render(
     preview,
     show_in_file_browser,
     sound,
+    jupyter,
 ):
     """Render SCENE(S) from the input FILE.
 
@@ -310,6 +312,7 @@ def render(
         "preview": preview,
         "show_in_file_browser": show_in_file_browser,
         "sound": sound,
+        "jupyter": jupyter,
     }
 
     class ClickArgs:
@@ -327,8 +330,13 @@ def render(
 
         def __contains__(self, key):
             return key in self.__dict__
+        
+        def __repr__(self):
+            return str(self.__dict__)
 
     click_args = ClickArgs(args)
+    if jupyter:
+        return config
     config.digest_args(click_args)
 
     if webgl_renderer:
