@@ -6,6 +6,7 @@ from manim.__main__ import main
 from click.testing import CliRunner
 
 from ..utils.video_tester import *
+from manim.utils.file_ops import add_version_before_extension
 
 
 @pytest.mark.slow
@@ -139,7 +140,9 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     is_not_empty = any((tmp_path / "images").iterdir())
     assert is_not_empty, "running manim with -s, -r flag did not render a file"
 
-    filename = tmp_path / "images" / "simple_scenes" / "SquareToCircle.png"
+    filename = add_version_before_extension(
+        tmp_path / "images" / "simple_scenes" / "SquareToCircle.png"
+    )
     assert np.asarray(Image.open(filename)).shape == (100, 200, 4)
 
 
@@ -164,7 +167,7 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
     exists = (tmp_path / "videos").exists()
     assert not exists, "--custom_folders produced a 'videos/' dir"
 
-    exists = (tmp_path / "SquareToCircle.png").exists()
+    exists = add_version_before_extension(tmp_path / "SquareToCircle.png").exists()
     assert exists, "--custom_folders did not produce the output file"
 
 
