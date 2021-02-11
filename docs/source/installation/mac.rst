@@ -49,7 +49,7 @@ Reboot your computer then ensure that the TeXLiveManager tool ``tlmgr`` works by
    
    sudo tlmgr update --self
 
-Finnaly, run
+Finally, run
 
 .. code-block:: bash
 
