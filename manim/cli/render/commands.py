@@ -330,7 +330,7 @@ def render(
 
         def __contains__(self, key):
             return key in self.__dict__
-        
+
         def __repr__(self):
             return str(self.__dict__)
 

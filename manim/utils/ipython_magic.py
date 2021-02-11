@@ -64,10 +64,12 @@ else:
                 main.main(args, standalone_mode=False)
                 return
 
-            runner = CliRunner() # This runs the command.
+            runner = CliRunner()  # This runs the command.
             result = runner.invoke(main, args, input=cell)
 
-            config = main.main(["--jupyter"]+args, standalone_mode=False) # This runs the render subcommand, but returns config
+            config = main.main(
+                ["--jupyter"] + args, standalone_mode=False
+            )  # This runs the render subcommand, but returns config
             file = Path(config.output_file)
 
             file_type = mimetypes.guess_type(file)[0]
