@@ -33,11 +33,12 @@ def cascade_element_style(element, inherited):
     """Collect the element's style attributes based upon both its inheritance and its own attributes.
 
     SVG uses cascading element styles. A closer ancestor's style takes precedence over a more distant ancestor's
-    style. In order to correctly calculate the styles, the attributes must be passed down through the inheritance tree,
+    style. In order to correctly calculate the styles, the attributes are passed down through the inheritance tree,
     updating where necessary.
 
-    Note that this method only copies, see :meth:`parse_color_string` for converting from SVG
-    attributes to manim keyword arguments."""
+    Note that this method only copies the values and does not parse them. See :meth:`parse_color_string` for converting
+    from SVG attributes to manim keyword arguments.
+    """
 
     style = dict(inherited)
 
