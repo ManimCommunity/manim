@@ -16,10 +16,9 @@ class ConeTest(ThreeDScene):
 
 class ArrowTest(ThreeDScene):
 	def construct(self):
-		a = Arrow3D(start = np.array([0, 0, 0]), end = np.array([2, 2, 2]))
+		a = Arrow3D(start = np.array([0, 0, 0]), end = np.array([3, 0, 0]))
 		self.add(a)
 		self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-		print(a.start)
 		# self.begin_ambient_camera_rotation(rate=1)
 		# self.wait(5)
 
@@ -42,3 +41,8 @@ class LineTest(Scene):
 		line = Line(np.array([0, 0, 0]), np.array([2, 2, 0]))
 		self.add(line)
 		print(line.start)
+
+class TorusTest(ThreeDScene):
+	def construct(self):
+		torus = Torus()
+		self.add(torus)
