@@ -1,12 +1,16 @@
 """Utilities for using Manim with IPython (in particular: Jupyter notebooks)"""
 
+import hashlib
 import mimetypes
+import os
+import shutil
 from pathlib import Path
 
+from manim import config, tempconfig
 from manim.__main__ import main
-from click.testing import CliRunner
 
 try:
+    from IPython import get_ipython
     from IPython.core.magic import (
         Magics,
         magics_class,
@@ -59,28 +63,52 @@ else:
             """
             if cell:
                 exec(cell, local_ns)
+
             args = line.split()
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
                 main.main(args, standalone_mode=False)
                 return
-
-            runner = CliRunner()  # This runs the command.
-            result = runner.invoke(main, args, input=cell)
-
-            config = main.main(
-                ["--jupyter"] + args, standalone_mode=False
-            )  # This runs the render subcommand, but returns config
-            file = Path(config.output_file)
-
-            file_type = mimetypes.guess_type(file)[0]
-            if file_type.startswith("image"):
-                display(Image(filename=config["output_file"]))
-                return
-
-            display(
-                Video(
-                    file,
-                    html_attributes='controls autoplay loop style="max-width: 100%;"',
-                    embed=True,
+            modified_args = ["--jupyter"] + args[:-1] + [""] + [args[-1]]
+            args = main.main(modified_args, standalone_mode=False)
+            with tempconfig(local_ns.get("config", {})):
+                config.digest_args(args)
+                exec(f"{config['scene_names'][0]}().render()", local_ns)
+                local_path = Path(config["output_file"]).relative_to(Path.cwd())
+                tmpfile = (
+                    Path(config["media_dir"])
+                    / "jupyter"
+                    / f"{_video_hash(local_path)}{local_path.suffix}"
                 )
-            )
+
+                if local_path in self.rendered_files:
+                    self.rendered_files[local_path].unlink()
+                self.rendered_files[local_path] = tmpfile
+                os.makedirs(tmpfile.parent, exist_ok=True)
+                shutil.copy(local_path, tmpfile)
+
+                file_type = mimetypes.guess_type(config["output_file"])[0]
+                if file_type.startswith("image"):
+                    display(Image(filename=config["output_file"]))
+                    return
+
+                # videos need to be embedded when running in google colab
+                video_embed = "google.colab" in str(get_ipython())
+
+                display(
+                    Video(
+                        tmpfile,
+                        html_attributes='controls autoplay loop style="max-width: 100%;"',
+                        embed=video_embed,
+                    )
+                )
+
+
+def _video_hash(path):
+    sha1 = hashlib.sha1()
+    with open(path, "rb") as f:
+        while True:
+            data = f.read(65536)
+            if not data:
+                break
+            sha1.update(data)
+    return sha1.hexdigest()

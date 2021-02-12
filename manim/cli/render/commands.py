@@ -333,7 +333,7 @@ def render(
 
     click_args = ClickArgs(args)
     if jupyter:
-        return config
+        return click_args
     config.digest_args(click_args)
 
     if webgl_renderer:
