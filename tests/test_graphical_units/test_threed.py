@@ -15,6 +15,27 @@ class SphereTest(ThreeDScene):
         self.play(Animation(Sphere()))
 
 
+class ConeTest(ThreeDScene):
+    def construct(self):
+        self.play(Animation(Cone()))
+
+
+class CylinderTest(ThreeDScene):
+    def construct(self):
+        self.play(Animation(Cylinder()))
+
+
+class Line3DTest(ThreeDScene):
+    def construct(self):
+        self.play(Animation(Line3D()))
+        
+
+class TorusTest(ThreeDScene):
+    def construct(self):
+        self.play(Animation(Torus()))
+
+
+
 class AxesTest(ThreeDScene):
     def construct(self):
         self.play(Animation(ThreeDAxes()))

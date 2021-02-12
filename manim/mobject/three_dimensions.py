@@ -10,7 +10,7 @@ __all__ = [
     "Arrow3D",
     "Cylinder",
     "Line3D",
-    "Torus"
+    "Torus",
 ]
 
 from ..constants import *
@@ -416,18 +416,15 @@ class Cylinder(ParametricSurface):
         self.rotate(phi, Z_AXIS, about_point=ORIGIN)
 
     def set_direction(self, direction):
-        direction = self.direction
+        self.direction = direction
         self._rotate_to_direction()
 
 
 class Line3D(Cylinder):
-    def __init__(self, start, end, width=0.02, color=None, **kwargs):
+    def __init__(self, start=LEFT, end=RIGHT, width=0.02, color=None, **kwargs):
         self.set_start_and_end_attrs(start, end)
         super().__init__(
-            height=get_norm(self.vect), 
-            radius=width,
-            direction=self.direction,
-            **kwargs
+            height=get_norm(self.vect), radius=width, direction=self.direction, **kwargs
         )
         self.shift((self.start + self.end) / 2)
         if color != None:
@@ -467,25 +464,41 @@ class Line3D(Cylinder):
 
 
 class Arrow3D(Line3D):
-    def __init__(self, start, end, height=0.5, base_radius=0.25, color=WHITE, **kwargs):
+    def __init__(self, start=LEFT, end=RIGHT, height=0.5, base_radius=0.25, color=WHITE, **kwargs):
         self.set_start_and_end_attrs(start, end)
 
         VGroup.__init__(self, **kwargs)
 
         self.length = get_norm(self.vect)
-        self.line = Line3D(start, end - height*self.direction) #end adjusted so that thet tip does not extend out of the cone
+        self.line = Line3D(
+            start, end - height * self.direction
+        )  # end adjusted so that thet tip does not extend out of the cone
         self.line.set_color(color)
 
-        self.cone = Cone(direction=self.direction, base_radius=base_radius, height=height, **kwargs)
+        self.cone = Cone(
+            direction=self.direction, base_radius=base_radius, height=height, **kwargs
+        )
         self.cone.shift(end)
         self.cone.set_color(color)
         self.add(self.line, self.cone)
 
+
 class Torus(ParametricSurface):
-    def __init__(self, R=3, r=1, u_min=0, u_max=TAU, v_min=0, v_max=TAU, resolution=24, **kwargs):
+    def __init__(
+        self, R=3, r=1, u_min=0, u_max=TAU, v_min=0, v_max=TAU, resolution=24, **kwargs
+    ):
         self.R = R
         self.r = r
-        ParametricSurface.__init__(self, self.func, u_min=u_min, u_max=u_max, v_min=v_min, v_max=v_max, resolution=resolution, **kwargs)
+        ParametricSurface.__init__(
+            self,
+            self.func,
+            u_min=u_min,
+            u_max=u_max,
+            v_min=v_min,
+            v_max=v_max,
+            resolution=resolution,
+            **kwargs
+        )
 
     def func(self, u, v):
         P = np.array([np.cos(u), np.sin(u), 0])
