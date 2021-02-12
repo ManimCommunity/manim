@@ -55,7 +55,14 @@ def parse_color_string(color_spec):
 
     if color_spec[0:3] == "rgb":
         # these are only in integer form, but the Colour module wants them in floats.
-        parsed_rgbs = [int(i) / 255.0 for i in color_spec[4:-1].split(",")]
+        splits = color_spec[4:-1].split(",")
+        if splits[0][-1] == "%":
+            # if the last character of the first number is a percentage,
+            # then interpret the number as a percentage
+            parsed_rgbs = [int(i[:-1]) / 100.0 for i in splits]
+        else:
+            parsed_rgbs = [int(i) / 255.0 for i in splits]
+
         hex_color = rgb_to_hex(parsed_rgbs)
 
     elif color_spec[0] == "#":
