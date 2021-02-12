@@ -87,7 +87,6 @@ def open_file_if_needed(file_writer):
 @optgroup.option(
     "-c",
     "--config_file",
-    type=click.File(),
     help="Specify the configuration file to use for render settings.",
 )
 @optgroup.option(
@@ -103,9 +102,7 @@ def open_file_if_needed(file_writer):
 @optgroup.option(
     "--flush_cache", is_flag=True, help="Remove cached partial movie files."
 )
-@optgroup.option(
-    "--tex_template", type=click.File(), help="Specify a custom TeX template file."
-)
+@optgroup.option("--tex_template", help="Specify a custom TeX template file.")
 @optgroup.option(
     "-v",
     "--verbose",
