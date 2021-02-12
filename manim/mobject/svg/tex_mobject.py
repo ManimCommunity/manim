@@ -343,6 +343,9 @@ class SingleStringMathTex(SVGMobject):
         self.sort(lambda p: p[0])
         return self
 
+    def init_colors(self, propagate_colors=True):
+        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+
 
 class MathTex(SingleStringMathTex):
     r"""A string compiled with LaTeX in math mode.
