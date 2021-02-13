@@ -28,7 +28,7 @@ class CylinderTest(ThreeDScene):
 class Line3DTest(ThreeDScene):
     def construct(self):
         self.play(Animation(Line3D()))
-        
+
 
 class TorusTest(ThreeDScene):
     def construct(self):

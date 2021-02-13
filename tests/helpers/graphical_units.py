@@ -54,4 +54,3 @@ def set_test_scene(scene_object, module_name):
         os.makedirs(path)
     np.savez_compressed(os.path.join(path, str(scene)), frame_data=data)
     logger.info(f"Test data for {str(scene)} saved in {path}\n")
-

@@ -464,7 +464,9 @@ class Line3D(Cylinder):
 
 
 class Arrow3D(Line3D):
-    def __init__(self, start=LEFT, end=RIGHT, height=0.5, base_radius=0.25, color=WHITE, **kwargs):
+    def __init__(
+        self, start=LEFT, end=RIGHT, height=0.5, base_radius=0.25, color=WHITE, **kwargs
+    ):
         self.set_start_and_end_attrs(start, end)
 
         VGroup.__init__(self, **kwargs)
