@@ -30,6 +30,11 @@ class Line3DTest(ThreeDScene):
         self.play(Animation(Line3D()))
 
 
+class Arrow3DTest(ThreeDScene):
+    def construct(self):
+        self.play(Animation(Arrow3D()))
+
+
 class TorusTest(ThreeDScene):
     def construct(self):
         self.play(Animation(Torus()))
