@@ -35,7 +35,6 @@ class TorusTest(ThreeDScene):
         self.play(Animation(Torus()))
 
 
-
 class AxesTest(ThreeDScene):
     def construct(self):
         self.play(Animation(ThreeDAxes()))
