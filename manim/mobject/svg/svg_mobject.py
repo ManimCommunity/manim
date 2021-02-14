@@ -243,16 +243,12 @@ class SVGMobject(VMobject):
         """
         return VMobjectFromSVGPathstring(path_string, **self.parse_style(style))
 
-    def use_to_mobjects(self, use_element):
-        """Converts a SVG <use> element to VMobject.
+    def use_to_mobjects(self, use_element: MinidomElement) -> List[VMobject]:
+        """Converts a SVG <use> element to a collection of VMobjects.
 
         Parameters
         ----------
-<<<<<<< Updated upstream
-        use_element : :class:`minidom.Element`
-=======
-        use_element : MinidomElement
->>>>>>> Stashed changes
+        use_element : :class:`MinidomElement`
             An SVG <use> element which represents nodes that should be
             duplicated elsewhere.
 
