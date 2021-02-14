@@ -74,7 +74,7 @@ class SVGMobject(VMobject):
     # these are the default styling specifications for SVG images,
     # according to https://www.w3.org/TR/SVG/painting.html, ctrl-F for "initial"
     # This value can be overridden in more specific classes
-    DEFAULT_SVG_STYLE = {
+    DEFAULT_SVG_STYLE: Dict[str,str] = {
         "fill": "black",
         "fill-opacity": "1",
         "stroke": "none",
@@ -153,7 +153,7 @@ class SVGMobject(VMobject):
         self,
         element: MinidomElement,
         inherited_style: Dict[str, str],
-        within_defs=False,
+        within_defs: bool =False,
     ) -> List[VMobject]:
         """Parses a given SVG element into a Mobject.
 
@@ -162,11 +162,11 @@ class SVGMobject(VMobject):
         element : :class:`Element`
             The SVG data in the XML to be parsed.
 
-        inherited_style : `dict`
+        inherited_style : :class:`dict`
             Dictionary of the SVG attributes for children to inherit.
 
-        within_defs : `bool`
-            Whether `element` is within a `defs` element, which indicates
+        within_defs : :class:`bool`
+            Whether ``element`` is within a ``defs`` element, which indicates
             whether elements with `id` attributes should be added to the
             definitions list.
 
@@ -225,12 +225,12 @@ class SVGMobject(VMobject):
 
         return result
 
-    def path_string_to_mobject(self, path_string, style):
+    def path_string_to_mobject(self, path_string: str, style: dict):
         """Converts a SVG path element's ``d`` attribute to a mobject.
 
         Parameters
         ----------
-        path_string : str
+        path_string : :class:`str`
             A path with potentially multiple path commands to create a shape.
 
         style : :class:`dict`
@@ -286,7 +286,7 @@ class SVGMobject(VMobject):
         )
         return float(stripped_attr)
 
-    def polygon_to_mobject(self, polygon_element, style):
+    def polygon_to_mobject(self, polygon_element: MinidomElement, style: dict):
         """Constructs a VMobject from a SVG <polygon> element.
 
         Parameters
@@ -313,7 +313,7 @@ class SVGMobject(VMobject):
 
     # <circle class="st1" cx="143.8" cy="268" r="22.6"/>
 
-    def circle_to_mobject(self, circle_element, style):
+    def circle_to_mobject(self, circle_element: MinidomElement, style: dict):
         """Creates a Circle VMobject from a SVG <circle> command.
 
         Parameters
@@ -337,7 +337,7 @@ class SVGMobject(VMobject):
         ]
         return Circle(radius=r, **self.parse_style(style)).shift(x * RIGHT + y * DOWN)
 
-    def ellipse_to_mobject(self, circle_element, style):
+    def ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
         """Creates a stretched Circle VMobject from a SVG <circle> path
         command.
 
@@ -366,7 +366,7 @@ class SVGMobject(VMobject):
             .shift(x * RIGHT + y * DOWN)
         )
 
-    def rect_to_mobject(self, rect_element, style):
+    def rect_to_mobject(self, rect_element: MinidomElement, style: dict):
         """Converts a SVG <rect> command to a VMobject.
 
         Parameters
@@ -420,10 +420,10 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        element : minidom.Element
+        element : :class:`minidom.Element`
             The transform command to perform
 
-        mobject : Mobject
+        mobject : :class:`Mobject`
             The Mobject to transform.
         """
 
