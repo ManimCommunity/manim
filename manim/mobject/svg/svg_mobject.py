@@ -80,7 +80,7 @@ def parse_color_string(color_spec):
 def parse_style(svg_style):
     """Convert a dictionary of SVG attributes to Manim VMobject keyword arguments."""
 
-    manim_style = dict()
+    manim_style = {}
 
     # style attributes trump other element-level attributes,
     # see https://www.w3.org/TR/SVG11/styling.html section 6.4, search "priority"
@@ -313,7 +313,7 @@ class SVGMobject(VMobject):
         path_string : str
             A path with potentially multiple path commands to create a shape.
 
-        style : dict
+        style : :class:`dict`
             Style specification, using the SVG names for properties.
 
         Returns
@@ -328,7 +328,7 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        use_element : minidom.Element
+        use_element : :class:`minidom.Element`
             An SVG <use> element which represents nodes that should be
             duplicated elsewhere.
 
@@ -371,10 +371,10 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        polygon_element : minidom.Element
+        polygon_element : :class:`minidom.Element`
             An SVG polygon element.
 
-        style : dict
+        style : :class:`dict`
             Style specification, using the SVG names for properties.
 
         Returns
@@ -398,10 +398,10 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        circle_element : minidom.Element
+        circle_element : :class:`minidom.Element`
             A SVG circle path command.
 
-        style : dict
+        style : :class:`dict`
             Style specification, using the SVG names for properties.
 
         Returns
@@ -423,10 +423,10 @@ class SVGMobject(VMobject):
 
         Parameters
         ----------
-        circle_element : minidom.Element
+        circle_element : :class:`minidom.Element`
             A SVG circle path command.
 
-        style : dict
+        style : :class:`dict`
             Style specification, using the SVG names for properties.
 
         Returns
