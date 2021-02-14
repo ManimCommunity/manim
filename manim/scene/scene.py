@@ -11,6 +11,7 @@ import platform
 import copy
 import string
 import types
+from pathlib import Path
 
 from tqdm import tqdm
 import numpy as np
@@ -870,7 +871,9 @@ class Scene(Container):
 
             :meth:`~.add_sound`
         """
-        self.add_sound("../manim/asserts/click.wav", **kwargs)
+        self.add_sound(
+            str(Path(__file__).parent.parent / "assets" / "click.wav"), **kwargs
+        )
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
