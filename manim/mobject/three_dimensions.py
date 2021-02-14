@@ -240,6 +240,7 @@ class Cone(ParametricSurface):
     checkerboard_colors : :class:`bool`
         Show checkerboard grid texture on the cone.
     """
+
     def __init__(
         self,
         base_radius=1,
@@ -280,7 +281,6 @@ class Cone(ParametricSurface):
             self.add(self.base_circle)
 
         self._rotate_to_direction()
-
 
     @property
     def theta(self):
@@ -323,7 +323,6 @@ class Cone(ParametricSurface):
             phi = np.arctan(y / x)
         if x < 0:
             phi += PI
-
 
         # undo old rotation (in reverse order)
         self.rotate(-self._current_phi, Z_AXIS, about_point=ORIGIN)
@@ -438,8 +437,7 @@ class Line3D(Cylinder):
             self.set_color(color)
 
     def set_start_and_end_attrs(self, start, end):
-        '''If either start or end are Mobjects, this gives their centers
-        '''
+        """If either start or end are Mobjects, this gives their centers"""
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
         self.vect = rough_end - rough_start
