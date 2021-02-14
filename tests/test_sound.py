@@ -1,4 +1,5 @@
 import os, struct, wave
+from pathlib import Path
 
 from manim import Scene
 
@@ -18,3 +19,10 @@ def test_add_sound():
     scene.add_sound("noise.wav")
 
     os.remove("noise.wav")
+
+
+def test_add_click_sound():
+    # check that the click.wav file exists at the right place,
+    # this file is needed for the function add_click_sound.
+    path_sound = Path(__file__).parent.parent / "manim" / "assets" / "click.wav"
+    assert path_sound.exists() == True

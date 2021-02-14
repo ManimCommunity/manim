@@ -871,9 +871,10 @@ class Scene(Container):
 
             :meth:`~.add_sound`
         """
-        self.add_sound(
-            str(Path(__file__).parent.parent / "assets" / "click.wav"), **kwargs
+        path_sound = (
+            Path(__file__).parent.parent.parent / "manim" / "assets" / "click.wav"
         )
+        self.add_sound(str(path_sound), **kwargs)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
