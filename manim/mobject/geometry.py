@@ -1255,16 +1255,6 @@ class Square(Rectangle):
     def __init__(self, side_length=2.0, **kwargs):
         Rectangle.__init__(self, height=side_length, width=side_length, **kwargs)
 
-    @property
-    def side_length(self):
-        """The square's side length."""
-
-        return self.width
-
-    @side_length.setter
-    def side_length(self, value):
-        self.width = value
-
 
 class RoundedRectangle(Rectangle):
     def __init__(self, corner_radius=0.5, **kwargs):
