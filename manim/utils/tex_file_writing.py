@@ -171,19 +171,21 @@ def compile_tex(tex_file, tex_compiler, output_format):
                 )
             with open(log_file, "r") as f:
                 log = f.readlines()
-                log_error_pos = [ind for (ind, line) in enumerate(log) if line.startswith("!")]
+                log_error_pos = [
+                    ind for (ind, line) in enumerate(log) if line.startswith("!")
+                ]
                 if log_error_pos:
                     logger.error(f"LaTeX compilation error! {tex_compiler} reports:")
                     for lineno in log_error_pos:
-                        # search for a line starting with "l." in the next 
+                        # search for a line starting with "l." in the next
                         # few lines past the error; otherwise just print some lines.
                         printed_lines = 1
                         for _ in range(10):
-                            if log[lineno+printed_lines].startswith("l."):
+                            if log[lineno + printed_lines].startswith("l."):
                                 break
                             printed_lines += 1
 
-                        for line in log[lineno:lineno+printed_lines+1]:
+                        for line in log[lineno : lineno + printed_lines + 1]:
                             logger.error(line)
 
             raise ValueError(
