@@ -3,7 +3,7 @@ Mac
 
 First, you need to install Homebrew.  Homebrew is a package manager similar to
 ``apt`` or ``pacman`` on linux that allows you to install packages easily.  If
-it is not installed, please install it with this command (for Apple Silicon useres, please read first the tip):
+it is not installed, please install it with this command (for Apple Silicon useres, please read the tip first):
 
 .. code-block:: bash
 
