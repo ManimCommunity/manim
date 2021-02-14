@@ -930,7 +930,7 @@ class CubicBezier(VMobject):
                 d2 = Dot(point=p2).set_color(RED)
                 l2 = Line(p2, p2b)
                 bezier=CubicBezier([p1b, p1b + 3 * RIGHT, p2b - 3 * RIGHT, p2b])
-                self.add(l1, d1,l2, d2,bezier)
+                self.add(l1, d1, l2, d2, bezier)
 
     """
 
