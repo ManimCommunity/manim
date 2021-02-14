@@ -74,7 +74,7 @@ class SVGMobject(VMobject):
     # these are the default styling specifications for SVG images,
     # according to https://www.w3.org/TR/SVG/painting.html, ctrl-F for "initial"
     # This value can be overridden in more specific classes
-    DEFAULT_SVG_STYLE: Dict[str,str] = {
+    DEFAULT_SVG_STYLE: Dict[str, str] = {
         "fill": "black",
         "fill-opacity": "1",
         "stroke": "none",
@@ -153,7 +153,7 @@ class SVGMobject(VMobject):
         self,
         element: MinidomElement,
         inherited_style: Dict[str, str],
-        within_defs: bool =False,
+        within_defs: bool = False,
     ) -> List[VMobject]:
         """Parses a given SVG element into a Mobject.
 
