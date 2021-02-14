@@ -921,7 +921,6 @@ class CubicBezier(VMobject):
 
         class BezierSplineExample(Scene):
             def construct(self):
-                np.random.seed(42)
                 p1 = np.array([-3, 1, 0])
                 p1b = p1 + [1, 0, 0]
                 d1 = Dot(point=p1).set_color(BLUE)
