@@ -934,6 +934,7 @@ class CubicBezier(VMobject):
                 self.add(l1, d1,l2, d2,bezier)
 
     """
+
     def __init__(self, points, **kwargs):
         VMobject.__init__(self, **kwargs)
         self.set_points(points)
