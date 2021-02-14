@@ -23,8 +23,6 @@ from ..utils.space_ops import z_to_vector, normalize
 from ..utils.color import *
 from ..utils.space_ops import get_norm
 
-##############
-
 
 class ThreeDVMobject(VMobject):
     def __init__(self, shade_in_3d=True, **kwargs):
@@ -205,19 +203,52 @@ class Prism(Cube):
 
 
 class Cone(ParametricSurface):
+    """A circular cone.
+    Can be defined using 2 parameters: its height, and its base radius.
+    The polar angle, theta, can be calculated using arctan(base_radius /
+    height) The spherical radius, r, is calculated using the pythagorean
+    theorem.
+
+    Examples
+    --------
+    .. manim:: ExampleCone
+        :save_last_frame:
+
+        class ExampleCone(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                cone = Cone(direction=X_AXIS+Y_AXIS+2*Z_AXIS)
+                self.set_camera_orientation(phi=5*PI/11, theta=PI/9)
+                self.add(axes, cone)
+
+    Parameters
+    --------
+    base_radius : :class:`int`
+        The base radius from which the cone tapers.
+    height : :class:`int`
+        The height measured from the plane formed by the base_radius to the apex of the cone.
+    direction :  :class:`np.array`
+        The direction of the apex.
+    show_base : :class:`bool`
+        Whether to show the base plane or not.
+    v_min : :class:`float`
+        The azimuthal angle to start at.
+    v_max : :class:`float`
+        The azimuthal angle to end at.
+    u_min : :class:`float`
+        The radius at the apex.
+    checkerboard_colors : :class:`bool`
+        Show checkerboard grid texture on the cone.
+    """
     def __init__(
         self,
         base_radius=1,
         height=1,
         direction=Z_AXIS,
         show_base=False,
-        resolution=24,
-        # v will stand for phi
         v_min=0,
         v_max=TAU,
-        # u will stand for r
         u_min=0,
-        # u_max is calculated as a property
         checkerboard_colors=False,
         **kwargs
     ):
@@ -250,23 +281,6 @@ class Cone(ParametricSurface):
 
         self._rotate_to_direction()
 
-    """
-	A Cone can be defined using 2 parameters: its height, and its base radius.
-	The polar angle, theta, can be calculated using arctan(base_radius / height)
-	The spherical radius, r, can be calculated using the pythagorean theorem.
-	.. code-block::
-				   |\\
-				   |_\\ <-- theta
-		height --> |  \\
-				   |   \\ <-- r
-				   |    \\
-				   |     \\
-				   --------
-				   base_radius
-	"""
-    # @property
-    # def u_max(self):
-    # 	return np.sqrt(self.base_radius ** 2 + self.height ** 2)
 
     @property
     def theta(self):
@@ -310,12 +324,6 @@ class Cone(ParametricSurface):
         if x < 0:
             phi += PI
 
-        # this is a lazy implementation of rotations
-        # This un-rotates the last rotation (which is stored im memory)
-        # and then calculates a rotation against the z axis
-        # A better way would be to get the angle between the current direction
-        # and the new one (using the dot product for example) and rotate it about
-        # a 3rd vector, normal to the previous two
 
         # undo old rotation (in reverse order)
         self.rotate(-self._current_phi, Z_AXIS, about_point=ORIGIN)
@@ -343,7 +351,6 @@ class Cylinder(ParametricSurface):
         height=2,
         direction=Z_AXIS,
         center_point=ORIGIN,
-        # v will is the azimuthal angle
         v_min=0,
         v_max=TAU,
         show_ends=True,
@@ -431,8 +438,8 @@ class Line3D(Cylinder):
             self.set_color(color)
 
     def set_start_and_end_attrs(self, start, end):
-        # If either start or end are Mobjects, this
-        # gives their centers
+        '''If either start or end are Mobjects, this gives their centers
+        '''
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
         self.vect = rough_end - rough_start
