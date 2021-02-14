@@ -10,8 +10,9 @@ import os
 import string
 import warnings
 
-from xml.dom import minidom
+from xml.dom.minidom import Element as MinidomElement, parse as minidom_parse
 from colour import web2hex
+from typing import Dict, List
 
 from ... import config
 from ...constants import *
@@ -27,97 +28,6 @@ def string_to_numbers(num_string):
     num_string = num_string.replace("-", ",-")
     num_string = num_string.replace("e,-", "e-")
     return [float(s) for s in re.split("[ ,]", num_string) if s != ""]
-
-
-def cascade_element_style(element, inherited):
-    """Collect the element's style attributes based upon both its inheritance and its own attributes.
-
-    SVG uses cascading element styles. A closer ancestor's style takes precedence over a more distant ancestor's
-    style. In order to correctly calculate the styles, the attributes are passed down through the inheritance tree,
-    updating where necessary.
-
-    Note that this method only copies the values and does not parse them. See :meth:`parse_color_string` for converting
-    from SVG attributes to manim keyword arguments.
-    """
-
-    style = dict(inherited)
-
-    styling_attributes = ["fill", "stroke", "style", "fill-opacity", "stroke-opacity"]
-    for attr in styling_attributes:
-        entry = element.getAttribute(attr)
-        if entry:
-            style[attr] = entry
-
-    return style
-
-
-def parse_color_string(color_spec):
-    """Handle the SVG-specific color strings and convert them to HTML #rrggbb format."""
-
-    if color_spec[0:3] == "rgb":
-        # these are only in integer form, but the Colour module wants them in floats.
-        splits = color_spec[4:-1].split(",")
-        if splits[0][-1] == "%":
-            # if the last character of the first number is a percentage,
-            # then interpret the number as a percentage
-            parsed_rgbs = [int(i[:-1]) / 100.0 for i in splits]
-        else:
-            parsed_rgbs = [int(i) / 255.0 for i in splits]
-
-        hex_color = rgb_to_hex(parsed_rgbs)
-
-    elif color_spec[0] == "#":
-        # its OK, parse as hex color standard.
-        hex_color = color_spec
-
-    else:
-        # attempt to convert color names like "red" to hex color
-        hex_color = web2hex(color_spec, force_long=True)
-
-    return hex_color
-
-
-def parse_style(svg_style):
-    """Convert a dictionary of SVG attributes to Manim VMobject keyword arguments."""
-
-    manim_style = {}
-
-    # style attributes trump other element-level attributes,
-    # see https://www.w3.org/TR/SVG11/styling.html section 6.4, search "priority"
-    # so overwrite the other attribute dictionary values.
-    if "style" in svg_style:
-        for style_spec in svg_style["style"].split(";"):
-            try:
-                key, value = style_spec.split(":")
-            except ValueError as e:
-                if not style_spec:
-                    # there was just a stray semicolon at the end, producing an emptystring
-                    pass
-                else:
-                    raise e
-            else:
-                svg_style[key] = value
-
-    if "fill-opacity" in svg_style:
-        manim_style["fill_opacity"] = float(svg_style["fill-opacity"])
-
-    if "stroke-opacity" in svg_style:
-        manim_style["stroke_opacity"] = float(svg_style["stroke-opacity"])
-
-    # nones need to be handled specially
-    if "fill" in svg_style:
-        if svg_style["fill"] == "none":
-            manim_style["fill_opacity"] = 0
-        else:
-            manim_style["fill_color"] = parse_color_string(svg_style["fill"])
-
-    if "stroke" in svg_style:
-        if svg_style["stroke"] == "none":
-            manim_style["stroke_opacity"] = 0
-        else:
-            manim_style["stroke_color"] = parse_color_string(svg_style["stroke"])
-
-    return manim_style
 
 
 class SVGMobject(VMobject):
@@ -230,7 +140,7 @@ class SVGMobject(VMobject):
         the SVGMobject's points from XML tags, populating self.mobjects, and
         any submobjects within self.mobjects.
         """
-        doc = minidom.parse(self.file_path)
+        doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
             mobjects = self.get_mobjects_from(svg, self.DEFAULT_SVG_STYLE)
             if self.unpack_groups:
@@ -239,16 +149,26 @@ class SVGMobject(VMobject):
                 self.add(*mobjects[0].submobjects)
         doc.unlink()
 
-    def get_mobjects_from(self, element, inherited_style, within_defs=False):
+    def get_mobjects_from(
+        self,
+        element: MinidomElement,
+        inherited_style: Dict[str, str],
+        within_defs=False,
+    ) -> List[VMobject]:
         """Parses a given SVG element into a Mobject.
 
         Parameters
         ----------
-        element : :class:`minidom.Element`
+        element : :class:`Element`
             The SVG data in the XML to be parsed.
 
         inherited_style : `dict`
             Dictionary of the SVG attributes for children to inherit.
+
+        within_defs : `bool`
+            Whether `element` is within a `defs` element, which indicates
+            whether elements with `id` attributes should be added to the
+            definitions list.
 
         Returns
         -------
@@ -258,10 +178,10 @@ class SVGMobject(VMobject):
 
         result = []
         # First, let all non-elements pass (like text entries)
-        if not isinstance(element, minidom.Element):
+        if not isinstance(element, MinidomElement):
             return result
 
-        style = cascade_element_style(element, inherited_style)
+        style = self.cascade_element_style(element, inherited_style)
         is_defs = element.tagName == "defs"
 
         if element.tagName == "style":
@@ -321,14 +241,18 @@ class SVGMobject(VMobject):
         VMobjectFromSVGPathstring
             A VMobject from the given path string, or d attribute.
         """
-        return VMobjectFromSVGPathstring(path_string, **parse_style(style))
+        return VMobjectFromSVGPathstring(path_string, **self.parse_style(style))
 
     def use_to_mobjects(self, use_element):
         """Converts a SVG <use> element to VMobject.
 
         Parameters
         ----------
+<<<<<<< Updated upstream
         use_element : :class:`minidom.Element`
+=======
+        use_element : MinidomElement
+>>>>>>> Stashed changes
             An SVG <use> element which represents nodes that should be
             duplicated elsewhere.
 
@@ -415,7 +339,7 @@ class SVGMobject(VMobject):
             else 0.0
             for key in ("cx", "cy", "r")
         ]
-        return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
+        return Circle(radius=r, **self.parse_style(style)).shift(x * RIGHT + y * DOWN)
 
     def ellipse_to_mobject(self, circle_element, style):
         """Creates a stretched Circle VMobject from a SVG <circle> path
@@ -441,7 +365,7 @@ class SVGMobject(VMobject):
             for key in ("cx", "cy", "rx", "ry")
         ]
         return (
-            Circle(**parse_style(style))
+            Circle(**self.parse_style(style))
             .scale(rx * RIGHT + ry * UP)
             .shift(x * RIGHT + y * DOWN)
         )
@@ -480,7 +404,7 @@ class SVGMobject(VMobject):
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
                 stroke_width=stroke_width,
-                **parse_style(style),
+                **self.parse_style(style),
             )
         else:
             mob = RoundedRectangle(
@@ -488,7 +412,7 @@ class SVGMobject(VMobject):
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
                 stroke_width=stroke_width,
                 corner_radius=corner_radius,
-                **parse_style(style),
+                **self.parse_style(style),
             )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
@@ -515,8 +439,6 @@ class SVGMobject(VMobject):
 
         transform = element.getAttribute("transform")
         suffix = ")"
-
-        # igve me a syntax error.
 
         # Transform matrix
         prefix = "matrix("
@@ -553,6 +475,136 @@ class SVGMobject(VMobject):
             transform = transform[len(prefix) : -len(suffix)]
             x, y = string_to_numbers(transform)
             mobject.shift(x * RIGHT + y * DOWN)
+
+    def cascade_element_style(
+        self, element: MinidomElement, inherited: Dict[str, str]
+    ) -> Dict[str, str]:
+        """Collect the element's style attributes based upon both its inheritance and its own attributes.
+
+        SVG uses cascading element styles. A closer ancestor's style takes precedence over a more distant ancestor's
+        style. In order to correctly calculate the styles, the attributes are passed down through the inheritance tree,
+        updating where necessary.
+
+        Note that this method only copies the values and does not parse them. See :meth:`parse_color_string` for converting
+        from SVG attributes to manim keyword arguments.
+
+        Parameters
+        ----------
+        element : :class:`MinidomElement`
+            Element of the SVG parse tree
+
+        inherited : :class:`dict`
+            Dictionary of SVG attributes inherited from the parent element.
+
+        Returns
+        -------
+            Dictionary mapping svg attributes to values with `element`'s values overriding inherited values.
+        """
+
+        style = dict(inherited)
+
+        styling_attributes = [
+            "fill",
+            "stroke",
+            "style",
+            "fill-opacity",
+            "stroke-opacity",
+        ]
+        for attr in styling_attributes:
+            entry = element.getAttribute(attr)
+            if entry:
+                style[attr] = entry
+
+        return style
+
+    def parse_color_string(self, color_spec: str) -> str:
+        """Handle the SVG-specific color strings and convert them to HTML #rrggbb format.
+
+        Parameters
+        ----------
+        color_spec : :class:`str`
+            String in any web-compatible format
+
+        Returns
+        -------
+        Hexadecimal color string in the format `#rrggbb`
+        """
+
+        if color_spec[0:3] == "rgb":
+            # these are only in integer form, but the Colour module wants them in floats.
+            splits = color_spec[4:-1].split(",")
+            if splits[0][-1] == "%":
+                # if the last character of the first number is a percentage,
+                # then interpret the number as a percentage
+                parsed_rgbs = [int(i[:-1]) / 100.0 for i in splits]
+            else:
+                parsed_rgbs = [int(i) / 255.0 for i in splits]
+
+            hex_color = rgb_to_hex(parsed_rgbs)
+
+        elif color_spec[0] == "#":
+            # its OK, parse as hex color standard.
+            hex_color = color_spec
+
+        else:
+            # attempt to convert color names like "red" to hex color
+            hex_color = web2hex(color_spec, force_long=True)
+
+        return hex_color
+
+    def parse_style(self, svg_style: Dict[str, str]) -> Dict:
+        """Convert a dictionary of SVG attributes to Manim VMobject keyword arguments.
+
+        Parameters
+        ----------
+        svg_style : :class:`dict`
+            Style attributes as a string-to-string dictionary. Keys are valid SVG element attributes (fill, stroke, etc)
+
+        Returns
+        -------
+        Style attributes, but in manim kwargs form, e.g., keys are fill_color, stroke_color
+        """
+
+        manim_style = {}
+
+        # style attributes trump other element-level attributes,
+        # see https://www.w3.org/TR/SVG11/styling.html section 6.4, search "priority"
+        # so overwrite the other attribute dictionary values.
+        if "style" in svg_style:
+            for style_spec in svg_style["style"].split(";"):
+                try:
+                    key, value = style_spec.split(":")
+                except ValueError as e:
+                    if not style_spec:
+                        # there was just a stray semicolon at the end, producing an emptystring
+                        pass
+                    else:
+                        raise e
+                else:
+                    svg_style[key] = value
+
+        if "fill-opacity" in svg_style:
+            manim_style["fill_opacity"] = float(svg_style["fill-opacity"])
+
+        if "stroke-opacity" in svg_style:
+            manim_style["stroke_opacity"] = float(svg_style["stroke-opacity"])
+
+        # nones need to be handled specially
+        if "fill" in svg_style:
+            if svg_style["fill"] == "none":
+                manim_style["fill_opacity"] = 0
+            else:
+                manim_style["fill_color"] = self.parse_color_string(svg_style["fill"])
+
+        if "stroke" in svg_style:
+            if svg_style["stroke"] == "none":
+                manim_style["stroke_opacity"] = 0
+            else:
+                manim_style["stroke_color"] = self.parse_color_string(
+                    svg_style["stroke"]
+                )
+
+        return manim_style
 
     def flatten(self, input_list):
         """A helper method to flatten the ``input_list`` into an 1D array."""
