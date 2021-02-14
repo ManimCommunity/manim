@@ -12,7 +12,7 @@ it is not installed, please install it with this command (for Apple Silicon user
 
 .. tip:: 
 
-    As of February 2020, the installation with ``brew`` had some issues with scipy and cairo packages in Apple Silicon mode. This can be solved by installing brew in the rosetta2 mode.
+    As of February 2020, the installation with ``brew`` has some issues with scipy and cairo packages in Apple Silicon mode. This can be solved by installing brew in the rosetta2 mode.
     Therefore, a rosetta terminal needs to be created (see here: https://5balloons.info/correct-way-to-install-and-use-homebrew-on-m1-macs/). 
     Next, install cairo, ffmpeg and mactex as described below. If not already there, install python 3.9 with ``brew install python@3.9``. Finally, make sure that you are using the right pip version to install manim, e.g. ``/usr/local/opt/python@3.9/bin/python3.9 -m pip install manim``
 
