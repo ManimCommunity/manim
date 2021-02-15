@@ -10,6 +10,8 @@ import itertools as it
 import operator as op
 import random
 import sys
+import types
+import warnings
 
 from pathlib import Path
 from colour import Color
@@ -33,6 +35,10 @@ from ..utils.space_ops import rotation_matrix
 
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
+
+    There is a compatibility layer that allows for
+    getting and setting generic attributes with ``get_*``
+    and ``set_*`` methods. See :meth:`set` for more details.
 
     Attributes
     ----------
@@ -247,6 +253,186 @@ class Mobject(Container):
 
     def __isub__(self, other):
         raise NotImplementedError
+
+    def set(self, **kwargs):
+        """Sets attributes.
+
+        Mainly to be used along with :attr:`animate` to
+        animate setting attributes.
+
+        In addition to this method, there is a compatibility
+        layer that allows ``get_*`` and ``set_*`` methods to
+        get and set generic attributes. For instance::
+
+            >>> mob = Mobject()
+            >>> mob.set_foo(0)
+            Mobject
+            >>> mob.get_foo()
+            0
+            >>> mob.foo
+            0
+
+        This compatibility layer does not interfere with any
+        ``get_*`` or ``set_*`` methods that are explicitly
+        defined.
+
+        .. warning::
+
+            This compatibility layer is for backwards compatibility
+            and is not guaranteed to stay around. Where applicable,
+            please prefer getting/setting attributes normally or with
+            the :meth:`set` method.
+
+        Parameters
+        ----------
+        **kwargs
+            The attributes and corresponding values to set.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> mob = Mobject()
+            >>> mob.set(foo=0)
+            Mobject
+            >>> mob.foo
+            0
+        """
+
+        for attr, value in kwargs.items():
+            setattr(self, attr, value)
+
+        return self
+
+    def __getattr__(self, attr):
+        # Add automatic compatibility layer
+        # between properties and get_* and set_*
+        # methods.
+        #
+        # In python 3.9+ we could change this
+        # logic to use str.remove_prefix instead.
+
+        if attr.startswith("get_"):
+            # Remove the "get_" prefix
+            to_get = attr[4:]
+
+            def getter(self):
+                warnings.warn(
+                    "This method is not guaranteed to stay around. Please prefer getting the attribute normally.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
+                return getattr(self, to_get)
+
+            # Return a bound method
+            return types.MethodType(getter, self)
+
+        if attr.startswith("set_"):
+            # Remove the "set_" prefix
+            to_set = attr[4:]
+
+            def setter(self, value):
+                warnings.warn(
+                    "This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
+                setattr(self, to_set, value)
+
+                return self
+
+            # Return a bound method
+            return types.MethodType(setter, self)
+
+        # Unhandled attribute, therefore error
+        raise AttributeError
+
+    @property
+    def width(self):
+        """The width of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: WidthExample
+
+            class WidthExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.width))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(width=7))
+                    self.wait()
+        """
+
+        # Get the length across the X dimension
+        return self.length_over_dim(0)
+
+    @width.setter
+    def width(self, value):
+        self.scale_to_fit_width(value)
+
+    @property
+    def height(self):
+        """The height of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: HeightExample
+
+            class HeightExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.height))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(height=5))
+                    self.wait()
+        """
+
+        # Get the length across the Y dimension
+        return self.length_over_dim(1)
+
+    @height.setter
+    def height(self, value):
+        self.scale_to_fit_height(value)
+
+    @property
+    def depth(self):
+        """The depth of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+        """
+
+        # Get the length across the Z dimension
+        return self.length_over_dim(2)
+
+    @depth.setter
+    def depth(self, value):
+        self.scale_to_fit_depth(value)
 
     def get_array_attrs(self):
         return ["points"]
@@ -648,23 +834,119 @@ class Mobject(Container):
             self.scale(length / old_length, **kwargs)
         return self
 
+    def scale_to_fit_width(self, width, **kwargs):
+        """Scales the mobject to fit a width while keeping height/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.height
+            2.0
+            >>> sq.scale_to_fit_width(5)
+            Square
+            >>> sq.width
+            5.0
+            >>> sq.height
+            5.0
+        """
+
+        return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
+
     def stretch_to_fit_width(self, width, **kwargs):
+        """Stretches the mobject to fit a width, not keeping height/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.height
+            2.0
+            >>> sq.stretch_to_fit_width(5)
+            Square
+            >>> sq.width
+            5.0
+            >>> sq.height
+            2.0
+        """
+
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
+    def scale_to_fit_height(self, height, **kwargs):
+        """Scales the mobject to fit a height while keeping width/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.width
+            2.0
+            >>> sq.scale_to_fit_height(5)
+            Square
+            >>> sq.height
+            5.0
+            >>> sq.width
+            5.0
+        """
+
+        return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
+
     def stretch_to_fit_height(self, height, **kwargs):
+        """Stretches the mobject to fit a height, not keeping width/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.width
+            2.0
+            >>> sq.stretch_to_fit_height(5)
+            Square
+            >>> sq.height
+            5.0
+            >>> sq.width
+            2.0
+        """
+
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
+    def scale_to_fit_depth(self, depth, **kwargs):
+        """Scales the mobject to fit a depth while keeping width/height proportional."""
+
+        return self.rescale_to_fit(depth, 2, stretch=False, **kwargs)
+
     def stretch_to_fit_depth(self, depth, **kwargs):
+        """Stretches the mobject to fit a depth, not keeping width/height proportional."""
+
         return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
-
-    def set_width(self, width, stretch=False, **kwargs):
-        return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
-
-    def set_height(self, height, stretch=False, **kwargs):
-        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
-
-    def set_depth(self, depth, stretch=False, **kwargs):
-        return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
 
     def set_coord(self, value, dim, direction=ORIGIN):
         curr = self.get_coord(dim, direction)
@@ -704,8 +986,8 @@ class Mobject(Container):
             raise Warning("Attempting to replace mobject with no points")
             return self
         if stretch:
-            self.stretch_to_fit_width(mobject.get_width())
-            self.stretch_to_fit_height(mobject.get_height())
+            self.stretch_to_fit_width(mobject.width)
+            self.stretch_to_fit_height(mobject.height)
         else:
             self.rescale_to_fit(
                 mobject.length_over_dim(dim_to_match), dim_to_match, stretch=False
@@ -954,15 +1236,6 @@ class Mobject(Container):
         return self.reduce_across_dimension(
             np.max, np.max, dim
         ) - self.reduce_across_dimension(np.min, np.min, dim)
-
-    def get_width(self):
-        return self.length_over_dim(0)
-
-    def get_height(self):
-        return self.length_over_dim(1)
-
-    def get_depth(self):
-        return self.length_over_dim(2)
 
     def get_coord(self, dim, direction=ORIGIN):
         """
