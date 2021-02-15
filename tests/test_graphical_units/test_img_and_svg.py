@@ -119,6 +119,13 @@ class ManimLogoTest(Scene):
         self.wait()
 
 
+class UKFlagTest(Scene):
+    def construct(self):
+        uk_flag = SVGMobject(get_test_resource("united-kingdom.svg"))
+        self.add(uk_flag)
+        self.wait()
+
+
 class SingleUSStateTest(Scene):
     def construct(self):
         single_state = SVGMobject(get_test_resource("single_state.svg"))
