@@ -437,9 +437,8 @@ class SVGMobject(VMobject):
         suffix = ")"
 
         # Transform matrix
-        prefix = "matrix("
-        if transform.startswith(prefix) and transform.endswith(suffix):
-            transform = transform[len(prefix) : -len(suffix)]
+        if transform.startswith("matrix(") and transform.endswith(suffix):
+            transform = transform[len("matrix(") : -len(suffix)]
             transform = string_to_numbers(transform)
             transform = np.array(transform).reshape([3, 2])
             x = transform[2][0]
@@ -453,10 +452,8 @@ class SVGMobject(VMobject):
                 mob.points = np.dot(mob.points, matrix)
             mobject.shift(x * RIGHT + y * UP)
 
-        # transform scale
-        prefix = "scale("
-        if transform.startswith(prefix) and transform.endswith(suffix):
-            transform = transform[len(prefix) : -len(suffix)]
+        elif transform.startswith("scale(") and transform.endswith(suffix):
+            transform = transform[len("scale(") : -len(suffix)]
             scale_values = string_to_numbers(transform)
             if len(scale_values) == 2:
                 scale_x, scale_y = scale_values
@@ -465,10 +462,8 @@ class SVGMobject(VMobject):
                 scale = scale_values[0]
                 mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
 
-        # transform translate
-        prefix = "translate("
-        if transform.startswith(prefix) and transform.endswith(suffix):
-            transform = transform[len(prefix) : -len(suffix)]
+        elif transform.startswith("translate(") and transform.endswith(suffix):
+            transform = transform[len("translate(") : -len(suffix)]
             x, y = string_to_numbers(transform)
             mobject.shift(x * RIGHT + y * DOWN)
 
