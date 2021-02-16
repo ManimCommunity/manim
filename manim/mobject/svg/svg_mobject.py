@@ -1,7 +1,7 @@
 """Mobjects generated from an SVG file."""
 
 
-__all__ = ["SVGMobject", "VMobjectFromSVGPathstring", "string_to_numbers"]
+__all__ = ["SVGMobject", "string_to_numbers"]
 
 
 import itertools as it
@@ -11,9 +11,11 @@ import string
 import warnings
 
 from xml.dom.minidom import Element as MinidomElement, parse as minidom_parse
-from colour import web2hex
+
 from typing import Dict, List
 
+from .style_utils import cascade_element_style, parse_style
+from .svg_path import SVGPathMobject, string_to_numbers
 from ... import config
 from ...constants import *
 from ...mobject.geometry import Circle
@@ -21,13 +23,6 @@ from ...mobject.geometry import Rectangle
 from ...mobject.geometry import RoundedRectangle
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VMobject
-from ...utils.color import *
-
-
-def string_to_numbers(num_string):
-    num_string = num_string.replace("-", ",-")
-    num_string = num_string.replace("e,-", "e-")
-    return [float(s) for s in re.split("[ ,]", num_string) if s != ""]
 
 
 class SVGMobject(VMobject):
@@ -181,7 +176,7 @@ class SVGMobject(VMobject):
         if not isinstance(element, MinidomElement):
             return result
 
-        style = self.cascade_element_style(element, inherited_style)
+        style = cascade_element_style(element, inherited_style)
         is_defs = element.tagName == "defs"
 
         if element.tagName == "style":
@@ -240,7 +235,7 @@ class SVGMobject(VMobject):
         VMobjectFromSVGPathstring
             A VMobject from the given path string, or d attribute.
         """
-        return VMobjectFromSVGPathstring(path_string, **self.parse_style(style))
+        return SVGPathMobject(path_string, **parse_style(style))
 
     def use_to_mobjects(self, use_element: MinidomElement) -> List[VMobject]:
         """Converts a SVG <use> element to a collection of VMobjects.
@@ -332,7 +327,7 @@ class SVGMobject(VMobject):
             else 0.0
             for key in ("cx", "cy", "r")
         ]
-        return Circle(radius=r, **self.parse_style(style)).shift(x * RIGHT + y * DOWN)
+        return Circle(radius=r, **parse_style(style)).shift(x * RIGHT + y * DOWN)
 
     def ellipse_to_mobject(self, circle_element: MinidomElement, style: dict):
         """Creates a stretched Circle VMobject from a SVG <circle> path
@@ -358,7 +353,7 @@ class SVGMobject(VMobject):
             for key in ("cx", "cy", "rx", "ry")
         ]
         return (
-            Circle(**self.parse_style(style))
+            Circle(**parse_style(style))
             .scale(rx * RIGHT + ry * UP)
             .shift(x * RIGHT + y * DOWN)
         )
@@ -397,7 +392,7 @@ class SVGMobject(VMobject):
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
                 stroke_width=stroke_width,
-                **self.parse_style(style),
+                **parse_style(style),
             )
         else:
             mob = RoundedRectangle(
@@ -405,7 +400,7 @@ class SVGMobject(VMobject):
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
                 stroke_width=stroke_width,
                 corner_radius=corner_radius,
-                **self.parse_style(style),
+                **parse_style(style),
             )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
@@ -464,136 +459,6 @@ class SVGMobject(VMobject):
             x, y = string_to_numbers(transform)
             mobject.shift(x * RIGHT + y * DOWN)
 
-    def cascade_element_style(
-        self, element: MinidomElement, inherited: Dict[str, str]
-    ) -> Dict[str, str]:
-        """Collect the element's style attributes based upon both its inheritance and its own attributes.
-
-        SVG uses cascading element styles. A closer ancestor's style takes precedence over a more distant ancestor's
-        style. In order to correctly calculate the styles, the attributes are passed down through the inheritance tree,
-        updating where necessary.
-
-        Note that this method only copies the values and does not parse them. See :meth:`parse_color_string` for converting
-        from SVG attributes to manim keyword arguments.
-
-        Parameters
-        ----------
-        element : :class:`MinidomElement`
-            Element of the SVG parse tree
-
-        inherited : :class:`dict`
-            Dictionary of SVG attributes inherited from the parent element.
-
-        Returns
-        -------
-            Dictionary mapping svg attributes to values with `element`'s values overriding inherited values.
-        """
-
-        style = dict(inherited)
-
-        styling_attributes = [
-            "fill",
-            "stroke",
-            "style",
-            "fill-opacity",
-            "stroke-opacity",
-        ]
-        for attr in styling_attributes:
-            entry = element.getAttribute(attr)
-            if entry:
-                style[attr] = entry
-
-        return style
-
-    def parse_color_string(self, color_spec: str) -> str:
-        """Handle the SVG-specific color strings and convert them to HTML #rrggbb format.
-
-        Parameters
-        ----------
-        color_spec : :class:`str`
-            String in any web-compatible format
-
-        Returns
-        -------
-        Hexadecimal color string in the format `#rrggbb`
-        """
-
-        if color_spec[0:3] == "rgb":
-            # these are only in integer form, but the Colour module wants them in floats.
-            splits = color_spec[4:-1].split(",")
-            if splits[0][-1] == "%":
-                # if the last character of the first number is a percentage,
-                # then interpret the number as a percentage
-                parsed_rgbs = [int(i[:-1]) / 100.0 for i in splits]
-            else:
-                parsed_rgbs = [int(i) / 255.0 for i in splits]
-
-            hex_color = rgb_to_hex(parsed_rgbs)
-
-        elif color_spec[0] == "#":
-            # its OK, parse as hex color standard.
-            hex_color = color_spec
-
-        else:
-            # attempt to convert color names like "red" to hex color
-            hex_color = web2hex(color_spec, force_long=True)
-
-        return hex_color
-
-    def parse_style(self, svg_style: Dict[str, str]) -> Dict:
-        """Convert a dictionary of SVG attributes to Manim VMobject keyword arguments.
-
-        Parameters
-        ----------
-        svg_style : :class:`dict`
-            Style attributes as a string-to-string dictionary. Keys are valid SVG element attributes (fill, stroke, etc)
-
-        Returns
-        -------
-        Style attributes, but in manim kwargs form, e.g., keys are fill_color, stroke_color
-        """
-
-        manim_style = {}
-
-        # style attributes trump other element-level attributes,
-        # see https://www.w3.org/TR/SVG11/styling.html section 6.4, search "priority"
-        # so overwrite the other attribute dictionary values.
-        if "style" in svg_style:
-            for style_spec in svg_style["style"].split(";"):
-                try:
-                    key, value = style_spec.split(":")
-                except ValueError as e:
-                    if not style_spec:
-                        # there was just a stray semicolon at the end, producing an emptystring
-                        pass
-                    else:
-                        raise e
-                else:
-                    svg_style[key] = value
-
-        if "fill-opacity" in svg_style:
-            manim_style["fill_opacity"] = float(svg_style["fill-opacity"])
-
-        if "stroke-opacity" in svg_style:
-            manim_style["stroke_opacity"] = float(svg_style["stroke-opacity"])
-
-        # nones need to be handled specially
-        if "fill" in svg_style:
-            if svg_style["fill"] == "none":
-                manim_style["fill_opacity"] = 0
-            else:
-                manim_style["fill_color"] = self.parse_color_string(svg_style["fill"])
-
-        if "stroke" in svg_style:
-            if svg_style["stroke"] == "none":
-                manim_style["stroke_opacity"] = 0
-            else:
-                manim_style["stroke_color"] = self.parse_color_string(
-                    svg_style["stroke"]
-                )
-
-        return manim_style
-
     def flatten(self, input_list):
         """A helper method to flatten the ``input_list`` into an 1D array."""
         output_list = []
@@ -618,198 +483,3 @@ class SVGMobject(VMobject):
 
     def init_colors(self, propagate_colors=False):
         VMobject.init_colors(self, propagate_colors=propagate_colors)
-
-
-class VMobjectFromSVGPathstring(VMobject):
-    def __init__(self, path_string, **kwargs):
-        self.path_string = path_string
-        VMobject.__init__(self, **kwargs)
-        self.current_path_start = np.zeros((1, self.dim))
-
-    def get_path_commands(self):
-        """Returns a list of possible path commands used within an SVG ``d``
-        attribute.
-
-        See: https://svgwg.org/svg2-draft/paths.html#DProperty for further
-        details on what each path command does.
-
-        Returns
-        -------
-        List[:class:`str`]
-            The various upper and lower cased path commands.
-        """
-        result = [
-            "M",  # moveto
-            "L",  # lineto
-            "H",  # horizontal lineto
-            "V",  # vertical lineto
-            "C",  # curveto
-            "S",  # smooth curveto
-            "Q",  # quadratic Bezier curve
-            "T",  # smooth quadratic Bezier curveto
-            "A",  # elliptical Arc
-            "Z",  # closepath
-        ]
-        result += [s.lower() for s in result]
-        return result
-
-    def generate_points(self):
-        """Generates points from a given an SVG ``d`` attribute."""
-        pattern = "[%s]" % ("".join(self.get_path_commands()))
-        pairs = list(
-            zip(
-                re.findall(pattern, self.path_string),
-                re.split(pattern, self.path_string)[1:],
-            )
-        )
-        # Which mobject should new points be added to
-        prev_command = None
-        for command, coord_string in pairs:
-            self.handle_command(command, coord_string, prev_command)
-            prev_command = command
-        # people treat y-coordinate differently
-        self.rotate(np.pi, RIGHT, about_point=ORIGIN)
-
-    def handle_command(self, command, coord_string, prev_command):
-        """Core logic for handling each of the various path commands."""
-        # Relative SVG commands are specified as lowercase letters
-        is_relative = command.islower()
-        command = command.upper()
-
-        # Keep track of the most recently completed point
-        start_point = (
-            self.points[-1] if self.points.shape[0] else np.zeros((1, self.dim))
-        )
-
-        # Produce the (absolute) coordinates of the controls and handles
-        new_points = self.string_to_points(
-            command, is_relative, coord_string, start_point
-        )
-
-        if command == "M":  # moveto
-            self.start_new_path(new_points[0])
-            for p in new_points[1:]:
-                self.add_line_to(p)
-            return
-
-        elif command in ["H", "V", "L"]:  # lineto of any kind
-            for p in new_points:
-                self.add_line_to(p)
-            return
-
-        elif command == "C":  # Cubic
-            # points must be added in groups of 3.
-            for i in range(0, len(new_points), 3):
-                self.add_cubic_bezier_curve_to(*new_points[i : i + 3])
-            return
-
-        elif command == "S":  # Smooth cubic
-            prev_handle = start_point
-            if prev_command.upper() in ["C", "S"]:
-                prev_handle = self.points[-2]
-            for i in range(0, len(new_points), 2):
-                new_handle = 2 * start_point - prev_handle
-                self.add_cubic_bezier_curve_to(
-                    new_handle, new_points[i], new_points[i + 1]
-                )
-                start_point = new_points[i + 1]
-                prev_handle = new_points[i]
-            return
-
-        elif command == "Q":  # quadratic Bezier curve
-            for i in range(0, len(new_points), 2):
-                self.add_quadratic_bezier_curve_to(new_points[i], new_points[i + 1])
-            return
-
-        elif command == "T":  # smooth quadratic
-            prev_quad_handle = start_point
-            if prev_command.upper() in ["Q", "T"]:
-                # because of the conversion from quadratic to cubic,
-                # our actual previous handle was 3/2 in the direction of p[-2] from p[-1]
-                prev_quad_handle = 1.5 * self.points[-2] - 0.5 * self.points[-1]
-            for p in new_points:
-                new_quad_handle = 2 * start_point - prev_quad_handle
-                self.add_quadratic_bezier_curve_to(new_quad_handle, p)
-                start_point = p
-                prev_quad_handle = new_quad_handle
-
-        elif command == "A":  # elliptical Arc
-            raise NotImplementedError()
-
-        elif command == "Z":  # closepath
-            self.add_line_to(self.current_path_start)
-            return
-
-    def string_to_points(self, command, is_relative, coord_string, start_point):
-        """Convert an SVG command string into a sequence of absolute-positioned control points.
-
-        Parameters
-        -----
-        command : `str`
-            A string containing a single uppercase letter representing the SVG command.
-
-        is_relative : `bool`
-            Whether the command is relative to the end of the previous command
-
-        coord_string : `str`
-            A string that contains many comma- or space-separated numbers that defined the control points. Different
-            commands require different numbers of numbers as arguments.
-
-        start_point : `ndarray`
-            If the command is relative, the position to begin the relations from.
-        """
-
-        # this call to "string to numbers" where problems like parsing 0.5.6 lie
-        numbers = string_to_numbers(coord_string)
-
-        # H and V expect a sequence of single coords, not coord pairs like the rest of the commands.
-        if command == "H":
-            result = np.zeros((len(numbers), self.dim))
-            result[:, 0] = numbers
-            if not is_relative:
-                result[:, 1] = start_point[1]
-
-        elif command == "V":
-            result = np.zeros((len(numbers), self.dim))
-            result[:, 1] = numbers
-            if not is_relative:
-                result[:, 0] = start_point[0]
-
-        elif command == "A":
-            raise NotImplementedError("Arcs are not implemented.")
-
-        else:
-            num_points = len(numbers) // 2
-            result = np.zeros((num_points, self.dim))
-            result[:, :2] = np.array(numbers).reshape((num_points, 2))
-
-        # If it's not relative, we don't have any more work!
-        if not is_relative:
-            return result
-
-        # Each control / target point is calculated relative to the ending position of the previous curve.
-        # Curves consist of multiple point listings depending on the command.
-        entries = 1
-        # Quadratic curves expect pairs, S expects 3 (cubic) but one is implied by smoothness
-        if command in ["Q", "S"]:
-            entries = 2
-        # Only cubic curves expect three points.
-        elif command == "C":
-            entries = 3
-
-        offset = start_point
-        for i in range(result.shape[0]):
-            result[i, :] = result[i, :] + offset
-            if (i + 1) % entries == 0:
-                offset = result[i, :]
-
-        return result
-
-    def get_original_path_string(self):
-        """A simple getter for the path's ``d`` attribute."""
-        return self.path_string
-
-    def start_new_path(self, point):
-        self.current_path_start = point
-        super().start_new_path(point)
-        return self
