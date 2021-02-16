@@ -229,6 +229,7 @@ class SVGPathMobject(VMobject):
 
 class VMobjectFromSVGPathstring(SVGPathMobject):
     """Pure alias of SVGPathMobject, retained for backwards compatibility"""
+
     def __init__(self, *args, **kwargs):
         logger.warning(
             "VMobjectFromSVGPathstring has been deprecated in favour "
