@@ -712,7 +712,6 @@ Advanced Projects
         def show_circle(self):
             circle = Circle(radius=1)
             circle.move_to(self.origin_point)
-
             self.add(circle)
             self.circle = circle
 
