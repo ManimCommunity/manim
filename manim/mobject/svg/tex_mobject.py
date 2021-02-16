@@ -203,13 +203,6 @@ class SingleStringMathTex(SVGMobject):
         SingleStringMathTex('Test')
     """
 
-    DEFAULT_SVG_STYLE = {
-        "fill": "white",
-        "fill-opacity": "1",
-        "stroke": "none",
-        "stroke-opacity": "1",
-    }
-
     def __init__(
         self,
         tex_string,

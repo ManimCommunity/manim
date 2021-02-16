@@ -71,16 +71,6 @@ class SVGMobject(VMobject):
         Specifies the opacity of the image. `1` is opaque, `0` is transparent. Defaults to `1`.
     """
 
-    # these are the default styling specifications for SVG images,
-    # according to https://www.w3.org/TR/SVG/painting.html, ctrl-F for "initial"
-    # This value can be overridden in more specific classes
-    DEFAULT_SVG_STYLE: Dict[str, str] = {
-        "fill": "black",
-        "fill-opacity": "1",
-        "stroke": "none",
-        "stroke-opacity": "1",
-    }
-
     def __init__(
         self,
         file_name=None,
@@ -142,7 +132,17 @@ class SVGMobject(VMobject):
         """
         doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(svg, self.DEFAULT_SVG_STYLE)
+            mobjects = self.get_mobjects_from(
+                svg,
+                # these are the default styling specifications for SVG images,
+                # according to https://www.w3.org/TR/SVG/painting.html, ctrl-F for "initial"
+                {
+                    "fill": "black",
+                    "fill-opacity": "1",
+                    "stroke": "none",
+                    "stroke-opacity": "1",
+                },
+            )
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
