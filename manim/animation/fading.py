@@ -58,8 +58,11 @@ __all__ = [
     "FadeIn",
     "FadeInFrom",
     "FadeOutAndShift",
+    "FadeOutToPoint",
     "FadeInFromPoint",
     "FadeInFromLarge",
+    "FadeTransform",
+    "FadeTransformPieces",
     "VFadeIn",
     "VFadeOut",
     "VFadeInThenOut",
@@ -72,7 +75,8 @@ import numpy as np
 from .. import logger
 from ..animation.animation import Animation
 from ..animation.transform import Transform
-from ..constants import DOWN
+from ..constants import DOWN, ORIGIN
+from ..mobject.mobject import Group
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import interpolate
 from ..utils.rate_functions import there_and_back
@@ -151,6 +155,19 @@ class FadeOutAndShift(FadeOut):
         return target
 
 
+class FadeOutToPoint(FadeOut):
+    def __init__(
+        self, mobject: "Mobject", point: np.ndarray = ORIGIN, **kwargs
+    ) -> None:
+        self.point = point
+        super().__init__(mobject, **kwargs)
+
+    def create_target(self) -> "Mobject":
+        target = super().create_target()
+        target.move_to(self.point)
+        return target
+
+
 class FadeInFromPoint(FadeIn):
     def __init__(
         self, mobject: "Mobject", point: typing.Union["Mobject", np.ndarray], **kwargs
@@ -174,6 +191,59 @@ class FadeInFromLarge(FadeIn):
         start = super().create_starting_mobject()
         start.scale(self.scale_factor)
         return start
+
+
+class FadeTransform(Transform):
+
+    def __init__(self, mobject, target_mobject, stretch=True, dim_to_match=1, **kwargs):
+        self.to_add_on_completion = target_mobject
+        self.stretch = stretch
+        self.dim_to_match = dim_to_match
+        mobject.save_state()
+        super().__init__(
+            Group(mobject, target_mobject.copy()),
+            **kwargs
+        )
+
+    def begin(self):
+        self.ending_mobject = self.mobject.copy()
+        Animation.begin(self)
+        # Both 'start' and 'end' consists of the source and target mobjects.
+        # At the start, the traget should be faded replacing the source,
+        # and at the end it should be the other way around.
+        start, end = self.starting_mobject, self.ending_mobject
+        for m0, m1 in ((start[1], start[0]), (end[0], end[1])):
+            self.ghost_to(m0, m1)
+
+    def ghost_to(self, source, target):
+        source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
+        source.set_opacity(0)
+
+    def get_all_mobjects(self):
+        return [
+            self.mobject,
+            self.starting_mobject,
+            self.ending_mobject,
+        ]
+
+    def get_all_families_zipped(self):
+        return Animation.get_all_families_zipped(self)
+
+    def clean_up_from_scene(self, scene):
+        Animation.clean_up_from_scene(self, scene)
+        scene.remove(self.mobject)
+        self.mobject[0].restore()
+        scene.add(self.to_add_on_completion)
+
+
+class FadeTransformPieces(FadeTransform):
+    def begin(self):
+        self.mobject[0].align_submobjects(self.mobject[1])
+        super().begin()
+
+    def ghost_to(self, source, target):
+        for sm0, sm1 in zip(source.get_family(), target.get_family()):
+            super().ghost_to(sm0, sm1)
 
 
 class VFadeIn(Animation):
