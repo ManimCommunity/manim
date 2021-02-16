@@ -10,6 +10,15 @@ from ...utils.color import rgb_to_hex
 from typing import Dict
 
 
+SUPPORTED_STYLING_ATTRIBUTES = [
+    "fill",
+    "stroke",
+    "style",
+    "fill-opacity",
+    "stroke-opacity",
+]
+
+
 def cascade_element_style(
     element: MinidomElement, inherited: Dict[str, str]
 ) -> Dict[str, str]:
@@ -32,19 +41,13 @@ def cascade_element_style(
 
     Returns
     -------
+    :class:`dict`
         Dictionary mapping svg attributes to values with `element`'s values overriding inherited values.
     """
 
-    style = dict(inherited)
+    style = inherited.copy()
 
-    styling_attributes = [
-        "fill",
-        "stroke",
-        "style",
-        "fill-opacity",
-        "stroke-opacity",
-    ]
-    for attr in styling_attributes:
+    for attr in SUPPORTED_STYLING_ATTRIBUTES:
         entry = element.getAttribute(attr)
         if entry:
             style[attr] = entry
@@ -62,7 +65,8 @@ def parse_color_string(color_spec: str) -> str:
 
     Returns
     -------
-    Hexadecimal color string in the format `#rrggbb`
+    :class:`str`
+        Hexadecimal color string in the format `#rrggbb`
     """
 
     if color_spec[0:3] == "rgb":
@@ -98,7 +102,8 @@ def parse_style(svg_style: Dict[str, str]) -> Dict:
 
     Returns
     -------
-    Style attributes, but in manim kwargs form, e.g., keys are fill_color, stroke_color
+    :class:`dict`
+        Style attributes, but in manim kwargs form, e.g., keys are fill_color, stroke_color
     """
 
     manim_style = {}

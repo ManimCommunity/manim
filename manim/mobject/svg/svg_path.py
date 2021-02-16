@@ -8,11 +8,25 @@ import re
 
 from typing import List
 
+from manim import logger
+
 from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
 
 
-def string_to_numbers(num_string):
+def string_to_numbers(num_string: str) -> List[float]:
+    """Parse the SVG string representing a sequence of numbers into an array of floats.
+
+    Parameters
+    ----------
+    num_string : :class:`str`
+        String representing a sequence of numbers, separated by commas, spaces, etc.
+
+    Returns
+    -------
+    list(float)
+        List of float values parsed out of the string.
+    """
     num_string = num_string.replace("-", ",-")
     num_string = num_string.replace("e,-", "e-")
     return [float(s) for s in re.split("[ ,]", num_string) if s != ""]
@@ -215,5 +229,9 @@ class SVGPathMobject(VMobject):
 
 class VMobjectFromSVGPathstring(SVGPathMobject):
     """Pure alias of SVGPathMobject, retained for backwards compatibility"""
-
-    pass
+    def __init__(self, *args, **kwargs):
+        logger.warning(
+            "VMobjectFromSVGPathstring has been deprecated in favour "
+            "of SVGPathMobject. Please use SVGPathMobject instead."
+        )
+        SVGPathMobject.__init__(self, *args, **kwargs)
