@@ -394,6 +394,7 @@ class MathTex(SingleStringMathTex):
             self.organize_submobjects_left_to_right()
 
     def break_up_tex_strings(self, tex_strings):
+        tex_strings = [str(t) for t in tex_strings]
         # Separate out anything surrounded in double braces
         patterns = ["{{", "}}"]
         # Separate out any strings specified in the isolate
