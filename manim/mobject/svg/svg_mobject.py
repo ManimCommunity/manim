@@ -210,7 +210,6 @@ class SVGMobject(VMobject):
             result.append(self.polygon_to_mobject(element, style))
         else:
             pass  # TODO
-            # warnings.warn("Unknown element type: " + element.tagName)
 
         result = [m for m in result if m is not None]
         self.handle_transforms(element, VGroup(*result))
@@ -310,8 +309,6 @@ class SVGMobject(VMobject):
         if polygon_element.tagName == "polygon":
             path_string = path_string + "Z"
         return self.path_string_to_mobject(path_string, style)
-
-    # <circle class="st1" cx="143.8" cy="268" r="22.6"/>
 
     def circle_to_mobject(self, circle_element: MinidomElement, style: dict):
         """Creates a Circle VMobject from a SVG <circle> command.
@@ -781,8 +778,6 @@ class VMobjectFromSVGPathstring(VMobject):
         elif command == "A":
             raise NotImplementedError("Arcs are not implemented.")
 
-        # This is where the A command must be included.
-        # It has special numbers (angles?) that don't translate to points.
         else:
             num_points = len(numbers) // 2
             result = np.zeros((num_points, self.dim))
