@@ -2,6 +2,10 @@
 
 from manim import *
 
+if config["use_opengl_renderer"]:
+    from manim.opengl import *
+
+
 # To watch one of these scenes, run the following:
 # python --quality m manim example_scenes.py SquareToCircle -p
 #
@@ -71,15 +75,21 @@ class OpeningManim(Scene):
 
 class SquareToCircle(Scene):
     def construct(self):
-        circle = Circle()
-        square = Square()
-        square.flip(RIGHT)
-        square.rotate(-3 * TAU / 8)
-        circle.set_fill(PINK, opacity=0.5)
+        # circle = Circle()
+        # square = Square()
+        # square.flip(RIGHT)
+        # square.rotate(-3 * TAU / 8)
+        # circle.set_fill(PINK, opacity=0.5)
 
-        self.play(ShowCreation(square))
-        self.play(Transform(square, circle))
-        self.play(FadeOut(square))
+        # self.play(ShowCreation(square))
+        # self.play(Transform(square, circle))
+        # self.play(FadeOut(square))
+
+        square = Arc()
+        square2 = Arc()
+        square2.data["points"] += 2 * RIGHT
+        square2.points += 2 * RIGHT
+        self.play(Transform(square, square2))
 
 
 class WarpSquare(Scene):

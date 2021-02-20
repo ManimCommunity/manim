@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 
+from ... import config
 import itertools as it
 import sys
 import colour
@@ -44,6 +45,21 @@ from ...utils.space_ops import shoelace_direction
 
 
 class VMobject(Mobject):
+    fill_dtype = [
+        ("point", np.float32, (3,)),
+        ("unit_normal", np.float32, (3,)),
+        ("color", np.float32, (4,)),
+        ("vert_index", np.float32, (1,)),
+    ]
+
+    stroke_dtype = [
+        ("point", np.float32, (3,)),
+        ("prev_point", np.float32, (3,)),
+        ("next_point", np.float32, (3,)),
+        ("unit_normal", np.float32, (3,)),
+        ("stroke_width", np.float32, (1,)),
+        ("color", np.float32, (4,)),
+    ]
     def __init__(
         self,
         fill_color=None,
@@ -96,7 +112,52 @@ class VMobject(Mobject):
         self.shade_in_3d = shade_in_3d
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
+
+
         Mobject.__init__(self, **kwargs)
+
+
+    def init_gl_data(self):
+        self.needs_new_triangulation = True
+        self.joint_type = "auto"
+        self.flat_stroke = True
+        self.data["points"] = np.zeros(0)
+        self.data["unit_normal"] = np.array([[0.0, 0.0, 1.0]])
+        self.data["stroke_width"] = np.array([[4]])
+
+    def init_gl_points(self):
+        self.data["points"] = np.array(
+            [
+                [1.0, 1.0, 0.0],
+                [0.5, 1.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [-0.5, 1.0, 0.0],
+                [-1.0, 1.0, 0.0],
+                [-1.0, 1.0, 0.0],
+                [-1.0, 0.5, 0.0],
+                [-1.0, 0.0, 0.0],
+                [-1.0, 0.0, 0.0],
+                [-1.0, -0.5, 0.0],
+                [-1.0, -1.0, 0.0],
+                [-1.0, -1.0, 0.0],
+                [-0.5, -1.0, 0.0],
+                [0.0, -1.0, 0.0],
+                [0.0, -1.0, 0.0],
+                [0.5, -1.0, 0.0],
+                [1.0, -1.0, 0.0],
+                [1.0, -1.0, 0.0],
+                [1.0, -0.5, 0.0],
+                [1.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [1.0, 0.5, 0.0],
+                [1.0, 1.0, 0.0],
+            ]
+        )
+
+    def init_gl_colors(self):
+        self.data["stroke_rgba"] = np.array([[1.0, 1.0, 1.0, 1.0]])
+        self.data["fill_rgba"] = np.array([[1.0, 1.0, 1.0, 0.0]])
 
     def get_group_class(self):
         return VGroup
@@ -438,8 +499,18 @@ class VMobject(Mobject):
 
     # Points
     def set_points(self, points):
-        self.points = np.array(points)
-        return self
+        if config["use_opengl_renderer"]:
+            if len(points) == len(self.data["points"]):
+                self.data["points"][:] = points
+            elif isinstance(points, np.ndarray):
+                self.data["points"] = points.copy()
+            else:
+                self.data["points"] = np.array(points)
+            self.refresh_bounding_box()
+            return self
+        else:
+            self.points = np.array(points)
+            return self
 
     def get_points(self):
         return np.array(self.points)

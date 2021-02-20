@@ -1,6 +1,7 @@
 import os
 import sys
 import traceback
+from manim.renderer.opengl_renderer import OpenGLRenderer
 
 from manim import logger, console, config, __version__
 from manim.utils.module_ops import (
@@ -73,7 +74,20 @@ def main():
     else:
         config.digest_args(args)
         input_file = config.get_dir("input_file")
-        if config["use_webgl_renderer"]:
+
+        if config["use_opengl_renderer"]:
+            from manim.renderer.opengl_renderer import OpenGLRenderer
+
+            for SceneClass in scene_classes_from_file(input_file):
+                try:
+                    renderer = OpenGLRenderer()
+                    scene = SceneClass(renderer)
+                    scene.render()
+                except Exception:
+                    print("\n\n")
+                    traceback.print_exc()
+                    print("\n\n")
+        elif config["use_webgl_renderer"]:
             try:
                 from manim.grpc.impl import frame_server_impl
 

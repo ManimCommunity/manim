@@ -60,7 +60,28 @@ class Mobject(Container):
         self.reset_points()
         self.generate_points()
         self.init_colors()
+
+        self.data = dict()
+        self.depth_test = False
+        self.is_fixed_in_frame = False
+        self.gloss = 0.0
+        self.shadow = 0.0
+
+        # OpenGL data.
+        self.init_gl_data()
+        self.init_gl_points()
+        self.init_gl_colors()
+
         Container.__init__(self, **kwargs)
+
+    def init_gl_data(self):
+        pass
+
+    def init_gl_points(self):
+        pass
+
+    def init_gl_colors(self):
+        pass
 
     @property
     def animate(self):
@@ -133,6 +154,9 @@ class Mobject(Container):
 
     def generate_points(self):
         # Typically implemented in subclass, unless purposefully left blank
+        pass
+
+    def refresh_bounding_box(self):
         pass
 
     def add(self, *mobjects):
@@ -1166,7 +1190,10 @@ class Mobject(Container):
         return self.get_all_points()
 
     def get_num_points(self):
-        return len(self.points)
+        if config["use_opengl_renderer"]:
+            return len(self.data["points"])
+        else:
+            return len(self.points)
 
     def get_extremum_along_dim(self, points=None, dim=0, key=0):
         if points is None:
@@ -1548,7 +1575,12 @@ class Mobject(Container):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        self.points = path_func(mobject1.points, mobject2.points, alpha)
+        if config["use_opengl_renderer"]:
+            self.data["points"][:] = path_func(
+                mobject1.data["points"], mobject2.data["points"], alpha
+            )
+        else:
+            self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
