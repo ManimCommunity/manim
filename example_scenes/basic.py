@@ -85,11 +85,10 @@ class SquareToCircle(Scene):
         # self.play(Transform(square, circle))
         # self.play(FadeOut(square))
 
-        square = Arc()
-        square2 = Arc()
-        square2.data["points"] += 2 * RIGHT
-        square2.points += 2 * RIGHT
-        self.play(Transform(square, square2))
+        mob = ArcBetweenPoints(LEFT, RIGHT)
+        mob2 = ArcBetweenPoints(LEFT, RIGHT)
+        mob2.shift(RIGHT)
+        self.play(Transform(mob, mob2))
 
 
 class WarpSquare(Scene):

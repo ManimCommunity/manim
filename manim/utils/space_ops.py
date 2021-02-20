@@ -33,6 +33,7 @@ __all__ = [
 from functools import reduce
 
 import numpy as np
+import math
 
 from ..constants import OUT
 from ..constants import PI

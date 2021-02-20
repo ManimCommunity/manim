@@ -531,15 +531,27 @@ class VMobject(Mobject):
         VMobject
             for chaining.
         """
-        assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
-        nppcc = self.n_points_per_cubic_curve  # 4
-        total_len = nppcc * len(anchors1)
-        self.points = np.zeros((total_len, self.dim))
-        # the following will, from the four sets, dispatch them in points such that self.points = [anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1], handles1[1], ...]
-        arrays = [anchors1, handles1, handles2, anchors2]
-        for index, array in enumerate(arrays):
-            self.points[index::nppcc] = array
-        return self
+        if config["use_opengl_renderer"]:
+            handles = handles1
+            anchors2 = handles2
+            assert(len(anchors1) == len(handles) == len(anchors2))
+            nppc = 3
+            new_points = np.zeros((nppc * len(anchors1), self.dim))
+            arrays = [anchors1, handles, anchors2]
+            for index, array in enumerate(arrays):
+                new_points[index::nppc] = array
+            self.set_points(new_points)
+            return self
+        else:
+            assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
+            nppcc = self.n_points_per_cubic_curve  # 4
+            total_len = nppcc * len(anchors1)
+            self.points = np.zeros((total_len, self.dim))
+            # the following will, from the four sets, dispatch them in points such that self.points = [anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1], handles1[1], ...]
+            arrays = [anchors1, handles1, handles2, anchors2]
+            for index, array in enumerate(arrays):
+                self.points[index::nppcc] = array
+            return self
 
     def clear_points(self):
         self.points = np.zeros((0, self.dim))
@@ -677,14 +689,23 @@ class VMobject(Mobject):
         VMobject
             self. For chaining purposes.
         """
-        nppcc = self.n_points_per_cubic_curve
-        points = np.array(points)
-        # This will set the handles aligned with the anchors.
-        # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
-        self.set_anchors_and_handles(
-            *[interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc)]
-        )
-        return self
+        if config["use_opengl_renderer"]:
+            nppc = self.n_points_per_curve
+            points = np.array(points)
+            self.set_anchors_and_handles(*[
+                interpolate(points[:-1], points[1:], a)
+                for a in np.linspace(0, 1, nppc)
+            ])
+            return self
+        else:
+            nppcc = self.n_points_per_cubic_curve
+            points = np.array(points)
+            # This will set the handles aligned with the anchors.
+            # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
+            self.set_anchors_and_handles(
+                *[interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc)]
+            )
+            return self
 
     def set_points_smoothly(self, points):
         self.set_points_as_corners(points)
