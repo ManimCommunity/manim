@@ -448,12 +448,12 @@ class OpenGLMobject:
         # Make sure any mobject or numpy array attributes are copied
         family = self.get_family()
         for attr, value in list(self.__dict__.items()):
-            if isinstance(value, Mobject) and value in family and value is not self:
+            if isinstance(value, OpenGLMobject) and value in family and value is not self:
                 setattr(copy_mobject, attr, value.copy())
             if isinstance(value, np.ndarray):
                 setattr(copy_mobject, attr, value.copy())
-            if isinstance(value, ShaderWrapper):
-                setattr(copy_mobject, attr, value.copy())
+            # if isinstance(value, ShaderWrapper):
+            #     setattr(copy_mobject, attr, value.copy())
         return copy_mobject
 
     def deepcopy(self):
@@ -1157,7 +1157,7 @@ class OpenGLMobject:
 
     def align_data(self, mobject):
         # In case any data arrays get resized when aligned to shader data
-        self.refresh_shader_data()
+        # self.refresh_shader_data()
         for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
             # Separate out how points are treated so that subclasses
             # can handle that case differently if they choose

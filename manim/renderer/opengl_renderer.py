@@ -5,6 +5,7 @@ import numpy as np
 from ..mobject.types.vectorized_mobject import VMobject
 import itertools as it
 import time
+from .. import logger
 
 from ..mobject import opengl_geometry
 
@@ -298,6 +299,11 @@ class OpenGLRenderer:
         self.file_writer = None
 
     def play(self, scene, *args, **kwargs):
+        if len(args) == 0:
+            logger.warning("Called Scene.play with no animations")
+            return
+
+        # TODO: Handle data locking / unlocking.
         if scene.compile_animation_data(*args, **kwargs):
             self.animation_start_time = time.time()
             self.animation_elapsed_time = 0

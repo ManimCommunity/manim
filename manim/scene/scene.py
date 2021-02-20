@@ -26,6 +26,7 @@ from ..utils.iterables import list_update, list_difference_update
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
+from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 
 
 class Scene(Container):
@@ -320,15 +321,20 @@ class Scene(Container):
             The same scene after adding the Mobjects in.
 
         """
-        mobjects = [*mobjects, *self.foreground_mobjects]
-        self.restructure_mobjects(to_remove=mobjects)
-        self.mobjects += mobjects
-        if self.moving_mobjects:
-            self.restructure_mobjects(
-                to_remove=mobjects, mobject_list_name="moving_mobjects"
-            )
-            self.moving_mobjects += mobjects
-        return self
+        if config["use_opengl_renderer"]:
+            new_mobjects = mobjects
+            self.remove(*new_mobjects)
+            self.mobjects += new_mobjects
+        else:
+            mobjects = [*mobjects, *self.foreground_mobjects]
+            self.restructure_mobjects(to_remove=mobjects)
+            self.mobjects += mobjects
+            if self.moving_mobjects:
+                self.restructure_mobjects(
+                    to_remove=mobjects, mobject_list_name="moving_mobjects"
+                )
+                self.moving_mobjects += mobjects
+            return self
 
     def add_mobjects_from_animations(self, animations):
 
@@ -352,9 +358,16 @@ class Scene(Container):
         *mobjects : Mobject
             The mobjects to remove.
         """
-        for list_name in "mobjects", "foreground_mobjects":
-            self.restructure_mobjects(mobjects, list_name, False)
-        return self
+        if config["use_opengl_renderer"]:
+            mobjects_to_remove = mobjects
+            self.mobjects = restructure_list_to_exclude_certain_family_members(
+                self.mobjects, mobjects_to_remove
+            )
+            return self
+        else:
+            for list_name in "mobjects", "foreground_mobjects":
+                self.restructure_mobjects(mobjects, list_name, False)
+            return self
 
     def restructure_mobjects(
         self, to_remove, mobject_list_name="mobjects", extract_families=True
@@ -793,26 +806,27 @@ class Scene(Container):
         self.stop_condition = None
         self.moving_mobjects = None
         self.static_mobjects = None
-        if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
-            self.update_mobjects(dt=0)  # Any problems with this?
-            if self.should_update_mobjects():
-                # TODO, be smart about setting a static image
-                # the same way Scene.play does
-                self.renderer.static_image = None
-                self.stop_condition = self.animations[0].stop_condition
+        if not config["use_opengl_renderer"]:
+            if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
+                self.update_mobjects(dt=0)  # Any problems with this?
+                if self.should_update_mobjects():
+                    # TODO, be smart about setting a static image
+                    # the same way Scene.play does
+                    self.renderer.static_image = None
+                    self.stop_condition = self.animations[0].stop_condition
+                else:
+                    self.duration = self.animations[0].duration
+                    if not skip_rendering:
+                        self.add_static_frames(self.animations[0].duration)
+                    return None
             else:
-                self.duration = self.animations[0].duration
-                if not skip_rendering:
-                    self.add_static_frames(self.animations[0].duration)
-                return None
-        else:
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            (
-                self.moving_mobjects,
-                self.static_mobjects,
-            ) = self.get_moving_and_static_mobjects(self.animations)
-            self.renderer.save_static_frame_data(self, self.static_mobjects)
+                # Paint all non-moving objects onto the screen, so they don't
+                # have to be rendered every frame
+                (
+                    self.moving_mobjects,
+                    self.static_mobjects,
+                ) = self.get_moving_and_static_mobjects(self.animations)
+                self.renderer.save_static_frame_data(self, self.static_mobjects)
 
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(

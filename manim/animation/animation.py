@@ -16,6 +16,7 @@ if typing.TYPE_CHECKING:
 from .. import logger
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..utils.rate_functions import smooth
+from ..mobject.opengl_mobject import OpenGLMobject
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
@@ -61,7 +62,9 @@ class Animation:
     def _typecheck_input(self, mobject: Mobject) -> None:
         if mobject is None:
             logger.debug("creating dummy animation")
-        elif not isinstance(mobject, Mobject):
+        elif not isinstance(mobject, Mobject) and not isinstance(
+            mobject, OpenGLMobject
+        ):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:

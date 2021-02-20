@@ -28,7 +28,7 @@ from ...utils.iterables import listify
 # from manimlib.utils.space_ops import angle_between_vectors
 # from manimlib.utils.space_ops import cross2d
 # from manimlib.utils.space_ops import earclip_triangulation
-# from manimlib.utils.space_ops import get_norm
+from ...utils.space_ops import get_norm
 from ...utils.space_ops import get_unit_normal
 
 # from manimlib.utils.space_ops import z_to_vector
@@ -1021,13 +1021,14 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         artificial_height=0.01,
         **kwargs
     ):
-        self.color = color
-        self.fill_opacity = fill_opacity
-        self.stroke_width = stroke_width
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
 
-        super().__init__(**kwargs)
+        super().__init__(
+                color=color,
+                fill_opacity=fill_opacity,
+                stroke_width=stroke_width,
+        **kwargs)
         self.set_points(np.array([location]))
 
 
@@ -1041,14 +1042,13 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
             self.add(part)
 
 
-class DashedVMobject(OpenGLVMobject):
+class OpenGLDashedVMobject(OpenGLVMobject):
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):
         self.num_dashes = num_dashes
         self.positive_space_ratio = positive_space_ratio
-        self.color = color
-        super().__init__(**kwargs)
+        super().__init__(color=color, **kwargs)
         num_dashes = self.num_dashes
         ps_ratio = self.positive_space_ratio
         if num_dashes > 0:
