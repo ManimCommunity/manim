@@ -88,7 +88,7 @@ def vector_coordinate_label(vector_mob, integer_labels=True, n_dim=2, color=WHIT
 
 
 class Matrix(VMobject):
-    """An mobject that displays matrix on the screen."""
+    """A mobject that displays a matrix on the screen."""
 
     def __init__(
         self,
@@ -307,7 +307,7 @@ class Matrix(VMobject):
 
 
 class DecimalMatrix(Matrix):
-    """An mobject that displays matrix with decimal entries on the screen."""
+    """A mobject that displays a matrix with decimal entries on the screen."""
 
     def __init__(
         self,
@@ -338,7 +338,7 @@ class DecimalMatrix(Matrix):
 
 
 class IntegerMatrix(Matrix):
-    """An mobject that displays matrix with integer entries on the screen."""
+    """A mobject that displays a matrix with integer entries on the screen."""
 
     def __init__(self, matrix, element_to_mobject=Integer, **kwargs):
         """
@@ -355,7 +355,7 @@ class IntegerMatrix(Matrix):
 
 
 class MobjectMatrix(Matrix):
-    """An mobject that displays matrix of mobject entries on the screen."""
+    """A mobject that displays a matrix of mobject entries on the screen."""
 
     def __init__(self, matrix, element_to_mobject=lambda m: m, **kwargs):
         Matrix.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
