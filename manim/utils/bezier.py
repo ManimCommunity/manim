@@ -3,6 +3,7 @@
 __all__ = [
     "bezier",
     "partial_bezier_points",
+    "partial_quadratic_bezier_points",
     "interpolate",
     "integer_interpolate",
     "mid",
@@ -74,6 +75,28 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
     a_to_1 = np.array([bezier(points[i:])(a) for i in range(len(points))])
     end_prop = (b - a) / (1.0 - a)
     return np.array([bezier(a_to_1[: i + 1])(end_prop) for i in range(len(points))])
+
+
+# Shortened version of partial_bezier_points just for quadratics,
+# since this is called a fair amount
+def partial_quadratic_bezier_points(points, a, b):
+    if a == 1:
+        return 3 * [points[-1]]
+
+    def curve(t):
+        return (
+            points[0] * (1 - t) * (1 - t)
+            + 2 * points[1] * t * (1 - t)
+            + points[2] * t * t
+        )
+
+    # bezier(points)
+    h0 = curve(a) if a > 0 else points[0]
+    h2 = curve(b) if b < 1 else points[2]
+    h1_prime = (1 - a) * points[1] + a * points[2]
+    end_prop = (b - a) / (1.0 - a)
+    h1 = (1 - end_prop) * h0 + end_prop * h1_prime
+    return [h0, h1, h2]
 
 
 # Linear interpolation variants

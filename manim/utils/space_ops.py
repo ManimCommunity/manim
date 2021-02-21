@@ -27,6 +27,8 @@ __all__ = [
     "find_intersection",
     "line_intersection",
     "get_winding_number",
+    "cross2d",
+    "earclip_triangulation",
 ]
 
 
@@ -34,6 +36,7 @@ from functools import reduce
 
 import numpy as np
 import math
+from mapbox_earcut import triangulate_float32 as earcut
 
 from ..constants import OUT
 from ..constants import PI
@@ -41,10 +44,16 @@ from ..constants import RIGHT
 from ..constants import TAU
 from ..utils.iterables import adjacent_pairs
 from ..utils.simple_functions import fdiv
+import itertools as it
+from .. import config
 
 
 def get_norm(vect):
     return sum([x ** 2 for x in vect]) ** 0.5
+
+
+def norm_squared(v):
+    return v[0] * v[0] + v[1] * v[1] + v[2] * v[2]
 
 
 # Quaternions
@@ -209,8 +218,22 @@ def cross(v1, v2):
     )
 
 
-def get_unit_normal(v1, v2):
-    return normalize(cross(v1, v2))
+def get_unit_normal(v1, v2, tol=1e-6):
+    if config["use_opengl_renderer"]:
+        v1 = normalize(v1)
+        v2 = normalize(v2)
+        cp = cross(v1, v2)
+        cp_norm = get_norm(cp)
+        if cp_norm < tol:
+            # Vectors align, so find a normal to them in the plane shared with the z-axis
+            new_cp = cross(cross(v1, OUT), v1)
+            new_cp_norm = get_norm(new_cp)
+            if new_cp_norm < tol:
+                return DOWN
+            return new_cp / new_cp_norm
+        return cp / cp_norm
+    else:
+        return normalize(cross(v1, v2))
 
 
 ###
@@ -327,3 +350,90 @@ def shoelace_direction(x_y):
     """
     area = shoelace(x_y)
     return "CW" if area > 0 else "CCW"
+
+
+def cross2d(a, b):
+    if len(a.shape) == 2:
+        return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
+    else:
+        return a[0] * b[1] - b[0] * a[1]
+
+
+def earclip_triangulation(verts, ring_ends):
+    """
+    Returns a list of indices giving a triangulation
+    of a polygon, potentially with holes
+
+    - verts is a numpy array of points
+
+    - ring_ends is a list of indices indicating where
+    the ends of new paths are
+    """
+
+    # First, connect all the rings so that the polygon
+    # with holes is instead treated as a (very convex)
+    # polygon with one edge.  Do this by drawing connections
+    # between rings close to each other
+    rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends)]
+    attached_rings = rings[:1]
+    detached_rings = rings[1:]
+    loop_connections = dict()
+
+    while detached_rings:
+        i_range, j_range = [
+            list(
+                filter(
+                    # Ignore indices that are already being
+                    # used to draw some connection
+                    lambda i: i not in loop_connections,
+                    it.chain(*ring_group),
+                )
+            )
+            for ring_group in (attached_rings, detached_rings)
+        ]
+
+        # Closet point on the atttached rings to an estimated midpoint
+        # of the detached rings
+        tmp_j_vert = midpoint(verts[j_range[0]], verts[j_range[len(j_range) // 2]])
+        i = min(i_range, key=lambda i: norm_squared(verts[i] - tmp_j_vert))
+        # Closet point of the detached rings to the aforementioned
+        # point of the attached rings
+        j = min(j_range, key=lambda j: norm_squared(verts[i] - verts[j]))
+        # Recalculate i based on new j
+        i = min(i_range, key=lambda i: norm_squared(verts[i] - verts[j]))
+
+        # Remember to connect the polygon at these points
+        loop_connections[i] = j
+        loop_connections[j] = i
+
+        # Move the ring which j belongs to from the
+        # attached list to the detached list
+        new_ring = next(filter(lambda ring: ring[0] <= j < ring[-1], detached_rings))
+        detached_rings.remove(new_ring)
+        attached_rings.append(new_ring)
+
+    # Setup linked list
+    after = []
+    end0 = 0
+    for end1 in ring_ends:
+        after.extend(range(end0 + 1, end1))
+        after.append(end0)
+        end0 = end1
+
+    # Find an ordering of indices walking around the polygon
+    indices = []
+    i = 0
+    for x in range(len(verts) + len(ring_ends) - 1):
+        # starting = False
+        if i in loop_connections:
+            j = loop_connections[i]
+            indices.extend([i, j])
+            i = after[j]
+        else:
+            indices.append(i)
+            i = after[i]
+        if i == 0:
+            break
+
+    meta_indices = earcut(verts[indices, :2], [len(indices)])
+    return [indices[mi] for mi in meta_indices]

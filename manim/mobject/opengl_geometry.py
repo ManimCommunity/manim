@@ -320,244 +320,277 @@ class OpenGLCircle(OpenGLArc):
         return self.point_from_proportion((angle - start_angle) / TAU)
 
 
-# class Dot(Circle):
-#     CONFIG = {
-#         "radius": DEFAULT_DOT_RADIUS,
-#         "stroke_width": 0,
-#         "fill_opacity": 1.0,
-#         "color": WHITE,
-#     }
-#
-#     def __init__(self, point=ORIGIN, **kwargs):
-#         super().__init__(arc_center=point, **kwargs)
-#
-#
-# class SmallDot(Dot):
-#     CONFIG = {
-#         "radius": DEFAULT_SMALL_DOT_RADIUS,
-#     }
-#
-#
-# class Ellipse(Circle):
-#     CONFIG = {"width": 2, "height": 1}
-#
-#     def __init__(self, **kwargs):
-#         super().__init__(**kwargs)
-#         self.set_width(self.width, stretch=True)
-#         self.set_height(self.height, stretch=True)
-#
-#
-# class AnnularSector(Arc):
-#     CONFIG = {
-#         "inner_radius": 1,
-#         "outer_radius": 2,
-#         "angle": TAU / 4,
-#         "start_angle": 0,
-#         "fill_opacity": 1,
-#         "stroke_width": 0,
-#         "color": WHITE,
-#     }
-#
-#     def init_points(self):
-#         inner_arc, outer_arc = [
-#             Arc(
-#                 start_angle=self.start_angle,
-#                 angle=self.angle,
-#                 radius=radius,
-#                 arc_center=self.arc_center,
-#             )
-#             for radius in (self.inner_radius, self.outer_radius)
-#         ]
-#         outer_arc.reverse_points()
-#         self.append_points(inner_arc.get_points())
-#         self.add_line_to(outer_arc.get_points()[0])
-#         self.append_points(outer_arc.get_points())
-#         self.add_line_to(inner_arc.get_points()[0])
-#
-#
-# class Sector(AnnularSector):
-#     CONFIG = {"outer_radius": 1, "inner_radius": 0}
-#
-#
-# class Annulus(Circle):
-#     CONFIG = {
-#         "inner_radius": 1,
-#         "outer_radius": 2,
-#         "fill_opacity": 1,
-#         "stroke_width": 0,
-#         "color": WHITE,
-#         "mark_paths_closed": False,
-#     }
-#
-#     def init_points(self):
-#         self.radius = self.outer_radius
-#         outer_circle = Circle(radius=self.outer_radius)
-#         inner_circle = Circle(radius=self.inner_radius)
-#         inner_circle.reverse_points()
-#         self.append_points(outer_circle.get_points())
-#         self.append_points(inner_circle.get_points())
-#         self.shift(self.arc_center)
-#
-#
-# class Line(TipableVMobject):
-#     CONFIG = {
-#         "buff": 0,
-#         # Angle of arc specified here
-#         "path_arc": 0,
-#     }
-#
-#     def __init__(self, start=LEFT, end=RIGHT, **kwargs):
-#         digest_config(self, kwargs)
-#         self.set_start_and_end_attrs(start, end)
-#         super().__init__(**kwargs)
-#
-#     def init_points(self):
-#         self.set_points_by_ends(self.start, self.end, self.buff, self.path_arc)
-#
-#     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
-#         if path_arc:
-#             self.set_points(Arc.create_quadratic_bezier_points(path_arc))
-#             self.put_start_and_end_on(start, end)
-#         else:
-#             self.set_points_as_corners([start, end])
-#         self.account_for_buff(self.buff)
-#
-#     def set_path_arc(self, new_value):
-#         self.path_arc = new_value
-#         self.init_points()
-#
-#     def account_for_buff(self, buff):
-#         if buff == 0:
-#             return
-#         #
-#         if self.path_arc == 0:
-#             length = self.get_length()
-#         else:
-#             length = self.get_arc_length()
-#         #
-#         if length < 2 * buff:
-#             return
-#         buff_prop = buff / length
-#         self.pointwise_become_partial(self, buff_prop, 1 - buff_prop)
-#         return self
-#
-#     def set_start_and_end_attrs(self, start, end):
-#         # If either start or end are Mobjects, this
-#         # gives their centers
-#         rough_start = self.pointify(start)
-#         rough_end = self.pointify(end)
-#         vect = normalize(rough_end - rough_start)
-#         # Now that we know the direction between them,
-#         # we can find the appropriate boundary point from
-#         # start and end, if they're mobjects
-#         self.start = self.pointify(start, vect) + self.buff * vect
-#         self.end = self.pointify(end, -vect) - self.buff * vect
-#
-#     def pointify(self, mob_or_point, direction=None):
-#         """
-#         Take an argument passed into Line (or subclass) and turn
-#         it into a 3d point.
-#         """
-#         if isinstance(mob_or_point, Mobject):
-#             mob = mob_or_point
-#             if direction is None:
-#                 return mob.get_center()
-#             else:
-#                 return mob.get_continuous_bounding_box_point(direction)
-#         else:
-#             point = mob_or_point
-#             result = np.zeros(self.dim)
-#             result[: len(point)] = point
-#             return result
-#
-#     def put_start_and_end_on(self, start, end):
-#         curr_start, curr_end = self.get_start_and_end()
-#         if (curr_start == curr_end).all():
-#             self.set_points_by_ends(start, end, self.path_arc)
-#         return super().put_start_and_end_on(start, end)
-#
-#     def get_vector(self):
-#         return self.get_end() - self.get_start()
-#
-#     def get_unit_vector(self):
-#         return normalize(self.get_vector())
-#
-#     def get_angle(self):
-#         return angle_of_vector(self.get_vector())
-#
-#     def get_projection(self, point):
-#         """
-#         Return projection of a point onto the line
-#         """
-#         unit_vect = self.get_unit_vector()
-#         start = self.get_start()
-#         return start + np.dot(point - start, unit_vect) * unit_vect
-#
-#     def get_slope(self):
-#         return np.tan(self.get_angle())
-#
-#     def set_angle(self, angle, about_point=None):
-#         if about_point is None:
-#             about_point = self.get_start()
-#         self.rotate(
-#             angle - self.get_angle(),
-#             about_point=about_point,
-#         )
-#         return self
-#
-#     def set_length(self, length):
-#         self.scale(length / self.get_length())
-#
-#
-# class DashedLine(Line):
-#     CONFIG = {
-#         "dash_length": DEFAULT_DASH_LENGTH,
-#         "dash_spacing": None,
-#         "positive_space_ratio": 0.5,
-#     }
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         ps_ratio = self.positive_space_ratio
-#         num_dashes = self.calculate_num_dashes(ps_ratio)
-#         dashes = DashedVMobject(
-#             self, num_dashes=num_dashes, positive_space_ratio=ps_ratio
-#         )
-#         self.clear_points()
-#         self.add(*dashes)
-#
-#     def calculate_num_dashes(self, positive_space_ratio):
-#         try:
-#             full_length = self.dash_length / positive_space_ratio
-#             return int(np.ceil(self.get_length() / full_length))
-#         except ZeroDivisionError:
-#             return 1
-#
-#     def calculate_positive_space_ratio(self):
-#         return fdiv(
-#             self.dash_length,
-#             self.dash_length + self.dash_spacing,
-#         )
-#
-#     def get_start(self):
-#         if len(self.submobjects) > 0:
-#             return self.submobjects[0].get_start()
-#         else:
-#             return Line.get_start(self)
-#
-#     def get_end(self):
-#         if len(self.submobjects) > 0:
-#             return self.submobjects[-1].get_end()
-#         else:
-#             return Line.get_end(self)
-#
-#     def get_first_handle(self):
-#         return self.submobjects[0].get_points()[1]
-#
-#     def get_last_handle(self):
-#         return self.submobjects[-1].get_points()[-2]
-#
-#
+class OpenGLDot(OpenGLCircle):
+    def __init__(
+        self,
+        point=ORIGIN,
+        radius=DEFAULT_DOT_RADIUS,
+        stroke_width=0,
+        fill_opacity=1.0,
+        color=WHITE,
+        **kwargs
+    ):
+        super().__init__(
+            arc_center=point,
+            radius=radius,
+            stroke_width=stroke_width,
+            fill_opacity=fill_opacity,
+            color=color,
+            **kwargs
+        )
+
+
+class OpenGLSmallDot(OpenGLDot):
+    def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
+        super().__init__(radius=radius, **kwargs)
+
+
+class OpenGLEllipse(OpenGLCircle):
+    def __init__(self, width=2, height=1, **kwargs):
+        super().__init__(**kwargs)
+        self.set_width(width, stretch=True)
+        self.set_height(height, stretch=True)
+
+
+class OpenGLAnnularSector(OpenGLArc):
+    def __init__(
+        self,
+        inner_radius=1,
+        outer_radius=2,
+        angle=TAU / 4,
+        start_angle=0,
+        fill_opacity=1,
+        stroke_width=0,
+        color=WHITE,
+        **kwargs
+    ):
+        self.inner_radius = inner_radius
+        self.outer_radius = outer_radius
+        OpenGLArc.__init__(
+            self,
+            start_angle=start_angle,
+            angle=angle,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            color=color,
+            **kwargs
+        )
+
+    def init_points(self):
+        inner_arc, outer_arc = [
+            OpenGLArc(
+                start_angle=self.start_angle,
+                angle=self.angle,
+                radius=radius,
+                arc_center=self.arc_center,
+            )
+            for radius in (self.inner_radius, self.outer_radius)
+        ]
+        outer_arc.reverse_points()
+        self.append_points(inner_arc.get_points())
+        self.add_line_to(outer_arc.get_points()[0])
+        self.append_points(outer_arc.get_points())
+        self.add_line_to(inner_arc.get_points()[0])
+
+
+class OpenGLSector(OpenGLAnnularSector):
+    def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
+        OpenGLAnnularSector.__init__(
+            self, inner_radius=inner_radius, outer_radius=outer_radius, **kwargs
+        )
+
+
+class OpenGLAnnulus(OpenGLCircle):
+    def __init__(
+        self,
+        inner_radius=1,
+        outer_radius=2,
+        fill_opacity=1,
+        stroke_width=0,
+        color=WHITE,
+        mark_paths_closed=False,
+        **kwargs
+    ):
+        self.mark_paths_closed = mark_paths_closed  # is this even used?
+        self.inner_radius = inner_radius
+        self.outer_radius = outer_radius
+        OpenGLCircle.__init__(
+            self,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            color=color,
+            **kwargs
+        )
+
+    def init_points(self):
+        self.radius = self.outer_radius
+        outer_circle = OpenGLCircle(radius=self.outer_radius)
+        inner_circle = OpenGLCircle(radius=self.inner_radius)
+        inner_circle.reverse_points()
+        self.append_points(outer_circle.get_points())
+        self.append_points(inner_circle.get_points())
+        self.shift(self.arc_center)
+
+
+class OpenGLLine(OpenGLTipableVMobject):
+    def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=0, **kwargs):
+        self.dim = 3
+        self.buff = buff
+        self.path_arc = path_arc
+        self.set_start_and_end_attrs(start, end)
+        super().__init__(**kwargs)
+
+    def init_points(self):
+        self.set_points_by_ends(self.start, self.end, self.buff, self.path_arc)
+
+    def set_points_by_ends(self, start, end, buff=0, path_arc=0):
+        if path_arc:
+            self.set_points(OpenGLArc.create_quadratic_bezier_points(path_arc))
+            self.put_start_and_end_on(start, end)
+        else:
+            self.set_points_as_corners([start, end])
+        self.account_for_buff(self.buff)
+
+    def set_path_arc(self, new_value):
+        self.path_arc = new_value
+        self.init_points()
+
+    def account_for_buff(self, buff):
+        if buff == 0:
+            return
+        #
+        if self.path_arc == 0:
+            length = self.get_length()
+        else:
+            length = self.get_arc_length()
+        #
+        if length < 2 * buff:
+            return
+        buff_prop = buff / length
+        self.pointwise_become_partial(self, buff_prop, 1 - buff_prop)
+        return self
+
+    def set_start_and_end_attrs(self, start, end):
+        # If either start or end are Mobjects, this
+        # gives their centers
+        rough_start = self.pointify(start)
+        rough_end = self.pointify(end)
+        vect = normalize(rough_end - rough_start)
+        # Now that we know the direction between them,
+        # we can find the appropriate boundary point from
+        # start and end, if they're mobjects
+        self.start = self.pointify(start, vect) + self.buff * vect
+        self.end = self.pointify(end, -vect) - self.buff * vect
+
+    def pointify(self, mob_or_point, direction=None):
+        """
+        Take an argument passed into Line (or subclass) and turn
+        it into a 3d point.
+        """
+        if isinstance(mob_or_point, Mobject):
+            mob = mob_or_point
+            if direction is None:
+                return mob.get_center()
+            else:
+                return mob.get_continuous_bounding_box_point(direction)
+        else:
+            point = mob_or_point
+            result = np.zeros(self.dim)
+            result[: len(point)] = point
+            return result
+
+    def put_start_and_end_on(self, start, end):
+        curr_start, curr_end = self.get_start_and_end()
+        if (curr_start == curr_end).all():
+            self.set_points_by_ends(start, end, self.path_arc)
+        return super().put_start_and_end_on(start, end)
+
+    def get_vector(self):
+        return self.get_end() - self.get_start()
+
+    def get_unit_vector(self):
+        return normalize(self.get_vector())
+
+    def get_angle(self):
+        return angle_of_vector(self.get_vector())
+
+    def get_projection(self, point):
+        """
+        Return projection of a point onto the line
+        """
+        unit_vect = self.get_unit_vector()
+        start = self.get_start()
+        return start + np.dot(point - start, unit_vect) * unit_vect
+
+    def get_slope(self):
+        return np.tan(self.get_angle())
+
+    def set_angle(self, angle, about_point=None):
+        if about_point is None:
+            about_point = self.get_start()
+        self.rotate(
+            angle - self.get_angle(),
+            about_point=about_point,
+        )
+        return self
+
+    def set_length(self, length):
+        self.scale(length / self.get_length())
+
+
+class OpenGLDashedLine(OpenGLLine):
+    def __init__(
+        self,
+        *args,
+        dash_length=DEFAULT_DASH_LENGTH,
+        dash_spacing=None,
+        positive_space_ratio=0.5,
+        **kwargs
+    ):
+        self.dash_length = dash_length
+        self.dash_spacing = (dash_spacing,)
+        self.positive_space_ratio = positive_space_ratio
+        super().__init__(*args, **kwargs)
+        ps_ratio = self.positive_space_ratio
+        num_dashes = self.calculate_num_dashes(ps_ratio)
+        dashes = OpenGLDashedVMobject(
+            self, num_dashes=num_dashes, positive_space_ratio=ps_ratio
+        )
+        self.clear_points()
+        self.add(*dashes)
+
+    def calculate_num_dashes(self, positive_space_ratio):
+        try:
+            full_length = self.dash_length / positive_space_ratio
+            return int(np.ceil(self.get_length() / full_length))
+        except ZeroDivisionError:
+            return 1
+
+    def calculate_positive_space_ratio(self):
+        return fdiv(
+            self.dash_length,
+            self.dash_length + self.dash_spacing,
+        )
+
+    def get_start(self):
+        if len(self.submobjects) > 0:
+            return self.submobjects[0].get_start()
+        else:
+            return OpenGLLine.get_start(self)
+
+    def get_end(self):
+        if len(self.submobjects) > 0:
+            return self.submobjects[-1].get_end()
+        else:
+            return OpenGLLine.get_end(self)
+
+    def get_first_handle(self):
+        return self.submobjects[0].get_points()[1]
+
+    def get_last_handle(self):
+        return self.submobjects[-1].get_points()[-2]
+
+
 # class TangentLine(Line):
 #     CONFIG = {"length": 1, "d_alpha": 1e-6}
 #
@@ -716,253 +749,137 @@ class OpenGLCircle(OpenGLArc):
 #         self.add_cubic_bezier_curve(a0, h0, h1, a1)
 #
 #
-# class Polygon(VMobject):
-#     def __init__(self, *vertices, **kwargs):
-#         self.vertices = vertices
-#         super().__init__(**kwargs)
-#
-#     def init_points(self):
-#         verts = self.vertices
-#         self.set_points_as_corners([*verts, verts[0]])
-#
-#     def get_vertices(self):
-#         return self.get_start_anchors()
-#
-#     def round_corners(self, radius=0.5):
-#         vertices = self.get_vertices()
-#         arcs = []
-#         for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
-#             vect1 = v2 - v1
-#             vect2 = v3 - v2
-#             unit_vect1 = normalize(vect1)
-#             unit_vect2 = normalize(vect2)
-#             angle = angle_between_vectors(vect1, vect2)
-#             # Negative radius gives concave curves
-#             angle *= np.sign(radius)
-#             # Distance between vertex and start of the arc
-#             cut_off_length = radius * np.tan(angle / 2)
-#             # Determines counterclockwise vs. clockwise
-#             sign = np.sign(np.cross(vect1, vect2)[2])
-#             arc = ArcBetweenPoints(
-#                 v2 - unit_vect1 * cut_off_length,
-#                 v2 + unit_vect2 * cut_off_length,
-#                 angle=sign * angle,
-#                 n_components=2,
-#             )
-#             arcs.append(arc)
-#
-#         self.clear_points()
-#         # To ensure that we loop through starting with last
-#         arcs = [arcs[-1], *arcs[:-1]]
-#         for arc1, arc2 in adjacent_pairs(arcs):
-#             self.append_points(arc1.get_points())
-#             line = Line(arc1.get_end(), arc2.get_start())
-#             # Make sure anchors are evenly distributed
-#             len_ratio = line.get_length() / arc1.get_arc_length()
-#             line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
-#             self.append_points(line.get_points())
-#         return self
-#
-#
-# class RegularPolygon(Polygon):
-#     CONFIG = {
-#         "start_angle": None,
-#     }
-#
-#     def __init__(self, n=6, **kwargs):
-#         digest_config(self, kwargs, locals())
-#         if self.start_angle is None:
-#             # 0 for odd, 90 for even
-#             self.start_angle = (n % 2) * 90 * DEGREES
-#         start_vect = rotate_vector(RIGHT, self.start_angle)
-#         vertices = compass_directions(n, start_vect)
-#         super().__init__(*vertices, **kwargs)
-#
-#
-# class Triangle(RegularPolygon):
-#     def __init__(self, **kwargs):
-#         super().__init__(n=3, **kwargs)
-#
-#
-# class ArrowTip(Triangle):
-#     CONFIG = {
-#         "fill_opacity": 1,
-#         "fill_color": WHITE,
-#         "stroke_width": 0,
-#         "width": DEFAULT_ARROW_TIP_WIDTH,
-#         "length": DEFAULT_ARROW_TIP_LENGTH,
-#         "angle": 0,
-#     }
-#
-#     def __init__(self, **kwargs):
-#         Triangle.__init__(self, start_angle=0, **kwargs)
-#         self.set_height(self.width)
-#         self.set_width(self.length, stretch=True)
-#         self.rotate(self.angle)
-#
-#     def get_base(self):
-#         return self.point_from_proportion(0.5)
-#
-#     def get_tip_point(self):
-#         return self.get_points()[0]
-#
-#     def get_vector(self):
-#         return self.get_tip_point() - self.get_base()
-#
-#     def get_angle(self):
-#         return angle_of_vector(self.get_vector())
-#
-#     def get_length(self):
-#         return get_norm(self.get_vector())
-#
-#
-# class Rectangle(Polygon):
-#     CONFIG = {
-#         "color": WHITE,
-#         "width": 4.0,
-#         "height": 2.0,
-#         "mark_paths_closed": True,
-#         "close_new_points": True,
-#     }
-#
-#     def __init__(self, width=None, height=None, **kwargs):
-#         Polygon.__init__(self, UR, UL, DL, DR, **kwargs)
-#
-#         if width is None:
-#             width = self.width
-#         if height is None:
-#             height = self.height
-#
-#         self.set_width(width, stretch=True)
-#         self.set_height(height, stretch=True)
-#
-#
-# class Square(Rectangle):
-#     CONFIG = {
-#         "side_length": 2.0,
-#     }
-#
-#     def __init__(self, side_length=None, **kwargs):
-#         digest_config(self, kwargs)
-#
-#         if side_length is None:
-#             side_length = self.side_length
-#
-#         super().__init__(side_length, side_length, **kwargs)
-#
-#
-# class RoundedRectangle(Rectangle):
-#     CONFIG = {
-#         "corner_radius": 0.5,
-#     }
-#
-#     def __init__(self, **kwargs):
-#         Rectangle.__init__(self, **kwargs)
-#         self.round_corners(self.corner_radius)
+class OpenGLPolygon(OpenGLVMobject):
+    def __init__(self, *vertices, **kwargs):
+        self.vertices = vertices
+        super().__init__(**kwargs)
 
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import angle_between_vectors
-from ..utils.space_ops import compass_directions
-from ..utils.space_ops import find_intersection
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import normalize
-from ..utils.space_ops import rotate_vector
-from ..utils.space_ops import rotation_matrix_transpose
-from ..utils.iterables import adjacent_n_tuples
-from ..constants import *
-from ..mobject.geometry import TipableVMobject
-from ..mobject.types.vectorized_mobject import VMobject
+    def init_points(self):
+        verts = self.vertices
+        self.set_points_as_corners([*verts, verts[0]])
 
+    def get_vertices(self):
+        return self.get_start_anchors()
 
-class TestOpenGLArc(TipableVMobject):
-    """A circular arc."""
-
-    opengl_compatible = True
-
-    def __init__(
-        self,
-        start_angle=0,
-        angle=TAU / 4,
-        radius=1.0,
-        num_components=8,
-        anchors_span_full_range=True,
-        arc_center=ORIGIN,
-        **kwargs
-    ):
-        if radius is None:  # apparently None is passed by ArcBetweenPoints
-            radius = 1.0
-        self.radius = radius
-        self.num_components = num_components
-        self.anchors_span_full_range = anchors_span_full_range
-        self.arc_center = arc_center
-        self.start_angle = start_angle
-        self.angle = angle
-        self._failed_to_get_center = False
-        TipableVMobject.__init__(self, **kwargs)
-
-    def init_gl_points(self):
-        self.set_points(
-            TestOpenGLArc.create_quadratic_bezier_points(
-                angle=self.angle,
-                start_angle=self.start_angle,
-                n_components=self.num_components,
+    def round_corners(self, radius=0.5):
+        vertices = self.get_vertices()
+        arcs = []
+        for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
+            vect1 = v2 - v1
+            vect2 = v3 - v2
+            unit_vect1 = normalize(vect1)
+            unit_vect2 = normalize(vect2)
+            angle = angle_between_vectors(vect1, vect2)
+            # Negative radius gives concave curves
+            angle *= np.sign(radius)
+            # Distance between vertex and start of the arc
+            cut_off_length = radius * np.tan(angle / 2)
+            # Determines counterclockwise vs. clockwise
+            sign = np.sign(np.cross(vect1, vect2)[2])
+            arc = OpenGLArcBetweenPoints(
+                v2 - unit_vect1 * cut_off_length,
+                v2 + unit_vect2 * cut_off_length,
+                angle=sign * angle,
+                n_components=2,
             )
-        )
-        self.scale(self.radius, about_point=ORIGIN)
-        self.shift(self.arc_center)
+            arcs.append(arc)
 
-    @staticmethod
-    def create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
-        samples = np.array(
-            [
-                [np.cos(a), np.sin(a), 0]
-                for a in np.linspace(
-                    start_angle,
-                    start_angle + angle,
-                    2 * n_components + 1,
-                )
-            ]
-        )
-        theta = angle / n_components
-        samples[1::2] /= np.cos(theta / 2)
-
-        points = np.zeros((3 * n_components, 3))
-        points[0::3] = samples[0:-1:2]
-        points[1::3] = samples[1::2]
-        points[2::3] = samples[2::2]
-        return points
-
-    def get_arc_center(self):
-        """
-        Looks at the normals to the first two
-        anchors, and finds their intersection points
-        """
-        # First two anchors and handles
-        a1, h, a2 = self.get_points()[:3]
-        # Tangent vectors
-        t1 = h - a1
-        t2 = h - a2
-        # Normals
-        n1 = rotate_vector(t1, TAU / 4)
-        n2 = rotate_vector(t2, TAU / 4)
-        return find_intersection(a1, n1, a2, n2)
-
-    def get_start_angle(self):
-        angle = angle_of_vector(self.get_start() - self.get_arc_center())
-        return angle % TAU
-
-    def get_stop_angle(self):
-        angle = angle_of_vector(self.get_end() - self.get_arc_center())
-        return angle % TAU
-
-    def move_arc_center_to(self, point):
-        self.shift(point - self.get_arc_center())
+        self.clear_points()
+        # To ensure that we loop through starting with last
+        arcs = [arcs[-1], *arcs[:-1]]
+        for arc1, arc2 in adjacent_pairs(arcs):
+            self.append_points(arc1.get_points())
+            line = OpenGLLine(arc1.get_end(), arc2.get_start())
+            # Make sure anchors are evenly distributed
+            len_ratio = line.get_length() / arc1.get_arc_length()
+            line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
+            self.append_points(line.get_points())
         return self
 
 
-class TestOpenGLArcBetweenPoints(TestOpenGLArc):
-    def __init__(self, start, end, angle=TAU / 4, **kwargs):
-        super().__init__(angle=angle, **kwargs)
-        if angle == 0:
-            self.set_points_as_corners([LEFT, RIGHT])
-        self.put_start_and_end_on(start, end)
+class OpenGLRegularPolygon(OpenGLPolygon):
+    def __init__(self, n=6, start_angle=None, **kwargs):
+        self.start_angle = start_angle
+        if self.start_angle is None:
+            if n % 2 == 0:
+                self.start_angle = 0
+            else:
+                self.start_angle = 90 * DEGREES
+        start_vect = rotate_vector(RIGHT, self.start_angle)
+        vertices = compass_directions(n, start_vect)
+        super().__init__(*vertices, **kwargs)
+
+
+class OpenGLTriangle(OpenGLRegularPolygon):
+    def __init__(self, **kwargs):
+        super().__init__(n=3, **kwargs)
+
+
+class OpenGLArrowTip(OpenGLTriangle):
+    def __init__(
+        self,
+        fill_opacity=1,
+        fill_color=WHITE,
+        stroke_width=0,
+        width=DEFAULT_ARROW_TIP_WIDTH,
+        length=DEFAULT_ARROW_TIP_LENGTH,
+        angle=0,
+        **kwargs
+    ):
+        OpenGLTriangle.__init__(
+            self,
+            start_angle=0,
+            fill_opacity=fill_opacity,
+            fill_color=fill_color,
+            stroke_width=stroke_width,
+            **kwargs
+        )
+        self.set_width(width, stretch=True)
+        self.set_height(length, stretch=True)
+
+    def get_base(self):
+        return self.point_from_proportion(0.5)
+
+    def get_tip_point(self):
+        return self.get_points()[0]
+
+    def get_vector(self):
+        return self.get_tip_point() - self.get_base()
+
+    def get_angle(self):
+        return angle_of_vector(self.get_vector())
+
+    def get_length(self):
+        return get_norm(self.get_vector())
+
+
+class OpenGLRectangle(OpenGLPolygon):
+    def __init__(
+        self,
+        color=WHITE,
+        width=4.0,
+        height=2.0,
+        mark_paths_closed=True,
+        close_new_points=True,
+        **kwargs
+    ):
+        self.mark_paths_closed = mark_paths_closed
+        self.close_new_points = close_new_points
+        OpenGLPolygon.__init__(self, UR, UL, DL, DR, color=color, **kwargs)
+
+        self.set_width(width, stretch=True)
+        self.set_height(height, stretch=True)
+
+
+class OpenGLSquare(OpenGLRectangle):
+    def __init__(self, side_length=2.0, **kwargs):
+        self.side_length = side_length
+
+        super().__init__(height=side_length, width=side_length, **kwargs)
+
+
+class OpenGLRoundedRectangle(OpenGLRectangle):
+    def __init__(self, corner_radius=0.5, **kwargs):
+        self.corner_radius = corner_radius
+        OpenGLRectangle.__init__(self, **kwargs)
+        self.round_corners(self.corner_radius)

@@ -6,6 +6,10 @@ from ..mobject.types.vectorized_mobject import VMobject
 import itertools as it
 import time
 from .. import logger
+from ..constants import *
+from ..utils.space_ops import cross2d
+from ..utils.space_ops import earclip_triangulation
+from ..utils.space_ops import z_to_vector
 
 from ..mobject import opengl_geometry
 
@@ -231,7 +235,7 @@ class OpenGLRenderer:
         crosses = cross2d(v01s, v12s)
         convexities = np.sign(crosses)
 
-        atol = tolerance_for_point_equality
+        atol = mob.tolerance_for_point_equality
         end_of_loop = np.zeros(len(b0s), dtype=bool)
         end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
         end_of_loop[-1] = True

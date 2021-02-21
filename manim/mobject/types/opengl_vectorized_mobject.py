@@ -11,13 +11,13 @@ from ...utils.color import *
 # from manimlib.constants import *
 # from manimlib.mobject.mobject import Mobject
 # from manimlib.mobject.mobject import Point
-# from manimlib.utils.bezier import bezier
+from ...utils.bezier import bezier
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
 # from manimlib.utils.bezier import get_smooth_cubic_bezier_handle_points
 # from manimlib.utils.bezier import get_quadratic_approximation_of_cubic
-# from manimlib.utils.bezier import interpolate
-# from manimlib.utils.bezier import integer_interpolate
-# from manimlib.utils.bezier import partial_quadratic_bezier_points
+from ...utils.bezier import interpolate
+from ...utils.bezier import integer_interpolate
+from ...utils.bezier import partial_quadratic_bezier_points
 # from manimlib.utils.color import rgb_to_hex
 from ...utils.iterables import make_even
 
@@ -26,12 +26,12 @@ from ...utils.iterables import resize_with_interpolation
 from ...utils.iterables import listify
 
 # from manimlib.utils.space_ops import angle_between_vectors
-# from manimlib.utils.space_ops import cross2d
-# from manimlib.utils.space_ops import earclip_triangulation
+from ...utils.space_ops import cross2d
+from ...utils.space_ops import earclip_triangulation
 from ...utils.space_ops import get_norm
 from ...utils.space_ops import get_unit_normal
 
-# from manimlib.utils.space_ops import z_to_vector
+from ...utils.space_ops import z_to_vector
 # from manimlib.shader_wrapper import ShaderWrapper
 
 
@@ -741,7 +741,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def pointwise_become_partial(self, vmobject, a, b):
-        assert isinstance(vmobject, VMobject)
+        assert isinstance(vmobject, OpenGLVMobject)
         if a <= 0 and b >= 1:
             self.become(vmobject)
             return self

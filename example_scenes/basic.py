@@ -18,6 +18,26 @@ if config["use_opengl_renderer"]:
 # for a 1920x1080 video)
 
 
+class Testing(Scene):
+    def construct(self):
+        c = OpenGLLine(LEFT, RIGHT)
+        c2 = OpenGLLine(LEFT, RIGHT)
+        print(c.data["points"])
+        c2.shift(RIGHT)
+        self.play(Transform(c, c2))
+
+        # c = OpenGLDashedLine(LEFT, RIGHT)
+        # c2 = OpenGLDashedLine(LEFT, RIGHT)
+        # print(c.data["points"])
+        # c2.shift(RIGHT)
+        # self.play(Transform(c, c2))
+
+        # mob = ArcBetweenPoints(LEFT, RIGHT)
+        # mob2 = ArcBetweenPoints(LEFT, RIGHT)
+        # mob2.shift(RIGHT)
+        # self.play(Transform(mob, mob2), run_time=0.3)
+
+
 class OpeningManim(Scene):
     def construct(self):
         title = Tex(r"This is some \LaTeX")
@@ -75,20 +95,15 @@ class OpeningManim(Scene):
 
 class SquareToCircle(Scene):
     def construct(self):
-        # circle = Circle()
-        # square = Square()
-        # square.flip(RIGHT)
-        # square.rotate(-3 * TAU / 8)
-        # circle.set_fill(PINK, opacity=0.5)
+        circle = Circle()
+        square = Square()
+        square.flip(RIGHT)
+        square.rotate(-3 * TAU / 8)
+        circle.set_fill(PINK, opacity=0.5)
 
-        # self.play(ShowCreation(square))
-        # self.play(Transform(square, circle))
-        # self.play(FadeOut(square))
-
-        mob = ArcBetweenPoints(LEFT, RIGHT)
-        mob2 = ArcBetweenPoints(LEFT, RIGHT)
-        mob2.shift(RIGHT)
-        self.play(Transform(mob, mob2))
+        self.play(ShowCreation(square))
+        self.play(Transform(square, circle))
+        self.play(FadeOut(square))
 
 
 class WarpSquare(Scene):
