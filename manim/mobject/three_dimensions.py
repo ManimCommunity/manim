@@ -223,7 +223,7 @@ class Cone(ParametricSurface):
 
     Parameters
     --------
-    base_radius : :class:`int`
+    base_radius : :class:`float`
         The base radius from which the cone tapers.
     height : :class:`int`
         The height measured from the plane formed by the base_radius to the apex of the cone.
@@ -343,13 +343,41 @@ class Cone(ParametricSurface):
 
 
 class Cylinder(ParametricSurface):
+    """A cylinder, defined by its height, radius and direction,
+    
+    Examples
+    ---------
+    .. manim:: ExampleCylinder
+        :save_last_frame:
+
+        class ExampleCylinder(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                cylinder = Cylinder(radius=2, height=3)
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.add(axes, cylinder)
+
+    Parameters
+    ---------
+    radius : :class:`float`
+        The radius of the cylinder.
+    height : :class:`float`
+        The height of the cylinder.
+    direction : :class:`np.array`
+        The direction of the central axis of the cylinder.
+    show_ends : :class:`bool`
+        Whether to show the end caps or not.
+    v_min : :class:`float`
+        The height along the height axis (given by direction) to start on.
+    v_max : :class:`float`
+        The height along the height axis (given by direction) to end on.
+    """
     def __init__(
         self,
         resolution=24,
         radius=1,
         height=2,
         direction=Z_AXIS,
-        center_point=ORIGIN,
         v_min=0,
         v_max=TAU,
         show_ends=True,
@@ -384,6 +412,7 @@ class Cylinder(ParametricSurface):
         return np.array([r * np.cos(phi), r * np.sin(phi), height])
 
     def add_bases(self):
+        """Function to add the end caps of the cylinder."""
         self.base_top = Dot(
             point=self.u_max * IN,
             radius=self.radius,
@@ -427,6 +456,30 @@ class Cylinder(ParametricSurface):
 
 
 class Line3D(Cylinder):
+    """A cylindrical line, for use in ThreeDScene.
+
+    Examples
+    ---------
+    .. manim:: ExampleLine
+        :save_last_frame:
+
+        class ExampleLine3D(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                line = Line3D(start=np.array([0, 0, 0]), end=np.array([2, 2, 2]))
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.add(axes, line)
+
+    Parameters
+    ---------
+    start : :class:`np.array`
+        Sets the start position of the line.
+    end : :class:`np.array`
+        Sets the end position of the line.
+    width : :class:`float`
+        The thickness of the line.
+    color : :class:`str`
+        The color of the line."""
     def __init__(self, start=LEFT, end=RIGHT, width=0.02, color=None, **kwargs):
         self.set_start_and_end_attrs(start, end)
         super().__init__(
@@ -469,8 +522,37 @@ class Line3D(Cylinder):
 
 
 class Arrow3D(Line3D):
+    """An arrow made out of a cylindrical line and a conical tip.
+
+    Examples
+    ---------
+    .. manim:: ExampleArrow3D
+        :save_last_frame:
+
+        class ExampleArrow3D(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                arrow = Arrow3D(start=np.array([0, 0, 0]), end=np.array([2, 2, 2]))
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.add(axes, arrow)
+
+    Parameters
+    ---------
+    start : :class:`np.array`
+        Sets the start position of the arrow.
+    end : :class:`np.array`
+        Sets the end position of the arrow.
+    width : :class:`float`
+        The thickness of the arrow.
+    height : :class:`float`
+        The height of the conical tip.
+    base_radius: :class:`float`
+        The base radius of the conical tip.
+    color : :class:`str`
+        The color of the arrow.   
+    """
     def __init__(
-        self, start=LEFT, end=RIGHT, height=0.5, base_radius=0.25, color=WHITE, **kwargs
+        self, start=LEFT, end=RIGHT, width=0.02, height=0.5, base_radius=0.25, color=WHITE, **kwargs
     ):
         self.set_start_and_end_attrs(start, end)
 
@@ -478,7 +560,7 @@ class Arrow3D(Line3D):
 
         self.length = get_norm(self.vect)
         self.line = Line3D(
-            start, end - height * self.direction
+            start, end - height * self.direction, width=width
         )  # end adjusted so that thet tip does not extend out of the cone
         self.line.set_color(color)
 
