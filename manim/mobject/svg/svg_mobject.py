@@ -125,17 +125,7 @@ class SVGMobject(VMobject):
         """
         doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(
-                svg,
-                # these are the default styling specifications for SVG images,
-                # according to https://www.w3.org/TR/SVG/painting.html, ctrl-F for "initial"
-                {
-                    "fill": "black",
-                    "fill-opacity": "1",
-                    "stroke": "none",
-                    "stroke-opacity": "1",
-                },
-            )
+            mobjects = self.get_mobjects_from(svg, {})
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -191,7 +181,7 @@ class SVGMobject(VMobject):
             if temp != "":
                 result.append(self.path_string_to_mobject(temp, style))
         elif element.tagName == "use":
-            # note, style is cacluated in a different way for `use` elements.
+            # note, style is calcuated in a different way for `use` elements.
             result += self.use_to_mobjects(element, style)
         elif element.tagName == "rect":
             result.append(self.rect_to_mobject(element, style))

@@ -17,6 +17,17 @@ SUPPORTED_STYLING_ATTRIBUTES: List[str] = [
     "stroke-opacity",
 ]
 
+"""
+The default styling specifications for SVG images,
+according to https://www.w3.org/TR/SVG/painting.html
+(ctrl-F for "initial)
+"""
+SVG_DEFAULT_ATTRIBUTES = {
+    "fill": "black",
+    "fill-opacity": "1",
+    "stroke": "none",
+    "stroke-opacity": "1",
+}
 
 def cascade_element_style(
     element: MinidomElement, inherited: Dict[str, str]
@@ -91,6 +102,26 @@ def parse_color_string(color_spec: str) -> str:
     return hex_color
 
 
+def fill_default_values(svg_style: Dict) -> None:
+    """
+    Fill in the default values for properties of SVG elements,
+    if they are not currently set in the style dictionary.
+
+    Parameters
+    ----------
+    svg_style : :class:`dict`
+        Style dictionary with SVG property names. Some may be missing.
+
+    Returns
+    -------
+    :class:`dict`
+        Style attributes; none are missing.
+    """
+    for key in SVG_DEFAULT_ATTRIBUTES:
+        if key not in svg_style:
+            svg_style[key] = SVG_DEFAULT_ATTRIBUTES[key]
+
+
 def parse_style(svg_style: Dict[str, str]) -> Dict:
     """Convert a dictionary of SVG attributes to Manim VMobject keyword arguments.
 
@@ -106,22 +137,7 @@ def parse_style(svg_style: Dict[str, str]) -> Dict:
     """
 
     manim_style = {}
-
-    # style attributes trump other element-level attributes,
-    # see https://www.w3.org/TR/SVG11/styling.html section 6.4, search "priority"
-    # so overwrite the other attribute dictionary values.
-    if "style" in svg_style:
-        for style_spec in svg_style["style"].split(";"):
-            try:
-                key, value = style_spec.split(":")
-            except ValueError as e:
-                if not style_spec:
-                    # there was just a stray semicolon at the end, producing an emptystring
-                    pass
-                else:
-                    raise e
-            else:
-                svg_style[key] = value
+    fill_default_values(svg_style)
 
     if "fill-opacity" in svg_style:
         manim_style["fill_opacity"] = float(svg_style["fill-opacity"])
