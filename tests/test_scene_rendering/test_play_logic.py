@@ -15,7 +15,11 @@ from .simple_scenes import (
     SquareToCircle,
 )
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="np.assert_allclose is does not work in this test case in python < 3.8")
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 8),
+    reason="np.assert_allclose is does not work in this test case in python < 3.8",
+)
 @pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
 def test_t_values(using_temp_config, disabling_caching, frame_rate):
     """Test that the framerate corresponds to the number of t values generated"""
