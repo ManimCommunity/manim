@@ -253,10 +253,9 @@ class Cone(ParametricSurface):
         checkerboard_colors=False,
         **kwargs
     ):
-        self.base_radius = base_radius
-        self._height = height
-        self.show_base = show_base
         self.direction = direction
+        self.theta = PI - np.arctan(base_radius / height)
+
         ParametricSurface.__init__(
             self,
             self.func,
@@ -271,20 +270,16 @@ class Cone(ParametricSurface):
         self._current_theta = 0
         self._current_phi = 0
 
-        if self.show_base:
+        if show_base:
             self.base_circle = Dot(
-                point=self._height * IN,
-                radius=self.base_radius,
+                point=height * IN,
+                radius=base_radius,
                 color=self.fill_color,
                 fill_opacity=self.fill_opacity,
             )
             self.add(self.base_circle)
 
         self._rotate_to_direction()
-
-    @property
-    def theta(self):
-        return PI - np.arctan(self.base_radius / self._height)
 
     def func(self, u, v):
         """Function to convert from spherical coordinates to cartesian.
@@ -297,12 +292,11 @@ class Cone(ParametricSurface):
         """
         r = u
         phi = v
-        theta = self.theta
         return np.array(
             [
-                r * np.sin(theta) * np.cos(phi),
-                r * np.sin(theta) * np.sin(phi),
-                r * np.cos(theta),
+                r * np.sin(self.theta) * np.cos(phi),
+                r * np.sin(self.theta) * np.sin(phi),
+                r * np.cos(self.theta),
             ]
         )
 
@@ -583,7 +577,7 @@ class Arrow3D(Line3D):
 
 
 class Torus(ParametricSurface):
-    """A torus (doughnut shape object).
+    """A torus.
 
     Examples
     ---------
