@@ -2,6 +2,7 @@ from functools import wraps
 from pathlib import Path
 from unittest.mock import Mock
 from numpy.core.defchararray import asarray
+import sys
 
 import pytest
 from manim import *
@@ -14,7 +15,7 @@ from .simple_scenes import (
     SquareToCircle,
 )
 
-
+@pytest.mark.skipif(sys.version_info < (3, 8), reason="np.assert_allclose is does not work in this test case in python < 3.8")
 @pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
 def test_t_values(using_temp_config, disabling_caching, frame_rate):
     """Test that the framerate corresponds to the number of t values generated"""
@@ -39,7 +40,6 @@ def test_t_values_with_skip_animations(using_temp_config, disabling_caching):
     np.testing.assert_almost_equal(
         scene.update_to_time.call_args.args[0],
         1.0,
-        err_msg="Last t must be 1 when skipping animation",
     )
 
 
