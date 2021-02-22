@@ -254,7 +254,7 @@ class Cone(ParametricSurface):
         **kwargs
     ):
         self.base_radius = base_radius
-        self.height = height
+        self._height = height
         self.show_base = show_base
         self.direction = direction
         ParametricSurface.__init__(
@@ -273,7 +273,7 @@ class Cone(ParametricSurface):
 
         if self.show_base:
             self.base_circle = Dot(
-                point=self.height * IN,
+                point=self._height * IN,
                 radius=self.base_radius,
                 color=self.fill_color,
                 fill_opacity=self.fill_opacity,
@@ -284,7 +284,7 @@ class Cone(ParametricSurface):
 
     @property
     def theta(self):
-        return PI - np.arctan(self.base_radius / self.height)
+        return PI - np.arctan(self.base_radius / self._height)
 
     def func(self, u, v):
         """Function to convert from spherical coordinates to cartesian.
@@ -383,14 +383,14 @@ class Cylinder(ParametricSurface):
         v_max=TAU,
         show_ends=True,
     ):
-        self.height = height
+        self._height = height
         self.radius = radius
         ParametricSurface.__init__(
             self,
             self.func,
             resolution=resolution,
-            u_min=-self.height / 2,
-            u_max=self.height / 2,
+            u_min=-self._height / 2,
+            u_max=self._height / 2,
             v_min=v_min,
             v_max=v_max,
         )
