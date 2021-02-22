@@ -344,7 +344,7 @@ class Cone(ParametricSurface):
 
 class Cylinder(ParametricSurface):
     """A cylinder, defined by its height, radius and direction,
-    
+
     Examples
     ---------
     .. manim:: ExampleCylinder
@@ -372,6 +372,7 @@ class Cylinder(ParametricSurface):
     v_max : :class:`float`
         The height along the height axis (given by direction) to end on.
     """
+
     def __init__(
         self,
         resolution=24,
@@ -460,7 +461,7 @@ class Line3D(Cylinder):
 
     Examples
     ---------
-    .. manim:: ExampleLine
+    .. manim:: ExampleLine3D
         :save_last_frame:
 
         class ExampleLine3D(ThreeDScene):
@@ -480,6 +481,7 @@ class Line3D(Cylinder):
         The thickness of the line.
     color : :class:`str`
         The color of the line."""
+
     def __init__(self, start=LEFT, end=RIGHT, width=0.02, color=None, **kwargs):
         self.set_start_and_end_attrs(start, end)
         super().__init__(
@@ -549,10 +551,18 @@ class Arrow3D(Line3D):
     base_radius: :class:`float`
         The base radius of the conical tip.
     color : :class:`str`
-        The color of the arrow.   
+        The color of the arrow.
     """
+
     def __init__(
-        self, start=LEFT, end=RIGHT, width=0.02, height=0.5, base_radius=0.25, color=WHITE, **kwargs
+        self,
+        start=LEFT,
+        end=RIGHT,
+        width=0.02,
+        height=0.5,
+        base_radius=0.25,
+        color=WHITE,
+        **kwargs
     ):
         self.set_start_and_end_attrs(start, end)
 
@@ -573,6 +583,27 @@ class Arrow3D(Line3D):
 
 
 class Torus(ParametricSurface):
+    """A torus (doughnut shape object).
+
+    Examples
+    ---------
+    .. manim :: ExampleTorus
+        :save_last_frame:
+
+        class ExampleTorus(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                torus = Torus()
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.add(axes, torus)
+
+    Parameters
+    ---------
+    R : :class:`float`
+        distance from the center of the tube to the center of the torus
+    r : :class:`float`
+        radius of the tube"""
+
     def __init__(
         self, R=3, r=1, u_min=0, u_max=TAU, v_min=0, v_max=TAU, resolution=24, **kwargs
     ):
