@@ -12,12 +12,14 @@ from ...utils.color import *
 # from manimlib.mobject.mobject import Mobject
 # from manimlib.mobject.mobject import Point
 from ...utils.bezier import bezier
+
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
 # from manimlib.utils.bezier import get_smooth_cubic_bezier_handle_points
-# from manimlib.utils.bezier import get_quadratic_approximation_of_cubic
+from ...utils.bezier import get_quadratic_approximation_of_cubic
 from ...utils.bezier import interpolate
 from ...utils.bezier import integer_interpolate
 from ...utils.bezier import partial_quadratic_bezier_points
+
 # from manimlib.utils.color import rgb_to_hex
 from ...utils.iterables import make_even
 
@@ -32,10 +34,32 @@ from ...utils.space_ops import get_norm
 from ...utils.space_ops import get_unit_normal
 
 from ...utils.space_ops import z_to_vector
-# from manimlib.shader_wrapper import ShaderWrapper
 
+from ...renderer.shader_wrapper import ShaderWrapper
+
+JOINT_TYPE_MAP = {
+    "auto": 0,
+    "round": 1,
+    "bevel": 2,
+    "miter": 3,
+}
 
 class OpenGLVMobject(OpenGLMobject):
+    fill_dtype = [
+        ("point", np.float32, (3,)),
+        ("unit_normal", np.float32, (3,)),
+        ("color", np.float32, (4,)),
+        ("vert_index", np.float32, (1,)),
+    ]
+    stroke_dtype = [
+        ("point", np.float32, (3,)),
+        ("prev_point", np.float32, (3,)),
+        ("next_point", np.float32, (3,)),
+        ("unit_normal", np.float32, (3,)),
+        ("stroke_width", np.float32, (1,)),
+        ("color", np.float32, (4,)),
+    ]
+
     def __init__(
         self,
         fill_color=None,
@@ -916,17 +940,23 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_fill_shader_wrapper(self):
-        self.fill_shader_wrapper.vert_data = self.get_fill_shader_data()
-        self.fill_shader_wrapper.vert_indices = self.get_fill_shader_vert_indices()
-        self.fill_shader_wrapper.uniforms = self.get_shader_uniforms()
-        self.fill_shader_wrapper.depth_test = self.depth_test
-        return self.fill_shader_wrapper
+        return ShaderWrapper(
+            vert_data=self.get_fill_shader_data(),
+            vert_indices=self.get_triangulation(),
+            shader_folder="quadratic_bezier_fill",
+            render_primitive=moderngl.TRIANGLES,
+            uniforms=self.get_fill_uniforms(),
+            depth_test=self.depth_test,
+        )
 
     def get_stroke_shader_wrapper(self):
-        self.stroke_shader_wrapper.vert_data = self.get_stroke_shader_data()
-        self.stroke_shader_wrapper.uniforms = self.get_stroke_uniforms()
-        self.stroke_shader_wrapper.depth_test = self.depth_test
-        return self.stroke_shader_wrapper
+        return ShaderWrapper(
+            vert_data=self.get_stroke_shader_data(),
+            shader_folder="quadratic_bezier_stroke",
+            render_primitive=moderngl.TRIANGLES,
+            uniforms=self.get_stroke_uniforms(),
+            depth_test=self.depth_test,
+        )
 
     def get_shader_wrapper_list(self):
         # Build up data lists
@@ -963,36 +993,40 @@ class OpenGLVMobject(OpenGLMobject):
         result["flat_stroke"] = float(self.flat_stroke)
         return result
 
+    def get_fill_uniforms(self):
+        return dict(
+            is_fixed_in_frame=float(self.is_fixed_in_frame),
+            gloss=self.gloss,
+            shadow=self.shadow,
+        )
+
     def get_stroke_shader_data(self):
-        points = self.get_points()
-        if len(self.stroke_data) != len(points):
-            self.stroke_data = resize_array(self.stroke_data, len(points))
+        points = self.data["points"]
+        stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
 
-        if "points" not in self.locked_data_keys:
-            nppc = self.n_points_per_curve
-            self.stroke_data["point"] = points
-            self.stroke_data["prev_point"][:nppc] = points[-nppc:]
-            self.stroke_data["prev_point"][nppc:] = points[:-nppc]
-            self.stroke_data["next_point"][:-nppc] = points[nppc:]
-            self.stroke_data["next_point"][-nppc:] = points[:nppc]
+        nppc = self.n_points_per_curve
+        stroke_data["point"] = points
+        stroke_data["prev_point"][:nppc] = points[-nppc:]
+        stroke_data["prev_point"][nppc:] = points[:-nppc]
+        stroke_data["next_point"][:-nppc] = points[nppc:]
+        stroke_data["next_point"][-nppc:] = points[:nppc]
 
-        self.read_data_to_shader(self.stroke_data, "color", "stroke_rgba")
-        self.read_data_to_shader(self.stroke_data, "stroke_width", "stroke_width")
-        self.read_data_to_shader(self.stroke_data, "unit_normal", "unit_normal")
+        self.read_data_to_shader(stroke_data, "color", "stroke_rgba")
+        self.read_data_to_shader(stroke_data, "stroke_width", "stroke_width")
+        self.read_data_to_shader(stroke_data, "unit_normal", "unit_normal")
 
-        return self.stroke_data
+        return stroke_data
 
     def get_fill_shader_data(self):
-        points = self.get_points()
-        if len(self.fill_data) != len(points):
-            self.fill_data = resize_array(self.fill_data, len(points))
-            self.fill_data["vert_index"][:, 0] = range(len(points))
+        points = self.data["points"]
+        fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
+        fill_data["vert_index"][:, 0] = range(len(points))
 
-        self.read_data_to_shader(self.fill_data, "point", "points")
-        self.read_data_to_shader(self.fill_data, "color", "fill_rgba")
-        self.read_data_to_shader(self.fill_data, "unit_normal", "unit_normal")
+        self.read_data_to_shader(fill_data, "point", "points")
+        self.read_data_to_shader(fill_data, "color", "fill_rgba")
+        self.read_data_to_shader(fill_data, "unit_normal", "unit_normal")
 
-        return self.fill_data
+        return fill_data
 
     def refresh_shader_data(self):
         self.get_fill_shader_data()
@@ -1025,10 +1059,8 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         self.artificial_height = artificial_height
 
         super().__init__(
-                color=color,
-                fill_opacity=fill_opacity,
-                stroke_width=stroke_width,
-        **kwargs)
+            color=color, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        )
         self.set_points(np.array([location]))
 
 

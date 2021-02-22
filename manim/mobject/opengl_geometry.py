@@ -10,7 +10,7 @@ from ..utils.iterables import adjacent_n_tuples
 from ..utils.iterables import adjacent_pairs
 from ..utils.simple_functions import fdiv
 
-# from ..utils.simple_functions import clip
+from ..utils.simple_functions import clip
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import angle_between_vectors
 from ..utils.space_ops import compass_directions
@@ -90,7 +90,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         config = dict()
         config.update(self.tip_config)
         config.update(kwargs)
-        return ArrowTip(**config)
+        return OpenGLArrowTip(**config)
 
     def position_tip(self, tip, at_start=False):
         # Last two control points, defining both
@@ -591,164 +591,176 @@ class OpenGLDashedLine(OpenGLLine):
         return self.submobjects[-1].get_points()[-2]
 
 
-# class TangentLine(Line):
-#     CONFIG = {"length": 1, "d_alpha": 1e-6}
-#
-#     def __init__(self, vmob, alpha, **kwargs):
-#         digest_config(self, kwargs)
-#         da = self.d_alpha
-#         a1 = clip(alpha - da, 0, 1)
-#         a2 = clip(alpha + da, 0, 1)
-#         super().__init__(vmob.pfp(a1), vmob.pfp(a2), **kwargs)
-#         self.scale(self.length / self.get_length())
-#
-#
-# class Elbow(VMobject):
-#     CONFIG = {
-#         "width": 0.2,
-#         "angle": 0,
-#     }
-#
-#     def __init__(self, **kwargs):
-#         super().__init__(self, **kwargs)
-#         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
-#         self.set_width(self.width, about_point=ORIGIN)
-#         self.rotate(self.angle, about_point=ORIGIN)
-#
-#
-# class Arrow(Line):
-#     CONFIG = {
-#         "fill_color": GREY_A,
-#         "fill_opacity": 1,
-#         "stroke_width": 0,
-#         "buff": MED_SMALL_BUFF,
-#         "thickness": 0.05,
-#         "tip_width_ratio": 5,
-#         "tip_angle": PI / 3,
-#         "max_tip_length_to_length_ratio": 0.5,
-#         "max_width_to_length_ratio": 0.1,
-#     }
-#
-#     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
-#         # Find the right tip length and thickness
-#         vect = end - start
-#         length = max(get_norm(vect), 1e-8)
-#         thickness = self.thickness
-#         w_ratio = fdiv(self.max_width_to_length_ratio, fdiv(thickness, length))
-#         if w_ratio < 1:
-#             thickness *= w_ratio
-#
-#         tip_width = self.tip_width_ratio * thickness
-#         tip_length = tip_width / (2 * np.tan(self.tip_angle / 2))
-#         t_ratio = fdiv(self.max_tip_length_to_length_ratio, fdiv(tip_length, length))
-#         if t_ratio < 1:
-#             tip_length *= t_ratio
-#             tip_width *= t_ratio
-#
-#         # Find points for the stem
-#         if path_arc == 0:
-#             points1 = (length - tip_length) * np.array([RIGHT, 0.5 * RIGHT, ORIGIN])
-#             points1 += thickness * UP / 2
-#             points2 = points1[::-1] + thickness * DOWN
-#         else:
-#             # Solve for radius so that the tip-to-tail length matches |end - start|
-#             a = 2 * (1 - np.cos(path_arc))
-#             b = -2 * tip_length * np.sin(path_arc)
-#             c = tip_length ** 2 - length ** 2
-#             R = (-b + np.sqrt(b ** 2 - 4 * a * c)) / (2 * a)
-#
-#             # Find arc points
-#             points1 = Arc.create_quadratic_bezier_points(path_arc)
-#             points2 = np.array(points1[::-1])
-#             points1 *= R + thickness / 2
-#             points2 *= R - thickness / 2
-#             if path_arc < 0:
-#                 tip_length *= -1
-#             rot_T = rotation_matrix_transpose(PI / 2 - path_arc, OUT)
-#             for points in points1, points2:
-#                 points[:] = np.dot(points, rot_T)
-#                 points += R * DOWN
-#
-#         self.set_points(points1)
-#         # Tip
-#         self.add_line_to(tip_width * UP / 2)
-#         self.add_line_to(tip_length * LEFT)
-#         self.tip_index = len(self.get_points()) - 1
-#         self.add_line_to(tip_width * DOWN / 2)
-#         self.add_line_to(points2[0])
-#         # Close it out
-#         self.append_points(points2)
-#         self.add_line_to(points1[0])
-#
-#         if length > 0:
-#             # Final correction
-#             super().scale(length / self.get_length())
-#
-#         self.rotate(angle_of_vector(vect) - self.get_angle())
-#         self.rotate(
-#             PI / 2 - np.arccos(normalize(vect)[2]),
-#             axis=rotate_vector(self.get_unit_vector(), -PI / 2),
-#         )
-#         self.shift(start - self.get_start())
-#         self.refresh_triangulation()
-#
-#     def reset_points_around_ends(self):
-#         self.set_points_by_ends(
-#             self.get_start(), self.get_end(), path_arc=self.path_arc
-#         )
-#         return self
-#
-#     def get_start(self):
-#         nppc = self.n_points_per_curve
-#         points = self.get_points()
-#         return (points[0] + points[-nppc]) / 2
-#
-#     def get_end(self):
-#         return self.get_points()[self.tip_index]
-#
-#     def put_start_and_end_on(self, start, end):
-#         self.set_points_by_ends(start, end, buff=0, path_arc=self.path_arc)
-#         return self
-#
-#     def scale(self, *args, **kwargs):
-#         super().scale(*args, **kwargs)
-#         self.reset_points_around_ends()
-#         return self
-#
-#     def set_thickness(self, thickness):
-#         self.thickness = thickness
-#         self.reset_points_around_ends()
-#         return self
-#
-#     def set_path_arc(self, path_arc):
-#         self.path_arc = path_arc
-#         self.reset_points_around_ends()
-#         return self
-#
-#
-# class Vector(Arrow):
-#     CONFIG = {
-#         "buff": 0,
-#     }
-#
-#     def __init__(self, direction=RIGHT, **kwargs):
-#         if len(direction) == 2:
-#             direction = np.hstack([direction, 0])
-#         super().__init__(ORIGIN, direction, **kwargs)
-#
-#
-# class DoubleArrow(Arrow):
-#     def __init__(self, *args, **kwargs):
-#         Arrow.__init__(self, *args, **kwargs)
-#         self.add_tip(at_start=True)
-#
-#
-# class CubicBezier(VMobject):
-#     def __init__(self, a0, h0, h1, a1, **kwargs):
-#         VMobject.__init__(self, **kwargs)
-#         self.add_cubic_bezier_curve(a0, h0, h1, a1)
-#
-#
+class OpenGLTangentLine(OpenGLLine):
+    def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
+        self.length = length
+        self.d_alpha = d_alpha
+        da = self.d_alpha
+        a1 = clip(alpha - da, 0, 1)
+        a2 = clip(alpha + da, 0, 1)
+        super().__init__(vmob.pfp(a1), vmob.pfp(a2), **kwargs)
+        self.scale(self.length / self.get_length())
+
+
+class OpenGLElbow(OpenGLVMobject):
+    def __init__(self, width=0.2, angle=0, **kwargs):
+        self.angle = angle
+        super().__init__(self, **kwargs)
+        self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
+        self.set_width(width, about_point=ORIGIN)
+        self.rotate(self.angle, about_point=ORIGIN)
+
+
+class OpenGLArrow(OpenGLLine):
+    def __init__(
+        self,
+        start=LEFT,
+        end=RIGHT,
+        path_arc=0,
+        fill_color=GREY_A,
+        fill_opacity=1,
+        stroke_width=0,
+        buff=MED_SMALL_BUFF,
+        thickness=0.05,
+        tip_width_ratio=5,
+        tip_angle=PI / 3,
+        max_tip_length_to_length_ratio=0.5,
+        max_width_to_length_ratio=0.1,
+        **kwargs
+    ):
+        self.thickness = thickness
+        self.tip_width_ratio = tip_width_ratio
+        self.tip_angle = tip_angle
+        self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
+        self.max_width_to_length_ratio = max_width_to_length_ratio
+        super().__init__(
+            start=start,
+            end=end,
+            buff=buff,
+            path_arc=path_arc,
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs
+        )
+
+    def set_points_by_ends(self, start, end, buff=0, path_arc=0):
+        # Find the right tip length and thickness
+        vect = end - start
+        length = max(get_norm(vect), 1e-8)
+        thickness = self.thickness
+        w_ratio = fdiv(self.max_width_to_length_ratio, fdiv(thickness, length))
+        if w_ratio < 1:
+            thickness *= w_ratio
+
+        tip_width = self.tip_width_ratio * thickness
+        tip_length = tip_width / (2 * np.tan(self.tip_angle / 2))
+        t_ratio = fdiv(self.max_tip_length_to_length_ratio, fdiv(tip_length, length))
+        if t_ratio < 1:
+            tip_length *= t_ratio
+            tip_width *= t_ratio
+
+        # Find points for the stem
+        if path_arc == 0:
+            points1 = (length - tip_length) * np.array([RIGHT, 0.5 * RIGHT, ORIGIN])
+            points1 += thickness * UP / 2
+            points2 = points1[::-1] + thickness * DOWN
+        else:
+            # Solve for radius so that the tip-to-tail length matches |end - start|
+            a = 2 * (1 - np.cos(path_arc))
+            b = -2 * tip_length * np.sin(path_arc)
+            c = tip_length ** 2 - length ** 2
+            R = (-b + np.sqrt(b ** 2 - 4 * a * c)) / (2 * a)
+
+            # Find arc points
+            points1 = OpenGLArc.create_quadratic_bezier_points(path_arc)
+            points2 = np.array(points1[::-1])
+            points1 *= R + thickness / 2
+            points2 *= R - thickness / 2
+            if path_arc < 0:
+                tip_length *= -1
+            rot_T = rotation_matrix_transpose(PI / 2 - path_arc, OUT)
+            for points in points1, points2:
+                points[:] = np.dot(points, rot_T)
+                points += R * DOWN
+
+        self.set_points(points1)
+        # Tip
+        self.add_line_to(tip_width * UP / 2)
+        self.add_line_to(tip_length * LEFT)
+        self.tip_index = len(self.get_points()) - 1
+        self.add_line_to(tip_width * DOWN / 2)
+        self.add_line_to(points2[0])
+        # Close it out
+        self.append_points(points2)
+        self.add_line_to(points1[0])
+
+        if length > 0:
+            # Final correction
+            super().scale(length / self.get_length())
+
+        self.rotate(angle_of_vector(vect) - self.get_angle())
+        self.rotate(
+            PI / 2 - np.arccos(normalize(vect)[2]),
+            axis=rotate_vector(self.get_unit_vector(), -PI / 2),
+        )
+        self.shift(start - self.get_start())
+        self.refresh_triangulation()
+
+    def reset_points_around_ends(self):
+        self.set_points_by_ends(
+            self.get_start(), self.get_end(), path_arc=self.path_arc
+        )
+        return self
+
+    def get_start(self):
+        nppc = self.n_points_per_curve
+        points = self.get_points()
+        return (points[0] + points[-nppc]) / 2
+
+    def get_end(self):
+        return self.get_points()[self.tip_index]
+
+    def put_start_and_end_on(self, start, end):
+        self.set_points_by_ends(start, end, buff=0, path_arc=self.path_arc)
+        return self
+
+    def scale(self, *args, **kwargs):
+        super().scale(*args, **kwargs)
+        self.reset_points_around_ends()
+        return self
+
+    def set_thickness(self, thickness):
+        self.thickness = thickness
+        self.reset_points_around_ends()
+        return self
+
+    def set_path_arc(self, path_arc):
+        self.path_arc = path_arc
+        self.reset_points_around_ends()
+        return self
+
+
+class OpenGLVector(OpenGLArrow):
+    def __init__(self, direction=RIGHT, buff=0, **kwargs):
+        self.buff = buff
+        if len(direction) == 2:
+            direction = np.hstack([direction, 0])
+        super().__init__(ORIGIN, direction, buff=buff, **kwargs)
+
+
+class OpenGLDoubleArrow(OpenGLArrow):
+    def __init__(self, *args, **kwargs):
+        OpenGLArrow.__init__(self, *args, **kwargs)
+        self.add_tip(at_start=True)
+
+
+class OpenGLCubicBezier(OpenGLVMobject):
+    def __init__(self, a0, h0, h1, a1, **kwargs):
+        OpenGLVMobject.__init__(self, **kwargs)
+        self.add_cubic_bezier_curve(a0, h0, h1, a1)
+
+
 class OpenGLPolygon(OpenGLVMobject):
     def __init__(self, *vertices, **kwargs):
         self.vertices = vertices

@@ -55,7 +55,8 @@ class OpenGLRenderer:
             self.context.disable(moderngl.DEPTH_TEST)
 
     def render_mobject(self, mob):
-        shader_wrapper_list = self.get_shader_wrapper_list(mob)
+        # shader_wrapper_list = self.get_shader_wrapper_list(mob)
+        shader_wrapper_list = mob.get_shader_wrapper_list()
         render_group_list = map(
             lambda x: self.get_render_group(self.context, x), shader_wrapper_list
         )
