@@ -110,7 +110,7 @@ class Matrix(VMobject):
 
         Parameters
         ----------
-        matrix : np.array|List[List]
+        matrix : typing.Iterable
             A numpy 2d array or list of lists
         v_buff : float, optional
             vertical buffer, by default 0.8
@@ -118,17 +118,17 @@ class Matrix(VMobject):
             horizontal buffer, by default 1.3
         bracket_h_buff : float, optional
             bracket horizonal buffer, by default MED_SMALL_BUFF
-        bracket_v_buff : [type], optional
+        bracket_v_buff : float, optional
             bracket veritical buffer, by default MED_SMALL_BUFF
         add_background_rectangles_to_entries : bool, optional
             `True` if should add backgraound rectangles to entries, by default False
         include_background_rectangle : bool, optional
             `True` if should include background rectangle, by default False
-        element_to_mobject : [type], optional
+        element_to_mobject : Mobject, optional
             element to mobject, by default MathTex
         element_to_mobject_config : dict, optional
             element to mobject config, by default {}
-        element_alignment_corner : [type], optional
+        element_alignment_corner : np.ndarray, optional
             the element alignment corner, by default DR
         left_bracket : str, optional
             the left bracket type, by default "\\\\big["
@@ -321,9 +321,9 @@ class DecimalMatrix(Matrix):
 
         Parameters
         ----------
-        matrix : np.array|List[List]
+        matrix : typing.Iterable
             A numpy 2d array or list of lists
-        element_to_mobject : [Mobject], optional
+        element_to_mobject : Mobject, optional
             Mobject to use, by default DecimalNumber
         element_to_mobject_config : dict, optional
             Config for the desired mobject, by default {"num_decimal_places": 1}
@@ -346,9 +346,9 @@ class IntegerMatrix(Matrix):
 
         Parameters
         ----------
-        matrix : np.array|List[List]
+        matrix : typing.Iterable
             A numpy 2d array or list of lists
-        element_to_mobject : [Mobject], optional
+        element_to_mobject : Mobject, optional
             Mobject to use, by default Integer
         """
         Matrix.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
