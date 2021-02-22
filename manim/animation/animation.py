@@ -14,7 +14,9 @@ if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 
 from .. import logger
-from ..mobject.mobject import Mobject, _AnimationBuilder
+from ..mobject import mobject
+from ..mobject import opengl_mobject
+from ..mobject.mobject import Mobject
 from ..utils.rate_functions import smooth
 from ..mobject.opengl_mobject import OpenGLMobject
 
@@ -198,7 +200,9 @@ class Animation:
         return self.remover
 
 
-def prepare_animation(anim: Union["Animation", "_AnimationBuilder"]) -> "Animation":
+def prepare_animation(
+    anim: Union["Animation", "mobject._AnimationBuilder"]
+) -> "Animation":
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
 
@@ -225,7 +229,10 @@ def prepare_animation(anim: Union["Animation", "_AnimationBuilder"]) -> "Animati
         TypeError: Object 42 cannot be converted to an animation
 
     """
-    if isinstance(anim, _AnimationBuilder):
+    if isinstance(anim, mobject._AnimationBuilder):
+        return anim.build()
+
+    if isinstance(anim, opengl_mobject._AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):

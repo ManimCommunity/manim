@@ -54,14 +54,15 @@ class OpenGLRenderer:
         else:
             self.context.disable(moderngl.DEPTH_TEST)
 
-    def render_mobject(self, mob):
+    def render_mobject(self, mobs):
         # shader_wrapper_list = self.get_shader_wrapper_list(mob)
-        shader_wrapper_list = mob.get_shader_wrapper_list()
-        render_group_list = map(
-            lambda x: self.get_render_group(self.context, x), shader_wrapper_list
-        )
-        for render_group in render_group_list:
-            self.render_render_group(render_group)
+        for mob in mobs:
+            shader_wrapper_list = mob.get_shader_wrapper_list()
+            render_group_list = map(
+                lambda x: self.get_render_group(self.context, x), shader_wrapper_list
+            )
+            for render_group in render_group_list:
+                self.render_render_group(render_group)
 
     def render_render_group(self, render_group):
         shader_wrapper = render_group["shader_wrapper"]
@@ -318,7 +319,7 @@ class OpenGLRenderer:
     def render(self, scene, frame_offset, moving_mobjects):
         def update_frame():
             self.frame_buffer_object.clear(*window_background_color)
-            self.render_mobject(scene.mobjects[0])
+            self.render_mobject(scene.mobjects)
             self.window.swap_buffers()
             self.animation_elapsed_time = time.time() - self.animation_start_time
 

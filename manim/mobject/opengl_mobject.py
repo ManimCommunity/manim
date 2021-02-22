@@ -1617,7 +1617,7 @@ class _AnimationBuilder:
         return update_target
 
     def build(self):
-        from manimlib.animation.transform import _MethodAnimation
+        from ..animation.transform import _MethodAnimation
 
         if self.overridden_animation:
             return self.overridden_animation

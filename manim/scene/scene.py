@@ -301,9 +301,15 @@ class Scene(Container):
         list
             List of mobject family members.
         """
-        return extract_mobject_family_members(
-            self.mobjects, use_z_index=self.renderer.camera.use_z_index
-        )
+        if config["use_opengl_renderer"]:
+            family_members = []
+            for mob in self.mobjects:
+                family_members.extend(mob.get_family())
+            return family_members
+        else:
+            return extract_mobject_family_members(
+                self.mobjects, use_z_index=self.renderer.camera.use_z_index
+            )
 
     def add(self, *mobjects):
         """
