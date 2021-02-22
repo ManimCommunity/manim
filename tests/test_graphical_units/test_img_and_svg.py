@@ -85,6 +85,13 @@ class WatchTheDecimals(Scene):
         self.wait()
 
 
+class UseTagInheritanceTest(Scene):
+    def construct(self):
+        aabbb = SVGMobject(get_test_resource("aabbb.svg"))
+        self.add(aabbb)
+        self.wait()
+
+
 # Second are the visual tests - these are probably too complex to verify step-by-step, so
 # these are really more of a spot-check
 
