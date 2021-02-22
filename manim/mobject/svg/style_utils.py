@@ -30,6 +30,7 @@ SVG_DEFAULT_ATTRIBUTES = {
     "stroke-opacity": "1",
 }
 
+
 def cascade_element_style(
     element: MinidomElement, inherited: Dict[str, str]
 ) -> Dict[str, str]:

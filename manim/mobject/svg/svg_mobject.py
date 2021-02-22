@@ -136,7 +136,7 @@ class SVGMobject(VMobject):
         self,
         element: MinidomElement,
         inherited_style: Dict[str, str],
-        within_defs: bool = False
+        within_defs: bool = False,
     ) -> List[VMobject]:
         """Parses a given SVG element into a Mobject.
 
@@ -172,7 +172,9 @@ class SVGMobject(VMobject):
         elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
                 *[
-                    self.get_mobjects_from(child, style, within_defs=within_defs or is_defs)
+                    self.get_mobjects_from(
+                        child, style, within_defs=within_defs or is_defs
+                    )
                     for child in element.childNodes
                 ]
             )
@@ -227,7 +229,9 @@ class SVGMobject(VMobject):
         """
         return SVGPathMobject(path_string, **parse_style(style))
 
-    def use_to_mobjects(self, use_element: MinidomElement, local_style: Dict) -> List[VMobject]:
+    def use_to_mobjects(
+        self, use_element: MinidomElement, local_style: Dict
+    ) -> List[VMobject]:
         """Converts a SVG <use> element to a collection of VMobjects.
 
         Parameters
