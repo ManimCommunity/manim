@@ -9,7 +9,8 @@ from ...utils.color import rgb_to_hex
 
 from typing import Dict, List
 
-SUPPORTED_STYLING_ATTRIBUTES: List[str] = [
+
+CASCADING_STYLING_ATTRIBUTES: List[str] = [
     "fill",
     "stroke",
     "style",
@@ -57,10 +58,28 @@ def cascade_element_style(
 
     style = inherited.copy()
 
-    for attr in SUPPORTED_STYLING_ATTRIBUTES:
+    # cascade the regular elements.
+    for attr in CASCADING_STYLING_ATTRIBUTES:
         entry = element.getAttribute(attr)
         if entry:
             style[attr] = entry
+
+    # the style attribute should be handled separately in order to
+    # break it up nicely. furthermore, style takes priority over other
+    # attributes in the same element.
+    style_specs = element.getAttribute("style")
+    if style_specs:
+        for style_spec in style_specs.split(";"):
+            try:
+                key, value = style_spec.split(":")
+            except ValueError as e:
+                if not style_spec:
+                    # there was just a stray semicolon at the end, producing an emptystring
+                    pass
+                else:
+                    raise e
+            else:
+                style[key] = value
 
     return style
 
