@@ -110,29 +110,29 @@ class Matrix(VMobject):
 
         Parameters
         ----------
-        matrix : typing.Iterable
+        matrix : :class:`typing.Iterable`
             A numpy 2d array or list of lists
-        v_buff : float, optional
+        v_buff : :class:`float`, optional
             vertical buffer, by default 0.8
-        h_buff : float, optional
+        h_buff : :class:`float`, optional
             horizontal buffer, by default 1.3
-        bracket_h_buff : float, optional
+        bracket_h_buff : :class:`float`, optional
             bracket horizonal buffer, by default MED_SMALL_BUFF
-        bracket_v_buff : float, optional
+        bracket_v_buff : :class:`float`, optional
             bracket veritical buffer, by default MED_SMALL_BUFF
-        add_background_rectangles_to_entries : bool, optional
+        add_background_rectangles_to_entries : :class:`bool`, optional
             `True` if should add backgraound rectangles to entries, by default False
-        include_background_rectangle : bool, optional
+        include_background_rectangle : :class:`bool`, optional
             `True` if should include background rectangle, by default False
-        element_to_mobject : Mobject, optional
+        element_to_mobject : :class:`~.Mobject`, optional
             element to mobject, by default MathTex
-        element_to_mobject_config : dict, optional
+        element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
             element to mobject config, by default {}
-        element_alignment_corner : np.ndarray, optional
+        element_alignment_corner : :class:`np.ndarray`, optional
             the element alignment corner, by default DR
-        left_bracket : str, optional
+        left_bracket : :class:`str`, optional
             the left bracket type, by default "\\\\big["
-        right_bracket : str, optional
+        right_bracket : :class:`str`, optional
             the right bracket type, by default "\\\\big]"
 
         """
@@ -189,9 +189,9 @@ class Matrix(VMobject):
 
         Parameters
         ----------
-        left : str, optional
+        left : :class:`str`, optional
             the left bracket, by default "\\\\big["
-        right : str, optional
+        right : :class:`str`, optional
             the right bracket, by default "\\\\big]"
 
         Returns
@@ -321,11 +321,11 @@ class DecimalMatrix(Matrix):
 
         Parameters
         ----------
-        matrix : typing.Iterable
+        matrix : :class:`typing.Iterable`
             A numpy 2d array or list of lists
-        element_to_mobject : Mobject, optional
+        element_to_mobject : :class:`~.Mobject`, optional
             Mobject to use, by default DecimalNumber
-        element_to_mobject_config : dict, optional
+        element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
             Config for the desired mobject, by default {"num_decimal_places": 1}
         """
         Matrix.__init__(
@@ -346,9 +346,9 @@ class IntegerMatrix(Matrix):
 
         Parameters
         ----------
-        matrix : typing.Iterable
+        matrix : :class:`typing.Iterable`
             A numpy 2d array or list of lists
-        element_to_mobject : Mobject, optional
+        element_to_mobject : :class:`~.Mobject`, optional
             Mobject to use, by default Integer
         """
         Matrix.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
