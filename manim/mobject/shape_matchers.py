@@ -75,7 +75,7 @@ class BackgroundRectangle(SurroundingRectangle):
 
 
 class Cross(VGroup):
-    def __init__(self, mobject, stroke_color=RED, stroke_width=6, **kwargs):        
+    def __init__(self, mobject, stroke_color=RED, stroke_width=6, **kwargs):
         VGroup.__init__(
             self,
             Line(UP + LEFT, DOWN + RIGHT),
