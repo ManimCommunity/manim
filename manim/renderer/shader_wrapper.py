@@ -29,7 +29,7 @@ def find_file(file_name, directories=None):
         if os.path.exists(path):
             return path
         else:
-            logger.info(f"{path} does not exist.")
+            logger.debug(f"{path} does not exist.")
     raise IOError(f"{file_name} not Found")
 
 

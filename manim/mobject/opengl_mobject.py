@@ -24,12 +24,14 @@ from ..utils.iterables import resize_preserving_order
 from ..utils.iterables import resize_with_interpolation
 from ..utils.iterables import make_even
 from ..utils.iterables import listify
+from ..utils.iterables import batch_by_property
 from ..utils.bezier import interpolate
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix_transpose
+from ..renderer.shader_wrapper import ShaderWrapper
 
 
 class OpenGLMobject:
@@ -1397,10 +1399,14 @@ class OpenGLMobject:
         return self
 
     def get_shader_wrapper(self):
-        self.shader_wrapper.vert_data = self.get_shader_data()
-        self.shader_wrapper.vert_indices = self.get_shader_vert_indices()
-        self.shader_wrapper.uniforms = self.get_shader_uniforms()
-        self.shader_wrapper.depth_test = self.depth_test
+        self.shader_wrapper = ShaderWrapper(
+            vert_data=self.get_shader_data(),
+            vert_indices=self.get_shader_vert_indices(),
+            uniforms = self.get_shader_uniforms(),
+            depth_test = self.depth_test,
+            render_primitive=self.render_primitive,
+            shader_folder=self.shader_folder,
+        )
         return self.shader_wrapper
 
     def get_shader_wrapper_list(self):

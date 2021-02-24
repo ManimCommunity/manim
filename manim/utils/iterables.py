@@ -97,6 +97,33 @@ def tuplify(obj):
         return (obj,)
 
 
+def batch_by_property(items, property_func):
+    """
+    Takes in a list, and returns a list of tuples, (batch, prop)
+    such that all items in a batch have the same output when
+    put into property_func, and such that chaining all these
+    batches together would give the original list (i.e. order is
+    preserved)
+    """
+    batch_prop_pairs = []
+    curr_batch = []
+    curr_prop = None
+    for item in items:
+        prop = property_func(item)
+        if prop != curr_prop:
+            # Add current batch
+            if len(curr_batch) > 0:
+                batch_prop_pairs.append((curr_batch, curr_prop))
+            # Redefine curr
+            curr_prop = prop
+            curr_batch = [item]
+        else:
+            curr_batch.append(item)
+    if len(curr_batch) > 0:
+        batch_prop_pairs.append((curr_batch, curr_prop))
+    return batch_prop_pairs
+
+
 def listify(obj):
     if isinstance(obj, str):
         return [obj]
