@@ -16,6 +16,10 @@ from .simple_scenes import (
 )
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 8),
+    reason="Mock object has a different implementation in python 3.7, which makes it broken with this logic.",
+)
 @pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
 def test_t_values(using_temp_config, disabling_caching, frame_rate):
     """Test that the framerate corresponds to the number of t values generated"""
@@ -25,11 +29,15 @@ def test_t_values(using_temp_config, disabling_caching, frame_rate):
     scene.render()
     assert scene.update_to_time.call_count == config["frame_rate"]
     np.testing.assert_allclose(
-        ([float(call.args[0]) for call in scene.update_to_time.call_args_list]),
+        ([call.args[0] for call in scene.update_to_time.call_args_list]),
         np.arange(0, 1, 1 / config["frame_rate"]),
     )
 
 
+@pytest.mark.skipif(
+    sys.version_info < (3, 8),
+    reason="Mock object has a different implementation in python 3.7, which makes it broken with this logic.",
+)
 def test_t_values_with_skip_animations(using_temp_config, disabling_caching):
     """Test the behaviour of scene.skip_animations"""
     scene = SquareToCircle()
@@ -38,7 +46,7 @@ def test_t_values_with_skip_animations(using_temp_config, disabling_caching):
     scene.render()
     assert scene.update_to_time.call_count == 1
     np.testing.assert_almost_equal(
-        float(scene.update_to_time.call_args.args[0]),
+        scene.update_to_time.call_args.args[0],
         1.0,
     )
 
