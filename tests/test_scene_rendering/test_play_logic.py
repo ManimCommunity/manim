@@ -16,10 +16,6 @@ from .simple_scenes import (
 )
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3, 8),
-    reason="np.assert_allclose is does not work in this test case in python < 3.8",
-)
 @pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
 def test_t_values(using_temp_config, disabling_caching, frame_rate):
     """Test that the framerate corresponds to the number of t values generated"""
@@ -29,7 +25,7 @@ def test_t_values(using_temp_config, disabling_caching, frame_rate):
     scene.render()
     assert scene.update_to_time.call_count == config["frame_rate"]
     np.testing.assert_allclose(
-        ([call.args[0] for call in scene.update_to_time.call_args_list]),
+        ([float(call.args[0]) for call in scene.update_to_time.call_args_list]),
         np.arange(0, 1, 1 / config["frame_rate"]),
     )
 
@@ -42,7 +38,7 @@ def test_t_values_with_skip_animations(using_temp_config, disabling_caching):
     scene.render()
     assert scene.update_to_time.call_count == 1
     np.testing.assert_almost_equal(
-        scene.update_to_time.call_args.args[0],
+        float(scene.update_to_time.call_args.args[0]),
         1.0,
     )
 
