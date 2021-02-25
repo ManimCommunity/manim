@@ -219,16 +219,24 @@ class VMobject(Mobject):
         if background:
             array_name = "background_stroke_rgbas"
             width_name = "background_stroke_width"
+            opacity_name = "background_stroke_opacity"
+            color_name = "background_stroke_color"
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
+            opacity_name = "stroke_opacity"
+            color_name = "stroke_color"
+
         if self.get_stroke_opacity() == 0 and opacity is None:
             opacity = 1
+
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
             setattr(self, width_name, width)
         if opacity is not None:
-            self.stroke_opacity = opacity
+            setattr(self, opacity_name, opacity)
+        if color is not None:
+            setattr(self, color_name, color)
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -1848,10 +1856,12 @@ class VectorizedPoint(VMobject):
         )
         self.set_points(np.array([location]))
 
-    def get_width(self):
+    @VMobject.width.getter
+    def width(self):
         return self.artificial_width
 
-    def get_height(self):
+    @VMobject.height.getter
+    def height(self):
         return self.artificial_height
 
     def get_location(self):
