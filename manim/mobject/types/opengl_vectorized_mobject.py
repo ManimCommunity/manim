@@ -14,7 +14,7 @@ from ...utils.color import *
 from ...utils.bezier import bezier
 
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
-# from manimlib.utils.bezier import get_smooth_cubic_bezier_handle_points
+from ...utils.bezier import get_smooth_cubic_bezier_handle_points
 from ...utils.bezier import get_quadratic_approximation_of_cubic
 from ...utils.bezier import interpolate
 from ...utils.bezier import integer_interpolate
