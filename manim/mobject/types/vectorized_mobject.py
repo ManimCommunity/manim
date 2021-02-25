@@ -335,30 +335,12 @@ class VMobject(Mobject):
         opacity : :class:`float`, optional
             Opacity to set for fill and stroke.
         """
-        self.set_fill(color, opacity, family=family)
-        self.set_stroke(color, opacity, family=family)
-        # check if a list of colors is passed to color
-        if isinstance(color, str):
-            self.color = colour.Color(color)
+        if opacity is None:
+            self.set_fill(color, opacity=self.get_fill_opacity(), family=family)
+            self.set_stroke(color, opacity=self.get_stroke_opacity(), family=family)
         else:
-            self.color = color
-        return self
-
-    def set_color_only(self, color, family=True):
-        """Sets both fill and stroke color, but opacities remain
-        unaltered even if stroke/fill color is fully transparent.
-
-        .. seealso::
-
-            :meth:`~.VMobject.set_color`
-
-        Parameters
-        --------
-        color : :class:`str`, optional
-            Color for fill and stroke.
-        """
-        self.set_fill(color, opacity=self.get_fill_opacity(), family=family)
-        self.set_stroke(color, opacity=self.get_stroke_opacity(), family=family)
+            self.set_fill(color, opacity, family=family)
+            self.set_stroke(color, opacity, family=family)
         # check if a list of colors is passed to color
         if isinstance(color, str):
             self.color = colour.Color(color)

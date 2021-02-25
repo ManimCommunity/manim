@@ -276,7 +276,7 @@ class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
 
 class FadeToColor(ApplyMethod):
     def __init__(self, mobject: Mobject, color: str, **kwargs) -> None:
-        super().__init__(mobject.set_color_only, color, **kwargs)
+        super().__init__(mobject.set_color, color, **kwargs)
 
 
 class ScaleInPlace(ApplyMethod):
