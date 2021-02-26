@@ -19,9 +19,8 @@ from ..mobject.mobject import *
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.iterables import tuplify
-from ..utils.space_ops import z_to_vector, normalize
+from ..utils.space_ops import z_to_vector, normalize, get_norm
 from ..utils.color import *
-from ..utils.space_ops import get_norm
 
 
 class ThreeDVMobject(VMobject):
@@ -227,7 +226,7 @@ class Cone(ParametricSurface):
         The base radius from which the cone tapers.
     height : :class:`int`
         The height measured from the plane formed by the base_radius to the apex of the cone.
-    direction :  :class:`np.array`
+    direction : :class:`numpy.array`
         The direction of the apex.
     show_base : :class:`bool`
         Whether to show the base plane or not.
@@ -282,13 +281,13 @@ class Cone(ParametricSurface):
         self._rotate_to_direction()
 
     def func(self, u, v):
-        """Function to convert from spherical coordinates to cartesian.
+        """Converts from spherical coordinates to cartesian.
         Parameters
         ---------
         u : :class:`float`
-                the radius
+            The radius.
         v : :class:`float`
-                the azimuthal angle
+            The azimuthal angle.
         """
         r = u
         phi = v
@@ -318,13 +317,15 @@ class Cone(ParametricSurface):
         if x < 0:
             phi += PI
 
-        # undo old rotation (in reverse order)
+        # Undo old rotation (in reverse order)
         self.rotate(-self._current_phi, Z_AXIS, about_point=ORIGIN)
         self.rotate(-self._current_theta, Y_AXIS, about_point=ORIGIN)
-        # do new rotation
+
+        # Do new rotation
         self.rotate(theta, Y_AXIS, about_point=ORIGIN)
         self.rotate(phi, Z_AXIS, about_point=ORIGIN)
-        # store values
+
+        # Store values
         self._current_theta = theta
         self._current_phi = phi
 
@@ -357,7 +358,7 @@ class Cylinder(ParametricSurface):
         The radius of the cylinder.
     height : :class:`float`
         The height of the cylinder.
-    direction : :class:`np.array`
+    direction : :class:`numpy.array`
         The direction of the central axis of the cylinder.
     show_ends : :class:`bool`
         Whether to show the end caps or not.
@@ -393,13 +394,13 @@ class Cylinder(ParametricSurface):
         self.set_direction(direction)
 
     def func(self, u, v):
-        """Function to convert from cylindrical coordinates to cartesian.
+        """Converts from cylindrical coordinates to cartesian.
         Parameters
         ---------
         u : :class:`float`
-                the height
+            The height.
         v : :class:`float`
-                the azimuthal angle
+            The azimuthal angle.
         """
         height = u
         phi = v
@@ -407,7 +408,7 @@ class Cylinder(ParametricSurface):
         return np.array([r * np.cos(phi), r * np.sin(phi), height])
 
     def add_bases(self):
-        """Function to add the end caps of the cylinder."""
+        """Adds the end caps of the cylinder."""
         self.base_top = Dot(
             point=self.u_max * IN,
             radius=self.radius,
@@ -467,14 +468,15 @@ class Line3D(Cylinder):
 
     Parameters
     ---------
-    start : :class:`np.array`
-        Sets the start position of the line.
-    end : :class:`np.array`
-        Sets the end position of the line.
+    start : :class:`numpy.array`
+        The start position of the line.
+    end : :class:`numpy.array`
+        The end position of the line.
     width : :class:`float`
         The thickness of the line.
     color : :class:`str`
-        The color of the line."""
+        The color of the line.
+        """
 
     def __init__(self, start=LEFT, end=RIGHT, width=0.02, color=None, **kwargs):
         self.set_start_and_end_attrs(start, end)
@@ -482,11 +484,14 @@ class Line3D(Cylinder):
             height=get_norm(self.vect), radius=width, direction=self.direction, **kwargs
         )
         self.shift((self.start + self.end) / 2)
-        if color != None:
+        if color is not None:
             self.set_color(color)
 
     def set_start_and_end_attrs(self, start, end):
-        """If either start or end are Mobjects, this gives their centers"""
+        """Sets the start and end points of the line.
+        
+        If either ``start`` or ``end`` are :class:`~.Mobject`s, this gives their centers.
+        """
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
         self.vect = rough_end - rough_start
@@ -534,10 +539,10 @@ class Arrow3D(Line3D):
 
     Parameters
     ---------
-    start : :class:`np.array`
-        Sets the start position of the arrow.
-    end : :class:`np.array`
-        Sets the end position of the arrow.
+    start : :class:`numpy.array`
+        The start position of the arrow.
+    end : :class:`numpy.array`
+        The end position of the arrow.
     width : :class:`float`
         The thickness of the arrow.
     height : :class:`float`
@@ -594,9 +599,10 @@ class Torus(ParametricSurface):
     Parameters
     ---------
     R : :class:`float`
-        distance from the center of the tube to the center of the torus
+        Distance from the center of the tube to the center of the torus.
     r : :class:`float`
-        radius of the tube"""
+        Radius of the tube.
+    """
 
     def __init__(
         self, R=3, r=1, u_min=0, u_max=TAU, v_min=0, v_max=TAU, resolution=24, **kwargs
