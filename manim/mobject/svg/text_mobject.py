@@ -228,7 +228,7 @@ class CairoText(SVGMobject):
         if self.t2g:
             self.set_color_by_t2g()
         # anti-aliasing
-        if self.height is None and self.width is None:
+        if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def __repr__(self):
@@ -568,7 +568,7 @@ class Paragraph(VGroup):
             self[line_no].move_to(
                 np.array(
                     [
-                        self.get_right()[0] - self[line_no].get_width() / 2,
+                        self.get_right()[0] - self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
                     ]
@@ -578,7 +578,7 @@ class Paragraph(VGroup):
             self[line_no].move_to(
                 np.array(
                     [
-                        self.get_left()[0] + self[line_no].get_width() / 2,
+                        self.get_left()[0] + self[line_no].width / 2,
                         self[line_no].get_center()[1],
                         0,
                     ]
@@ -799,7 +799,7 @@ class Text(SVGMobject):
         if self.t2g:
             self.set_color_by_t2g()
         # anti-aliasing
-        if self.height is None and self.width is None:
+        if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def __repr__(self):
@@ -1252,7 +1252,7 @@ class MarkupText(SVGMobject):
                 *(self._parse_color(grad["from"]), self._parse_color(grad["to"]))
             )
         # anti-aliasing
-        if self.height is None and self.width is None:
+        if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def text2hash(self):
@@ -1429,8 +1429,8 @@ def register_font(font_file: typing.Union[str, Path]):
 
     .. important ::
 
-        This method isn't available for macOS. Using this
-        method on macOS will raise an :class:`AttributeError`.
+        This method is available for macOS for ``ManimPango>=v0.2.3``. Using this
+        method with previous releases will raise an :class:`AttributeError` on macOS.
     """
 
     input_folder = Path(config.input_file).parent.resolve()
