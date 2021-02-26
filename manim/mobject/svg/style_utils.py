@@ -75,7 +75,7 @@ def parse_color_string(color_spec: str) -> str:
         if splits[0][-1] == "%":
             # if the last character of the first number is a percentage,
             # then interpret the number as a percentage
-            parsed_rgbs = [int(i[:-1]) / 100.0 for i in splits]
+            parsed_rgbs = [float(i[:-1]) / 100.0 for i in splits]
         else:
             parsed_rgbs = [int(i) / 255.0 for i in splits]
 
