@@ -10,7 +10,7 @@ from ...utils.color import rgb_to_hex
 from typing import Dict
 
 
-SUPPORTED_STYLING_ATTRIBUTES = [
+SUPPORTED_STYLING_ATTRIBUTES: List[str] = [
     "fill",
     "stroke",
     "style",
