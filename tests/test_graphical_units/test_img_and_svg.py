@@ -78,6 +78,13 @@ class SmoothCurvesTest(Scene):
         self.wait()
 
 
+class WatchTheDecimals(Scene):
+    def construct(self):
+        decimal = SVGMobject(get_test_resource("watch_the_decimals.svg"))
+        self.add(decimal)
+        self.wait()
+
+
 # Second are the visual tests - these are probably too complex to verify step-by-step, so
 # these are really more of a spot-check
 
