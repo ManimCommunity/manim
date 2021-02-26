@@ -7,8 +7,7 @@ from xml.dom.minidom import Element as MinidomElement
 from colour import web2hex
 from ...utils.color import rgb_to_hex
 
-from typing import Dict
-
+from typing import Dict, List
 
 SUPPORTED_STYLING_ATTRIBUTES: List[str] = [
     "fill",
