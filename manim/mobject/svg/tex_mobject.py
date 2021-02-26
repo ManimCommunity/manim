@@ -171,11 +171,12 @@ __all__ = [
 from functools import reduce
 import operator as op
 
+from .style_utils import parse_style
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.svg.svg_mobject import VMobjectFromSVGPathstring
+from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VectorizedPoint
 from ...utils.strings import split_string_list_to_isolate_substrings
@@ -186,8 +187,8 @@ from ...utils.tex import TexTemplate
 TEX_MOB_SCALE_FACTOR = 0.05
 
 
-class TexSymbol(VMobjectFromSVGPathstring):
-    """Purely a renaming of VMobjectFromSVGPathstring."""
+class TexSymbol(SVGPathMobject):
+    """Purely a renaming of SVGPathMobject."""
 
     pass
 
@@ -326,14 +327,17 @@ class SingleStringMathTex(SVGMobject):
     def get_tex_string(self):
         return self.tex_string
 
-    def path_string_to_mobject(self, path_string):
+    def path_string_to_mobject(self, path_string, style):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string, z_index=self.z_index)
+        return TexSymbol(path_string, z_index=self.z_index, **parse_style(style))
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
         return self
+
+    def init_colors(self, propagate_colors=True):
+        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):

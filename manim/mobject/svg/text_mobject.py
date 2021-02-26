@@ -61,7 +61,6 @@ import manimpango
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
-from ..._config.utils import ManimConfig
 from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
@@ -964,6 +963,9 @@ class Text(SVGMobject):
             self.text,
         )
 
+    def init_colors(self, propagate_colors=True):
+        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+
 
 class MarkupText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
@@ -1384,6 +1386,9 @@ class MarkupText(SVGMobject):
             )
         self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
         return colormap
+
+    def init_colors(self, propagate_colors=True):
+        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
 
     def __repr__(self):
         return f"MarkupText({repr(self.original_text)})"
