@@ -1434,8 +1434,8 @@ def register_font(font_file: typing.Union[str, Path]):
 
     .. important ::
 
-        This method isn't available for macOS. Using this
-        method on macOS will raise an :class:`AttributeError`.
+        This method is available for macOS for ``ManimPango>=v0.2.3``. Using this
+        method with previous releases will raise an :class:`AttributeError` on macOS.
     """
 
     input_folder = Path(config.input_file).parent.resolve()

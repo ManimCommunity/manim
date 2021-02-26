@@ -924,14 +924,14 @@ class CubicBezier(VMobject):
                 p2b = p2 - [1, 0, 0]
                 d2 = Dot(point=p2).set_color(RED)
                 l2 = Line(p2, p2b)
-                bezier = CubicBezier([p1b, p1b + 3 * RIGHT, p2b - 3 * RIGHT, p2b])
+                bezier = CubicBezier(p1b, p1b + 3 * RIGHT, p2b - 3 * RIGHT, p2b)
                 self.add(l1, d1, l2, d2, bezier)
 
     """
 
-    def __init__(self, points, **kwargs):
+    def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):
         VMobject.__init__(self, **kwargs)
-        self.set_points(points)
+        self.set_points([start_anchor, start_handle, end_handle, end_anchor])
 
 
 class Polygon(VMobject):
