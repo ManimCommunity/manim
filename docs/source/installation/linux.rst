@@ -26,6 +26,12 @@ To install cairo:
 
    sudo apt install libcairo2-dev
 
+To install Pango:
+
+.. code-block:: bash
+
+   sudo apt install libcairo2-dev
+
 To install ffmpeg:
 
 .. code-block:: bash
@@ -57,6 +63,12 @@ To install cairo:
 .. code-block:: bash
 
   sudo dnf install cairo-devel
+
+To install Pango:
+
+.. code-block:: bash
+
+   sudo dnf install pango-devel
 
 To install ffmpeg, you have to add RPMfusion repository (If it's not already added). Please follow the instructions for your specific distribution in the following URL:
 
@@ -96,6 +108,11 @@ To install cairo:
 
    sudo pacman -S cairo
 
+To install pango:
+
+.. code-block:: bash
+
+   sudo pacman -S pango
 
 To install ffmpeg:
 
