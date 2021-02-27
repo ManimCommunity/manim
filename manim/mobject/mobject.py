@@ -352,7 +352,7 @@ class Mobject(Container):
             return types.MethodType(setter, self)
 
         # Unhandled attribute, therefore error
-        raise AttributeError(f"{self} object has no attribute '{attr}'")
+        raise AttributeError(f"{type(self).__name__} object has no attribute '{attr}'")
 
     @property
     def width(self):
