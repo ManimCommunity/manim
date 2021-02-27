@@ -18,12 +18,11 @@ CASCADING_STYLING_ATTRIBUTES: List[str] = [
     "stroke-opacity",
 ]
 
-"""
-The default styling specifications for SVG images,
-according to https://www.w3.org/TR/SVG/painting.html
-(ctrl-F for "initial)
-"""
-SVG_DEFAULT_ATTRIBUTES = {
+
+# The default styling specifications for SVG images,
+# according to https://www.w3.org/TR/SVG/painting.html
+# (ctrl-F for "initial")
+SVG_DEFAULT_ATTRIBUTES: Dict[str, str] = {
     "fill": "black",
     "fill-opacity": "1",
     "stroke": "none",
