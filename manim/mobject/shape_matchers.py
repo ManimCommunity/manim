@@ -76,15 +76,13 @@ class BackgroundRectangle(SurroundingRectangle):
 
 class Cross(VGroup):
     def __init__(self, mobject, stroke_color=RED, stroke_width=6, **kwargs):
-        self.stroke_color = stroke_color
-        self.stroke_width = stroke_width
         VGroup.__init__(
             self,
             Line(UP + LEFT, DOWN + RIGHT),
             Line(UP + RIGHT, DOWN + LEFT),
         )
         self.replace(mobject, stretch=True)
-        self.set_stroke(self.stroke_color, self.stroke_width)
+        self.set_stroke(color=stroke_color, width=stroke_width)
 
 
 class Underline(Line):
