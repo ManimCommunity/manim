@@ -46,7 +46,6 @@ class CairoRenderer:
 
         scene.compile_animation_data(*args, **kwargs)
 
-        is_cached = False
         # If skip_animations is already True, we can skip all the caching process.
         if not config["disable_caching"] and not self.skip_animations:
             hash_current_animation = get_hash_from_play_call(
@@ -57,13 +56,11 @@ class CairoRenderer:
                     f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
                     {"hash_current_animation": hash_current_animation},
                 )
-                is_cached = True
+                self.skip_animations = True
         else:
             hash_current_animation = f"uncached_{self.num_plays:05}"
 
-        if is_cached:
-            self.skip_animations = True
-        elif self.skip_animations:
+        if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             hash_current_animation = None
 
