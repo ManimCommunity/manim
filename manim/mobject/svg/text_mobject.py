@@ -47,7 +47,6 @@ __all__ = ["Text", "Paragraph", "CairoText", "MarkupText", "register_font"]
 
 import copy
 import hashlib
-import logging
 import os
 import re
 import sys
@@ -1223,7 +1222,7 @@ class MarkupText(SVGMobject):
 
         colormap = self.extract_color_tags()
         if len(colormap) > 0:
-            logging.getLogger("manim").warning(
+            logger.warning(
                 f'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
             )
         gradientmap = self.extract_gradient_tags()
