@@ -47,6 +47,7 @@ __all__ = ["Text", "Paragraph", "CairoText", "MarkupText", "register_font"]
 
 import copy
 import hashlib
+import logging
 import os
 import re
 import sys
@@ -982,20 +983,24 @@ class MarkupText(SVGMobject):
     - ``<span underline="double">double underline</span>``
     - ``<span underline="error">error underline</span>``
     - ``<span font_family="sans">temporary change of font</span>``
-    - ``<color col="RED">temporary change of color</color>``; colors can be specified as Manim constants like ``RED`` or ``YELLOW`` or as hex triples like ``#aabbaa``
-    - ``<gradient from="YELLOW" to="RED">temporary gradient</gradient>``; colors specified as above
+    - ``<span foreground="RED">temporary change of color</span>``; colors can be specified as hex triples like ``#aabbaa`` or as a named CSS color like ``AliceBlue``
+    - ``<span fgcolor="RED">temporary change of color</span>``; same as above
+    - ``<gradient from="YELLOW" to="RED">temporary gradient</gradient>``; colors can be specified as Manim constants like ``RED`` or ``YELLOW`` or as hex triples like ``#aabbaa``
+
+    If you want to use Manim constants like ``RED_A`` with ``<span foreground>`` or ``<span fgcolor>``, you will
+    need to use Python's f-String syntax as follows:
+    ``f'<span foreground="{RED_A}">here you go</span>``
 
     If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine
-    the first and last letter to be colored. This is due to the fact that e.g. ``fl``
+    the first and last letter when creating the gradient. This is due to the fact that e.g. ``fl``
     are two characters, but might be set as one single glyph, a ligature. If your language does
-    not depend on ligatures, consider setting ``disable_ligatures=True``. If you cannot
-    or do not want to do without ligatures, the ``gradient`` and ``color`` tag support
-    an optional attribute ``offset`` which can be used to compensate for that error.
-    Usage is as follows:
+    not depend on ligatures, consider setting ``disable_ligatures=True``. If you cannot or do
+    not want to do without ligatures, the ``gradient`` tag supports an optional attribute ``offset``
+    which can be used to compensate for that error. Usage is as follows:
 
-    - ``<color col="RED" offset="1">red text</color>`` to *start* coloring one letter earlier
-    - ``<color col="RED" offset=",1">red text</color>`` to *end* coloring one letter earlier
-    - ``<color col="RED" offset="2,1">red text</color>`` to *start* coloring two letters earlier and *end* one letter earlier
+    - ``<gradient from="RED" to="YELLOW" offset="1">example</gradient>`` to *start* the gradient one letter earlier
+    - ``<gradient from="RED" to="YELLOW" offset=",1">example</gradient>`` to *end* the gradient one letter earlier
+    - ``<gradient from="RED" to="YELLOW" offset="2,1">example</gradient>`` to *start* the gradient two letters earlier and *end* it one letter earlier
 
     Specifying a second offset may be necessary if the text to be colored does
     itself contain ligatures. The same can happen when using HTML entities for
@@ -1008,7 +1013,7 @@ class MarkupText(SVGMobject):
     corresponding documentation page:
     `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
     Please be aware that not all features are supported by this class and that
-    the ``<color>`` and ``<gradient>`` tags mentioned above are not supported by Pango.
+    the ``<gradient>`` tag mentioned above is not supported by Pango.
 
     Parameters
     ----------
@@ -1171,6 +1176,7 @@ class MarkupText(SVGMobject):
         **kwargs,
     ):
         self.text = text
+        self.color = color
         self.size = size
         self.line_spacing = line_spacing
         self.font = font
@@ -1186,6 +1192,10 @@ class MarkupText(SVGMobject):
             text_without_tabs = text.replace("\t", " " * self.tab_width)
 
         colormap = self.extract_color_tags()
+        if len(colormap) > 0:
+            logging.getLogger("manim").warning(
+                f'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
+            )
         gradientmap = self.extract_gradient_tags()
 
         if not MarkupUtils.validate(self.text):
@@ -1205,7 +1215,6 @@ class MarkupText(SVGMobject):
         SVGMobject.__init__(
             self,
             file_name,
-            color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             height=height,
@@ -1260,7 +1269,7 @@ class MarkupText(SVGMobject):
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""
         settings = (
-            "MARKUPPANGO" + self.font + self.slant + self.weight
+            "MARKUPPANGO" + self.font + self.slant + self.weight + self.color
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self.size)
         settings += str(self.disable_ligatures)
@@ -1284,7 +1293,7 @@ class MarkupText(SVGMobject):
 
         logger.debug(f"Setting Text {self.text}")
         return MarkupUtils.text2svg(
-            self.text,
+            f'<span foreground="{self.color}">{self.text}</span>',
             self.font,
             self.slant,
             self.weight,
@@ -1386,9 +1395,6 @@ class MarkupText(SVGMobject):
             )
         self.text = re.sub("<color[^>]+>(.+?)</color>", r"\1", self.text, 0, re.S)
         return colormap
-
-    def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
 
     def __repr__(self):
         return f"MarkupText({repr(self.original_text)})"
