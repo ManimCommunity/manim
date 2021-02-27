@@ -13,7 +13,7 @@ Examples
             self.wait(1)
             self.activate_zooming(animate=False)
             self.wait(1)
-            self.play(dot.shift, LEFT)
+            self.play(dot.animate.shift(LEFT))
 
 .. manim:: ChangingZoomScale
 
@@ -38,10 +38,10 @@ Examples
             self.wait(1)
             self.activate_zooming(animate=False)
             self.wait(1)
-            self.play(dot.shift, LEFT * 0.3)
+            self.play(dot.animate.shift(LEFT * 0.3))
 
-            self.play(self.zoomed_camera.frame.scale, 4)
-            self.play(self.zoomed_camera.frame.shift, 0.5 * DOWN)
+            self.play(self.zoomed_camera.frame.animate.scale(4))
+            self.play(self.zoomed_camera.frame.animate.shift(0.5 * DOWN))
 
 """
 
@@ -204,6 +204,4 @@ class ZoomedScene(MovingCameraScene):
         float
             The zoom factor.
         """
-        return fdiv(
-            self.zoomed_camera.frame.get_height(), self.zoomed_display.get_height()
-        )
+        return fdiv(self.zoomed_camera.frame.height, self.zoomed_display.height)

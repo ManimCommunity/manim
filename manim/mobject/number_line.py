@@ -85,8 +85,8 @@ class NumberLine(Line):
             color=color,
             **kwargs,
         )
-        if self.width is not None:
-            self.set_width(self.width)
+        if width is not None:
+            self.width = width
             self.unit_size = self.get_unit_size()
         self.shift(-self.number_to_point(self.number_at_center))
 
@@ -174,6 +174,9 @@ class NumberLine(Line):
 
     def get_unit_size(self):
         return self.get_length() / (self.x_max - self.x_min)
+
+    def get_unit_vector(self):
+        return super().get_unit_vector() * self.unit_size
 
     def default_numbers_to_display(self):
         if self.numbers_to_show is not None:

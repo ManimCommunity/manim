@@ -171,11 +171,12 @@ __all__ = [
 from functools import reduce
 import operator as op
 
+from .style_utils import parse_style
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.svg.svg_mobject import VMobjectFromSVGPathstring
+from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VectorizedPoint
 from ...utils.strings import split_string_list_to_isolate_substrings
@@ -186,8 +187,8 @@ from ...utils.tex import TexTemplate
 TEX_MOB_SCALE_FACTOR = 0.05
 
 
-class TexSymbol(VMobjectFromSVGPathstring):
-    """Purely a renaming of VMobjectFromSVGPathstring."""
+class TexSymbol(SVGPathMobject):
+    """Purely a renaming of SVGPathMobject."""
 
     pass
 
@@ -217,12 +218,6 @@ class SingleStringMathTex(SVGMobject):
         tex_template=None,
         **kwargs,
     ):
-        self.stroke_width = stroke_width
-        self.fill_opacity = fill_opacity
-        self.background_stroke_width = background_stroke_width
-        self.background_stroke_color = background_stroke_color
-        self.should_center = should_center
-        self.height = height
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
@@ -239,15 +234,15 @@ class SingleStringMathTex(SVGMobject):
         SVGMobject.__init__(
             self,
             file_name=file_name,
-            should_center=self.should_center,
-            stroke_width=self.stroke_width,
-            height=self.height,
-            fill_opacity=self.fill_opacity,
-            background_stroke_width=self.background_stroke_width,
-            background_stroke_color=self.background_stroke_color,
+            should_center=should_center,
+            stroke_width=stroke_width,
+            height=height,
+            fill_opacity=fill_opacity,
+            background_stroke_width=background_stroke_width,
+            background_stroke_color=background_stroke_color,
             **kwargs,
         )
-        if self.height is None:
+        if height is None:
             self.scale(TEX_MOB_SCALE_FACTOR)
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
@@ -269,7 +264,7 @@ class SingleStringMathTex(SVGMobject):
                 # Fraction line needs something to be over
                 tex == "\\over",
                 tex == "\\overline",
-                # Makesure sqrt has overbar
+                # Make sure sqrt has overbar
                 tex == "\\sqrt",
                 # Need to add blank subscript or superscript
                 tex.endswith("_"),
@@ -311,9 +306,13 @@ class SingleStringMathTex(SVGMobject):
         return tex
 
     def remove_stray_braces(self, tex):
+        r"""
+        Makes :class:`~.MathTex` resilient to unmatched braces.
+
+        This is important when the braces in the TeX code are spread over
+        multiple arguments as in, e.g., ``MathTex(r"e^{i", r"\tau} = 1")``.
         """
-        Makes MathTex resilient to unmatched { at start
-        """
+
         # "\{" does not count (it's a brace literal), but "\\{" counts (it's a new line and then brace)
         num_lefts = tex.count("{") - tex.count("\\{") + tex.count("\\\\{")
         num_rights = tex.count("}") - tex.count("\\}") + tex.count("\\\\}")
@@ -328,14 +327,17 @@ class SingleStringMathTex(SVGMobject):
     def get_tex_string(self):
         return self.tex_string
 
-    def path_string_to_mobject(self, path_string):
+    def path_string_to_mobject(self, path_string, style):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string)
+        return TexSymbol(path_string, z_index=self.z_index, **parse_style(style))
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
         return self
+
+    def init_colors(self, propagate_colors=True):
+        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):
@@ -408,7 +410,7 @@ class MathTex(SingleStringMathTex):
 
     def break_up_by_substrings(self):
         """
-        Reorganize existing submojects one layer
+        Reorganize existing submobjects one layer
         deeper based on the structure of tex_strings (as a list
         of tex_strings)
         """
@@ -419,11 +421,12 @@ class MathTex(SingleStringMathTex):
                 tex_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
+                z_index=self.z_index,
             )
             num_submobs = len(sub_tex_mob.submobjects)
             new_index = curr_index + num_submobs
             if num_submobs == 0:
-                # For cases like empty tex_strings, we want the corresponing
+                # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
                 sub_tex_mob.submobjects = [VectorizedPoint()]
@@ -522,7 +525,9 @@ class BulletedList(Tex):
         self.dot_scale_factor = dot_scale_factor
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
-        Tex.__init__(self, *line_separated_items, **kwargs)
+        Tex.__init__(
+            self, *line_separated_items, tex_environment=tex_environment, **kwargs
+        )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
             dot.next_to(part[0], LEFT, SMALL_BUFF)
@@ -536,7 +541,7 @@ class BulletedList(Tex):
         elif isinstance(arg, int):
             part = self.submobjects[arg]
         else:
-            raise TypeError("Expected int or string, got {0}".format(arg))
+            raise TypeError(f"Expected int or string, got {arg}")
         for other_part in self.submobjects:
             if other_part is part:
                 other_part.set_fill(opacity=1)
@@ -559,16 +564,16 @@ class Title(Tex):
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff
         Tex.__init__(self, *text_parts, **kwargs)
-        self.underline_width = config["frame_width"] - 2
         self.scale(self.scale_factor)
         self.to_edge(UP)
         if self.include_underline:
+            underline_width = config["frame_width"] - 2
             underline = Line(LEFT, RIGHT)
             underline.next_to(self, DOWN, buff=self.underline_buff)
             if self.match_underline_width_to_text:
                 underline.match_width(self)
             else:
-                underline.set_width(self.underline_width)
+                underline.width = underline_width
             self.add(underline)
             self.underline = underline
 

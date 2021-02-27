@@ -134,7 +134,7 @@ class TipableVMobject(VMobject):
 
     def create_tip(self, tip_shape=None, tip_length=None, at_start=False):
         """
-        Stylises the tip, positions it spacially, and returns
+        Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
         tip = self.get_unpositioned_tip(tip_shape, tip_length)
@@ -298,7 +298,7 @@ class Arc(TipableVMobject):
         # Appropriate tangent lines to the circle
         d_theta = self.angle / (self.num_components - 1.0)
         tangent_vectors = np.zeros(anchors.shape)
-        # Rotate all 90 degress, via (x, y) -> (-y, x)
+        # Rotate all 90 degrees, via (x, y) -> (-y, x)
         tangent_vectors[:, 1] = anchors[:, 0]
         tangent_vectors[:, 0] = -anchors[:, 1]
         # Use tangent vectors to deduce anchors
@@ -407,13 +407,13 @@ class Circle(Arc):
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
         # Ignores dim_to_match and stretch; result will always be a circle
-        # TODO: Perhaps create an ellipse class to handle singele-dimension stretching
+        # TODO: Perhaps create an ellipse class to handle single-dimension stretching
 
         # Something goes wrong here when surrounding lines?
         # TODO: Figure out and fix
         self.replace(mobject, dim_to_match, stretch)
 
-        self.set_width(np.sqrt(mobject.get_width() ** 2 + mobject.get_height() ** 2))
+        self.width = np.sqrt(mobject.width ** 2 + mobject.height ** 2)
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
@@ -519,9 +519,7 @@ class LabeledDot(Dot):
             rendered_label = label
 
         if radius is None:
-            radius = (
-                0.1 + max(rendered_label.get_width(), rendered_label.get_height()) / 2
-            )
+            radius = 0.1 + max(rendered_label.width, rendered_label.height) / 2
         Dot.__init__(self, radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
         self.add(rendered_label)
@@ -530,10 +528,8 @@ class LabeledDot(Dot):
 class Ellipse(Circle):
     def __init__(self, width=2, height=1, **kwargs):
         Circle.__init__(self, **kwargs)
-        self.width = width
-        self.height = height
-        self.set_width(self.width, stretch=True)
-        self.set_height(self.height, stretch=True)
+        self.stretch_to_fit_width(width)
+        self.stretch_to_fit_height(height)
 
 
 class AnnularSector(Arc):
@@ -710,6 +706,20 @@ class Line(TipableVMobject):
 
 
 class DashedLine(Line):
+    """A dashed Line.
+
+    Examples
+    --------
+    .. manim:: DashedLineExample
+        :save_last_frame:
+
+        class DashedLineExample(Scene):
+            def construct(self):
+                dashed_line = DashedLine(config.frame_width/2*LEFT, 4*RIGHT)
+                self.add(dashed_line)
+
+    """
+
     def __init__(
         self,
         *args,
@@ -774,11 +784,10 @@ class TangentLine(Line):
 
 class Elbow(VMobject):
     def __init__(self, width=0.2, angle=0, **kwargs):
-        self.width = width
         self.angle = angle
         VMobject.__init__(self, **kwargs)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
-        self.set_width(self.width, about_point=ORIGIN)
+        self.scale_to_fit_width(width, about_point=ORIGIN)
         self.rotate(self.angle, about_point=ORIGIN)
 
 
@@ -802,12 +811,12 @@ class Arrow(Line):
         self.preserve_tip_size_when_scaling = (
             preserve_tip_size_when_scaling  # is this used anywhere
         )
-        tipp_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
+        tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
         Line.__init__(self, *args, buff=buff, stroke_width=stroke_width, **kwargs)
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
-        self.add_tip(tip_shape=tipp_shape)
+        self.add_tip(tip_shape=tip_shape)
         self.set_stroke_width_from_length()
 
     def scale(self, factor, scale_tips=False, **kwargs):
@@ -842,6 +851,7 @@ class Arrow(Line):
 
         if scale_tips:
             VMobject.scale(self, factor, **kwargs)
+            self.set_stroke_width_from_length()
             return self
 
         has_tip = self.has_tip()
@@ -897,14 +907,37 @@ class DoubleArrow(Arrow):
 
 
 class CubicBezier(VMobject):
-    def __init__(self, points, **kwargs):
+    """
+    Example
+    -------
+
+    .. manim:: BezierSplineExample
+        :save_last_frame:
+
+        class BezierSplineExample(Scene):
+            def construct(self):
+                p1 = np.array([-3, 1, 0])
+                p1b = p1 + [1, 0, 0]
+                d1 = Dot(point=p1).set_color(BLUE)
+                l1 = Line(p1, p1b)
+                p2 = np.array([3, -1, 0])
+                p2b = p2 - [1, 0, 0]
+                d2 = Dot(point=p2).set_color(RED)
+                l2 = Line(p2, p2b)
+                bezier = CubicBezier(p1b, p1b + 3 * RIGHT, p2b - 3 * RIGHT, p2b)
+                self.add(l1, d1, l2, d2, bezier)
+
+    """
+
+    def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):
         VMobject.__init__(self, **kwargs)
-        self.set_points(points)
+        self.set_points([start_anchor, start_handle, end_handle, end_anchor])
 
 
 class Polygon(VMobject):
     def __init__(self, *vertices, color=BLUE, **kwargs):
         VMobject.__init__(self, color=color, **kwargs)
+        # There are actually four corners, and the first one is repeated twice to form the four vertices.
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
@@ -1211,13 +1244,11 @@ class Rectangle(Polygon):
         close_new_points=True,
         **kwargs
     ):
-        self.height = height
-        self.width = width
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
         Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
-        self.set_width(self.width, stretch=True)
-        self.set_height(self.height, stretch=True)
+        self.stretch_to_fit_width(width)
+        self.stretch_to_fit_height(height)
 
 
 class Square(Rectangle):
@@ -1263,8 +1294,8 @@ class ArrowTip(VMobject):
         ...     def __init__(self, **kwargs):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
         ...         length = 0.35
-        ...         self.set_width(length)
-        ...         self.set_height(length, stretch=True)
+        ...         self.width = length
+        ...         self.stretch_to_fit_height(length)
         >>> arr = Arrow(np.array([-2, -2, 0]), np.array([2, 2, 0]),
         ...             tip_shape=MyCustomArrowTip)
         >>> isinstance(arr.tip, RegularPolygon)
@@ -1403,8 +1434,8 @@ class ArrowTriangleTip(ArrowTip, Triangle):
             start_angle=start_angle,
             **kwargs
         )
-        self.set_width(length)
-        self.set_height(length, stretch=True)
+        self.width = length
+        self.stretch_to_fit_height(length)
 
 
 class ArrowTriangleFilledTip(ArrowTriangleTip):
@@ -1434,8 +1465,8 @@ class ArrowCircleTip(ArrowTip, Circle):
         Circle.__init__(
             self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
         )
-        self.set_width(length)
-        self.set_height(length, stretch=True)
+        self.width = length
+        self.stretch_to_fit_height(length)
 
 
 class ArrowCircleFilledTip(ArrowCircleTip):
@@ -1466,8 +1497,8 @@ class ArrowSquareTip(ArrowTip, Square):
             side_length=length,
             **kwargs
         )
-        self.set_width(length)
-        self.set_height(length, stretch=True)
+        self.width = length
+        self.stretch_to_fit_height(length)
 
 
 class ArrowSquareFilledTip(ArrowSquareTip):

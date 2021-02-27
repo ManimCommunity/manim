@@ -1,7 +1,7 @@
 """Base classes for objects that can be displayed."""
 
 
-__all__ = ["Mobject", "Group"]
+__all__ = ["Mobject", "Group", "override_animate"]
 
 
 from functools import reduce
@@ -10,6 +10,8 @@ import itertools as it
 import operator as op
 import random
 import sys
+import types
+import warnings
 
 from pathlib import Path
 from colour import Color
@@ -28,12 +30,15 @@ from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix
 
-
 # TODO: Explain array_attrs
 
 
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
+
+    There is a compatibility layer that allows for
+    getting and setting generic attributes with ``get_*``
+    and ``set_*`` methods. See :meth:`set` for more details.
 
     Attributes
     ----------
@@ -43,20 +48,78 @@ class Mobject(Container):
     """
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
-        self.color = color
+        self.color = Color(color)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
         self.z_index = z_index
         self.point_hash = None
         self.submobjects = []
-        self.color = Color(self.color)
         self.updaters = []
         self.updating_suspended = False
         self.reset_points()
         self.generate_points()
         self.init_colors()
         Container.__init__(self, **kwargs)
+
+    @property
+    def animate(self):
+        """Used to animate the application of a method.
+
+        .. warning::
+
+            Passing multiple animations for the same :class:`~.Mobject` in one
+            call to :meth:`~.Scene.play` is discouraged and will most likely
+            not work properly. Instead of writing an animation like
+
+            ::
+
+                self.play(my_mobject.animate.shift(RIGHT), my_mobject.animate.rotate(PI))
+
+            make use of method chaining for ``animate``, meaning::
+
+                self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
+
+        .. seealso::
+
+            :meth:`~.Mobject.override_animate`
+
+
+        Examples
+        --------
+
+        .. manim:: AnimateExample
+
+            class AnimateExample(Scene):
+                def construct(self):
+                    s = Square()
+                    self.play(ShowCreation(s))
+                    self.play(s.animate.shift(RIGHT))
+                    self.play(s.animate.scale(2))
+                    self.play(s.animate.rotate(PI / 2))
+                    self.play(Uncreate(s))
+
+
+        .. manim:: AnimateChainExample
+
+            class AnimateChainExample(Scene):
+                def construct(self):
+                    s = Square()
+                    self.play(ShowCreation(s))
+                    self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
+                    self.play(Uncreate(s))
+
+        """
+        return _AnimationBuilder(self)
+
+    def __deepcopy__(self, clone_from_id):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        clone_from_id[id(self)] = result
+        for k, v in self.__dict__.items():
+            setattr(result, k, copy.deepcopy(v, clone_from_id))
+        result.original_id = str(id(self))
+        return result
 
     def __repr__(self):
         return str(self.name)
@@ -76,6 +139,8 @@ class Mobject(Container):
         """Add mobjects as submobjects.
 
         The mobjects are added to self.submobjects.
+
+        Subclasses of mobject may implement + and += dunder methods.
 
         Parameters
         ----------
@@ -136,7 +201,22 @@ class Mobject(Container):
         self.submobjects = list_update(self.submobjects, mobjects)
         return self
 
+    def __add__(self, mobject):
+        raise NotImplementedError
+
+    def __iadd__(self, mobject):
+        raise NotImplementedError
+
     def add_to_back(self, *mobjects):
+        """Adds (or moves) all passed mobjects to the back of the scene.
+
+        .. note::
+
+            Technically, this is done by adding (or moving) the mobjects to
+            the head of ``self.submobjects``. The head of this list is rendered
+            first, which places the corresponding mobjects behind the
+            subsequent list members.
+        """
         self.remove(*mobjects)
         self.submobjects = list(mobjects) + self.submobjects
         return self
@@ -145,6 +225,8 @@ class Mobject(Container):
         """Remove submobjects.
 
         The mobjects are removed from self.submobjects, if they exist.
+
+        Subclasses of mobject may implement - and -= dunder methods.
 
         Parameters
         ----------
@@ -166,19 +248,194 @@ class Mobject(Container):
                 self.submobjects.remove(mobject)
         return self
 
+    def __sub__(self, other):
+        raise NotImplementedError
+
+    def __isub__(self, other):
+        raise NotImplementedError
+
+    def set(self, **kwargs):
+        """Sets attributes.
+
+        Mainly to be used along with :attr:`animate` to
+        animate setting attributes.
+
+        In addition to this method, there is a compatibility
+        layer that allows ``get_*`` and ``set_*`` methods to
+        get and set generic attributes. For instance::
+
+            >>> mob = Mobject()
+            >>> mob.set_foo(0)
+            Mobject
+            >>> mob.get_foo()
+            0
+            >>> mob.foo
+            0
+
+        This compatibility layer does not interfere with any
+        ``get_*`` or ``set_*`` methods that are explicitly
+        defined.
+
+        .. warning::
+
+            This compatibility layer is for backwards compatibility
+            and is not guaranteed to stay around. Where applicable,
+            please prefer getting/setting attributes normally or with
+            the :meth:`set` method.
+
+        Parameters
+        ----------
+        **kwargs
+            The attributes and corresponding values to set.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> mob = Mobject()
+            >>> mob.set(foo=0)
+            Mobject
+            >>> mob.foo
+            0
+        """
+
+        for attr, value in kwargs.items():
+            setattr(self, attr, value)
+
+        return self
+
+    def __getattr__(self, attr):
+        # Add automatic compatibility layer
+        # between properties and get_* and set_*
+        # methods.
+        #
+        # In python 3.9+ we could change this
+        # logic to use str.remove_prefix instead.
+
+        if attr.startswith("get_"):
+            # Remove the "get_" prefix
+            to_get = attr[4:]
+
+            def getter(self):
+                warnings.warn(
+                    "This method is not guaranteed to stay around. Please prefer getting the attribute normally.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
+                return getattr(self, to_get)
+
+            # Return a bound method
+            return types.MethodType(getter, self)
+
+        if attr.startswith("set_"):
+            # Remove the "set_" prefix
+            to_set = attr[4:]
+
+            def setter(self, value):
+                warnings.warn(
+                    "This method is not guaranteed to stay around. Please prefer setting the attribute normally or with Mobject.set().",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
+                setattr(self, to_set, value)
+
+                return self
+
+            # Return a bound method
+            return types.MethodType(setter, self)
+
+        # Unhandled attribute, therefore error
+        raise AttributeError(f"{type(self).__name__} object has no attribute '{attr}'")
+
+    @property
+    def width(self):
+        """The width of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: WidthExample
+
+            class WidthExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.width))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(width=7))
+                    self.wait()
+        """
+
+        # Get the length across the X dimension
+        return self.length_over_dim(0)
+
+    @width.setter
+    def width(self, value):
+        self.scale_to_fit_width(value)
+
+    @property
+    def height(self):
+        """The height of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: HeightExample
+
+            class HeightExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.height))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(height=5))
+                    self.wait()
+        """
+
+        # Get the length across the Y dimension
+        return self.length_over_dim(1)
+
+    @height.setter
+    def height(self, value):
+        self.scale_to_fit_height(value)
+
+    @property
+    def depth(self):
+        """The depth of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+        """
+
+        # Get the length across the Z dimension
+        return self.length_over_dim(2)
+
+    @depth.setter
+    def depth(self, value):
+        self.scale_to_fit_depth(value)
+
     def get_array_attrs(self):
         return ["points"]
-
-    def digest_mobject_attrs(self):
-        """
-        Ensures all attributes which are mobjects are included
-        in the submobjects list.
-        """
-        mobject_attrs = [
-            x for x in list(self.__dict__.values()) if isinstance(x, Mobject)
-        ]
-        self.submobjects = list_update(self.submobjects, mobject_attrs)
-        return self
 
     def apply_over_attr_arrays(self, func):
         for attr in self.get_array_attrs():
@@ -207,7 +464,7 @@ class Mobject(Container):
         return copy.deepcopy(self)
 
     def generate_target(self, use_deepcopy=False):
-        self.target = None  # Prevent exponential explosion
+        self.target = None  # Prevent unbounded linear recursion
         if use_deepcopy:
             self.target = copy.deepcopy(self)
         else:
@@ -577,23 +834,119 @@ class Mobject(Container):
             self.scale(length / old_length, **kwargs)
         return self
 
+    def scale_to_fit_width(self, width, **kwargs):
+        """Scales the mobject to fit a width while keeping height/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.height
+            2.0
+            >>> sq.scale_to_fit_width(5)
+            Square
+            >>> sq.width
+            5.0
+            >>> sq.height
+            5.0
+        """
+
+        return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
+
     def stretch_to_fit_width(self, width, **kwargs):
+        """Stretches the mobject to fit a width, not keeping height/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.height
+            2.0
+            >>> sq.stretch_to_fit_width(5)
+            Square
+            >>> sq.width
+            5.0
+            >>> sq.height
+            2.0
+        """
+
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
+    def scale_to_fit_height(self, height, **kwargs):
+        """Scales the mobject to fit a height while keeping width/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.width
+            2.0
+            >>> sq.scale_to_fit_height(5)
+            Square
+            >>> sq.height
+            5.0
+            >>> sq.width
+            5.0
+        """
+
+        return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
+
     def stretch_to_fit_height(self, height, **kwargs):
+        """Stretches the mobject to fit a height, not keeping width/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.width
+            2.0
+            >>> sq.stretch_to_fit_height(5)
+            Square
+            >>> sq.height
+            5.0
+            >>> sq.width
+            2.0
+        """
+
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
+    def scale_to_fit_depth(self, depth, **kwargs):
+        """Scales the mobject to fit a depth while keeping width/height proportional."""
+
+        return self.rescale_to_fit(depth, 2, stretch=False, **kwargs)
+
     def stretch_to_fit_depth(self, depth, **kwargs):
-        return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
+        """Stretches the mobject to fit a depth, not keeping width/height proportional."""
 
-    def set_width(self, width, stretch=False, **kwargs):
-        return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
-
-    def set_height(self, height, stretch=False, **kwargs):
-        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
-
-    def set_depth(self, depth, stretch=False, **kwargs):
-        return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
+        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def set_coord(self, value, dim, direction=ORIGIN):
         curr = self.get_coord(dim, direction)
@@ -633,8 +986,8 @@ class Mobject(Container):
             raise Warning("Attempting to replace mobject with no points")
             return self
         if stretch:
-            self.stretch_to_fit_width(mobject.get_width())
-            self.stretch_to_fit_height(mobject.get_height())
+            self.stretch_to_fit_width(mobject.width)
+            self.stretch_to_fit_height(mobject.height)
         else:
             self.rescale_to_fit(
                 mobject.length_over_dim(dim_to_match), dim_to_match, stretch=False
@@ -884,15 +1237,6 @@ class Mobject(Container):
             np.max, np.max, dim
         ) - self.reduce_across_dimension(np.min, np.min, dim)
 
-    def get_width(self):
-        return self.length_over_dim(0)
-
-    def get_height(self):
-        return self.length_over_dim(1)
-
-    def get_depth(self):
-        return self.length_over_dim(2)
-
     def get_coord(self, dim, direction=ORIGIN):
         """
         Meant to generalize get_x, get_y, get_z
@@ -1027,9 +1371,32 @@ class Mobject(Container):
     def family_members_with_points(self):
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
-    def arrange(self, direction=RIGHT, center=True, **kwargs):
+    def arrange(
+        self,
+        direction=RIGHT,
+        buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+        center=True,
+        **kwargs,
+    ):
+        """sort mobjects next to each other on screen.
+
+        Examples
+        --------
+
+        .. manim:: Example
+            :save_last_frame:
+
+            class Example(Scene):
+                def construct(self):
+                    s1 = Square()
+                    s2 = Square()
+                    s3 = Square()
+                    s4 = Square()
+                    x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
+                    self.add(x)
+        """
         for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
-            m2.next_to(m1, direction, **kwargs)
+            m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()
         return self
@@ -1193,8 +1560,21 @@ class Mobject(Container):
 
     def become(self, mobject, copy_submobjects=True):
         """
-        Edit points, colors and submobjects to be idential
+        Edit points, colors and submobjects to be identical
         to another mobject
+
+        Examples
+        --------
+        .. manim:: BecomeScene
+
+            class BecomeScene(Scene):
+                def construct(self):
+                    circ = Circle(fill_color=RED)
+                    square = Square(fill_color=BLUE)
+                    self.add(circ)
+                    self.wait(0.5)
+                    circ.become(square)
+                    self.wait(0.5)
         """
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
@@ -1205,9 +1585,10 @@ class Mobject(Container):
     # Errors
     def throw_error_if_no_points(self):
         if self.has_no_points():
-            message = "Cannot call Mobject.{} " + "for a Mobject with no points"
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(message.format(caller_name))
+            raise Exception(
+                f"Cannot call Mobject.{caller_name} for a Mobject with no points"
+            )
 
     # About z-index
     def set_z_index(self, z_index_value):
@@ -1245,3 +1626,102 @@ class Group(Mobject):
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)
+
+
+class _AnimationBuilder:
+    def __init__(self, mobject):
+        self.mobject = mobject
+        self.overridden_animation = None
+        self.mobject.generate_target()
+        self.is_chaining = False
+        self.methods = []
+
+    def __getattr__(self, method_name):
+        method = getattr(self.mobject.target, method_name)
+        self.methods.append(method)
+        has_overridden_animation = hasattr(method, "_override_animate")
+
+        if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
+            raise NotImplementedError(
+                "Method chaining is currently not supported for "
+                "overridden animations"
+            )
+
+        def update_target(*method_args, **method_kwargs):
+            if has_overridden_animation:
+                self.overridden_animation = method._override_animate(
+                    self.mobject, *method_args, **method_kwargs
+                )
+            else:
+                method(*method_args, **method_kwargs)
+            return self
+
+        self.is_chaining = True
+        return update_target
+
+    def build(self):
+        from ..animation.transform import _MethodAnimation
+
+        if self.overridden_animation:
+            return self.overridden_animation
+
+        return _MethodAnimation(self.mobject, self.methods)
+
+
+def override_animate(method):
+    r"""Decorator for overriding method animations.
+
+    This allows to specify a method (returning an :class:`~.Animation`)
+    which is called when the decorated method is used with the ``.animate`` syntax
+    for animating the application of a method.
+
+    .. seealso::
+
+        :prop:`~.Mobject.animate`
+
+    .. note::
+
+        Overridden methods cannot be combined with normal or other overridden
+        methods using method chaining with the ``.animate`` syntax.
+
+
+    Examples
+    --------
+
+    .. manim:: AnimationOverrideExample
+
+        from manim import Circle, Scene, ShowCreation, Text, Uncreate, VGroup
+
+        class CircleWithContent(VGroup):
+            def __init__(self, content):
+                super().__init__()
+                self.circle = Circle()
+                self.content = content
+                self.add(self.circle, content)
+                content.move_to(self.circle.get_center())
+
+            def clear_content(self):
+                self.remove(self.content)
+                self.content = None
+
+            @override_animate(clear_content)
+            def _clear_content_animation(self):
+                anim = Uncreate(self.content)
+                self.clear_content()
+                return anim
+
+        class AnimationOverrideExample(Scene):
+            def construct(self):
+                t = Text("hello!")
+                my_mobject = CircleWithContent(t)
+                self.play(ShowCreation(my_mobject))
+                self.play(my_mobject.animate.clear_content())
+                self.wait()
+
+    """
+
+    def decorator(animation_method):
+        method._override_animate = animation_method
+        return animation_method
+
+    return decorator

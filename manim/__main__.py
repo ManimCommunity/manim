@@ -2,19 +2,15 @@ import os
 import sys
 import traceback
 
-from manim import logger, config
+from manim import logger, console, config, __version__
 from manim.utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
     get_scenes_to_render,
+    scene_classes_from_file,
 )
 from manim.utils.file_ops import open_file as open_media_file
 from manim._config.main_utils import parse_args
-
-try:
-    from manim.grpc.impl import frame_server_impl
-except ImportError:
-    frame_server_impl = None
 
 
 def open_file_if_needed(file_writer):
@@ -46,6 +42,7 @@ def open_file_if_needed(file_writer):
 
 
 def main():
+    console.print(f"Manim Community [green]v{__version__}[/green]")
     args = parse_args(sys.argv)
 
     if hasattr(args, "cmd"):
@@ -75,26 +72,32 @@ def main():
 
     else:
         config.digest_args(args)
-
-        module = get_module(config.get_dir("input_file"))
-        all_scene_classes = get_scene_classes_from_module(module)
-        scene_classes_to_render = get_scenes_to_render(all_scene_classes)
-        for SceneClass in scene_classes_to_render:
+        input_file = config.get_dir("input_file")
+        if config["use_webgl_renderer"]:
             try:
-                if config["use_js_renderer"]:
-                    if frame_server_impl is None:
-                        raise ImportError(
-                            "Dependencies for JS renderer is not installed."
-                        )
-                    frame_server_impl.get(SceneClass).start()
-                else:
+                from manim.grpc.impl import frame_server_impl
+
+                server = frame_server_impl.get(input_file)
+                server.start()
+                server.wait_for_termination()
+            except ModuleNotFoundError as e:
+                print("\n\n")
+                print(
+                    "Dependencies for the WebGL render are missing. Run "
+                    "pip install manim[webgl_renderer] to install them."
+                )
+                print(e)
+                print("\n\n")
+        else:
+            for SceneClass in scene_classes_from_file(input_file):
+                try:
                     scene = SceneClass()
                     scene.render()
                     open_file_if_needed(scene.renderer.file_writer)
-            except Exception:
-                print("\n\n")
-                traceback.print_exc()
-                print("\n\n")
+                except Exception:
+                    print("\n\n")
+                    traceback.print_exc()
+                    print("\n\n")
 
 
 if __name__ == "__main__":

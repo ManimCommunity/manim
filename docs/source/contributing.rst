@@ -2,12 +2,14 @@
 Contributing
 ############
 
-Thank you for contributing to Manim!  However you have decided to contribute or
-interact with the community, please always be civil and respect other members
-of the community.  Manim is a free open source software for mathematical
-animations, and as such we welcome **everyone** who is interested in
-mathematics, pedagogy, computer animations, open-source, software development,
-and beyond.  Manim accepts contributions of many kinds, detailed below.
+Thank you for contributing to Manim! However you have decided to contribute
+or interact with the community, please always be civil and respect other
+members of the community. If you haven't read our :doc:`code of
+conduct<conduct>`, do so here. Manim is a free open source software for
+mathematical animations, and as such we welcome **everyone** who is
+interested in mathematics, pedagogy, computer animations, open-source,
+software development, and beyond. Manim accepts contributions of many kinds,
+detailed below.
 
 Many ways of contributing will involve writing, reading, testing, or
 refactoring code.  As our repository is a Fork of `Manim by
@@ -224,4 +226,14 @@ Further useful guidelines
    general as tidy as possible.
 
 
+You can find examples for the ``docs`` in many places:
+In ``Example Gallery`` , ``Tutorials`` , ``Reference Classes`` and ``Reference Modules``.
+In case you are contributing, please have a look at this flowchart:
+
+.. raw:: html
+
+    <div class="mxgraph" style="max-width:100%;border:1px solid transparent;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;nav&quot;:true,&quot;resize&quot;:true,&quot;toolbar&quot;:&quot;zoom layers lightbox&quot;,&quot;edit&quot;:&quot;_blank&quot;,&quot;url&quot;:&quot;https://drive.google.com/uc?id=1aKyJTloYB97IhrzwqEENOu-WQyuVWMjM&amp;export=download&quot;}"></div>
+    <script type="text/javascript" src="https://viewer.diagrams.net/embed2.js?&fetch=https%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1aKyJTloYB97IhrzwqEENOu-WQyuVWMjM%26export%3Ddownload"></script>
+
 **Thank you for contributing!**
+

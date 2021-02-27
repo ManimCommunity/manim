@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "manim"
-version = "0.1.1"
+version = "0.3.0"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers","3b1b <grant@3blue1brown.com>"]
 license="MIT"
 readme="README.md"
 repository="https://github.com/manimcommunity/manim"
-documentation="https://manimce.readthedocs.io/en/latest/"
+documentation="https://docs.manim.community/"
 classifiers= [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
@@ -24,26 +24,28 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.2"
 colour = "*"
 numpy = "*"
 Pillow = "*"
-progressbar = "*"
 scipy = "*"
 tqdm = "*"
 pydub = "*"
 pygments = "*"
 rich = "^6.0"
 pycairo = "^1.19"
-pangocffi = "^0.8.0"
-pangocairocffi = "^0.4.0"
-cairocffi = "^1.1.0"
-grpcio =  { version = "*", optional = true }
-grpcio-tools = { version = "*", optional = true }
+manimpango = "^0.2.0"
+networkx = "^2.5"
+setuptools = "*"
+importlib-metadata = {version = "*", python = "<3.8"}
+grpcio =  { version = "1.33.*", optional = true }
+grpcio-tools = { version = "1.33.*", optional = true }
 watchdog = { version = "*", optional = true }
+jupyterlab = { version = "^3.0", optional = true }
 
 [tool.poetry.extras]
-js_renderer = ["grpcio","grpcio-tools","watchdog"]
+webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
+jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"

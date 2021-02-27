@@ -3,6 +3,9 @@
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
+import copy
+import uuid
+from ..utils.family import extract_mobject_family_members
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
@@ -31,8 +34,7 @@ class DecimalNumber(VMobject):
                 decimal.add_updater(lambda d: d.set_value(square.get_center()[1]))
                 self.add(square, decimal)
                 self.play(
-                    square.to_edge,
-                    DOWN,
+                    square.animate.to_edge(DOWN),
                     rate_func=there_and_back,
                     run_time=5,
                 )
@@ -112,9 +114,9 @@ class DecimalNumber(VMobject):
         for i, c in enumerate(num_string):
             if c == "-" and len(num_string) > i + 1:
                 self[i].align_to(self[i + 1], UP)
-                self[i].shift(self[i + 1].get_height() * DOWN / 2)
+                self[i].shift(self[i + 1].height * DOWN / 2)
             elif c == ",":
-                self[i].shift(self[i].get_height() * DOWN / 2)
+                self[i].shift(self[i].height * DOWN / 2)
         if self.unit and self.unit.startswith("^"):
             self.unit_sign.align_to(self, UP)
         #
@@ -170,8 +172,22 @@ class DecimalNumber(VMobject):
         full_config.update(self.initial_config)
         full_config.update(config)
         new_decimal = DecimalNumber(number, **full_config)
+
+        if hasattr(self, "original_id"):
+            if not hasattr(self, "generated_original_ids"):
+                self.generated_original_ids = []
+            new_submobjects = extract_mobject_family_members(
+                new_decimal, only_those_with_points=True
+            )
+            while len(self.generated_original_ids) < len(new_submobjects):
+                self.generated_original_ids.append(str(uuid.uuid4()))
+            for new_submobject, generated_id in zip(
+                new_submobjects, self.generated_original_ids
+            ):
+                new_submobject.original_id = generated_id
+
         # Make sure last digit has constant height
-        new_decimal.scale(self[-1].get_height() / new_decimal[-1].get_height())
+        new_decimal.scale(self[-1].height / new_decimal[-1].height)
         new_decimal.move_to(self, self.edge_to_fix)
         new_decimal.match_style(self)
 
@@ -261,7 +277,7 @@ class Variable(VMobject):
                 self.wait()
                 var_tracker = on_screen_var.tracker
                 var = 10.5
-                self.play(var_tracker.set_value, var)
+                self.play(var_tracker.animate.set_value(var))
                 self.wait()
 
                 int_var = 0
@@ -275,7 +291,7 @@ class Variable(VMobject):
                 self.wait()
                 var_tracker = on_screen_int_var.tracker
                 var = 10.5
-                self.play(var_tracker.set_value, var)
+                self.play(var_tracker.animate.set_value(var))
                 self.wait()
 
                 # If you wish to have a somewhat more complicated label for your

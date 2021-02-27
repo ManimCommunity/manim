@@ -11,7 +11,7 @@ def pytest_addoption(parser):
         "--skip_slow",
         action="store_true",
         default=False,
-        help="Will skip all the slow marked tests. Slow tests are arbitrarly marked as such.",
+        help="Will skip all the slow marked tests. Slow tests are arbitrarily marked as such.",
     )
     parser.addoption(
         "--show_diff",
@@ -39,7 +39,10 @@ def pytest_collection_modifyitems(config, items):
 
 @pytest.fixture(scope="session")
 def python_version():
-    return "python3" if sys.platform == "darwin" else "python"
+    # use the same python executable as it is running currently
+    # rather than randomly calling using python or python3, which
+    # may create problems.
+    return sys.executable
 
 
 @pytest.fixture

@@ -13,10 +13,11 @@ import datetime
 from PIL import Image
 from pathlib import Path
 
+from manim import __version__
 from .. import config, logger
 from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
 from ..utils.file_ops import guarantee_existence
-from ..utils.file_ops import add_extension_if_not_present
+from ..utils.file_ops import add_extension_if_not_present, add_version_before_extension
 from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
 
@@ -124,10 +125,7 @@ class SceneFileWriter(object):
             return
         new_partial_movie_file = os.path.join(
             self.partial_movie_directory,
-            "{}{}".format(
-                hash_animation,
-                config["movie_file_extension"],
-            ),
+            f"{hash_animation}{config['movie_file_extension']}",
         )
         self.partial_movie_files.append(new_partial_movie_file)
 
@@ -158,7 +156,7 @@ class SceneFileWriter(object):
         """
         pixel_height = config["pixel_height"]
         frame_rate = config["frame_rate"]
-        return "{}p{}".format(pixel_height, frame_rate)
+        return f"{pixel_height}p{frame_rate}"
 
     # Sound
     def init_audio(self):
@@ -293,9 +291,11 @@ class SceneFileWriter(object):
         image : np.array
             The pixel array of the image to save.
         """
-        file_path = self.image_file_path
-        image.save(file_path)
-        self.print_file_ready_message(file_path)
+        if not config["output_file"]:
+            self.image_file_path = add_version_before_extension(self.image_file_path)
+
+        image.save(self.image_file_path)
+        self.print_file_ready_message(self.image_file_path)
 
     def idle_stream(self):
         """
@@ -335,7 +335,7 @@ class SceneFileWriter(object):
 
     def open_movie_pipe(self):
         """
-        Used internally by Manim to initalise
+        Used internally by Manim to initialise
         FFMPEG and begin writing to FFMPEG's input
         buffer.
         """
@@ -358,10 +358,12 @@ class SceneFileWriter(object):
             "-r",
             str(fps),  # frames per second
             "-i",
-            "-",  # The imput comes from a pipe
+            "-",  # The input comes from a pipe
             "-an",  # Tells FFMPEG not to expect any audio
             "-loglevel",
             config["ffmpeg_loglevel"].lower(),
+            "-metadata",
+            f"comment=Rendered with Manim Community v{__version__}",
         ]
         if config["transparent"]:
             command += ["-vcodec", "qtrle"]
@@ -399,7 +401,7 @@ class SceneFileWriter(object):
             return False
         path = os.path.join(
             self.partial_movie_directory,
-            "{}{}".format(hash_invocation, config["movie_file_extension"]),
+            f"{hash_invocation}{config['movie_file_extension']}",
         )
         return os.path.exists(path)
 
@@ -416,7 +418,7 @@ class SceneFileWriter(object):
         # viewing the scene as a whole, one of course wants to see it as a
         # single piece.
         partial_movie_files = [el for el in self.partial_movie_files if el is not None]
-        # NOTE : Here we should do a check and raise an exeption if partial
+        # NOTE : Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
         # tests) use scene initialization, and this error would be raised as
         # it's just an empty scene initialized.
@@ -435,7 +437,7 @@ class SceneFileWriter(object):
             for pf_path in partial_movie_files:
                 if os.name == "nt":
                     pf_path = pf_path.replace("\\", "/")
-                fp.write("file 'file:{}'\n".format(pf_path))
+                fp.write(f"file 'file:{pf_path}'\n")
         movie_file_path = self.movie_file_path
         commands = [
             FFMPEG_BIN,
@@ -448,12 +450,19 @@ class SceneFileWriter(object):
             file_list,
             "-loglevel",
             config["ffmpeg_loglevel"].lower(),
+            "-metadata",
+            f"comment=Rendered with Manim Community v{__version__}",
+            "-nostdin",
         ]
 
         if config["write_to_movie"] and not config["save_as_gif"]:
             commands += ["-c", "copy", movie_file_path]
 
         if config["save_as_gif"]:
+            if not config["output_file"]:
+                self.gif_file_path = str(
+                    add_version_before_extension(self.gif_file_path)
+                )
             commands += [self.gif_file_path]
 
         if not self.includes_sound:
@@ -494,6 +503,8 @@ class SceneFileWriter(object):
                 "1:a:0",
                 "-loglevel",
                 config["ffmpeg_loglevel"].lower(),
+                "-metadata",
+                f"comment=Rendered with Manim Community v{__version__}",
                 # "-shortest",
                 temp_file_path,
             ]
@@ -548,4 +559,5 @@ class SceneFileWriter(object):
 
     def print_file_ready_message(self, file_path):
         """Prints the "File Ready" message to STDOUT."""
+        config["output_file"] = file_path
         logger.info("\nFile ready at %(file_path)s\n", {"file_path": file_path})

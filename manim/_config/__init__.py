@@ -1,10 +1,11 @@
 """Set the global config and logger."""
 
 import logging
-from contextlib import contextmanager
+from contextlib import _GeneratorContextManager, contextmanager
+from typing import Union
 
 from .logger_utils import make_logger
-from .utils import make_config_parser, ManimConfig, ManimFrame
+from .utils import ManimConfig, ManimFrame, make_config_parser
 
 __all__ = [
     "logger",
@@ -30,7 +31,7 @@ frame = ManimFrame(config)
 
 # This has to go here because it needs access to this module's config
 @contextmanager
-def tempconfig(temp):
+def tempconfig(temp: Union[ManimConfig, dict]) -> _GeneratorContextManager:
     """Context manager that temporarily modifies the global ``config`` object.
 
     Inside the ``with`` statement, the modified config will be used.  After
@@ -64,7 +65,7 @@ def tempconfig(temp):
 
     temp = {k: v for k, v in temp.items() if k in original}
 
-    # In order to change the config that every module has acces to, use
+    # In order to change the config that every module has access to, use
     # update(), DO NOT use assignment.  Assigning config = some_dict will just
     # make the local variable named config point to a new dictionary, it will
     # NOT change the dictionary that every module has a reference to.

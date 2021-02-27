@@ -3,6 +3,7 @@
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
+import colour
 
 import numpy as np
 
@@ -38,7 +39,7 @@ class AbstractImageMobject(Mobject):
         raise NotImplementedError()
 
     def set_color(self):
-        # Likely to be implemented in subclasses, but no obgligation
+        # Likely to be implemented in subclasses, but no obligation
         pass
 
     def reset_points(self):
@@ -53,11 +54,11 @@ class AbstractImageMobject(Mobject):
         self.center()
         h, w = self.get_pixel_array().shape[:2]
         if self.scale_to_resolution:
-            self.height = h / self.scale_to_resolution * config["frame_height"]
+            height = h / self.scale_to_resolution * config["frame_height"]
         else:
-            self.height = 3  ## this is the case for ImageMobjectFromCamera
-        self.stretch_to_fit_height(self.height)
-        self.stretch_to_fit_width(self.height * w / h)
+            height = 3  ## this is the case for ImageMobjectFromCamera
+        self.stretch_to_fit_height(height)
+        self.stretch_to_fit_width(height * w / h)
 
 
 class ImageMobject(AbstractImageMobject):
@@ -79,7 +80,7 @@ class ImageMobject(AbstractImageMobject):
             def construct(self):
                 image = ImageMobject(np.uint8([[0, 100, 30, 200],
                                                [255, 0, 5, 33]]))
-                image.set_height(7)
+                image.height = 7
                 self.add(image)
 
     """
@@ -92,12 +93,15 @@ class ImageMobject(AbstractImageMobject):
         image_mode="RGBA",
         **kwargs,
     ):
+        self.fill_opacity = 1
+        self.stroke_opacity = 1
         self.invert = invert
         self.image_mode = image_mode
         if isinstance(filename_or_array, (str, pathlib.PurePath)):
             path = get_full_raster_image_path(filename_or_array)
             image = Image.open(path).convert(self.image_mode)
             self.pixel_array = np.array(image)
+            self.path = path
         else:
             self.pixel_array = np.array(filename_or_array)
         self.pixel_array_dtype = kwargs.get("pixel_array_dtype", "uint8")
@@ -144,6 +148,8 @@ class ImageMobject(AbstractImageMobject):
             transparent.
         """
         self.pixel_array[:, :, 3] = int(255 * alpha)
+        self.fill_opacity = alpha
+        self.stroke_opacity = alpha
         return self
 
     def fade(self, darkness=0.5, family=True):
@@ -168,11 +174,11 @@ class ImageMobject(AbstractImageMobject):
         Parameters
         ----------
         mobject1 : ImageMobject
-            The ImageMobject to tranform from.
+            The ImageMobject to transform from.
 
         mobject1 : ImageMobject
 
-            The ImageMobject to tranform into.
+            The ImageMobject to transform into.
         alpha : float
             Used to track the lerp relationship. Not opacity related.
         """
@@ -181,9 +187,21 @@ class ImageMobject(AbstractImageMobject):
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
             f"Mobject 2 ({mobject2}) : {mobject2.pixel_array.shape}"
         )
+        self.fill_opacity = interpolate(
+            mobject1.fill_opacity, mobject2.fill_opacity, alpha
+        )
+        self.stroke_opacity = interpolate(
+            mobject1.stroke_opacity, mobject2.stroke_opacity, alpha
+        )
         self.pixel_array = interpolate(
             mobject1.pixel_array, mobject2.pixel_array, alpha
         ).astype(self.pixel_array_dtype)
+
+    def get_style(self):
+        return {
+            "fill_color": colour.rgb2hex(self.color.get_rgb()),
+            "fill_opacity": self.fill_opacity,
+        }
 
 
 # TODO, add the ability to have the dimensions/orientation of this

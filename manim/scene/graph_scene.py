@@ -3,10 +3,10 @@
 Examples
 --------
 
-.. manim:: FunctionPlotWithLabbeledYAxis
+.. manim:: FunctionPlotWithLabelledYAxis
     :save_last_frame:
 
-    class FunctionPlotWithLabbeledYAxis(GraphScene):
+    class FunctionPlotWithLabelledYAxis(GraphScene):
         def __init__(self, **kwargs):
             GraphScene.__init__(
                 self,
@@ -380,7 +380,7 @@ class GraphScene(Scene):
     def input_to_graph_point(self, x, graph):
         """
         This method returns a coordinate on the curve
-        given an x_value and a the graoh-curve for which
+        given an x_value and a the graph-curve for which
         the corresponding y value should be found.
 
         Parameters
@@ -428,7 +428,7 @@ class GraphScene(Scene):
 
     def slope_of_tangent(self, *args, **kwargs):
         """
-        Returns the slople of the tangent to the plotted curve
+        Returns the slope of the tangent to the plotted curve
         at a particular x-value.
 
         Parameters
@@ -657,7 +657,7 @@ class GraphScene(Scene):
     ):
         """
         This method returns a list of multiple VGroups of Riemann
-        Rectangles. The inital VGroups are relatively inaccurate,
+        Rectangles. The initial VGroups are relatively inaccurate,
         but the closer you get to the end the more accurate the Riemann
         rectangles become
 
@@ -927,22 +927,22 @@ class GraphScene(Scene):
             group.add(group.df_label)
 
         if len(labels) > 0:
-            max_width = 0.8 * group.dx_line.get_width()
-            max_height = 0.8 * group.df_line.get_height()
-            if labels.get_width() > max_width:
-                labels.set_width(max_width)
-            if labels.get_height() > max_height:
-                labels.set_height(max_height)
+            max_width = 0.8 * group.dx_line.width
+            max_height = 0.8 * group.df_line.height
+            if labels.width > max_width:
+                labels.width = max_width
+            if labels.height > max_height:
+                labels.height = max_height
 
         if dx_label is not None:
             group.dx_label.next_to(
-                group.dx_line, np.sign(dx) * DOWN, buff=group.dx_label.get_height() / 2
+                group.dx_line, np.sign(dx) * DOWN, buff=group.dx_label.height / 2
             )
             group.dx_label.set_color(group.dx_line.get_color())
 
         if df_label is not None:
             group.df_label.next_to(
-                group.df_line, np.sign(dx) * RIGHT, buff=group.df_label.get_height() / 2
+                group.df_line, np.sign(dx) * RIGHT, buff=group.df_label.height / 2
             )
             group.df_label.set_color(group.df_line.get_color())
 
@@ -981,7 +981,7 @@ class GraphScene(Scene):
         side : np.array(), optional
 
         label : str, optional
-            The label to give the vertline and triangle
+            The label to give the vertical line and triangle
 
         color : str, optional
             The hex color of the label.
@@ -993,7 +993,7 @@ class GraphScene(Scene):
             Any valid keyword argument of a self.play call.
         """
         triangle = RegularPolygon(n=3, start_angle=np.pi / 2)
-        triangle.set_height(MED_SMALL_BUFF)
+        triangle.height = MED_SMALL_BUFF
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         triangle.set_fill(color, 1)
         triangle.set_stroke(width=0)

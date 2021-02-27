@@ -22,6 +22,7 @@ Mobjects
    ~mobject.frame
    ~mobject.functions
    ~mobject.geometry
+   ~mobject.graph
    ~mobject.logo
    ~mobject.matrix
    ~mobject.mobject
@@ -120,6 +121,7 @@ Utilities
    ~utils.color
    ~utils.config_ops
    ~utils.hashing
+   ~utils.ipython_magic
    ~utils.images
    ~utils.iterables
    ~utils.paths

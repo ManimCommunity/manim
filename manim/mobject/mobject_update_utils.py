@@ -37,7 +37,7 @@ def always(method, *args, **kwargs):
 def f_always(method, *arg_generators, **kwargs):
     """
     More functional version of always, where instead
-    of taking in args, it takes in functions which ouput
+    of taking in args, it takes in functions which output
     the relevant arguments.
     """
     assert_is_mobject_method(method)
@@ -59,7 +59,13 @@ def always_redraw(func):
 
 
 def always_shift(mobject, direction=RIGHT, rate=0.1):
-    mobject.add_updater(lambda m, dt: m.shift(dt * rate * direction))
+    def normalize(v):
+        norm = np.linalg.norm(v)
+        if norm == 0:
+            return v
+        return v / norm
+
+    mobject.add_updater(lambda m, dt: m.shift(dt * rate * normalize(direction)))
     return mobject
 
 
@@ -74,7 +80,7 @@ def turn_animation_into_updater(animation, cycle=False, **kwargs):
     the interpolation and update functions of the animation
 
     If cycle is True, this repeats over and over.  Otherwise,
-    the updater will be popped uplon completion
+    the updater will be popped upon completion
     """
     mobject = animation.mobject
     animation.update_config(**kwargs)
