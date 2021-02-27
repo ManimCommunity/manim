@@ -1382,7 +1382,7 @@ class OpenGLMobject:
 
     def init_shader_data(self):
         # TODO, only call this when needed?
-        self.shader_data = np.zeros(len(self.get_points()), dtype=self.__class__.shader_dtype)
+        self.shader_data = np.zeros(len(self.get_points()), dtype=self.shader_dtype)
         self.shader_indices = None
         self.shader_wrapper = ShaderWrapper(
             vert_data=self.shader_data,

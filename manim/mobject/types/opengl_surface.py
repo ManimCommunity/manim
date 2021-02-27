@@ -184,7 +184,7 @@ class OpenGLSurface(OpenGLMobject):
     # For shaders
     def get_shader_data(self):
         s_points, du_points, dv_points = self.get_surface_points_and_nudged_points()
-        shader_data = np.zeros(len(s_points), dtype=self.__class__.shader_dtype)
+        shader_data = np.zeros(len(s_points), dtype=self.shader_dtype)
         if "points" not in self.locked_data_keys:
             shader_data["point"] = s_points
             shader_data["du_point"] = du_points

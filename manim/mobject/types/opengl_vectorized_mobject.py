@@ -8,9 +8,6 @@ from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ...constants import *
 from ...utils.color import *
 
-# from manimlib.constants import *
-# from manimlib.mobject.mobject import Mobject
-# from manimlib.mobject.mobject import Point
 from ...utils.bezier import bezier
 
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
@@ -116,6 +113,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.flat_stroke = flat_stroke
         self.render_primitive = render_primitive
         self.triangulation_locked = triangulation_locked
+        self.n_points_per_curve = n_points_per_curve
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
