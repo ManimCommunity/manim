@@ -54,7 +54,6 @@ class NumberLine(Line):
         self.unit_size = unit_size
         self.include_ticks = include_ticks
         self.tick_size = tick_size
-        self.width = width
         self.rotation = rotation
         self.tick_frequency = tick_frequency
         self.leftmost_tick = leftmost_tick
