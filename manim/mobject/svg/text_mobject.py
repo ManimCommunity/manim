@@ -1135,7 +1135,7 @@ class MarkupText(SVGMobject):
             def construct(self):
                 morning = MarkupText("வணக்கம்", font="sans-serif")
                 chin = MarkupText(
-                    '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</color> 酉 釆 里!'
+                    '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
                 )  # works as in ``Text``.
                 mess = MarkupText("Multi-Language", style=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
