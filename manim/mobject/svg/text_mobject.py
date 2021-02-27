@@ -989,7 +989,7 @@ class MarkupText(SVGMobject):
 
     If you want to use Manim constants like ``RED_A`` with ``<span foreground>`` or ``<span fgcolor>``, you will
     need to use Python's f-String syntax as follows:
-    ``f'<span foreground="{RED_A}">here you go</span>``
+    ``f'<span foreground="{RED_A}">here you go</span>'``
 
     If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine
     the first and last letter when creating the gradient. This is due to the fact that e.g. ``fl``
