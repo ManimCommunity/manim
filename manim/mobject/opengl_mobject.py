@@ -31,7 +31,6 @@ from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix_transpose
-from ..renderer.shader_wrapper import ShaderWrapper
 
 
 class OpenGLMobject:
@@ -95,7 +94,8 @@ class OpenGLMobject:
         # self.init_event_listners()
         self.init_points()
         self.init_colors()
-        self.init_shader_data()
+
+        self.shader_indices = None
 
         if self.depth_test:
             self.apply_depth_test()
@@ -1380,23 +1380,12 @@ class OpenGLMobject:
 
     # For shader data
 
-    def init_shader_data(self):
-        # TODO, only call this when needed?
-        self.shader_data = np.zeros(len(self.get_points()), dtype=self.shader_dtype)
-        self.shader_indices = None
-        self.shader_wrapper = ShaderWrapper(
-            vert_data=self.shader_data,
-            shader_folder=self.__class__.shader_folder,
-            texture_paths=self.texture_paths,
-            depth_test=self.depth_test,
-            render_primitive=self.render_primitive,
-        )
-
     # def refresh_shader_wrapper_id(self):
     #     self.shader_wrapper.refresh_id()
     #     return self
 
     def get_shader_wrapper(self):
+        from ..renderer.shader_wrapper import ShaderWrapper
         self.shader_wrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
             vert_indices=self.get_shader_vert_indices(),

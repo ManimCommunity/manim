@@ -32,7 +32,6 @@ from ...utils.space_ops import get_unit_normal
 
 from ...utils.space_ops import z_to_vector
 
-from ...renderer.shader_wrapper import ShaderWrapper
 
 JOINT_TYPE_MAP = {
     "auto": 0,
@@ -40,6 +39,7 @@ JOINT_TYPE_MAP = {
     "bevel": 2,
     "miter": 3,
 }
+
 
 class OpenGLVMobject(OpenGLMobject):
     fill_dtype = [
@@ -918,6 +918,8 @@ class OpenGLVMobject(OpenGLMobject):
 
     # For shaders
     def init_shader_data(self):
+        from ...renderer.shader_wrapper import ShaderWrapper
+
         self.fill_data = np.zeros(0, dtype=self.fill_dtype)
         self.stroke_data = np.zeros(0, dtype=self.stroke_dtype)
         self.fill_shader_wrapper = ShaderWrapper(
@@ -938,6 +940,8 @@ class OpenGLVMobject(OpenGLMobject):
         return self
 
     def get_fill_shader_wrapper(self):
+        from ...renderer.shader_wrapper import ShaderWrapper
+
         return ShaderWrapper(
             vert_data=self.get_fill_shader_data(),
             vert_indices=self.get_triangulation(),
@@ -948,6 +952,8 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def get_stroke_shader_wrapper(self):
+        from ...renderer.shader_wrapper import ShaderWrapper
+
         return ShaderWrapper(
             vert_data=self.get_stroke_shader_data(),
             shader_folder="quadratic_bezier_stroke",
@@ -957,6 +963,8 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def get_shader_wrapper_list(self):
+        from ...renderer.shader_wrapper import ShaderWrapper
+
         # Build up data lists
         fill_shader_wrappers = []
         stroke_shader_wrappers = []
