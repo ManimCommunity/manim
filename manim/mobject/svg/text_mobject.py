@@ -1097,7 +1097,7 @@ class MarkupText(SVGMobject):
                 group = VGroup(text1, text2, text3, text4, text5, text6, text7).arrange(DOWN)
                 self.add(group)
 
-    .. manim:: FontExample
+    .. manim:: UnderlineExample
         :save_last_frame:
 
         class UnderlineExample(Scene):
