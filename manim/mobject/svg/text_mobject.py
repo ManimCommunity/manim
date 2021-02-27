@@ -980,15 +980,19 @@ class MarkupText(SVGMobject):
     - ``<tt>typewriter font</tt>``
     - ``<big>bigger font</big>`` and ``<small>smaller font</small>``
     - ``<sup>superscript</sup>`` and ``<sub>subscript</sub>``
-    - ``<span underline="double">double underline</span>``
+    - ``<span underline="double" underline_color="green">double underline</span>``
     - ``<span underline="error">error underline</span>``
+    - ``<span overline="single" overline_color="green">overline</span>``
+    - ``<span strikethrough="true" strikethrough_color="red">strikethrough</span>``
     - ``<span font_family="sans">temporary change of font</span>``
-    - ``<span foreground="RED">temporary change of color</span>``; colors can be specified as hex triples like ``#aabbaa`` or as a named CSS color like ``AliceBlue``
-    - ``<span fgcolor="RED">temporary change of color</span>``; same as above
-    - ``<gradient from="YELLOW" to="RED">temporary gradient</gradient>``; colors can be specified as Manim constants like ``RED`` or ``YELLOW`` or as hex triples like ``#aabbaa``
+    - ``<span foreground="red">temporary change of color</span>``
+    - ``<span fgcolor="red">temporary change of color</span>``
+    - ``<gradient from="YELLOW" to="RED">temporary gradient</gradient>``
 
-    If you want to use Manim constants like ``RED_A`` with ``<span foreground>`` or ``<span fgcolor>``, you will
-    need to use Python's f-String syntax as follows:
+    For ``<span>`` markup, colors can be specified either as hex triples like ``#aabbcc`` or as named CSS colors like ``AliceBlue``.
+    The ``<gradient>`` tag being handled by Manim rather than Pango, supports hex triplets or Manim constants like ``RED`` or ``RED_A``.
+    If you want to use Manim constants like ``RED_A`` together with ``<span>``,
+    you will need to use Python's f-String syntax as follows:
     ``f'<span foreground="{RED_A}">here you go</span>'``
 
     If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine
@@ -1005,6 +1009,9 @@ class MarkupText(SVGMobject):
     Specifying a second offset may be necessary if the text to be colored does
     itself contain ligatures. The same can happen when using HTML entities for
     special chars.
+
+    When using ``underline``, ``overline`` or ``strikethrough`` together with ``<gradient>`` tags, you will also need to use the offset, because
+    underlines are additional paths in the final :class:`SVGMobject`, check out the corresponding example.
 
     Escaping of special characters: ``>`` *should* be written as ``&gt;`` whereas ``<`` and
     ``&`` *must* be written as ``&lt;`` and ``&amp;``.
@@ -1088,6 +1095,29 @@ class MarkupText(SVGMobject):
                     'fl ligature <gradient from="RED" to="YELLOW" offset="1,1">floating</gradient> inside'
                 )
                 group = VGroup(text1, text2, text3, text4, text5, text6, text7).arrange(DOWN)
+                self.add(group)
+
+    .. manim:: FontExample
+        :save_last_frame:
+
+        class UnderlineExample(Scene):
+            def construct(self):
+                text1 = MarkupText(
+                    '<span underline="double" underline_color="green">bla</span>'
+                )
+                text2 = MarkupText(
+                    '<span underline="single" underline_color="green">xxx</span><gradient from="#ffff00" to="RED">aabb</gradient>y'
+                )
+                text3 = MarkupText(
+                    '<span underline="single" underline_color="green">xxx</span><gradient from="#ffff00" to="RED" offset="-1">aabb</gradient>y'
+                )
+                text4 = MarkupText(
+                    '<span underline="double" underline_color="green">xxx</span><gradient from="#ffff00" to="RED">aabb</gradient>y'
+                )
+                text5 = MarkupText(
+                    '<span underline="double" underline_color="green">xxx</span><gradient from="#ffff00" to="RED" offset="-2">aabb</gradient>y'
+                )
+                group = VGroup(text1, text2, text3, text4, text5).arrange(DOWN)
                 self.add(group)
 
     .. manim:: FontExample
