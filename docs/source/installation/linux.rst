@@ -30,7 +30,7 @@ To install Pango:
 
 .. code-block:: bash
 
-   sudo apt install libcairo2-dev
+   sudo apt install libpango1.0-dev
 
 To install ffmpeg:
 
