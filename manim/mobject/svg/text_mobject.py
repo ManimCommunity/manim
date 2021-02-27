@@ -1068,7 +1068,7 @@ class MarkupText(SVGMobject):
         class ColorExample(Scene):
             def construct(self):
                 text1 = MarkupText(
-                    'all in red <color col="YELLOW">except this</color>', color=RED
+                    f'all in red <span fgcolor="{YELLOW}">except this</span>', color=RED
                 )
                 text2 = MarkupText("nice gradient", gradient=(BLUE, GREEN))
                 text3 = MarkupText(
@@ -1076,16 +1076,16 @@ class MarkupText(SVGMobject):
                     gradient=(BLUE, GREEN),
                 )
                 text4 = MarkupText(
-                    'fl ligature <color col="#00ff00">causing trouble</color> here'
+                    'fl ligature <gradient from="RED" to="YELLOW">causing trouble</gradient> here'
                 )
                 text5 = MarkupText(
-                    'fl ligature <color col="#00ff00" offset="1">defeated</color> with offset'
+                    'fl ligature <gradient from="RED" to="YELLOW" offset="1">defeated</color> with offset'
                 )
                 text6 = MarkupText(
-                    'fl ligature <color col="GREEN" offset="1">floating</color> inside'
+                    'fl ligature <gradient from="RED" to="YELLOW" offset="1">floating</color> inside'
                 )
                 text7 = MarkupText(
-                    'fl ligature <color col="GREEN" offset="1,1">floating</color> inside'
+                    'fl ligature <gradient from="RED" to="YELLOW" offset="1,1">floating</color> inside'
                 )
                 group = VGroup(text1, text2, text3, text4, text5, text6, text7).arrange(DOWN)
                 self.add(group)
@@ -1111,7 +1111,7 @@ class MarkupText(SVGMobject):
 
         class NewlineExample(Scene):
             def construct(self):
-                text = MarkupText('foooo<color col="RED">oo\nbaa</color>aar')
+                text = MarkupText('foooo<span foreground="red">oo\nbaa</span>aar')
                 self.add(text)
 
     .. manim:: NoLigaturesExample
@@ -1119,8 +1119,8 @@ class MarkupText(SVGMobject):
 
         class NoLigaturesExample(Scene):
             def construct(self):
-                text1 = MarkupText('fl<color col="RED">oat</color>ing')
-                text2 = MarkupText('fl<color col="RED">oat</color>ing', disable_ligatures=True)
+                text1 = MarkupText('fl<gradient from="RED" to="GREEN">oat</gradient>ing')
+                text2 = MarkupText('fl<gradient from="RED" to="GREEN">oat</gradient>ing', disable_ligatures=True)
                 group = VGroup(text1, text2).arrange(DOWN)
                 self.add(group)
 
@@ -1135,7 +1135,7 @@ class MarkupText(SVGMobject):
             def construct(self):
                 morning = MarkupText("வணக்கம்", font="sans-serif")
                 chin = MarkupText(
-                    '見 角 言 谷  辛 <color col="BLUE">辰 辵 邑</color> 酉 釆 里!'
+                    '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</color> 酉 釆 里!'
                 )  # works as in ``Text``.
                 mess = MarkupText("Multi-Language", style=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
@@ -1369,6 +1369,9 @@ class MarkupText(SVGMobject):
         with a custom color.
 
         Removes the ``<color>`` tag, as it is not part of Pango's markup and would cause an error.
+
+        Note: Using the ``<color>`` tags is deprecated. As soon as the legacy syntax is gone, this function
+        will be removed.
         """
         tags = re.finditer(
             '<color\s+col="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</color>',
