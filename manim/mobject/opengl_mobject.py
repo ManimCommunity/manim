@@ -38,6 +38,10 @@ class OpenGLMobject:
     """
     Mathematical Object
     """
+    shader_dtype=[
+        ("point", np.float32, (3,)),
+    ]
+    shader_folder = ""
 
     def __init__(
         self,
@@ -50,16 +54,12 @@ class OpenGLMobject:
         # Positive shadow up to 1 makes a side opposite the light darker
         shadow=0.0,
         # For shaders
-        shader_folder="",
         render_primitive=moderngl.TRIANGLE_STRIP,
         texture_paths=None,
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
         is_fixed_in_frame=False,
         # Must match in attributes of vert shader
-        shader_dtype=[
-            ("point", np.float32, (3,)),
-        ],
         # Event listener
         listen_to_events=False,
         **kwargs
@@ -74,14 +74,12 @@ class OpenGLMobject:
         # Positive shadow up to 1 makes a side opposite the light darker
         self.shadow = shadow
         # For shaders
-        self.shader_folder = shader_folder
         self.render_primitive = render_primitive
         self.texture_paths = texture_paths
         self.depth_test = depth_test
         # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = is_fixed_in_frame
         # Must match in attributes of vert shader
-        self.shader_dtype = shader_dtype
         # Event listener
         self.listen_to_events = listen_to_events
 
@@ -817,7 +815,7 @@ class OpenGLMobject:
     def move_to(
         self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
     ):
-        if isinstance(point_or_mobject, Mobject):
+        if isinstance(point_or_mobject, OpenGLMobject):
             target = point_or_mobject.get_bounding_box_point(aligned_edge)
         else:
             target = point_or_mobject
@@ -1384,11 +1382,11 @@ class OpenGLMobject:
 
     def init_shader_data(self):
         # TODO, only call this when needed?
-        self.shader_data = np.zeros(len(self.get_points()), dtype=self.shader_dtype)
+        self.shader_data = np.zeros(len(self.get_points()), dtype=self.__class__.shader_dtype)
         self.shader_indices = None
         self.shader_wrapper = ShaderWrapper(
             vert_data=self.shader_data,
-            shader_folder=self.shader_folder,
+            shader_folder=self.__class__.shader_folder,
             texture_paths=self.texture_paths,
             depth_test=self.depth_test,
             render_primitive=self.render_primitive,
@@ -1404,8 +1402,9 @@ class OpenGLMobject:
             vert_indices=self.get_shader_vert_indices(),
             uniforms = self.get_shader_uniforms(),
             depth_test = self.depth_test,
+            texture_paths=self.texture_paths,
             render_primitive=self.render_primitive,
-            shader_folder=self.shader_folder,
+            shader_folder=self.__class__.shader_folder,
         )
         return self.shader_wrapper
 

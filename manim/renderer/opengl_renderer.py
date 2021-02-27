@@ -7,16 +7,164 @@ import itertools as it
 import time
 from .. import logger
 from ..constants import *
-from ..utils.space_ops import cross2d
-from ..utils.space_ops import earclip_triangulation
-from ..utils.space_ops import z_to_vector
+from ..utils.space_ops import (
+    cross2d,
+    earclip_triangulation,
+    z_to_vector,
+    quaternion_mult,
+    quaternion_from_angle_axis,
+    rotation_matrix_transpose_from_quaternion,
+    rotation_matrix_transpose,
+    angle_of_vector,
+)
 
 from ..mobject import opengl_geometry
+from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from PIL import Image
+from manim import config
 
 
-class OpenGLCamera:
-    use_z_index = True
-    frame_rate = 60
+class OpenGLCamera(OpenGLMobject):
+    def __init__(
+        self,
+        frame_shape=None,
+        center_point=None,
+        # Theta, phi, gamma
+        euler_angles=[0, 0, 0],
+        focal_distance=2,
+        light_source_position=[-10, 10, 10],
+        **kwargs
+    ):
+        self.use_z_index = True
+        self.frame_rate = 60
+
+        if frame_shape is None:
+            self.frame_shape = (config["frame_width"], config["frame_height"])
+        else:
+            self.frame_shape = frame_shape
+
+        if center_point is None:
+            self.center_point = ORIGIN
+        else:
+            self.center_point = center_point
+
+        if euler_angles is None:
+            self.euler_angles = [0, 0, 0]
+        else:
+            self.euler_angles = euler_angles
+
+        self.focal_distance = focal_distance
+
+        if light_source_position is None:
+            self.light_source_position = [-10, 10, 10]
+        else:
+            self.light_source_position = light_source_position
+        self.light_source = OpenGLPoint(self.light_source_position)
+
+        super().__init__(**kwargs)
+
+    def init_data(self):
+        super().init_data()
+        self.data["euler_angles"] = np.array(self.euler_angles, dtype=float)
+        self.refresh_rotation_matrix()
+
+    def init_points(self):
+        self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
+        self.set_width(self.frame_shape[0], stretch=True)
+        self.set_height(self.frame_shape[1], stretch=True)
+        self.move_to(self.center_point)
+
+    def to_default_state(self):
+        self.center()
+        self.set_height(config["frame_height"])
+        self.set_width(config["frame_width"])
+        self.set_euler_angles(0, 0, 0)
+        return self
+
+    def refresh_rotation_matrix(self):
+        # Rotate based on camera orientation
+        theta, phi, gamma = self.data["euler_angles"]
+        quat = quaternion_mult(
+            quaternion_from_angle_axis(theta, OUT, axis_normalized=True),
+            quaternion_from_angle_axis(phi, RIGHT, axis_normalized=True),
+            quaternion_from_angle_axis(gamma, OUT, axis_normalized=True),
+        )
+        self.inverse_camera_rotation_matrix = rotation_matrix_transpose_from_quaternion(
+            quat
+        )
+
+    def rotate(self, angle, axis=OUT, **kwargs):
+        curr_rot_T = self.inverse_camera_rotation_matrix
+        added_rot_T = rotation_matrix_transpose(angle, axis)
+        new_rot_T = np.dot(curr_rot_T, added_rot_T)
+        Fz = new_rot_T[2]
+        phi = np.arccos(Fz[2])
+        theta = angle_of_vector(Fz[:2]) + PI / 2
+        partial_rot_T = np.dot(
+            rotation_matrix_transpose(phi, RIGHT),
+            rotation_matrix_transpose(theta, OUT),
+        )
+        gamma = angle_of_vector(np.dot(partial_rot_T, new_rot_T.T)[:, 0])
+        self.set_euler_angles(theta, phi, gamma)
+        return self
+
+    def set_euler_angles(self, theta=None, phi=None, gamma=None):
+        if theta is not None:
+            self.data["euler_angles"][0] = theta
+        if phi is not None:
+            self.data["euler_angles"][1] = phi
+        if gamma is not None:
+            self.data["euler_angles"][2] = gamma
+        self.refresh_rotation_matrix()
+        return self
+
+    def set_theta(self, theta):
+        return self.set_euler_angles(theta=theta)
+
+    def set_phi(self, phi):
+        return self.set_euler_angles(phi=phi)
+
+    def set_gamma(self, gamma):
+        return self.set_euler_angles(gamma=gamma)
+
+    def increment_theta(self, dtheta):
+        self.data["euler_angles"][0] += dtheta
+        self.refresh_rotation_matrix()
+        return self
+
+    def increment_phi(self, dphi):
+        phi = self.data["euler_angles"][1]
+        new_phi = clip(phi + dphi, 0, PI)
+        self.data["euler_angles"][1] = new_phi
+        self.refresh_rotation_matrix()
+        return self
+
+    def increment_gamma(self, dgamma):
+        self.data["euler_angles"][2] += dgamma
+        self.refresh_rotation_matrix()
+        return self
+
+    def get_shape(self):
+        return (self.get_width(), self.get_height())
+
+    def get_center(self):
+        # Assumes first point is at the center
+        return self.get_points()[0]
+
+    def get_width(self):
+        points = self.get_points()
+        return points[2, 0] - points[1, 0]
+
+    def get_height(self):
+        points = self.get_points()
+        return points[4, 1] - points[3, 1]
+
+    def get_focal_distance(self):
+        return self.focal_distance * self.get_height()
+
+    def interpolate(self, *args, **kwargs):
+        super().interpolate(*args, **kwargs)
+        self.refresh_rotation_matrix()
 
 
 points_per_curve = 3
@@ -30,6 +178,9 @@ JOINT_TYPE_MAP = {
 
 class OpenGLRenderer:
     def __init__(self):
+        # Measured in pixel widths, used for vector graphics
+        self.anti_alias_width = 1.5
+
         self.num_plays = 0
         self.skip_animations = False
 
@@ -37,6 +188,7 @@ class OpenGLRenderer:
 
         self.camera = OpenGLCamera()
 
+        # Initialize context.
         self.context = self.window.ctx
         self.context.enable(moderngl.BLEND)
         self.context.blend_func = (
@@ -46,7 +198,12 @@ class OpenGLRenderer:
             moderngl.ONE,
         )
         self.frame_buffer_object = self.context.detect_framebuffer()
+
+        # Initialize shader map.
         self.id_to_shader_program = {}
+
+        # Initialize texture map.
+        self.path_to_texture_id = {}
 
     def update_depth_test(self, context, shader_wrapper):
         if shader_wrapper.depth_test:
@@ -54,8 +211,31 @@ class OpenGLRenderer:
         else:
             self.context.disable(moderngl.DEPTH_TEST)
 
-    def render_mobject(self, mobs):
-        # shader_wrapper_list = self.get_shader_wrapper_list(mob)
+    def get_pixel_shape(self):
+        return self.frame_buffer_object.viewport[2:4]
+        # return (self.pixel_width, self.pixel_height)
+
+    def refresh_perspective_uniforms(self, camera_frame):
+        pw, ph = self.get_pixel_shape()
+        fw, fh = camera_frame.get_shape()
+        # TODO, this should probably be a mobject uniform, with
+        # the camera taking care of the conversion factor
+        anti_alias_width = self.anti_alias_width / (ph / fh)
+        # Orient light
+        rotation = camera_frame.inverse_camera_rotation_matrix
+        light_pos = camera_frame.light_source.get_location()
+        light_pos = np.dot(rotation, light_pos)
+
+        self.perspective_uniforms = {
+            "frame_shape": camera_frame.get_shape(),
+            "anti_alias_width": anti_alias_width,
+            "camera_center": tuple(camera_frame.get_center()),
+            "camera_rotation": tuple(np.array(rotation).T.flatten()),
+            "light_source_position": tuple(light_pos),
+            "focal_distance": camera_frame.get_focal_distance(),
+        }
+
+    def render_mobjects(self, mobs):
         for mob in mobs:
             shader_wrapper_list = mob.get_shader_wrapper_list()
             render_group_list = map(
@@ -75,91 +255,6 @@ class OpenGLRenderer:
             for key in ["vbo", "ibo", "vao"]:
                 if render_group[key] is not None:
                     render_group[key].release()
-
-    def read_data_to_shader(self, mob, shader_data, shader_data_key, data_key):
-        # Check data alignment.
-        d_len = len(mob.data[data_key])
-        if d_len != 1 and d_len != len(shader_data):
-            mob.data[data_key] = resize_with_interpolation(
-                mob.data[data_key], len(shader_data)
-            )
-
-        shader_data[shader_data_key] = mob.data[data_key]
-
-    def get_stroke_shader_data(self, mob):
-        points = mob.data["points"]
-        stroke_data = np.zeros(len(points), dtype=VMobject.stroke_dtype)
-
-        stroke_data["point"] = points
-        stroke_data["prev_point"][:points_per_curve] = points[-points_per_curve:]
-        stroke_data["prev_point"][points_per_curve:] = points[:-points_per_curve]
-        stroke_data["next_point"][:-points_per_curve] = points[points_per_curve:]
-        stroke_data["next_point"][-points_per_curve:] = points[:points_per_curve]
-
-        self.read_data_to_shader(mob, stroke_data, "color", "stroke_rgba")
-        self.read_data_to_shader(mob, stroke_data, "stroke_width", "stroke_width")
-        self.read_data_to_shader(mob, stroke_data, "unit_normal", "unit_normal")
-
-        return stroke_data
-
-    def get_fill_shader_data(self, mob):
-        points = mob.data["points"]
-        fill_data = np.zeros(len(points), dtype=VMobject.fill_dtype)
-        fill_data["vert_index"][:, 0] = range(len(points))
-
-        self.read_data_to_shader(mob, fill_data, "point", "points")
-        self.read_data_to_shader(mob, fill_data, "color", "fill_rgba")
-        self.read_data_to_shader(mob, fill_data, "unit_normal", "unit_normal")
-
-        return fill_data
-
-    def get_stroke_shader_wrapper(self, mob):
-        return ShaderWrapper(
-            vert_data=self.get_stroke_shader_data(mob),
-            shader_folder="quadratic_bezier_stroke",
-            render_primitive=moderngl.TRIANGLES,
-            uniforms=self.get_stroke_uniforms(mob),
-            depth_test=mob.depth_test,
-        )
-
-    def get_fill_shader_wrapper(self, mob):
-        return ShaderWrapper(
-            vert_data=self.get_fill_shader_data(mob),
-            vert_indices=self.get_triangulation(mob),
-            shader_folder="quadratic_bezier_fill",
-            render_primitive=moderngl.TRIANGLES,
-            uniforms=self.get_fill_uniforms(mob),
-            depth_test=mob.depth_test,
-        )
-
-    def get_shader_wrapper_list(self, mob):
-        fill_shader_wrappers = []
-        stroke_shader_wrappers = []
-        back_stroke_shader_wrappers = []
-        if any(mob.data["fill_rgba"][:, 3]):
-            fill_shader_wrappers.append(self.get_fill_shader_wrapper(mob))
-        if any(mob.data["stroke_rgba"][:, 3]) and mob.data["stroke_width"][0]:
-            stroke_shader_wrapper = self.get_stroke_shader_wrapper(mob)
-            # TODO: Handle background_stroke
-            # if mob.draw_stroke_behind_fill:
-            #     back_stroke_shader_wrappers.append(ssw)
-            # else:
-            stroke_shader_wrappers.append(stroke_shader_wrapper)
-
-        # Combine data lists
-        wrapper_lists = [
-            back_stroke_shader_wrappers,
-            fill_shader_wrappers,
-            stroke_shader_wrappers,
-        ]
-
-        result = []
-        for wrapper_list in wrapper_lists:
-            if wrapper_list:
-                wrapper = wrapper_list[0]
-                wrapper.combine_with(*wrapper_list[1:])
-                result.append(wrapper)
-        return result
 
     def get_render_group(self, context, shader_wrapper, single_use=True):
         # Data buffers
@@ -206,95 +301,35 @@ class OpenGLRenderer:
             self.id_to_shader_program[sid] = (program, vert_format)
         return self.id_to_shader_program[sid]
 
-    def get_triangulation(self, mob, normal_vector=None):
-        # Figure out how to triangulate the interior to know
-        # how to send the points as to the vertex shader.
-        # First triangles come directly from the points
-        if normal_vector is None:
-            normal_vector = mob.get_unit_normal()
-
-        if not mob.needs_new_triangulation:
-            return mob.triangulation
-
-        points = mob.data["points"]
-
-        if len(points) <= 1:
-            mob.triangulation = np.zeros(0, dtype="i4")
-            mob.needs_new_triangulation = False
-            return mob.triangulation
-
-        if not np.isclose(normal_vector, OUT).all():
-            # Rotate points such that unit normal vector is OUT
-            points = np.dot(points, z_to_vector(normal_vector))
-        indices = np.arange(len(points), dtype=int)
-
-        b0s = points[0::3]
-        b1s = points[1::3]
-        b2s = points[2::3]
-        v01s = b1s - b0s
-        v12s = b2s - b1s
-
-        crosses = cross2d(v01s, v12s)
-        convexities = np.sign(crosses)
-
-        atol = mob.tolerance_for_point_equality
-        end_of_loop = np.zeros(len(b0s), dtype=bool)
-        end_of_loop[:-1] = (np.abs(b2s[:-1] - b0s[1:]) > atol).any(1)
-        end_of_loop[-1] = True
-
-        concave_parts = convexities < 0
-
-        # These are the vertices to which we'll apply a polygon triangulation
-        inner_vert_indices = np.hstack(
-            [
-                indices[0::3],
-                indices[1::3][concave_parts],
-                indices[2::3][end_of_loop],
-            ]
-        )
-        inner_vert_indices.sort()
-        rings = np.arange(1, len(inner_vert_indices) + 1)[inner_vert_indices % 3 == 2]
-
-        # Triangulate
-        inner_verts = points[inner_vert_indices]
-        inner_tri_indices = inner_vert_indices[
-            earclip_triangulation(inner_verts, rings)
-        ]
-
-        tri_indices = np.hstack([indices, inner_tri_indices])
-        mob.triangulation = tri_indices
-        mob.needs_new_triangulation = False
-        return tri_indices
-
-    def get_stroke_uniforms(self, mob):
-        return dict(
-            **self.get_fill_uniforms(mob),
-            joint_type=JOINT_TYPE_MAP[mob.joint_type],
-            flat_stroke=float(mob.flat_stroke),
-        )
-
-    def get_fill_uniforms(self, mob):
-        return dict(
-            is_fixed_in_frame=float(mob.is_fixed_in_frame),
-            gloss=mob.gloss,
-            shadow=mob.shadow,
-        )
+    def get_texture_id(self, path):
+        if path not in self.path_to_texture_id:
+            # A way to increase tid's sequentially
+            tid = len(self.path_to_texture_id)
+            im = Image.open(path)
+            texture = self.context.texture(
+                size=im.size,
+                components=len(im.getbands()),
+                data=im.tobytes(),
+            )
+            texture.use(location=tid)
+            self.path_to_texture_id[path] = tid
+        return self.path_to_texture_id[path]
 
     def set_shader_uniforms(self, shader, shader_wrapper):
-        perspective_uniforms = {
-            "frame_shape": (14.222222222222221, 8.0),
-            "anti_alias_width": 0.016666666666666666,
-            "camera_center": (0.0, 0.0, 0.0),
-            "camera_rotation": (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0),
-            "light_source_position": (-10.0, 10.0, 10.0),
-            "focal_distance": 16.0,
-        }
+        # perspective_uniforms = {
+        #     "frame_shape": (14.222222222222221, 8.0),
+        #     "anti_alias_width": 0.016666666666666666,
+        #     "camera_center": (0.0, 0.0, 0.0),
+        #     "camera_rotation": (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0),
+        #     "light_source_position": (-10.0, 10.0, 10.0),
+        #     "focal_distance": 16.0,
+        # }
 
-        # for name, path in shader_wrapper.texture_paths.items():
-        #     tid = self.get_texture_id(path)
-        #     shader[name].value = tid
+        for name, path in shader_wrapper.texture_paths.items():
+            tid = self.get_texture_id(path)
+            shader[name].value = tid
         for name, value in it.chain(
-            shader_wrapper.uniforms.items(), perspective_uniforms.items()
+            shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
         ):
             try:
                 shader[name].value = value
@@ -319,7 +354,8 @@ class OpenGLRenderer:
     def render(self, scene, frame_offset, moving_mobjects):
         def update_frame():
             self.frame_buffer_object.clear(*window_background_color)
-            self.render_mobject(scene.mobjects)
+            self.refresh_perspective_uniforms(scene.camera)
+            self.render_mobjects(scene.mobjects)
             self.window.swap_buffers()
             self.animation_elapsed_time = time.time() - self.animation_start_time
 

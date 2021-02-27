@@ -184,7 +184,7 @@ class OpenGLSurface(OpenGLMobject):
     # For shaders
     def get_shader_data(self):
         s_points, du_points, dv_points = self.get_surface_points_and_nudged_points()
-        shader_data = np.zeros(len(s_points), dtype=OpenGLSurface.shader_dtype)
+        shader_data = np.zeros(len(s_points), dtype=self.__class__.shader_dtype)
         if "points" not in self.locked_data_keys:
             shader_data["point"] = s_points
             shader_data["du_point"] = du_points
@@ -218,22 +218,20 @@ class OpenGLTexturedSurface(OpenGLSurface):
         ("im_coords", np.float32, (2,)),
         ("opacity", np.float32, (1,)),
     ]
+    shader_folder = "textured_surface"
 
     def __init__(
         self, uv_surface, image_file, dark_image_file=None, shader_folder=None, **kwargs
     ):
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
-        shader_folder = (
-            shader_folder if shader_folder is not None else "textured_surface"
-        )
         # Set texture information
         if dark_image_file is None:
             dark_image_file = image_file
             self.num_textures = 1
         else:
             self.num_textures = 2
-        self.texture_paths = {
+        texture_paths = {
             "LightTexture": get_full_raster_image_path(image_file),
             "DarkTexture": get_full_raster_image_path(dark_image_file),
         }
@@ -244,7 +242,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.v_range = uv_surface.v_range
         self.resolution = uv_surface.resolution
         self.gloss = self.uv_surface.gloss
-        super().__init__(**kwargs)
+        super().__init__(texture_paths=texture_paths, **kwargs)
 
     def init_data(self):
         super().init_data()

@@ -92,8 +92,13 @@ def quaternion_mult(*quats):
         )
 
 
-def quaternion_from_angle_axis(angle, axis):
-    return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
+def quaternion_from_angle_axis(angle, axis, axis_normalized=False):
+    if config["use_opengl_renderer"]:
+        if not axis_normalized:
+            axis = normalize(axis)
+        return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
+    else:
+        return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
 def angle_axis_from_quaternion(quaternion):
@@ -213,10 +218,13 @@ def angle_of_vector(vector):
     """
     Returns polar coordinate theta when vector is project on xy plane
     """
-    z = complex(*vector[:2])
-    if z == 0:
-        return 0
-    return np.angle(complex(*vector[:2]))
+    if config["use_opengl_renderer"]:
+        return np.angle(complex(*vector[:2]))
+    else:
+        z = complex(*vector[:2])
+        if z == 0:
+            return 0
+        return np.angle(complex(*vector[:2]))
 
 
 def angle_between_vectors(v1, v2):
