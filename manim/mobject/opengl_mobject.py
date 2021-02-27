@@ -97,8 +97,8 @@ class OpenGLMobject:
         self.init_colors()
         # self.init_shader_data()
 
-        # if self.depth_test:
-        #     self.apply_depth_test()
+        if self.depth_test:
+            self.apply_depth_test()
 
     def __str__(self):
         return self.__class__.__name__
@@ -1311,7 +1311,7 @@ class OpenGLMobject:
         def wrapper(self):
             for mob in self.get_family():
                 func(mob)
-                mob.refresh_shader_wrapper_id()
+                # mob.refresh_shader_wrapper_id()
             return self
 
         return wrapper
@@ -1392,9 +1392,9 @@ class OpenGLMobject:
             render_primitive=self.render_primitive,
         )
 
-    def refresh_shader_wrapper_id(self):
-        self.shader_wrapper.refresh_id()
-        return self
+    # def refresh_shader_wrapper_id(self):
+    #     self.shader_wrapper.refresh_id()
+    #     return self
 
     def get_shader_wrapper(self):
         self.shader_wrapper = ShaderWrapper(
