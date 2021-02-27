@@ -1079,13 +1079,13 @@ class MarkupText(SVGMobject):
                     'fl ligature <gradient from="RED" to="YELLOW">causing trouble</gradient> here'
                 )
                 text5 = MarkupText(
-                    'fl ligature <gradient from="RED" to="YELLOW" offset="1">defeated</color> with offset'
+                    'fl ligature <gradient from="RED" to="YELLOW" offset="1">defeated</gradient> with offset'
                 )
                 text6 = MarkupText(
-                    'fl ligature <gradient from="RED" to="YELLOW" offset="1">floating</color> inside'
+                    'fl ligature <gradient from="RED" to="YELLOW" offset="1">floating</gradient> inside'
                 )
                 text7 = MarkupText(
-                    'fl ligature <gradient from="RED" to="YELLOW" offset="1,1">floating</color> inside'
+                    'fl ligature <gradient from="RED" to="YELLOW" offset="1,1">floating</gradient> inside'
                 )
                 group = VGroup(text1, text2, text3, text4, text5, text6, text7).arrange(DOWN)
                 self.add(group)
