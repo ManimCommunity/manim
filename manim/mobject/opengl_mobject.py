@@ -95,7 +95,7 @@ class OpenGLMobject:
         # self.init_event_listners()
         self.init_points()
         self.init_colors()
-        # self.init_shader_data()
+        self.init_shader_data()
 
         if self.depth_test:
             self.apply_depth_test()
@@ -1439,9 +1439,9 @@ class OpenGLMobject:
     def get_resized_shader_data_array(self, length):
         # If possible, try to populate an existing array, rather
         # than recreating it each frame
-        if len(self.shader_data) != length:
-            self.shader_data = resize_array(self.shader_data, length)
-        return self.shader_data
+        points = self.data["points"]
+        shader_data = np.zeros(len(points), dtype=self.shader_dtype)
+        return shader_data
 
     def read_data_to_shader(self, shader_data, shader_data_key, data_key):
         if data_key in self.locked_data_keys:

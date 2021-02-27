@@ -17,6 +17,7 @@ from ..utils.space_ops import (
     rotation_matrix_transpose,
     angle_of_vector,
 )
+from ..utils.simple_functions import clip
 
 from ..mobject import opengl_geometry
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint

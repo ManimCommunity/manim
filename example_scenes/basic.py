@@ -2,10 +2,6 @@
 
 from manim import *
 
-if config["use_opengl_renderer"]:
-    from manim.opengl import *
-
-
 # To watch one of these scenes, run the following:
 # python --quality m manim example_scenes.py SquareToCircle -p
 #
@@ -16,26 +12,6 @@ if config["use_opengl_renderer"]:
 # Use -n <number> to skip ahead to the nth animation of a scene.
 # Use -r <number> to specify a resolution (for example, -r 1080
 # for a 1920x1080 video)
-
-
-class Testing(Scene):
-    def construct(self):
-        c = OpenGLLine(LEFT, RIGHT)
-        c2 = OpenGLLine(LEFT, RIGHT)
-        print(c.data["points"])
-        c2.shift(RIGHT)
-        self.play(Transform(c, c2))
-
-        # c = OpenGLDashedLine(LEFT, RIGHT)
-        # c2 = OpenGLDashedLine(LEFT, RIGHT)
-        # print(c.data["points"])
-        # c2.shift(RIGHT)
-        # self.play(Transform(c, c2))
-
-        # mob = ArcBetweenPoints(LEFT, RIGHT)
-        # mob2 = ArcBetweenPoints(LEFT, RIGHT)
-        # mob2.shift(RIGHT)
-        # self.play(Transform(mob, mob2), run_time=0.3)
 
 
 class OpeningManim(Scene):
