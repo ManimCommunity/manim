@@ -82,7 +82,7 @@ class Mobject(Container):
 
         .. seealso::
 
-            :meth:`~.Mobject.override_animate`
+            :func:`override_animate`
 
 
         Examples
@@ -1677,7 +1677,7 @@ def override_animate(method):
 
     .. seealso::
 
-        :prop:`~.Mobject.animate`
+        :attr:`Mobject.animate`
 
     .. note::
 
