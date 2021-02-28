@@ -479,8 +479,6 @@ class Line3D(Cylinder):
         The end position of the line.
     thickness : :class:`float`
         The thickness of the line.
-    color : :class:`str`
-        The color of the line.
     """
 
     def __init__(self, start=LEFT, end=RIGHT, thickness=0.02, color=None, **kwargs):
@@ -556,8 +554,6 @@ class Arrow3D(Line3D):
         The height of the conical tip.
     base_radius: :class:`float`
         The base radius of the conical tip.
-    color : :class:`str`
-        The color of the arrow.
     """
 
     def __init__(
@@ -607,17 +603,25 @@ class Torus(ParametricSurface):
 
     Parameters
     ---------
-    R : :class:`float`
+    major_radius : :class:`float`
         Distance from the center of the tube to the center of the torus.
-    r : :class:`float`
+    minor_radius : :class:`float`
         Radius of the tube.
     """
 
     def __init__(
-        self, R=3, r=1, u_min=0, u_max=TAU, v_min=0, v_max=TAU, resolution=24, **kwargs
+        self,
+        major_radius=3,
+        minor_radius=1,
+        u_min=0,
+        u_max=TAU,
+        v_min=0,
+        v_max=TAU,
+        resolution=24,
+        **kwargs
     ):
-        self.R = R
-        self.r = r
+        self.R = major_radius
+        self.r = minor_radius
         ParametricSurface.__init__(
             self,
             self.func,
