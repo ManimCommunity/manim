@@ -9,48 +9,35 @@ Examples
 
     class NumberLineExamples(Scene):
         def construct(self):
-            # the default number line (does not display labels, tips etc)
             txt1 = Text("Default Number Line", size=0.6).shift(3.5 * UP)
             num_line1 = NumberLine().next_to(txt1, direction=DOWN)
             self.add(txt1, num_line1)
 
-            # a number line with a tip
             txt2 = Text("Number Line with a tip", size=0.6).next_to(
-                num_line1,
-                direction=DOWN,
-                buff=2 * DEFAULT_MOBJECT_TO_MOBJECT_BUFFER)
+                num_line1, direction=DOWN, buff=2 * DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+            )
             num_line2 = NumberLine(include_tip=True).next_to(txt2, direction=DOWN)
             self.add(txt2, num_line2)
 
-            # a number line with the numbers/labels
             txt3 = Text("Number Line with labels", size=0.6).next_to(
-                num_line2,
-                direction=DOWN,
-                buff=2 * DEFAULT_MOBJECT_TO_MOBJECT_BUFFER)
-            num_line3 = NumberLine(include_numbers=True).next_to(txt3,
-                                                                direction=DOWN)
+                num_line2, direction=DOWN, buff=2 * DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+            )
+            num_line3 = NumberLine(include_numbers=True).next_to(txt3, direction=DOWN)
             self.add(txt3, num_line3)
 
-            # a number line with specific numbers to show
             txt4 = Text("Number Line with specific labels", size=0.6).next_to(
-                num_line3,
-                direction=DOWN,
-                buff=2 * DEFAULT_MOBJECT_TO_MOBJECT_BUFFER)
-            num_line4 = NumberLine(include_numbers=False).next_to(txt4,
-                                                                direction=DOWN)
+                num_line3, direction=DOWN, buff=2 * DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+            )
+            num_line4 = NumberLine(include_numbers=False).next_to(txt4, direction=DOWN)
             self.add(txt4, num_line4)
 
-            # get the numbers to be displayed
             x_numbers = num_line4.get_number_mobjects(1, 2, -2)
-            # may be color them if you wish
             x_numbers.set_color(ORANGE)
-            # and must add them to the screen
             self.add(x_numbers)
 
             txt5 = Text("Number Line with unit interval", size=0.6).next_to(
-                num_line4,
-                direction=DOWN,
-                buff=2 * DEFAULT_MOBJECT_TO_MOBJECT_BUFFER)
+                num_line4, direction=DOWN, buff=2 * DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+            )
             num_line5 = UnitInterval().next_to(txt5, direction=DOWN)
             self.add(txt5, num_line5)
 """
