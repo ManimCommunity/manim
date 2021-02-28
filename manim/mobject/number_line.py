@@ -98,7 +98,7 @@ class NumberLine(Line):
 
         Parameters
         ----------
-        color : :class:`Colors`, optional
+        color : :class:`~.Colors`, optional
             the color for the number line, by default LIGHT_GREY
         unit_size : :class:`int`, optional
             the unit size, by default 1
