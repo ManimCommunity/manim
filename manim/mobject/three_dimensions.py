@@ -270,7 +270,7 @@ class Cone(ParametricSurface):
         self._current_phi = 0
 
         if show_base:
-         self.base_circle = Circle(
+            self.base_circle = Circle(
                 point=height * IN,
                 radius=base_radius,
                 color=self.fill_color,
