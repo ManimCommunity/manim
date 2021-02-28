@@ -358,39 +358,39 @@ class Cylinder(ParametricSurface):
         The radius of the cylinder.
     height : :class:`float`
         The height of the cylinder.
-   direction : :class:`numpy.array`
-       The direction of the central axis of the cylinder.
-   v_min : :class:`float`
-       The height along the height axis (given by direction) to start on.
-   v_max : :class:`float`
-       The height along the height axis (given by direction) to end on.
-   show_ends : :class:`bool`
-       Whether to show the end caps or not.
-   """
+    direction : :class:`numpy.array`
+        The direction of the central axis of the cylinder.
+    v_min : :class:`float`
+        The height along the height axis (given by direction) to start on.
+    v_max : :class:`float`
+        The height along the height axis (given by direction) to end on.
+    show_ends : :class:`bool`
+        Whether to show the end caps or not.
+    """
 
-   def __init__(
-       self,
-       radius=1,
-       height=2,
-       direction=Z_AXIS,
-       v_min=0,
-       v_max=TAU,
-       show_ends=True,
-       resolution=24,
-       **kwargs
-   ):
-       self._height = height
-       self.radius = radius
-       ParametricSurface.__init__(
-           self,
-           self.func,
-           resolution=resolution,
-           u_min=-self._height / 2,
-           u_max=self._height / 2,
-           v_min=v_min,
-           v_max=v_max,
-           **kwargs,
-       )
+    def __init__(
+        self,
+        radius=1,
+        height=2,
+        direction=Z_AXIS,
+        v_min=0,
+        v_max=TAU,
+        show_ends=True,
+        resolution=24,
+        **kwargs
+    ):
+        self._height = height
+        self.radius = radius
+        ParametricSurface.__init__(
+            self,
+            self.func,
+            resolution=resolution,
+            u_min=-self._height / 2,
+            u_max=self._height / 2,
+            v_min=v_min,
+            v_max=v_max,
+            **kwargs,
+        )
         if show_ends:
             self.add_bases()
         self.set_direction(direction)
