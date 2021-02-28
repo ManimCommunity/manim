@@ -35,7 +35,7 @@ skeleton of a thing that *could* be displayed.  Therefore, you will rarely need
 to use plain instances of :class:`.Mobject`; instead you will most likely
 create instances of its derived classes.  One of these derived classes is
 :class:`.VMobject`.  The ``V`` stands for Vectorized Mobject.  In essence, a
-vmobject is a mobject that uses vector `vector graphics
+vmobject is a mobject that uses `vector graphics
 <https://en.wikipedia.org/wiki/Vector_graphics>`_ to be displayed.  Most of
 the time, you will be dealing with vmobjects, though we will continue to use
 the term "mobject" to refer to the class of shapes that can be displayed on
