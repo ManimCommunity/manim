@@ -1,4 +1,4 @@
-r"""Mobjects representing number lines.
+"""Mobjects representing number lines.
 
 
 Examples
@@ -57,7 +57,7 @@ from ..utils.bezier import interpolate
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
-from ..utils.color import LIGHT_GREY
+from ..utils.color import Colors, LIGHT_GREY
 
 
 class NumberLine(Line):
@@ -65,33 +65,33 @@ class NumberLine(Line):
 
     def __init__(
         self,
-        color=LIGHT_GREY,
-        unit_size=1,
-        width=None,
-        include_ticks=True,
-        tick_size=0.1,
-        tick_frequency=1,
+        color: Colors = LIGHT_GREY,
+        unit_size: int = 1,
+        width: float = None,
+        include_ticks: bool = True,
+        tick_size: float = 0.1,
+        tick_frequency: int = 1,
         # Defaults to value near x_min s.t. 0 is a tick
         # TODO, rename this
-        leftmost_tick=None,
+        leftmost_tick: float = None,
         # Change name
-        numbers_with_elongated_ticks=[0],
-        include_numbers=False,
-        numbers_to_show=None,
-        longer_tick_multiple=2,
-        number_at_center=0,
-        number_scale_val=0.75,
-        label_direction=DOWN,
-        line_to_number_buff=MED_SMALL_BUFF,
-        include_tip=False,
-        tip_width=0.25,
-        tip_height=0.25,
-        add_start=0,  # extend number line by this amount at its starting point
-        add_end=0,  # extend number line by this amount at its end point
-        decimal_number_config={"num_decimal_places": 0},
-        exclude_zero_from_default_numbers=False,
-        x_min=-config["frame_x_radius"],
-        x_max=config["frame_x_radius"],
+        numbers_with_elongated_ticks: typing.List[float] = [0],
+        include_numbers: bool = False,
+        numbers_to_show: typing.List[float] = None,
+        longer_tick_multiple: int = 2,
+        number_at_center: float = 0,
+        number_scale_val: float = 0.75,
+        label_direction: np.ndarray = DOWN,
+        line_to_number_buff: float = MED_SMALL_BUFF,
+        include_tip: bool = False,
+        tip_width: float = 0.25,
+        tip_height: float = 0.25,
+        add_start: float = 0,  # extend number line by this amount at its starting point
+        add_end: float = 0,  # extend number line by this amount at its end point
+        decimal_number_config: dict = {"num_decimal_places": 0},
+        exclude_zero_from_default_numbers: bool = False,
+        x_min: float = -config["frame_x_radius"],
+        x_max: float = config["frame_x_radius"],
         **kwargs
     ):
         """
@@ -210,7 +210,7 @@ class NumberLine(Line):
             self.big_tick_marks,
         )
 
-    def get_tick(self, x, size=None):
+    def get_tick(self, x: float, size: float = None) -> Line:
         """Returns the tick Mobject (:class:`~.Line`)
 
         Parameters
@@ -233,7 +233,7 @@ class NumberLine(Line):
         result.match_style(self)
         return result
 
-    def get_tick_marks(self):
+    def get_tick_marks(self) -> VGroup:
         """Returns the tick marks on the NumberLine
 
         Returns
@@ -246,7 +246,7 @@ class NumberLine(Line):
             *self.big_tick_marks,
         )
 
-    def get_tick_numbers(self):
+    def get_tick_numbers(self) -> np.ndarray:
         """Returns the numbers corresponding to the tick marks
 
         Returns
@@ -261,7 +261,7 @@ class NumberLine(Line):
             self.tick_frequency,
         )
 
-    def number_to_point(self, number):
+    def number_to_point(self, number: float) -> np.ndarray:
         """Converts the point on the screen to the number of NumberLine
 
         Parameters
@@ -281,7 +281,7 @@ class NumberLine(Line):
             alpha,
         )
 
-    def point_to_number(self, point):
+    def point_to_number(self, point: np.ndarray) -> float:
         """Converts the point on the screen to the number on NumberLine
 
         Parameters
@@ -304,15 +304,15 @@ class NumberLine(Line):
         proportion = fdiv(distance_from_start(point), distance_from_start(end_point))
         return interpolate(self.x_min, self.x_max, proportion)
 
-    def n2p(self, number):
+    def n2p(self, number: float) -> np.ndarray:
         """An alias for :meth:`~.NumberLine.number_to_point`"""
         return self.number_to_point(number)
 
-    def p2n(self, point):
+    def p2n(self, point: np.ndarray) -> float:
         """An alias for :meth:`~.NumberLine.point_to_number`"""
         return self.point_to_number(point)
 
-    def get_unit_size(self):
+    def get_unit_size(self) -> float:
         """Returns the unit size of the NumberLine
 
         Returns
@@ -322,7 +322,7 @@ class NumberLine(Line):
         """
         return self.get_length() / (self.x_max - self.x_min)
 
-    def get_unit_vector(self):
+    def get_unit_vector(self) -> np.ndarray:
         """Returns a unit vector
 
         Returns
@@ -332,7 +332,7 @@ class NumberLine(Line):
         """
         return super().get_unit_vector() * self.unit_size
 
-    def default_numbers_to_display(self):
+    def default_numbers_to_display(self) -> np.ndarray:
         """Returns the default numbers to display
 
         Returns
@@ -351,8 +351,13 @@ class NumberLine(Line):
         return numbers
 
     def get_number_mobject(
-        self, number, number_config=None, scale_val=None, direction=None, buff=None
-    ):
+        self,
+        number: float,
+        number_config: dict = None,
+        scale_val: float = None,
+        direction: np.ndarray = None,
+        buff: float = None,
+    ) -> DecimalNumber:
         """Returns the :class:`~.DecimalNumber` mobject for the passed number
 
         Parameters
@@ -387,7 +392,7 @@ class NumberLine(Line):
         num_mob.next_to(self.number_to_point(number), direction=direction, buff=buff)
         return num_mob
 
-    def get_number_mobjects(self, *numbers, **kwargs):
+    def get_number_mobjects(self, *numbers: float, **kwargs) -> VGroup:
         """Returns the labels (type :class:`~.DecimalNumber`) of the number line as a VGroup.
 
         Parameters
@@ -406,7 +411,7 @@ class NumberLine(Line):
             *[self.get_number_mobject(number, **kwargs) for number in numbers]
         )
 
-    def get_labels(self):
+    def get_labels(self) -> VGroup:
         """Returns the default labels (type :class:`~.DecimalNumber`) of the number line as a VGroup.
 
         Returns
@@ -416,7 +421,7 @@ class NumberLine(Line):
         """
         return self.get_number_mobjects()
 
-    def add_numbers(self, *numbers, **kwargs):
+    def add_numbers(self, *numbers: float, **kwargs) -> "NumberLine":
         """Add the numbers (labels) to the NumberLine
 
         Parameters
@@ -439,11 +444,11 @@ class UnitInterval(NumberLine):
 
     def __init__(
         self,
-        unit_size=6,
-        tick_frequency=0.1,
-        numbers_with_elongated_ticks=[0, 1],
-        number_at_center=0.5,
-        decimal_number_config={
+        unit_size: int = 6,
+        tick_frequency: float = 0.1,
+        numbers_with_elongated_ticks: typing.List[float] = [0, 1],
+        number_at_center: float = 0.5,
+        decimal_number_config: dict = {
             "num_decimal_places": 1,
         },
         **kwargs
