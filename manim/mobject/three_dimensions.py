@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 from ..constants import *
-from ..mobject.geometry import Square, Dot, Line
+from ..mobject.geometry import Square, Circle, Line
 from ..mobject.mobject import *
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
@@ -270,7 +270,7 @@ class Cone(ParametricSurface):
         self._current_phi = 0
 
         if show_base:
-            self.base_circle = Dot(
+         self.base_circle = Circle(
                 point=height * IN,
                 radius=base_radius,
                 color=self.fill_color,
@@ -334,7 +334,7 @@ class Cone(ParametricSurface):
         self._rotate_to_direction()
 
     def get_direction(self):
-        return self._current_theta, self._current_phi
+        return self.direction
 
 
 class Cylinder(ParametricSurface):
@@ -411,14 +411,14 @@ class Cylinder(ParametricSurface):
 
     def add_bases(self):
         """Adds the end caps of the cylinder."""
-        self.base_top = Dot(
+        self.base_top = Circle(
             point=self.u_max * IN,
             radius=self.radius,
             color=self.fill_color,
             fill_opacity=self.fill_opacity,
             shade_in_3d=True,
         )
-        self.base_bottom = Dot(
+        self.base_bottom = Circle(
             point=self.u_min * IN,
             radius=self.radius,
             color=self.fill_color,
@@ -482,7 +482,7 @@ class Line3D(Cylinder):
 
     def __init__(self, start=LEFT, end=RIGHT, width=0.02, color=None, **kwargs):
         self.set_start_and_end_attrs(start, end)
-        super().__init__(
+        Cylinder.__init__(self,
             height=get_norm(self.vect), radius=width, direction=self.direction, **kwargs
         )
         self.shift((self.start + self.end) / 2)
@@ -520,8 +520,6 @@ class Line3D(Cylinder):
     def get_end(self):
         return self.end
 
-    def get_direction(self):
-        return self.direction
 
 
 class Arrow3D(Line3D):
@@ -567,7 +565,7 @@ class Arrow3D(Line3D):
     ):
         self.set_start_and_end_attrs(start, end)
 
-        VGroup.__init__(self, **kwargs)
+        Line3D.__init__(self, **kwargs)
 
         self.length = get_norm(self.vect)
         self.line = Line3D(
