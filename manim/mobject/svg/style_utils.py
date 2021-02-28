@@ -13,7 +13,6 @@ from typing import Dict, List
 CASCADING_STYLING_ATTRIBUTES: List[str] = [
     "fill",
     "stroke",
-    "style",
     "fill-opacity",
     "stroke-opacity",
 ]
