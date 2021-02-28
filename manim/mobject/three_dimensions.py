@@ -331,6 +331,8 @@ class Cone(ParametricSurface):
         self._current_phi = phi
 
     def set_direction(self, direction):
+        # if get_norm(direction) is get_norm(self.direction):
+        #     pass
         self.direction = direction
         self._rotate_to_direction()
 
@@ -394,6 +396,8 @@ class Cylinder(ParametricSurface):
         )
         if show_ends:
             self.add_bases()
+        self._current_phi = 0
+        self._current_theta = 0
         self.set_direction(direction)
 
     def func(self, u, v):
@@ -448,12 +452,26 @@ class Cylinder(ParametricSurface):
         if x < 0:
             phi += PI
 
+        # undo old rotation (in reverse direction)
+        self.rotate(-self._current_phi, Z_AXIS, about_point=ORIGIN)
+        self.rotate(-self._current_theta, Y_AXIS, about_point=ORIGIN)
+
+        # do new rotation
         self.rotate(theta, Y_AXIS, about_point=ORIGIN)
         self.rotate(phi, Z_AXIS, about_point=ORIGIN)
 
+        # store new values
+        self._current_theta = theta
+        self._current_phi = phi
+
     def set_direction(self, direction):
+        # if get_norm(direction) is get_norm(self.direction):
+        #     pass
         self.direction = direction
         self._rotate_to_direction()
+
+    def get_direction(self):
+        return self.direction
 
 
 class Line3D(Cylinder):
@@ -566,22 +584,20 @@ class Arrow3D(Line3D):
         color=WHITE,
         **kwargs
     ):
-        # self.set_start_and_end_attrs(start, end) # gets start and end of arrow, but the line has to be readjusted to avoid protruding out of the cone
-
-        Line3D.__init__(self, start=start, end=end, thickness=thickness, **kwargs)
+        Line3D.__init__(self, start=start, end=end, **kwargs)
 
         self.length = get_norm(self.vect)
-        # self.line = Line3D(
-        #     start, end - height * self.direction, width=width
-        # )  # end adjusted so that thet tip does not extend out of the cone
-        self.set_start_and_end_attrs(self.start, self.end - height * self.direction)
-        # self.line.set_color(color)
+        self.set_start_and_end_attrs(
+            self.start,
+            self.end - height * self.direction,
+            thickness=thickness,
+            **kwargs,
+        )
 
         self.cone = Cone(
             direction=self.direction, base_radius=base_radius, height=height, **kwargs
         )
         self.cone.shift(end)
-        # self.cone.set_color(color)
         self.add(self.cone)
         self.set_color(color)
 
