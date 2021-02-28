@@ -149,7 +149,7 @@ class Sphere(ParametricSurface):
             u_max=u_max,
             v_min=v_min,
             v_max=v_max,
-            **kwargs
+            **kwargs,
         )
         self.radius = radius
         self.scale(self.radius)
@@ -174,7 +174,7 @@ class Cube(VGroup):
             fill_color=fill_color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
-            **kwargs
+            **kwargs,
         )
 
     def generate_points(self):
@@ -263,7 +263,7 @@ class Cone(ParametricSurface):
             u_min=u_min,
             u_max=np.sqrt(base_radius ** 2 + height ** 2),
             checkerboard_colors=checkerboard_colors,
-            **kwargs
+            **kwargs,
         )
         # used for rotations
         self._current_theta = 0
@@ -271,11 +271,12 @@ class Cone(ParametricSurface):
 
         if show_base:
             self.base_circle = Circle(
-                point=height * IN,
                 radius=base_radius,
                 color=self.fill_color,
                 fill_opacity=self.fill_opacity,
+                stroke_width=0,
             )
+            self.base_circle.shift(height * IN)
             self.add(self.base_circle)
 
         self._rotate_to_direction()
@@ -412,19 +413,21 @@ class Cylinder(ParametricSurface):
     def add_bases(self):
         """Adds the end caps of the cylinder."""
         self.base_top = Circle(
-            point=self.u_max * IN,
             radius=self.radius,
             color=self.fill_color,
             fill_opacity=self.fill_opacity,
             shade_in_3d=True,
+            stroke_width=0,
         )
+        self.base_top.shift(self.u_max * IN)
         self.base_bottom = Circle(
-            point=self.u_min * IN,
             radius=self.radius,
             color=self.fill_color,
             fill_opacity=self.fill_opacity,
             shade_in_3d=True,
+            stroke_width=0,
         )
+        self.base_bottom.shift(self.u_min * IN)
         self.add(self.base_top, self.base_bottom)
 
     def _rotate_to_direction(self):
@@ -474,22 +477,19 @@ class Line3D(Cylinder):
         The start position of the line.
     end : :class:`numpy.array`
         The end position of the line.
-    width : :class:`float`
+    thickness : :class:`float`
         The thickness of the line.
     color : :class:`str`
         The color of the line.
     """
 
-    def __init__(self, start=LEFT, end=RIGHT, width=0.02, color=None, **kwargs):
-        self.set_start_and_end_attrs(start, end)
-        Cylinder.__init__(self,
-            height=get_norm(self.vect), radius=width, direction=self.direction, **kwargs
-        )
-        self.shift((self.start + self.end) / 2)
+    def __init__(self, start=LEFT, end=RIGHT, thickness=0.02, color=None, **kwargs):
+        self.thickness = thickness
+        self.set_start_and_end_attrs(start, end, **kwargs)
         if color is not None:
             self.set_color(color)
 
-    def set_start_and_end_attrs(self, start, end):
+    def set_start_and_end_attrs(self, start, end, **kwargs):
         """Sets the start and end points of the line.
 
         If either ``start`` or ``end`` are :class:`~.Mobject`s, this gives their centers.
@@ -504,6 +504,14 @@ class Line3D(Cylinder):
         # start and end, if they're mobjects
         self.start = self.pointify(start, self.direction)
         self.end = self.pointify(end, -self.direction)
+        Cylinder.__init__(
+            self,
+            height=get_norm(self.vect),
+            radius=self.thickness,
+            direction=self.direction,
+            **kwargs,
+        )
+        self.shift((self.start + self.end) / 2)
 
     def pointify(self, mob_or_point, direction=None):
         if isinstance(mob_or_point, Mobject):
@@ -519,7 +527,6 @@ class Line3D(Cylinder):
 
     def get_end(self):
         return self.end
-
 
 
 class Arrow3D(Line3D):
@@ -543,7 +550,7 @@ class Arrow3D(Line3D):
         The start position of the arrow.
     end : :class:`numpy.array`
         The end position of the arrow.
-    width : :class:`float`
+    thickness : :class:`float`
         The thickness of the arrow.
     height : :class:`float`
         The height of the conical tip.
@@ -557,28 +564,30 @@ class Arrow3D(Line3D):
         self,
         start=LEFT,
         end=RIGHT,
-        width=0.02,
+        thickness=0.02,
         height=0.5,
         base_radius=0.25,
         color=WHITE,
         **kwargs
     ):
-        self.set_start_and_end_attrs(start, end)
+        # self.set_start_and_end_attrs(start, end) # gets start and end of arrow, but the line has to be readjusted to avoid protruding out of the cone
 
-        Line3D.__init__(self, **kwargs)
+        Line3D.__init__(self, start=start, end=end, thickness=thickness, **kwargs)
 
         self.length = get_norm(self.vect)
-        self.line = Line3D(
-            start, end - height * self.direction, width=width
-        )  # end adjusted so that thet tip does not extend out of the cone
-        self.line.set_color(color)
+        # self.line = Line3D(
+        #     start, end - height * self.direction, width=width
+        # )  # end adjusted so that thet tip does not extend out of the cone
+        self.set_start_and_end_attrs(self.start, self.end - height * self.direction)
+        # self.line.set_color(color)
 
         self.cone = Cone(
             direction=self.direction, base_radius=base_radius, height=height, **kwargs
         )
         self.cone.shift(end)
-        self.cone.set_color(color)
-        self.add(self.line, self.cone)
+        # self.cone.set_color(color)
+        self.add(self.cone)
+        self.set_color(color)
 
 
 class Torus(ParametricSurface):
@@ -617,7 +626,7 @@ class Torus(ParametricSurface):
             v_min=v_min,
             v_max=v_max,
             resolution=resolution,
-            **kwargs
+            **kwargs,
         )
 
     def func(self, u, v):
