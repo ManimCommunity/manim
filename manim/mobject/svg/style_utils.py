@@ -172,7 +172,12 @@ def parse_style(svg_style: Dict[str, str]) -> Dict:
 
     if "stroke" in svg_style:
         if svg_style["stroke"] == "none":
-            manim_style["stroke_opacity"] = 0
+            # In order to not break animations.creation.Write,
+            # we interpret no stroke as stroke-width of zero and
+            # color the same as the fill color, if it exists.
+            manim_style["stroke_width"] = 0
+            if "fill_color" in manim_style:
+                manim_style["stroke_color"] = manim_style["fill_color"]
         else:
             manim_style["stroke_color"] = parse_color_string(svg_style["stroke"])
 

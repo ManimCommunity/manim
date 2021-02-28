@@ -393,20 +393,21 @@ class SVGMobject(VMobject):
 
         corner_radius = float(corner_radius)
 
+        parsed_style = parse_style(style)
+        parsed_style["stroke_width"] = stroke_width
+
         if corner_radius == 0:
             mob = Rectangle(
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
-                stroke_width=stroke_width,
-                **parse_style(style),
+                **parsed_style,
             )
         else:
             mob = RoundedRectangle(
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
-                stroke_width=stroke_width,
                 corner_radius=corner_radius,
-                **parse_style(style),
+                **parsed_style,
             )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
