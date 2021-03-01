@@ -77,7 +77,7 @@ class SVGMobject(VMobject):
         fill_opacity=1.0,
         **kwargs,
     ):
-        self.def_id_to_mobject = {}
+        self.def_map = {}
         self.file_name = file_name or self.file_name
         self.ensure_valid_file()
         self.should_center = should_center
@@ -125,17 +125,7 @@ class SVGMobject(VMobject):
         """
         doc = minidom_parse(self.file_path)
         for svg in doc.getElementsByTagName("svg"):
-            mobjects = self.get_mobjects_from(
-                svg,
-                # these are the default styling specifications for SVG images,
-                # according to https://www.w3.org/TR/SVG/painting.html, ctrl-F for "initial"
-                {
-                    "fill": "black",
-                    "fill-opacity": "1",
-                    "stroke": "none",
-                    "stroke-opacity": "1",
-                },
-            )
+            mobjects = self.get_mobjects_from(svg, {})
             if self.unpack_groups:
                 self.add(*mobjects)
             else:
@@ -182,7 +172,9 @@ class SVGMobject(VMobject):
         elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
                 *[
-                    self.get_mobjects_from(child, style, within_defs or is_defs)
+                    self.get_mobjects_from(
+                        child, style, within_defs=within_defs or is_defs
+                    )
                     for child in element.childNodes
                 ]
             )
@@ -191,8 +183,8 @@ class SVGMobject(VMobject):
             if temp != "":
                 result.append(self.path_string_to_mobject(temp, style))
         elif element.tagName == "use":
-            # note, style is not passed down to "use" elements
-            result += self.use_to_mobjects(element)
+            # note, style is calcuated in a different way for `use` elements.
+            result += self.use_to_mobjects(element, style)
         elif element.tagName == "rect":
             result.append(self.rect_to_mobject(element, style))
         elif element.tagName == "circle":
@@ -210,7 +202,9 @@ class SVGMobject(VMobject):
             result = [VGroup(*result)]
 
         if within_defs and element.hasAttribute("id"):
-            self.def_id_to_mobject[element.getAttribute("id")] = result
+            # it seems wasteful to throw away the actual element,
+            # but I'd like the parsing to be as similar as possible
+            self.def_map[element.getAttribute("id")] = (style, element)
         if is_defs:
             # defs shouldn't be part of the result tree, only the id dictionary.
             return []
@@ -235,7 +229,9 @@ class SVGMobject(VMobject):
         """
         return SVGPathMobject(path_string, **parse_style(style))
 
-    def use_to_mobjects(self, use_element: MinidomElement) -> List[VMobject]:
+    def use_to_mobjects(
+        self, use_element: MinidomElement, local_style: Dict
+    ) -> List[VMobject]:
         """Converts a SVG <use> element to a collection of VMobjects.
 
         Parameters
@@ -244,21 +240,33 @@ class SVGMobject(VMobject):
             An SVG <use> element which represents nodes that should be
             duplicated elsewhere.
 
+        local_style : :class:`Dict`
+            The styling using SVG property names at the point the element is `<use>`d.
+            Not all values are applied; styles defined when the element is specified in
+            the `<def>` tag cannot be overriden here.
+
         Returns
         -------
         List[VMobject]
-            A collection of VMobjects that are copies of the defined objects
+            A collection of VMobjects that are a copy of the defined object
         """
 
         # Remove initial "#" character
         ref = use_element.getAttribute("xlink:href")[1:]
 
         try:
-            return [i.copy() for i in self.def_id_to_mobject[ref]]
+            def_style, def_element = self.def_map[ref]
         except KeyError:
             warning_text = f"{self.file_name} contains a reference to id #{ref}, which is not recognized"
             warnings.warn(warning_text)
             return []
+
+        # In short, the def-ed style overrides the new style,
+        # in cases when the def-ed styled is defined.
+        style = local_style.copy()
+        style.update(def_style)
+
+        return self.get_mobjects_from(def_element, style)
 
     def attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.
@@ -385,20 +393,21 @@ class SVGMobject(VMobject):
 
         corner_radius = float(corner_radius)
 
+        parsed_style = parse_style(style)
+        parsed_style["stroke_width"] = stroke_width
+
         if corner_radius == 0:
             mob = Rectangle(
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
-                stroke_width=stroke_width,
-                **parse_style(style),
+                **parsed_style,
             )
         else:
             mob = RoundedRectangle(
                 width=self.attribute_to_float(rect_element.getAttribute("width")),
                 height=self.attribute_to_float(rect_element.getAttribute("height")),
-                stroke_width=stroke_width,
                 corner_radius=corner_radius,
-                **parse_style(style),
+                **parsed_style,
             )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
