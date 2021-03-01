@@ -23,6 +23,7 @@ from ..mobject import opengl_geometry
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from PIL import Image
 from manim import config
+from ..scene.scene_file_writer import SceneFileWriter
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -34,7 +35,7 @@ class OpenGLCamera(OpenGLMobject):
         euler_angles=[0, 0, 0],
         focal_distance=2,
         light_source_position=[-10, 10, 10],
-        **kwargs
+        **kwargs,
     ):
         self.use_z_index = True
         self.frame_rate = 60
@@ -185,7 +186,7 @@ class OpenGLRenderer:
         self.num_plays = 0
         self.skip_animations = False
 
-        self.window = Window(size=(854, 480))
+        self.window = Window(size=(1280, 720))
 
         self.camera = OpenGLCamera()
 
@@ -214,7 +215,6 @@ class OpenGLRenderer:
 
     def get_pixel_shape(self):
         return self.frame_buffer_object.viewport[2:4]
-        # return (self.pixel_width, self.pixel_height)
 
     def refresh_perspective_uniforms(self, camera_frame):
         pw, ph = self.get_pixel_shape()
@@ -338,7 +338,10 @@ class OpenGLRenderer:
                 pass
 
     def init_scene(self, scene):
-        self.file_writer = None
+        self.file_writer = SceneFileWriter(
+            self,
+            scene.__class__.__name__,
+        )
 
     def play(self, scene, *args, **kwargs):
         if len(args) == 0:
@@ -349,7 +352,14 @@ class OpenGLRenderer:
         if scene.compile_animation_data(*args, **kwargs):
             self.animation_start_time = time.time()
             self.animation_elapsed_time = 0
+
+            temp_name = f"media/temp_{self.num_plays}.mp4"
+            self.file_writer.begin_animation(
+                not self.skip_animations, file_path=temp_name
+            )
             scene.play_internal()
+            self.file_writer.end_animation(not self.skip_animations)
+
         self.num_plays += 1
 
     def render(self, scene, frame_offset, moving_mobjects):
@@ -362,6 +372,9 @@ class OpenGLRenderer:
 
         window_background_color = (0.2, 0.2, 0.2, 1)
         update_frame()
+
+        self.file_writer.write_frame(self)
+
         while self.animation_elapsed_time < frame_offset:
             update_frame()
 
@@ -370,3 +383,19 @@ class OpenGLRenderer:
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
+
+    def get_raw_frame_buffer_object_data(self, dtype="f1"):
+        # Copy blocks from the fbo_msaa to the drawn fbo using Blit
+        # pw, ph = self.get_pixel_shape()
+        # gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self.fbo_msaa.glo)
+        # gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, self.fbo.glo)
+        # gl.glBlitFramebuffer(
+        #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
+        # )
+        num_channels = 4
+        ret = self.frame_buffer_object.read(
+            viewport=self.frame_buffer_object.viewport,
+            components=num_channels,
+            dtype=dtype,
+        )
+        return ret

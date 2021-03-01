@@ -238,7 +238,7 @@ class SceneFileWriter(object):
         self.add_audio_segment(new_segment, time, **kwargs)
 
     # Writers
-    def begin_animation(self, allow_write=False):
+    def begin_animation(self, allow_write=False, file_path=None):
         """
         Used internally by manim to stream the animation to FFMPEG for
         displaying or writing to a file.
@@ -249,7 +249,7 @@ class SceneFileWriter(object):
             Whether or not to write to a video file.
         """
         if config["write_to_movie"] and allow_write:
-            self.open_movie_pipe()
+            self.open_movie_pipe(file_path=file_path)
 
     def end_animation(self, allow_write=False):
         """
@@ -264,7 +264,7 @@ class SceneFileWriter(object):
         if config["write_to_movie"] and allow_write:
             self.close_movie_pipe()
 
-    def write_frame(self, frame):
+    def write_frame(self, frame_or_renderer):
         """
         Used internally by Manim to write a frame to
         the FFMPEG input buffer.
@@ -274,12 +274,19 @@ class SceneFileWriter(object):
         frame : np.array
             Pixel array of the frame.
         """
-        if config["write_to_movie"]:
-            self.writing_process.stdin.write(frame.tostring())
-        if config["save_pngs"]:
-            path, extension = os.path.splitext(self.image_file_path)
-            Image.fromarray(frame).save(f"{path}{self.frame_count}{extension}")
-            self.frame_count += 1
+        if config["use_opengl_renderer"]:
+            renderer = frame_or_renderer
+            self.writing_process.stdin.write(
+                renderer.get_raw_frame_buffer_object_data()
+            )
+        else:
+            frame = frame_or_renderer
+            if config["write_to_movie"]:
+                self.writing_process.stdin.write(frame.tostring())
+            if config["save_pngs"]:
+                path, extension = os.path.splitext(self.image_file_path)
+                Image.fromarray(frame).save(f"{path}{self.frame_count}{extension}")
+                self.frame_count += 1
 
     def save_final_image(self, image):
         """
@@ -333,18 +340,22 @@ class SceneFileWriter(object):
             else:
                 self.clean_cache()
 
-    def open_movie_pipe(self):
+    def open_movie_pipe(self, file_path=None):
         """
         Used internally by Manim to initialise
         FFMPEG and begin writing to FFMPEG's input
         buffer.
         """
-        file_path = self.partial_movie_files[self.renderer.num_plays]
+        if file_path is None:
+            file_path = self.partial_movie_files[self.renderer.num_plays]
         self.partial_movie_file_path = file_path
 
         fps = config["frame_rate"]
-        height = config["pixel_height"]
-        width = config["pixel_width"]
+        if config["use_opengl_renderer"]:
+            width, height = self.renderer.get_pixel_shape()
+        else:
+            height = config["pixel_height"]
+            width = config["pixel_width"]
 
         command = [
             FFMPEG_BIN,
