@@ -124,7 +124,7 @@ class NumberLine(Line):
             the number at the center, by default 0
         number_scale_val : :class:`float`, optional
             the scale factor for the numbers, by default 0.75
-        label_direction : :class:`np.ndarray`, optional
+        label_direction : :class:`numpy.ndarray`, optional
             the direction of the label, by default DOWN
         line_to_number_buff : :class:`float`, optional
             the buffer between the line and numbers, by default MED_SMALL_BUFF
@@ -251,7 +251,7 @@ class NumberLine(Line):
 
         Returns
         -------
-        :class:`np.array`
+        :class:`numpy.array`
             the numpy array containing the numbers
         """
         u = -1 if self.include_tip and self.add_end == 0 else 1
@@ -271,7 +271,7 @@ class NumberLine(Line):
 
         Returns
         -------
-        :class:`np.ndarray`
+        :class:`numpy.ndarray`
             the point on the screen
         """
         alpha = float(number - self.x_min) / (self.x_max - self.x_min)
@@ -286,7 +286,7 @@ class NumberLine(Line):
 
         Parameters
         ----------
-        point : :class:`np.ndarray`
+        point : :class:`numpy.ndarray`
             the point to convert
 
         Returns
@@ -327,7 +327,7 @@ class NumberLine(Line):
 
         Returns
         -------
-        :class:`np.ndarray`
+        :class:`numpy.ndarray`
             the unit vector scaled with the unit size of the NumberLine
         """
         return super().get_unit_vector() * self.unit_size
@@ -337,7 +337,7 @@ class NumberLine(Line):
 
         Returns
         -------
-        :class:`np.array`
+        :class:`numpy.array`
             the default numbers as numpy array
         """
         if self.numbers_to_show is not None:
@@ -368,7 +368,7 @@ class NumberLine(Line):
             the config to be passed to :class:`~.DecimalNumber`, by default None
         scale_val : :class:`float`, optional
             the scale factor for :class:`~.DecimalNumber` mobject, by default None
-        direction : :class:`np.ndarray, optional
+        direction : :class:`numpy.ndarray, optional
             the direction for the :class:`~.DecimalNumber` mobject, by default None
         buff : :class:`float`, optional
             the buffer between the number and the number line, by default None
