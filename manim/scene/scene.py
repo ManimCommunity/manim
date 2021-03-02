@@ -741,7 +741,7 @@ class Scene(Container):
         if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
-            step = 1 / self.renderer.camera.frame_rate
+            step = 1 / config["frame_rate"]
             times = np.arange(0, run_time, step)
         time_progression = tqdm(
             times,

@@ -186,7 +186,7 @@ class OpenGLRenderer:
         self.num_plays = 0
         self.skip_animations = False
 
-        self.window = Window(size=(1280, 720))
+        self.window = Window()
 
         self.camera = OpenGLCamera()
 
@@ -206,6 +206,8 @@ class OpenGLRenderer:
 
         # Initialize texture map.
         self.path_to_texture_id = {}
+
+        self.partial_movie_files = []
 
     def update_depth_test(self, context, shader_wrapper):
         if shader_wrapper.depth_test:
@@ -354,6 +356,7 @@ class OpenGLRenderer:
             self.animation_elapsed_time = 0
 
             temp_name = f"media/temp_{self.num_plays}.mp4"
+            self.partial_movie_files.append(temp_name)
             self.file_writer.begin_animation(
                 not self.skip_animations, file_path=temp_name
             )
@@ -379,7 +382,7 @@ class OpenGLRenderer:
             update_frame()
 
     def scene_finished(self, scene):
-        pass
+        self.file_writer.finish(self.partial_movie_files)
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass

@@ -323,7 +323,7 @@ class SceneFileWriter(object):
             if time_diff < frame_duration:
                 sleep(frame_duration - time_diff)
 
-    def finish(self):
+    def finish(self, partial_movie_files=None):
         """
         Finishes writing to the FFMPEG buffer.
         Combines the partial movie files into the
@@ -334,7 +334,7 @@ class SceneFileWriter(object):
         if config["write_to_movie"]:
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
-            self.combine_movie_files()
+            self.combine_movie_files(partial_movie_files=partial_movie_files)
             if config["flush_cache"]:
                 self.flush_cache_directory()
             else:
@@ -376,6 +376,8 @@ class SceneFileWriter(object):
             "-metadata",
             f"comment=Rendered with Manim Community v{__version__}",
         ]
+        if config["use_opengl_renderer"]:
+            command += ["-vf", "vflip"]
         if config["transparent"]:
             command += ["-vcodec", "qtrle"]
         else:
@@ -416,7 +418,7 @@ class SceneFileWriter(object):
         )
         return os.path.exists(path)
 
-    def combine_movie_files(self):
+    def combine_movie_files(self, partial_movie_files=None):
         """
         Used internally by Manim to combine the separate
         partial movie files that make up a Scene into a single
@@ -428,7 +430,10 @@ class SceneFileWriter(object):
         # which effectively has cuts at all the places you might want.  But for
         # viewing the scene as a whole, one of course wants to see it as a
         # single piece.
-        partial_movie_files = [el for el in self.partial_movie_files if el is not None]
+        if not config["use_opengl_renderer"]:
+            partial_movie_files = [
+                el for el in self.partial_movie_files if el is not None
+            ]
         # NOTE : Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
         # tests) use scene initialization, and this error would be raised as

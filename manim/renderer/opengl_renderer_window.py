@@ -11,8 +11,10 @@ class Window(PygletWindow):
     vsync = True
     cursor = True
 
-    def __init__(self, size=(config["pixel_width"], config["pixel_height"]), **kwargs):
-        super().__init__()
+    def __init__(self, size=None, **kwargs):
+        if size is None:
+            size = (config["pixel_width"], config["pixel_height"])
+        super().__init__(size=size)
 
         self.pressed_keys = set()
 
@@ -23,3 +25,5 @@ class Window(PygletWindow):
         self.timer = Timer()
         self.config = mglw.WindowConfig(ctx=self.ctx, wnd=self, timer=self.timer)
         self.timer.start()
+
+        self.swap_buffers()
