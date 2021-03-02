@@ -382,7 +382,9 @@ class OpenGLRenderer:
 
         window_background_color = (0.2, 0.2, 0.2, 1)
         update_frame()
-        self.file_writer.write_frame(self)
+
+        if config["write_to_movie"]:
+            self.file_writer.write_frame(self)
 
         if self.window is not None:
             self.window.swap_buffers()

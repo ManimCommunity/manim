@@ -707,6 +707,11 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
+        if self.use_opengl_renderer:
+            if getattr(args, "write_to_movie") is None:
+                # --write_to_movie was not passed on the command line, so don't generate video.
+                self["write_to_movie"] = False
+
         return self
 
     def digest_file(self, filename: str) -> "ManimConfig":
