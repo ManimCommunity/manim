@@ -186,12 +186,18 @@ class OpenGLRenderer:
         self.num_plays = 0
         self.skip_animations = False
 
-        self.window = Window()
-
         self.camera = OpenGLCamera()
 
-        # Initialize context.
-        self.context = self.window.ctx
+        if config["preview"]:
+            self.window = Window()
+            self.context = self.window.ctx
+            self.frame_buffer_object = self.context.detect_framebuffer()
+        else:
+            self.window = None
+            self.context = moderngl.create_standalone_context()
+            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
+            self.frame_buffer_object.use()
+
         self.context.enable(moderngl.BLEND)
         self.context.blend_func = (
             moderngl.SRC_ALPHA,
@@ -199,7 +205,6 @@ class OpenGLRenderer:
             moderngl.ONE,
             moderngl.ONE,
         )
-        self.frame_buffer_object = self.context.detect_framebuffer()
 
         # Initialize shader map.
         self.id_to_shader_program = {}
@@ -242,7 +247,10 @@ class OpenGLRenderer:
         for mob in mobs:
             shader_wrapper_list = mob.get_shader_wrapper_list()
             render_group_list = map(
-                lambda x: self.get_render_group(self.context, x), shader_wrapper_list
+                lambda shader_wrapper: self.get_render_group(
+                    self.context, shader_wrapper
+                ),
+                shader_wrapper_list,
             )
             for render_group in render_group_list:
                 self.render_render_group(render_group)
@@ -370,22 +378,39 @@ class OpenGLRenderer:
             self.frame_buffer_object.clear(*window_background_color)
             self.refresh_perspective_uniforms(scene.camera)
             self.render_mobjects(scene.mobjects)
-            self.window.swap_buffers()
             self.animation_elapsed_time = time.time() - self.animation_start_time
 
         window_background_color = (0.2, 0.2, 0.2, 1)
         update_frame()
-
         self.file_writer.write_frame(self)
 
-        while self.animation_elapsed_time < frame_offset:
-            update_frame()
+        if self.window is not None:
+            self.window.swap_buffers()
+            while self.animation_elapsed_time < frame_offset:
+                # TODO: Just sleep?
+                update_frame()
+                self.window.swap_buffers()
 
     def scene_finished(self, scene):
         self.file_writer.finish(self.partial_movie_files)
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
+
+    def get_frame_buffer_object(self, context, samples=0):
+        pixel_width = config["pixel_width"]
+        pixel_height = config["pixel_height"]
+        num_channels = 4
+        return context.framebuffer(
+            color_attachments=context.texture(
+                (pixel_width, pixel_height),
+                components=num_channels,
+                samples=samples,
+            ),
+            depth_attachment=context.depth_renderbuffer(
+                (pixel_width, pixel_height), samples=samples
+            ),
+        )
 
     def get_raw_frame_buffer_object_data(self, dtype="f1"):
         # Copy blocks from the fbo_msaa to the drawn fbo using Blit
