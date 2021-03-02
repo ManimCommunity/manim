@@ -1147,7 +1147,7 @@ class OpenGLMobject:
         return self
 
     def get_group_class(self):
-        return Group
+        return OpenGLGroup
 
     # Alignment
 
