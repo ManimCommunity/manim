@@ -21,56 +21,56 @@ Changes for the upcoming release are tracked `in our GitHub wiki <https://github
 v0.4.0
 ******
 
-:Date: March 2, 2021
+:Date: March 3, 2021
 
 The changes since Manim Community release v0.3.0 are listed below.
 
 New Features
 ============
 
-- :pr:`1026`: Add 3D Mobjects - Cone, Cylinder, Line3D, Arrow3D and Torus.
-- :pr:`1047`: add api docs and examples for Matrix mobjects
-- :pr:`1044`: register_font is available for macOS
-- :pr:`995`: Add generic set method and compatibility layer between properties and get_*/set_* methods
+- :pr:`1026`: Add 3D Mobjects: :class:`~.Cone`, :class:`~.Cylinder`, :class:`~.Line3D`, :class:`~.Arrow3D` and :class:`~.Torus`
+- :pr:`1047`: Add documentation and examples for :class:`~.Matrix`
+- :pr:`1044`: ``register_font`` is available for macOS
+- :pr:`995`: Add generic :func:`~.Mobject.set` method and compatibility layer between properties and ``get_*``/``set_*`` methods
 
 Bugfixes and Enhancements
 =========================
 
-- :pr:`1053`: fix #1045 changes in line 118
-- :pr:`1067`: rtd: add manimpango wheels
-- :pr:`1058`: Fix #1039 (<span foreground=> tags)
-- :pr:`1063`: Fix docs related to .animate
+- :pr:`1053`: Repair links to source code in stable version of documentation
+- :pr:`1067`: Add ManimPango to ReadTheDocs requirements
+- :pr:`1058`: Replace ``<color>`` syntax by Pango's ``<span foreground>`` for coloring parts of :class:`~.MarkupText` and allow using colors for underline, overline and strikethrough in MarkupText
+- :pr:`1063`: Fix documentation related to ``.animate``
 - :pr:`1065`: Remove duplicate word 'vector'
-- :pr:`1060`: docs: update installation docs for linux - pango
-- :pr:`1050`: make sure stroke color & width gets applied in Cross object
+- :pr:`1060`: Update Linux installation instructions to mention the installation of Pango
+- :pr:`1050`: Ensure that the user-supplied stroke color and width gets applied to :class:`~.Cross`
 - :pr:`1059`: More descriptive error when accessing an unhandled mobject attribute
 - :pr:`915`: SVG engine rewrite and tests
-- :pr:`1048`: use absolute path in make_and_open_docs.py
-- :pr:`1000`: Remove 'MovingCameraScene.setup' and 'MovingCameraScene.camera_frame'
-- :pr:`1051`: corrections for setting stroke related attributes on VMobject
-- :pr:`1043`: Make CubicBezier explicitly accept four points
-- :pr:`1046`: Use any version of importlib-metadata
-- :pr:`1030`: parse .log file and try to print LaTeX errors if compilation fails
-- :pr:`1015`: Documentation: Add more explicit instructions related to tlmgr
-- :pr:`1028`: Docs: Update installation guide on mac with Apple Silicon
-- :pr:`1032`: Remove Square.side_length property
-- :pr:`1031`: fix link to wikipedia vector graphics page
-- :pr:`1021`: Docs: added Bezier example
-- :pr:`1017`: Added progress_bar to digest_args to fix the --progress_bar CLI flag
-- :pr:`1018`: Remove redundancy in FunctionGraph arguments
-- :pr:`1024`: Migrate width/height/depth to properties
-- :pr:`1022`: Fix -p flag when passing -s
-- :pr:`1008`: ci: fix release asset upload
-- :pr:`983`: make sure last frame for animations with updaters is correct
-- :pr:`984`: Add manim version to CLI output, append version name for generated gif+png, add version to metadata of rendered videos, change dark blue terminal text to default green
-- :pr:`993`: can't pass list of colors in set_color() fixed
-- :pr:`1003`: GrowArrow animation fixed, (fixes #1002)
+- :pr:`1048`: Use absolute path in ``make_and_open_docs.py``
+- :pr:`1000`: Remove ``MovingCameraScene.setup`` and ``MovingCameraScene.camera_frame``
+- :pr:`1051`: Corrections for setting stroke related attributes on :class:`~.VMobject`
+- :pr:`1043`: Make :class:`~.CubicBezier` explicitly accept four points
+- :pr:`1046`: Use any version of ``importlib-metadata``
+- :pr:`1030`: Parse ``.log`` file and try to print LaTeX errors if compilation fails
+- :pr:`1015`: Documentation: Add more explicit instructions related to ``tlmgr``
+- :pr:`1028`: Documentation: Update installation guide on mac with Apple Silicon
+- :pr:`1032`: Remove ``Square.side_length`` property
+- :pr:`1031`: Fix link to wikipedia vector graphics page
+- :pr:`1021`: Documentation: Added example to :class:`~.CubicBezier`
+- :pr:`1017`: Added ``progress_bar`` to ``digest_args`` to fix the ``--progress_bar`` CLI flag
+- :pr:`1018`: Remove redundancy in :class:`~.FunctionGraph` arguments
+- :pr:`1024`: Migrate ``width`` / ``height`` / ``depth`` to properties
+- :pr:`1022`: Fix ``-p`` flag when passing ``-s``
+- :pr:`1008`: CI pipeline: fix release asset upload
+- :pr:`983`: Make sure last frame for animations with updaters is correct
+- :pr:`984`: Add manim version to CLI output, append version name for generated ``.gif`` and ``.png`` files, add version to metadata of rendered videos, change dark blue terminal text to default green
+- :pr:`993`: Fix setting Mobject color to a gradient by passing a list of colors in :meth:`~.VMobject.set_color`
+- :pr:`1003`: Fix animation :class:`~.GrowArrow`
 - :pr:`1010`: Disable STDIN interaction for ffmpeg concat.
-- :pr:`969`: fix the problem that --tex_template flag didn't handle.
-- :pr:`989`: Fix 'manim cfg export' subcommand
-- :pr:`1005`: Fix - as filename feature
-- :pr:`998`: Allow using #hex colors with 3 characters
-- :pr:`996`:  Changed --version message to not include "Edition"
+- :pr:`969`: Fix the ``--tex_template`` CLI flag
+- :pr:`989`: Fix the ``manim cfg export`` subcommand
+- :pr:`1005`: Fix the feature where ``-`` is used as the filename
+- :pr:`998`: Allow using hexadecimal color codes with 3 characters
+- :pr:`996`: Changed the message of ``manim --version`` to not include "Edition"
 
 
 
