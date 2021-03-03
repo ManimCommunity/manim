@@ -48,6 +48,7 @@ webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
 jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
+coverage = "*"
 pytest = "^6.0"
 pylint = "*"
 guzzle_sphinx_theme = "*"
