@@ -25,6 +25,12 @@ v0.4.0
 
 The changes since Manim Community release v0.3.0 are listed below.
 
+Breaking Changes
+================
+
+- :pr:`915`: Manim's SVG engine has been reworked and is able to handle a wider variations of SVG files. In particular: fill and stroke properties are now retained from the original files. Breaking change: ``VMobjectFromSVGPathstring`` is deprecated and has been renamed to ``SVGPathMobject``.
+
+
 New Features
 ============
 
@@ -44,7 +50,6 @@ Bugfixes and Enhancements
 - :pr:`1060`: Update Linux installation instructions to mention the installation of Pango
 - :pr:`1050`: Ensure that the user-supplied stroke color and width gets applied to :class:`~.Cross`
 - :pr:`1059`: More descriptive error when accessing an unhandled mobject attribute
-- :pr:`915`: SVG engine rewrite and tests
 - :pr:`1048`: Use absolute path in ``make_and_open_docs.py``
 - :pr:`1000`: Remove ``MovingCameraScene.setup`` and ``MovingCameraScene.camera_frame``
 - :pr:`1051`: Corrections for setting stroke related attributes on :class:`~.VMobject`
