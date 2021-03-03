@@ -62,7 +62,7 @@ Bugfixes and Enhancements
 - :pr:`1022`: Fix -p flag when passing -s
 - :pr:`1008`: ci: fix release asset upload
 - :pr:`983`: make sure last frame for animations with updaters is correct
-- :pr:`984`: Add manim version to CLI output, append version name for generated gif+png, add version to metadata of rendered videos
+- :pr:`984`: Add manim version to CLI output, append version name for generated gif+png, add version to metadata of rendered videos, change dark blue terminal text to default green
 - :pr:`993`: can't pass list of colors in set_color() fixed
 - :pr:`1003`: GrowArrow animation fixed, (fixes #1002)
 - :pr:`1010`: Disable STDIN interaction for ffmpeg concat.
