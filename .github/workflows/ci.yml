@@ -115,10 +115,13 @@ jobs:
           poetry install -E webgl_renderer
 
       - name: Run tests
-        run: poetry run pytest
+        run: poetry run coverage run -m pytest
 
       - name: Run module doctests
-        run: poetry run pytest --doctest-modules manim
+        run: poetry run coverage run --append -m pytest --doctest-modules manim
 
       - name: Run doctests in rst files
         run: cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
