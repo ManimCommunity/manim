@@ -42,6 +42,7 @@ New Features
 Bugfixes and Enhancements
 =========================
 
+- :pr:`981`: Fixed hot reload functionality for the WebGL renderer on Windows
 - :pr:`1053`: Repair links to source code in stable version of documentation
 - :pr:`1067`: Add ManimPango to ReadTheDocs requirements
 - :pr:`1058`: Replace ``<color>`` syntax by Pango's ``<span foreground>`` for coloring parts of :class:`~.MarkupText` and allow using colors for underline, overline and strikethrough in MarkupText
