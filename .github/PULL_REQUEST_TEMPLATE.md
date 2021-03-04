@@ -16,14 +16,6 @@ For PRs introducing new features, please provide code snippets
 using the newly introduced functionality and ideally even the
 expected rendered output. -->
 
-## Oneline Summary of Changes
-<!-- Please update the lines below with a oneline summary
-for your changes. It will be included in the list of upcoming changes at
-https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release -->
-```
-- Added new feature ... / Fixed bug ... / ... (:pr:`PR NUMBER HERE`)
-```
-
 ## Testing Status
 <!-- Optional (but recommended): your computer specs and
 what tests you ran with their results, if any. This section
@@ -44,4 +36,3 @@ that might be useful for reviewers.. -->
 - [ ] Newly added functions/classes are either private or have a docstring
 - [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
-- [ ] The oneline summary has been included [in the wiki](https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release)
