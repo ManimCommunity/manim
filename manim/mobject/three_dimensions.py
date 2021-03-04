@@ -331,6 +331,11 @@ class Cone(ParametricSurface):
         self._current_phi = phi
 
     def set_direction(self, direction):
+<<<<<<< HEAD
+=======
+        # if get_norm(direction) is get_norm(self.direction):
+        #     pass
+>>>>>>> c23736dd7b53aa8f4e202b351fe149875676c704
         self.direction = direction
         self._rotate_to_direction()
 
