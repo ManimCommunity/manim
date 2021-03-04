@@ -14,6 +14,7 @@ import configparser
 import copy
 import logging
 import os
+import errno
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -737,6 +738,13 @@ class ManimConfig(MutableMapping):
         multiple times.
 
         """
+        if not os.path.isfile(filename):
+            raise FileNotFoundError(
+                errno.ENOENT,
+                "Error: --config_file could not find a valid config file.",
+                filename,
+            )
+
         if filename:
             return self.digest_parser(make_config_parser(filename))
 
