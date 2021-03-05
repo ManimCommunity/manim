@@ -62,16 +62,8 @@ def test_manim_plugis_subcommand_no_subcommand():
     )
     assert "No flag provided; Exiting..." in a.stdout
 
+
 def test_manim_plugis_subcommand_listing(function_like_plugin):
     # Check whether `test_plugin` is in plugins list
-    a = call_command(
-        [
-            sys.executable,
-            "-m",
-            "manim",
-            "plugins",
-            "--list"
-        ]
-    )
+    a = call_command([sys.executable, "-m", "manim", "plugins", "--list"])
     assert "test_plugin" in a.stdout
-
