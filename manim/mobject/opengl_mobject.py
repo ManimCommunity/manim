@@ -37,7 +37,8 @@ class OpenGLMobject:
     """
     Mathematical Object
     """
-    shader_dtype=[
+
+    shader_dtype = [
         ("point", np.float32, (3,)),
     ]
     shader_folder = ""
@@ -448,7 +449,11 @@ class OpenGLMobject:
         # Make sure any mobject or numpy array attributes are copied
         family = self.get_family()
         for attr, value in list(self.__dict__.items()):
-            if isinstance(value, OpenGLMobject) and value in family and value is not self:
+            if (
+                isinstance(value, OpenGLMobject)
+                and value in family
+                and value is not self
+            ):
                 setattr(copy_mobject, attr, value.copy())
             if isinstance(value, np.ndarray):
                 setattr(copy_mobject, attr, value.copy())
@@ -1386,11 +1391,12 @@ class OpenGLMobject:
 
     def get_shader_wrapper(self):
         from ..renderer.shader_wrapper import ShaderWrapper
+
         self.shader_wrapper = ShaderWrapper(
             vert_data=self.get_shader_data(),
             vert_indices=self.get_shader_vert_indices(),
-            uniforms = self.get_shader_uniforms(),
-            depth_test = self.depth_test,
+            uniforms=self.get_shader_uniforms(),
+            depth_test=self.depth_test,
             texture_paths=self.texture_paths,
             render_primitive=self.render_primitive,
             shader_folder=self.__class__.shader_folder,

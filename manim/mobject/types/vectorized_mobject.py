@@ -60,6 +60,7 @@ class VMobject(Mobject):
         ("stroke_width", np.float32, (1,)),
         ("color", np.float32, (4,)),
     ]
+
     def __init__(
         self,
         fill_color=None,
@@ -113,9 +114,7 @@ class VMobject(Mobject):
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
 
-
         Mobject.__init__(self, **kwargs)
-
 
     def init_gl_data(self):
         self.needs_new_triangulation = True
@@ -549,7 +548,7 @@ class VMobject(Mobject):
         if config["use_opengl_renderer"]:
             handles = handles1
             anchors2 = handles2
-            assert(len(anchors1) == len(handles) == len(anchors2))
+            assert len(anchors1) == len(handles) == len(anchors2)
             nppc = 3
             new_points = np.zeros((nppc * len(anchors1), self.dim))
             arrays = [anchors1, handles, anchors2]
@@ -725,10 +724,12 @@ class VMobject(Mobject):
         if config["use_opengl_renderer"]:
             nppc = self.n_points_per_curve
             points = np.array(points)
-            self.set_anchors_and_handles(*[
-                interpolate(points[:-1], points[1:], a)
-                for a in np.linspace(0, 1, nppc)
-            ])
+            self.set_anchors_and_handles(
+                *[
+                    interpolate(points[:-1], points[1:], a)
+                    for a in np.linspace(0, 1, nppc)
+                ]
+            )
             return self
         else:
             nppcc = self.n_points_per_cubic_curve
@@ -736,7 +737,10 @@ class VMobject(Mobject):
             # This will set the handles aligned with the anchors.
             # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
             self.set_anchors_and_handles(
-                *[interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc)]
+                *[
+                    interpolate(points[:-1], points[1:], a)
+                    for a in np.linspace(0, 1, nppcc)
+                ]
             )
             return self
 

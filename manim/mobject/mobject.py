@@ -94,14 +94,16 @@ class Mobject(Container):
         return self.data["bounding_box"]
 
     def compute_bounding_box(self):
-        all_points = np.vstack([
-            self.data["points"],
-            *(
-                mob.get_bounding_box()
-                for mob in self.get_family()[1:]
-                if mob.has_points()
-            )
-        ])
+        all_points = np.vstack(
+            [
+                self.data["points"],
+                *(
+                    mob.get_bounding_box()
+                    for mob in self.get_family()[1:]
+                    if mob.has_points()
+                ),
+            ]
+        )
         if len(all_points) == 0:
             return np.zeros((3, self.dim))
         else:
@@ -656,8 +658,8 @@ class Mobject(Container):
             for mob in self.family_members_with_points():
                 mob.points = mob.points.astype("float")
                 mob.points += total_vector
-                if hasattr(mob, 'data') and 'points' in mob.data:
-                    mob.data['points'] += total_vector
+                if hasattr(mob, "data") and "points" in mob.data:
+                    mob.data["points"] += total_vector
             return self
 
     def scale(self, scale_factor, **kwargs):
@@ -674,7 +676,7 @@ class Mobject(Container):
             self.apply_points_function(
                 lambda points: scale_factor * points,
                 works_on_bounding_box=True,
-                **kwargs
+                **kwargs,
             )
             return self
         else:
@@ -690,8 +692,7 @@ class Mobject(Container):
         if config["use_opengl_renderer"]:
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
-                lambda points: np.dot(points, rot_matrix_T),
-                **kwargs
+                lambda points: np.dot(points, rot_matrix_T), **kwargs
             )
             return self
         else:
@@ -782,7 +783,9 @@ class Mobject(Container):
     # In place operations.
     # Note, much of these are now redundant with default behavior of
     # above methods
-    def apply_points_function(self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False):
+    def apply_points_function(
+        self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
+    ):
         if about_point is None and about_edge is not None:
             about_point = self.get_bounding_box_point(about_edge)
 
@@ -1375,14 +1378,14 @@ class Mobject(Container):
     def get_start(self):
         self.throw_error_if_no_points()
         if config["use_opengl_renderer"]:
-            return np.array(self.data['points'][0])
+            return np.array(self.data["points"][0])
         else:
             return np.array(self.points[0])
 
     def get_end(self):
         self.throw_error_if_no_points()
         if config["use_opengl_renderer"]:
-            return np.array(self.data['points'][-1])
+            return np.array(self.data["points"][-1])
         else:
             return np.array(self.points[-1])
 

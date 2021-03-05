@@ -1065,7 +1065,6 @@ class ManimConfig(MutableMapping):
         if val:
             self["disable_caching"] = True
 
-
     @property
     def use_webgl_renderer(self):
         """Whether or not to use WebGL renderer."""

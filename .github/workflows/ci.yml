@@ -50,7 +50,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y ffmpeg
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa freeglut3-dev
+          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa freeglut3-dev python-opengl
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Install system dependencies (MacOS)
@@ -115,7 +115,7 @@ jobs:
           poetry install -E webgl_renderer
 
       - name: Run tests
-        run: poetry run pytest
+        run: xvfb-run -s "-screen 0 1400x900x24" poetry run pytest
 
       - name: Run module doctests
         run: poetry run pytest --doctest-modules manim
