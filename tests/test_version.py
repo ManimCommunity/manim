@@ -1,4 +1,4 @@
-from manim import __version__
+from manim import __name__, __version__
 import pkg_resources
 
 
