@@ -3,4 +3,4 @@ import pkg_resources
 
 
 def test_version():
-    assert __version__ == pkg_resources.get_distribution("manim").version
+    assert __version__ == pkg_resources.get_distribution(__name__).version
