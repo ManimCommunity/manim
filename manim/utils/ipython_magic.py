@@ -103,7 +103,7 @@ else:
                 display(
                     Video(
                         tmpfile,
-                        html_attributes='controls autoplay loop style="max-width: 375px;"',
+                        html_attributes=f'controls autoplay loop style="max-width: {str(config["jupyter_width"])};"',
                         embed=video_embed,
                     )
                 )
