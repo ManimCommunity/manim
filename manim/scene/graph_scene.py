@@ -140,8 +140,7 @@ class GraphScene(Scene):
         super().__init__(**kwargs)
 
     def setup(self):
-        """
-        This method is used internally by Manim
+        """This method is used internally by Manim
         to set up the scene for proper use.
         """
         self.default_graph_colors_cycle = it.cycle(self.default_graph_colors)
@@ -152,8 +151,7 @@ class GraphScene(Scene):
         self.right_v_line = VGroup()
 
     def setup_axes(self, animate=False):
-        """
-        This method sets up the axes of the graph.
+        """This method sets up the axes of the graph.
 
         Parameters
         ----------
@@ -260,8 +258,7 @@ class GraphScene(Scene):
         self.default_graph_colors = it.cycle(self.default_graph_colors)
 
     def coords_to_point(self, x, y):
-        """
-        The graph is smaller than the scene.
+        """The graph is smaller than the scene.
 
         Because of this, coordinates in the graph don't map
         to coordinates on the scene.
@@ -303,7 +300,6 @@ class GraphScene(Scene):
                     for time, dat in enumerate(data):
                         dot = Dot().move_to(self.coords_to_point(time, dat))
                         self.add(dot)
-
         """
         assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
@@ -311,8 +307,7 @@ class GraphScene(Scene):
         return result
 
     def point_to_coords(self, point):
-        """
-        The scene is smaller than the graph.
+        """The scene is smaller than the graph.
 
         Because of this, coordinates in the graph don't map
         to coordinates on the scene.
@@ -333,8 +328,7 @@ class GraphScene(Scene):
         return (self.x_axis.point_to_number(point), self.y_axis.point_to_number(point))
 
     def get_graph(self, func, color=None, x_min=None, x_max=None, **kwargs):
-        """
-        This method gets a curve to plot on the graph.
+        """This method gets a curve to plot on the graph.
 
         Parameters
         ----------
@@ -379,8 +373,7 @@ class GraphScene(Scene):
         return graph
 
     def input_to_graph_point(self, x, graph):
-        """
-        This method returns a coordinate on the curve
+        """This method returns a coordinate on the curve
         given an x_value and a the graph-curve for which
         the corresponding y value should be found.
 
@@ -401,8 +394,7 @@ class GraphScene(Scene):
         return self.coords_to_point(x, graph.underlying_function(x))
 
     def angle_of_tangent(self, x, graph, dx=0.01):
-        """
-        Returns the angle to the x axis of the tangent
+        """Returns the angle to the x axis of the tangent
         to the plotted curve at a particular x-value.
 
         Parameters
@@ -428,8 +420,7 @@ class GraphScene(Scene):
         return angle_of_vector(vect)
 
     def slope_of_tangent(self, *args, **kwargs):
-        """
-        Returns the slope of the tangent to the plotted curve
+        """Returns the slope of the tangent to the plotted curve
         at a particular x-value.
 
         Parameters
@@ -452,8 +443,7 @@ class GraphScene(Scene):
         return np.tan(self.angle_of_tangent(*args, **kwargs))
 
     def get_derivative_graph(self, graph, dx=0.01, **kwargs):
-        """
-        Returns the curve of the derivative of the passed
+        """Returns the curve of the derivative of the passed
         graph.
 
         Parameters
@@ -490,8 +480,7 @@ class GraphScene(Scene):
         buff=MED_SMALL_BUFF,
         color=None,
     ):
-        """
-        This method returns a properly positioned label for the passed graph,
+        """This method returns a properly positioned label for the passed graph,
         styled with the passed parameters.
 
         Parameters
@@ -551,8 +540,7 @@ class GraphScene(Scene):
         show_signed_area=True,
         width_scale_factor=1.001,
     ):
-        """
-        This method returns the VGroup() of the Riemann Rectangles for
+        """This method returns the VGroup() of the Riemann Rectangles for
         a particular curve.
 
         Parameters
@@ -656,8 +644,7 @@ class GraphScene(Scene):
     def get_riemann_rectangles_list(
         self, graph, n_iterations, max_dx=0.5, power_base=2, stroke_width=1, **kwargs
     ):
-        """
-        This method returns a list of multiple VGroups of Riemann
+        """This method returns a list of multiple VGroups of Riemann
         Rectangles. The initial VGroups are relatively inaccurate,
         but the closer you get to the end the more accurate the Riemann
         rectangles become
@@ -701,8 +688,7 @@ class GraphScene(Scene):
     def get_area(
         self, graph, t_min, t_max, bounded=None, dx_scaling=1, area_color=WHITE
     ):
-        """
-        Returns a VGroup of Riemann rectangles
+        """Returns a VGroup of Riemann rectangles
         sufficiently small enough to visually
         approximate the area under the graph passed.
 
@@ -738,8 +724,7 @@ class GraphScene(Scene):
         )
 
     def transform_between_riemann_rects(self, curr_rects, new_rects, **kwargs):
-        """
-        This method is used to transform between two VGroups of Riemann Rectangles,
+        """This method is used to transform between two VGroups of Riemann Rectangles,
         if they were obtained by get_riemann_rectangles or get_riemann_rectangles_list.
         No animation is returned, and the animation is directly played.
 
@@ -769,8 +754,7 @@ class GraphScene(Scene):
         self.play(Transform(curr_rects, new_rects, **transform_kwargs), *added_anims)
 
     def get_vertical_line_to_graph(self, x, graph, line_class=Line, **line_kwargs):
-        """
-        This method returns a Vertical line from the x-axis to
+        """This method returns a Vertical line from the x-axis to
         the corresponding point on the graph/curve.
 
         Parameters
@@ -805,8 +789,7 @@ class GraphScene(Scene):
     def get_vertical_lines_to_graph(
         self, graph, x_min=None, x_max=None, num_lines=20, **kwargs
     ):
-        """
-        Obtains multiple lines from the x axis to the Graph/curve.
+        """Obtains multiple lines from the x axis to the Graph/curve.
 
         Parameters
         ----------
@@ -851,8 +834,7 @@ class GraphScene(Scene):
         secant_line_color=None,
         secant_line_length=10,
     ):
-        """
-        This method returns a VGroup of (two lines
+        """This method returns a VGroup of (two lines
         representing dx and df, the labels for dx and
         df, and the Secant to the Graph/curve at a
         particular x value.
@@ -1026,8 +1008,7 @@ class GraphScene(Scene):
     def get_animation_integral_bounds_change(
         self, graph, new_t_min, new_t_max, fade_close_to_origin=True, run_time=1.0
     ):
-        """
-        This method requires a lot of prerequisites:
+        """This method requires a lot of prerequisites:
         self.area must be defined from self.get_area()
         self.left_v_line and self.right_v_line must be defined from self.get_v_line
         self.left_T_label_group and self.right_T_label_group must be defined from self.add_T_label
@@ -1103,8 +1084,7 @@ class GraphScene(Scene):
         added_anims=None,
         **anim_kwargs,
     ):
-        """
-        This method animates the change of the secant slope group  from
+        """This method animates the change of the secant slope group  from
         the old secant slope group, into a new secant slope group.
 
         Parameters
