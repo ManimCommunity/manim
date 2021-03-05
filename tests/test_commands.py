@@ -3,11 +3,6 @@ import sys
 
 from .test_plugins.test_plugins import function_like_plugin
 
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
-
 import manim
 
 
@@ -33,10 +28,9 @@ def test_manim_version_from_command_line():
             "--version",
         ]
     )
-    version = importlib_metadata.version("manim")
+    version = manim.__version__
     assert version in a.stdout
     assert a.stdout.strip() == f"Manim Community v{version}"
-    assert manim.__version__ == version
 
 
 def test_manim_cfg_subcommand_no_subcommand():
