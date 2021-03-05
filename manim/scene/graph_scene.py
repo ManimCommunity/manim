@@ -262,23 +262,25 @@ class GraphScene(Scene):
     def coords_to_point(self, x, y):
         """
         The graph is smaller than the scene.
-        Because of this, coordinates in the scene don't map
-        to coordinates on the graph.
-        This method returns a scaled coordinate for the graph,
-        given cartesian coordinates that correspond to the scene..
+
+        Because of this, coordinates in the graph don't map
+        to coordinates on the scene.
+
+        This method returns a scaled coordinate for the scene,
+        given coordinates that correspond to the graph.
 
         Parameters
         ----------
         x : int, float
-            The x value
+            The x coordinate of the graph.
 
         y : int, float
-            The y value
+            The y coordinate of the graph.
 
         Returns
         -------
         np.ndarray
-            The array of the coordinates.
+            The array of the coordinates on the scene.
 
         Examples
         --------
@@ -290,7 +292,7 @@ class GraphScene(Scene):
                 def __init__(self, **kwargs):
                     GraphScene.__init__(
                         self,
-                        y_axis_label=r"Concentration [\\%]",
+                        y_axis_label=r"Concentration [\%]",
                         x_axis_label="Time [s]",
                         **kwargs
                     )
@@ -315,18 +317,18 @@ class GraphScene(Scene):
         Because of this, coordinates in the graph don't map
         to coordinates on the scene.
 
-        This method returns a scaled coordinate for the scene,
-        given coordinates that correspond to the graph.
+        This method returns a scaled coordinate for the graph,
+        given coordinates that correspond to the scene.
 
         Parameters
         ----------
         point : np.ndarray
-            The point on the graph.
+            The point on the scene.
 
         Returns
         -------
         tuple
-            The coordinates on the scene.
+            The coordinates on the graph.
         """
         return (self.x_axis.point_to_number(point), self.y_axis.point_to_number(point))
 
