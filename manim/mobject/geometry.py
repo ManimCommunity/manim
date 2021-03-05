@@ -1511,7 +1511,7 @@ class ArrowSquareFilledTip(ArrowSquareTip):
 
 
 class Cutout(VMobject):
-    """A shape with smaller cutouts.
+    """A shape with smaller cutouts. 5
 
     .. warning::
 
