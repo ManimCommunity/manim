@@ -797,7 +797,7 @@ class Scene(Container):
             None if there is nothing to play, or self otherwise.
         """
         # NOTE TODO : returns statement of this method are wrong. It should return nothing, as it makes a little sense to get any information from this method.
-        # The return are kept to keep the wbgl from breaking.
+        # The return are kept to keep webgl renderer from breaking.
         if len(animations) == 0:
             raise ValueError("Called Scene.play with no animations")
 
@@ -824,12 +824,6 @@ class Scene(Container):
                 self.moving_mobjects,
                 self.static_mobjects,
             ) = self.get_moving_and_static_mobjects(self.animations)
-
-        # TODO encapsulate this in a proper method.
-        self.duration = self.get_run_time(self.animations)
-        self.time_progression = self._get_animation_time_progression(
-            self.animations, self.duration
-        )
         return self
 
     def begin_animations(self) -> None:
