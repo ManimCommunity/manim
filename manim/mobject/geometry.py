@@ -54,6 +54,8 @@ __all__ = [
     "Square",
     "RoundedRectangle",
     "Cutout",
+    "ArcAngle",
+    "RightAngle",
 ]
 
 import warnings
@@ -1600,4 +1602,3 @@ class RightAngle(VMobject):
         
         VMobject.__init__(self, **kwargs)
         self.set_points_as_corners( [ anchor_elbow_1, anchor_elbow_middle, anchor_elbow_2 ] )
-        
