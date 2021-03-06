@@ -1586,7 +1586,7 @@ class ArcAngle(Arc):
         Arc.__init__(self, radius=radius, angle=angle_fin, start_angle=start_angle, arc_center=inter, **kwargs)
         if dot==True:
             right_dot = Dot( ORIGIN, radius=dot_radius, color=dot_color )
-            dot_anchor = inter + ( self.get_center() - inter )/ np.norm( self.get_center() - inter ) * radius/distance_dot
+            dot_anchor = inter + ( self.get_center() - inter )/ np.linalg.norm( self.get_center() - inter ) * radius/distance_dot
             right_dot.move_to(dot_anchor)
             self.add(right_dot)
 
