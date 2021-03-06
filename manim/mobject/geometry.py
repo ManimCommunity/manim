@@ -1554,3 +1554,50 @@ class Cutout(VMobject):
             sub_direction = "CW"
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).get_points())
+
+
+class ArcAngle(Arc):
+    def __init__(self, line1, line2, radius=0.3, quadrant=[1,1], which=0, dot=False, dot_radius=0.03, distance_dot=1.8, dot_color=WHITE, **kwargs):
+        self.radius = radius
+        self.quadrant = quadrant
+        self.distance_dot = distance_dot
+        inter = line_intersection([ line1.get_start(), line1.get_end() ], [ line2.get_start(), line2.get_end() ])
+        anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
+        anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
+
+        angle_1 = angle_of_vector((anchor_angle_1 - inter))
+        angle_2 = angle_of_vector((anchor_angle_2 - inter))
+
+        if which==0:
+            start_angle = angle_1
+            if angle_2 > angle_1:
+                angle_fin = angle_2 - angle_1
+            else:
+                angle_fin = 2 * np.pi - ( angle_1 - angle_2 )
+        else:
+            start_angle = angle_2
+            if angle_2 < angle_1:
+                angle_fin = angle_1 - angle_2
+            else:
+                angle_fin = 2 * np.pi - ( angle_2 - angle_1 )
+
+        Arc.__init__(self, radius=radius, angle=angle_fin, start_angle=start_angle, arc_center=inter, **kwargs)
+        if dot==True:
+            right_dot = Dot( ORIGIN, radius=dot_radius, color=dot_color )
+            dot_anchor = inter + ( self.get_center() - inter )/ norm( self.get_center() - inter ) * radius/distance_dot
+            right_dot.move_to(dot_anchor)
+            self.add(right_dot)
+
+
+class RightAngle(VMobject):
+    def __init__(self, line1, line2, length=0.3, quadrant=[1,1], **kwargs):
+        self.length = length
+        self.quadrant = quadrant
+        inter = line_intersection([ line1.get_start(), line1.get_end() ], [ line2.get_start(), line2.get_end() ])
+        anchor_elbow_1 = inter + quadrant[0] * length * line1.get_unit_vector()
+        anchor_elbow_2 = inter + quadrant[1] * length * line2.get_unit_vector()
+        anchor_elbow_middle = inter + quadrant[0] * length * line1.get_unit_vector() + quadrant[1] * length * line2.get_unit_vector()
+        
+        VMobject.__init__(self, **kwargs)
+        self.set_points_as_corners( [ anchor_elbow_1, anchor_elbow_middle, anchor_elbow_2 ] )
+        
