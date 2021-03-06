@@ -82,7 +82,7 @@ class Mobject(Container):
 
         .. seealso::
 
-            :meth:`~.Mobject.override_animate`
+            :func:`override_animate`
 
 
         Examples
@@ -352,7 +352,7 @@ class Mobject(Container):
             return types.MethodType(setter, self)
 
         # Unhandled attribute, therefore error
-        raise AttributeError
+        raise AttributeError(f"{type(self).__name__} object has no attribute '{attr}'")
 
     @property
     def width(self):
@@ -1677,7 +1677,7 @@ def override_animate(method):
 
     .. seealso::
 
-        :prop:`~.Mobject.animate`
+        :attr:`Mobject.animate`
 
     .. note::
 

@@ -36,5 +36,5 @@ def test_set_compat_layer():
 def test_nonexistent_attr():
     m = Mobject()
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, match="object has no attribute"):
         m.test

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000">
+    <g>
+        <path fill="none" stroke="red" stroke-width="5"
+              d="M200,300 Q400,50 600,300 T1000,300"/>
+        <path fill="none" stroke="blue" stroke-width="5"
+              d="M100,200 C100,100 250,100 250,200 S400,300 400,200"/>
+    </g>
+
+</svg>
