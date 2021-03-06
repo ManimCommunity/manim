@@ -1,7 +1,6 @@
 import os
 import sys
 import traceback
-from manim.renderer.opengl_renderer import OpenGLRenderer
 
 from manim import logger, console, config, __version__
 from manim.utils.module_ops import (
