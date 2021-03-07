@@ -81,13 +81,11 @@ def main():
                 server.start()
                 server.wait_for_termination()
             except ModuleNotFoundError as e:
-                print("\n\n")
-                print(
+                console.print(
                     "Dependencies for the WebGL render are missing. Run "
                     "pip install manim[webgl_renderer] to install them."
                 )
-                print(e)
-                print("\n\n")
+                console.print_exception()
         else:
             for SceneClass in scene_classes_from_file(input_file):
                 try:
@@ -95,9 +93,7 @@ def main():
                     scene.render()
                     open_file_if_needed(scene.renderer.file_writer)
                 except Exception:
-                    print("\n\n")
-                    traceback.print_exc()
-                    print("\n\n")
+                    console.print_exception()
 
 
 if __name__ == "__main__":
