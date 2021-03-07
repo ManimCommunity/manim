@@ -308,10 +308,11 @@ class GraphScene(Scene):
         return result
 
     def point_to_coords(self, point):
-        """The scene is smaller than the graph.
+        """Maps a point in the scene to a pair of coordinates (with
+        respect to the axes)
 
-        Because of this, coordinates in the graph don't map
-        to coordinates on the scene.
+        The scene is smaller than the graph. Because of this, coordinates
+        in the graph don't map to coordinates on the scene.
 
         This method returns a scaled coordinate for the graph,
         given coordinates that correspond to the scene.
@@ -319,12 +320,12 @@ class GraphScene(Scene):
         Parameters
         ----------
         point : :class:`numpy.ndarray`
-            The point on the scene.
+            Coordinates of a point in the scene.
 
         Returns
         -------
         Tuple[:class:`float`]
-            The coordinates on the graph.
+            The coordinates with respect to the graph.
         """
         return (self.x_axis.point_to_number(point), self.y_axis.point_to_number(point))
 
