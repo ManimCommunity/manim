@@ -1594,7 +1594,8 @@ class ArcAngle(Arc):
     The first example shows some right angles with a dot in the middle while the second example shows
     all 8 possible angles defined by two intersecting lines.
 
-    .. manim:: RightArcAngleExample
+    ..manim:: RightArcAngleExample
+        :save_last_frame:
 
         class RightArcAngleExample(Scene):
             def construct(self):
