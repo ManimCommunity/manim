@@ -1631,7 +1631,8 @@ class ArcAngle(Arc):
                 )
                 self.wait()
 
-    ..manim:: ArcAngleExample
+    ..manim:: Angles_Test3
+        :save_last_frame:
 
         class Angles_Test3(Scene):
             def construct(self):
