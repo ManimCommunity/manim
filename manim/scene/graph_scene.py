@@ -649,7 +649,7 @@ class GraphScene(Scene):
         self, graph, n_iterations, max_dx=0.5, power_base=2, stroke_width=1, **kwargs
     ):
         """Returns a list of Riemann Rectangles.
-        
+
         This method returns a list of multiple :class:`~.VGroup`s of Riemann
         Rectangles. The initial rectangles are relatively inaccurate,
         but the closer you get to the end the more accurate the Riemann
@@ -750,7 +750,7 @@ class GraphScene(Scene):
         ----------------
         added_anims : :class:`~.Animation`
             Any other animations to play simultaneously.
-            
+
         """
         transform_kwargs = {"run_time": 2, "lag_ratio": 0.5}
         added_anims = kwargs.get("added_anims", [])
