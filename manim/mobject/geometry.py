@@ -1584,7 +1584,7 @@ class ArcAngle(Arc):
     dot_distance : :class:`float`
         Placement of the dot in the arc. This distance from the arc center is given as the radius
         diveded by this :class:`float` parameter.
-    dot_color : :class:`Colors`
+    dot_color : :class:`~.Colors`
         The color of the :class:`Dot`.
     kwargs
         Further keyword arguments that are passed to the constructor of :class:`Arc`.
