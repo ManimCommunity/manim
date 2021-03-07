@@ -1753,7 +1753,8 @@ class RightAngle(VMobject):
     Examples
     --------
 
-    .. manim:: RightAngleExample
+    ..manim:: RightAngleExample
+        :save_last_frame:
 
         class RightAngleExample(Scene):
             def construct(self):
