@@ -115,7 +115,7 @@ jobs:
           poetry install -E webgl_renderer
 
       - name: Run tests
-        run: xvfb-run -s "-screen 0 1400x900x24" poetry run pytest
+        run: poetry run pytest
 
       - name: Run module doctests
         run: poetry run pytest --doctest-modules --ignore-glob="*opengl*" manim
