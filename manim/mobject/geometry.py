@@ -1710,7 +1710,7 @@ class ArcAngle(Arc):
 
 
 class RightAngle(VMobject):
-    """An  intersecting lines.
+    """An elbow-type mobject representing a right angle between two intersecting lines.
 
     Parameters
     ----------
