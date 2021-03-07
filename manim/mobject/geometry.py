@@ -1573,8 +1573,8 @@ class ArcAngle(Arc):
         A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
         Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
     other_angle : :class:`bool`
-        Toggles between the two possible angles defined by two points and an arc center. If set to 
-        False (default), the arc will always go counterclockwise from the point on line1 until 
+        Toggles between the two possible angles defined by two points and an arc center. If set to
+        False (default), the arc will always go counterclockwise from the point on line1 until
         the point on line2 is reached. If set to True, the angle will go clockwise from line1 to line2.
     dot : :class:`bool`
         Allows for a :class:`Dot` in the arc. Mainly used as an convention to indicate a right angle.
@@ -1582,7 +1582,7 @@ class ArcAngle(Arc):
     dot_radius : :class:`float`
         The radius of the :class:`Dot`.
     dot_distance : :class:`float`
-        Placement of the dot in the arc. This distance from the arc center is given as the radius 
+        Placement of the dot in the arc. This distance from the arc center is given as the radius
         diveded by this :class:`float` parameter.
     dot_color : :class:`Colors`
         The color of the :class:`Dot`.
@@ -1672,34 +1672,61 @@ class ArcAngle(Arc):
 
     """
 
-    def __init__(self, line1, line2, radius=0.3, quadrant=(1,1), other_angle=False, dot=False, dot_radius=0.03, dot_distance=1.8, dot_color=WHITE, **kwargs):
+    def __init__(
+        self,
+        line1,
+        line2,
+        radius=0.3,
+        quadrant=(1, 1),
+        other_angle=False,
+        dot=False,
+        dot_radius=0.03,
+        dot_distance=1.8,
+        dot_color=WHITE,
+        **kwargs
+    ):
         self.radius = radius
         self.quadrant = quadrant
         self.dot_distance = dot_distance
-        inter = line_intersection([ line1.get_start(), line1.get_end() ], [ line2.get_start(), line2.get_end() ])
+        inter = line_intersection(
+            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
+        )
         anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
         anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
 
         angle_1 = angle_of_vector(anchor_angle_1 - inter)
         angle_2 = angle_of_vector(anchor_angle_2 - inter)
 
-        if other_angle==False:
+        if other_angle == False:
             start_angle = angle_1
             if angle_2 > angle_1:
                 angle_fin = angle_2 - angle_1
             else:
-                angle_fin = 2 * np.pi - ( angle_1 - angle_2 )
+                angle_fin = 2 * np.pi - (angle_1 - angle_2)
         else:
             start_angle = angle_1
             if angle_2 < angle_1:
-                angle_fin = - angle_1 + angle_2
+                angle_fin = -angle_1 + angle_2
             else:
-                angle_fin = - 2 * np.pi + ( angle_2 - angle_1 )
+                angle_fin = -2 * np.pi + (angle_2 - angle_1)
 
-        Arc.__init__(self, radius=radius, angle=angle_fin, start_angle=start_angle, arc_center=inter, **kwargs)
-        if dot==True:
-            right_dot = Dot( ORIGIN, radius=dot_radius, color=dot_color )
-            dot_anchor = inter+(self.get_center()-inter)/np.linalg.norm(self.get_center()-inter)*radius/dot_distance
+        Arc.__init__(
+            self,
+            radius=radius,
+            angle=angle_fin,
+            start_angle=start_angle,
+            arc_center=inter,
+            **kwargs
+        )
+        if dot == True:
+            right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
+            dot_anchor = (
+                inter
+                + (self.get_center() - inter)
+                / np.linalg.norm(self.get_center() - inter)
+                * radius
+                / dot_distance
+            )
             right_dot.move_to(dot_anchor)
             self.add(right_dot)
 
@@ -1761,13 +1788,22 @@ class RightAngle(VMobject):
                 self.wait()
 
     """
-    def __init__(self, line1, line2, length=0.3, quadrant=[1,1], **kwargs):
+
+    def __init__(self, line1, line2, length=0.3, quadrant=(1, 1), **kwargs):
         self.length = length
         self.quadrant = quadrant
-        inter = line_intersection([ line1.get_start(), line1.get_end() ], [ line2.get_start(), line2.get_end() ])
+        inter = line_intersection(
+            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
+        )
         anchor_elbow_1 = inter + quadrant[0] * length * line1.get_unit_vector()
         anchor_elbow_2 = inter + quadrant[1] * length * line2.get_unit_vector()
-        anchor_elbow_middle = inter + quadrant[0] * length * line1.get_unit_vector() + quadrant[1] * length * line2.get_unit_vector()
-        
+        anchor_elbow_middle = (
+            inter
+            + quadrant[0] * length * line1.get_unit_vector()
+            + quadrant[1] * length * line2.get_unit_vector()
+        )
+
         VMobject.__init__(self, **kwargs)
-        self.set_points_as_corners( [ anchor_elbow_1, anchor_elbow_middle, anchor_elbow_2 ] )
+        self.set_points_as_corners(
+            [anchor_elbow_1, anchor_elbow_middle, anchor_elbow_2]
+        )
