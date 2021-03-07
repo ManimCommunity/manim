@@ -782,7 +782,7 @@ class Scene(Container):
         self.wait(max_time, stop_condition=stop_condition)
 
     def compile_animation_data(self, *animations: Animation, **play_kwargs):
-        """Given a list of animatoins, compile statics and moving mobjects, duration from them.
+        """Given a list of animations, compile statics and moving mobjects, duration from them.
 
         This also begin the animations.
 
