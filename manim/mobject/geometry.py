@@ -1559,7 +1559,7 @@ class Cutout(VMobject):
 
 
 class ArcAngle(Arc):
-    """A circular arc representing an angle given two intersecting lines.
+    """A circular arc representing an angle of two intersecting lines.
 
     Parameters
     ----------
@@ -1591,18 +1591,85 @@ class ArcAngle(Arc):
 
     Examples
     --------
-    .. manim:: ArcAngleExample
+    The first example shows some right angles with a dot in the middle while the second example shows
+    all 8 possible angles defined by two intersecting lines.
 
-        class ArcAngleExample(Scene):
+    .. manim:: RightArcAngleExample
+
+        class RightArcAngleExample(Scene):
             def construct(self):
-                s1 = Square().scale(2.5)
-                s2 = Triangle().shift(DOWN + RIGHT).scale(0.5)
-                s3 = Square().shift(UP + RIGHT).scale(0.5)
-                s4 = RegularPolygon(5).shift(DOWN + LEFT).scale(0.5)
-                s5 = RegularPolygon(6).shift(UP + LEFT).scale(0.5)
-                c = Cutout(s1, s2, s3, s4, s5, fill_opacity=1, color=BLUE, stroke_color=RED)
-                self.play(Write(c), run_time=4)
+                line1 = Line( LEFT, RIGHT )
+                line2 = Line( DOWN, UP )
+                rightarcangles = [
+                    ArcAngle(line1, line2, dot=True),
+                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1), dot=True, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.05, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.07),
+                ]
+                line_list = VGroup( *[VGroup() for k in range(4)] )
+                for k in range(4):
+                    linea = line1.copy()
+                    lineb = line2.copy()
+                    line_list[k].add( linea )
+                    line_list[k].add( lineb )
+                    line_list[k].add( rightarcangles[k] )
+                line_list.arrange_in_grid(buff=1.5)
+                self.play(
+                    *[ShowCreation(
+                        line_list[k][:2]
+                        ) for k in range(4)]
+                )
+                self.wait(0.5)
+                self.play(
+                    LaggedStart(
+                        *[ShowCreation(
+                            line_list[k][2]
+                        ) for k in range(4)],
+                        lag_ratio=0.7
+                    )
+                )
                 self.wait()
+
+    ..manim:: ArcAngleExample
+
+        class Angles_Test3(Scene):
+            def construct(self):
+                line1 = Line( LEFT + (1/3) * UP, RIGHT + (1/3) * DOWN )
+                line2 = Line( DOWN + (1/3) * RIGHT, UP + (1/3) * LEFT )
+                arcangles = [
+                    ArcAngle(line1, line2),
+                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1), other_angle=True),
+                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED),
+                    ArcAngle(line1, line2, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1)),
+                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
+                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
+                ]
+                line_list = VGroup( *[VGroup() for k in range(8)] )
+                for k in range(8):
+                    linea = line1.copy()
+                    lineb = line2.copy()
+                    line_list[k].add( linea )
+                    line_list[k].add( lineb )
+                    line_list[k].add( arcangles[k] )
+                line_list.arrange_in_grid(n_rows=2, n_cols=4, buff=1.5)
+                self.play(
+                    *[ShowCreation(
+                        line_list[k][:2]
+                    ) for k in range(8)]
+                )
+                self.wait(0.5)
+                self.play(
+                    LaggedStart(
+                        *[ShowCreation(
+                            line_list[k][2]
+                        ) for k in range(8)],
+                        lag_ratio=0.7
+                    )
+                )
+                self.wait()
+
     """
 
     def __init__(self, line1, line2, radius=0.3, quadrant=(1,1), other_angle=False, dot=False, dot_radius=0.03, dot_distance=1.8, dot_color=WHITE, **kwargs):
@@ -1638,6 +1705,62 @@ class ArcAngle(Arc):
 
 
 class RightAngle(VMobject):
+    """Am elbow-type like object representing a right angle of two intersecting lines.
+
+    Parameters
+    ----------
+    line1 : :class:`Line`
+        The first of the intersecting lines.
+    line2 : :class:`Line`
+        The second of the intersecting lines.
+    length : :class:`float`
+        The length of the arms.
+    quadrant : Sequence[:class:`int`]
+        A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
+        Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
+    kwargs
+        Further keyword arguments that are passed to the constructor of :class:`~.VMobject`.
+
+    Examples
+    --------
+
+    .. manim:: RightAngleExample
+
+        class RightAngleExample(Scene):
+            def construct(self):
+                line1 = Line( LEFT, RIGHT )
+                line2 = Line( DOWN, UP )
+                rightangles = [
+                    RightAngle(line1, line2),
+                    RightAngle(line1, line2, length=0.4, quadrant=(1,-1)),
+                    RightAngle(line1, line2, length=0.5, quadrant=(-1,1), stroke_width=8),
+                    RightAngle(line1, line2, length=0.7, quadrant=(-1,-1), color=RED),
+                ]
+                line_list = VGroup( *[VGroup() for k in range(4)] )
+                for k in range(4):
+                    linea = line1.copy()
+                    lineb = line2.copy()
+                    line_list[k].add( linea )
+                    line_list[k].add( lineb )
+                    line_list[k].add( rightangles[k] )
+                line_list.arrange_in_grid(buff=1.5)
+                self.play(
+                    *[ShowCreation(
+                        line_list[k][:2]
+                    ) for k in range(4)]
+                )
+                self.wait(0.5)
+                self.play(
+                    LaggedStart(
+                        *[ShowCreation(
+                            line_list[k][2]
+                        ) for k in range(4)],
+                        lag_ratio=0.7
+                    )
+                )
+                self.wait()
+
+    """
     def __init__(self, line1, line2, length=0.3, quadrant=[1,1], **kwargs):
         self.length = length
         self.quadrant = quadrant
