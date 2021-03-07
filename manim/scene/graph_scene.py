@@ -258,10 +258,11 @@ class GraphScene(Scene):
         self.default_graph_colors = it.cycle(self.default_graph_colors)
 
     def coords_to_point(self, x, y):
-        """The graph is smaller than the scene.
+        """Maps a pair of coordinates (with respect to the axes)
+        to a point in the scene.
 
-        Because of this, coordinates in the graph don't map
-        to coordinates on the scene.
+        The graph is smaller than the scene. Because of this, coordinates
+        in the graph don't map to coordinates on the scene.
 
         This method returns a scaled coordinate for the scene,
         given coordinates that correspond to the graph.
@@ -269,15 +270,15 @@ class GraphScene(Scene):
         Parameters
         ----------
         x : :class:`float`
-            The x coordinate of the graph.
+            The x coordinate with respect to the graph.
 
         y : :class:`float`
-            The y coordinate of the graph.
+            The y coordinate with respect to the graph.
 
         Returns
         -------
         :class:`numpy.ndarray`
-            The array of the coordinates on the scene.
+            Coordinates of a point in the scene.
 
         Examples
         --------
@@ -560,7 +561,7 @@ class GraphScene(Scene):
             considered significant.
 
         input_sample_type : Optional[:class:`str`]
-            Can be any of "left", "right" or "center". Referrs to where
+            Can be any of "left", "right" or "center". Refers to where
             the sample point for the height of each Riemann Rectangle
             will be inside the segments of the partition.
 
@@ -646,8 +647,10 @@ class GraphScene(Scene):
     def get_riemann_rectangles_list(
         self, graph, n_iterations, max_dx=0.5, power_base=2, stroke_width=1, **kwargs
     ):
-        """This method returns a list of multiple :class:`~.VGroup`s of Riemann
-        Rectangles. The initial :class:`~.VGroup`s are relatively inaccurate,
+        """Returns a list of Riemann Rectangles.
+        
+        This method returns a list of multiple :class:`~.VGroup`s of Riemann
+        Rectangles. The initial rectangles are relatively inaccurate,
         but the closer you get to the end the more accurate the Riemann
         rectangles become.
 
@@ -726,7 +729,9 @@ class GraphScene(Scene):
         )
 
     def transform_between_riemann_rects(self, curr_rects, new_rects, **kwargs):
-        """This method is used to transform between two VGroups of Riemann Rectangles,
+        """Transform between groups of Riemann Rectangles.
+
+        This method is used to transform between two VGroups of Riemann Rectangles,
         if they were obtained by get_riemann_rectangles or get_riemann_rectangles_list.
         No animation is returned, and the animation is directly played.
 
