@@ -1615,26 +1615,14 @@ class ArcAngle(Arc):
                     line_list[k].add( lineb )
                     line_list[k].add( rightarcangles[k] )
                 line_list.arrange_in_grid(buff=1.5)
-                self.play(
-                    *[ShowCreation(
-                        line_list[k][:2]
-                        ) for k in range(4)]
+                self.add(
+                    line_list
                 )
-                self.wait(0.5)
-                self.play(
-                    LaggedStart(
-                        *[ShowCreation(
-                            line_list[k][2]
-                        ) for k in range(4)],
-                        lag_ratio=0.7
-                    )
-                )
-                self.wait()
 
-    ..manim:: Angles_Test3
+    ..manim:: ArcAngleExample
         :save_last_frame:
 
-        class Angles_Test3(Scene):
+        class ArcAngleExample(Scene):
             def construct(self):
                 line1 = Line( LEFT + (1/3) * UP, RIGHT + (1/3) * DOWN )
                 line2 = Line( DOWN + (1/3) * RIGHT, UP + (1/3) * LEFT )
@@ -1656,21 +1644,9 @@ class ArcAngle(Arc):
                     line_list[k].add( lineb )
                     line_list[k].add( arcangles[k] )
                 line_list.arrange_in_grid(n_rows=2, n_cols=4, buff=1.5)
-                self.play(
-                    *[ShowCreation(
-                        line_list[k][:2]
-                    ) for k in range(8)]
+                self.add(
+                    line_list
                 )
-                self.wait(0.5)
-                self.play(
-                    LaggedStart(
-                        *[ShowCreation(
-                            line_list[k][2]
-                        ) for k in range(8)],
-                        lag_ratio=0.7
-                    )
-                )
-                self.wait()
 
     """
 
@@ -1774,21 +1750,9 @@ class RightAngle(VMobject):
                     line_list[k].add( lineb )
                     line_list[k].add( rightangles[k] )
                 line_list.arrange_in_grid(buff=1.5)
-                self.play(
-                    *[ShowCreation(
-                        line_list[k][:2]
-                    ) for k in range(4)]
+                self.add(
+                    line_list
                 )
-                self.wait(0.5)
-                self.play(
-                    LaggedStart(
-                        *[ShowCreation(
-                            line_list[k][2]
-                        ) for k in range(4)],
-                        lag_ratio=0.7
-                    )
-                )
-                self.wait()
 
     """
 
