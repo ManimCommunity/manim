@@ -1559,34 +1559,80 @@ class Cutout(VMobject):
 
 
 class ArcAngle(Arc):
-    def __init__(self, line1, line2, radius=0.3, quadrant=[1,1], which=0, dot=False, dot_radius=0.03, distance_dot=1.8, dot_color=WHITE, **kwargs):
+    """A circular arc representing an angle given two intersecting lines.
+
+    Parameters
+    ----------
+    line1 : :class:`Line`
+        The first of the intersecting lines.
+    line2 : :class:`Line`
+        The second of the intersecting lines.
+    radius : :class:`float`
+        The radius of the :class:`Arc`.
+    quadrant : Sequence[:class:`int`]
+        A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
+        Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
+    other_angle : :class:`bool`
+        Toggles between the two possible angles defined by two points and an arc center. If set to 
+        False (default), the arc will always go counterclockwise from the point on line1 until 
+        the point on line2 is reached. If set to True, the angle will go clockwise from line1 to line2.
+    dot : :class:`bool`
+        Allows for a :class:`Dot` in the arc. Mainly used as an convention to indicate a right angle.
+        The dot can be customized in the next three parameters.
+    dot_radius : :class:`float`
+        The radius of the :class:`Dot`.
+    dot_distance : :class:`float`
+        Placement of the dot in the arc. This distance from the arc center is given as the radius 
+        diveded by this :class:`float` parameter.
+    dot_color : :class:`Colors`
+        The color of the :class:`Dot`.
+    kwargs
+        Further keyword arguments that are passed to the constructor of :class:`Arc`.
+
+    Examples
+    --------
+    .. manim:: ArcAngleExample
+
+        class ArcAngleExample(Scene):
+            def construct(self):
+                s1 = Square().scale(2.5)
+                s2 = Triangle().shift(DOWN + RIGHT).scale(0.5)
+                s3 = Square().shift(UP + RIGHT).scale(0.5)
+                s4 = RegularPolygon(5).shift(DOWN + LEFT).scale(0.5)
+                s5 = RegularPolygon(6).shift(UP + LEFT).scale(0.5)
+                c = Cutout(s1, s2, s3, s4, s5, fill_opacity=1, color=BLUE, stroke_color=RED)
+                self.play(Write(c), run_time=4)
+                self.wait()
+    """
+
+    def __init__(self, line1, line2, radius=0.3, quadrant=(1,1), other_angle=False, dot=False, dot_radius=0.03, dot_distance=1.8, dot_color=WHITE, **kwargs):
         self.radius = radius
         self.quadrant = quadrant
-        self.distance_dot = distance_dot
+        self.dot_distance = dot_distance
         inter = line_intersection([ line1.get_start(), line1.get_end() ], [ line2.get_start(), line2.get_end() ])
         anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
         anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
 
-        angle_1 = angle_of_vector((anchor_angle_1 - inter))
-        angle_2 = angle_of_vector((anchor_angle_2 - inter))
+        angle_1 = angle_of_vector(anchor_angle_1 - inter)
+        angle_2 = angle_of_vector(anchor_angle_2 - inter)
 
-        if which==0:
+        if other_angle==False:
             start_angle = angle_1
             if angle_2 > angle_1:
                 angle_fin = angle_2 - angle_1
             else:
                 angle_fin = 2 * np.pi - ( angle_1 - angle_2 )
         else:
-            start_angle = angle_2
+            start_angle = angle_1
             if angle_2 < angle_1:
-                angle_fin = angle_1 - angle_2
+                angle_fin = - angle_1 + angle_2
             else:
-                angle_fin = 2 * np.pi - ( angle_2 - angle_1 )
+                angle_fin = - 2 * np.pi + ( angle_2 - angle_1 )
 
         Arc.__init__(self, radius=radius, angle=angle_fin, start_angle=start_angle, arc_center=inter, **kwargs)
         if dot==True:
             right_dot = Dot( ORIGIN, radius=dot_radius, color=dot_color )
-            dot_anchor = inter + ( self.get_center() - inter )/ np.linalg.norm( self.get_center() - inter ) * radius/distance_dot
+            dot_anchor = inter+(self.get_center()-inter)/np.linalg.norm(self.get_center()-inter)*radius/dot_distance
             right_dot.move_to(dot_anchor)
             self.add(right_dot)
 
