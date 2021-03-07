@@ -263,7 +263,7 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
-        "jupyter_width",
+        "media_width",
         "webgl_renderer_path",
         "leave_progress_bars",
         "log_dir",
@@ -545,7 +545,6 @@ class ManimConfig(MutableMapping):
             "movie_file_extension",
             "background_color",
             "webgl_renderer_path",
-            "jupyter_width",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 

@@ -469,8 +469,4 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
         metavar="True/False",
     )
 
-    parser.add_argument(
-        "--jupyter_width", type=str, help="Width of the displayed media on Jupyter"
-    )
-
     return parser.parse_args(args[1:])
