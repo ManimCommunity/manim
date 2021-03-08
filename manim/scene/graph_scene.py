@@ -650,7 +650,7 @@ class GraphScene(Scene):
     ):
         """Returns a list of Riemann Rectangles.
 
-        This method returns a list of multiple :class:`~.VGroup`s of Riemann
+        This method returns a list of multiple :class:`VGroups <.VGroup>` of Riemann
         Rectangles. The initial rectangles are relatively inaccurate,
         but the closer you get to the end the more accurate the Riemann
         rectangles become.
@@ -1116,7 +1116,7 @@ class GraphScene(Scene):
         run_time : Optional[:class:`float`]
             The run time for this change when animated.
 
-        added_anims : Optional[Sequence[:class:`~.Animation]]
+        added_anims : Optional[Sequence[:class:`~.Animation`]]
             Any exta animations that should be played alongside.
 
         **anim_kwargs
