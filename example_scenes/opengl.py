@@ -3,7 +3,8 @@ from manim.opengl import *
 import os
 from pathlib import Path
 
-
+# Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
+# Lines that do not yet work with the Community Version are commented.
 class SurfaceExample(Scene):
     def construct(self):
         # surface_text = Text("For 3d scenes, try using surfaces")
