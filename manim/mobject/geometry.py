@@ -54,6 +54,8 @@ __all__ = [
     "Square",
     "RoundedRectangle",
     "Cutout",
+    "ArcAngle",
+    "RightAngle",
 ]
 
 import warnings
@@ -1554,3 +1556,221 @@ class Cutout(VMobject):
             sub_direction = "CW"
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).get_points())
+
+
+class ArcAngle(Arc):
+    """A circular arc representing an angle of two intersecting lines.
+
+    Parameters
+    ----------
+    line1 : :class:`Line`
+        The first of the intersecting lines.
+    line2 : :class:`Line`
+        The second of the intersecting lines.
+    radius : :class:`float`
+        The radius of the :class:`Arc`.
+    quadrant : Sequence[:class:`int`]
+        A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
+        Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
+    other_angle : :class:`bool`
+        Toggles between the two possible angles defined by two points and an arc center. If set to
+        False (default), the arc will always go counterclockwise from the point on line1 until
+        the point on line2 is reached. If set to True, the angle will go clockwise from line1 to line2.
+    dot : :class:`bool`
+        Allows for a :class:`Dot` in the arc. Mainly used as an convention to indicate a right angle.
+        The dot can be customized in the next three parameters.
+    dot_radius : :class:`float`
+        The radius of the :class:`Dot`.
+    dot_distance : :class:`float`
+        Placement of the dot in the arc. This distance from the arc center is given as the radius
+        diveded by this :class:`float` parameter.
+    dot_color : :class:`~.Colors`
+        The color of the :class:`Dot`.
+    kwargs
+        Further keyword arguments that are passed to the constructor of :class:`Arc`.
+
+    Examples
+    --------
+    The first example shows some right angles with a dot in the middle while the second example shows
+    all 8 possible angles defined by two intersecting lines.
+
+    ..manim:: RightArcAngleExample
+        :save_last_frame:
+
+        class RightArcAngleExample(Scene):
+            def construct(self):
+                line1 = Line( LEFT, RIGHT )
+                line2 = Line( DOWN, UP )
+                rightarcangles = [
+                    ArcAngle(line1, line2, dot=True),
+                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1), dot=True, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.05, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.07),
+                ]
+                line_list = VGroup( *[VGroup() for k in range(4)] )
+                for k in range(4):
+                    linea = line1.copy()
+                    lineb = line2.copy()
+                    line_list[k].add( linea )
+                    line_list[k].add( lineb )
+                    line_list[k].add( rightarcangles[k] )
+                line_list.arrange_in_grid(buff=1.5)
+                self.add(
+                    line_list
+                )
+
+    ..manim:: ArcAngleExample
+        :save_last_frame:
+
+        class ArcAngleExample(Scene):
+            def construct(self):
+                line1 = Line( LEFT + (1/3) * UP, RIGHT + (1/3) * DOWN )
+                line2 = Line( DOWN + (1/3) * RIGHT, UP + (1/3) * LEFT )
+                arcangles = [
+                    ArcAngle(line1, line2),
+                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1), other_angle=True),
+                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED),
+                    ArcAngle(line1, line2, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1)),
+                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
+                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
+                ]
+                line_list = VGroup( *[VGroup() for k in range(8)] )
+                for k in range(8):
+                    linea = line1.copy()
+                    lineb = line2.copy()
+                    line_list[k].add( linea )
+                    line_list[k].add( lineb )
+                    line_list[k].add( arcangles[k] )
+                line_list.arrange_in_grid(n_rows=2, n_cols=4, buff=1.5)
+                self.add(
+                    line_list
+                )
+
+    """
+
+    def __init__(
+        self,
+        line1,
+        line2,
+        radius=0.3,
+        quadrant=(1, 1),
+        other_angle=False,
+        dot=False,
+        dot_radius=0.03,
+        dot_distance=1.8,
+        dot_color=WHITE,
+        **kwargs
+    ):
+        self.radius = radius
+        self.quadrant = quadrant
+        self.dot_distance = dot_distance
+        inter = line_intersection(
+            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
+        )
+        anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
+        anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
+
+        angle_1 = angle_of_vector(anchor_angle_1 - inter)
+        angle_2 = angle_of_vector(anchor_angle_2 - inter)
+
+        if other_angle == False:
+            start_angle = angle_1
+            if angle_2 > angle_1:
+                angle_fin = angle_2 - angle_1
+            else:
+                angle_fin = 2 * np.pi - (angle_1 - angle_2)
+        else:
+            start_angle = angle_1
+            if angle_2 < angle_1:
+                angle_fin = -angle_1 + angle_2
+            else:
+                angle_fin = -2 * np.pi + (angle_2 - angle_1)
+
+        Arc.__init__(
+            self,
+            radius=radius,
+            angle=angle_fin,
+            start_angle=start_angle,
+            arc_center=inter,
+            **kwargs
+        )
+        if dot == True:
+            right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
+            dot_anchor = (
+                inter
+                + (self.get_center() - inter)
+                / np.linalg.norm(self.get_center() - inter)
+                * radius
+                / dot_distance
+            )
+            right_dot.move_to(dot_anchor)
+            self.add(right_dot)
+
+
+class RightAngle(VMobject):
+    """An elbow-type mobject representing a right angle between two intersecting lines.
+
+    Parameters
+    ----------
+    line1 : :class:`Line`
+        The first of the intersecting lines.
+    line2 : :class:`Line`
+        The second of the intersecting lines.
+    length : :class:`float`
+        The length of the arms.
+    quadrant : Sequence[:class:`int`]
+        A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
+        Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
+    kwargs
+        Further keyword arguments that are passed to the constructor of :class:`~.VMobject`.
+
+    Examples
+    --------
+
+    ..manim:: RightAngleExample
+        :save_last_frame:
+
+        class RightAngleExample(Scene):
+            def construct(self):
+                line1 = Line( LEFT, RIGHT )
+                line2 = Line( DOWN, UP )
+                rightangles = [
+                    RightAngle(line1, line2),
+                    RightAngle(line1, line2, length=0.4, quadrant=(1,-1)),
+                    RightAngle(line1, line2, length=0.5, quadrant=(-1,1), stroke_width=8),
+                    RightAngle(line1, line2, length=0.7, quadrant=(-1,-1), color=RED),
+                ]
+                line_list = VGroup( *[VGroup() for k in range(4)] )
+                for k in range(4):
+                    linea = line1.copy()
+                    lineb = line2.copy()
+                    line_list[k].add( linea )
+                    line_list[k].add( lineb )
+                    line_list[k].add( rightangles[k] )
+                line_list.arrange_in_grid(buff=1.5)
+                self.add(
+                    line_list
+                )
+
+    """
+
+    def __init__(self, line1, line2, length=0.3, quadrant=(1, 1), **kwargs):
+        self.length = length
+        self.quadrant = quadrant
+        inter = line_intersection(
+            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
+        )
+        anchor_elbow_1 = inter + quadrant[0] * length * line1.get_unit_vector()
+        anchor_elbow_2 = inter + quadrant[1] * length * line2.get_unit_vector()
+        anchor_elbow_middle = (
+            inter
+            + quadrant[0] * length * line1.get_unit_vector()
+            + quadrant[1] * length * line2.get_unit_vector()
+        )
+
+        VMobject.__init__(self, **kwargs)
+        self.set_points_as_corners(
+            [anchor_elbow_1, anchor_elbow_middle, anchor_elbow_2]
+        )
