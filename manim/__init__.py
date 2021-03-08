@@ -41,7 +41,6 @@ from .mobject.changing import *
 from .mobject.frame import *
 from .mobject.functions import *
 from .mobject.geometry import *
-
 from .mobject.graph import *
 from .mobject.logo import *
 from .mobject.matrix import *
