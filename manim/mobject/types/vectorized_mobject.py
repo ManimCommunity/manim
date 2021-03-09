@@ -644,10 +644,7 @@ class VMobject(Mobject):
         # This will set the handles aligned with the anchors.
         # Id est, a bezier curve will be the segment from the two anchors such that the handles belongs to this segment.
         self.set_anchors_and_handles(
-            *[
-                interpolate(points[:-1], points[1:], a)
-                for a in np.linspace(0, 1, nppcc)
-            ]
+            *[interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppcc)]
         )
         return self
 
