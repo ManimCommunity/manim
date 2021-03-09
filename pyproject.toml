@@ -48,7 +48,7 @@ webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
 jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
-coverage = "*"
+pytest-cov = "*"
 pytest = "^6.0"
 pylint = "*"
 guzzle_sphinx_theme = "*"
@@ -63,6 +63,13 @@ markers = "platform_python_implementation == 'CPython'"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
+addopts = "--cov=manim --cov-report xml"
+
+[tool.coverage.run]
+omit = ["*tests*"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover"]
 
 [tool.poetry.plugins]
 [tool.poetry.plugins."console_scripts"]
