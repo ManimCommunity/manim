@@ -1571,6 +1571,8 @@ class ArcAngle(Arc):
         The radius of the :class:`Arc`.
     quadrant : Sequence[:class:`int`]
         A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
+        The first value indicates whether to anchor the arc on the first line closer to the end point (1)
+        or start point (-1), and the second value functions similarly for the end (1) or start (-1) of the second line.
         Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
     other_angle : :class:`bool`
         Toggles between the two possible angles defined by two points and an arc center. If set to
@@ -1580,10 +1582,9 @@ class ArcAngle(Arc):
         Allows for a :class:`Dot` in the arc. Mainly used as an convention to indicate a right angle.
         The dot can be customized in the next three parameters.
     dot_radius : :class:`float`
-        The radius of the :class:`Dot`.
+        The radius of the :class:`Dot`. If not specified otherwise, this radius will be 1/10 of the arc radius.
     dot_distance : :class:`float`
-        Placement of the dot in the arc. This distance from the arc center is given as the radius
-        diveded by this :class:`float` parameter.
+        Relative distance from the center to the arc: 0 puts the dot in the center and 1 on the arc itself.
     dot_color : :class:`~.Colors`
         The color of the :class:`Dot`.
     kwargs
@@ -1604,8 +1605,8 @@ class ArcAngle(Arc):
                 rightarcangles = [
                     ArcAngle(line1, line2, dot=True),
                     ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1), dot=True, other_angle=True),
-                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.05, other_angle=True),
-                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.07),
+                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.04, other_angle=True),
+                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.08),
                 ]
                 line_list = VGroup( *[VGroup() for k in range(4)] )
                 for k in range(4):
@@ -1658,8 +1659,8 @@ class ArcAngle(Arc):
         quadrant=(1, 1),
         other_angle=False,
         dot=False,
-        dot_radius=0.03,
-        dot_distance=1.8,
+        dot_radius=None,
+        dot_distance=0.55,
         dot_color=WHITE,
         **kwargs
     ):
@@ -1697,13 +1698,17 @@ class ArcAngle(Arc):
             **kwargs
         )
         if dot == True:
+            if dot_radius == None:
+                dot_radius = radius / 10
+            else:
+                self.dot_radius = dot_radius
             right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
             dot_anchor = (
                 inter
                 + (self.get_center() - inter)
                 / np.linalg.norm(self.get_center() - inter)
                 * radius
-                / dot_distance
+                * dot_distance
             )
             right_dot.move_to(dot_anchor)
             self.add(right_dot)
@@ -1722,6 +1727,8 @@ class RightAngle(VMobject):
         The length of the arms.
     quadrant : Sequence[:class:`int`]
         A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
+        The first value indicates whether to anchor the arc on the first line closer to the end point (1)
+        or start point (-1), and the second value functions similarly for the end (1) or start (-1) of the second line.
         Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
     kwargs
         Further keyword arguments that are passed to the constructor of :class:`~.VMobject`.
