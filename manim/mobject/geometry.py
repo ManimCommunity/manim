@@ -1559,14 +1559,14 @@ class Cutout(VMobject):
 
 
 class ArcAngle(Arc):
-    """A circular arc representing an angle of two intersecting lines.
+    """A circular arc representing an angle of two lines.
 
     Parameters
     ----------
     line1 : :class:`Line`
-        The first of the intersecting lines.
+        The first line.
     line2 : :class:`Line`
-        The second of the intersecting lines.
+        The second line.
     radius : :class:`float`
         The radius of the :class:`Arc`.
     quadrant : Sequence[:class:`int`]
@@ -1710,14 +1710,14 @@ class ArcAngle(Arc):
 
 
 class RightAngle(VMobject):
-    """An elbow-type mobject representing a right angle between two intersecting lines.
+    """An elbow-type mobject representing a right angle between two lines.
 
     Parameters
     ----------
     line1 : :class:`Line`
-        The first of the intersecting lines.
+        The first line.
     line2 : :class:`Line`
-        The second of the intersecting lines.
+        The second line.
     length : :class:`float`
         The length of the arms.
     quadrant : Sequence[:class:`int`]
