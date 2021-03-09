@@ -1592,7 +1592,7 @@ class ArcAngle(Arc):
     Examples
     --------
     The first example shows some right angles with a dot in the middle while the second example shows
-    all 8 possible angles defined by two intersecting lines.
+    all 8 possible angles defined by two lines.
 
     ..manim:: RightArcAngleExample
         :save_last_frame:
