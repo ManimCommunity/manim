@@ -1,3 +1,10 @@
+"""Manim's default subcommand, render.
+
+Manim's render subcommand is accessed in the command-line interface via
+`manim`, but can be more explicitly accessed with `manim render`. Here you
+can specify options, subcommands, and subgroups for the render command.
+
+"""
 from inspect import Traceback
 import os
 import re

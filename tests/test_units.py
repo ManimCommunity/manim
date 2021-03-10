@@ -6,7 +6,6 @@ import numpy as np
 
 def test_units():
     # make sure we are using the right frame geometry
-    print(config)
     assert config.pixel_width == 1920
     assert np.isclose(config.frame_height, 8.0)
 
