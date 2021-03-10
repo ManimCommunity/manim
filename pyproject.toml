@@ -63,7 +63,7 @@ markers = "platform_python_implementation == 'CPython'"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
-addopts = "--cov=manim --cov-report xml"
+addopts = "--cov=manim --cov-report xml --cov-report term"
 
 [tool.coverage.run]
 omit = ["*tests*"]
