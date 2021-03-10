@@ -824,6 +824,7 @@ class Scene(Container):
                 self.moving_mobjects,
                 self.static_mobjects,
             ) = self.get_moving_and_static_mobjects(self.animations)
+        self.duration = self.get_run_time(self.animations)
         return self
 
     def begin_animations(self) -> None:
