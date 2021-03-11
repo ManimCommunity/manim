@@ -350,20 +350,18 @@ def render(
             server = frame_server_impl.get(file)
             server.start()
             server.wait_for_termination()
-        except ModuleNotFoundError as e:
-            print("\n\n")
-            print(
+        except ModuleNotFoundError:
+            console.print(
                 "Dependencies for the WebGL render are missing. Run "
                 "pip install manim[webgl_renderer] to install them."
             )
-            print(e)
-            print("\n\n")
+            console.print_exception()
     else:
-        for SceneClass in scene_classes_from_file(Path(file)):
+        for SceneClass in scene_classes_from_file(input_file):
             try:
                 scene = SceneClass()
                 scene.render()
                 open_file_if_needed(scene.renderer.file_writer)
-            except Exception as e:
-                print(f"Exception {e}")
+            except Exception:
+                console.print_exception()
     return args
