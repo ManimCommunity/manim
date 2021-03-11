@@ -87,6 +87,7 @@ class NumberLine(Line):
         if width is not None:
             self.width = width
             self.unit_size = self.get_unit_size()
+        self.rotate_about_zero(self.rotation)
         self.shift(-self.number_to_point(self.number_at_center))
 
         self.init_leftmost_tick()
@@ -94,9 +95,15 @@ class NumberLine(Line):
             self.add_tip()
         if self.include_ticks:
             self.add_tick_marks()
-        self.rotate(self.rotation)
         if self.include_numbers:
             self.add_numbers()
+
+    def rotate_about_zero(self, angle, axis=OUT, **kwargs):
+        self.rotate_about_number(0, angle, axis, **kwargs)
+
+    def rotate_about_number(self, number, angle, axis=OUT, **kwargs):
+        kwargs.update(about_point=self.n2p(number))
+        self.rotate(angle, axis, **kwargs)
 
     def init_leftmost_tick(self):
         if self.leftmost_tick is None:
