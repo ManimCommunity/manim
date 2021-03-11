@@ -22,7 +22,7 @@ def test_add_sound():
 
 
 def test_add_click_sound():
-    # check that the click.wav file exists at the right place,
+    # check that the click.mp3 file exists at the right place,
     # this file is needed for the function add_click_sound.
-    path_sound = Path(__file__).parent.parent / "manim" / "assets" / "click.wav"
+    path_sound = Path(__file__).parent.parent / "manim" / "assets" / "click.mp3"
     assert path_sound.exists() == True

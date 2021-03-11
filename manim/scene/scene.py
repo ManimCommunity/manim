@@ -872,7 +872,7 @@ class Scene(Container):
             :meth:`~.add_sound`
         """
         path_sound = (
-            Path(__file__).parent.parent.parent / "manim" / "assets" / "click.wav"
+            Path(__file__).parent.parent.parent / "manim" / "assets" / "click.mp3"
         )
         self.add_sound(str(path_sound), **kwargs)
 
