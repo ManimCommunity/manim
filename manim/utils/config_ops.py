@@ -2,6 +2,7 @@
 
 __all__ = [
     "merge_dicts_recursively",
+    "update_dict_recursively",
     "DictAsObject",
 ]
 
@@ -27,6 +28,13 @@ def merge_dicts_recursively(*dicts):
         else:
             result[key] = value
     return result
+
+
+def update_dict_recursively(*dicts):
+    current_dict = dicts[0]
+    updated_dict = merge_dicts_recursively(*dicts)
+    for key, value in updated_dict.items():
+        current_dict[key] = value
 
 
 # Occasionally convenient in order to write dict.x instead of more laborious
