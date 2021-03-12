@@ -1,24 +1,29 @@
 <!--
-Thank you for your interest in contributing to ManimCommunity!
+Thanks for your contributing to ManimCommunity!
 
-Before filling out the details below, please ensure:
-- Your local changes are up-to-date with ManimCommunity/manim's latest
-changes and any conflicts are resolved.
+Before filling in the details, ensure:
+- Your local changes are up-to-date with ManimCommunity/manim
 
-- The title of your PR starts with a keyword describing the changes made:
-  Feature:
-  Bugfix:
-  Enhancement:
-  Doc:
-  Removal:
-  Misc:
+- The title of your PR starts with at least one capitalized acronym:
+  API: an API breaking change
+  CI: change related to building manim
+  BUG: bug fix
+  DEP: deprecation, or removal of a deprecated object
+  DEV: development tool or utility
+  DOC: documentation
+  ENH: enhancement or new feature
+  MNT: maintenance (refactoring, typos, etc.)
+  REV: revert an earlier commit
+  STY: style fix (whitespace, PEP8)
+  TST: addition or modification of tests
+  REL: manim release
   
-  Or create your own keyword if none of the previous keywords are applicable.
-
-- The title of your PR gives a short summary to end-users on what changes
-have been made. Some examples:
-  - `Bugfix: Fixed the issue with last animations not running to completion`)
-  - `Feature: Added support for gradients in SVG files`)
+- The title of your PR gives a descriptive summary to end-users. Some examples:
+  - `BUG: Fixed the issue with last animations not running to completion`)
+  - `ENH, DOC: Added support and documentation for gradients in SVG files`)
+  Examples of what *NOT* to do:
+  - `MNT: fixed that styling issue` - not descriptive enough
+  - `fixed issue #XYZ` - end-user needs to do further research
 -->
 
 ## Motivation
@@ -43,7 +48,7 @@ that might be useful for reviewers.. -->
 
 ## Acknowledgements
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-
+- [ ] The PR title includes at least one acronym and is descriptive enough
 <!-- Once again, thanks for helping out by contributing to manim! -->
 
 
@@ -52,3 +57,5 @@ that might be useful for reviewers.. -->
 - [ ] Newly added functions/classes are either private or have a docstring
 - [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
+- [ ] The PR title includes at least one acronym and is descriptive enough
+
