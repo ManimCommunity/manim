@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 
 from manim import config, tempconfig
-from manim.__main__ import main
+from manim.__main__ import manim
 
 try:
     from IPython import get_ipython
@@ -66,10 +66,10 @@ else:
 
             args = line.split()
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
-                main.manim(args, standalone_mode=False)
+                manim(args, standalone_mode=False)
                 return
             modified_args = ["--jupyter"] + args[:-1] + [""] + [args[-1]]
-            args = main.manim(modified_args, standalone_mode=False)
+            args = manim(modified_args, standalone_mode=False)
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
                 exec(f"{config['scene_names'][0]}().render()", local_ns)

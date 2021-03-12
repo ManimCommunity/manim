@@ -187,7 +187,7 @@ def test_dash_as_filename(tmp_path):
         "-",
     ]
     runner = CliRunner()
-    result = runner.invoke(main, command, input=code)
+    result = runner.invoke(manim, command, input=code)
     assert result.exit_code == 0
     exists = add_version_before_extension(
         tmp_path / "images" / "-" / "Test.png"
