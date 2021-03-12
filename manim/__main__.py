@@ -1,5 +1,6 @@
 import click
 from click_default_group import DefaultGroup
+from manim import __version__
 from manim.constants import EPILOG
 from manim.constants import CONTEXT_SETTINGS
 from manim.cli.cfg.commands import cfg
@@ -15,16 +16,18 @@ from manim.cli.render.commands import render
     help="Animation engine for explanatory math videos",
     epilog=EPILOG,
 )
-@click.version_option()
+@click.version_option(
+    version=__version__, prog_name="Manim", message="%(prog)s v%(version)s"
+)
 @click.pass_context
-def main(ctx):
+def manim(ctx):
     """The entry point for manim."""
     pass
 
 
-main.add_command(cfg)
-main.add_command(plugins)
-main.add_command(render)
+manim.add_command(cfg)
+manim.add_command(plugins)
+manim.add_command(render)
 
 if __name__ == "__main__":
-    main()
+    manim()

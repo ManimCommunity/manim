@@ -1,63 +1,54 @@
 import subprocess
 import sys
 
+from manim.__main__ import manim, __version__
+from click.testing import CliRunner
 from .test_plugins.test_plugins import function_like_plugin
 
-import manim
+
+def test_manim_version():
+    command = ["--version"]
+
+    runner = CliRunner()
+    result = runner.invoke(manim, command)
+    assert result.exit_code == 0
+    assert __version__ in result.output
 
 
-def call_command(command, cwd=None, env=None):
-    a = subprocess.run(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=True,
-        text=True,
-        cwd=cwd,
-        env=env,
-    )
-    return a
+def test_manim_cfg_subcommand():
+    command = ["cfg"]
+    runner = CliRunner()
+    result = runner.invoke(manim, command)
+    expected_output = """Usage: manim cfg [OPTIONS] COMMAND [ARGS]...
+
+  Manages Manim configuration files.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Commands:
+  export
+  show
+  write
+
+  Made with <3 by Manim Community developers.
+"""
+    assert expected_output == result.stdout
 
 
-def test_manim_version_from_command_line():
-    a = call_command(
-        [
-            sys.executable,
-            "-m",
-            "manim",
-            "--version",
-        ]
-    )
-    version = manim.__version__
-    assert version in a.stdout
-    assert a.stdout.strip() == f"Manim Community v{version}"
+def test_manim_plugins_subcommand():
+    command = ["plugins"]
+    runner = CliRunner()
+    result = runner.invoke(manim, command)
+    expected_output = """Usage: manim plugins [OPTIONS]
 
+  Manages Manim plugins.
 
-def test_manim_cfg_subcommand_no_subcommand():
-    a = call_command(
-        [
-            sys.executable,
-            "-m",
-            "manim",
-            "cfg",
-        ]
-    )
-    assert "No subcommand provided; Exiting..." in a.stdout
+Options:
+  -l, --list  List available plugins
+  -h, --help  Show this message and exit.
 
-
-def test_manim_plugis_subcommand_no_subcommand():
-    a = call_command(
-        [
-            sys.executable,
-            "-m",
-            "manim",
-            "plugins",
-        ]
-    )
-    assert "No flag provided; Exiting..." in a.stdout
-
-
-def test_manim_plugis_subcommand_listing(function_like_plugin):
-    # Check whether `test_plugin` is in plugins list
-    a = call_command([sys.executable, "-m", "manim", "plugins", "--list"])
-    assert "test_plugin" in a.stdout
+  Made with <3 by Manim Community developers.
+"""
+    print(result.output)
+    assert expected_output == result.output

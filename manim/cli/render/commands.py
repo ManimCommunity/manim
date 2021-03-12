@@ -357,7 +357,7 @@ def render(
             )
             console.print_exception()
     else:
-        for SceneClass in scene_classes_from_file(input_file):
+        for SceneClass in scene_classes_from_file(file):
             try:
                 scene = SceneClass()
                 scene.render()

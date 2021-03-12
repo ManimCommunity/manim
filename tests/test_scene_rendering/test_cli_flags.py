@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from PIL import Image
 from pathlib import Path
-from manim.__main__ import main
+from manim.__main__ import manim
 from click.testing import CliRunner
 
 from ..utils.video_tester import *
@@ -173,10 +173,12 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
 
 @pytest.mark.slow
 def test_dash_as_filename(tmp_path):
-    code = (f"class Test(Scene):\n"
-            f"    def construct(self):\n"
-            f"        self.add(Circle())\n"
-            f"        self.wait()")
+    code = (
+        f"class Test(Scene):\n"
+        f"    def construct(self):\n"
+        f"        self.add(Circle())\n"
+        f"        self.wait()"
+    )
     command = [
         "-ql",
         "-s",
