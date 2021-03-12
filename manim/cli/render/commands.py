@@ -88,7 +88,7 @@ def open_file_if_needed(file_writer):
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
-@click.argument("file", required=False)
+@click.argument("file", type=Path, required=False)
 @click.argument("scenes", required=False, nargs=-1)
 @optgroup.group("Global options")
 @optgroup.option(
