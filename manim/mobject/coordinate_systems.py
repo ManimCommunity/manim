@@ -146,13 +146,10 @@ class Axes(VGroup, CoordinateSystem):
         self.x_axis_config = {}
         self.y_axis_config = {"label_direction": LEFT, "rotation": 90 * DEGREES}
 
-        # update the above default configs recursively with their corresponding parameters.
-        default_configs = (self.axis_config, self.x_axis_config, self.y_axis_config)
-        passed_configs = (axis_config, x_axis_config, y_axis_config)
-        for default_config, passed_config in zip(default_configs, passed_configs):
-            if passed_config is not None:
-                update_dict_recursively(default_config, passed_config)
-
+        self.update_default_configs(
+            (self.axis_config, self.x_axis_config, self.y_axis_config),
+            (axis_config, x_axis_config, y_axis_config),
+        )
         self.center_point = center_point
         CoordinateSystem.__init__(self)
         VGroup.__init__(self, **kwargs)
@@ -164,6 +161,12 @@ class Axes(VGroup, CoordinateSystem):
         self.axes = VGroup(self.x_axis, self.y_axis, dim=self.dim)
         self.add(*self.axes)
         self.shift(self.center_point)
+
+    @staticmethod
+    def update_default_configs(default_configs, passed_configs):
+        for default_config, passed_config in zip(default_configs, passed_configs):
+            if passed_config is not None:
+                update_dict_recursively(default_config, passed_config)
 
     def create_axis(self, min_val, max_val, axis_config):
         new_config = merge_dicts_recursively(
@@ -283,29 +286,27 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions=True,
         **kwargs
     ):
-        axis_config = merge_dicts_recursively(
-            {
-                "stroke_color": WHITE,
-                "stroke_width": 2,
-                "include_ticks": False,
-                "include_tip": False,
-                "line_to_number_buff": SMALL_BUFF,
-                "label_direction": DR,
-                "number_scale_val": 0.5,
-            },
-            axis_config if axis_config is not None else {},
-        )
-        y_axis_config = merge_dicts_recursively(
-            {"label_direction": DR}, y_axis_config if y_axis_config is not None else {}
-        )
+        axis_config_ = {
+            "stroke_color": WHITE,
+            "stroke_width": 2,
+            "include_ticks": False,
+            "include_tip": False,
+            "line_to_number_buff": SMALL_BUFF,
+            "label_direction": DR,
+            "number_scale_val": 0.5,
+        }
+        y_axis_config_ = {"label_direction": DR}
+        background_line_style_ = {
+            "stroke_color": BLUE_D,
+            "stroke_width": 2,
+            "stroke_opacity": 1,
+        }
 
-        if background_line_style is None:
-            background_line_style = {
-                "stroke_color": BLUE_D,
-                "stroke_width": 2,
-                "stroke_opacity": 1,
-            }
-        self.background_line_style = background_line_style
+        self.update_default_configs(
+            (axis_config_, y_axis_config_, background_line_style_),
+            (axis_config, y_axis_config, background_line_style),
+        )
+        self.background_line_style = background_line_style_
 
         # Defaults to a faded version of line_config
         self.faded_line_style = faded_line_style
@@ -315,8 +316,8 @@ class NumberPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
 
         super().__init__(
-            axis_config=axis_config,
-            y_axis_config=y_axis_config,
+            axis_config=axis_config_,
+            y_axis_config=y_axis_config_,
             **kwargs,
         )
         self.init_background_lines()
