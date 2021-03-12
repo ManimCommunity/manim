@@ -1,5 +1,5 @@
 <!--
-Thanks for your contributing to ManimCommunity!
+Thanks for your contribution to ManimCommunity!
 
 Before filling in the details, ensure:
 - Your local changes are up-to-date with ManimCommunity/manim
