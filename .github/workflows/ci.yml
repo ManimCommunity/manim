@@ -50,7 +50,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y ffmpeg
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+          sudo apt-get -y install libpango1.0-dev texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Install system dependencies (MacOS)
