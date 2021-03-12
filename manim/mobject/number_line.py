@@ -87,7 +87,6 @@ class NumberLine(Line):
         if width is not None:
             self.width = width
             self.unit_size = self.get_unit_size()
-        self.rotate_about_zero(self.rotation)
         self.shift(-self.number_to_point(self.number_at_center))
 
         self.init_leftmost_tick()
@@ -95,6 +94,7 @@ class NumberLine(Line):
             self.add_tip()
         if self.include_ticks:
             self.add_tick_marks()
+        self.rotate_about_zero(self.rotation)
         if self.include_numbers:
             self.add_numbers()
 
