@@ -1,8 +1,24 @@
 <!--
-Thank you for contributing to manim!
+Thank you for your interest in contributing to ManimCommunity!
 
-Please ensure that your pull request works with the latest
-version of manim from this repository.
+Before filling out the details below, please ensure:
+- Your local changes are up-to-date with ManimCommunity/manim's latest
+changes and any conflicts are resolved.
+
+- The title of your PR starts with a keyword describing the changes made:
+  Feature:
+  Bugfix:
+  Enhancement:
+  Doc:
+  Removal:
+  Misc:
+  
+  Or create your own keyword if none of the previous keywords are applicable.
+
+- The title of your PR gives a short summary to end-users on what changes
+have been made. Some examples:
+  - `Bugfix: Fixed the issue with last animations not running to completion`)
+  - `Feature: Added support for gradients in SVG files`)
 -->
 
 ## Motivation
