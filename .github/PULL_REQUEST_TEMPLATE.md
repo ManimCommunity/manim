@@ -3,26 +3,12 @@ Thanks for your contribution to ManimCommunity!
 
 Before filling in the details, ensure:
 - Your local changes are up-to-date with ManimCommunity/manim
-
-- The title of your PR starts with at least one capitalized acronym:
-  API: an API breaking change
-  CI: change related to building manim
-  BUG: bug fix
-  DEP: deprecation, or removal of a deprecated object
-  DEV: development tool or utility
-  DOC: documentation
-  ENH: enhancement or new feature
-  MNT: maintenance (refactoring, typos, etc.)
-  REV: revert an earlier commit
-  STY: style fix (whitespace, PEP8)
-  TST: addition or modification of tests
-  REL: manim release
   
 - The title of your PR gives a descriptive summary to end-users. Some examples:
-  - `BUG: Fixed the issue with last animations not running to completion`)
-  - `ENH, DOC: Added support and documentation for gradients in SVG files`)
+  - `Fixed last animations not running to completion`)
+  - `Added gradient support and documentation for SVG files`)
   Examples of what *NOT* to do:
-  - `MNT: fixed that styling issue` - not descriptive enough
+  - `fixed that styling issue` - not descriptive enough
   - `fixed issue #XYZ` - end-user needs to do further research
 -->
 
@@ -48,7 +34,7 @@ that might be useful for reviewers.. -->
 
 ## Acknowledgements
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-- [ ] The PR title includes at least one acronym and is descriptive enough
+- [ ] The PR title is descriptive enough
 <!-- Once again, thanks for helping out by contributing to manim! -->
 
 
@@ -57,5 +43,5 @@ that might be useful for reviewers.. -->
 - [ ] Newly added functions/classes are either private or have a docstring
 - [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
-- [ ] The PR title includes at least one acronym and is descriptive enough
+- [ ] The PR title is descriptive enough
 
