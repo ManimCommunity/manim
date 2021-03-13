@@ -555,7 +555,7 @@ class Mobject(Container):
 
         Returns
         -------
-        list
+        ``list``
             The list of time based updaters. 
 
         See Also
@@ -572,7 +572,7 @@ class Mobject(Container):
         
         Returns
         -------
-        bool
+        ``bool``
             ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise. 
 
         See Also
@@ -586,6 +586,20 @@ class Mobject(Container):
         return False
 
     def get_updaters(self):
+        """
+        Return all updaters.
+        
+        Returns
+        -------
+        ``list``
+            The list of updaters. 
+
+        See Also
+        --------
+        :meth:`~Mobject.add_updater`
+        :meth:`~Mobject.get_time_based_updaters`
+
+        """
         return self.updaters
 
     def get_family_updaters(self):
