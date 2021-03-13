@@ -138,7 +138,9 @@ class Axes(VGroup, CoordinateSystem):
         center_point=ORIGIN,
         **kwargs
     ):
-        CoordinateSystem.__init__(self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
+        CoordinateSystem.__init__(
+            self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max
+        )
         VGroup.__init__(self, **kwargs)
 
         self.axis_config = {
@@ -170,13 +172,11 @@ class Axes(VGroup, CoordinateSystem):
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
-        print(f"passed configs are: {passed_configs}")
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
     def create_axis(self, axis_config):
-        print(f"final dict: {merge_dicts_recursively(self.axis_config, axis_config)}", end='\n\n')
         return NumberLine(**merge_dicts_recursively(self.axis_config, axis_config))
 
     def coords_to_point(self, *coords):
@@ -229,7 +229,9 @@ class ThreeDAxes(Axes):
         light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
         **kwargs
     ):
-        Axes.__init__(self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, **kwargs)
+        Axes.__init__(
+            self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, **kwargs
+        )
         self.z_min = z_min
         self.z_max = z_max
         self.z_axis_config = {"x_min": self.z_min, "x_max": self.z_max}
