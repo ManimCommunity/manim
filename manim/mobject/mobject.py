@@ -126,7 +126,7 @@ class Mobject(Container):
 
     def reset_points(self):
         """
-        Sets :code:`self.points` to be an empty array.
+        Sets ``self.points`` to be an empty array.
         """
         self.points = np.zeros((0, self.dim))
 
@@ -140,7 +140,7 @@ class Mobject(Container):
 
     def generate_points(self):
         """
-        Initializes :code:`self.points` and therefore the shape.
+        Initializes ``self.points`` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
         """
@@ -149,9 +149,9 @@ class Mobject(Container):
     def add(self, *mobjects):
         """Add mobjects as submobjects.
 
-        The mobjects are added to :code:`self.submobjects`.
+        The mobjects are added to ``self.submobjects``.
 
-        Subclasses of mobject may implement :code:`+` and :code:`+=` dunder methods.
+        Subclasses of mobject may implement ``+`` and ``+=`` dunder methods.
 
         Parameters
         ----------
@@ -161,7 +161,7 @@ class Mobject(Container):
         Returns
         -------
         :class:`Mobject`
-            :code:`self`
+            ``self``
 
         Raises
         ------
@@ -239,9 +239,9 @@ class Mobject(Container):
     def remove(self, *mobjects):
         """Remove submobjects.
 
-        The mobjects are removed from self.submobjects, if they exist.
+        The mobjects are removed from ``self.submobjects``, if they exist.
 
-        Subclasses of mobject may implement - and -= dunder methods.
+        Subclasses of mobject may implement ``-`` and ``-=`` dunder methods.
 
         Parameters
         ----------
@@ -251,7 +251,7 @@ class Mobject(Container):
         Returns
         -------
         :class:`Mobject`
-            :code:`self`
+            ``self``
 
         See Also
         --------
@@ -1054,7 +1054,7 @@ class Mobject(Container):
         Returns
         -------
         :class:`Mobject`
-            :code:`self`
+            ``self``
 
         See Also
         --------
