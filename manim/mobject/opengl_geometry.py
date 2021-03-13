@@ -1,25 +1,25 @@
 import numpy as np
 
 from ..constants import *
-from ..utils.color import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
-from ..mobject.types.opengl_vectorized_mobject import OpenGLDashedVMobject
-from ..utils.iterables import adjacent_n_tuples
-from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
-
-from ..utils.simple_functions import clip
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import angle_between_vectors
-from ..utils.space_ops import compass_directions
-from ..utils.space_ops import find_intersection
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import normalize
-from ..utils.space_ops import rotate_vector
-from ..utils.space_ops import rotation_matrix_transpose
-
+from ..mobject.types.opengl_vectorized_mobject import (
+    OpenGLDashedVMobject,
+    OpenGLVGroup,
+    OpenGLVMobject,
+)
+from ..utils.color import *
+from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
+from ..utils.simple_functions import clip, fdiv
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    compass_directions,
+    find_intersection,
+    get_norm,
+    normalize,
+    rotate_vector,
+    rotation_matrix_transpose,
+)
 
 DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04

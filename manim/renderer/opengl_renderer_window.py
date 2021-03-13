@@ -1,4 +1,4 @@
-from .. import config
+from .. import config, __version__
 import moderngl_window as mglw
 from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
@@ -18,7 +18,7 @@ class Window(PygletWindow):
 
         self.pressed_keys = set()
 
-        self.title = "Title goes here"
+        self.title = f"Manim Community {__version__}"
         self.size = size
         self.renderer = renderer
 
