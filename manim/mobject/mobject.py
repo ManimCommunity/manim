@@ -491,6 +491,13 @@ class Mobject(Container):
         )
 
     def copy(self):
+        """
+        Create and return an identical copy of the Mobject including all submobjects.
+
+        Note
+        ----
+        The clone is initially not visible in the Scene, even if the original was.
+        """
         return copy.deepcopy(self)
 
     def generate_target(self, use_deepcopy=False):
@@ -1051,8 +1058,8 @@ class Mobject(Container):
     # Background rectangle
     def add_background_rectangle(self, color=BLACK, opacity=0.75, **kwargs):
         """Add a BackgroundRectangle as submobject.
-        
-        The BackgroundRectangle is added behind other submobjects. 
+
+        The BackgroundRectangle is added behind other submobjects.
 
         This can be used to increase the mobjects visibility in front of a noisy background.
 
