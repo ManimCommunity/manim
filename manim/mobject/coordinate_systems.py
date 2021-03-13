@@ -28,16 +28,12 @@ class CoordinateSystem:
     Abstract class for Axes and NumberPlane
     """
 
-    def __init__(self, dim=2):
+    def __init__(self, x_min=None, x_max=None, y_min=None, y_max=None, dim=2):
         self.dimension = dim
-        if not hasattr(self, "x_min"):
-            self.x_min = -config["frame_x_radius"]
-        if not hasattr(self, "x_max"):
-            self.x_max = config["frame_x_radius"]
-        if not hasattr(self, "y_min"):
-            self.y_min = -config["frame_y_radius"]
-        if not hasattr(self, "y_max"):
-            self.y_max = config["frame_y_radius"]
+        self.x_min = -config["frame_x_radius"] if x_min is None else x_min
+        self.x_max = config["frame_x_radius"] if x_max is None else x_max
+        self.y_min = -config["frame_y_radius"] if y_min is None else y_min
+        self.y_max = config["frame_y_radius"] if y_max is None else y_max
 
     def coords_to_point(self, *coords):
         raise NotImplementedError()
@@ -132,29 +128,39 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem):
     def __init__(
         self,
+        x_min=None,
+        x_max=None,
+        y_min=None,
+        y_max=None,
         axis_config=None,
         x_axis_config=None,
         y_axis_config=None,
         center_point=ORIGIN,
         **kwargs
     ):
+        CoordinateSystem.__init__(self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
+        VGroup.__init__(self, **kwargs)
+
         self.axis_config = {
             "color": LIGHT_GREY,
             "include_tip": True,
             "exclude_zero_from_default_numbers": True,
         }
-        self.x_axis_config = {}
-        self.y_axis_config = {"label_direction": LEFT, "rotation": 90 * DEGREES}
+        self.x_axis_config = {"x_min": self.x_min, "x_max": self.x_max}
+        self.y_axis_config = {
+            "x_min": self.y_min,
+            "x_max": self.y_max,
+            "label_direction": LEFT,
+            "rotation": 90 * DEGREES,
+        }
 
         self.update_default_configs(
             (self.axis_config, self.x_axis_config, self.y_axis_config),
             (axis_config, x_axis_config, y_axis_config),
         )
         self.center_point = center_point
-        CoordinateSystem.__init__(self)
-        VGroup.__init__(self, **kwargs)
-        self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
-        self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
+        self.x_axis = self.create_axis(self.x_axis_config)
+        self.y_axis = self.create_axis(self.y_axis_config)
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
@@ -164,17 +170,14 @@ class Axes(VGroup, CoordinateSystem):
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
+        print(f"passed configs are: {passed_configs}")
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
-    def create_axis(self, min_val, max_val, axis_config):
-        new_config = merge_dicts_recursively(
-            self.axis_config,
-            {"x_min": min_val, "x_max": max_val},
-            axis_config,
-        )
-        return NumberLine(**new_config)
+    def create_axis(self, axis_config):
+        print(f"final dict: {merge_dicts_recursively(self.axis_config, axis_config)}", end='\n\n')
+        return NumberLine(**merge_dicts_recursively(self.axis_config, axis_config))
 
     def coords_to_point(self, *coords):
         origin = self.x_axis.number_to_point(0)
@@ -214,35 +217,28 @@ class Axes(VGroup, CoordinateSystem):
 class ThreeDAxes(Axes):
     def __init__(
         self,
-        z_axis_config=None,
-        z_min=-3.5,
-        z_max=3.5,
         x_min=-5.5,
         x_max=5.5,
         y_min=-5.5,
         y_max=5.5,
+        z_min=-3.5,
+        z_max=3.5,
+        z_axis_config=None,
         z_normal=DOWN,
         num_axis_pieces=20,
         light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
         **kwargs
     ):
-        if z_axis_config is None:
-            z_axis_config = {}
-        self.z_axis_config = z_axis_config
+        Axes.__init__(self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, **kwargs)
         self.z_min = z_min
         self.z_max = z_max
+        self.z_axis_config = {"x_min": self.z_min, "x_max": self.z_max}
+        self.update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_normal = z_normal
         self.num_axis_pieces = num_axis_pieces
         self.light_source = light_source
-        self.x_min = x_min
-        self.x_max = x_max
-        self.y_min = y_min
-        self.y_max = y_max
-        Axes.__init__(self, **kwargs)
         self.dimension = 3
-        z_axis = self.z_axis = self.create_axis(
-            self.z_min, self.z_max, self.z_axis_config
-        )
+        z_axis = self.z_axis = self.create_axis(self.z_axis_config)
         z_axis.rotate(-np.pi / 2, UP, about_point=ORIGIN)
         z_axis.rotate(angle_of_vector(self.z_normal), OUT, about_point=ORIGIN)
         self.axes.add(z_axis)
