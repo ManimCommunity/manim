@@ -1558,7 +1558,7 @@ class Cutout(VMobject):
             self.append_points(mobject.force_direction(sub_direction).get_points())
 
 
-class ArcAngle(Arc):
+class Angle(Arc):
     """A circular arc representing an angle of two lines.
 
     Parameters
