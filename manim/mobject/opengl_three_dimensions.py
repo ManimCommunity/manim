@@ -42,8 +42,7 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
 
         points, du_points, dv_points = uv_surface.get_surface_points_and_nudged_points()
         normals = uv_surface.get_unit_normals()
-        nudge = 1e-2
-        nudged_points = points + nudge * normals
+        nudged_points = points + self.normal_nudge * normals
 
         for ui in u_indices:
             path = OpenGLVMobject()

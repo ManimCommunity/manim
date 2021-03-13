@@ -1,37 +1,36 @@
 import itertools as it
 import operator as op
+from functools import reduce, wraps
+
 import moderngl
 import numpy as np
 
-from functools import reduce, wraps
-from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ...constants import *
-from ...utils.color import *
-
-from ...utils.bezier import bezier
+from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
-from ...utils.bezier import get_smooth_cubic_bezier_handle_points
-from ...utils.bezier import get_quadratic_approximation_of_cubic
-from ...utils.bezier import interpolate
-from ...utils.bezier import integer_interpolate
-from ...utils.bezier import partial_quadratic_bezier_points
-
-# from manimlib.utils.color import rgb_to_hex
-from ...utils.iterables import make_even
+from ...utils.bezier import (
+    bezier,
+    get_quadratic_approximation_of_cubic,
+    get_smooth_cubic_bezier_handle_points,
+    integer_interpolate,
+    interpolate,
+    partial_quadratic_bezier_points,
+)
+from ...utils.color import *
 
 # from manimlib.utils.iterables import resize_array
-from ...utils.iterables import resize_with_interpolation
-from ...utils.iterables import listify
+# from manimlib.utils.color import rgb_to_hex
+from ...utils.iterables import listify, make_even, resize_with_interpolation
 
 # from manimlib.utils.space_ops import angle_between_vectors
-from ...utils.space_ops import cross2d
-from ...utils.space_ops import earclip_triangulation
-from ...utils.space_ops import get_norm
-from ...utils.space_ops import get_unit_normal
-
-from ...utils.space_ops import z_to_vector
-
+from ...utils.space_ops import (
+    cross2d,
+    earclip_triangulation,
+    get_norm,
+    get_unit_normal,
+    z_to_vector,
+)
 
 JOINT_TYPE_MAP = {
     "auto": 0,
