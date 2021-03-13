@@ -873,6 +873,46 @@ class Scene(Container):
             self.update_mobjects(0)
         self.renderer.static_image = None
 
+    def embed(self):
+        if not config["preview"]:
+            logger.warning("Called embed() while no preview window is available.")
+            return
+        if config["write_to_movie"]:
+            logger.warning("embed() is skipped while writing to a file.")
+            return
+
+        self.renderer.render(self, -1, self.moving_mobjects)
+
+        # Configure IPython shell.
+        from IPython.terminal.embed import InteractiveShellEmbed
+
+        shell = InteractiveShellEmbed()
+
+        # Have the frame update after each command
+        shell.events.register(
+            "post_run_cell",
+            lambda *a, **kw: self.renderer.render(self, -1, self.moving_mobjects),
+        )
+
+        # Use the locals of the caller as the local namespace
+        # once embeded, and add a few custom shortcuts.
+        local_ns = inspect.currentframe().f_back.f_locals
+        # local_ns["touch"] = self.interact
+        for method in (
+            "play",
+            "wait",
+            "add",
+            "remove",
+            # "clear",
+            # "save_state",
+            # "restore",
+        ):
+            local_ns[method] = getattr(self, method)
+        shell(local_ns=local_ns, stack_depth=2)
+
+        # End scene when exiting an embed.
+        raise Exception("Exiting scene.")
+
     def update_to_time(self, t):
         dt = t - self.last_t
         self.last_t = t
