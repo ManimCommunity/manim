@@ -125,14 +125,25 @@ class Mobject(Container):
         return str(self.name)
 
     def reset_points(self):
+        """
+        Sets :code:`self.points` to be an empty array.
+        """
         self.points = np.zeros((0, self.dim))
 
     def init_colors(self):
-        # For subclasses
+        """
+        Initializes the colors.
+
+        Gets called upon creation. This is an empty method that can be implemented by subclasses.
+        """
         pass
 
     def generate_points(self):
-        # Typically implemented in subclass, unless purposefully left blank
+        """
+        Initializes :code:`self.points` and therefore the shape.
+
+        Gets called upon creation. This is an empty method that can be implemented by subclasses.
+        """
         pass
 
     def add(self, *mobjects):
@@ -1020,7 +1031,7 @@ class Mobject(Container):
 
     # Background rectangle
     def add_background_rectangle(self, color=BLACK, opacity=0.75, **kwargs):
-        """Adds a BackgroundRectangle as submobject.
+        """Add a BackgroundRectangle as submobject.
         
         The BackgroundRectangle is added behind other submobjects. 
 
