@@ -1020,10 +1020,34 @@ class Mobject(Container):
 
     # Background rectangle
     def add_background_rectangle(self, color=BLACK, opacity=0.75, **kwargs):
-        """
-        Adds a BackgroundRectangle as submobject. 
-        """
+        """Adds a BackgroundRectangle as submobject.
         
+        The BackgroundRectangle is added behind other submobjects. 
+
+        This can be used to increase the mobjects visibility in front of a noisy background.
+
+        Parameters
+        ----------
+        color : str
+            The color of the BackgroundRectangle
+        opacity : float
+            The opacity of the BackgroundRectangle
+        kwargs :
+            Additional keyword arguments passed to the BackgroundRectangle constructor
+
+
+        Returns
+        -------
+        :class:`Mobject`
+            :code:`self`
+
+        See Also
+        --------
+        :meth:`~Mobject.add_to_back`
+        :class:`~.BackgroundRectangle`
+
+        """
+
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
         from ..mobject.shape_matchers import BackgroundRectangle
