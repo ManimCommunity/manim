@@ -220,7 +220,10 @@ class Mobject(Container):
         raise NotImplementedError
 
     def add_to_back(self, *mobjects):
-        """Adds (or moves) all passed mobjects to the back of the scene.
+        """
+        Add all passed mobjects to the back of the submobjects.
+
+        If ``self.submobjects`` already contains the given mobjects, they just get moved to the back instead.
 
         .. note::
 
