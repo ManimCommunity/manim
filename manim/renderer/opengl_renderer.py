@@ -189,7 +189,7 @@ class OpenGLRenderer:
         self.camera = OpenGLCamera()
 
         if config["preview"]:
-            self.window = Window()
+            self.window = Window(self)
             self.context = self.window.ctx
             self.frame_buffer_object = self.context.detect_framebuffer()
         else:
@@ -352,6 +352,7 @@ class OpenGLRenderer:
             self,
             scene.__class__.__name__,
         )
+        self.scene = scene
 
     def play(self, scene, *args, **kwargs):
         if len(args) == 0:
@@ -429,3 +430,15 @@ class OpenGLRenderer:
             dtype=dtype,
         )
         return ret
+
+    # Returns offset from the bottom left corner in pixels.
+    def pixel_coords_to_space_coords(self, px, py, relative=False):
+        pw, ph = config["pixel_width"], config["pixel_height"]
+        fw, fh = config["frame_width"], config["frame_height"]
+        fc = self.camera.get_center()
+        if relative:
+            return 2 * np.array([px / pw, py / ph, 0])
+        else:
+            # Only scale wrt one axis
+            scale = fh / ph
+            return fc + scale * np.array([(px - pw / 2), (py - ph / 2), 0])

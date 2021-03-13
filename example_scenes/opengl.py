@@ -8,6 +8,14 @@ from pathlib import Path
 # Lines that do not yet work with the Community Version are commented.
 
 
+class Test(Scene):
+    def construct(self):
+        square = OpenGLSquare()
+        square.add_updater(lambda s: s.move_to(self.mouse_point))
+        self.add(square)
+        self.wait(60)
+
+
 class InteractiveDevelopment(Scene):
     def construct(self):
         circle = OpenGLCircle()

@@ -22,6 +22,7 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject, _AnimationBuilder
+from ..mobject.opengl_mobject import OpenGLPoint
 from ..utils.iterables import list_update, list_difference_update
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
@@ -80,6 +81,11 @@ class Scene(Container):
         self.time_progression = None
         self.duration = None
         self.last_t = None
+
+        if config["use_opengl_renderer"]:
+            # Items associated with interaction
+            self.mouse_point = OpenGLPoint()
+            self.mouse_drag_point = OpenGLPoint()
 
         if renderer is None:
             self.renderer = CairoRenderer(
@@ -950,3 +956,6 @@ class Scene(Container):
             return
         time = self.renderer.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
+
+    def on_mouse_motion(self, point, d_point):
+        self.mouse_point.move_to(point)
