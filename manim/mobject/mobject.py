@@ -149,9 +149,9 @@ class Mobject(Container):
     def add(self, *mobjects):
         """Add mobjects as submobjects.
 
-        The mobjects are added to self.submobjects.
+        The mobjects are added to :code:`self.submobjects`.
 
-        Subclasses of mobject may implement + and += dunder methods.
+        Subclasses of mobject may implement :code:`+` and :code:`+=` dunder methods.
 
         Parameters
         ----------
