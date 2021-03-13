@@ -392,6 +392,11 @@ class Mobject(Container):
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(width=7))
                     self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
         """
 
         # Get the length across the X dimension
@@ -424,6 +429,11 @@ class Mobject(Container):
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(height=5))
                     self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
         """
 
         # Get the length across the Y dimension
@@ -440,6 +450,11 @@ class Mobject(Container):
         Returns
         -------
         :class:`float`
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
         """
 
         # Get the length across the Z dimension
