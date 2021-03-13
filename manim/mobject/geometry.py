@@ -1558,7 +1558,7 @@ class Cutout(VMobject):
             self.append_points(mobject.force_direction(sub_direction).get_points())
 
 
-class Angle(Elbow):
+class Angle(Arc, Elbow):
     """A circular arc representing an angle of two lines.
 
     Parameters
@@ -1681,23 +1681,25 @@ class Angle(Elbow):
             else:
                 dist_2 = np.linalg.norm(line2.get_start() - inter)
             if np.minimum(dist_1, dist_2) < 0.6:
-                radius = (2 / 3) * np.minimum(dist_1, dist_2)
+                radius = (2/3) * np.minimum(dist_1, dist_2)
             else:
                 radius = 0.4
         else:
             self.radius = radius
-
+        
         anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
         anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
 
         if elbow == True:
             anchor_middle = (
-                inter
-                + quadrant[0] * radius * line1.get_unit_vector()
-                + quadrant[1] * radius * line2.get_unit_vector()
+            inter
+            + quadrant[0] * radius * line1.get_unit_vector()
+            + quadrant[1] * radius * line2.get_unit_vector()
             )
             Elbow.__init__(self, **kwargs)
-            self.set_points_as_corners([anchor_angle_1, anchor_middle, anchor_angle_2])
+            self.set_points_as_corners(
+                [anchor_angle_1, anchor_middle, anchor_angle_2]
+            )
         else:
             angle_1 = angle_of_vector(anchor_angle_1 - inter)
             angle_2 = angle_of_vector(anchor_angle_2 - inter)
