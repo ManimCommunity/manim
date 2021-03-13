@@ -54,7 +54,7 @@ __all__ = [
     "Square",
     "RoundedRectangle",
     "Cutout",
-    "ArcAngle",
+    "Angle",
     "RightAngle",
 ]
 
@@ -1558,7 +1558,7 @@ class Cutout(VMobject):
             self.append_points(mobject.force_direction(sub_direction).get_points())
 
 
-class Angle(Arc):
+class Angle(Elbow):
     """A circular arc representing an angle of two lines.
 
     Parameters
@@ -1603,10 +1603,10 @@ class Angle(Arc):
                 line1 = Line( LEFT, RIGHT )
                 line2 = Line( DOWN, UP )
                 rightarcangles = [
-                    ArcAngle(line1, line2, dot=True),
-                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1), dot=True, other_angle=True),
-                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.04, other_angle=True),
-                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.08),
+                    Angle(line1, line2, dot=True),
+                    Angle(line1, line2, radius=0.4, quadrant=(1,-1), dot=True, other_angle=True),
+                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.04, other_angle=True),
+                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.08),
                 ]
                 line_list = VGroup( *[VGroup() for k in range(4)] )
                 for k in range(4):
@@ -1620,22 +1620,22 @@ class Angle(Arc):
                     line_list
                 )
 
-    ..manim:: ArcAngleExample
+    ..manim:: AngleExample
         :save_last_frame:
 
-        class ArcAngleExample(Scene):
+        class AngleExample(Scene):
             def construct(self):
                 line1 = Line( LEFT + (1/3) * UP, RIGHT + (1/3) * DOWN )
                 line2 = Line( DOWN + (1/3) * RIGHT, UP + (1/3) * LEFT )
-                arcangles = [
-                    ArcAngle(line1, line2),
-                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1), other_angle=True),
-                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, other_angle=True),
-                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED),
-                    ArcAngle(line1, line2, other_angle=True),
-                    ArcAngle(line1, line2, radius=0.4, quadrant=(1,-1)),
-                    ArcAngle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
-                    ArcAngle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
+                angles = [
+                    Angle(line1, line2),
+                    Angle(line1, line2, radius=0.4, quadrant=(1,-1), other_angle=True),
+                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, other_angle=True),
+                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED),
+                    Angle(line1, line2, other_angle=True),
+                    Angle(line1, line2, radius=0.4, quadrant=(1,-1)),
+                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
+                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
                 ]
                 line_list = VGroup( *[VGroup() for k in range(8)] )
                 for k in range(8):
@@ -1643,7 +1643,7 @@ class Angle(Arc):
                     lineb = line2.copy()
                     line_list[k].add( linea )
                     line_list[k].add( lineb )
-                    line_list[k].add( arcangles[k] )
+                    line_list[k].add( angles[k] )
                 line_list.arrange_in_grid(n_rows=2, n_cols=4, buff=1.5)
                 self.add(
                     line_list
@@ -1655,66 +1655,92 @@ class Angle(Arc):
         self,
         line1,
         line2,
-        radius=0.3,
+        radius=None,
         quadrant=(1, 1),
         other_angle=False,
         dot=False,
         dot_radius=None,
         dot_distance=0.55,
         dot_color=WHITE,
+        elbow=False,
         **kwargs
     ):
-        self.radius = radius
         self.quadrant = quadrant
         self.dot_distance = dot_distance
         inter = line_intersection(
             [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
         )
+
+        if radius == None:
+            if quadrant[0] == 1:
+                dist_1 = np.linalg.norm(line1.get_end() - inter)
+            else:
+                dist_1 = np.linalg.norm(line1.get_start() - inter)
+            if quadrant[1] == 1:
+                dist_2 = np.linalg.norm(line2.get_end() - inter)
+            else:
+                dist_2 = np.linalg.norm(line2.get_start() - inter)
+            if np.minimum(dist_1, dist_2) < 0.6:
+                radius = (2 / 3) * np.minimum(dist_1, dist_2)
+            else:
+                radius = 0.4
+        else:
+            self.radius = radius
+
         anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
         anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
 
-        angle_1 = angle_of_vector(anchor_angle_1 - inter)
-        angle_2 = angle_of_vector(anchor_angle_2 - inter)
-
-        if other_angle == False:
-            start_angle = angle_1
-            if angle_2 > angle_1:
-                angle_fin = angle_2 - angle_1
-            else:
-                angle_fin = 2 * np.pi - (angle_1 - angle_2)
-        else:
-            start_angle = angle_1
-            if angle_2 < angle_1:
-                angle_fin = -angle_1 + angle_2
-            else:
-                angle_fin = -2 * np.pi + (angle_2 - angle_1)
-
-        Arc.__init__(
-            self,
-            radius=radius,
-            angle=angle_fin,
-            start_angle=start_angle,
-            arc_center=inter,
-            **kwargs
-        )
-        if dot == True:
-            if dot_radius == None:
-                dot_radius = radius / 10
-            else:
-                self.dot_radius = dot_radius
-            right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
-            dot_anchor = (
+        if elbow == True:
+            anchor_middle = (
                 inter
-                + (self.get_center() - inter)
-                / np.linalg.norm(self.get_center() - inter)
-                * radius
-                * dot_distance
+                + quadrant[0] * radius * line1.get_unit_vector()
+                + quadrant[1] * radius * line2.get_unit_vector()
             )
-            right_dot.move_to(dot_anchor)
-            self.add(right_dot)
+            Elbow.__init__(self, **kwargs)
+            self.set_points_as_corners([anchor_angle_1, anchor_middle, anchor_angle_2])
+        else:
+            angle_1 = angle_of_vector(anchor_angle_1 - inter)
+            angle_2 = angle_of_vector(anchor_angle_2 - inter)
+
+            if other_angle == False:
+                start_angle = angle_1
+                if angle_2 > angle_1:
+                    angle_fin = angle_2 - angle_1
+                else:
+                    angle_fin = 2 * np.pi - (angle_1 - angle_2)
+            else:
+                start_angle = angle_1
+                if angle_2 < angle_1:
+                    angle_fin = -angle_1 + angle_2
+                else:
+                    angle_fin = -2 * np.pi + (angle_2 - angle_1)
+
+            Arc.__init__(
+                self,
+                radius=radius,
+                angle=angle_fin,
+                start_angle=start_angle,
+                arc_center=inter,
+                **kwargs
+            )
+            if dot == True:
+                if dot_radius == None:
+                    dot_radius = radius / 10
+                else:
+                    self.dot_radius = dot_radius
+                right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
+                dot_anchor = (
+                    inter
+                    + (self.get_center() - inter)
+                    / np.linalg.norm(self.get_center() - inter)
+                    * radius
+                    * dot_distance
+                )
+                right_dot.move_to(dot_anchor)
+                self.add(right_dot)
 
 
-class RightAngle(VMobject):
+class RightAngle(Angle):
     """An elbow-type mobject representing a right angle between two lines.
 
     Parameters
@@ -1725,11 +1751,6 @@ class RightAngle(VMobject):
         The second line.
     length : :class:`float`
         The length of the arms.
-    quadrant : Sequence[:class:`int`]
-        A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
-        The first value indicates whether to anchor the arc on the first line closer to the end point (1)
-        or start point (-1), and the second value functions similarly for the end (1) or start (-1) of the second line.
-        Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
     kwargs
         Further keyword arguments that are passed to the constructor of :class:`~.VMobject`.
 
@@ -1763,21 +1784,8 @@ class RightAngle(VMobject):
 
     """
 
-    def __init__(self, line1, line2, length=0.3, quadrant=(1, 1), **kwargs):
-        self.length = length
-        self.quadrant = quadrant
-        inter = line_intersection(
-            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
-        )
-        anchor_elbow_1 = inter + quadrant[0] * length * line1.get_unit_vector()
-        anchor_elbow_2 = inter + quadrant[1] * length * line2.get_unit_vector()
-        anchor_elbow_middle = (
-            inter
-            + quadrant[0] * length * line1.get_unit_vector()
-            + quadrant[1] * length * line2.get_unit_vector()
-        )
-
-        VMobject.__init__(self, **kwargs)
-        self.set_points_as_corners(
-            [anchor_elbow_1, anchor_elbow_middle, anchor_elbow_2]
-        )
+    def __init__(self, line1, line2, length=None, **kwargs):
+        if length == None:
+            Angle.__init__(self, line1, line2, elbow=True, **kwargs)
+        else:
+            Angle.__init__(self, line1, line2, radius=length, elbow=True, **kwargs)
