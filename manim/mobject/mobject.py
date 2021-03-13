@@ -608,29 +608,65 @@ class Mobject(Container):
     def add_updater(self, update_function, index=None, call_updater=False):
         """Add an update function to this mobject.
 
+        Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
+
+        Parameters
+        ----------
+        update_function:
+            The update function to be added.
+            Whenever :meth:`update` is called, this update function gets called using the mobject as the first parameter.
+            The updater can have a second parameter ``dt``. If it uses this parameter, it gets called using a second value ``dt``, usually representing the time in seconds since the last call of :meth:`update`.
+
+        index:
+            The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
+        call_updater: ``bool``
+            Wheather or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
         Examples
         --------
+        .. manim:: NextToUpdater
 
-        .. manim:: RotationUpdater
-
-            class RotationUpdater(Scene):
+            class NextToUpdater(Scene):
                 def construct(self):
-                    def updater_forth(mobj, dt):
-                        mobj.rotate_about_origin(dt)
-                    def updater_back(mobj, dt):
-                        mobj.rotate_about_origin(-dt)
-                    line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
-                    line_moving = Line(ORIGIN, LEFT).set_color(YELLOW)
-                    line_moving.add_updater(updater_forth)
-                    self.add(line_reference, line_moving)
-                    self.wait(2)
-                    line_moving.remove_updater(updater_forth)
-                    line_moving.add_updater(updater_back)
-                    self.wait(2)
-                    line_moving.remove_updater(updater_back)
-                    self.wait(0.5)
+                    def dot_position(mobject):
+                        mobject.set_value(dot.get_center()[0])
+                        mobject.next_to(dot)
+
+                    dot = Dot(RIGHT*3)
+                    label = DecimalNumber()
+                    label.add_updater(dot_position)
+                    self.add(dot, label)
+
+                    self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
+        
 
         """
+
+        # .. manim:: RotationUpdater
+
+        #     class RotationUpdater(Scene):
+        #         def construct(self):
+        #             def updater_forth(mobj, dt):
+        #                 mobj.rotate_about_origin(dt)
+        #             def updater_back(mobj, dt):
+        #                 mobj.rotate_about_origin(-dt)
+        #             line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
+        #             line_moving = Line(ORIGIN, LEFT).set_color(YELLOW)
+        #             line_moving.add_updater(updater_forth)
+        #             self.add(line_reference, line_moving)
+        #             self.wait(2)
+        #             line_moving.remove_updater(updater_forth)
+        #             line_moving.add_updater(updater_back)
+        #             self.wait(2)
+        #             line_moving.remove_updater(updater_back)
+        #             self.wait(0.5)
+
+        # """
         if index is None:
             self.updaters.append(update_function)
         else:
