@@ -548,9 +548,38 @@ class Mobject(Container):
         return self
 
     def get_time_based_updaters(self):
+        """
+        Return all updaters using the ``dt`` parameter.
+        
+        The updaters use this parameter as the input for difference in time.
+
+        Returns
+        -------
+        list
+            The list of time based updaters. 
+
+        See Also
+        --------
+        :meth:`~Mobject.get_updaters`
+        :meth:`~Mobject.has_time_based_updater`
+
+        """
         return [updater for updater in self.updaters if "dt" in get_parameters(updater)]
 
     def has_time_based_updater(self):
+        """
+        Test if ``self`` has a time based updater.
+        
+        Returns
+        -------
+        bool
+            ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise. 
+
+        See Also
+        --------
+        :meth:`~Mobject.get_time_based_updaters`
+
+        """
         for updater in self.updaters:
             if "dt" in get_parameters(updater):
                 return True
