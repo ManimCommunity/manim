@@ -511,6 +511,27 @@ class Mobject(Container):
     # Updating
 
     def update(self, dt=0, recursive=True):
+        """
+        Applies all update functions if updating is not suspended.
+
+        
+        Parameters
+        ----------
+        dt : float
+            The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``.
+        recursive : bool
+            Whether to recursively call ``update`` on all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See Also
+        --------
+        :meth:`~Mobject.add_updater`
+
+        """
         if self.updating_suspended:
             return self
         for updater in self.updaters:
