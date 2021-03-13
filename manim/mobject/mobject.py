@@ -512,8 +512,9 @@ class Mobject(Container):
 
     def update(self, dt=0, recursive=True):
         """
-        Applies all update functions if updating is not suspended.
+        Apply all updaters.
 
+        Does nothing if updating is suspended.
         
         Parameters
         ----------
@@ -530,6 +531,7 @@ class Mobject(Container):
         See Also
         --------
         :meth:`~Mobject.add_updater`
+        :meth:`~Mobject.get_updaters`
 
         """
         if self.updating_suspended:
