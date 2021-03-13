@@ -56,6 +56,8 @@ class OpenGLVMobject(OpenGLMobject):
         ("stroke_width", np.float32, (1,)),
         ("color", np.float32, (4,)),
     ]
+    stroke_shader_folder = "quadratic_bezier_stroke"
+    fill_shader_folder = "quadratic_bezier_fill"
 
     def __init__(
         self,
@@ -76,9 +78,6 @@ class OpenGLVMobject(OpenGLMobject):
         tolerance_for_point_equality=1e-8,
         n_points_per_curve=3,
         long_lines=False,
-        # For shaders
-        stroke_shader_folder="quadratic_bezier_stroke",
-        fill_shader_folder="quadratic_bezier_fill",
         # Could also be "bevel", "miter", "round"
         joint_type="auto",
         flat_stroke=True,
@@ -105,9 +104,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_curve = n_points_per_curve
         self.long_lines = long_lines
-        # For shaders
-        self.stroke_shader_folder = stroke_shader_folder
-        self.fill_shader_folder = fill_shader_folder
         # Could also be "bevel", "miter", "round"
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
@@ -945,7 +941,7 @@ class OpenGLVMobject(OpenGLMobject):
         return ShaderWrapper(
             vert_data=self.get_fill_shader_data(),
             vert_indices=self.get_triangulation(),
-            shader_folder="quadratic_bezier_fill",
+            shader_folder=self.fill_shader_folder,
             render_primitive=moderngl.TRIANGLES,
             uniforms=self.get_fill_uniforms(),
             depth_test=self.depth_test,
@@ -956,7 +952,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         return ShaderWrapper(
             vert_data=self.get_stroke_shader_data(),
-            shader_folder="quadratic_bezier_stroke",
+            shader_folder=self.stroke_shader_folder,
             render_primitive=moderngl.TRIANGLES,
             uniforms=self.get_stroke_uniforms(),
             depth_test=self.depth_test,

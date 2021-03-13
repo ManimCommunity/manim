@@ -18,6 +18,7 @@ class OpenGLSurface(OpenGLMobject):
         ("dv_point", np.float32, (3,)),
         ("color", np.float32, (4,)),
     ]
+    shader_folder = "surface"
 
     def __init__(
         self,

@@ -4,7 +4,7 @@ import moderngl
 import numpy as np
 import copy
 from .. import logger
-
+from pathlib import Path
 
 # from manimlib.utils.directories import get_shader_dir
 # from manimlib.utils.file_ops import find_file
@@ -17,7 +17,7 @@ from .. import logger
 
 
 def get_shader_dir():
-    return "manim/renderer/shaders"
+    return Path(__file__).parent / "shaders"
 
 
 def find_file(file_name, directories=None):
