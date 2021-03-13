@@ -5,11 +5,11 @@ Before filling in the details, ensure:
 - Your local changes are up-to-date with ManimCommunity/manim
   
 - The title of your PR gives a descriptive summary to end-users. Some examples:
-  - `Fixed last animations not running to completion`)
-  - `Added gradient support and documentation for SVG files`)
+  - Fixed last animations not running to completion
+  - Added gradient support and documentation for SVG files
   Examples of what *NOT* to do:
-  - `fixed that styling issue` - not descriptive enough
-  - `fixed issue #XYZ` - end-user needs to do further research
+  - "fixed that styling issue" - not descriptive enough
+  - "fixed issue #XYZ" - end-user needs to do further research
 -->
 
 ## Motivation
@@ -44,4 +44,3 @@ that might be useful for reviewers.. -->
 - [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
 - [ ] The PR title is descriptive enough
-
