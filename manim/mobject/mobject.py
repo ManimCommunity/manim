@@ -1020,6 +1020,10 @@ class Mobject(Container):
 
     # Background rectangle
     def add_background_rectangle(self, color=BLACK, opacity=0.75, **kwargs):
+        """
+        Adds a BackgroundRectangle as submobject. 
+        """
+        
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
         from ..mobject.shape_matchers import BackgroundRectangle
