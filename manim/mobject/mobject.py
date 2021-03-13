@@ -138,8 +138,6 @@ class Mobject(Container):
     def add(self, *mobjects):
         """Add mobjects as submobjects.
 
-        Test 123
-
         The mobjects are added to self.submobjects.
 
         Subclasses of mobject may implement + and += dunder methods.
@@ -1022,11 +1020,6 @@ class Mobject(Container):
 
     # Background rectangle
     def add_background_rectangle(self, color=BLACK, opacity=0.75, **kwargs):
-        """
-        Adds a :class:`.BackgroundRectangle` in the back.
-
-        """
-
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
         from ..mobject.shape_matchers import BackgroundRectangle
