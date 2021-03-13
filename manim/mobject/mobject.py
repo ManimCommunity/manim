@@ -181,6 +181,7 @@ class Mobject(Container):
         See Also
         --------
         :meth:`~Mobject.remove`
+        :meth:`~Mobject.add_to_back`
 
         Examples
         --------
