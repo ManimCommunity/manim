@@ -122,7 +122,6 @@ class TipableVMobject(VMobject):
         Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
         a 'starting tip' or not.
-        Test 123
         """
         if tip is None:
             tip = self.create_tip(tip_shape, tip_length, at_start)
