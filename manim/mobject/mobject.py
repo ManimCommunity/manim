@@ -180,8 +180,8 @@ class Mobject(Container):
 
         See Also
         --------
-        :meth:`~Mobject.remove`
-        :meth:`~Mobject.add_to_back`
+        :meth:`remove`
+        :meth:`add_to_back`
 
         Examples
         --------
@@ -255,7 +255,7 @@ class Mobject(Container):
 
         See Also
         --------
-        :meth:`~Mobject.add`
+        :meth:`add`
 
         """
         for mobject in mobjects:
@@ -530,8 +530,8 @@ class Mobject(Container):
 
         See Also
         --------
-        :meth:`~Mobject.add_updater`
-        :meth:`~Mobject.get_updaters`
+        :meth:`add_updater`
+        :meth:`get_updaters`
 
         """
         if self.updating_suspended:
@@ -560,8 +560,8 @@ class Mobject(Container):
 
         See Also
         --------
-        :meth:`~Mobject.get_updaters`
-        :meth:`~Mobject.has_time_based_updater`
+        :meth:`get_updaters`
+        :meth:`has_time_based_updater`
 
         """
         return [updater for updater in self.updaters if "dt" in get_parameters(updater)]
@@ -577,7 +577,7 @@ class Mobject(Container):
 
         See Also
         --------
-        :meth:`~Mobject.get_time_based_updaters`
+        :meth:`get_time_based_updaters`
 
         """
         for updater in self.updaters:
@@ -596,8 +596,8 @@ class Mobject(Container):
 
         See Also
         --------
-        :meth:`~Mobject.add_updater`
-        :meth:`~Mobject.get_time_based_updaters`
+        :meth:`add_updater`
+        :meth:`get_time_based_updaters`
 
         """
         return self.updaters
@@ -1146,7 +1146,7 @@ class Mobject(Container):
 
         See Also
         --------
-        :meth:`~Mobject.add_to_back`
+        :meth:`add_to_back`
         :class:`~.BackgroundRectangle`
 
         """
