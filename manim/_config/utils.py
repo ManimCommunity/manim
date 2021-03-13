@@ -14,6 +14,7 @@ import configparser
 import copy
 import logging
 import os
+import errno
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -262,7 +263,7 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
-        "js_renderer_path",
+        "webgl_renderer_path",
         "leave_progress_bars",
         "log_dir",
         "log_to_file",
@@ -272,6 +273,7 @@ class ManimConfig(MutableMapping):
         "partial_movie_dir",
         "pixel_height",
         "pixel_width",
+        "plugins",
         "png_mode",
         "preview",
         "progress_bar",
@@ -286,7 +288,8 @@ class ManimConfig(MutableMapping):
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
-        "use_js_renderer",
+        "use_webgl_renderer",
+        "webgl_updater_fps",
         "verbosity",
         "video_dir",
         "write_all",
@@ -508,7 +511,7 @@ class ManimConfig(MutableMapping):
             "disable_caching",
             "flush_cache",
             "custom_folders",
-            "use_js_renderer",
+            "use_webgl_renderer",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -518,8 +521,10 @@ class ManimConfig(MutableMapping):
             "upto_animation_number",
             "frame_rate",
             "max_files_cached",
+            # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
+            "webgl_updater_fps",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -545,15 +550,24 @@ class ManimConfig(MutableMapping):
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
         # float keys
-        for key in ["background_opacity"]:
+        for key in [
+            "background_opacity",
+            # the next two are floats but have their own logic, applied later
+            # "frame_width",
+            # "frame_height",
+        ]:
             setattr(self, key, parser["CLI"].getfloat(key))
+        # plugins
+        self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
+        # the next two must be set AFTER digesting pixel_width and pixel_height
+        self["frame_height"] = parser["CLI"].getfloat("frame_height", 8.0)
+        width = parser["CLI"].getfloat("frame_width", None)
+        if width is None:
+            self["frame_width"] = self["frame_height"] * self["aspect_ratio"]
+        else:
+            self["frame_width"] = width
 
         # other logic
-        self["frame_height"] = 8.0
-        self["frame_width"] = (
-            self["frame_height"] * self["pixel_width"] / self["pixel_height"]
-        )
-
         val = parser["CLI"].get("tex_template_file")
         if val:
             setattr(self, "tex_template_file", val)
@@ -611,7 +625,9 @@ class ManimConfig(MutableMapping):
         if args.config_file:
             self.digest_file(args.config_file)
 
-        self.input_file = Path(args.file).absolute()
+        # If args.file is `-`, the animation code has to be taken from STDIN, so the
+        # input file path shouldn't be absolute, since that file won't be read.
+        self.input_file = Path(args.file).absolute() if args.file != "-" else args.file
         self.scene_names = args.scene_names if args.scene_names is not None else []
         self.output_file = args.output_file
 
@@ -620,6 +636,7 @@ class ManimConfig(MutableMapping):
             "show_in_file_browser",
             "sound",
             "leave_progress_bars",
+            "progress_bar",
             "write_to_movie",
             "save_last_frame",
             "save_pngs",
@@ -631,7 +648,8 @@ class ManimConfig(MutableMapping):
             "scene_names",
             "verbosity",
             "background_color",
-            "use_js_renderer",
+            "use_webgl_renderer",
+            "webgl_updater_fps",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -702,6 +720,10 @@ class ManimConfig(MutableMapping):
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
 
+        # Handle --tex_template
+        if args.tex_template:
+            self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
+
         return self
 
     def digest_file(self, filename: str) -> "ManimConfig":
@@ -735,6 +757,13 @@ class ManimConfig(MutableMapping):
         multiple times.
 
         """
+        if not os.path.isfile(filename):
+            raise FileNotFoundError(
+                errno.ENOENT,
+                "Error: --config_file could not find a valid config file.",
+                filename,
+            )
+
         if filename:
             return self.digest_parser(make_config_parser(filename))
 
@@ -1037,20 +1066,26 @@ class ManimConfig(MutableMapping):
             )
 
     @property
-    def use_js_renderer(self):
-        """Whether to use JS renderer or not (default)."""
-        return self._d["use_js_renderer"]
+    def use_webgl_renderer(self):
+        """Whether to use WebGL renderer or not (default)."""
+        return self._d["use_webgl_renderer"]
 
-    @use_js_renderer.setter
-    def use_js_renderer(self, val: bool) -> None:
-        self._d["use_js_renderer"] = val
+    @use_webgl_renderer.setter
+    def use_webgl_renderer(self, val: bool) -> None:
+        self._d["use_webgl_renderer"] = val
         if val:
             self["disable_caching"] = True
 
-    js_renderer_path = property(
-        lambda self: self._d["js_renderer_path"],
-        lambda self, val: self._d.__setitem__("js_renderer_path", val),
-        doc="Path to JS renderer.",
+    webgl_renderer_path = property(
+        lambda self: self._d["webgl_renderer_path"],
+        lambda self, val: self._d.__setitem__("webgl_renderer_path", val),
+        doc="Path to WebGL renderer.",
+    )
+
+    webgl_updater_fps = property(
+        lambda self: self._d["webgl_updater_fps"],
+        lambda self, val: self._d.__setitem__("webgl_updater_fps", val),
+        doc="Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend.",
     )
 
     media_dir = property(
@@ -1320,6 +1355,15 @@ class ManimConfig(MutableMapping):
         else:
             self._d["tex_template_file"] = val  # actually set the falsy value
             self._tex_template = TexTemplate()  # but don't use it
+
+    @property
+    def plugins(self):
+        """List of plugins to enable."""
+        return self._d["plugins"]
+
+    @plugins.setter
+    def plugins(self, value):
+        self._d["plugins"] = value
 
 
 class ManimFrame(Mapping):

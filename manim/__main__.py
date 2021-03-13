@@ -2,7 +2,7 @@ import os
 import sys
 import traceback
 
-from manim import logger, config
+from manim import logger, console, config, __version__
 from manim.utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
@@ -12,11 +12,6 @@ from manim.utils.module_ops import (
 from manim.utils.file_ops import open_file as open_media_file
 from manim._config.main_utils import parse_args
 from manim.stream_starter import livestream
-
-try:
-    from manim.grpc.impl import frame_server_impl
-except ImportError:
-    frame_server_impl = None
 
 
 def open_file_if_needed(file_writer):
@@ -48,6 +43,7 @@ def open_file_if_needed(file_writer):
 
 
 def main():
+    console.print(f"Manim Community [green]v{__version__}[/green]")
     args = parse_args(sys.argv)
 
     if hasattr(args, "cmd"):
@@ -83,17 +79,19 @@ def main():
             return
 
         input_file = config.get_dir("input_file")
-        if config["use_js_renderer"]:
+        if config["use_webgl_renderer"]:
             try:
-                if frame_server_impl is None:
-                    raise ImportError("Dependencies for JS renderer is not installed.")
+                from manim.grpc.impl import frame_server_impl
+
                 server = frame_server_impl.get(input_file)
                 server.start()
                 server.wait_for_termination()
-            except Exception:
-                print("\n\n")
-                traceback.print_exc()
-                print("\n\n")
+            except ModuleNotFoundError as e:
+                console.print(
+                    "Dependencies for the WebGL render are missing. Run "
+                    "pip install manim[webgl_renderer] to install them."
+                )
+                console.print_exception()
         else:
             for SceneClass in scene_classes_from_file(input_file):
                 try:
@@ -101,9 +99,7 @@ def main():
                     scene.render()
                     open_file_if_needed(scene.renderer.file_writer)
                 except Exception:
-                    print("\n\n")
-                    traceback.print_exc()
-                    print("\n\n")
+                    console.print_exception()
 
 
 if __name__ == "__main__":

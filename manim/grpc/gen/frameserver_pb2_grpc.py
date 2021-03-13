@@ -24,6 +24,11 @@ class FrameServerStub(object):
             request_serializer=frameserver__pb2.EmptyRequest.SerializeToString,
             response_deserializer=frameserver__pb2.FetchSceneDataResponse.FromString,
         )
+        self.ScriptUpdated = channel.unary_unary(
+            "/frameserver.FrameServer/ScriptUpdated",
+            request_serializer=frameserver__pb2.EmptyRequest.SerializeToString,
+            response_deserializer=frameserver__pb2.EmptyResponse.FromString,
+        )
 
 
 class FrameServerServicer(object):
@@ -41,6 +46,12 @@ class FrameServerServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def ScriptUpdated(self, request, context):
+        """Returns when the manim script changes"""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
 
 def add_FrameServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -53,6 +64,11 @@ def add_FrameServerServicer_to_server(servicer, server):
             servicer.FetchSceneData,
             request_deserializer=frameserver__pb2.EmptyRequest.FromString,
             response_serializer=frameserver__pb2.FetchSceneDataResponse.SerializeToString,
+        ),
+        "ScriptUpdated": grpc.unary_unary_rpc_method_handler(
+            servicer.ScriptUpdated,
+            request_deserializer=frameserver__pb2.EmptyRequest.FromString,
+            response_serializer=frameserver__pb2.EmptyResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -113,6 +129,35 @@ class FrameServer(object):
             "/frameserver.FrameServer/FetchSceneData",
             frameserver__pb2.EmptyRequest.SerializeToString,
             frameserver__pb2.FetchSceneDataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
+
+    @staticmethod
+    def ScriptUpdated(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/frameserver.FrameServer/ScriptUpdated",
+            frameserver__pb2.EmptyRequest.SerializeToString,
+            frameserver__pb2.EmptyResponse.FromString,
             options,
             channel_credentials,
             insecure,

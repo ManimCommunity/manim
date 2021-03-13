@@ -1022,6 +1022,14 @@ optional = true
 python-versions = ">=3.5"
 
 [[package]]
+name = "pyrsistent"
+version = "0.17.3"
+description = "Persistent/Functional/Immutable data structures"
+category = "main"
+optional = true
+python-versions = ">=3.5"
+
+[[package]]
 name = "pytest"
 version = "6.2.2"
 description = "pytest: simple powerful testing with Python"

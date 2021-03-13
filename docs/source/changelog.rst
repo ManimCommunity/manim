@@ -18,6 +18,135 @@ Changes for the upcoming release are tracked `in our GitHub wiki <https://github
 
 
 ******
+v0.4.0
+******
+
+:Date: March 3, 2021
+
+The changes since Manim Community release v0.3.0 are listed below.
+
+Breaking Changes
+================
+
+- :pr:`915`: Manim's SVG engine has been reworked and is able to handle a wider variations of SVG files. In particular: fill and stroke properties are now retained from the original files. Breaking change: ``VMobjectFromSVGPathstring`` is deprecated and has been renamed to ``SVGPathMobject``.
+
+
+New Features
+============
+
+- :pr:`1026`: Add 3D Mobjects: :class:`~.Cone`, :class:`~.Cylinder`, :class:`~.Line3D`, :class:`~.Arrow3D` and :class:`~.Torus`
+- :pr:`1047`: Add documentation and examples for :class:`~.Matrix`
+- :pr:`1044`: ``register_font`` is available for macOS
+- :pr:`995`: Add generic :func:`~.Mobject.set` method and compatibility layer between properties and ``get_*``/``set_*`` methods
+
+Bugfixes and Enhancements
+=========================
+
+- :pr:`981`: Fixed hot reload functionality for the WebGL renderer on Windows
+- :pr:`1053`: Repair links to source code in stable version of documentation
+- :pr:`1067`: Add ManimPango to ReadTheDocs requirements
+- :pr:`1058`: Replace ``<color>`` syntax by Pango's ``<span foreground>`` for coloring parts of :class:`~.MarkupText` and allow using colors for underline, overline and strikethrough in MarkupText
+- :pr:`1063`: Fix documentation related to ``.animate``
+- :pr:`1065`: Remove duplicate word 'vector'
+- :pr:`1060`: Update Linux installation instructions to mention the installation of Pango
+- :pr:`1050`: Ensure that the user-supplied stroke color and width gets applied to :class:`~.Cross`
+- :pr:`1059`: More descriptive error when accessing an unhandled mobject attribute
+- :pr:`1048`: Use absolute path in ``make_and_open_docs.py``
+- :pr:`1000`: Remove ``MovingCameraScene.setup`` and ``MovingCameraScene.camera_frame``
+- :pr:`1051`: Corrections for setting stroke related attributes on :class:`~.VMobject`
+- :pr:`1043`: Make :class:`~.CubicBezier` explicitly accept four points
+- :pr:`1046`: Use any version of ``importlib-metadata``
+- :pr:`1030`: Parse ``.log`` file and try to print LaTeX errors if compilation fails
+- :pr:`1015`: Documentation: Add more explicit instructions related to ``tlmgr``
+- :pr:`1028`: Documentation: Update installation guide on mac with Apple Silicon
+- :pr:`1032`: Remove ``Square.side_length`` property
+- :pr:`1031`: Fix link to wikipedia vector graphics page
+- :pr:`1021`: Documentation: Added example to :class:`~.CubicBezier`
+- :pr:`1017`: Added ``progress_bar`` to ``digest_args`` to fix the ``--progress_bar`` CLI flag
+- :pr:`1018`: Remove redundancy in :class:`~.FunctionGraph` arguments
+- :pr:`1024`: Migrate ``width`` / ``height`` / ``depth`` to properties
+- :pr:`1022`: Fix ``-p`` flag when passing ``-s``
+- :pr:`1008`: CI pipeline: fix release asset upload
+- :pr:`983`: Make sure last frame for animations with updaters is correct
+- :pr:`984`: Add manim version to CLI output, append version name for generated ``.gif`` and ``.png`` files, add version to metadata of rendered videos, change dark blue terminal text to default green
+- :pr:`993`: Fix setting Mobject color to a gradient by passing a list of colors in :meth:`~.VMobject.set_color`
+- :pr:`1003`: Fix animation :class:`~.GrowArrow`
+- :pr:`1010`: Disable STDIN interaction for ffmpeg concat.
+- :pr:`969`: Fix the ``--tex_template`` CLI flag
+- :pr:`989`: Fix the ``manim cfg export`` subcommand
+- :pr:`1005`: Fix the feature where ``-`` is used as the filename
+- :pr:`998`: Allow using hexadecimal color codes with 3 characters
+- :pr:`996`: Changed the message of ``manim --version`` to not include "Edition"
+
+
+
+******
+v0.3.0
+******
+
+:Date: February 1, 2021
+
+The changes since Manim Community release v0.2.0 are listed below.
+
+
+New Features
+============
+
+- :pr:`945`: :meth:`~.Graph.change_layout` method for :class:`~.Graph` mobject
+- :pr:`943`: IPython %%manim magic
+- :pr:`970`: Added ``--version`` command line flag
+- :pr:`948`: Allow passing a code string to :class:`~.Code`
+- :pr:`917`: Allow overriding new-style method animations
+- :pr:`756`: Allow setting frame_height and frame_width via config file
+- :pr:`939`: Added custom font files support
+- :pr:`892`: Added ManimCommunity colors
+- :pr:`922`: Tree layout for Graph mobject
+- :pr:`935`: Added code of conduct
+- :pr:`916`: Multi-column layout for partite graphs
+- :pr:`742`: Units: Pixels, Munits, Percent in :mod:`~.utils.unit`
+- :pr:`893`: Convenience method :meth:`~.Graph.from_networkx` for creating a graph from a networkx graph
+
+Bugfixes and Enhancements
+=========================
+
+- :pr:`988`: Fix Windows CI pipeline by adding missing LaTeX package
+- :pr:`961`: Added typings and docs for vectorized mobjects and bezier related functions
+- :pr:`977`: JupyterLab docker image and documentation for manim and IPython
+- :pr:`985`: Fix variable name for webgl renderer
+- :pr:`954`: Fix edges lagging behind vertices in animations of graphs
+- :pr:`980`: Allow usage of custom Pygments styles in Code
+- :pr:`952`: Allow passing tween information to the WebGL frontend
+- :pr:`978`: Fix ``possible_paths`` not printing in ``code_mobject``
+- :pr:`976`: Update ``ManimPango``
+- :pr:`967`: Automatically import plugins
+- :pr:`971`: Make ManimCommunity look consistent
+- :pr:`957`: Raise ``NotImplementedError`` when trying to chain overridden method animations
+- :pr:`947`: Several fixes and improvements for :class:`~.PointCloundDot`
+- :pr:`923`: Documentation: move installation instructions for developers to page for developers
+- :pr:`964`: Added unit test for :class:`~.NumberLine`'s unit vector
+- :pr:`960`: Magnitude of :class:`~.NumberLine`'s unit vector should be ``unit_size``, not 1
+- :pr:`958`: Fix code formatting in ``utils/debug.py``
+- :pr:`953`: Update license year
+- :pr:`944`: Interpolate stroke opacity in :class:`~.FadeIn` and update ``stroke_opacity`` and ``fill_opacity`` in :meth:`~.VMobject.set_stroke` and :meth:`~.VMobject.set_fill`
+- :pr:`865`: Rename ``get_submobject_index_labels`` to ``index_labels``
+- :pr:`941`: Added keyword arguments ``x_min``, ``x_max``, ``y_min``, ``y_max`` to :class:`~.ThreeDAxes`
+- :pr:`886`: Let the render progress bar show details about the rendered animation again
+- :pr:`936`: Fix :class:`~.BulletedList` TeX environment problem and add a typing to ``get_module``
+- :pr:`938`: Remove dependency on progressbar
+- :pr:`937`: Change 'brew cask install' to 'brew install --cask' for CI pipeline
+- :pr:`933`: Make matrix work with lists again
+- :pr:`932`: Correctly parse ``log_dir`` option
+- :pr:`920`: Raise error if markup in :class:`~.MarkupText` is invalid
+- :pr:`929`: Raise an error if a :class:`~.Matrix` object is created with < 2-dimensional input
+- :pr:`907`: Make Scene.add_sound work again (when running with ``--disable_caching``)
+- :pr:`906`: Allow new-style method animation to be used in animation groups
+- :pr:`908`: Removed deprecated command line arguments from documentation
+- :pr:`903`: Tiny grammar improvements
+- :pr:`904`: Added blank line between imports and class example
+- :pr:`898`: CI: fix publish workflow
+
+
+******
 v0.2.0
 ******
 
