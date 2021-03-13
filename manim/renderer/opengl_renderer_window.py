@@ -18,7 +18,7 @@ class Window(PygletWindow):
 
         self.pressed_keys = set()
 
-        self.title = f"ManimCommunity {__version__}"
+        self.title = f"Manim Community {__version__}"
         self.size = size
 
         mglw.activate_context(window=self)
