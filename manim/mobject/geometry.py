@@ -77,11 +77,6 @@ from ..utils.space_ops import normalize
 from ..utils.space_ops import rotate_vector
 from ..utils.color import *
 
-DEFAULT_DOT_RADIUS = 0.08
-DEFAULT_SMALL_DOT_RADIUS = 0.04
-DEFAULT_DASH_LENGTH = 0.05
-DEFAULT_ARROW_TIP_LENGTH = 0.35
-
 
 class TipableVMobject(VMobject):
     """
