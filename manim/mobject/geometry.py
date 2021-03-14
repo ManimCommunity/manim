@@ -392,6 +392,14 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
+    """
+
+    Parameters
+    ----------
+    close_new_points
+    anchors_span_full_range
+    kwargs
+    """
     def __init__(
         self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
     ):
@@ -1288,9 +1296,13 @@ class Rectangle(Polygon):
         color=WHITE,
         height=2.0,
         width=4.0,
+        mark_paths_closed=True,
+        close_new_points=True,
         **kwargs
     ):
         Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
+        self.mark_paths_closed = mark_paths_closed
+        self.close_new_points = close_new_points
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
