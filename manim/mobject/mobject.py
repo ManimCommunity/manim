@@ -515,7 +515,7 @@ class Mobject(Container):
         Apply all updaters.
 
         Does nothing if updating is suspended.
-        
+
         Parameters
         ----------
         dt : float
@@ -550,13 +550,13 @@ class Mobject(Container):
     def get_time_based_updaters(self):
         """
         Return all updaters using the ``dt`` parameter.
-        
+
         The updaters use this parameter as the input for difference in time.
 
         Returns
         -------
         ``list``
-            The list of time based updaters. 
+            The list of time based updaters.
 
         See Also
         --------
@@ -569,11 +569,11 @@ class Mobject(Container):
     def has_time_based_updater(self):
         """
         Test if ``self`` has a time based updater.
-        
+
         Returns
         -------
         ``bool``
-            ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise. 
+            ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise.
 
         See Also
         --------
@@ -588,11 +588,11 @@ class Mobject(Container):
     def get_updaters(self):
         """
         Return all updaters.
-        
+
         Returns
         -------
         ``list``
-            The list of updaters. 
+            The list of updaters.
 
         See Also
         --------
@@ -643,7 +643,7 @@ class Mobject(Container):
                     self.add(dot, label)
 
                     self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
-        
+
         .. manim:: DtUpdater
 
             class DtUpdater(Scene):
@@ -795,7 +795,7 @@ class Mobject(Container):
         --------
         :meth:`suspend_updating`
         :meth:`add_updater`
-        
+
         """
         self.updating_suspended = False
         if recursive:
@@ -823,7 +823,7 @@ class Mobject(Container):
         See also
         --------
         :meth:`family_members_with_points`
-        
+
         """
         for mob in self.family_members_with_points():
             func(mob)
@@ -864,13 +864,13 @@ class Mobject(Container):
         # Otherwise, if about_point is given a value, scaling is done with
         # respect to that point.
 
-        
+
         Parameters
         ----------
         scale_factor : ``float``
             The scaling factor. Values 0 < |x| < 1 will shrink the mobject, 1 < |x| will increase it's size. If x<0 resuls in  additionally flipping by 180°.
         kwargs :
-            Additional keyword arguments passed to :meth:`apply_points_function_about_point`. 
+            Additional keyword arguments passed to :meth:`apply_points_function_about_point`.
 
         Returns
         -------
