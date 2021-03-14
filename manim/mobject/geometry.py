@@ -428,7 +428,7 @@ class Circle(Arc):
         )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
-        """Adjusts a circle so that it surrounds a given mobject
+        """Modifies a circle so that it surrounds a given mobject.
 
         Parameters
         ----------
