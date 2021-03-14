@@ -241,8 +241,9 @@ class ThreeDAxes(Axes):
         self.light_source = light_source
         self.dimension = 3
         z_axis = self.z_axis = self.create_axis(self.z_axis_config)
-        z_axis.rotate(-np.pi / 2, UP, about_point=ORIGIN)
-        z_axis.rotate(angle_of_vector(self.z_normal), OUT, about_point=ORIGIN)
+        z_axis.shift(self.center_point)
+        z_axis.rotate_about_zero(-np.pi / 2, UP)
+        z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
         self.axes.add(z_axis)
         self.add(z_axis)
 
