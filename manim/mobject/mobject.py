@@ -828,6 +828,23 @@ class Mobject(Container):
             func(mob)
 
     def shift(self, *vectors):
+        """
+        Shift by the given vectors.
+
+        Parameters
+        ----------
+        vectors : ``numpy.ndarray``
+            Vectors to shift by. If multiple vectors are given, they are added together.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`move_to`
+        """
         total_vector = reduce(op.add, vectors)
         for mob in self.family_members_with_points():
             mob.points = mob.points.astype("float")
