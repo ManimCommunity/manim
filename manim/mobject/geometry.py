@@ -409,8 +409,6 @@ class Circle(Arc):
             def construct(self):
                 circle = Circle(radius=1.0)
                 self.add(circle)
-                self.wait()
-
 
     """
 
@@ -500,7 +498,7 @@ class Dot(Circle):
                 dot2 = Dot(point=LEFT)
                 dot3 = Dot(point=RIGHT)
                 self.add(dot1,dot2,dot3)
-                self.wait()
+
     """
 
     def __init__(
@@ -1337,7 +1335,7 @@ class Rectangle(Polygon):
                 rect2 = Rectangle(width=1.0, height=4.0)
                 rects = Group(rect1,rect2).arrange(buff=1)
                 self.add(rects)
-                self.wait()
+
     """
 
     def __init__(
@@ -1374,7 +1372,6 @@ class Square(Rectangle):
             def construct(self):
                 square = Square(side_length=2.0)
                 self.add(square)
-                self.wait()
 
     """
 
