@@ -405,11 +405,11 @@ class Circle(Arc):
     .. manim:: CircleExample
         :save_last_frame:
 
-    class CircleExample(Scene):
-        def construct(self):
-            circle = Circle(radius=1.0)
-            self.add(circle)
-            self.wait()
+        class CircleExample(Scene):
+            def construct(self):
+                circle = Circle(radius=1.0)
+                self.add(circle)
+                self.wait()
 
 
     """
@@ -439,28 +439,28 @@ class Circle(Arc):
 
 
         Examples
-        ----------
+        --------
 
         .. manim:: CircleSurround
             :save_last_frame:
 
-        class CircleSurround(Scene):
-            def construct(self):
-                triangle1 = Triangle()
-                circle1 = Circle().surround(triangle1)
-                group1 = Group(triangle1,circle1) # treat the two mobjects as one
+            class CircleSurround(Scene):
+                def construct(self):
+                    triangle1 = Triangle()
+                    circle1 = Circle().surround(triangle1)
+                    group1 = Group(triangle1,circle1) # treat the two mobjects as one
 
-                line2 = Line()
-                circle2 = Circle().surround(line2)
-                group2 = Group(line2,circle2)
+                    line2 = Line()
+                    circle2 = Circle().surround(line2)
+                    group2 = Group(line2,circle2)
 
-                # buffer_factor < 1, so the circle is smaller than the square
-                square3 = Square()
-                circle3 = Circle().surround(square3, buffer_factor=0.5)
-                group3 = Group(square3, circle3)
+                    # buffer_factor < 1, so the circle is smaller than the square
+                    square3 = Square()
+                    circle3 = Circle().surround(square3, buffer_factor=0.5)
+                    group3 = Group(square3, circle3)
 
-                group = Group(group1, group2, group3).arrange()
-                self.add(group)
+                    group = Group(group1, group2, group3).arrange()
+                    self.add(group)
 
         """
         # Ignores dim_to_match and stretch; result will always be a circle
@@ -494,13 +494,13 @@ class Dot(Circle):
     .. manim:: DotExample
         :save_last_frame:
 
-    class DotExample(Scene):
-        def construct(self):
-            dot1 = Dot(point=ORIGIN, radius=0.08)
-            dot2 = Dot(point=LEFT)
-            dot3 = Dot(point=RIGHT)
-            self.add(dot1,dot2,dot3)
-            self.wait()
+        class DotExample(Scene):
+            def construct(self):
+                dot1 = Dot(point=ORIGIN, radius=0.08)
+                dot2 = Dot(point=LEFT)
+                dot3 = Dot(point=RIGHT)
+                self.add(dot1,dot2,dot3)
+                self.wait()
     """
 
     def __init__(
@@ -1331,13 +1331,13 @@ class Rectangle(Polygon):
     .. manim:: RectangleExample
         :save_last_frame:
 
-    class RectangleExample(Scene):
-        def construct(self):
-            rect1 = Rectangle(width=4.0, height=2.0)
-            rect2 = Rectangle(width=1.0, height=4.0)
-            rects = Group(rect1,rect2).arrange(buff=1)
-            self.add(rects)
-            self.wait()
+        class RectangleExample(Scene):
+            def construct(self):
+                rect1 = Rectangle(width=4.0, height=2.0)
+                rect2 = Rectangle(width=1.0, height=4.0)
+                rects = Group(rect1,rect2).arrange(buff=1)
+                self.add(rects)
+                self.wait()
     """
 
     def __init__(
@@ -1370,11 +1370,11 @@ class Square(Rectangle):
     .. manim:: SquareExample
         :save_last_frame:
 
-    class ShowSquare(Scene):
-        def construct(self):
-            square = Square(side_length=2.0)
-            self.add(square)
-            self.wait()
+        class SquareExample(Scene):
+            def construct(self):
+                square = Square(side_length=2.0)
+                self.add(square)
+                self.wait()
 
     """
 
