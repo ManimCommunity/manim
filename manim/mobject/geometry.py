@@ -1276,6 +1276,27 @@ class Rectangle(Polygon):
 
 
 class Square(Rectangle):
+    """A rectangle with equal side lengths.
+
+    Parameters
+    ----------
+    side_length : Optional[:class:`float`]
+        The length of a side.
+
+    Examples
+    --------
+
+    .. manim:: SquareExample
+        :save_last_frame:
+
+    class ShowSquare(Scene):
+        def construct(self):
+            square = Square(side_length=2.0)
+            self.add(square)
+            self.wait()
+
+    """
+
     def __init__(self, side_length=2.0, **kwargs):
         self.side_length = side_length
         Rectangle.__init__(self, height=side_length, width=side_length, **kwargs)
