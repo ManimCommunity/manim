@@ -433,8 +433,9 @@ class Circle(Arc):
         mobject : :class:`~.Mobject`
             The mobject that the circle will be surrounding
         buffer_factor :  Optional[:class:`float`]
-            The distance between the mobjects. A buffer_factor < 1 makes the circle smaller than the mobject.
-
+            Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject.
+        stretch : :class: `bool`
+            Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class: `Line`
 
         Examples
         --------
@@ -449,7 +450,7 @@ class Circle(Arc):
                     group1 = Group(triangle1,circle1) # treat the two mobjects as one
 
                     line2 = Line()
-                    circle2 = Circle().surround(line2)
+                    circle2 = Circle().surround(line2, buffer_factor=2.0)
                     group2 = Group(line2,circle2)
 
                     # buffer_factor < 1, so the circle is smaller than the square
@@ -457,7 +458,7 @@ class Circle(Arc):
                     circle3 = Circle().surround(square3, buffer_factor=0.5)
                     group3 = Group(square3, circle3)
 
-                    group = Group(group1, group2, group3).arrange()
+                    group = Group(group1, group2, group3).arrange(buff=1)
                     self.add(group)
 
         """
@@ -472,6 +473,36 @@ class Circle(Arc):
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
+        """Returns the position of a point on the circle.
+
+        Parameters
+        ----------
+        angle : class: `float`
+            The angle of the point along the circle in radians.
+
+        Examples
+        --------
+
+        .. manim:: PointAtAngleExample
+            :save_last_frame:
+
+            class PointAtAngleExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=2.0)
+                    p1 = circle.point_at_angle(PI/2)
+                    p2 = circle.point_at_angle(270*DEGREES)
+
+                    s1 = Square(side_length=0.25).move_to(p1)
+                    s2 = Square(side_length=0.25).move_to(p2)
+
+                    self.add(circle, s1, s2)
+
+        Returns
+        -------
+        :class: `numpy.ndarray`
+            The location of the point along the circle's circumference.
+
+        """
         start_angle = angle_of_vector(self.points[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
 
@@ -1360,7 +1391,7 @@ class Square(Rectangle):
     Parameters
     ----------
     side_length : Optional[:class:`float`]
-        The length of a side.
+        The length of the sides.
 
     Examples
     --------
