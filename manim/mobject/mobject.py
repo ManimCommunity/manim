@@ -42,8 +42,10 @@ class Mobject(Container):
 
     Attributes
     ----------
-    submobjects : :class:`list`
+    submobjects : List[:class:`Mobject`]
         The contained objects.
+    points : :class:`numpy.ndarray`
+        The points of the objects.
 
     """
 
@@ -68,7 +70,7 @@ class Mobject(Container):
 
         .. warning::
 
-            Passing multiple animations for the same :class:`~.Mobject` in one
+            Passing multiple animations for the same :class:`Mobject` in one
             call to :meth:`~.Scene.play` is discouraged and will most likely
             not work properly. Instead of writing an animation like
 
@@ -125,7 +127,7 @@ class Mobject(Container):
         return str(self.name)
 
     def reset_points(self):
-        """Sets ``self.points`` to be an empty array.
+        """Sets :attr:`points` to be an empty array.
         """
         self.points = np.zeros((0, self.dim))
 
@@ -137,7 +139,7 @@ class Mobject(Container):
         pass
 
     def generate_points(self):
-        """Initializes ``self.points`` and therefore the shape.
+        """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
         """
@@ -146,7 +148,7 @@ class Mobject(Container):
     def add(self, *mobjects):
         """Add mobjects as submobjects.
 
-        The mobjects are added to ``self.submobjects``.
+        The mobjects are added to :attr:`submobjects`.
 
         Subclasses of mobject may implement ``+`` and ``+=`` dunder methods.
 
@@ -219,12 +221,23 @@ class Mobject(Container):
     def add_to_back(self, *mobjects):
         """Add all passed mobjects to the back of the submobjects.
 
-        If ``self.submobjects`` already contains the given mobjects, they just get moved to the back instead.
+        If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead.
+
+        Parameters
+        ----------
+        mobjects : :class:`Mobject`
+            The mobjects to add.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
 
         .. note::
 
             Technically, this is done by adding (or moving) the mobjects to
-            the head of ``self.submobjects``. The head of this list is rendered
+            the head of :attr:`submobjects`. The head of this list is rendered
             first, which places the corresponding mobjects behind the
             subsequent list members.
         """
@@ -235,7 +248,7 @@ class Mobject(Container):
     def remove(self, *mobjects):
         """Remove submobjects.
 
-        The mobjects are removed from ``self.submobjects``, if they exist.
+        The mobjects are removed from :attr:`submobjects`, if they exist.
 
         Subclasses of mobject may implement ``-`` and ``-=`` dunder methods.
 
@@ -489,6 +502,11 @@ class Mobject(Container):
     def copy(self):
         """Create and return an identical copy of the Mobject including all submobjects.
 
+        Returns
+        -------
+        :class:`Mobject`
+            The copy.
+
         Note
         ----
         The clone is initially not visible in the Scene, even if the original was.
@@ -512,10 +530,10 @@ class Mobject(Container):
 
         Parameters
         ----------
-        dt : float
+        dt : :class:`float`
             The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``.
-        recursive : bool
-            Whether to recursively call ``update`` on all submobjects.
+        recursive : class:`bool`
+            Whether to recursively update all submobjects.
 
         Returns
         -------
@@ -548,7 +566,7 @@ class Mobject(Container):
 
         Returns
         -------
-        ``list``
+        List[:class:`Callable`]
             The list of time based updaters.
 
         See Also
@@ -564,7 +582,7 @@ class Mobject(Container):
 
         Returns
         -------
-        ``bool``
+        class:`bool`
             ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise.
 
         See Also
@@ -582,7 +600,7 @@ class Mobject(Container):
 
         Returns
         -------
-        ``list``
+        List[:class:`Callable`]
             The list of updaters.
 
         See Also
@@ -603,14 +621,13 @@ class Mobject(Container):
 
         Parameters
         ----------
-        update_function:
+        update_function: class:`Callable`
             The update function to be added.
-            Whenever :meth:`update` is called, this update function gets called using the mobject as the first parameter.
+            Whenever :meth:`update` is called, this update function gets called using ``self`` as the first parameter.
             The updater can have a second parameter ``dt``. If it uses this parameter, it gets called using a second value ``dt``, usually representing the time in seconds since the last call of :meth:`update`.
-
-        index:
+        index: :class:`int`
             The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
-        call_updater: ``bool``
+        call_updater: :class:`bool`
             Wheather or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
 
         Returns
@@ -666,6 +683,12 @@ class Mobject(Container):
 
         If the same updater is applied multiple times, every instance gets removed.
 
+        Parameters
+        ----------
+        update_function: class:`Callable`
+            The update function to be removed.
+            
+
         Returns
         -------
         :class:`Mobject`
@@ -687,7 +710,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        recursive : bool
+        recursive : :class:`bool`
             Whether to recursively call ``clear_updaters`` on all submobjects.
 
         Returns
@@ -743,7 +766,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        recursive : ``bool``
+        recursive : :class:`bool`
             Whether to recursively suspend updating on all submobjects.
 
         Returns
@@ -769,7 +792,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        recursive : ``bool``
+        recursive : :class:`bool`
             Whether to recursively enable updating on all submobjects.
 
         Returns
@@ -797,7 +820,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        func : ``Callable``
+        func : :class:`Callable`
             The function to apply to each mobject. ``func`` gets passed the respective (sub)mobject as parameter.
 
         Returns
@@ -818,7 +841,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        vectors : ``numpy.ndarray``
+        vectors : :class:numpy.ndarray`
             Vectors to shift by. If multiple vectors are given, they are added together.
 
         Returns
@@ -840,18 +863,11 @@ class Mobject(Container):
         """Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
-        # The argument about_edge can be a vector, indicating which side of
-        # the mobject to scale about, e.g., mob.scale(about_edge = RIGHT)
-        # scales about mob.get_right().
-
-        # Otherwise, if about_point is given a value, scaling is done with
-        # respect to that point.
-
-
+        
         Parameters
         ----------
-        scale_factor : ``float``
-            The scaling factor. Values 0 < |x| < 1 will shrink the mobject, 1 < |x| will increase it's size. If x<0 resuls in  additionally flipping by 180°.
+        scale_factor : :class:`float`
+            The scaling factor. Values 0 < |`scale_factor`| < 1 will shrink the mobject, 1 < |`scale_factor`| will increase it's size. A `scale_factor`<0 resuls in  additionally flipping by 180°.
         kwargs :
             Additional keyword arguments passed to :meth:`apply_points_function_about_point`.
 
