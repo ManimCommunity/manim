@@ -405,7 +405,7 @@ class Circle(Arc):
     .. manim:: CircleExample
         :save_last_frame:
 
-    class ShowCircle(Scene):
+    class CircleExample(Scene):
         def construct(self):
             circle = Circle(radius=1.0)
             self.add(circle)
