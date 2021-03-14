@@ -749,6 +749,27 @@ class Mobject(Container):
         return self
 
     def suspend_updating(self, recursive=True):
+        """
+        Disable updating from updaters and animations.
+
+
+        Parameters
+        ----------
+        recursive : ``bool``
+            Whether to recursively suspend updating on all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`resume_updating`
+        :meth:`add_updater`
+
+        """
+
         self.updating_suspended = True
         if recursive:
             for submob in self.submobjects:
