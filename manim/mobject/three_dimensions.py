@@ -5,7 +5,6 @@ __all__ = [
     "ParametricSurface",
     "Sphere",
     "Dot3D",
-    "SmallDot3D",
     "Cube",
     "Prism",
     "Cone",
@@ -174,19 +173,6 @@ class Dot3D(Sphere):
     def __init__(self, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
         Sphere.__init__(self, radius=radius, **kwargs)
         self.set_color(color)
-
-
-class SmallDot3D(Dot3D):
-    """A small spherical dot.
-
-    Parameters
-    --------
-    radius : :class:`float`
-        The radius of the dot.
-    """
-
-    def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
-        Dot3D.__init__(self, radius=radius, **kwargs)
 
 
 class Cube(VGroup):

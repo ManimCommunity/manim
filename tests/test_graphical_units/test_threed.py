@@ -20,11 +20,6 @@ class Dot3DTest(ThreeDScene):
         self.play(Animation(Dot3D()))
 
 
-class SmallDot3DTest(ThreeDScene):
-    def construct(self):
-        self.play(Animation(SmallDot3D()))
-
-
 class ConeTest(ThreeDScene):
     def construct(self):
         self.play(Animation(Cone()))
