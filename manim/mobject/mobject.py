@@ -178,8 +178,7 @@ class Mobject(Container):
         return str(self.name)
 
     def reset_points(self):
-        """Sets :attr:`points` to be an empty array.
-        """
+        """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
 
     def init_colors(self):
@@ -757,7 +756,7 @@ class Mobject(Container):
         ----------
         update_function: class:`Callable`
             The update function to be removed.
-            
+
 
         Returns
         -------
@@ -923,7 +922,7 @@ class Mobject(Container):
         --------
         :meth:`move_to`
         """
-        
+
         total_vector = reduce(op.add, vectors)
         if config["use_opengl_renderer"]:
             self.apply_points_function(
@@ -943,7 +942,7 @@ class Mobject(Container):
         """Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
-        
+
         Parameters
         ----------
         scale_factor : :class:`float`
@@ -1058,8 +1057,7 @@ class Mobject(Container):
         return self
 
     def repeat(self, count):
-        """This can make transition animations nicer
-        """
+        """This can make transition animations nicer"""
 
         def repeat_array(array):
             return reduce(lambda a1, a2: np.append(a1, a2, axis=0), [array] * count)
@@ -1674,8 +1672,7 @@ class Mobject(Container):
         ) - self.reduce_across_dimension(np.min, np.min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
-        """Meant to generalize get_x, get_y, get_z
-        """
+        """Meant to generalize get_x, get_y, get_z"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
     def get_x(self, direction=ORIGIN):
