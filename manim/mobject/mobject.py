@@ -671,6 +671,23 @@ class Mobject(Container):
         return self
 
     def remove_updater(self, update_function):
+        """
+        Remove an updater.
+
+        If the same updater is applied multiple times, every instance gets removed.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`clear_updaters`
+        :meth:`add_updater`
+        :meth:`get_updaters`
+
+        """
         while update_function in self.updaters:
             self.updaters.remove(update_function)
         return self
