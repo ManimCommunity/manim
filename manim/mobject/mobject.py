@@ -777,6 +777,25 @@ class Mobject(Container):
         return self
 
     def resume_updating(self, recursive=True):
+        """
+        Enable updating from updaters and animations.
+
+        Parameters
+        ----------
+        recursive : ``bool``
+            Whether to recursively enable updating on all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`suspend_updating`
+        :meth:`add_updater`
+        
+        """
         self.updating_suspended = False
         if recursive:
             for submob in self.submobjects:
