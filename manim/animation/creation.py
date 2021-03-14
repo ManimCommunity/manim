@@ -82,6 +82,7 @@ from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
 
@@ -101,7 +102,9 @@ class ShowPartial(Animation):
     """
 
     def __init__(self, mobject: VMobject, **kwargs):
-        if not isinstance(mobject, VMobject):
+        if not isinstance(mobject, VMobject) and not isinstance(
+            mobject, OpenGLVMobject
+        ):
             raise TypeError("This Animation only works on vectorized mobjects")
         super().__init__(mobject, **kwargs)
 
