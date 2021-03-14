@@ -644,7 +644,24 @@ class Mobject(Container):
 
                     self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
         
+        .. manim:: DtUpdater
+
+            class DtUpdater(Scene):
+                def construct(self):
+                    line = Square()
+
+                    #Let the line rotate 90° per second
+                    line.add_updater(lambda mobject, dt: mobject.rotate(dt*90*DEGREES))
+                    self.add(line)
+                    self.wait(2)
+
+        See also
+        --------
+        :meth:`get_updaters`
+        :meth:`remove_updater`
+        :class:`~.UpdateFromFunc`
         """
+
         if index is None:
             self.updaters.append(update_function)
         else:
