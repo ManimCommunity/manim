@@ -26,6 +26,7 @@ from ..utils.iterables import list_update, list_difference_update
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
+from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 
 
 class Scene(Container):
@@ -300,9 +301,15 @@ class Scene(Container):
         list
             List of mobject family members.
         """
-        return extract_mobject_family_members(
-            self.mobjects, use_z_index=self.renderer.camera.use_z_index
-        )
+        if config["use_opengl_renderer"]:
+            family_members = []
+            for mob in self.mobjects:
+                family_members.extend(mob.get_family())
+            return family_members
+        else:
+            return extract_mobject_family_members(
+                self.mobjects, use_z_index=self.renderer.camera.use_z_index
+            )
 
     def add(self, *mobjects):
         """
@@ -320,15 +327,20 @@ class Scene(Container):
             The same scene after adding the Mobjects in.
 
         """
-        mobjects = [*mobjects, *self.foreground_mobjects]
-        self.restructure_mobjects(to_remove=mobjects)
-        self.mobjects += mobjects
-        if self.moving_mobjects:
-            self.restructure_mobjects(
-                to_remove=mobjects, mobject_list_name="moving_mobjects"
-            )
-            self.moving_mobjects += mobjects
-        return self
+        if config["use_opengl_renderer"]:
+            new_mobjects = mobjects
+            self.remove(*new_mobjects)
+            self.mobjects += new_mobjects
+        else:
+            mobjects = [*mobjects, *self.foreground_mobjects]
+            self.restructure_mobjects(to_remove=mobjects)
+            self.mobjects += mobjects
+            if self.moving_mobjects:
+                self.restructure_mobjects(
+                    to_remove=mobjects, mobject_list_name="moving_mobjects"
+                )
+                self.moving_mobjects += mobjects
+            return self
 
     def add_mobjects_from_animations(self, animations):
 
@@ -352,9 +364,16 @@ class Scene(Container):
         *mobjects : Mobject
             The mobjects to remove.
         """
-        for list_name in "mobjects", "foreground_mobjects":
-            self.restructure_mobjects(mobjects, list_name, False)
-        return self
+        if config["use_opengl_renderer"]:
+            mobjects_to_remove = mobjects
+            self.mobjects = restructure_list_to_exclude_certain_family_members(
+                self.mobjects, mobjects_to_remove
+            )
+            return self
+        else:
+            for list_name in "mobjects", "foreground_mobjects":
+                self.restructure_mobjects(mobjects, list_name, False)
+            return self
 
     def restructure_mobjects(
         self, to_remove, mobject_list_name="mobjects", extract_families=True
@@ -722,7 +741,7 @@ class Scene(Container):
         if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
-            step = 1 / self.renderer.camera.frame_rate
+            step = 1 / config["frame_rate"]
             times = np.arange(0, run_time, step)
         time_progression = tqdm(
             times,
@@ -793,26 +812,27 @@ class Scene(Container):
         self.stop_condition = None
         self.moving_mobjects = None
         self.static_mobjects = None
-        if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
-            self.update_mobjects(dt=0)  # Any problems with this?
-            if self.should_update_mobjects():
-                # TODO, be smart about setting a static image
-                # the same way Scene.play does
-                self.renderer.static_image = None
-                self.stop_condition = self.animations[0].stop_condition
+        if not config["use_opengl_renderer"]:
+            if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
+                self.update_mobjects(dt=0)  # Any problems with this?
+                if self.should_update_mobjects():
+                    # TODO, be smart about setting a static image
+                    # the same way Scene.play does
+                    self.renderer.static_image = None
+                    self.stop_condition = self.animations[0].stop_condition
+                else:
+                    self.duration = self.animations[0].duration
+                    if not skip_rendering:
+                        self.add_static_frames(self.animations[0].duration)
+                    return None
             else:
-                self.duration = self.animations[0].duration
-                if not skip_rendering:
-                    self.add_static_frames(self.animations[0].duration)
-                return None
-        else:
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            (
-                self.moving_mobjects,
-                self.static_mobjects,
-            ) = self.get_moving_and_static_mobjects(self.animations)
-            self.renderer.save_static_frame_data(self, self.static_mobjects)
+                # Paint all non-moving objects onto the screen, so they don't
+                # have to be rendered every frame
+                (
+                    self.moving_mobjects,
+                    self.static_mobjects,
+                ) = self.get_moving_and_static_mobjects(self.animations)
+                self.renderer.save_static_frame_data(self, self.static_mobjects)
 
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
@@ -841,7 +861,7 @@ class Scene(Container):
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering:
-                self.renderer.render(self, self.moving_mobjects)
+                self.renderer.render(self, t, self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
                 break
@@ -852,6 +872,46 @@ class Scene(Container):
         if not self.renderer.skip_animations:
             self.update_mobjects(0)
         self.renderer.static_image = None
+
+    def embed(self):
+        if not config["preview"]:
+            logger.warning("Called embed() while no preview window is available.")
+            return
+        if config["write_to_movie"]:
+            logger.warning("embed() is skipped while writing to a file.")
+            return
+
+        self.renderer.render(self, -1, self.moving_mobjects)
+
+        # Configure IPython shell.
+        from IPython.terminal.embed import InteractiveShellEmbed
+
+        shell = InteractiveShellEmbed()
+
+        # Have the frame update after each command
+        shell.events.register(
+            "post_run_cell",
+            lambda *a, **kw: self.renderer.render(self, -1, self.moving_mobjects),
+        )
+
+        # Use the locals of the caller as the local namespace
+        # once embeded, and add a few custom shortcuts.
+        local_ns = inspect.currentframe().f_back.f_locals
+        # local_ns["touch"] = self.interact
+        for method in (
+            "play",
+            "wait",
+            "add",
+            "remove",
+            # "clear",
+            # "save_state",
+            # "restore",
+        ):
+            local_ns[method] = getattr(self, method)
+        shell(local_ns=local_ns, stack_depth=2)
+
+        # End scene when exiting an embed.
+        raise Exception("Exiting scene.")
 
     def update_to_time(self, t):
         dt = t - self.last_t

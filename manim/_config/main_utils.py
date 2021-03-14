@@ -411,6 +411,13 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
     )
 
     parser.add_argument(
+        "--use_opengl_renderer",
+        help="Render animations using the OpenGL renderer",
+        action="store_const",
+        const=True,
+    )
+
+    parser.add_argument(
         "--use_webgl_renderer",
         help="Render animations using the WebGL frontend",
         action="store_const",
