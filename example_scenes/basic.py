@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from manim import *
+import os
+import pathlib
 
 # To watch one of these scenes, run the following:
 # python --quality m manim example_scenes.py SquareToCircle -p
@@ -128,5 +130,38 @@ class UpdatersExample(Scene):
         )
         self.wait()
 
+class ImageStuff(Scene):
+    def construct(self):
+        jpgimage = ImageMobject("C:/Manim_18Jun/assets/raster_images/Bayes")
+        self.play(FadeIn(jpgimage))
+        self.wait()
+        self.play(FadeOut(jpgimage))
+        self.wait()
+
+        svgimage = SVGMobject("C:/Manim_18Jun/assets/svg_images/finger")
+        svgimage.set_color(WHITE)
+        self.play(Write(svgimage))
+        self.wait()
 
 # See many more examples at https://docs.manim.community/en/latest/examples.html
+
+if __name__ == "__main__":
+    #module_name = os.path.basename(__file__)
+    module_name = os.path.abspath(__file__)
+    output_location = "C:\ManimCE\media"
+    #command_A = "manim -p  --video_dir ~/Downloads/  "
+    clear_cmd = "cls"
+    #command_A = "python -m manim "
+    command_A = "manim " + module_name + " " + "ImageStuff" + " " + "-pql" + " --media_dir " + output_location
+    #command_B = module_name + " " + "SecondGeneral" + " -pl -n 21,24"
+    #command_B = module_name + " " + "ProblemIntroduction" + " -ps -n 16,17"
+    #command_B = module_name + " " + "AnimationTransform" + " -pl"
+    #command_B = module_name + " -p"
+    #command_B = module_name + " -pl"
+    #command_B = module_name + " -a"
+    #command_B = module_name + " -al"
+    os.system(clear_cmd)
+    #print(module_name)
+    #print(output_location)
+    #os.system(command_A + command_B)
+    os.system(command_A)
