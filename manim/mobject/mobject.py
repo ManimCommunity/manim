@@ -744,6 +744,7 @@ class Mobject(Container):
 
         """
 
+        self.clear_updaters()
         for updater in mobject.get_updaters():
             self.add_updater(updater)
         return self
