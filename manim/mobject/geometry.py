@@ -434,13 +434,13 @@ class Circle(Arc):
         ----------
         mobject : :class:`~.Mobject`
             The mobject that the circle will be surrounding
-        buffer_factor : :class: `float`
+        buffer_factor :  Optional[:class:`float`]
             The distance between the mobjects. A buffer_factor < 1 makes the circle smaller than the mobject.
 
 
         Examples
         ----------
-
+g
         .. manim:: CircleSurround
             :save_last_frame:
 
