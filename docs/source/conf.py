@@ -17,7 +17,6 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.abspath("."))
 
-
 if os.environ.get("READTHEDOCS") == "True":
     site_path = get_python_lib()
     # we need to add ffmpeg to the path
@@ -31,13 +30,11 @@ if os.environ.get("READTHEDOCS") == "True":
     )
     os.environ["PATH"] += os.pathsep + ffmpeg_path
 
-
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
 copyright = "2020, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -77,8 +74,9 @@ napoleon_custom_sections = ["Tests", ("Test", "Tests")]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
-
+exclude_patterns = ['examples.rst', 'reference\manim.mobject.geometry.ArrowTip.rst',
+                    'reference\manim.mobject.geometry.rst'
+    , 'reference\manim.mobject.functions.ParametricFunction.rst', 'tutorials']
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -106,6 +104,7 @@ html_static_path = ["_static"]
 
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
+
 
 # source links to github
 def linkcode_resolve(domain, info):
