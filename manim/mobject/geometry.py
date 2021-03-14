@@ -392,6 +392,26 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
+    """A circle.
+
+    Parameters
+    ----------
+    kwargs : Any
+        additional arguments to be passed to Arc
+
+    Examples
+    --------
+
+    .. manim:: CircleExample
+        :save_last_frame:
+
+    class ShowCircle(Scene):
+        def construct(self):
+            circle = Circle(radius=1.0)
+            self.add(circle)
+            self.wait()
+    """
+
     def __init__(
         self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
     ):
@@ -1259,11 +1279,37 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
+    """A quadrilateral with two sets of parallel sides.
+
+    Parameters
+    ----------
+    height : Optional[:class:`float`]
+        The vertical height of the rectangle.
+    width : Optional[:class:`float`]
+        The horizontal width of the rectangle.
+
+    Examples
+    ----------
+
+    .. manim:: RectangleExample
+        :save_last_frame:
+
+    class RectangleExample(Scene):
+        def construct(self):
+            r1 = Rectangle(width=4.0, height=2.0)
+            r2 = Rectangle(width=1.0, height=4.0)
+            rects = Group(r1,r2).arrange(buff=1)
+            self.add(rects)
+            self.wait()
+    """
+
     def __init__(
         self,
         color=WHITE,
         height=2.0,
         width=4.0,
+        mark_paths_closed=True,
+        close_new_points=True,
         **kwargs
     ):
         self.mark_paths_closed = mark_paths_closed
