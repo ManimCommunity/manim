@@ -720,7 +720,30 @@ class Mobject(Container):
         return self
 
     def match_updaters(self, mobject):
-        self.clear_updaters()
+        """
+        Match the updaters of the given mobject.
+
+        Parameters
+        ----------
+        mobject : :class:`Mobject`
+            The mobject whose updaters get matched.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Note
+        ----
+        All updaters from submobjects are removed, but only updaters of the given mobject are matched, not those of it's submobjects.
+
+        See also
+        --------
+        :meth:`add_updater`
+        :meth:`clear_updaters`
+
+        """
+
         for updater in mobject.get_updaters():
             self.add_updater(updater)
         return self
