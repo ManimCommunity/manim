@@ -410,6 +410,8 @@ class Circle(Arc):
             circle = Circle(radius=1.0)
             self.add(circle)
             self.wait()
+
+
     """
 
     def __init__(
@@ -426,6 +428,42 @@ class Circle(Arc):
         )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
+        """Adjusts a circle so that it surrounds a given mobject
+
+        Parameters
+        ----------
+        mobject : :class:`~.Mobject`
+            The mobject that the circle will be surrounding
+        buffer_factor : :class: `float`
+            The distance between the mobjects. A buffer_factor < 1 makes the circle smaller than the mobject.
+
+
+        Examples
+        ----------
+
+        .. manim:: CircleSurround
+            :save_last_frame:
+
+        class CircleSurround(Scene):
+            def construct(self):
+                t1 = Triangle()
+                c1 = Circle().surround(t1)
+                group1 = Group(t1,c1) # treat the two mobjects as one
+
+                l2 = Line()
+                c2 = Circle().surround(l2)
+                group2 = Group(l2,c2)
+
+                # buffer_factor < 1, so the circle is smaller than the square
+                s3 = Square()
+                c3 = Circle().surround(s3, buffer_factor=0.5)
+                group3 = Group(s3, c3)
+
+                group = Group(group1, group2, group3).arrange()
+                self.add(group)
+                self.wait()
+
+        """
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: Perhaps create an ellipse class to handle single-dimension stretching
 
