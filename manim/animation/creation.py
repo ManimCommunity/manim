@@ -307,21 +307,17 @@ class Unwrite(Write):
 
         class UnwriteReverseFalse(Scene):
             def construct(self):
-                text = Tex("Alice and Bob")
+                text = Tex("Alice and Bob").scale(3)
                 self.add(text)
-                self.wait()
                 self.play(Unwrite(text))
-                self.wait()
 
     .. manim :: UnwriteReverseTrue
 
         class UnwriteReverseTrue(Scene):
             def construct(self):
-                text = Tex("Alice and Bob")
+                text = Tex("Alice and Bob").scale(3)
                 self.add(text)
-                self.wait()
                 self.play(Unwrite(text,reverse=True))
-                self.wait()
 
     """
 
