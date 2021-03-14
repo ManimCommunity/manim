@@ -446,22 +446,21 @@ class Circle(Arc):
 
         class CircleSurround(Scene):
             def construct(self):
-                t1 = Triangle()
-                c1 = Circle().surround(t1)
-                group1 = Group(t1,c1) # treat the two mobjects as one
+                triangle1 = Triangle()
+                circle1 = Circle().surround(triangle1)
+                group1 = Group(triangle1,circle1) # treat the two mobjects as one
 
-                l2 = Line()
-                c2 = Circle().surround(l2)
-                group2 = Group(l2,c2)
+                line2 = Line()
+                circle2 = Circle().surround(line2)
+                group2 = Group(line2,circle2)
 
                 # buffer_factor < 1, so the circle is smaller than the square
-                s3 = Square()
-                c3 = Circle().surround(s3, buffer_factor=0.5)
-                group3 = Group(s3, c3)
+                square3 = Square()
+                circle3 = Circle().surround(square3, buffer_factor=0.5)
+                group3 = Group(square3, circle3)
 
                 group = Group(group1, group2, group3).arrange()
                 self.add(group)
-                self.wait()
 
         """
         # Ignores dim_to_match and stretch; result will always be a circle
@@ -497,10 +496,10 @@ class Dot(Circle):
 
     class DotExample(Scene):
         def construct(self):
-            d1 = Dot(point=ORIGIN, radius=0.08)
-            d2 = Dot(point=LEFT)
-            d3 = Dot(point=RIGHT)
-            self.add(d1,d2,d3)
+            dot1 = Dot(point=ORIGIN, radius=0.08)
+            dot2 = Dot(point=LEFT)
+            dot3 = Dot(point=RIGHT)
+            self.add(dot1,dot2,dot3)
             self.wait()
     """
 
@@ -1334,9 +1333,9 @@ class Rectangle(Polygon):
 
     class RectangleExample(Scene):
         def construct(self):
-            r1 = Rectangle(width=4.0, height=2.0)
-            r2 = Rectangle(width=1.0, height=4.0)
-            rects = Group(r1,r2).arrange(buff=1)
+            rect1 = Rectangle(width=4.0, height=2.0)
+            rect2 = Rectangle(width=1.0, height=4.0)
+            rects = Group(rect1,rect2).arrange(buff=1)
             self.add(rects)
             self.wait()
     """
