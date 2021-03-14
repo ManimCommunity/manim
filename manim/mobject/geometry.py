@@ -440,7 +440,7 @@ class Circle(Arc):
 
         Examples
         ----------
-g
+
         .. manim:: CircleSurround
             :save_last_frame:
 
