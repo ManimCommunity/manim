@@ -422,6 +422,30 @@ class Circle(Arc):
 
 
 class Dot(Circle):
+    """A circle with a very small radius.
+
+    Parameters
+    ----------
+    point : Optional[:class:`float`]
+        The location of the dot.
+    radius : Optional[:class:`float`]
+        The radius of the dot.
+
+    Examples
+    --------
+
+    .. manim:: DotExample
+        :save_last_frame:
+
+    class DotExample(Scene):
+        def construct(self):
+            d1 = Dot(point=ORIGIN, radius=0.08)
+            d2 = Dot(point=LEFT)
+            d3 = Dot(point=RIGHT)
+            self.add(d1,d2,d3)
+            self.wait()
+    """
+
     def __init__(
         self,
         point=ORIGIN,
