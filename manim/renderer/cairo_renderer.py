@@ -118,7 +118,7 @@ class CairoRenderer:
         kwargs["include_submobjects"] = include_submobjects
         self.camera.capture_mobjects(mobjects, **kwargs)
 
-    def render(self, scene, moving_mobjects):
+    def render(self, scene, time, moving_mobjects):
         self.update_frame(scene, moving_mobjects)
         self.add_frame(self.get_frame())
 

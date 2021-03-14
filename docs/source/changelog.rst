@@ -14,8 +14,6 @@ Upcoming release
 
 :Date: TBD
 
-Changes for the upcoming release are tracked `in our GitHub wiki <https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release>`_.
-
 
 ******
 v0.4.0
