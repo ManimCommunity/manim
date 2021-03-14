@@ -13,11 +13,40 @@ __all__ = [
     "make_even_by_cycling",
     "remove_nones",
     "concatenate_lists",
+    "listify",
 ]
 
 
 import itertools as it
 import numpy as np
+
+
+def resize_array(nparray, length):
+    if len(nparray) == length:
+        return nparray
+    return np.resize(nparray, (length, *nparray.shape[1:]))
+
+
+def resize_preserving_order(nparray, length):
+    if len(nparray) == 0:
+        return np.zeros((length, *nparray.shape[1:]))
+    if len(nparray) == length:
+        return nparray
+    indices = np.arange(length) * len(nparray) // length
+    return nparray[indices]
+
+
+def resize_with_interpolation(nparray, length):
+    if len(nparray) == length:
+        return nparray
+    cont_indices = np.linspace(0, len(nparray) - 1, length)
+    return np.array(
+        [
+            (1 - a) * nparray[lh] + a * nparray[rh]
+            for ci in cont_indices
+            for lh, rh, a in [(int(ci), int(np.ceil(ci)), ci % 1)]
+        ]
+    )
 
 
 def remove_list_redundancies(l):
@@ -66,6 +95,42 @@ def tuplify(obj):
         return tuple(obj)
     except TypeError:
         return (obj,)
+
+
+def batch_by_property(items, property_func):
+    """
+    Takes in a list, and returns a list of tuples, (batch, prop)
+    such that all items in a batch have the same output when
+    put into property_func, and such that chaining all these
+    batches together would give the original list (i.e. order is
+    preserved)
+    """
+    batch_prop_pairs = []
+    curr_batch = []
+    curr_prop = None
+    for item in items:
+        prop = property_func(item)
+        if prop != curr_prop:
+            # Add current batch
+            if len(curr_batch) > 0:
+                batch_prop_pairs.append((curr_batch, curr_prop))
+            # Redefine curr
+            curr_prop = prop
+            curr_batch = [item]
+        else:
+            curr_batch.append(item)
+    if len(curr_batch) > 0:
+        batch_prop_pairs.append((curr_batch, curr_prop))
+    return batch_prop_pairs
+
+
+def listify(obj):
+    if isinstance(obj, str):
+        return [obj]
+    try:
+        return list(obj)
+    except TypeError:
+        return [obj]
 
 
 def stretch_array_to_length(nparray, length):
