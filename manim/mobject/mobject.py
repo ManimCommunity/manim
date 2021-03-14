@@ -693,6 +693,26 @@ class Mobject(Container):
         return self
 
     def clear_updaters(self, recursive=True):
+        """
+        Remove every updater.
+
+        Parameters
+        ----------
+        recursive : bool
+            Whether to recursively call ``clear_updaters`` on all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`remove_updater`
+        :meth:`add_updater`
+        :meth:`get_updaters`
+
+        """
         self.updaters = []
         if recursive:
             for submob in self.submobjects:
