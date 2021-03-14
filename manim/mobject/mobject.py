@@ -806,6 +806,24 @@ class Mobject(Container):
     # Transforming operations
 
     def apply_to_family(self, func):
+        """
+        Apply a function to ``self`` and every submobject with points recursively.
+
+        Parameters
+        ----------
+        func : ``Callable``
+            The function to apply to each mobject. ``func`` gets passed the respective (sub)mobject as parameter.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`family_members_with_points`
+        
+        """
         for mob in self.family_members_with_points():
             func(mob)
 
