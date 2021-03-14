@@ -853,13 +853,33 @@ class Mobject(Container):
 
     def scale(self, scale_factor, **kwargs):
         """
-        Default behavior is to scale about the center of the mobject.
-        The argument about_edge can be a vector, indicating which side of
-        the mobject to scale about, e.g., mob.scale(about_edge = RIGHT)
-        scales about mob.get_right().
+        Scale the size by a factor.
 
-        Otherwise, if about_point is given a value, scaling is done with
-        respect to that point.
+        Default behavior is to scale about the center of the mobject.
+        # The argument about_edge can be a vector, indicating which side of
+        # the mobject to scale about, e.g., mob.scale(about_edge = RIGHT)
+        # scales about mob.get_right().
+
+        # Otherwise, if about_point is given a value, scaling is done with
+        # respect to that point.
+
+        
+        Parameters
+        ----------
+        scale_factor : ``float``
+            The scaling factor. Values 0 < |x| < 1 will shrink the mobject, 1 < |x| will increase it's size. If x<0 resuls in  additionally flipping by 180°.
+        kwargs :
+            Additional keyword arguments passed to :meth:`apply_points_function_about_point`. 
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`move_to`
+
         """
         self.apply_points_function_about_point(
             lambda points: scale_factor * points, **kwargs
