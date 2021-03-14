@@ -38,3 +38,9 @@ class DtUpdater(Scene):
         line.add_updater(lambda mobject, dt: mobject.rotate(dt * 90 * DEGREES))
         self.add(line)
         self.wait(2)
+
+class PiePiece(Scene):
+    def construct(self):
+        piece = Arc(start_angle=1, angle=0.5, radius=2, color=BLUE).set_fill(opacity=0.5)
+        piece.add_points_as_corners([ORIGIN, piece.get_start()])
+        self.add(piece)

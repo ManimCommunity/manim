@@ -125,22 +125,19 @@ class Mobject(Container):
         return str(self.name)
 
     def reset_points(self):
-        """
-        Sets ``self.points`` to be an empty array.
+        """Sets ``self.points`` to be an empty array.
         """
         self.points = np.zeros((0, self.dim))
 
     def init_colors(self):
-        """
-        Initializes the colors.
+        """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
         """
         pass
 
     def generate_points(self):
-        """
-        Initializes ``self.points`` and therefore the shape.
+        """Initializes ``self.points`` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
         """
@@ -220,8 +217,7 @@ class Mobject(Container):
         raise NotImplementedError
 
     def add_to_back(self, *mobjects):
-        """
-        Add all passed mobjects to the back of the submobjects.
+        """Add all passed mobjects to the back of the submobjects.
 
         If ``self.submobjects`` already contains the given mobjects, they just get moved to the back instead.
 
@@ -491,8 +487,7 @@ class Mobject(Container):
         )
 
     def copy(self):
-        """
-        Create and return an identical copy of the Mobject including all submobjects.
+        """Create and return an identical copy of the Mobject including all submobjects.
 
         Note
         ----
@@ -511,8 +506,7 @@ class Mobject(Container):
     # Updating
 
     def update(self, dt=0, recursive=True):
-        """
-        Apply all updaters.
+        """Apply all updaters.
 
         Does nothing if updating is suspended.
 
@@ -548,8 +542,7 @@ class Mobject(Container):
         return self
 
     def get_time_based_updaters(self):
-        """
-        Return all updaters using the ``dt`` parameter.
+        """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.
 
@@ -567,8 +560,7 @@ class Mobject(Container):
         return [updater for updater in self.updaters if "dt" in get_parameters(updater)]
 
     def has_time_based_updater(self):
-        """
-        Test if ``self`` has a time based updater.
+        """Test if ``self`` has a time based updater.
 
         Returns
         -------
@@ -586,8 +578,7 @@ class Mobject(Container):
         return False
 
     def get_updaters(self):
-        """
-        Return all updaters.
+        """Return all updaters.
 
         Returns
         -------
@@ -671,8 +662,7 @@ class Mobject(Container):
         return self
 
     def remove_updater(self, update_function):
-        """
-        Remove an updater.
+        """Remove an updater.
 
         If the same updater is applied multiple times, every instance gets removed.
 
@@ -693,8 +683,7 @@ class Mobject(Container):
         return self
 
     def clear_updaters(self, recursive=True):
-        """
-        Remove every updater.
+        """Remove every updater.
 
         Parameters
         ----------
@@ -720,8 +709,7 @@ class Mobject(Container):
         return self
 
     def match_updaters(self, mobject):
-        """
-        Match the updaters of the given mobject.
+        """Match the updaters of the given mobject.
 
         Parameters
         ----------
@@ -750,8 +738,7 @@ class Mobject(Container):
         return self
 
     def suspend_updating(self, recursive=True):
-        """
-        Disable updating from updaters and animations.
+        """Disable updating from updaters and animations.
 
 
         Parameters
@@ -778,8 +765,7 @@ class Mobject(Container):
         return self
 
     def resume_updating(self, recursive=True):
-        """
-        Enable updating from updaters and animations.
+        """Enable updating from updaters and animations.
 
         Parameters
         ----------
@@ -807,8 +793,7 @@ class Mobject(Container):
     # Transforming operations
 
     def apply_to_family(self, func):
-        """
-        Apply a function to ``self`` and every submobject with points recursively.
+        """Apply a function to ``self`` and every submobject with points recursively.
 
         Parameters
         ----------
@@ -829,8 +814,7 @@ class Mobject(Container):
             func(mob)
 
     def shift(self, *vectors):
-        """
-        Shift by the given vectors.
+        """Shift by the given vectors.
 
         Parameters
         ----------
@@ -853,8 +837,7 @@ class Mobject(Container):
         return self
 
     def scale(self, scale_factor, **kwargs):
-        """
-        Scale the size by a factor.
+        """Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
         # The argument about_edge can be a vector, indicating which side of
@@ -964,8 +947,7 @@ class Mobject(Container):
         return self
 
     def repeat(self, count):
-        """
-        This can make transition animations nicer
+        """This can make transition animations nicer
         """
 
         def repeat_array(array):
@@ -1015,8 +997,7 @@ class Mobject(Container):
         return self
 
     def align_on_border(self, direction, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER):
-        """
-        Direction just needs to be a vector pointing towards side or
+        """Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
         """
         target_point = np.sign(direction) * (
@@ -1361,8 +1342,7 @@ class Mobject(Container):
     # Color functions
 
     def set_color(self, color=YELLOW_C, family=True):
-        """
-        Condition is function which takes in one arguments, (x, y, z).
+        """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings
         of color
@@ -1498,8 +1478,7 @@ class Mobject(Container):
             return np.max(values)
 
     def get_critical_point(self, direction):
-        """
-        Picture a box bounding the mobject.  Such a box has
+        """Picture a box bounding the mobject.  Such a box has
         9 'critical points': 4 corners, 4 edge center, the
         center.  This returns one of them.
         """
@@ -1556,8 +1535,7 @@ class Mobject(Container):
         ) - self.reduce_across_dimension(np.min, np.min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
-        """
-        Meant to generalize get_x, get_y, get_z
+        """Meant to generalize get_x, get_y, get_z
         """
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
@@ -1640,8 +1618,7 @@ class Mobject(Container):
         return self.match_coord(mobject, 2, direction)
 
     def align_to(self, mobject_or_point, direction=ORIGIN, alignment_vect=UP):
-        """
-        Examples:
+        """Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
 
@@ -1772,8 +1749,7 @@ class Mobject(Container):
             m1.align_data(m2)
 
     def get_point_mobject(self, center=None):
-        """
-        The simplest mobject to be transformed to or from self.
+        """The simplest mobject to be transformed to or from self.
         Should by a point of the appropriate type
         """
         msg = f"get_point_mobject not implemented for {self.__class__.__name__}"
@@ -1801,8 +1777,7 @@ class Mobject(Container):
         return self
 
     def null_point_align(self, mobject):
-        """
-        If a mobject with points is being aligned to
+        """If a mobject with points is being aligned to
         one without, treat both as groups, and push
         the one with points into its own submobjects
         list.
@@ -1877,8 +1852,7 @@ class Mobject(Container):
         raise NotImplementedError("Please override in a child class.")
 
     def become(self, mobject, copy_submobjects=True):
-        """
-        Edit points, colors and submobjects to be identical
+        """Edit points, colors and submobjects to be identical
         to another mobject
 
         Examples
