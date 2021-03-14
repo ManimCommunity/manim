@@ -646,21 +646,20 @@ class Mobject(Container):
             func(mob)
 
     def shift(self, *vectors):
+        total_vector = reduce(op.add, vectors)
         if config["use_opengl_renderer"]:
             self.apply_points_function(
-                lambda points: points + vectors[0],
+                lambda points: points + total_vector,
                 about_edge=None,
                 works_on_bounding_box=True,
             )
-            return self
         else:
-            total_vector = reduce(op.add, vectors)
             for mob in self.family_members_with_points():
                 mob.points = mob.points.astype("float")
                 mob.points += total_vector
                 if hasattr(mob, "data") and "points" in mob.data:
                     mob.data["points"] += total_vector
-            return self
+        return self
 
     def scale(self, scale_factor, **kwargs):
         """
