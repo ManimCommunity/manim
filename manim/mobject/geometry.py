@@ -1267,30 +1267,6 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
-    """A quadrilateral with two sets of parallel sides.
-
-    Parameters
-    ----------
-    height : Optional[:class:`float`]
-        The vertical height of the rectangle.
-    width : Optional[:class:`float`]
-        The horizontal width of the rectangle.
-
-    Examples
-    ----------
-
-    .. manim:: RectangleExample
-        :save_last_frame:
-
-    class RectangleExample(Scene):
-        def construct(self):
-            r1 = Rectangle(width=4.0, height=2.0)
-            r2 = Rectangle(width=1.0, height=4.0)
-            rects = Group(r1,r2).arrange(buff=1)
-            self.add(rects)
-            self.wait()
-    """
-
     def __init__(
         self,
         color=WHITE,
@@ -1300,6 +1276,8 @@ class Rectangle(Polygon):
         close_new_points=True,
         **kwargs
     ):
+        self.mark_paths_closed = mark_paths_closed
+        self.close_new_points = close_new_points
         Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
