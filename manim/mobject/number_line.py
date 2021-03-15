@@ -99,11 +99,10 @@ class NumberLine(Line):
             self.add_numbers()
 
     def rotate_about_zero(self, angle, axis=OUT, **kwargs):
-        self.rotate_about_number(0, angle, axis, **kwargs)
+        return self.rotate_about_number(0, angle, axis, **kwargs)
 
     def rotate_about_number(self, number, angle, axis=OUT, **kwargs):
-        kwargs.update(about_point=self.n2p(number))
-        self.rotate(angle, axis, **kwargs)
+        return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
     def init_leftmost_tick(self):
         if self.leftmost_tick is None:

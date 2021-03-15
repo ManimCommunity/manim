@@ -285,7 +285,7 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions=True,
         **kwargs
     ):
-        axis_config_ = {
+        self.axis_config = {
             "stroke_color": WHITE,
             "stroke_width": 2,
             "include_ticks": False,
@@ -294,18 +294,17 @@ class NumberPlane(Axes):
             "label_direction": DR,
             "number_scale_val": 0.5,
         }
-        y_axis_config_ = {"label_direction": DR}
-        background_line_style_ = {
+        self.y_axis_config = {"label_direction": DR}
+        self.background_line_style = {
             "stroke_color": BLUE_D,
             "stroke_width": 2,
             "stroke_opacity": 1,
         }
 
         self.update_default_configs(
-            (axis_config_, y_axis_config_, background_line_style_),
+            (self.axis_config, self.y_axis_config, self.background_line_style),
             (axis_config, y_axis_config, background_line_style),
         )
-        self.background_line_style = background_line_style_
 
         # Defaults to a faded version of line_config
         self.faded_line_style = faded_line_style
@@ -315,8 +314,8 @@ class NumberPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
 
         super().__init__(
-            axis_config=axis_config_,
-            y_axis_config=y_axis_config_,
+            axis_config=self.axis_config,
+            y_axis_config=self.y_axis_config,
             **kwargs,
         )
         self.init_background_lines()

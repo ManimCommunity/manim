@@ -30,11 +30,9 @@ def merge_dicts_recursively(*dicts):
     return result
 
 
-def update_dict_recursively(*dicts):
-    current_dict = dicts[0]
-    updated_dict = merge_dicts_recursively(*dicts)
-    for key, value in updated_dict.items():
-        current_dict[key] = value
+def update_dict_recursively(current_dict, *others):
+    updated_dict = merge_dicts_recursively(current_dict, *others)
+    current_dict.update(updated_dict)
 
 
 # Occasionally convenient in order to write dict.x instead of more laborious
