@@ -396,12 +396,12 @@ class Circle(Arc):
 
     Parameters
     ----------
-    color : :class: `str`, optional
+    color : :class:`str`, optional
         The color of the shape.
-    close_new_points : :class: `bool`, optional
-    anchors_span_full_range : :class: `bool`, optional
+    close_new_points : :class:`bool`, optional
+    anchors_span_full_range : :class:`bool`, optional
     kwargs : Any
-        Additional arguments to be passed to Arc
+        Additional arguments to be passed to :class:`Arc`
 
     Examples
     --------
@@ -439,11 +439,11 @@ class Circle(Arc):
         ----------
         mobject : :class:`~.Mobject`
             The mobject that the circle will be surrounding.
-        dim_to_match : :class: `int`, optional
+        dim_to_match : :class:`int`, optional
         buffer_factor :  :class:`float`, optional
             Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject.
-        stretch : :class: `bool`, optional
-            Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class: `Line`
+        stretch : :class:`bool`, optional
+            Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class:`Line`
 
         Examples
         --------
@@ -506,7 +506,7 @@ class Circle(Arc):
 
         Returns
         -------
-        :class: `numpy.ndarray`
+        :class:`numpy.ndarray`
             The location of the point along the circle's circumference.
         """
 
@@ -523,12 +523,12 @@ class Dot(Circle):
         The location of the dot.
     radius : Optional[:class:`float`]
         The radius of the dot.
-    stroke_width : :class: `float`, optional
-    fill_opacity : :class: `float`, optional
-    color : :class: `str`, optional
+    stroke_width : :class:`float`, optional
+    fill_opacity : :class:`float`, optional
+    color : :class:`str`, optional
         The color of the dot.
     kwargs : Any
-        Additional arguments to be passed to :class: `Circle`
+        Additional arguments to be passed to :class:`Circle`
 
     Examples
     --------
@@ -1361,16 +1361,16 @@ class Rectangle(Polygon):
 
     Parameters
     ----------
-    color : :class: `str`, optional
+    color : :class:`str`, optional
         The color of the rectangle
     height : :class:`float`, optional
         The vertical height of the rectangle.
     width : :class:`float`, optional
         The horizontal width of the rectangle.
-    mark_paths_closed : :class: `bool`, optional
-    close_new_points : :class: `bool`, optional
+    mark_paths_closed : :class:`bool`, optional
+    close_new_points : :class:`bool`, optional
     kwargs : Any
-        Additional arguments to be passed to :class: `Polygon`
+        Additional arguments to be passed to :class:`Polygon`
 
     Examples
     ----------
@@ -1411,7 +1411,7 @@ class Square(Rectangle):
     side_length : :class:`float`, optional
         The length of the sides.
     kwargs : Any
-        Additional arguments to be passed to :class: `Square`
+        Additional arguments to be passed to :class:`Square`
 
     Examples
     --------
