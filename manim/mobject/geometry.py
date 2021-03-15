@@ -1559,7 +1559,7 @@ class Cutout(VMobject):
 
 
 class Angle(Arc, Elbow):
-    """A circular arc representing an angle of two lines.
+    """A circular arc or elbow-type mobject representing an angle of two lines.
 
     Parameters
     ----------
@@ -1588,7 +1588,7 @@ class Angle(Arc, Elbow):
     dot_color : :class:`~.Colors`
         The color of the :class:`Dot`.
     elbow : :class:`bool`
-        Produces an elbow-like mobject indicating a right angle, see :class:`RightAngle` for more information
+        Produces an elbow-type mobject indicating a right angle, see :class:`RightAngle` for more information
         and a shorthand.
     kwargs
         Further keyword arguments that are passed to the constructor of :class:`Arc` or :class:`Elbow`.
