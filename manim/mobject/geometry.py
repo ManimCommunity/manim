@@ -1598,7 +1598,7 @@ class Angle(Arc, Elbow):
     The first example shows some right angles with a dot in the middle while the second example shows
     all 8 possible angles defined by two lines.
 
-    ..manim:: RightArcAngleExample
+    .. manim:: RightArcAngleExample
         :save_last_frame:
 
         class RightArcAngleExample(Scene):
@@ -1623,7 +1623,7 @@ class Angle(Arc, Elbow):
                     line_list
                 )
 
-    ..manim:: AngleExample
+    .. manim:: AngleExample
         :save_last_frame:
 
         class AngleExample(Scene):
@@ -1767,7 +1767,7 @@ class RightAngle(Angle):
     Examples
     --------
 
-    ..manim:: RightAngleExample
+    .. manim:: RightAngleExample
         :save_last_frame:
 
         class RightAngleExample(Scene):
