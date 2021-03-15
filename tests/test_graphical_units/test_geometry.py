@@ -8,25 +8,25 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 class CoordinatesTest(Scene):
     def construct(self):
         dots = [Dot(np.array([x, y, 0])) for x in range(-7, 8) for y in range(-4, 5)]
-        self.play(Animation(VGroup(*dots)))
+        self.add(VGroup(*dots))
 
 
 class ArcTest(Scene):
     def construct(self):
         a = Arc(PI)
-        self.play(Animation(a))
+        self.add(a)
 
 
 class ArcBetweenPointsTest(Scene):
     def construct(self):
         a = ArcBetweenPoints(np.array([1, 1, 0]), np.array([2, 2, 0]))
-        self.play(Animation(a))
+        self.add(a)
 
 
 class CurvedArrowTest(Scene):
     def construct(self):
         a = CurvedArrow(np.array([1, 1, 0]), np.array([2, 2, 0]))
-        self.play(Animation(a))
+        self.add(a)
 
 
 class CustomDoubleArrowTest(Scene):
@@ -39,91 +39,91 @@ class CustomDoubleArrowTest(Scene):
             tip_shape_start=ArrowCircleTip,
             tip_shape_end=ArrowSquareFilledTip,
         )
-        self.play(Animation(a))
+        self.add(a)
 
 
 class CircleTest(Scene):
     def construct(self):
         circle = Circle()
-        self.play(Animation(circle))
+        self.add(circle)
 
 
 class DotTest(Scene):
     def construct(self):
         dot = Dot()
-        self.play(Animation(dot))
+        self.add(dot)
 
 
 class AnnotationDotTest(Scene):
     def construct(self):
         adot = AnnotationDot()
-        self.play(Animation(adot))
+        self.add(adot)
 
 
 class EllipseTest(Scene):
     def construct(self):
         e = Ellipse()
-        self.play(Animation(e))
+        self.add(e)
 
 
 class SectorTest(Scene):
     def construct(self):
         e = Sector()
-        self.play(Animation(e))
+        self.add(e)
 
 
 class AnnulusTest(Scene):
     def construct(self):
         a = Annulus()
-        self.play(Animation(a))
+        self.add(a)
 
 
 class AnnularSectorTest(Scene):
     def construct(self):
         a = AnnularSector()
-        self.play(Animation(a))
+        self.add(a)
 
 
 class LineTest(Scene):
     def construct(self):
         a = Line(np.array([1, 1, 0]), np.array([2, 2, 0]))
-        self.play(Animation(a))
+        self.add(a)
 
 
 class ElbowTest(Scene):
     def construct(self):
         a = Elbow()
-        self.play(Animation(a))
+        self.add(a)
 
 
 class DoubleArrowTest(Scene):
     def construct(self):
         a = DoubleArrow()
-        self.play(Animation(a))
+        self.add(a)
 
 
 class VectorTest(Scene):
     def construct(self):
         a = Vector(UP)
-        self.play(Animation(a))
+        self.add(a)
 
 
 class PolygonTest(Scene):
     def construct(self):
         a = Polygon(*[np.array([1, 1, 0]), np.array([2, 2, 0]), np.array([2, 3, 0])])
-        self.play(Animation(a))
+        self.add(a)
 
 
 class RectangleTest(Scene):
     def construct(self):
         a = Rectangle()
-        self.play(Animation(a))
+        self.add(a)
 
 
 class RoundedRectangleTest(Scene):
     def construct(self):
         a = RoundedRectangle()
-        self.play(Animation(a))
+        self.add(a)
 
 
 class ArrangeTest(Scene):

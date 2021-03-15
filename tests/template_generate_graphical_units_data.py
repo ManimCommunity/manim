@@ -10,7 +10,7 @@ from tests.helpers.graphical_units import set_test_scene
 class YourClassTest(Scene):  # e.g. RoundedRectangleTest
     def construct(self):
         circle = Circle()
-        self.play(Animation(circle))
+        self.add(circle)
 
 
 set_test_scene(

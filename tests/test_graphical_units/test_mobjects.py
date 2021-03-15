@@ -8,7 +8,7 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 class PointCloudDotTest(ThreeDScene):
     def construct(self):
         p = PointCloudDot()
-        self.play(Animation(p))
+        self.add(p)
 
 
 MODULE_NAME = "mobjects"

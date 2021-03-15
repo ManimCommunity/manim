@@ -14,7 +14,7 @@ class SceneWithMultipleCalls(Scene):
         self.add(number)
         for i in range(10):
             number.become(Integer(i))
-            self.play(Animation(number))
+            self.add(number)
 
 
 class SceneWithMultipleWaitCalls(Scene):
