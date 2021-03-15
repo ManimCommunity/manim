@@ -396,8 +396,12 @@ class Circle(Arc):
 
     Parameters
     ----------
+    color : :class: `str`, optional
+        The color of the shape.
+    close_new_points : :class: `bool`, optional
+    anchors_span_full_range : :class: `bool`, optional
     kwargs : Any
-        additional arguments to be passed to Arc
+        Additional arguments to be passed to Arc
 
     Examples
     --------
@@ -407,9 +411,12 @@ class Circle(Arc):
 
         class CircleExample(Scene):
             def construct(self):
-                circle = Circle(radius=1.0)
-                self.add(circle)
+                circle_1 = Circle(radius=1.0)
+                circle_2 = Circle(radius=1.5, color=GREEN)
+                circle_3 = Circle(radius=1.0, color=BLUE_B, fill_opacity=1)
 
+                circ_group = Group(circle_1, circle_2,circle_3).arrange(buff=1)
+                self.add(circ_group)
     """
 
     def __init__(
@@ -431,10 +438,11 @@ class Circle(Arc):
         Parameters
         ----------
         mobject : :class:`~.Mobject`
-            The mobject that the circle will be surrounding
-        buffer_factor :  Optional[:class:`float`]
+            The mobject that the circle will be surrounding.
+        dim_to_match : :class: `int`, optional
+        buffer_factor :  :class:`float`, optional
             Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject.
-        stretch : :class: `bool`
+        stretch : :class: `bool`, optional
             Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class: `Line`
 
         Examples
@@ -460,8 +468,8 @@ class Circle(Arc):
 
                     group = Group(group1, group2, group3).arrange(buff=1)
                     self.add(group)
-
         """
+
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: Perhaps create an ellipse class to handle single-dimension stretching
 
@@ -494,15 +502,14 @@ class Circle(Arc):
 
                     s1 = Square(side_length=0.25).move_to(p1)
                     s2 = Square(side_length=0.25).move_to(p2)
-
                     self.add(circle, s1, s2)
 
         Returns
         -------
         :class: `numpy.ndarray`
             The location of the point along the circle's circumference.
-
         """
+
         start_angle = angle_of_vector(self.points[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
 
@@ -512,10 +519,16 @@ class Dot(Circle):
 
     Parameters
     ----------
-    point : Optional[:class:`float`]
+    point : :class:`float`, optional
         The location of the dot.
     radius : Optional[:class:`float`]
         The radius of the dot.
+    stroke_width : :class: `float`, optional
+    fill_opacity : :class: `float`, optional
+    color : :class: `str`, optional
+        The color of the dot.
+    kwargs : Any
+        Additional arguments to be passed to :class: `Circle`
 
     Examples
     --------
@@ -525,11 +538,10 @@ class Dot(Circle):
 
         class DotExample(Scene):
             def construct(self):
-                dot1 = Dot(point=ORIGIN, radius=0.08)
-                dot2 = Dot(point=LEFT)
+                dot1 = Dot(point=LEFT, radius=0.08)
+                dot2 = Dot(point=ORIGIN)
                 dot3 = Dot(point=RIGHT)
                 self.add(dot1,dot2,dot3)
-
     """
 
     def __init__(
@@ -1349,10 +1361,16 @@ class Rectangle(Polygon):
 
     Parameters
     ----------
-    height : Optional[:class:`float`]
+    color : :class: `str`, optional
+        The color of the rectangle
+    height : :class:`float`, optional
         The vertical height of the rectangle.
-    width : Optional[:class:`float`]
+    width : :class:`float`, optional
         The horizontal width of the rectangle.
+    mark_paths_closed : :class: `bool`, optional
+    close_new_points : :class: `bool`, optional
+    kwargs : Any
+        Additional arguments to be passed to :class: `Polygon`
 
     Examples
     ----------
@@ -1364,9 +1382,9 @@ class Rectangle(Polygon):
             def construct(self):
                 rect1 = Rectangle(width=4.0, height=2.0)
                 rect2 = Rectangle(width=1.0, height=4.0)
+
                 rects = Group(rect1,rect2).arrange(buff=1)
                 self.add(rects)
-
     """
 
     def __init__(
@@ -1390,8 +1408,10 @@ class Square(Rectangle):
 
     Parameters
     ----------
-    side_length : Optional[:class:`float`]
+    side_length : :class:`float`, optional
         The length of the sides.
+    kwargs : Any
+        Additional arguments to be passed to :class: `Square`
 
     Examples
     --------
@@ -1401,9 +1421,11 @@ class Square(Rectangle):
 
         class SquareExample(Scene):
             def construct(self):
-                square = Square(side_length=2.0)
-                self.add(square)
+                square_1 = Square(side_length=2.0).shift(DOWN)
+                square_2 = Square(side_length=1.0).next_to(square_1, direction=UP)
+                square_3 = Square(side_length=0.5).next_to(square_2, direction=UP)
 
+                self.add(square_1,square_2,square_3)
     """
 
     def __init__(self, side_length=2.0, **kwargs):
