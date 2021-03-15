@@ -1785,7 +1785,4 @@ class RightAngle(Angle):
     """
 
     def __init__(self, line1, line2, length=None, **kwargs):
-        if length == None:
-            Angle.__init__(self, line1, line2, elbow=True, **kwargs)
-        else:
-            Angle.__init__(self, line1, line2, radius=length, elbow=True, **kwargs)
+        Angle.__init__(self, line1, line2, radius=length, elbow=True, **kwargs)
