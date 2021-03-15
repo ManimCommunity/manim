@@ -154,7 +154,7 @@ class AngleTest(Scene):
     def construct(self):
         l1 = Line(ORIGIN, RIGHT)
         l2 = Line(ORIGIN, UP)
-        a = Angle(l1,l2)
+        a = Angle(l1, l2)
         self.play(Animation(a))
 
 
@@ -162,7 +162,7 @@ class RightAngleTest(Scene):
     def construct(self):
         l1 = Line(ORIGIN, RIGHT)
         l2 = Line(ORIGIN, UP)
-        a = RightAngle(l1,l2)
+        a = RightAngle(l1, l2)
         self.play(Animation(a))
 
 
