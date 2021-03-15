@@ -342,11 +342,11 @@ class OpenGLDot(OpenGLCircle):
 
 
 class OpenGLSmallDot(OpenGLDot):
-    """ Depreciated"""
+    """ Deprecated"""
 
     def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
         logger.warning(
-            "OpenGLSmallDot has been depreciated and will be removed in a future release."
+            "OpenGLSmallDot has been deprecated and will be removed in a future release."
             "Use OpenGLDot instead."
         )
         super().__init__(radius=radius, **kwargs)

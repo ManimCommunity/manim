@@ -444,11 +444,11 @@ class Dot(Circle):
 
 
 class SmallDot(Dot):
-    """Depreciated - A dot with small radius"""
+    """Deprecated - A dot with small radius"""
 
     def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
         logger.warning(
-            "SmallDot has been depreciated and will be removed in a future release. "
+            "SmallDot has been deprecated and will be removed in a future release. "
             "Use Dot instead."
         )
         Dot.__init__(self, radius=radius, **kwargs)
