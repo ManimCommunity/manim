@@ -1587,8 +1587,11 @@ class Angle(Arc, Elbow):
         Relative distance from the center to the arc: 0 puts the dot in the center and 1 on the arc itself.
     dot_color : :class:`~.Colors`
         The color of the :class:`Dot`.
+    elbow : :class:`bool`
+        Produces an elbow-like mobject indicating a right angle, see :class:`RightAngle` for more information
+        and a shorthand.
     kwargs
-        Further keyword arguments that are passed to the constructor of :class:`Arc`.
+        Further keyword arguments that are passed to the constructor of :class:`Arc` or :class:`Elbow`.
 
     Examples
     --------
@@ -1667,6 +1670,7 @@ class Angle(Arc, Elbow):
     ):
         self.quadrant = quadrant
         self.dot_distance = dot_distance
+        self.elbow = elbow
         inter = line_intersection(
             [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
         )
@@ -1739,6 +1743,12 @@ class Angle(Arc, Elbow):
                 right_dot.move_to(dot_anchor)
                 self.add(right_dot)
 
+    def generate_points(self):
+        if self.elbow:
+            Elbow.generate_points(self)
+        else:
+            Arc.generate_points(self)
+
 
 class RightAngle(Angle):
     """An elbow-type mobject representing a right angle between two lines.
@@ -1752,7 +1762,7 @@ class RightAngle(Angle):
     length : :class:`float`
         The length of the arms.
     kwargs
-        Further keyword arguments that are passed to the constructor of :class:`~.VMobject`.
+        Further keyword arguments that are passed to the constructor of :class:`Angle`.
 
     Examples
     --------
