@@ -1049,6 +1049,7 @@ class Polygon(VMobject):
                 --------
 
                 ..manim :: PolygonRoundCorners
+                    :save_as_gif:
 
                     class PolygonRoundCorners(Scene):
                         def construct(self):
@@ -1062,9 +1063,9 @@ class Polygon(VMobject):
                             self.play(Transform(parallelogram, curved_more))
                             self.wait(0.5)
 
-                See Also
-                --------
-                :class:`RoundedRectangle`
+        See Also
+        --------
+        :class:`RoundedRectangle`
         """
 
         vertices = self.get_vertices()
