@@ -1728,7 +1728,7 @@ class Angle(Arc, Elbow):
                 **kwargs
             )
             if dot == True:
-                if dot_radius == None:
+                if dot_radius is None:
                     dot_radius = radius / 10
                 else:
                     self.dot_radius = dot_radius
