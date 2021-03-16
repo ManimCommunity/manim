@@ -1926,7 +1926,7 @@ class Mobject(Container):
         mob2.add_n_more_submobjects(max(0, n1 - n2))
         return self
 
-    def null_point_align(self, mobject):
+    def null_point_align(self, mobject: "Mobject") -> "Mobject":
         """If a mobject with points is being aligned to
         one without, treat both as groups, and push
         the one with points into its own submobjects
