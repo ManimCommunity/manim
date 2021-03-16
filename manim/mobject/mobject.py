@@ -940,7 +940,7 @@ class Mobject(Container):
                     mob.data["points"] += total_vector
             return self
 
-    def scale(self, scale_factor, **kwargs) -> "Mobject":
+    def scale(self, scale_factor: float, **kwargs) -> "Mobject":
         """Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
