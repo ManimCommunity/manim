@@ -218,9 +218,7 @@ class ApplyMethod(Transform):
                 "Whoops, looks like you accidentally invoked "
                 "the method you want to animate"
             )
-        assert isinstance(method.__self__, Mobject) or isinstance(
-            method.__self__, OpenGLMobject
-        )
+        assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
     def create_target(self) -> Mobject:
         method = self.method
