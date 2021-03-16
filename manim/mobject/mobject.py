@@ -204,7 +204,7 @@ class Mobject(Container):
                 parent.refresh_bounding_box()
         return self
 
-    def add(self, *mobjects) -> Mobject:
+    def add(self, *mobjects) -> "Mobject":
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -288,7 +288,7 @@ class Mobject(Container):
     def __iadd__(self, mobject):
         raise NotImplementedError
 
-    def add_to_back(self, *mobjects) -> Mobject:
+    def add_to_back(self, *mobjects) -> "Mobject":
         """Add all passed mobjects to the back of the submobjects.
 
         If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead.
@@ -315,7 +315,7 @@ class Mobject(Container):
         self.submobjects = list(mobjects) + self.submobjects
         return self
 
-    def remove(self, *mobjects) -> Mobject:
+    def remove(self, *mobjects) -> "Mobject":
         """Remove submobjects.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
@@ -348,7 +348,7 @@ class Mobject(Container):
     def __isub__(self, other):
         raise NotImplementedError
 
-    def set(self, **kwargs) -> Mobject:
+    def set(self, **kwargs) -> "Mobject":
         """Sets attributes.
 
         Mainly to be used along with :attr:`animate` to
@@ -569,7 +569,7 @@ class Mobject(Container):
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
-    def copy(self) -> Mobject:
+    def copy(self) -> "Mobject":
         """Create and return an identical copy of the Mobject including all submobjects.
 
         Returns
@@ -593,7 +593,7 @@ class Mobject(Container):
 
     # Updating
 
-    def update(self, dt=0, recursive=True) -> Mobject:
+    def update(self, dt=0, recursive=True) -> "Mobject":
         """Apply all updaters.
 
         Does nothing if updating is suspended.
@@ -629,7 +629,7 @@ class Mobject(Container):
                 submob.update(dt, recursive)
         return self
 
-    def get_time_based_updaters(self) -> list[Callable]:
+    def get_time_based_updaters(self) -> "list[Callable]":
         """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.
@@ -665,7 +665,7 @@ class Mobject(Container):
                 return True
         return False
 
-    def get_updaters(self) -> list[Callable]:
+    def get_updaters(self) -> "list[Callable]":
         """Return all updaters.
 
         Returns
@@ -684,7 +684,7 @@ class Mobject(Container):
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function, index=None, call_updater=False) -> Mobject:
+    def add_updater(self, update_function, index=None, call_updater=False) -> "Mobject":
         """Add an update function to this mobject.
 
         Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
@@ -748,7 +748,7 @@ class Mobject(Container):
             update_function(self, 0)
         return self
 
-    def remove_updater(self, update_function) -> Mobject:
+    def remove_updater(self, update_function) -> "Mobject":
         """Remove an updater.
 
         If the same updater is applied multiple times, every instance gets removed.
@@ -775,7 +775,7 @@ class Mobject(Container):
             self.updaters.remove(update_function)
         return self
 
-    def clear_updaters(self, recursive=True) -> Mobject:
+    def clear_updaters(self, recursive=True) -> "Mobject":
         """Remove every updater.
 
         Parameters
@@ -801,7 +801,7 @@ class Mobject(Container):
                 submob.clear_updaters()
         return self
 
-    def match_updaters(self, mobject) -> Mobject:
+    def match_updaters(self, mobject) -> "Mobject":
         """Match the updaters of the given mobject.
 
         Parameters
@@ -830,7 +830,7 @@ class Mobject(Container):
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recursive=True) -> Mobject:
+    def suspend_updating(self, recursive=True) -> "Mobject":
         """Disable updating from updaters and animations.
 
 
@@ -857,7 +857,7 @@ class Mobject(Container):
                 submob.suspend_updating(recursive)
         return self
 
-    def resume_updating(self, recursive=True) -> Mobject:
+    def resume_updating(self, recursive=True) -> "Mobject":
         """Enable updating from updaters and animations.
 
         Parameters
@@ -885,7 +885,7 @@ class Mobject(Container):
 
     # Transforming operations
 
-    def apply_to_family(self, func) -> Mobject:
+    def apply_to_family(self, func) -> "Mobject":
         """Apply a function to ``self`` and every submobject with points recursively.
 
         Parameters
@@ -906,7 +906,7 @@ class Mobject(Container):
         for mob in self.family_members_with_points():
             func(mob)
 
-    def shift(self, *vectors) -> Mobject:
+    def shift(self, *vectors) -> "Mobject":
         """Shift by the given vectors.
 
         Parameters
@@ -940,7 +940,7 @@ class Mobject(Container):
                     mob.data["points"] += total_vector
             return self
 
-    def scale(self, scale_factor, **kwargs) -> Mobject:
+    def scale(self, scale_factor, **kwargs) -> "Mobject":
         """Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
