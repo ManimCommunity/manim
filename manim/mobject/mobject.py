@@ -593,7 +593,7 @@ class Mobject(Container):
 
     # Updating
 
-    def update(self, dt=0, recursive=True) -> "Mobject":
+    def update(self, dt: fload=0, recursive: bool=True) -> "Mobject":
         """Apply all updaters.
 
         Does nothing if updating is suspended.
