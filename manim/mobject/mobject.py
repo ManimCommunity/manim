@@ -214,7 +214,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        mobjects : :class:`Mobject`
+        mobjects
             The mobjects to add.
 
         Returns
@@ -296,7 +296,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        mobjects : :class:`Mobject`
+        mobjects
             The mobjects to add.
 
         Returns
@@ -325,7 +325,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        mobjects : :class:`Mobject`
+        mobjects
             The mobjects to remove.
 
         Returns
@@ -601,9 +601,9 @@ class Mobject(Container):
 
         Parameters
         ----------
-        dt : :class:`float`
+        dt
             The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``.
-        recursive : class:`bool`
+        recursive
             Whether to recursively update all submobjects.
 
         Returns
@@ -685,20 +685,20 @@ class Mobject(Container):
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function: Updater, index: Optional[int]=None, call_updater=False) -> "Mobject":
+    def add_updater(self, update_function: Updater, index: Optional[int]=None, call_updater:bool=False) -> "Mobject":
         """Add an update function to this mobject.
 
         Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
 
         Parameters
         ----------
-        update_function: class:`Callable`
+        update_function
             The update function to be added.
             Whenever :meth:`update` is called, this update function gets called using ``self`` as the first parameter.
             The updater can have a second parameter ``dt``. If it uses this parameter, it gets called using a second value ``dt``, usually representing the time in seconds since the last call of :meth:`update`.
-        index: :class:`int`
+        index
             The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
-        call_updater: :class:`bool`
+        call_updater
             Wheather or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
 
         Returns
@@ -756,7 +756,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        update_function: class:`Callable`
+        update_function
             The update function to be removed.
 
 
@@ -781,7 +781,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        recursive : :class:`bool`
+        recursive
             Whether to recursively call ``clear_updaters`` on all submobjects.
 
         Returns
@@ -807,7 +807,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        mobject : :class:`Mobject`
+        mobject
             The mobject whose updaters get matched.
 
         Returns
@@ -837,7 +837,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        recursive : :class:`bool`
+        recursive
             Whether to recursively suspend updating on all submobjects.
 
         Returns
@@ -863,7 +863,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        recursive : :class:`bool`
+        recursive
             Whether to recursively enable updating on all submobjects.
 
         Returns
@@ -891,7 +891,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        func : :class:`Callable`
+        func
             The function to apply to each mobject. ``func`` gets passed the respective (sub)mobject as parameter.
 
         Returns
@@ -912,7 +912,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        vectors : :class:numpy.ndarray`
+        vectors
             Vectors to shift by. If multiple vectors are given, they are added together.
 
         Returns
@@ -948,7 +948,7 @@ class Mobject(Container):
 
         Parameters
         ----------
-        scale_factor : :class:`float`
+        scale_factor
             The scaling factor. Values 0 < |`scale_factor`| < 1 will shrink the mobject, 1 < |`scale_factor`| will increase it's size. A `scale_factor`<0 resuls in  additionally flipping by 180°.
         kwargs :
             Additional keyword arguments passed to :meth:`apply_points_function_about_point`.
@@ -1427,7 +1427,7 @@ class Mobject(Container):
         return self
 
     # Background rectangle
-    def add_background_rectangle(self, color: Colors=BLACK, opacity=0.75, **kwargs):
+    def add_background_rectangle(self, color: Colors=BLACK, opacity:float=0.75, **kwargs):
         """Add a BackgroundRectangle as submobject.
 
         The BackgroundRectangle is added behind other submobjects.
@@ -1436,11 +1436,11 @@ class Mobject(Container):
 
         Parameters
         ----------
-        color : str
+        color
             The color of the BackgroundRectangle
-        opacity : float
+        opacity
             The opacity of the BackgroundRectangle
-        kwargs :
+        kwargs
             Additional keyword arguments passed to the BackgroundRectangle constructor
 
 
@@ -2046,12 +2046,12 @@ class Mobject(Container):
                 )
 
     # About z-index
-    def set_z_index(self, z_index_value):
+    def set_z_index(self, z_index_value: Union[int, float]):
         """Sets the mobject's :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters
         ----------
-        z_index_value : Union[:class:`int`, :class:`float`]
+        z_index_value
             The new value of :attr:`z_index` set.
 
         Returns
