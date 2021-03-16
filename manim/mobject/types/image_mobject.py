@@ -30,7 +30,13 @@ class AbstractImageMobject(Mobject):
         This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen.
     """
 
-    def __init__(self, scale_to_resolution, pixel_array_dtype="uint8", interpolation_algorithm=Image.BICUBIC,  **kwargs):
+    def __init__(
+        self,
+        scale_to_resolution,
+        pixel_array_dtype="uint8",
+        interpolation_algorithm=Image.BICUBIC,
+        **kwargs,
+    ):
         self.pixel_array_dtype = pixel_array_dtype
         self.scale_to_resolution = scale_to_resolution
         self.set_interpolation_algorithm(interpolation_algorithm)
@@ -45,25 +51,41 @@ class AbstractImageMobject(Mobject):
 
     def set_interpolation_algorithm(self, interpolation_algorithm):
         if isinstance(interpolation_algorithm, str):
-            if interpolation_algorithm.lower() == "bicubic" or interpolation_algorithm.lower() == "cubic":
-                interpolation_algorithm=Image.BICUBIC
-            elif interpolation_algorithm.lower() == "nearest" or interpolation_algorithm.lower() == "none":
+            if (
+                interpolation_algorithm.lower() == "bicubic"
+                or interpolation_algorithm.lower() == "cubic"
+            ):
+                interpolation_algorithm = Image.BICUBIC
+            elif (
+                interpolation_algorithm.lower() == "nearest"
+                or interpolation_algorithm.lower() == "none"
+            ):
                 interpolation_algorithm = Image.NEAREST
             elif interpolation_algorithm.lower() == "box":
                 interpolation_algorithm = Image.BOX
-            elif interpolation_algorithm.lower() == "bilinear" or interpolation_algorithm.lower() == "linear":
+            elif (
+                interpolation_algorithm.lower() == "bilinear"
+                or interpolation_algorithm.lower() == "linear"
+            ):
                 interpolation_algorithm = Image.BILINEAR
             elif interpolation_algorithm.lower() == "hamming":
                 interpolation_algorithm = Image.HAMMING
-            elif interpolation_algorithm.lower() == "lanczos" or interpolation_algorithm.lower() == "antialias":
+            elif (
+                interpolation_algorithm.lower() == "lanczos"
+                or interpolation_algorithm.lower() == "antialias"
+            ):
                 interpolation_algorithm = Image.LANCZOS
             else:
-                raise ValueError(f"interpolation_algorithm has a wrong value: '{interpolation_algorithm}'. It must be one of 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos' (case insensitive) or a Pillow resampling filter integer constant.")
+                raise ValueError(
+                    f"interpolation_algorithm has a wrong value: '{interpolation_algorithm}'. It must be one of 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos' (case insensitive) or a Pillow resampling filter integer constant."
+                )
             self.interpolation_algorithm = interpolation_algorithm
         elif isinstance(interpolation_algorithm, int):
             self.interpolation_algorithm = interpolation_algorithm
         else:
-            raise ValueError(f"interpolation_algorithm property supports either string value, one of 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos' (case insensitive) or a Pillow resampling filter integer constant.")
+            raise ValueError(
+                f"interpolation_algorithm property supports either string value, one of 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos' (case insensitive) or a Pillow resampling filter integer constant."
+            )
 
     def reset_points(self):
         # Corresponding corners of image are fixed to these 3 points

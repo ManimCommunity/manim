@@ -891,7 +891,7 @@ class Camera:
         for image_mobject in image_mobjects:
             self.display_image_mobject(image_mobject, pixel_array)
 
-    def display_image_mobject(self, image_mobject:AbstractImageMobject, pixel_array):
+    def display_image_mobject(self, image_mobject: AbstractImageMobject, pixel_array):
         """Displays an ImageMobject by changing the pixel_array suitably.
 
         Parameters
