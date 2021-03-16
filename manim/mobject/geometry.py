@@ -1761,7 +1761,7 @@ class RightAngle(Angle):
         The second line.
     length : :class:`float`
         The length of the arms.
-    kwargs
+    **kwargs
         Further keyword arguments that are passed to the constructor of :class:`Angle`.
 
     Examples
