@@ -775,7 +775,7 @@ class Mobject(Container):
             self.updaters.remove(update_function)
         return self
 
-    def clear_updaters(self, recursive=True) -> "Mobject":
+    def clear_updaters(self, recursive: bool=True) -> "Mobject":
         """Remove every updater.
 
         Parameters
