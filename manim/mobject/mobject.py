@@ -885,7 +885,7 @@ class Mobject(Container):
 
     # Transforming operations
 
-    def apply_to_family(self, func) -> "Mobject":
+    def apply_to_family(self, func: Callable[["Mobject"], None]) -> "Mobject":
         """Apply a function to ``self`` and every submobject with points recursively.
 
         Parameters
