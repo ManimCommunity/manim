@@ -178,18 +178,18 @@ class Mobject(Container):
     def __repr__(self):
         return str(self.name)
 
-    def reset_points(self) -> None:
+    def reset_points(self):
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
 
-    def init_colors(self) -> None:
+    def init_colors(self):
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
         """
         pass
 
-    def generate_points(self) -> None:
+    def generate_points(self):
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
