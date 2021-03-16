@@ -685,7 +685,7 @@ class Mobject(Container):
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function: Updater, index=None, call_updater=False) -> "Mobject":
+    def add_updater(self, update_function: Updater, index: Optional[int]=None, call_updater=False) -> "Mobject":
         """Add an update function to this mobject.
 
         Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
