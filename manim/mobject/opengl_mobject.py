@@ -9,6 +9,7 @@ from ..utils.iterables import listify
 
 import numpy as np
 
+from .. import config
 from ..constants import *
 
 from ..utils.color import color_gradient
@@ -336,7 +337,7 @@ class OpenGLMobject:
         in the submobjects list.
         """
         mobject_attrs = [
-            x for x in list(self.__dict__.values()) if isinstance(x, Mobject)
+            x for x in list(self.__dict__.values()) if isinstance(x, OpenGLMobject)
         ]
         self.set_submobjects(list_update(self.submobjects, mobject_attrs))
         return self
@@ -694,7 +695,11 @@ class OpenGLMobject:
         Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
         """
-        target_point = np.sign(direction) * (FRAME_X_RADIUS, FRAME_Y_RADIUS, 0)
+        target_point = np.sign(direction) * (
+            config["frame_x_radius"],
+            config["frame_y_radius"],
+            0,
+        )
         point_to_align = self.get_bounding_box_point(direction)
         shift_val = target_point - point_to_align - buff * np.array(direction)
         shift_val = shift_val * abs(np.sign(direction))
@@ -717,7 +722,7 @@ class OpenGLMobject:
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
     ):
-        if isinstance(mobject_or_point, Mobject):
+        if isinstance(mobject_or_point, OpenGLMobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
                 target_aligner = mob[index_of_submobject_to_align]
@@ -739,7 +744,7 @@ class OpenGLMobject:
         return self
 
     def shift_onto_screen(self, **kwargs):
-        space_lengths = [FRAME_X_RADIUS, FRAME_Y_RADIUS]
+        space_lengths = [config["frame_x_radius"], config["frame_y_radius"]]
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
             buff = kwargs.get("buff", DEFAULT_MOBJECT_TO_EDGE_BUFFER)
@@ -750,13 +755,13 @@ class OpenGLMobject:
         return self
 
     def is_off_screen(self):
-        if self.get_left()[0] > FRAME_X_RADIUS:
+        if self.get_left()[0] > config["frame_x_radius"]:
             return True
-        if self.get_right()[0] < -FRAME_X_RADIUS:
+        if self.get_right()[0] < -config["frame_x_radius"]:
             return True
-        if self.get_bottom()[1] > FRAME_Y_RADIUS:
+        if self.get_bottom()[1] > config["frame_y_radius"]:
             return True
-        if self.get_top()[1] < -FRAME_Y_RADIUS:
+        if self.get_top()[1] < -config["frame_y_radius"]:
             return True
         return False
 
@@ -1086,7 +1091,7 @@ class OpenGLMobject:
         template = self.copy()
         template.set_submobjects([])
         alphas = np.linspace(0, 1, n_pieces + 1)
-        return Group(
+        return OpenGLGroup(
             *[
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
@@ -1141,7 +1146,7 @@ class OpenGLMobject:
         horizontally so that it's center is directly above/below
         the center of mob2
         """
-        if isinstance(mobject_or_point, Mobject):
+        if isinstance(mobject_or_point, OpenGLMobject):
             point = mobject_or_point.get_bounding_box_point(direction)
         else:
             point = mobject_or_point
