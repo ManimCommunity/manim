@@ -906,7 +906,7 @@ class Mobject(Container):
         for mob in self.family_members_with_points():
             func(mob)
 
-    def shift(self, *vectors) -> "Mobject":
+    def shift(self, *vectors: np.ndarray) -> "Mobject":
         """Shift by the given vectors.
 
         Parameters
