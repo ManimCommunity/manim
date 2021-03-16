@@ -180,13 +180,24 @@ class OpenGLRenderer:
     def __init__(self):
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
-
         self.num_plays = 0
         self.skip_animations = False
-
         self.camera = OpenGLCamera()
-
         self.pressed_keys = set()
+
+        # Initialize shader map.
+        self.id_to_shader_program = {}
+
+        # Initialize texture map.
+        self.path_to_texture_id = {}
+
+    def init_scene(self, scene):
+        self.partial_movie_files = []
+        self.file_writer = SceneFileWriter(
+            self,
+            scene.__class__.__name__,
+        )
+        self.scene = scene
         if config["preview"]:
             self.window = Window(self)
             self.context = self.window.ctx
@@ -196,7 +207,6 @@ class OpenGLRenderer:
             self.context = moderngl.create_standalone_context()
             self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
             self.frame_buffer_object.use()
-
         self.context.enable(moderngl.BLEND)
         self.context.blend_func = (
             moderngl.SRC_ALPHA,
@@ -204,14 +214,6 @@ class OpenGLRenderer:
             moderngl.ONE,
             moderngl.ONE,
         )
-
-        # Initialize shader map.
-        self.id_to_shader_program = {}
-
-        # Initialize texture map.
-        self.path_to_texture_id = {}
-
-        self.partial_movie_files = []
 
     def update_depth_test(self, context, shader_wrapper):
         if shader_wrapper.depth_test:
@@ -345,13 +347,6 @@ class OpenGLRenderer:
                 shader[name].value = value
             except KeyError:
                 pass
-
-    def init_scene(self, scene):
-        self.file_writer = SceneFileWriter(
-            self,
-            scene.__class__.__name__,
-        )
-        self.scene = scene
 
     def play(self, scene, *args, **kwargs):
         if len(args) == 0:
