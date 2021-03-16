@@ -402,10 +402,6 @@ class OpenGLRenderer:
 
     def scene_finished(self, scene):
         self.file_writer.finish()
-        # TODO: Ability to save last frame
-        # if config["save_last_frame"]:
-        #     self.update_frame(scene, ignore_skipping=False)
-        #     self.file_writer.save_final_image(self.camera.get_image())
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
