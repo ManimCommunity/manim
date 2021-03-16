@@ -11,7 +11,7 @@ import operator as op
 import random
 import sys
 import types
-from typing import Callable
+from typing import Callable, List
 import warnings
 
 from pathlib import Path
@@ -593,7 +593,7 @@ class Mobject(Container):
 
     # Updating
 
-    def update(self, dt: fload=0, recursive: bool=True) -> "Mobject":
+    def update(self, dt: float=0, recursive: bool=True) -> "Mobject":
         """Apply all updaters.
 
         Does nothing if updating is suspended.
@@ -629,7 +629,7 @@ class Mobject(Container):
                 submob.update(dt, recursive)
         return self
 
-    def get_time_based_updaters(self) -> "list[Callable]":
+    def get_time_based_updaters(self) -> List[Callable]:
         """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.
