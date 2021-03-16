@@ -1675,7 +1675,7 @@ class Angle(Arc, Elbow):
             [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
         )
 
-        if radius == None:
+        if radius is None:
             if quadrant[0] == 1:
                 dist_1 = np.linalg.norm(line1.get_end() - inter)
             else:
