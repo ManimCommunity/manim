@@ -1590,7 +1590,7 @@ class Angle(Arc, Elbow):
     elbow : :class:`bool`
         Produces an elbow-type mobject indicating a right angle, see :class:`RightAngle` for more information
         and a shorthand.
-    kwargs
+    **kwargs
         Further keyword arguments that are passed to the constructor of :class:`Arc` or :class:`Elbow`.
 
     Examples
