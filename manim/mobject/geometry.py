@@ -992,6 +992,7 @@ class Polygon(VMobject):
     Examples
     --------
     .. manim:: PolygonExample
+        :save_last_frame:
 
         class PolygonExample(Scene):
             def construct(self):
