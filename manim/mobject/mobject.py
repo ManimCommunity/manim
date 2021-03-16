@@ -11,7 +11,7 @@ import operator as op
 import random
 import sys
 import types
-from typing import Callable, List
+from typing import Callable, List, Optional
 import warnings
 
 from pathlib import Path
@@ -34,6 +34,7 @@ from ..utils.space_ops import rotation_matrix_transpose
 
 # TODO: Explain array_attrs
 
+Updater = Callable[["Mobject", Optional[float]], None]
 
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
@@ -629,7 +630,7 @@ class Mobject(Container):
                 submob.update(dt, recursive)
         return self
 
-    def get_time_based_updaters(self) -> List[Callable]:
+    def get_time_based_updaters(self) -> List[Updater]:
         """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.
@@ -665,7 +666,7 @@ class Mobject(Container):
                 return True
         return False
 
-    def get_updaters(self) -> List[Callable]:
+    def get_updaters(self) -> List[Updater]:
         """Return all updaters.
 
         Returns
@@ -684,7 +685,7 @@ class Mobject(Container):
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function, index=None, call_updater=False) -> "Mobject":
+    def add_updater(self, update_function: Updater, index=None, call_updater=False) -> "Mobject":
         """Add an update function to this mobject.
 
         Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
@@ -748,7 +749,7 @@ class Mobject(Container):
             update_function(self, 0)
         return self
 
-    def remove_updater(self, update_function) -> "Mobject":
+    def remove_updater(self, update_function: Updater) -> "Mobject":
         """Remove an updater.
 
         If the same updater is applied multiple times, every instance gets removed.
