@@ -1,6 +1,7 @@
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.caching import handle_caching_play
 from manim.renderer.cairo_renderer import pass_scene_reference, handle_play_like_call
+from manim.utils.color import color_to_rgba
 import moderngl
 from .opengl_renderer_window import Window
 from .shader_wrapper import ShaderWrapper
@@ -386,7 +387,7 @@ class OpenGLRenderer:
             self.render_mobjects(scene.mobjects)
             self.animation_elapsed_time = time.time() - self.animation_start_time
 
-        window_background_color = (0.2, 0.2, 0.2, 1)
+        window_background_color = color_to_rgba(config["background_color"])
         update_frame()
 
         if config["write_to_movie"]:
