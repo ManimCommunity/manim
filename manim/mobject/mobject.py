@@ -830,7 +830,7 @@ class Mobject(Container):
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recursive=True) -> "Mobject":
+    def suspend_updating(self, recursive: bool=True) -> "Mobject":
         """Disable updating from updaters and animations.
 
 
