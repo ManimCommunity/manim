@@ -1727,7 +1727,7 @@ class Angle(Arc, Elbow):
                 arc_center=inter,
                 **kwargs
             )
-            if dot == True:
+            if dot:
                 if dot_radius is None:
                     dot_radius = radius / 10
                 else:
