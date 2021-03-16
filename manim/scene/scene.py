@@ -1006,5 +1006,6 @@ class Scene(Container):
         pass
 
     def on_mouse_drag(self, point, d_point, buttons, modifiers):
+        self.mouse_drag_point.move_to(point)
         self.camera.increment_theta(-d_point[0])
         self.camera.increment_phi(d_point[1])
