@@ -315,7 +315,7 @@ class Mobject(Container):
         self.submobjects = list(mobjects) + self.submobjects
         return self
 
-    def remove(self, *mobjects) -> "Mobject":
+    def remove(self, *mobjects: "Mobject") -> "Mobject":
         """Remove submobjects.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
