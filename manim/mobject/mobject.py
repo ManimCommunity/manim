@@ -1058,7 +1058,7 @@ class Mobject(Container):
             mob.apply_over_attr_arrays(lambda arr: np.array(list(reversed(arr))))
         return self
 
-    def repeat(self, count):
+    def repeat(self, count: int):
         """This can make transition animations nicer"""
 
         def repeat_array(array):
