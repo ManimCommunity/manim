@@ -857,7 +857,7 @@ class Mobject(Container):
                 submob.suspend_updating(recursive)
         return self
 
-    def resume_updating(self, recursive=True) -> "Mobject":
+    def resume_updating(self, recursive: bool=True) -> "Mobject":
         """Enable updating from updaters and animations.
 
         Parameters
