@@ -204,7 +204,7 @@ class Mobject(Container):
                 parent.refresh_bounding_box()
         return self
 
-    def add(self, *mobjects) -> "Mobject":
+    def add(self, *mobjects: "Mobject") -> "Mobject":
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
