@@ -529,6 +529,46 @@ class LabeledDot(Dot):
 
 
 class Ellipse(Circle):
+    """A circular shape: oval, circle.
+
+     Parameters
+     ----------
+     width : :class:`float`, optional
+        The horizontal width of the ellipse.
+     height : :class:`float`, optional
+        The vertical height of the ellipse.
+     kwargs Any
+        Additional arguments to be passed to :class:`Circle`
+
+    Examples
+    --------
+
+    .. manim:: EllipseExample
+        :save_last_frame:
+
+        import numpy as np
+        class EllipseExample(Scene):
+            def construct(self):
+                ellipse = Ellipse(width=2.0, height=5.5, color=WHITE).shift(LEFT*2)
+                self.add(ellipse)
+
+                for angle in [x for x in np.arange(100*DEGREES, 260 * DEGREES, 25*DEGREES)]:
+                    incident_ray = DashedLine(
+                        start=ellipse.point_at_angle(angle) + config.left_side,
+                        end=ellipse.point_at_angle(angle),
+                        stroke_width=1,
+                    )
+
+                    focal_length = 1/(0.49*(1/ellipse.width - 1/ellipse.height))
+                    refracted_ray = DashedLine(
+                        start=ellipse.point_at_angle(angle),
+                        end=ellipse.get_center() + RIGHT * focal_length,
+                        stroke_width=1,
+                    )
+
+                    self.add(incident_ray, refracted_ray)
+    """
+
     def __init__(self, width=2, height=1, **kwargs):
         Circle.__init__(self, **kwargs)
         self.stretch_to_fit_width(width)
@@ -996,31 +1036,31 @@ class Polygon(VMobject):
     def round_corners(self, radius=0.5):
         """Rounds off the corners of a polygon.
 
-        Parameters
-        ----------
-        radius : :class:`float`, optional
-            The curvature of the corners of the rectangle.
+                Parameters
+                ----------
+                radius : :class:`float`, optional
+                    The curvature of the corners of the rectangle.
 
-=       Examples
-        --------
+        =       Examples
+                --------
 
-        ..manim :: PolygonRoundCorners
+                ..manim :: PolygonRoundCorners
 
-            class PolygonRoundCorners(Scene):
-                def construct(self):
-                    points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
-                    parallelogram = Polygon(*points, stroke_color=LIGHT_PINK)
-                    curved = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
-                    curved_more = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
+                    class PolygonRoundCorners(Scene):
+                        def construct(self):
+                            points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
+                            parallelogram = Polygon(*points, stroke_color=LIGHT_PINK)
+                            curved = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
+                            curved_more = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
 
-                    self.play(Transform(parallelogram, curved))
-                    self.wait(0.75)
-                    self.play(Transform(parallelogram, curved_more))
-                    self.wait(0.5)
+                            self.play(Transform(parallelogram, curved))
+                            self.wait(0.75)
+                            self.play(Transform(parallelogram, curved_more))
+                            self.wait(0.5)
 
-        See Also
-        --------
-        :class:`RoundedRectangle`
+                See Also
+                --------
+                :class:`RoundedRectangle`
         """
 
         vertices = self.get_vertices()
