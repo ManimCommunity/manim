@@ -1706,7 +1706,7 @@ class Angle(Arc, Elbow):
             angle_1 = angle_of_vector(anchor_angle_1 - inter)
             angle_2 = angle_of_vector(anchor_angle_2 - inter)
 
-            if other_angle == False:
+            if not other_angle:
                 start_angle = angle_1
                 if angle_2 > angle_1:
                     angle_fin = angle_2 - angle_1
