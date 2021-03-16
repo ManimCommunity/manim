@@ -544,29 +544,40 @@ class Ellipse(Circle):
     --------
 
     .. manim:: EllipseExample
-        :save_last_frame:
+        :save_as_gif:
 
         import numpy as np
         class EllipseExample(Scene):
             def construct(self):
-                ellipse = Ellipse(width=2.0, height=5.5, color=WHITE).shift(LEFT*2)
-                self.add(ellipse)
+                inc_list = []
+                ref_list = []
 
-                for angle in [x for x in np.arange(100*DEGREES, 260 * DEGREES, 25*DEGREES)]:
+                ellipse = Ellipse(width=2.0, height=6.5, stroke_color=WHITE, fill_color=[BLUE_A,BLUE_B], fill_opacity=1).shift(LEFT * 2)
+                focal_length = 1 / (0.49 * (1 / ellipse.width - 1 / ellipse.height))
+                end = ellipse.get_center() + RIGHT * focal_length
+
+                for angle in [x for x in np.arange(100 * DEGREES, 260 * DEGREES, 25 * DEGREES)]:
+                    lens_point = ellipse.point_at_angle(angle)
                     incident_ray = DashedLine(
-                        start=ellipse.point_at_angle(angle) + config.left_side,
-                        end=ellipse.point_at_angle(angle),
+                        start=lens_point + config.left_side,
+                        end=lens_point,
                         stroke_width=1,
                     )
+                    distance = end-lens_point
+                    last_value = (lens_point+(distance*2))
 
-                    focal_length = 1/(0.49*(1/ellipse.width - 1/ellipse.height))
                     refracted_ray = DashedLine(
-                        start=ellipse.point_at_angle(angle),
-                        end=ellipse.get_center() + RIGHT * focal_length,
+                        start=lens_point,
+                        end=last_value,
                         stroke_width=1,
                     )
+                    inc_list.append(incident_ray)
+                    ref_list.append(refracted_ray)
 
-                    self.add(incident_ray, refracted_ray)
+                self.add(ellipse)
+                self.play(*[ShowCreation(inc, run_time=1.5, rate_func=linear) for inc in inc_list])
+                self.play(*[ShowCreation(ref, run_time=1.5, rate_func=linear) for ref in ref_list])
+                self.wait()
     """
 
     def __init__(self, width=2, height=1, **kwargs):
@@ -991,6 +1002,7 @@ class Polygon(VMobject):
 
     Examples
     --------
+
     .. manim:: PolygonExample
         :save_last_frame:
 
@@ -1019,6 +1031,7 @@ class Polygon(VMobject):
 
         Examples
         --------
+
         ::
 
             >>> sq = Square()
