@@ -11,7 +11,7 @@ import operator as op
 import random
 import sys
 import types
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Union
 import warnings
 
 from pathlib import Path
@@ -34,7 +34,7 @@ from ..utils.space_ops import rotation_matrix_transpose
 
 # TODO: Explain array_attrs
 
-Updater = Callable[["Mobject", Optional[float]], None]
+Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
 
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
