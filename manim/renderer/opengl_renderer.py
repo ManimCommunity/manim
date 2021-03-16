@@ -186,6 +186,7 @@ class OpenGLRenderer:
 
         self.camera = OpenGLCamera()
 
+        self.pressed_keys = set()
         if config["preview"]:
             self.window = Window(self)
             self.context = self.window.ctx
@@ -195,7 +196,6 @@ class OpenGLRenderer:
             self.context = moderngl.create_standalone_context()
             self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
             self.frame_buffer_object.use()
-        self.pressed_keys = set()
 
         self.context.enable(moderngl.BLEND)
         self.context.blend_func = (

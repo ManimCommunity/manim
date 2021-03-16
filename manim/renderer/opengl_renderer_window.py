@@ -16,8 +16,6 @@ class Window(PygletWindow):
             size = (config["pixel_width"], config["pixel_height"])
         super().__init__(size=size)
 
-        self.pressed_keys = set()
-
         self.title = f"Manim Community {__version__}"
         self.size = size
         self.renderer = renderer
