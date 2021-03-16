@@ -544,7 +544,6 @@ class Ellipse(Circle):
     --------
 
     .. manim:: EllipseExample
-        :save_as_gif:
 
         import numpy as np
         class EllipseExample(Scene):
