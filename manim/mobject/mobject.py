@@ -802,7 +802,7 @@ class Mobject(Container):
                 submob.clear_updaters()
         return self
 
-    def match_updaters(self, mobject) -> "Mobject":
+    def match_updaters(self, mobject: "Mobject") -> "Mobject":
         """Match the updaters of the given mobject.
 
         Parameters
