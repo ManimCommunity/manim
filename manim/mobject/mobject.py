@@ -665,7 +665,7 @@ class Mobject(Container):
                 return True
         return False
 
-    def get_updaters(self) -> "list[Callable]":
+    def get_updaters(self) -> List[Callable]:
         """Return all updaters.
 
         Returns
