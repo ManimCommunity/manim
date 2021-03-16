@@ -529,7 +529,7 @@ class LabeledDot(Dot):
 
 
 class Ellipse(Circle):
-    """A circular shape: oval, circle.
+    """A circular shape; oval, circle.
 
      Parameters
      ----------
