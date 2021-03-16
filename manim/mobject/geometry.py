@@ -1694,7 +1694,7 @@ class Angle(Arc, Elbow):
         anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
         anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
 
-        if elbow == True:
+        if elbow:
             anchor_middle = (
                 inter
                 + quadrant[0] * radius * line1.get_unit_vector()
