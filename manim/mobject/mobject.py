@@ -36,6 +36,7 @@ from ..utils.space_ops import rotation_matrix_transpose
 
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
 
+
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -594,7 +595,7 @@ class Mobject(Container):
 
     # Updating
 
-    def update(self, dt: float=0, recursive: bool=True) -> "Mobject":
+    def update(self, dt: float = 0, recursive: bool = True) -> "Mobject":
         """Apply all updaters.
 
         Does nothing if updating is suspended.
@@ -685,7 +686,12 @@ class Mobject(Container):
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function: Updater, index: Optional[int]=None, call_updater:bool=False) -> "Mobject":
+    def add_updater(
+        self,
+        update_function: Updater,
+        index: Optional[int] = None,
+        call_updater: bool = False,
+    ) -> "Mobject":
         """Add an update function to this mobject.
 
         Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
@@ -776,7 +782,7 @@ class Mobject(Container):
             self.updaters.remove(update_function)
         return self
 
-    def clear_updaters(self, recursive: bool=True) -> "Mobject":
+    def clear_updaters(self, recursive: bool = True) -> "Mobject":
         """Remove every updater.
 
         Parameters
@@ -831,7 +837,7 @@ class Mobject(Container):
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recursive: bool=True) -> "Mobject":
+    def suspend_updating(self, recursive: bool = True) -> "Mobject":
         """Disable updating from updaters and animations.
 
 
@@ -858,7 +864,7 @@ class Mobject(Container):
                 submob.suspend_updating(recursive)
         return self
 
-    def resume_updating(self, recursive: bool=True) -> "Mobject":
+    def resume_updating(self, recursive: bool = True) -> "Mobject":
         """Enable updating from updaters and animations.
 
         Parameters
@@ -1427,7 +1433,9 @@ class Mobject(Container):
         return self
 
     # Background rectangle
-    def add_background_rectangle(self, color: Colors=BLACK, opacity:float=0.75, **kwargs):
+    def add_background_rectangle(
+        self, color: Colors = BLACK, opacity: float = 0.75, **kwargs
+    ):
         """Add a BackgroundRectangle as submobject.
 
         The BackgroundRectangle is added behind other submobjects.
@@ -1478,7 +1486,7 @@ class Mobject(Container):
 
     # Color functions
 
-    def set_color(self, color: Color=YELLOW_C, family: bool=True):
+    def set_color(self, color: Color = YELLOW_C, family: bool = True):
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings
@@ -2007,7 +2015,7 @@ class Mobject(Container):
     def pointwise_become_partial(self, mobject, a, b):
         raise NotImplementedError("Please override in a child class.")
 
-    def become(self, mobject: "Mobject", copy_submobjects: bool=True):
+    def become(self, mobject: "Mobject", copy_submobjects: bool = True):
         """Edit points, colors and submobjects to be identical
         to another mobject
 
