@@ -181,6 +181,39 @@ class ImageMobjectTest(Scene):
         self.add(im1, im2, im3)
         self.wait(1)
 
+class ImageInterpolationTest(Scene):
+    def construct(self):
+        image1 = ImageMobject(np.uint8([[63, 0, 0, 0],
+                                        [0, 127, 0, 0],
+                                        [0, 0, 191, 0],
+                                        [0, 0, 0, 255]
+                                        ]), scale_to_resolution=7)
+        image2 = ImageMobject(np.uint8([[63, 0, 0, 0],
+                                        [0, 127, 0, 0],
+                                        [0, 0, 191, 0],
+                                        [0, 0, 0, 255]
+                                        ]), scale_to_resolution=7)
+        image1.height = 7
+        image2.height = 7
+        image1.set_interpolation_algorithm("nearest")
+        self.add(image1)
+        image2.set_interpolation_algorithm("antialias")
+        self.play(FadeIn(image2))
+        self.remove(image1)
+        image1.set_interpolation_algorithm("linear")
+        self.play(FadeIn(image1))
+        self.remove(image2)
+        image2.set_interpolation_algorithm("cubic")
+        self.play(FadeIn(image2))
+        self.remove(image1)
+        image1.set_interpolation_algorithm("box")
+        self.play(FadeIn(image1))
+        self.remove(image2)
+        image2.set_cubicinterpolation_algorithm("hamming")
+        self.play(FadeIn(image2))
+        self.remove(image1)
+        self.wait()
+
 
 MODULE_NAME = "img_and_svg"
 
