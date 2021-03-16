@@ -124,7 +124,7 @@ class OpenGLSurface(OpenGLMobject):
         return normalize_along_axis(normals, 1)
 
     def pointwise_become_partial(self, smobject, a, b, axis=None):
-        assert isinstance(smobject, Surface)
+        assert isinstance(smobject, OpenGLSurface)
         if axis is None:
             axis = self.prefered_creation_axis
         if a <= 0 and b >= 1:
@@ -199,6 +199,15 @@ class OpenGLSurface(OpenGLMobject):
 
     def get_shader_vert_indices(self):
         return self.get_triangle_indices()
+
+
+class OpenGLParametricSurface(OpenGLSurface):
+    def __init__(self, uv_func, **kwargs):
+        self.passed_uv_func = uv_func
+        super().__init__(**kwargs)
+
+    def uv_func(self, u, v):
+        return self.passed_uv_func(u, v)
 
 
 class OpenGLSurfaceGroup(OpenGLSurface):
