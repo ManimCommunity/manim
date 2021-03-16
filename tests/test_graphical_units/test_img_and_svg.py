@@ -198,22 +198,20 @@ class ImageInterpolationTest(Scene):
         image1.set_interpolation_algorithm("nearest")
         self.add(image1)
         image2.set_interpolation_algorithm("antialias")
-        self.play(FadeIn(image2))
+        self.play(FadeIn(image2), run_time=0.2)
         self.remove(image1)
         image1.set_interpolation_algorithm("linear")
-        self.play(FadeIn(image1))
+        self.play(FadeIn(image1), run_time=0.2)
         self.remove(image2)
         image2.set_interpolation_algorithm("cubic")
-        self.play(FadeIn(image2))
+        self.play(FadeIn(image2), run_time=0.2)
         self.remove(image1)
         image1.set_interpolation_algorithm("box")
-        self.play(FadeIn(image1))
+        self.play(FadeIn(image1), run_time=0.2)
         self.remove(image2)
-        image2.set_cubicinterpolation_algorithm("hamming")
-        self.play(FadeIn(image2))
-        self.remove(image1)
         self.wait()
 
+#set_test_scene(ImageInterpolationTest, "img_and_svg")
 
 MODULE_NAME = "img_and_svg"
 
