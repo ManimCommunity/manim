@@ -21,7 +21,7 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..container import Container
-from ..utils.color import color_gradient, WHITE, BLACK, YELLOW_C
+from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C
 from ..utils.color import interpolate_color
 from ..utils.iterables import list_update
 from ..utils.iterables import remove_list_redundancies
@@ -1426,7 +1426,7 @@ class Mobject(Container):
         return self
 
     # Background rectangle
-    def add_background_rectangle(self, color=BLACK, opacity=0.75, **kwargs):
+    def add_background_rectangle(self, color: Colors=BLACK, opacity=0.75, **kwargs):
         """Add a BackgroundRectangle as submobject.
 
         The BackgroundRectangle is added behind other submobjects.
