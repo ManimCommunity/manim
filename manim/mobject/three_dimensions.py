@@ -649,4 +649,4 @@ class Torus(ParametricSurface):
 
     def func(self, u, v):
         P = np.array([np.cos(u), np.sin(u), 0])
-        return (self.R - self.r * np.cos(v)) * P - np.sin(v) * OUT
+        return (self.R - self.r * np.cos(v)) * P - self.r * np.sin(v) * OUT

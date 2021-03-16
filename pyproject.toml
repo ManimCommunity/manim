@@ -34,7 +34,7 @@ pydub = "*"
 pygments = "*"
 rich = "^6.0"
 pycairo = "^1.19"
-manimpango = "^0.2.0"
+manimpango = "^0.2.4"
 networkx = "^2.5"
 setuptools = "*"
 importlib-metadata = {version = "*", python = "<3.8"}
