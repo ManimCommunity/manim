@@ -1309,6 +1309,7 @@ class Mobject(Container):
         center. This returns one of them, along the given direction.
 
         ::
+
             sample = Arc(start_angle=PI/7, angle = PI/5)
 
             # These are all equivalent
