@@ -28,6 +28,7 @@ from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
+from ..utils.space_ops import rotate_vector
 
 
 class Scene(Container):
@@ -969,3 +970,41 @@ class Scene(Container):
 
     def on_mouse_motion(self, point, d_point):
         self.mouse_point.move_to(point)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            shift = -d_point
+            shift[0] *= self.camera.get_width() / 2
+            shift[1] *= self.camera.get_height() / 2
+            transform = self.camera.inverse_rotation_matrix
+            shift = np.dot(np.transpose(transform), shift)
+            self.camera.shift(shift)
+
+    def on_mouse_scroll(self, point, offset):
+        if CTRL_VALUE in self.renderer.pressed_keys:
+            factor = 1 + np.arctan(-20 * offset[1])
+            self.camera.scale(factor, about_point=point)
+
+        transform = self.camera.inverse_rotation_matrix
+        shift = np.dot(np.transpose(transform), offset)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
+        else:
+            self.camera.shift(20.0 * shift)
+
+    def on_key_press(self, symbol, modifiers):
+        try:
+            char = chr(symbol)
+        except OverflowError:
+            logger.warning("The value of the pressed key is too large.")
+            return
+
+        if char == "r":
+            self.camera.to_default_state()
+        elif char == "q":
+            self.quit_interaction = True
+
+    def on_key_release(self, symbol, modifiers):
+        pass
+
+    def on_mouse_drag(self, point, d_point, buttons, modifiers):
+        self.camera.increment_theta(-d_point[0])
+        self.camera.increment_phi(d_point[1])
