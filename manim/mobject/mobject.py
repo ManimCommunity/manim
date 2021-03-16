@@ -2006,7 +2006,7 @@ class Mobject(Container):
     def pointwise_become_partial(self, mobject, a, b):
         raise NotImplementedError("Please override in a child class.")
 
-    def become(self, mobject, copy_submobjects=True):
+    def become(self, mobject: "Mobject", copy_submobjects: bool=True):
         """Edit points, colors and submobjects to be identical
         to another mobject
 
