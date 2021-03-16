@@ -288,7 +288,7 @@ class Mobject(Container):
     def __iadd__(self, mobject):
         raise NotImplementedError
 
-    def add_to_back(self, *mobjects) -> "Mobject":
+    def add_to_back(self, *mobjects: "Mobject") -> "Mobject":
         """Add all passed mobjects to the back of the submobjects.
 
         If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead.
