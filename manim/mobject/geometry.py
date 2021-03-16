@@ -983,7 +983,7 @@ class Polygon(VMobject):
     Parameters
     ----------
     vertices : :class:`list`
-        The vertices of the mobject. The first one is repeated to close the shape. Must define 3-dimensions: [x,y,z]
+        The vertices of the mobject. The first one is repeated to close the shape. Must define 3-dimensions: `[x,y,z]`
     color : :class:`str`, optional
         The color of the polygon.
     kwargs : Any
@@ -1040,28 +1040,28 @@ class Polygon(VMobject):
     def round_corners(self, radius=0.5):
         """Rounds off the corners of a polygon.
 
-                Parameters
-                ----------
-                radius : :class:`float`, optional
-                    The curvature of the corners of the rectangle.
+        Parameters
+        ----------
+        radius : :class:`float`, optional
+            The curvature of the corners of the rectangle.
 
-        =       Examples
-                --------
+        Examples
+        --------
 
-                ..manim :: PolygonRoundCorners
-                    :save_as_gif:
+        .. manim:: PolygonRoundCorners
+            :save_as_gif:
 
-                    class PolygonRoundCorners(Scene):
-                        def construct(self):
-                            points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
-                            parallelogram = Polygon(*points, stroke_color=LIGHT_PINK)
-                            curved = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
-                            curved_more = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
+            class PolygonRoundCorners(Scene):
+                def construct(self):
+                    points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
+                    parallelogram = Polygon(*points, stroke_color=LIGHT_PINK)
+                    curved = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
+                    curved_more = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
 
-                            self.play(Transform(parallelogram, curved))
-                            self.wait(0.75)
-                            self.play(Transform(parallelogram, curved_more))
-                            self.wait(0.5)
+                    self.play(Transform(parallelogram, curved))
+                    self.wait(0.75)
+                    self.play(Transform(parallelogram, curved_more))
+                    self.wait(0.5)
 
         See Also
         --------
@@ -1381,7 +1381,7 @@ class ArcPolygonFromArcs(VMobject):
 
 
 class Triangle(RegularPolygon):
-    """A three-sided equilateral triangle.
+    """An equilateral triangle.
 
     Parameters
     ----------
