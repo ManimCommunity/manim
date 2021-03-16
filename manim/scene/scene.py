@@ -879,6 +879,16 @@ class Scene(Container):
             self.update_mobjects(0)
         self.renderer.static_image = None
 
+    def interact(self):
+        self.quit_interaction = False
+        while not (self.renderer.window.is_closing or self.quit_interaction):
+            self.renderer.animation_start_time = 0
+            dt = 1 / config["frame_rate"]
+            self.renderer.render(self, dt, self.moving_mobjects)
+            self.update_mobjects(dt)
+        if self.renderer.window.is_closing:
+            self.renderer.window.destroy()
+
     def embed(self):
         if not config["preview"]:
             logger.warning("Called embed() while no preview window is available.")

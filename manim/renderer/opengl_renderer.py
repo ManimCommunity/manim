@@ -390,7 +390,6 @@ class OpenGLRenderer:
         if self.window is not None:
             self.window.swap_buffers()
             while self.animation_elapsed_time < frame_offset:
-                # TODO: Just sleep?
                 update_frame()
                 self.window.swap_buffers()
 

@@ -10,10 +10,10 @@ from pathlib import Path
 
 class Test(Scene):
     def construct(self):
-        square = OpenGLSquare()
-        square.add_updater(lambda s: s.move_to(self.mouse_point))
-        self.add(square)
-        self.wait(60)
+        circle = OpenGLCircle()
+        self.play(circle.animate.shift(RIGHT))
+        circle.add_updater(lambda s: s.move_to(self.mouse_point))
+        self.interact()
 
 
 class InteractiveDevelopment(Scene):
