@@ -1477,7 +1477,7 @@ class Mobject(Container):
 
     # Color functions
 
-    def set_color(self, color=YELLOW_C, family=True):
+    def set_color(self, color: Color=YELLOW_C, family: bool=True):
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings
