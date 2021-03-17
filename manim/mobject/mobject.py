@@ -1812,17 +1812,18 @@ class _AnimationBuilder:
         self.is_chaining = False
         self.methods = []
 
-        self.cannot_call = False
+        # Whether animation args can be passed
+        self.cannot_pass_args = False
         self.anim_args = {}
 
     def __call__(self, **kwargs):
-        if self.cannot_call:
+        if self.cannot_pass_args:
             raise ValueError(
                 "Animation arguments must be passed before accessing methods and can only be passed once"
             )
 
         self.anim_args = kwargs
-        self.cannot_call = True
+        self.cannot_pass_args = True
 
         return self
 
@@ -1847,7 +1848,7 @@ class _AnimationBuilder:
             return self
 
         self.is_chaining = True
-        self.cannot_call = True
+        self.cannot_pass_args = True
 
         return update_target
 
