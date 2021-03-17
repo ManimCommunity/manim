@@ -217,9 +217,7 @@ class CreateThenDestruction(ShowPassingFlash):
 
 class CreateThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
-        super().__init__(
-            Create(mobject), FadeOut(mobject), remover=remover, **kwargs
-        )
+        super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
 class AnimationOnSurroundingRectangle(AnimationGroup):
