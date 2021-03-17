@@ -102,7 +102,7 @@ class SceneFileWriter(object):
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
                     "partial_movie_dir",
-                    scene_name=default_name,
+                    scene_name=scene_name,
                     module_name=module_name,
                 )
             )
