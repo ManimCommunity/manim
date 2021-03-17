@@ -331,24 +331,33 @@ class Unwrite(Write):
         **kwargs,
     ) -> None:
 
-        if not reverse:
-            vmobject.submobjects[0].submobjects = list(
-                reversed(vmobject.submobjects[0].submobjects)
-            )
-
         backwards_rate_func = lambda t: -rate_func(t) + 1
 
+        self.vmobject = vmobject
         self.run_time = run_time
         self.lag_ratio = lag_ratio
         self.reverse = reverse
         self._set_default_config_from_length(vmobject)
         super().__init__(
             vmobject,
-            run_time=self.run_time,
-            lag_ratio=self.lag_ratio,
+            run_time=run_time,
+            lag_ratio=lag_ratio,
             rate_func=backwards_rate_func,
             **kwargs,
         )
+
+    def begin(self) -> None:
+        if not self.reverse:
+            self.reverse_submobjects()
+        super().begin()
+
+    def finish(self) -> None:
+        if not self.reverse:
+            self.reverse_submobjects()
+        super().finish()
+
+    def reverse_submobjects(self) -> None:
+        self.vmobject.invert(recursive=True)
 
 
 class ShowIncreasingSubsets(Animation):
