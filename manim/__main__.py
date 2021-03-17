@@ -73,7 +73,18 @@ def main():
     else:
         config.digest_args(args)
         input_file = config.get_dir("input_file")
-        if config["use_webgl_renderer"]:
+
+        if config["use_opengl_renderer"]:
+            from manim.renderer.opengl_renderer import OpenGLRenderer
+
+            for SceneClass in scene_classes_from_file(input_file):
+                try:
+                    renderer = OpenGLRenderer()
+                    scene = SceneClass(renderer)
+                    scene.render()
+                except Exception:
+                    console.print_exception()
+        elif config["use_webgl_renderer"]:
             try:
                 from manim.grpc.impl import frame_server_impl
 
@@ -81,13 +92,11 @@ def main():
                 server.start()
                 server.wait_for_termination()
             except ModuleNotFoundError as e:
-                print("\n\n")
-                print(
+                console.print(
                     "Dependencies for the WebGL render are missing. Run "
                     "pip install manim[webgl_renderer] to install them."
                 )
-                print(e)
-                print("\n\n")
+                console.print_exception()
         else:
             for SceneClass in scene_classes_from_file(input_file):
                 try:
@@ -95,9 +104,7 @@ def main():
                     scene.render()
                     open_file_if_needed(scene.renderer.file_writer)
                 except Exception:
-                    print("\n\n")
-                    traceback.print_exc()
-                    print("\n\n")
+                    console.print_exception()
 
 
 if __name__ == "__main__":
