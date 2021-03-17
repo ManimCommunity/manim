@@ -920,6 +920,7 @@ class Scene(Container):
             "wait",
             "add",
             "remove",
+            "interact",
             # "clear",
             # "save_state",
             # "restore",
