@@ -17,7 +17,7 @@ r"""Animate the display or removal of a mobject from a scene.
             VGroup(s5, s6, s7).set_x(0).arrange(buff=2.6).shift(2 * DOWN)
             t1 = Text("Write").scale(0.5).next_to(s1, UP)
             t2 = Text("AddTextLetterByLetter").scale(0.5).next_to(s2, UP)
-            t3 = Text("ShowCreation").scale(0.5).next_to(s3, UP)
+            t3 = Text("Create").scale(0.5).next_to(s3, UP)
             t4 = Text("Uncreate").scale(0.5).next_to(s4, UP)
             t5 = Text("DrawBorderThenFill").scale(0.5).next_to(s5, UP)
             t6 = Text("ShowIncreasingSubsets").scale(0.45).next_to(s6, UP)
@@ -43,7 +43,7 @@ r"""Animate the display or removal of a mobject from a scene.
                 Write(texts[0]),
                 AddTextLetterByLetter(texts[1]),
                 # mobject creation
-                ShowCreation(objs[0]),
+                Create(objs[0]),
                 Uncreate(objs[1]),
                 DrawBorderThenFill(objs[2]),
                 ShowIncreasingSubsets(objs[3]),
@@ -58,7 +58,7 @@ r"""Animate the display or removal of a mobject from a scene.
 
 __all__ = [
     "ShowPartial",
-    "ShowCreation",
+    "Create",
     "Uncreate",
     "DrawBorderThenFill",
     "Write",
@@ -97,7 +97,7 @@ class ShowPartial(Animation):
 
     See Also
     --------
-    :class:`ShowCreation`, :class:`~.ShowPassingFlash`
+    :class:`Create`, :class:`~.ShowPassingFlash`
 
     """
 
@@ -116,10 +116,10 @@ class ShowPartial(Animation):
         )
 
     def _get_bounds(self, alpha: float) -> None:
-        raise NotImplementedError("Please use ShowCreation or ShowPassingFlash")
+        raise NotImplementedError("Please use Create or ShowPassingFlash")
 
 
-class ShowCreation(ShowPartial):
+class Create(ShowPartial):
     """Incrementally show a VMobject.
 
     Parameters
@@ -134,11 +134,11 @@ class ShowCreation(ShowPartial):
 
     Examples
     --------
-    .. manim:: ShowCreationScene
+    .. manim:: CreateScene
 
-        class ShowCreationScene(Scene):
+        class CreateScene(Scene):
             def construct(self):
-                self.play(ShowCreation(Square()))
+                self.play(Create(Square()))
 
     See Also
     --------
@@ -153,8 +153,42 @@ class ShowCreation(ShowPartial):
         return (0, alpha)
 
 
-class Uncreate(ShowCreation):
-    """Like :class:`ShowCreation` but in reverse.
+class ShowCreation(ShowPartial):
+    """Deprecated class. Use Create() instead.
+
+        Incrementally show a VMobject.
+    Parameters
+    ----------
+    mobject : :class:`~.VMobject`
+        The VMobject to animate.
+    Raises
+    ------
+    :class:`TypeError`
+        If ``mobject`` is not an instance of :class:`~.VMobject`.
+    Examples
+    --------
+    .. manim:: ShowCreationScene
+        class ShowCreationScene(Scene):
+            def construct(self):
+                self.play(ShowCreation(Square()))
+    See Also
+    --------
+    :class:`~.ShowPassingFlash`
+    """
+
+    logger.warning(
+        "ShowCreation has been deprecated in favor of Create. Please use Create instead!"
+    )
+
+    def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
+        super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
+
+    def _get_bounds(self, alpha: float) -> typing.Tuple[int, float]:
+        return (0, alpha)
+
+
+class Uncreate(Create):
+    """Like :class:`Create` but in reverse.
 
     Examples
     --------
@@ -166,7 +200,7 @@ class Uncreate(ShowCreation):
 
     See Also
     --------
-    :class:`ShowCreation`
+    :class:`Create`
 
     """
 

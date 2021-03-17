@@ -19,13 +19,13 @@ class SceneWithMultipleCalls(Scene):
 
 class SceneWithMultipleWaitCalls(Scene):
     def construct(self):
-        self.play(ShowCreation(Square()))
+        self.play(Create(Square()))
         self.wait(1)
-        self.play(ShowCreation(Square().shift(DOWN)))
+        self.play(Create(Square().shift(DOWN)))
         self.wait(1)
-        self.play(ShowCreation(Square().shift(2 * DOWN)))
+        self.play(Create(Square().shift(2 * DOWN)))
         self.wait(1)
-        self.play(ShowCreation(Square().shift(3 * DOWN)))
+        self.play(Create(Square().shift(3 * DOWN)))
         self.wait(1)
 
 

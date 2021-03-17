@@ -149,7 +149,7 @@ class Mobject(Container):
             class AnimateExample(Scene):
                 def construct(self):
                     s = Square()
-                    self.play(ShowCreation(s))
+                    self.play(Create(s))
                     self.play(s.animate.shift(RIGHT))
                     self.play(s.animate.scale(2))
                     self.play(s.animate.rotate(PI / 2))
@@ -161,7 +161,7 @@ class Mobject(Container):
             class AnimateChainExample(Scene):
                 def construct(self):
                     s = Square()
-                    self.play(ShowCreation(s))
+                    self.play(Create(s))
                     self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
                     self.play(Uncreate(s))
 
@@ -2153,7 +2153,7 @@ def override_animate(method):
 
     .. manim:: AnimationOverrideExample
 
-        from manim import Circle, Scene, ShowCreation, Text, Uncreate, VGroup
+        from manim import Circle, Scene, Create, Text, Uncreate, VGroup
 
         class CircleWithContent(VGroup):
             def __init__(self, content):
@@ -2177,7 +2177,7 @@ def override_animate(method):
             def construct(self):
                 t = Text("hello!")
                 my_mobject = CircleWithContent(t)
-                self.play(ShowCreation(my_mobject))
+                self.play(Create(my_mobject))
                 self.play(my_mobject.animate.clear_content())
                 self.wait()
 

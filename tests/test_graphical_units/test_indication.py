@@ -39,16 +39,16 @@ class ShowPassingFlashTest(Scene):
         self.play(ShowPassingFlash(square))
 
 
-class ShowCreationThenDestructionTest(Scene):
+class CreateThenDestructionTest(Scene):
     def construct(self):
         square = Square()
-        self.play(ShowCreationThenDestruction(square))
+        self.play(CreateThenDestruction(square))
 
 
-class ShowCreationThenFadeOutTest(Scene):
+class CreateThenFadeOutTest(Scene):
     def construct(self):
         square = Square()
-        self.play(ShowCreationThenFadeOut(square))
+        self.play(CreateThenFadeOut(square))
 
 
 class ShowPassingFlashAroundTest(Scene):

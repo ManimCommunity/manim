@@ -49,7 +49,7 @@ __all__ = ["GraphScene"]
 import itertools as it
 
 from .. import config
-from ..animation.creation import Write, DrawBorderThenFill, ShowCreation
+from ..animation.creation import Write, DrawBorderThenFill, Create
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
@@ -1007,7 +1007,7 @@ class GraphScene(Scene):
         if animated:
             self.play(
                 DrawBorderThenFill(triangle),
-                ShowCreation(v_line),
+                Create(v_line),
                 Write(T_label, run_time=1),
                 **kwargs,
             )

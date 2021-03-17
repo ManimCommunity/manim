@@ -6,12 +6,12 @@ __all__ = [
     "Flash",
     "CircleIndicate",
     "ShowPassingFlash",
-    "ShowCreationThenDestruction",
-    "ShowCreationThenFadeOut",
+    "CreateThenDestruction",
+    "CreateThenFadeOut",
     "AnimationOnSurroundingRectangle",
     "ShowPassingFlashAround",
-    "ShowCreationThenDestructionAround",
-    "ShowCreationThenFadeAround",
+    "CreateThenDestructionAround",
+    "CreateThenFadeAround",
     "ApplyWave",
     "WiggleOutThenIn",
     "TurnInsideOut",
@@ -25,7 +25,7 @@ import numpy as np
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import ShowCreation, ShowPartial
+from ..animation.creation import Create, ShowPartial
 from ..animation.fading import FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
@@ -136,8 +136,8 @@ class Flash(AnimationGroup):
         lines.add_updater(lambda l: l.move_to(self.point))
         return lines
 
-    def create_line_anims(self) -> typing.Iterable["ShowCreationThenDestruction"]:
-        return [ShowCreationThenDestruction(line) for line in self.lines]
+    def create_line_anims(self) -> typing.Iterable["CreateThenDestruction"]:
+        return [CreateThenDestruction(line) for line in self.lines]
 
 
 class CircleIndicate(Indicate):
@@ -180,7 +180,7 @@ class ShowPassingFlash(ShowPartial):
 
     See Also
     --------
-    :class:`~.ShowCreation`
+    :class:`~.Create`
 
     """
 
@@ -208,17 +208,17 @@ class ShowPassingFlash(ShowPartial):
             submob.pointwise_become_partial(start, 0, 1)
 
 
-class ShowCreationThenDestruction(ShowPassingFlash):
+class CreateThenDestruction(ShowPassingFlash):
     def __init__(
         self, mobject: "Mobject", time_width: float = 2.0, run_time: float = 1, **kwargs
     ) -> None:
         super().__init__(mobject, time_width=time_width, run_time=run_time, **kwargs)
 
 
-class ShowCreationThenFadeOut(Succession):
+class CreateThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(
-            ShowCreation(mobject), FadeOut(mobject), remover=remover, **kwargs
+            Create(mobject), FadeOut(mobject), remover=remover, **kwargs
         )
 
 
@@ -256,21 +256,21 @@ class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
-class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
+class CreateThenDestructionAround(AnimationOnSurroundingRectangle):
     def __init__(
         self,
         mobject: "Mobject",
-        rect_animation: Animation = ShowCreationThenDestruction,
+        rect_animation: Animation = CreateThenDestruction,
         **kwargs
     ) -> None:
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
-class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
+class CreateThenFadeAround(AnimationOnSurroundingRectangle):
     def __init__(
         self,
         mobject: "Mobject",
-        rect_animation: Animation = ShowCreationThenFadeOut,
+        rect_animation: Animation = CreateThenFadeOut,
         **kwargs
     ) -> None:
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
