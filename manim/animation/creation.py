@@ -74,7 +74,7 @@ import typing
 
 import numpy as np
 from colour import Color
-from ... import logger
+from .. import logger
 
 
 if typing.TYPE_CHECKING:
