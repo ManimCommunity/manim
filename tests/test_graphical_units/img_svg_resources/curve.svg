@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="windows-1252"  standalone="no"?>
+<svg 
+ width="1200" height="600"
+ viewBox="0 0 1200 600"
+ xmlns="http://www.w3.org/2000/svg"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+>
+
+<title>Gnuplot</title>
+<desc>Produced by GNUPLOT 5.2 patchlevel 7 </desc>
+
+<g id="gnuplot_canvas">
+
+<rect x="0" y="0" width="1200" height="600" fill="none"/>
+<defs>
+
+	<circle id='gpDot' r='0.5' stroke-width='0.5' stroke='white'/>
+	<path id='gpPt0' stroke-width='0.222' stroke='white' d='M-1,0 h2 M0,-1 v2'/>
+	<path id='gpPt1' stroke-width='0.222' stroke='white' d='M-1,-1 L1,1 M1,-1 L-1,1'/>
+	<path id='gpPt2' stroke-width='0.222' stroke='white' d='M-1,0 L1,0 M0,-1 L0,1 M-1,-1 L1,1 M-1,1 L1,-1'/>
+	<rect id='gpPt3' stroke-width='0.222' stroke='white' x='-1' y='-1' width='2' height='2'/>
+	<rect id='gpPt4' stroke-width='0.222' stroke='white' fill='white' x='-1' y='-1' width='2' height='2'/>
+	<circle id='gpPt5' stroke-width='0.222' stroke='white' cx='0' cy='0' r='1'/>
+	<use xlink:href='#gpPt5' id='gpPt6' fill='white' stroke='none'/>
+	<path id='gpPt7' stroke-width='0.222' stroke='white' d='M0,-1.33 L-1.33,0.67 L1.33,0.67 z'/>
+	<use xlink:href='#gpPt7' id='gpPt8' fill='white' stroke='none'/>
+	<use xlink:href='#gpPt7' id='gpPt9' stroke='white' transform='rotate(180)'/>
+	<use xlink:href='#gpPt9' id='gpPt10' fill='white' stroke='none'/>
+	<use xlink:href='#gpPt3' id='gpPt11' stroke='white' transform='rotate(45)'/>
+	<use xlink:href='#gpPt11' id='gpPt12' fill='white' stroke='none'/>
+	<path id='gpPt13' stroke-width='0.222' stroke='white' d='M0,1.330 L1.265,0.411 L0.782,-1.067 L-0.782,-1.076 L-1.265,0.411 z'/>
+	<use xlink:href='#gpPt13' id='gpPt14' fill='white' stroke='none'/>
+	<filter id='textbox' filterUnits='objectBoundingBox' x='0' y='0' height='1' width='1'>
+	  <feFlood flood-color='white' flood-opacity='1' result='bgnd'/>
+	  <feComposite in='SourceGraphic' in2='bgnd' operator='atop'/>
+	</filter>
+	<filter id='greybox' filterUnits='objectBoundingBox' x='0' y='0' height='1' width='1'>
+	  <feFlood flood-color='lightgrey' flood-opacity='1' result='grey'/>
+	  <feComposite in='SourceGraphic' in2='grey' operator='atop'/>
+	</filter>
+</defs>
+<g fill="none" color="white" stroke="white" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="white" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="white" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+	<g id="gnuplot_plot_1" ><title>7.65*(t-sin(t)), 7.65*(cos(t)-1)</title>
+<g fill="none" color="black" stroke="white" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='rgb(148,   0, 211)'  d='M154.5,18.1 L154.5,18.9 L154.7,21.5 L155.1,25.7 L155.9,31.5 L157.2,38.9 L159.1,47.9 L161.8,58.5
+		L165.4,70.4 L170.0,83.7 L175.6,98.4 L182.4,114.2 L190.5,131.2 L199.9,149.1 L210.7,168.0 L223.1,187.6
+		L237.0,208.0 L252.4,228.9 L269.5,250.2 L288.3,271.8 L308.8,293.6 L330.9,315.4 L354.7,337.2 L380.2,358.7
+		L407.3,379.9 L436.1,400.6 L466.4,420.7 L498.3,440.1 L531.6,458.7 L566.3,476.3 L602.4,492.9 L639.7,508.3
+		L678.1,522.5 L717.6,535.4 L758.0,546.8 L799.3,556.8 L841.2,565.3 L883.8,572.2 L926.8,577.5 L970.2,581.1
+		L1013.8,583.0 L1041.2,583.2  '/></g>
+	</g>
+<g fill="none" color="white" stroke="rgb(148,   0, 211)" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="white" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="black" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+<g fill="none" color="black" stroke="white" stroke-width="1.00" stroke-linecap="butt" stroke-linejoin="miter">
+</g>
+</g>
+</svg>
+
