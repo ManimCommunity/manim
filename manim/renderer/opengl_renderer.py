@@ -373,10 +373,10 @@ class OpenGLRenderer:
                 self.skip_animations = True
                 raise EndSceneEarlyException()
 
-    @pass_scene_reference
     @handle_caching_play
     @handle_play_like_call
     def play(self, scene, *args, **kwargs):
+        # TODO: Handle data locking / unlocking.
         if scene.compile_animation_data(*args, **kwargs):
             scene.play_internal()
 
@@ -389,6 +389,9 @@ class OpenGLRenderer:
 
         window_background_color = color_to_rgba(config["background_color"])
         update_frame()
+
+        if self.skip_animations:
+            return
 
         if config["write_to_movie"]:
             self.file_writer.write_frame(self)
