@@ -537,7 +537,7 @@ class Ellipse(Circle):
         The horizontal width of the ellipse.
      height : :class:`float`, optional
         The vertical height of the ellipse.
-     kwargs Any
+     kwargs : Any
         Additional arguments to be passed to :class:`Circle`
 
     Examples
