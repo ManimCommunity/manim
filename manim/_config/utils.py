@@ -288,6 +288,7 @@ class ManimConfig(MutableMapping):
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
+        "use_opengl_renderer",
         "use_webgl_renderer",
         "webgl_updater_fps",
         "verbosity",
@@ -511,6 +512,7 @@ class ManimConfig(MutableMapping):
             "disable_caching",
             "flush_cache",
             "custom_folders",
+            "use_opengl_renderer",
             "use_webgl_renderer",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
@@ -634,6 +636,7 @@ class ManimConfig(MutableMapping):
             "scene_names",
             "verbosity",
             "background_color",
+            "use_opengl_renderer",
             "use_webgl_renderer",
             "webgl_updater_fps",
         ]:
@@ -709,6 +712,11 @@ class ManimConfig(MutableMapping):
         # Handle --tex_template
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
+
+        if self.use_opengl_renderer:
+            if getattr(args, "write_to_movie") is None:
+                # --write_to_movie was not passed on the command line, so don't generate video.
+                self["write_to_movie"] = False
 
         return self
 
@@ -1058,8 +1066,19 @@ class ManimConfig(MutableMapping):
             )
 
     @property
+    def use_opengl_renderer(self):
+        """Whether or not to use the OpenGL renderer."""
+        return self._d["use_opengl_renderer"]
+
+    @use_opengl_renderer.setter
+    def use_opengl_renderer(self, val: bool) -> None:
+        self._d["use_opengl_renderer"] = val
+        if val:
+            self["disable_caching"] = True
+
+    @property
     def use_webgl_renderer(self):
-        """Whether to use WebGL renderer or not (default)."""
+        """Whether or not to use WebGL renderer."""
         return self._d["use_webgl_renderer"]
 
     @use_webgl_renderer.setter
