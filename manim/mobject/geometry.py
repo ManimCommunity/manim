@@ -994,7 +994,7 @@ class Polygon(VMobject):
     ----------
     vertices : :class:`list`
         The vertices of the mobject. The first one is repeated to close the shape. Must define 3-dimensions: `[x,y,z]`
-    color : :class:`str`, optional
+    color : :class:`~.Colors`, optional
         The color of the polygon.
     kwargs : Any
         Additional arguments to be passed to :class:`.~VMobject`
@@ -1007,7 +1007,7 @@ class Polygon(VMobject):
 
         class PolygonExample(Scene):
             def construct(self):
-                isosceles = Polygon([-5, 1, 0], [-2, 1, 0], [-3.5, -2, 0])
+                isosceles = Polygon([-5, 1.5, 0], [-2, 1.5, 0], [-3.5, -2, 0])
                 position_list = [
                     [4, 1, 0],  # middle right
                     [4, -2.5, 0],  # bottom right
@@ -1030,7 +1030,6 @@ class Polygon(VMobject):
 
         Examples
         --------
-
         ::
 
             >>> sq = Square()
@@ -1043,7 +1042,7 @@ class Polygon(VMobject):
 
         Returns
         -------
-        :class:`np.array`
+        :class:`numpy.ndarray`
             Returns a list of the coordinates of polygon's vertices.
         """
 
@@ -1055,7 +1054,7 @@ class Polygon(VMobject):
         Parameters
         ----------
         radius : :class:`float`, optional
-            The curvature of the corners of the rectangle.
+            The curvature of the corners of the polygon.
 
         Examples
         --------
@@ -1067,12 +1066,12 @@ class Polygon(VMobject):
                 def construct(self):
                     points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
                     parallelogram = Polygon(*points, stroke_color=LIGHT_PINK)
-                    curved = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
-                    curved_more = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
+                    rounded_1 = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
+                    rounded_2 = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
 
-                    self.play(Transform(parallelogram, curved))
-                    self.wait(0.75)
-                    self.play(Transform(parallelogram, curved_more))
+                    self.play(Transform(parallelogram, rounded_1))
+                    self.wait(0.5)
+                    self.play(Transform(parallelogram, rounded_2))
                     self.wait(0.5)
 
         See Also
@@ -1411,7 +1410,6 @@ class Triangle(RegularPolygon):
                 triangle_1 = Triangle()
                 triangle_2 = Triangle().scale(2).rotate(60*DEGREES)
                 tri_group = Group(triangle_1, triangle_2).arrange(buff=1)
-
                 self.add(tri_group)
     """
 
