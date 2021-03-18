@@ -50,6 +50,22 @@ class AbstractImageMobject(Mobject):
         pass
 
     def set_interpolation_algorithm(self, interpolation_algorithm):
+        """
+        Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it.
+        Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
+
+        Parameters
+        ----------
+        interpolation_algorithm : :class:`str` or :class:`str`. Either an integer constant described in the Pillow library, or
+         one of the following string constants:
+         * "bicubic' or 'cubic'
+         * 'nearest' or 'none'
+         * 'box'
+         * 'bilinear' or 'linear'
+         * 'hamming'
+         * 'lanczos' or 'antialias'
+        The string constants can be input either in lowercase or in UPPERCASE, like the corresponding constant name in the Pillow library.
+        """
         if isinstance(interpolation_algorithm, str):
             if (
                 interpolation_algorithm.lower() == "bicubic"
