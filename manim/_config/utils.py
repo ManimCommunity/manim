@@ -577,7 +577,7 @@ class ManimConfig(MutableMapping):
         if val:
             setattr(self, "ffmpeg_loglevel", val)
 
-        val = parser["jupyter"].get("width")
+        val = parser["jupyter"].get("media_width")
         if val:
             setattr(self, "media_width", val)
 
