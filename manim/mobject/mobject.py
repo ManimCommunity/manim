@@ -11,6 +11,7 @@ import operator as op
 import random
 import sys
 import types
+from typing import Callable, List, Optional, Union
 import warnings
 
 from pathlib import Path
@@ -20,7 +21,7 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..container import Container
-from ..utils.color import color_gradient, WHITE, BLACK, YELLOW_C
+from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C
 from ..utils.color import interpolate_color
 from ..utils.iterables import list_update
 from ..utils.iterables import remove_list_redundancies
@@ -33,6 +34,8 @@ from ..utils.space_ops import rotation_matrix_transpose
 
 # TODO: Explain array_attrs
 
+Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
+
 
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
@@ -43,8 +46,10 @@ class Mobject(Container):
 
     Attributes
     ----------
-    submobjects : :class:`list`
+    submobjects : List[:class:`Mobject`]
         The contained objects.
+    points : :class:`numpy.ndarray`
+        The points of the objects.
 
     """
 
@@ -119,7 +124,7 @@ class Mobject(Container):
 
         .. warning::
 
-            Passing multiple animations for the same :class:`~.Mobject` in one
+            Passing multiple animations for the same :class:`Mobject` in one
             call to :meth:`~.Scene.play` is discouraged and will most likely
             not work properly. Instead of writing an animation like
 
@@ -176,14 +181,21 @@ class Mobject(Container):
         return str(self.name)
 
     def reset_points(self):
+        """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
 
     def init_colors(self):
-        # For subclasses
+        """Initializes the colors.
+
+        Gets called upon creation. This is an empty method that can be implemented by subclasses.
+        """
         pass
 
     def generate_points(self):
-        # Typically implemented in subclass, unless purposefully left blank
+        """Initializes :attr:`points` and therefore the shape.
+
+        Gets called upon creation. This is an empty method that can be implemented by subclasses.
+        """
         pass
 
     def refresh_bounding_box(self, recurse_down=False, recurse_up=True):
@@ -194,22 +206,22 @@ class Mobject(Container):
                 parent.refresh_bounding_box()
         return self
 
-    def add(self, *mobjects):
+    def add(self, *mobjects: "Mobject") -> "Mobject":
         """Add mobjects as submobjects.
 
-        The mobjects are added to self.submobjects.
+        The mobjects are added to :attr:`submobjects`.
 
-        Subclasses of mobject may implement + and += dunder methods.
+        Subclasses of mobject may implement ``+`` and ``+=`` dunder methods.
 
         Parameters
         ----------
-        mobjects : :class:`Mobject`
+        mobjects
             The mobjects to add.
 
         Returns
         -------
         :class:`Mobject`
-            :code:`self`
+            ``self``
 
         Raises
         ------
@@ -228,7 +240,8 @@ class Mobject(Container):
 
         See Also
         --------
-        :meth:`~Mobject.remove`
+        :meth:`remove`
+        :meth:`add_to_back`
 
         Examples
         --------
@@ -277,13 +290,26 @@ class Mobject(Container):
     def __iadd__(self, mobject):
         raise NotImplementedError
 
-    def add_to_back(self, *mobjects):
-        """Adds (or moves) all passed mobjects to the back of the scene.
+    def add_to_back(self, *mobjects: "Mobject") -> "Mobject":
+        """Add all passed mobjects to the back of the submobjects.
+
+        If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead.
+
+        Parameters
+        ----------
+        mobjects
+            The mobjects to add.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
 
         .. note::
 
             Technically, this is done by adding (or moving) the mobjects to
-            the head of ``self.submobjects``. The head of this list is rendered
+            the head of :attr:`submobjects`. The head of this list is rendered
             first, which places the corresponding mobjects behind the
             subsequent list members.
         """
@@ -291,26 +317,26 @@ class Mobject(Container):
         self.submobjects = list(mobjects) + self.submobjects
         return self
 
-    def remove(self, *mobjects):
+    def remove(self, *mobjects: "Mobject") -> "Mobject":
         """Remove submobjects.
 
-        The mobjects are removed from self.submobjects, if they exist.
+        The mobjects are removed from :attr:`submobjects`, if they exist.
 
-        Subclasses of mobject may implement - and -= dunder methods.
+        Subclasses of mobject may implement ``-`` and ``-=`` dunder methods.
 
         Parameters
         ----------
-        mobjects : :class:`Mobject`
+        mobjects
             The mobjects to remove.
 
         Returns
         -------
         :class:`Mobject`
-            :code:`self`
+            ``self``
 
         See Also
         --------
-        :meth:`~Mobject.add`
+        :meth:`add`
 
         """
         for mobject in mobjects:
@@ -324,7 +350,7 @@ class Mobject(Container):
     def __isub__(self, other):
         raise NotImplementedError
 
-    def set(self, **kwargs):
+    def set(self, **kwargs) -> "Mobject":
         """Sets attributes.
 
         Mainly to be used along with :attr:`animate` to
@@ -447,6 +473,11 @@ class Mobject(Container):
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(width=7))
                     self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
         """
 
         # Get the length across the X dimension
@@ -479,6 +510,11 @@ class Mobject(Container):
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(height=5))
                     self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
         """
 
         # Get the length across the Y dimension
@@ -495,6 +531,11 @@ class Mobject(Container):
         Returns
         -------
         :class:`float`
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
         """
 
         # Get the length across the Z dimension
@@ -530,7 +571,18 @@ class Mobject(Container):
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
-    def copy(self):
+    def copy(self) -> "Mobject":
+        """Create and return an identical copy of the Mobject including all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            The copy.
+
+        Note
+        ----
+        The clone is initially not visible in the Scene, even if the original was.
+        """
         return copy.deepcopy(self)
 
     def generate_target(self, use_deepcopy=False):
@@ -543,7 +595,29 @@ class Mobject(Container):
 
     # Updating
 
-    def update(self, dt=0, recursive=True):
+    def update(self, dt: float = 0, recursive: bool = True) -> "Mobject":
+        """Apply all updaters.
+
+        Does nothing if updating is suspended.
+
+        Parameters
+        ----------
+        dt
+            The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``.
+        recursive
+            Whether to recursively update all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See Also
+        --------
+        :meth:`add_updater`
+        :meth:`get_updaters`
+
+        """
         if self.updating_suspended:
             return self
         for updater in self.updaters:
@@ -557,47 +631,122 @@ class Mobject(Container):
                 submob.update(dt, recursive)
         return self
 
-    def get_time_based_updaters(self):
+    def get_time_based_updaters(self) -> List[Updater]:
+        """Return all updaters using the ``dt`` parameter.
+
+        The updaters use this parameter as the input for difference in time.
+
+        Returns
+        -------
+        List[:class:`Callable`]
+            The list of time based updaters.
+
+        See Also
+        --------
+        :meth:`get_updaters`
+        :meth:`has_time_based_updater`
+
+        """
         return [updater for updater in self.updaters if "dt" in get_parameters(updater)]
 
-    def has_time_based_updater(self):
+    def has_time_based_updater(self) -> bool:
+        """Test if ``self`` has a time based updater.
+
+        Returns
+        -------
+        class:`bool`
+            ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise.
+
+        See Also
+        --------
+        :meth:`get_time_based_updaters`
+
+        """
         for updater in self.updaters:
             if "dt" in get_parameters(updater):
                 return True
         return False
 
-    def get_updaters(self):
+    def get_updaters(self) -> List[Updater]:
+        """Return all updaters.
+
+        Returns
+        -------
+        List[:class:`Callable`]
+            The list of updaters.
+
+        See Also
+        --------
+        :meth:`add_updater`
+        :meth:`get_time_based_updaters`
+
+        """
         return self.updaters
 
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function, index=None, call_updater=False):
+    def add_updater(
+        self,
+        update_function: Updater,
+        index: Optional[int] = None,
+        call_updater: bool = False,
+    ) -> "Mobject":
         """Add an update function to this mobject.
+
+        Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
+
+        Parameters
+        ----------
+        update_function
+            The update function to be added.
+            Whenever :meth:`update` is called, this update function gets called using ``self`` as the first parameter.
+            The updater can have a second parameter ``dt``. If it uses this parameter, it gets called using a second value ``dt``, usually representing the time in seconds since the last call of :meth:`update`.
+        index
+            The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
+        call_updater
+            Wheather or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
 
         Examples
         --------
+        .. manim:: NextToUpdater
 
-        .. manim:: RotationUpdater
-
-            class RotationUpdater(Scene):
+            class NextToUpdater(Scene):
                 def construct(self):
-                    def updater_forth(mobj, dt):
-                        mobj.rotate_about_origin(dt)
-                    def updater_back(mobj, dt):
-                        mobj.rotate_about_origin(-dt)
-                    line_reference = Line(ORIGIN, LEFT).set_color(WHITE)
-                    line_moving = Line(ORIGIN, LEFT).set_color(YELLOW)
-                    line_moving.add_updater(updater_forth)
-                    self.add(line_reference, line_moving)
-                    self.wait(2)
-                    line_moving.remove_updater(updater_forth)
-                    line_moving.add_updater(updater_back)
-                    self.wait(2)
-                    line_moving.remove_updater(updater_back)
-                    self.wait(0.5)
+                    def dot_position(mobject):
+                        mobject.set_value(dot.get_center()[0])
+                        mobject.next_to(dot)
 
+                    dot = Dot(RIGHT*3)
+                    label = DecimalNumber()
+                    label.add_updater(dot_position)
+                    self.add(dot, label)
+
+                    self.play(Rotating(dot, about_point=ORIGIN, angle=TAU, run_time=TAU, rate_func=linear))
+
+        .. manim:: DtUpdater
+
+            class DtUpdater(Scene):
+                def construct(self):
+                    line = Square()
+
+                    #Let the line rotate 90° per second
+                    line.add_updater(lambda mobject, dt: mobject.rotate(dt*90*DEGREES))
+                    self.add(line)
+                    self.wait(2)
+
+        See also
+        --------
+        :meth:`get_updaters`
+        :meth:`remove_updater`
+        :class:`~.UpdateFromFunc`
         """
+
         if index is None:
             self.updaters.append(update_function)
         else:
@@ -606,32 +755,134 @@ class Mobject(Container):
             update_function(self, 0)
         return self
 
-    def remove_updater(self, update_function):
+    def remove_updater(self, update_function: Updater) -> "Mobject":
+        """Remove an updater.
+
+        If the same updater is applied multiple times, every instance gets removed.
+
+        Parameters
+        ----------
+        update_function
+            The update function to be removed.
+
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`clear_updaters`
+        :meth:`add_updater`
+        :meth:`get_updaters`
+
+        """
         while update_function in self.updaters:
             self.updaters.remove(update_function)
         return self
 
-    def clear_updaters(self, recursive=True):
+    def clear_updaters(self, recursive: bool = True) -> "Mobject":
+        """Remove every updater.
+
+        Parameters
+        ----------
+        recursive
+            Whether to recursively call ``clear_updaters`` on all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`remove_updater`
+        :meth:`add_updater`
+        :meth:`get_updaters`
+
+        """
         self.updaters = []
         if recursive:
             for submob in self.submobjects:
                 submob.clear_updaters()
         return self
 
-    def match_updaters(self, mobject):
+    def match_updaters(self, mobject: "Mobject") -> "Mobject":
+        """Match the updaters of the given mobject.
+
+        Parameters
+        ----------
+        mobject
+            The mobject whose updaters get matched.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Note
+        ----
+        All updaters from submobjects are removed, but only updaters of the given mobject are matched, not those of it's submobjects.
+
+        See also
+        --------
+        :meth:`add_updater`
+        :meth:`clear_updaters`
+
+        """
+
         self.clear_updaters()
         for updater in mobject.get_updaters():
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recursive=True):
+    def suspend_updating(self, recursive: bool = True) -> "Mobject":
+        """Disable updating from updaters and animations.
+
+
+        Parameters
+        ----------
+        recursive
+            Whether to recursively suspend updating on all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`resume_updating`
+        :meth:`add_updater`
+
+        """
+
         self.updating_suspended = True
         if recursive:
             for submob in self.submobjects:
                 submob.suspend_updating(recursive)
         return self
 
-    def resume_updating(self, recursive=True):
+    def resume_updating(self, recursive: bool = True) -> "Mobject":
+        """Enable updating from updaters and animations.
+
+        Parameters
+        ----------
+        recursive
+            Whether to recursively enable updating on all submobjects.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`suspend_updating`
+        :meth:`add_updater`
+
+        """
         self.updating_suspended = False
         if recursive:
             for submob in self.submobjects:
@@ -641,11 +892,45 @@ class Mobject(Container):
 
     # Transforming operations
 
-    def apply_to_family(self, func):
+    def apply_to_family(self, func: Callable[["Mobject"], None]) -> "Mobject":
+        """Apply a function to ``self`` and every submobject with points recursively.
+
+        Parameters
+        ----------
+        func
+            The function to apply to each mobject. ``func`` gets passed the respective (sub)mobject as parameter.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`family_members_with_points`
+
+        """
         for mob in self.family_members_with_points():
             func(mob)
 
-    def shift(self, *vectors):
+    def shift(self, *vectors: np.ndarray) -> "Mobject":
+        """Shift by the given vectors.
+
+        Parameters
+        ----------
+        vectors
+            Vectors to shift by. If multiple vectors are given, they are added together.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`move_to`
+        """
+
         if config["use_opengl_renderer"]:
             self.apply_points_function(
                 lambda points: points + vectors[0],
@@ -662,15 +947,27 @@ class Mobject(Container):
                     mob.data["points"] += total_vector
             return self
 
-    def scale(self, scale_factor, **kwargs):
-        """
-        Default behavior is to scale about the center of the mobject.
-        The argument about_edge can be a vector, indicating which side of
-        the mobject to scale about, e.g., mob.scale(about_edge = RIGHT)
-        scales about mob.get_right().
+    def scale(self, scale_factor: float, **kwargs) -> "Mobject":
+        """Scale the size by a factor.
 
-        Otherwise, if about_point is given a value, scaling is done with
-        respect to that point.
+        Default behavior is to scale about the center of the mobject.
+
+        Parameters
+        ----------
+        scale_factor
+            The scaling factor. Values 0 < |`scale_factor`| < 1 will shrink the mobject, 1 < |`scale_factor`| will increase it's size. A `scale_factor`<0 resuls in  additionally flipping by 180°.
+        kwargs :
+            Additional keyword arguments passed to :meth:`apply_points_function_about_point`.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`move_to`
+
         """
         if config["use_opengl_renderer"]:
             self.apply_points_function(
@@ -768,10 +1065,8 @@ class Mobject(Container):
             mob.apply_over_attr_arrays(lambda arr: np.array(list(reversed(arr))))
         return self
 
-    def repeat(self, count):
-        """
-        This can make transition animations nicer
-        """
+    def repeat(self, count: int):
+        """This can make transition animations nicer"""
 
         def repeat_array(array):
             return reduce(lambda a1, a2: np.append(a1, a2, axis=0), [array] * count)
@@ -845,8 +1140,7 @@ class Mobject(Container):
         return self
 
     def align_on_border(self, direction, buff=DEFAULT_MOBJECT_TO_EDGE_BUFFER):
-        """
-        Direction just needs to be a vector pointing towards side or
+        """Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
         """
         target_point = np.sign(direction) * (
@@ -1139,7 +1433,37 @@ class Mobject(Container):
         return self
 
     # Background rectangle
-    def add_background_rectangle(self, color=BLACK, opacity=0.75, **kwargs):
+    def add_background_rectangle(
+        self, color: Colors = BLACK, opacity: float = 0.75, **kwargs
+    ):
+        """Add a BackgroundRectangle as submobject.
+
+        The BackgroundRectangle is added behind other submobjects.
+
+        This can be used to increase the mobjects visibility in front of a noisy background.
+
+        Parameters
+        ----------
+        color
+            The color of the BackgroundRectangle
+        opacity
+            The opacity of the BackgroundRectangle
+        kwargs
+            Additional keyword arguments passed to the BackgroundRectangle constructor
+
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See Also
+        --------
+        :meth:`add_to_back`
+        :class:`~.BackgroundRectangle`
+
+        """
+
         # TODO, this does not behave well when the mobject has points,
         # since it gets displayed on top
         from ..mobject.shape_matchers import BackgroundRectangle
@@ -1162,9 +1486,8 @@ class Mobject(Container):
 
     # Color functions
 
-    def set_color(self, color=YELLOW_C, family=True):
-        """
-        Condition is function which takes in one arguments, (x, y, z).
+    def set_color(self, color: Color = YELLOW_C, family: bool = True):
+        """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings
         of color
@@ -1303,8 +1626,7 @@ class Mobject(Container):
             return np.max(values)
 
     def get_critical_point(self, direction):
-        """
-        Picture a box bounding the mobject.  Such a box has
+        """Picture a box bounding the mobject.  Such a box has
         9 'critical points': 4 corners, 4 edge center, the
         center. This returns one of them, along the given direction.
 
@@ -1371,9 +1693,7 @@ class Mobject(Container):
         ) - self.reduce_across_dimension(np.min, np.min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
-        """
-        Meant to generalize get_x, get_y, get_z
-        """
+        """Meant to generalize get_x, get_y, get_z"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
     def get_x(self, direction=ORIGIN):
@@ -1461,8 +1781,7 @@ class Mobject(Container):
         return self.match_coord(mobject, 2, direction)
 
     def align_to(self, mobject_or_point, direction=ORIGIN, alignment_vect=UP):
-        """
-        Examples:
+        """Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
 
@@ -1599,8 +1918,7 @@ class Mobject(Container):
             m1.align_data(m2)
 
     def get_point_mobject(self, center=None):
-        """
-        The simplest mobject to be transformed to or from self.
+        """The simplest mobject to be transformed to or from self.
         Should by a point of the appropriate type
         """
         msg = f"get_point_mobject not implemented for {self.__class__.__name__}"
@@ -1627,9 +1945,8 @@ class Mobject(Container):
         mob2.add_n_more_submobjects(max(0, n1 - n2))
         return self
 
-    def null_point_align(self, mobject):
-        """
-        If a mobject with points is being aligned to
+    def null_point_align(self, mobject: "Mobject") -> "Mobject":
+        """If a mobject with points is being aligned to
         one without, treat both as groups, and push
         the one with points into its own submobjects
         list.
@@ -1708,9 +2025,8 @@ class Mobject(Container):
     def pointwise_become_partial(self, mobject, a, b):
         raise NotImplementedError("Please override in a child class.")
 
-    def become(self, mobject, copy_submobjects=True):
-        """
-        Edit points, colors and submobjects to be identical
+    def become(self, mobject: "Mobject", copy_submobjects: bool = True):
+        """Edit points, colors and submobjects to be identical
         to another mobject
 
         Examples
@@ -1748,12 +2064,12 @@ class Mobject(Container):
                 )
 
     # About z-index
-    def set_z_index(self, z_index_value):
+    def set_z_index(self, z_index_value: Union[int, float]):
         """Sets the mobject's :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters
         ----------
-        z_index_value : Union[:class:`int`, :class:`float`]
+        z_index_value
             The new value of :attr:`z_index` set.
 
         Returns
