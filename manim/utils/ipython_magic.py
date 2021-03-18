@@ -3,23 +3,12 @@
 import hashlib
 import mimetypes
 import os
-import re
 import shutil
-import tkinter as tk
 from pathlib import Path
 
 from manim import config, tempconfig
 
 from .._config.main_utils import parse_args
-
-def get_curr_screen_width():
-    root = tk.Tk()
-    root.update_idletasks()
-    root.attributes('-fullscreen', True)
-    root.state('iconic')
-    geometry = root.winfo_width()
-    root.destroy()
-    return geometry
 
 try:
     from IPython import get_ipython
@@ -103,14 +92,9 @@ else:
                 os.makedirs(tmpfile.parent, exist_ok=True)
                 shutil.copy(local_path, tmpfile)
 
-                media_width = float(re.sub(r"\D", "", config.media_width))
-                if "px" not in config.media_width:
-                    ratio = media_width/100
-                    media_width = int(ratio*get_curr_screen_width())
-
                 file_type = mimetypes.guess_type(config["output_file"])[0]
                 if file_type.startswith("image"):
-                    display(Image(filename=config["output_file"], width=media_width))
+                    display(Image(filename=config["output_file"]))
                     return
 
                 # videos need to be embedded when running in google colab
