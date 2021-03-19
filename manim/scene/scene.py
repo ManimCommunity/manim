@@ -28,7 +28,7 @@ from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
-from ..utils.file_ops import open_file
+from ..utils.file_ops import open_file_if_needed
 from ..utils.space_ops import rotate_vector
 
 
@@ -169,9 +169,14 @@ class Scene(Container):
                 result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
-    def render(self):
+    def render(self, preview=False):
         """
         Renders this Scene.
+
+        Parameters
+        ---------
+        preview : bool
+            If true, opens scene in a file viewer.
         """
         self.setup()
         try:
@@ -187,34 +192,11 @@ class Scene(Container):
         )
 
         # If preview open up the render after rendering.
-        if config["preview"]:
-            self.preview()
+        if preview:
+            config["preview"] = True
 
-    def preview(self, render=False):
-        """
-        Opens render for viewing.
-
-        Parameters
-        ---------
-        render : bool
-            Renders scene if true, otherwise just displays scene.
-        """
-
-        if render:
-            self.render()
-
-        file_paths = []
-
-        if config["save_last_frame"]:
-            file_paths.append(self.renderer.file_writer.image_file_path)
-        if config["write_to_movie"] and not config["save_as_gif"]:
-            file_paths.append(self.renderer.file_writer.movie_file_path)
-        if config["save_as_gif"]:
-            file_paths.append(self.renderer.file_writer.gif_file_path)
-
-        for file_path in file_paths:
-            open_file(file_path, False)
-            logger.info(f"Previewed file at: {str(file_path)}")
+        if config["preview"] or config["show_in_file_browser"]:
+            open_file_if_needed(self.renderer.file_writer)
 
     def setup(self):
         """
