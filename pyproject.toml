@@ -42,7 +42,7 @@ grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
 watchdog = { version = "*", optional = true }
 jupyterlab = { version = "^3.0", optional = true }
-ipython = {version = "^7.19.0", optional = true, python = ">=3.7,<4.0"}
+ipython = {version = "^7.19", optional = true, python = ">=3.7,<4.0"}
 pyreadline = {version = "^2.1", platform = "win32"}
 
 [tool.poetry.extras]
