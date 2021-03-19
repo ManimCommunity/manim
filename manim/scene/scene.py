@@ -28,6 +28,7 @@ from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
+from ..utils.file_ops import open_file
 from ..utils.space_ops import rotate_vector
 
 
@@ -170,7 +171,7 @@ class Scene(Container):
 
     def render(self):
         """
-        Render this Scene.
+        Renders this Scene.
         """
         self.setup()
         try:
@@ -180,9 +181,40 @@ class Scene(Container):
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
+
         logger.info(
             f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
         )
+
+        # If preview open up the render after rendering.
+        if config["preview"]:
+            self.preview()
+
+    def preview(self, render=False):
+        """
+        Opens render for viewing.
+
+        Parameters
+        ---------
+        render : bool
+            Renders scene if true, otherwise just displays scene.
+        """
+
+        if render:
+            self.render()
+
+        file_paths = []
+
+        if config["save_last_frame"]:
+            file_paths.append(self.renderer.file_writer.image_file_path)
+        if config["write_to_movie"] and not config["save_as_gif"]:
+            file_paths.append(self.renderer.file_writer.movie_file_path)
+        if config["save_as_gif"]:
+            file_paths.append(self.renderer.file_writer.gif_file_path)
+
+        for file_path in file_paths:
+            open_file(file_path, False)
+            logger.info(f"Previewed file at: {str(file_path)}")
 
     def setup(self):
         """
