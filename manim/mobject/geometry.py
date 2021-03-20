@@ -967,22 +967,25 @@ class Arrow(Line):
     .. manim:: ArrowExample
         :save_last_frame:
 
+        from manim.mobject.geometry import ArrowSquareTip
         class ArrowExample(Scene):
             def construct(self):
                 arrow_1 = Arrow(start=RIGHT, end=LEFT, color=GOLD)
+                arrow_2 = Arrow(start= RIGHT, end=LEFT, color=GOLD, tip_shape=ArrowSquareTip).shift(DOWN)
+                g1 = Group(arrow_1, arrow_2)
 
                 # the effect of buff
                 square = Square(color=MAROON_A)
-                arrow_2 = Arrow(start=LEFT, end=RIGHT)
-                arrow_3 = Arrow(start=LEFT, end=RIGHT, buff=0).next_to(arrow_1, UP)
-                g1 = Group(arrow_2, arrow_3, square)
+                arrow_3 = Arrow(start=LEFT, end=RIGHT)
+                arrow_4 = Arrow(start=LEFT, end=RIGHT, buff=0).next_to(arrow_1, UP)
+                g2 = Group(arrow_3, arrow_4, square)
 
                 # a shorter arrow has a shorter tip and smaller stroke width
-                arrow_4 = Arrow(start=ORIGIN, end=config.top).shift(LEFT * 4)
-                arrow_5 = Arrow(start=config.top + DOWN, end=config.top).shift(LEFT * 3)
-                g2 = Group(arrow_4, arrow_5)
+                arrow_5 = Arrow(start=ORIGIN, end=config.top).shift(LEFT * 4)
+                arrow_6 = Arrow(start=config.top + DOWN, end=config.top).shift(LEFT * 3)
+                g3 = Group(arrow_5, arrow_6)
 
-                self.add(Group(arrow_1, g1, g2).arrange(buff=2))
+                self.add(Group(g1, g2, g3).arrange(buff=2))
 
     See Also
     --------
