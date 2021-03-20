@@ -769,6 +769,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
+
             >>> DashedLine().calculate_num_dashes()
             20
 
@@ -792,6 +793,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
+
             >>> DashedLine().get_start()
             array([-1.,  0.,  0.])
 
@@ -811,6 +813,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
+
             >>> DashedLine().get_end()
             array([0.99871795, 0.        , 0.        ])
 
@@ -830,6 +833,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
+
             >>> DashedLine().get_first_handle()
             array([-0.98333333,  0.        ,  0.        ])
 
@@ -845,6 +849,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
+
             >>> DashedLine().get_last_handle()
             array([0.98205128, 0.        , 0.        ])
 
@@ -990,6 +995,7 @@ class Arrow(Line):
     See Also
     --------
     :class:`ArrowTip`
+    :class:`CurvedArrow`
     """
 
     def __init__(
@@ -1065,11 +1071,12 @@ class Arrow(Line):
         return self
 
     def get_normal_vector(self):
-        """Returns the normal of a vector
+        """Returns the normal of a vector.
 
         Examples
         --------
         ::
+
             >>> Arrow().get_normal_vector()
             array([-0.,  0., -1.])
 
@@ -1092,6 +1099,7 @@ class Arrow(Line):
         --------
 
         ::
+
             >>> Arrow().get_default_tip_length()
             0.35
 
@@ -1113,7 +1121,7 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
-    """An arrow specialized for use in graphs.
+    """An :class:`Arrow` specialized for use in graphs.
 
     Parameters
     ----------
@@ -1173,6 +1181,7 @@ class DoubleArrow(Arrow):
     See Also
     --------
     :class:`ArrowTip`
+    :class:`CurvedDoubleArrow`
     """
 
     def __init__(self, *args, **kwargs):
