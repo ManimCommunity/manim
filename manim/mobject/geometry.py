@@ -711,7 +711,7 @@ class Line(TipableVMobject):
 
 
 class DashedLine(Line):
-    """A dashed Line.
+    """A dashed :class:`Line`.
 
     Parameters
     ----------
@@ -1077,7 +1077,7 @@ class Arrow(Line):
         --------
         ::
 
-            >>> Arrow().get_normal_vector()
+            >>> normal = Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
             array([-0.,  0., -1.])
 
         Returns
