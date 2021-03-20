@@ -774,12 +774,34 @@ class DashedLine(Line):
         return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
     def get_start(self):
+        """Returns the start point of the line
+
+        ::
+            >>>DashedLine.get_start()
+            array([-1.,  0.,  0.])
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+        """
+
         if len(self.submobjects) > 0:
             return self.submobjects[0].get_start()
         else:
             return Line.get_start(self)
 
     def get_end(self):
+        """Returns the end point of the line.
+
+        ::
+            >>> DashedLine().get_end()
+            array([0.99871795, 0.        , 0.        ])
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+        """
+
         if len(self.submobjects) > 0:
             return self.submobjects[-1].get_end()
         else:
