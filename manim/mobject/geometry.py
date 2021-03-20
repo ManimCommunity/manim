@@ -757,15 +757,15 @@ class DashedLine(Line):
         Line.__init__(self, *args, **kwargs)
         dashes = DashedVMobject(
             self,
-            num_dashes=self.calculate_num_dashes(positive_space_ratio),
+            num_dashes=self.calculate_num_dashes(),
             positive_space_ratio=positive_space_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self, positive_space_ratio):
+    def calculate_num_dashes(self):
         try:
-            full_length = self.dash_length / positive_space_ratio
+            full_length = self.dash_length / self.positive_space_ratio
             return int(np.ceil(self.get_length() / full_length))
         except ZeroDivisionError:
             return 1
