@@ -713,6 +713,19 @@ class Line(TipableVMobject):
 class DashedLine(Line):
     """A dashed Line.
 
+    Parameters
+    ----------
+    args : Any
+        Arguments to be passed to :class:`Line`
+    dash_length : :class:`float`, optional
+        The length of each individual dash of the line.
+    dash_spacing : Optional[:class:`float]
+        No purpose.
+    positive_space_ratio : :class:`float`, optional
+        The ratio of empty space to dash space. Range of 0-1.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Line`
+
     Examples
     --------
     .. manim:: DashedLineExample
@@ -720,9 +733,14 @@ class DashedLine(Line):
 
         class DashedLineExample(Scene):
             def construct(self):
-                dashed_line = DashedLine(config.frame_width/2*LEFT, 4*RIGHT)
-                self.add(dashed_line)
+                dashed_1 = DashedLine(config.left_side, config.right_side, dash_length=2.0).shift(UP*2)
+                dashed_2 = DashedLine(config.left_side, config.right_side)
+                dashed_3 = DashedLine(config.left_side, config.right_side, positive_space_ratio=0.1).shift(DOWN*2)
+                self.add(dashed_1, dashed_2, dashed_3)
 
+    See Also
+    --------
+    :class:`~.DashedVMobject`
     """
 
     def __init__(
@@ -782,7 +800,7 @@ class TangentLine(Line):
     vmob : :class:`~.VMobject`
         The VMobject on which the tangent line is drawn.
     alpha : :class:`float`
-        Defines how far along the point is along the shape. range: 0-1.
+        How far along the point is along the shape. range: 0-1.
     length : :class:`float`, optional
         Length of the tangent line.
     d_alpha: :class:`float`, optional
@@ -806,7 +824,6 @@ class TangentLine(Line):
     See Also
     --------
     :class:`~.VMobject.point_from_proportion`
-
     """
 
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
@@ -829,7 +846,7 @@ class Elbow(VMobject):
     width : :class:`float`, optional
         The length of the elbow's sides.
     angle : :class:`float`, optional
-        Rotates the shape.
+        The rotation of the elbow.
     kwargs : Any
         Additional arguments to be passed to :class:`~.VMobject`
 
