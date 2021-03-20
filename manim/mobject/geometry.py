@@ -1065,18 +1065,45 @@ class Arrow(Line):
         return self
 
     def get_normal_vector(self):
+        """Returns the normal of a vector
+
+        Examples
+        --------
+        ::
+            >>>Arrow().get_normal_vector()
+            array([-0.,  0., -1.])
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+        """
         p0, p1, p2 = self.tip.get_start_anchors()[:3]
         return normalize(np.cross(p2 - p1, p1 - p0))
 
     def reset_normal_vector(self):
+        """Resets the normal of a vector"""
         self.normal_vector = self.get_normal_vector()
         return self
 
     def get_default_tip_length(self):
+        """Returns the default tip_length of the arrow.
+
+        Examples
+        --------
+
+        ::
+            >>>Arrow().get_default_tip_length()
+            0.35
+
+        Returns
+        -------
+        :class:`float`
+        """
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
     def set_stroke_width_from_length(self):
+        """Used internally. Sets stroke width based on length"""
         max_ratio = self.max_stroke_width_to_length_ratio
         self.set_stroke(
             width=min(self.initial_stroke_width, max_ratio * self.get_length()),
