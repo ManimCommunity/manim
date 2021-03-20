@@ -764,6 +764,19 @@ class DashedLine(Line):
         self.add(*dashes)
 
     def calculate_num_dashes(self):
+        """Returns the number of dashes in the dashed line.
+
+        Examples
+        --------
+        ::
+            >>>DashedLine().calculate_num_dashes()
+            20
+
+        Returns
+        -------
+        :class:`int`
+        """
+
         try:
             full_length = self.dash_length / self.positive_space_ratio
             return int(np.ceil(self.get_length() / full_length))
@@ -776,6 +789,8 @@ class DashedLine(Line):
     def get_start(self):
         """Returns the start point of the line
 
+        Examples
+        --------
         ::
             >>>DashedLine.get_start()
             array([-1.,  0.,  0.])
@@ -793,6 +808,8 @@ class DashedLine(Line):
     def get_end(self):
         """Returns the end point of the line.
 
+        Examples
+        --------
         ::
             >>> DashedLine().get_end()
             array([0.99871795, 0.        , 0.        ])
@@ -808,9 +825,33 @@ class DashedLine(Line):
             return Line.get_end(self)
 
     def get_first_handle(self):
+        """Returns the point of the first handle
+
+        Examples
+        --------
+        ::
+            >>>DashedLine().get_first_handle()
+            array([-0.98333333,  0.        ,  0.        ])
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+        """
         return self.submobjects[0].points[1]
 
     def get_last_handle(self):
+        """Returns the point of the last handle.
+
+        Examples
+        --------
+        ::
+            >>>DashedLine().get_last_handle()
+            array([0.98205128, 0.        , 0.        ])
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+        """
         return self.submobjects[-1].points[-2]
 
 
