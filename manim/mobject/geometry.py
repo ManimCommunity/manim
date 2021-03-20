@@ -942,6 +942,53 @@ class Elbow(VMobject):
 
 
 class Arrow(Line):
+    """An arrow.
+
+    Parameters
+    ----------
+    args : Any
+        Arguments to be passed to :class:`Line`.
+    stroke_width : :class:`float`, optional
+        The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`
+    buff : class:`float`, optional
+        The distance of the arrow from its start and end points.
+    max_tip_length_to_length_ratio : :class:`float`, optional
+        :attr:`tip_length` scales with length. Modifying this ratio influences the max length of :attr:`tip_length`.
+    max_stroke_width_to_length_ratio : :class:`float`, optional
+        :attr:`stroke_width` scales with the length of the arrow. Modifying this ratio influences the max length of :attr:`stroke_width`.
+    preserve_tip_size_when_scaling : :class:`bool`, optional
+        No purpose.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Line`
+
+    Examples
+    --------
+
+    .. manim:: ArrowExample
+        :save_last_frame:
+
+        class ArrowExample(Scene):
+            def construct(self):
+                arrow_1 = Arrow(start=RIGHT, end=LEFT, color=GOLD)
+
+                # the effect of buff
+                square = Square(color=MAROON_A)
+                arrow_2 = Arrow(start=LEFT, end=RIGHT)
+                arrow_3 = Arrow(start=LEFT, end=RIGHT, buff=0).next_to(arrow_1, UP)
+                g1 = Group(arrow_2, arrow_3, square)
+
+                # a shorter arrow has a shorter tip and smaller stroke width
+                arrow_4 = Arrow(start=ORIGIN, end=config.top).shift(LEFT * 4)
+                arrow_5 = Arrow(start=config.top + DOWN, end=config.top).shift(LEFT * 3)
+                g2 = Group(arrow_4, arrow_5)
+
+                self.add(Group(arrow_1, g1, g2).arrange(buff=2))
+
+    See Also
+    --------
+    :class:`ArrowTip`
+    """
+
     def __init__(
         self,
         *args,
@@ -952,12 +999,8 @@ class Arrow(Line):
         preserve_tip_size_when_scaling=True,
         **kwargs
     ):
-        self.max_tip_length_to_length_ratio = (
-            max_tip_length_to_length_ratio  # is this used anywhere
-        )
-        self.max_stroke_width_to_length_ratio = (
-            max_stroke_width_to_length_ratio  # is this used anywhere
-        )
+        self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
+        self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         self.preserve_tip_size_when_scaling = (
             preserve_tip_size_when_scaling  # is this used anywhere
         )
