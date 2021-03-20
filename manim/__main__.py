@@ -12,6 +12,7 @@ from manim.utils.module_ops import (
 
 from manim._config.main_utils import parse_args
 
+
 def main():
     console.print(f"Manim Community [green]v{__version__}[/green]")
     args = parse_args(sys.argv)
