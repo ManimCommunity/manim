@@ -775,12 +775,12 @@ class DashedLine(Line):
 
 
 class TangentLine(Line):
-    """Constructs a line tangent to a mobject at a specific point.
+    """Constructs a line tangent to a VMobject at a specific point.
 
     Parameters
     ----------
-    vmob : :class:`~.Mobject`
-        The mobject on which the tangent line is drawn.
+    vmob : :class:`~.VMobject`
+        The VMobject on which the tangent line is drawn.
     alpha : :class:`float`
         Defines how far along the point is along the shape. range: 0-1.
     length : :class:`float`, optional
@@ -805,7 +805,7 @@ class TangentLine(Line):
 
     See Also
     --------
-    :class:`~.Vmobject.point_from_proportion`
+    :class:`~.VMobject.point_from_proportion`
 
     """
 
@@ -822,6 +822,7 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
+
     def __init__(self, width=0.2, angle=0, **kwargs):
         self.angle = angle
         VMobject.__init__(self, **kwargs)
