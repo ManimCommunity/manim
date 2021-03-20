@@ -396,10 +396,12 @@ class Circle(Arc):
 
     Parameters
     ----------
-    color : :class:`str`, optional
+    color : :class:`~.Colors`, optional
         The color of the shape.
     close_new_points : :class:`bool`, optional
+        No purpose.
     anchors_span_full_range : :class:`bool`, optional
+        No purpose.
     kwargs : Any
         Additional arguments to be passed to :class:`Arc`
 
@@ -415,8 +417,8 @@ class Circle(Arc):
                 circle_2 = Circle(radius=1.5, color=GREEN)
                 circle_3 = Circle(radius=1.0, color=BLUE_B, fill_opacity=1)
 
-                circ_group = Group(circle_1, circle_2,circle_3).arrange(buff=1)
-                self.add(circ_group)
+                circle_group = Group(circle_1, circle_2, circle_3).arrange(buff=1)
+                self.add(circle_group)
     """
 
     def __init__(
@@ -519,13 +521,15 @@ class Dot(Circle):
 
     Parameters
     ----------
-    point : :class:`float`, optional
+    point : Union[:class:`list`, :class:`numpy.ndarray`], optional
         The location of the dot.
     radius : Optional[:class:`float`]
         The radius of the dot.
     stroke_width : :class:`float`, optional
+        The thickness of the outline of the dot.
     fill_opacity : :class:`float`, optional
-    color : :class:`str`, optional
+        The opacity of the dot's fill_colour
+    color : :class:`~.Colors`, optional
         The color of the dot.
     kwargs : Any
         Additional arguments to be passed to :class:`Circle`
@@ -1361,14 +1365,16 @@ class Rectangle(Polygon):
 
     Parameters
     ----------
-    color : :class:`str`, optional
-        The color of the rectangle
+    color : :class:`~.Colors`, optional
+        The color of the rectangle.
     height : :class:`float`, optional
         The vertical height of the rectangle.
     width : :class:`float`, optional
         The horizontal width of the rectangle.
     mark_paths_closed : :class:`bool`, optional
+        No purpose.
     close_new_points : :class:`bool`, optional
+        No purpose.
     kwargs : Any
         Additional arguments to be passed to :class:`Polygon`
 
@@ -1409,7 +1415,7 @@ class Square(Rectangle):
     Parameters
     ----------
     side_length : :class:`float`, optional
-        The length of the sides.
+        The length of the sides of the square.
     kwargs : Any
         Additional arguments to be passed to :class:`Square`
 
@@ -1424,7 +1430,6 @@ class Square(Rectangle):
                 square_1 = Square(side_length=2.0).shift(DOWN)
                 square_2 = Square(side_length=1.0).next_to(square_1, direction=UP)
                 square_3 = Square(side_length=0.5).next_to(square_2, direction=UP)
-
                 self.add(square_1,square_2,square_3)
     """
 
