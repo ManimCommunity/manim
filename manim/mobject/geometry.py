@@ -1113,6 +1113,22 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
+    """An arrow specialized for use in graphs.
+
+    Parameters
+    ----------
+    direction : :class:`list`
+        The direction of the arrow.
+    buff : :class:`float`
+         The distance of the vector from its endpoints.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Arrow`
+
+    Examples
+    --------
+
+
+    """
     def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
@@ -1121,6 +1137,33 @@ class Vector(Arrow):
 
 
 class DoubleArrow(Arrow):
+    """An arrow with tips on both ends.
+
+    Parameters
+    ----------
+    args : Arguments to be passed to :class:`Arrow`
+    kwargs : Additional arguments to be passde to :class:`Arrow`
+
+    Examples
+    --------
+
+    .. manim:: DoubleArrowExample
+        :save_last_frame:
+
+        from manim.mobject.geometry import ArrowCircleFilledTip
+        class DoubleArrowExample(Scene):
+            def construct(self):
+                circle = Circle(radius=2.0)
+                d_arrow = DoubleArrow(start=circle.get_left(), end=circle.get_right())
+                d_arrow_2 = DoubleArrow(tip_shape_end=ArrowCircleFilledTip, tip_shape_start=ArrowCircleFilledTip)
+                group = Group(Group(circle, d_arrow), d_arrow_2).arrange(UP, buff=1)
+                self.add(group)
+
+    See Also
+    --------
+    :class:`ArrowTip`
+    """
+
     def __init__(self, *args, **kwargs):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
