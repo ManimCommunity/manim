@@ -79,7 +79,7 @@ def open_file(file_path, in_browser=False):
         commands.append(file_path)
         sp.Popen(commands)
 
-def open_file_if_needed(file_writer):
+def open_media_file(file_writer):
     file_paths = []
 
     if config["save_last_frame"]:

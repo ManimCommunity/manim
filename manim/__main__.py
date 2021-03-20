@@ -9,7 +9,7 @@ from manim.utils.module_ops import (
     get_scenes_to_render,
     scene_classes_from_file,
 )
-from manim.utils.file_ops import open_file_if_needed
+
 from manim._config.main_utils import parse_args
 
 def main():

@@ -28,7 +28,7 @@ from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
-from ..utils.file_ops import open_file_if_needed
+from ..utils.file_ops import open_media_file
 from ..utils.space_ops import rotate_vector
 
 
@@ -196,7 +196,7 @@ class Scene(Container):
             config["preview"] = True
 
         if config["preview"] or config["show_in_file_browser"]:
-            open_file_if_needed(self.renderer.file_writer)
+            open_media_file(self.renderer.file_writer)
 
     def setup(self):
         """
