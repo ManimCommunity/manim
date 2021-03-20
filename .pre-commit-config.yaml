@@ -1,0 +1,10 @@
+default_language_version:
+  python: python3.9
+default_stages: [commit, push]
+fail_fast: false
+repos:
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+        language_version: python3.9
