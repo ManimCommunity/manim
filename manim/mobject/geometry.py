@@ -792,7 +792,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
-            >>> DashedLine.get_start()
+            >>> DashedLine().get_start()
             array([-1.,  0.,  0.])
 
         Returns
