@@ -769,7 +769,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
-            >>>DashedLine().calculate_num_dashes()
+            >>> DashedLine().calculate_num_dashes()
             20
 
         Returns
@@ -792,7 +792,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
-            >>>DashedLine.get_start()
+            >>> DashedLine.get_start()
             array([-1.,  0.,  0.])
 
         Returns
@@ -830,7 +830,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
-            >>>DashedLine().get_first_handle()
+            >>> DashedLine().get_first_handle()
             array([-0.98333333,  0.        ,  0.        ])
 
         Returns
@@ -845,7 +845,7 @@ class DashedLine(Line):
         Examples
         --------
         ::
-            >>>DashedLine().get_last_handle()
+            >>> DashedLine().get_last_handle()
             array([0.98205128, 0.        , 0.        ])
 
         Returns
@@ -863,7 +863,7 @@ class TangentLine(Line):
     vmob : :class:`~.VMobject`
         The VMobject on which the tangent line is drawn.
     alpha : :class:`float`
-        How far along the point is along the shape. range: 0-1.
+        How far along the shape that the line will be constructed. range: 0-1.
     length : :class:`float`, optional
         Length of the tangent line.
     d_alpha: :class:`float`, optional
@@ -1070,7 +1070,7 @@ class Arrow(Line):
         Examples
         --------
         ::
-            >>>Arrow().get_normal_vector()
+            >>> Arrow().get_normal_vector()
             array([-0.,  0., -1.])
 
         Returns
@@ -1092,7 +1092,7 @@ class Arrow(Line):
         --------
 
         ::
-            >>>Arrow().get_default_tip_length()
+            >>> Arrow().get_default_tip_length()
             0.35
 
         Returns
@@ -1117,7 +1117,7 @@ class Vector(Arrow):
 
     Parameters
     ----------
-    direction : :class:`list`
+    direction : Union[:class:`list`, :class:`numpy.ndarray`]
         The direction of the arrow.
     buff : :class:`float`
          The distance of the vector from its endpoints.
