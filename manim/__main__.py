@@ -72,7 +72,7 @@ def main():
             for SceneClass in scene_classes_from_file(input_file):
                 try:
                     scene = SceneClass()
-                    scene.render(preview=True)
+                    scene.render()
                 except Exception:
                     console.print_exception()
 
