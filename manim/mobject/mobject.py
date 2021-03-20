@@ -1888,6 +1888,12 @@ class Mobject(Container):
                 submob.shuffle(recursive=True)
         random.shuffle(self.submobjects)
 
+    def invert(self, recursive=False):
+        if recursive:
+            for submob in self.submobjects:
+                submob.invert(recursive=True)
+        list.reverse(self.submobjects)
+
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args, **kwargs):
         return self.arrange(*args, **kwargs)
