@@ -822,6 +822,36 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
+    """Two lines that create a right angle about each other: L-shape.
+
+    Parameters
+    ----------
+    width : :class:`float`, optional
+        The length of the elbow's sides.
+    angle : :class:`float`, optional
+        Rotates the shape.
+    kwargs : Any
+        Additional arguments to be passed to :class:`~.VMobject`
+
+    Examples
+    --------
+
+    .. manim:: ElbowExample
+        :save_last_frame:
+
+        class ElbowExample(Scene):
+            def construct(self):
+                elbow_1 = Elbow()
+                elbow_2 = Elbow(width=4.0)
+                elbow_3 = Elbow(width=4.0, angle=5*PI/4)
+
+                elbow_group = Group(elbow_1, elbow_2, elbow_3)
+                self.add(elbow_group)
+
+    See Also
+    --------
+    :class:`RightAngle`
+    """
 
     def __init__(self, width=0.2, angle=0, **kwargs):
         self.angle = angle
