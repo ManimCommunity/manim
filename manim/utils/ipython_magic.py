@@ -103,7 +103,7 @@ else:
                 display(
                     Video(
                         tmpfile,
-                        html_attributes='controls autoplay loop style="max-width: 100%;"',
+                        html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
                         embed=video_embed,
                     )
                 )

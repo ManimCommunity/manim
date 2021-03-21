@@ -263,6 +263,7 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
+        "media_width",
         "webgl_renderer_path",
         "leave_progress_bars",
         "log_dir",
@@ -576,6 +577,10 @@ class ManimConfig(MutableMapping):
         if val:
             setattr(self, "ffmpeg_loglevel", val)
 
+        val = parser["jupyter"].get("media_width")
+        if val:
+            setattr(self, "media_width", val)
+
         return self
 
     def digest_args(self, args: argparse.Namespace) -> "ManimConfig":
@@ -852,6 +857,12 @@ class ManimConfig(MutableMapping):
             "ffmpeg_loglevel", val, ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         ),
         doc="Verbosity level of ffmpeg (no flag).",
+    )
+
+    media_width = property(
+        lambda self: self._d["media_width"],
+        lambda self, val: self._d.__setitem__("media_width", val),
+        doc="Media width in Jupyter notebook",
     )
 
     pixel_width = property(
