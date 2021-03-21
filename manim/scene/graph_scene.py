@@ -291,7 +291,7 @@ class GraphScene(Scene):
                 def __init__(self, **kwargs):
                     GraphScene.__init__(
                         self,
-                        y_axis_label=r"Concentration [\%]",
+                        y_axis_label=r"Concentration [ % ]",
                         x_axis_label="Time [s]",
                         **kwargs
                     )
@@ -618,7 +618,7 @@ class GraphScene(Scene):
             else:
                 raise ValueError("Invalid input sample type")
             graph_point = self.input_to_graph_point(sample_input, graph)
-            if bounded_graph == None:
+            if bounded_graph is None:
                 y_point = 0
             else:
                 y_point = bounded_graph.underlying_function(x)

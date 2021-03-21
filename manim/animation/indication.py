@@ -38,7 +38,6 @@ from ..utils.color import GREY, YELLOW
 from ..utils.rate_functions import there_and_back, wiggle
 
 if typing.TYPE_CHECKING:
-    from ..mobject.geometry import Dot
     from ..mobject.mobject import Mobject
 
 

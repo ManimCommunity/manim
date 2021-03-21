@@ -33,9 +33,9 @@ for plugin in pkg_resources.iter_entry_points("manim.plugins"):
         # it will return a list of modules to add globally
         # finally add it
         lists = loaded_plugin()
-        for l in lists:
-            exec(f"{l.__name__}=l")
-            __all__.append(l.__name__)
+        for x in lists:
+            exec(f"{x.__name__}=x")
+            __all__.append(x.__name__)
     plugins_requested.remove(plugin.name)
 else:
     if plugins_requested != []:

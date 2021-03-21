@@ -5,18 +5,11 @@ import sys
 import moderngl
 from functools import wraps
 from ..utils.color import *
-from ..utils.iterables import listify
 
 import numpy as np
 
 from .. import config
 from ..constants import *
-
-from ..utils.color import color_gradient
-
-# from ..utils.color import get_colormap_list
-from ..utils.color import rgb_to_hex
-from ..utils.color import color_to_rgb
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import list_update

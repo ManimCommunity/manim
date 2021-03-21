@@ -215,7 +215,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 self.previous_scene = requested_scene
                 self.previous_scene_index = requested_scene_index
             return resp
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
 
     def FetchSceneData(self, request, context):
@@ -238,13 +238,12 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             else:
                 request.scene.background_color = "#000000"
             return request
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
 
     def ScriptUpdated(self, request, context):
         self.load_scene_module()
-        with grpc.insecure_channel("localhost:50052") as channel:
-            stub = renderserver_pb2_grpc.RenderServerStub(channel)
+        with grpc.insecure_channel("localhost:50052"):
             try:
                 self.update_renderer_scene_data()
             except grpc._channel._InactiveRpcError:

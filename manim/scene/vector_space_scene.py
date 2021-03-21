@@ -523,9 +523,6 @@ class LinearTransformationScene(VectorScene):
         background_plane_kwargs={
             "color": GREY,
             "axis_config": {
-                "stroke_color": LIGHT_GREY,
-            },
-            "axis_config": {
                 "color": GREY,
             },
             "background_line_style": {
@@ -972,8 +969,8 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        for l in self.transformable_labels:
-            l.target = self.get_vector_label(l.vector.target, l.target_text, **l.kwargs)
+        for x in self.transformable_labels:
+            x.target = self.get_vector_label(x.vector.target, x.target_text, **x.kwargs)
         return self.get_piece_movement(self.transformable_labels)
 
     def apply_matrix(self, matrix, **kwargs):
