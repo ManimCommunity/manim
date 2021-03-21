@@ -94,7 +94,7 @@ Develop your contribution
    .. code-block:: shell
 
       git checkout master 
-      git pull upstream master
+      git pull --rebase upstream master
 
 #. Create a branch for the changes you want to work on rather than working
    off of master:
