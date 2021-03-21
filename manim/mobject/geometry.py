@@ -719,7 +719,7 @@ class DashedLine(Line):
         Arguments to be passed to :class:`Line`
     dash_length : :class:`float`, optional
         The length of each individual dash of the line.
-    dash_spacing : Optional[:class:`float]
+    dash_spacing : Optional[:class:`float`]
         No purpose.
     positive_space_ratio : :class:`float`, optional
         The ratio of empty space to dash space. Range of 0-1.
@@ -733,8 +733,11 @@ class DashedLine(Line):
 
         class DashedLineExample(Scene):
             def construct(self):
+                # dash_length increased
                 dashed_1 = DashedLine(config.left_side, config.right_side, dash_length=2.0).shift(UP*2)
+                # normal
                 dashed_2 = DashedLine(config.left_side, config.right_side)
+                # positive_space_ratio decreased
                 dashed_3 = DashedLine(config.left_side, config.right_side, positive_space_ratio=0.1).shift(DOWN*2)
                 self.add(dashed_1, dashed_2, dashed_3)
 
@@ -773,8 +776,6 @@ class DashedLine(Line):
             >>> DashedLine().calculate_num_dashes()
             20
 
-        Returns
-        -------
         :class:`int`
         """
 
@@ -788,7 +789,7 @@ class DashedLine(Line):
         return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
     def get_start(self):
-        """Returns the start point of the line
+        """Returns the start point of the line.
 
         Examples
         --------
@@ -797,8 +798,6 @@ class DashedLine(Line):
             >>> DashedLine().get_start()
             array([-1.,  0.,  0.])
 
-        Returns
-        -------
         :class:`numpy.ndarray`
         """
 
@@ -817,8 +816,6 @@ class DashedLine(Line):
             >>> DashedLine().get_end()
             array([0.99871795, 0.        , 0.        ])
 
-        Returns
-        -------
         :class:`numpy.ndarray`
         """
 
@@ -828,7 +825,7 @@ class DashedLine(Line):
             return Line.get_end(self)
 
     def get_first_handle(self):
-        """Returns the point of the first handle
+        """Returns the point of the first handle.
 
         Examples
         --------
@@ -837,8 +834,6 @@ class DashedLine(Line):
             >>> DashedLine().get_first_handle()
             array([-0.98333333,  0.        ,  0.        ])
 
-        Returns
-        -------
         :class:`numpy.ndarray`
         """
         return self.submobjects[0].points[1]
@@ -853,8 +848,6 @@ class DashedLine(Line):
             >>> DashedLine().get_last_handle()
             array([0.98205128, 0.        , 0.        ])
 
-        Returns
-        -------
         :class:`numpy.ndarray`
         """
         return self.submobjects[-1].points[-2]
@@ -891,7 +884,7 @@ class TangentLine(Line):
 
     See Also
     --------
-    :class:`~.VMobject.point_from_proportion`
+    :meth:`~VMobject.point_from_proportion`
     """
 
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
@@ -954,17 +947,17 @@ class Arrow(Line):
     args : Any
         Arguments to be passed to :class:`Line`.
     stroke_width : :class:`float`, optional
-        The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`
-    buff : class:`float`, optional
+        The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`.
+    buff : :class:`float`, optional
         The distance of the arrow from its start and end points.
     max_tip_length_to_length_ratio : :class:`float`, optional
-        :attr:`tip_length` scales with length. Modifying this ratio influences the max length of :attr:`tip_length`.
+        :attr:`tip_length` scales with length. Modifying this ratio influences the max value of :attr:`tip_length`.
     max_stroke_width_to_length_ratio : :class:`float`, optional
-        :attr:`stroke_width` scales with the length of the arrow. Modifying this ratio influences the max length of :attr:`stroke_width`.
+        :attr:`stroke_width` scales with the length of the arrow. Modifying this ratio influences the max value of :attr:`stroke_width`.
     preserve_tip_size_when_scaling : :class:`bool`, optional
         No purpose.
     kwargs : Any
-        Additional arguments to be passed to :class:`Line`
+        Additional arguments to be passed to :class:`Line`.
 
     Examples
     --------
@@ -1080,8 +1073,6 @@ class Arrow(Line):
             >>> Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
             array([ 0.,  0., -1.])
 
-        Returns
-        -------
         :class:`numpy.ndarray`
         """
         p0, p1, p2 = self.tip.get_start_anchors()[:3]
@@ -1103,8 +1094,6 @@ class Arrow(Line):
             >>> Arrow().get_default_tip_length()
             0.35
 
-        Returns
-        -------
         :class:`float`
         """
         max_ratio = self.max_tip_length_to_length_ratio
@@ -1121,7 +1110,7 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
-    """An :class:`Arrow` specialized for use in graphs.
+    """A vector specialized for use in graphs.
 
     Parameters
     ----------
