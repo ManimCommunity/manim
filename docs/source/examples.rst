@@ -214,9 +214,9 @@ Animations
             self.play(square.animate.scale(0.3))
             self.play(square.animate.rotate(0.4))
 
-.. manim:: MovingGroupToDestiny
+.. manim:: MovingGroupToDestination
 
-    class MovingGroupToDestiny(Scene):
+    class MovingGroupToDestination(Scene):
         def construct(self):
             group = VGroup(Dot(LEFT), Dot(ORIGIN), Dot(RIGHT, color=RED), Dot(2 * RIGHT)).scale(1.4)
             dest = Dot([4, 3, 0], color=YELLOW)
