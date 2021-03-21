@@ -60,6 +60,7 @@ flake8 = "^3.9.0"
 flake8-bugbear = "^21.3.2"
 pep8-naming = "^0.11.1"
 flake8-builtins = "^1.5.3"
+flake8-comprehensions = "^3.4.0"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
