@@ -23,7 +23,7 @@ Contributing can be confusing, so here's a guide:
 
 
 Manim Development Process
-===============================
+=========================
 
 For first-time contributors
 ----------------------------
