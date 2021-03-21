@@ -356,14 +356,14 @@ Sphinx = ">=1.2b1"
 
 [[package]]
 name = "identify"
-version = "2.1.4"
+version = "2.2.0"
 description = "File identification library for Python"
 category = "dev"
 optional = false
 python-versions = ">=3.6.1"
 
 [package.extras]
-license = ["editdistance"]
+license = ["editdistance-s"]
 
 [[package]]
 name = "idna"
@@ -490,7 +490,7 @@ python-versions = "*"
 
 [[package]]
 name = "isort"
-version = "5.7.0"
+version = "5.8.0"
 description = "A Python utility / library to sort Python imports."
 category = "dev"
 optional = false
@@ -633,7 +633,7 @@ test = ["coverage", "requests", "pytest", "pytest-cov", "pytest-tornasync", "pyt
 
 [[package]]
 name = "jupyterlab"
-version = "3.0.11"
+version = "3.0.12"
 description = "The JupyterLab server extension."
 category = "main"
 optional = true
@@ -1390,7 +1390,7 @@ python-versions = "*"
 
 [[package]]
 name = "sphinx"
-version = "3.5.2"
+version = "3.5.3"
 description = "Python documentation generator"
 category = "dev"
 optional = false
@@ -1662,7 +1662,7 @@ webgl_renderer = ["grpcio", "grpcio-tools", "watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "3bea8a0f189b785579305c33fb0595e67a625f2a59dbb905bcd63ed71d519042"
+content-hash = "0f66a50eee69fc68cab0ae91aba06c1ad73bc9a959fec9ccb187401bee2e5b8f"
 
 [metadata.files]
 alabaster = [
@@ -1960,8 +1960,8 @@ guzzle-sphinx-theme = [
     {file = "guzzle_sphinx_theme-0.7.11.tar.gz", hash = "sha256:9b8c1639c343c02c3f3db7df660ddf6f533b5454ee92a5f7b02edaa573fed3e6"},
 ]
 identify = [
-    {file = "identify-2.1.4-py2.py3-none-any.whl", hash = "sha256:99d40094d8c9fc0b88b379200ecb4f8345a593878656867fa5363abc850766ab"},
-    {file = "identify-2.1.4.tar.gz", hash = "sha256:f516f69e62df018a3965a835dccfb3397ed02ddaf513584633c9acaf084be3f2"},
+    {file = "identify-2.2.0-py2.py3-none-any.whl", hash = "sha256:39c0b110c9d0cd2391b6c38cd0ff679ee4b4e98f8db8b06c5d9d9e502711a1e1"},
+    {file = "identify-2.2.0.tar.gz", hash = "sha256:efbf090a619255bc31c4fbba709e2805f7d30913fd4854ad84ace52bd276e2f6"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -2013,8 +2013,8 @@ ipython-genutils = [
     {file = "ipython_genutils-0.2.0.tar.gz", hash = "sha256:eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8"},
 ]
 isort = [
-    {file = "isort-5.7.0-py3-none-any.whl", hash = "sha256:fff4f0c04e1825522ce6949973e83110a6e907750cd92d128b0d14aaaadbffdc"},
-    {file = "isort-5.7.0.tar.gz", hash = "sha256:c729845434366216d320e936b8ad6f9d681aab72dc7cbc2d51bedc3582f3ad1e"},
+    {file = "isort-5.8.0-py3-none-any.whl", hash = "sha256:2bb1680aad211e3c9944dbce1d4ba09a989f04e238296c87fe2139faa26d655d"},
+    {file = "isort-5.8.0.tar.gz", hash = "sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6"},
 ]
 jedi = [
     {file = "jedi-0.18.0-py2.py3-none-any.whl", hash = "sha256:18456d83f65f400ab0c2d3319e48520420ef43b23a086fdc05dff34132f0fb93"},
@@ -2049,8 +2049,8 @@ jupyter-server = [
     {file = "jupyter_server-1.4.1.tar.gz", hash = "sha256:b0126f237f679533eec46244cfc66d61e3a1f8ec0fad2d47352fa19d3e754e47"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-3.0.11-py3-none-any.whl", hash = "sha256:1e152b635cd86a637a40c92f0b04399ec6e121bd6e11404cf74a06ec708cad26"},
-    {file = "jupyterlab-3.0.11.tar.gz", hash = "sha256:ce4cf4f31163ce51aed013c01a857c05d43a93c46ed690166e48644f6e7947de"},
+    {file = "jupyterlab-3.0.12-py3-none-any.whl", hash = "sha256:dbbbf6329c18422e7e22e95494933e7ea28b0fad09965cd60431b1b857f80ca2"},
+    {file = "jupyterlab-3.0.12.tar.gz", hash = "sha256:929c60d7fb4aa704084c02d8ededc209b8b378e0b3adab46158b7fa6acc24230"},
 ]
 jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl", hash = "sha256:abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"},
@@ -2698,8 +2698,8 @@ snowballstemmer = [
     {file = "snowballstemmer-2.1.0.tar.gz", hash = "sha256:e997baa4f2e9139951b6f4c631bad912dfd3c792467e2f03d7239464af90e914"},
 ]
 sphinx = [
-    {file = "Sphinx-3.5.2-py3-none-any.whl", hash = "sha256:ef64a814576f46ec7de06adf11b433a0d6049be007fefe7fd0d183d28b581fac"},
-    {file = "Sphinx-3.5.2.tar.gz", hash = "sha256:672cfcc24b6b69235c97c750cb190a44ecd72696b4452acaf75c2d9cc78ca5ff"},
+    {file = "Sphinx-3.5.3-py3-none-any.whl", hash = "sha256:3f01732296465648da43dec8fb40dc451ba79eb3e2cc5c6d79005fd98197107d"},
+    {file = "Sphinx-3.5.3.tar.gz", hash = "sha256:ce9c228456131bab09a3d7d10ae58474de562a6f79abb3dc811ae401cf8c1abc"},
 ]
 sphinxcontrib-applehelp = [
     {file = "sphinxcontrib-applehelp-1.0.2.tar.gz", hash = "sha256:a072735ec80e7675e3f432fcae8610ecf509c5f1869d17e2eecff44389cdbc58"},

@@ -56,7 +56,7 @@ pylint = "*"
 guzzle_sphinx_theme = "*"
 recommonmark = "*"
 matplotlib = "^3.3.2"
-pre-commit = "*"
+pre-commit = "^2.11.1"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"

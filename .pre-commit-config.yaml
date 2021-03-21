@@ -7,4 +7,3 @@ repos:
     rev: 20.8b1
     hooks:
       - id: black
-        language_version: python3.9
