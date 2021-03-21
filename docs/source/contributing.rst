@@ -26,7 +26,7 @@ Manim Development Process
 =========================
 
 For first-time contributors
-----------------------------
+---------------------------
 #. Install git:
 
    For instructions see https://git-scm.com/.
