@@ -62,6 +62,7 @@ __all__ = [
     "Uncreate",
     "DrawBorderThenFill",
     "Write",
+    "Unwrite",
     "ShowIncreasingSubsets",
     "AddTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
@@ -177,7 +178,7 @@ class Uncreate(ShowCreation):
             1 - t
         ),
         remover: bool = True,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject, rate_func=rate_func, remover=remover, **kwargs)
 
@@ -203,7 +204,7 @@ class DrawBorderThenFill(Animation):
         stroke_color: str = None,
         draw_border_animation_config: typing.Dict = {},  # what does this dict accept?
         fill_animation_config: typing.Dict = {},
-        **kwargs
+        **kwargs,
     ) -> None:
         self._typecheck_input(vmobject)
         super().__init__(vmobject, run_time=run_time, rate_func=rate_func, **kwargs)
@@ -267,7 +268,7 @@ class Write(DrawBorderThenFill):
         run_time: float = None,
         lag_ratio: float = None,
         rate_func: typing.Callable[[float], np.ndarray] = linear,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.run_time = run_time
         self.lag_ratio = lag_ratio
@@ -291,6 +292,74 @@ class Write(DrawBorderThenFill):
             self.lag_ratio = min(4.0 / length, 0.2)
 
 
+class Unwrite(Write):
+    """Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`.
+
+    Parameters
+    ----------
+    reverse : :class:`bool`
+        Set True to have the animation start erasing from the last submobject first.
+
+    Examples
+    --------
+
+    .. manim:: UnwriteReverseFalse
+
+        class UnwriteReverseFalse(Scene):
+            def construct(self):
+                text = Tex("Alice and Bob").scale(3)
+                self.add(text)
+                self.play(Unwrite(text))
+
+    .. manim :: UnwriteReverseTrue
+
+        class UnwriteReverseTrue(Scene):
+            def construct(self):
+                text = Tex("Alice and Bob").scale(3)
+                self.add(text)
+                self.play(Unwrite(text,reverse=True))
+
+    """
+
+    def __init__(
+        self,
+        vmobject: VMobject,
+        run_time: float = None,
+        lag_ratio: float = None,
+        rate_func: typing.Callable[[float], np.ndarray] = linear,
+        reverse: bool = False,
+        **kwargs,
+    ) -> None:
+
+        backwards_rate_func = lambda t: -rate_func(t) + 1
+
+        self.vmobject = vmobject
+        self.run_time = run_time
+        self.lag_ratio = lag_ratio
+        self.reverse = reverse
+        self._set_default_config_from_length(vmobject)
+        super().__init__(
+            vmobject,
+            run_time=run_time,
+            lag_ratio=lag_ratio,
+            rate_func=backwards_rate_func,
+            **kwargs,
+        )
+
+    def begin(self) -> None:
+        if not self.reverse:
+            self.reverse_submobjects()
+        super().begin()
+
+    def finish(self) -> None:
+        if not self.reverse:
+            self.reverse_submobjects()
+        super().finish()
+
+    def reverse_submobjects(self) -> None:
+        self.vmobject.invert(recursive=True)
+
+
 class ShowIncreasingSubsets(Animation):
     """Show one submobject at a time, leaving all previous ones displayed on screen.
 
@@ -312,7 +381,7 @@ class ShowIncreasingSubsets(Animation):
         group: Mobject,
         suspend_mobject_updating: bool = False,
         int_func: typing.Callable[[np.ndarray], np.ndarray] = np.floor,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.all_submobs = list(group.submobjects)
         self.int_func = int_func
@@ -351,7 +420,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         rate_func: typing.Callable[[float], float] = linear,
         time_per_char: float = 0.1,
         run_time: typing.Optional[float] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         # time_per_char must be above 0.06, or the animation won't finish
         self.time_per_char = time_per_char
@@ -376,7 +445,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
         self,
         group: typing.Iterable[Mobject],
         int_func: typing.Callable[[np.ndarray], np.ndarray] = np.ceil,
-        **kwargs
+        **kwargs,
     ) -> None:
         new_group = Group(*group)
         super().__init__(new_group, int_func=int_func, **kwargs)
@@ -397,7 +466,7 @@ class AddTextWordByWord(Succession):
         text_mobject: "Text",
         run_time: float = None,
         time_per_char: float = 0.06,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.time_per_char = time_per_char
         tpc = self.time_per_char

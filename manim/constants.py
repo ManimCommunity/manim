@@ -177,3 +177,5 @@ QUALITIES: typing.Dict[str, typing.Dict[str, typing.Union[str, int, None]]] = {
 
 DEFAULT_QUALITY: str = "high_quality"
 DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
+SHIFT_VALUE = 65505
+CTRL_VALUE = 65507
