@@ -78,7 +78,7 @@ For first-time contributors
 
    .. code-block:: shell
 
-      pre-commit install
+      poetry run pre-commit install
    
    This is optional and will ensure during development that each of your
    commit is properly formatted against our formatter, ``black``.
