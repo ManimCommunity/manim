@@ -291,7 +291,7 @@ class GraphScene(Scene):
                 def __init__(self, **kwargs):
                     GraphScene.__init__(
                         self,
-                        y_axis_label=r"Concentration [%]",
+                        y_axis_label=r"Concentration [\%]",
                         x_axis_label="Time [s]",
                         **kwargs
                     )
