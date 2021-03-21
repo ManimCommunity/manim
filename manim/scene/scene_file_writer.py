@@ -68,7 +68,7 @@ class SceneFileWriter(object):
         else:
             module_name = ""
 
-        if config["output_file"]:
+        if config["output_file"] and not config["write_all"]:
             default_name = config.get_dir("output_file")
         else:
             default_name = Path(scene_name)
@@ -102,7 +102,7 @@ class SceneFileWriter(object):
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
                     "partial_movie_dir",
-                    scene_name=default_name,
+                    scene_name=scene_name,
                     module_name=module_name,
                 )
             )
