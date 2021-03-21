@@ -64,7 +64,7 @@ For first-time contributors
 
       git remote add upstream https://github.com/ManimCommunity/manim.git
  
-#. Now, ``git remove -v`` should show two remote repositores named:
+#. Now, ``git remote -v`` should show two remote repositores named:
    
    - ``origin``, your forked repository
    - ``upstream`` the ManimCommunity repository
