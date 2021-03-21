@@ -1073,8 +1073,6 @@ class ManimConfig(MutableMapping):
     @use_opengl_renderer.setter
     def use_opengl_renderer(self, val: bool) -> None:
         self._d["use_opengl_renderer"] = val
-        if val:
-            self["disable_caching"] = True
 
     @property
     def use_webgl_renderer(self):
