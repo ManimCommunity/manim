@@ -5,7 +5,7 @@ Contributing
 Thank you for contributing to Manim! However you have decided to contribute
 or interact with the community, please always be civil and respect other
 members of the community. If you haven't read our :doc:`code of conduct<conduct>`,
-do so here. Manim is free and open source software (FOSS) for mathematical
+do so here. Manim is Free and Open Source Software (FOSS) for mathematical
 animations. As such, **we welcome everyone** who is interested in
 mathematics, pedagogy, computer animations, open-source,
 software development, and beyond. Manim accepts many kinds of contributions,
@@ -281,4 +281,3 @@ In case you are contributing, please have a look at this flowchart:
     <script type="text/javascript" src="https://viewer.diagrams.net/embed2.js?&fetch=https%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1aKyJTloYB97IhrzwqEENOu-WQyuVWMjM%26export%3Ddownload"></script>
 
 **Thank you for contributing!**
-
