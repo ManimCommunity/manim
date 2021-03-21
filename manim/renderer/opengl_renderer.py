@@ -362,12 +362,6 @@ class OpenGLRenderer:
             except KeyError:
                 pass
 
-    def init_scene(self, scene):
-        self.file_writer = SceneFileWriter(
-            self,
-            scene.__class__.__name__,
-        )
-
     def update_skipping_status(self):
         """
         This method is used internally to check if the current
