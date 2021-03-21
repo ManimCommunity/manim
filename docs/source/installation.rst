@@ -6,6 +6,9 @@ following pages have instructions that are specific to your system.  Once you
 are done installing the dependencies, come back to this page to install manim
 itself.
 
+.. tip::
+    In case that you want to try manim online without installation, open it in `Binder <https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb>`_
+
 Installing dependencies
 ***********************
 
