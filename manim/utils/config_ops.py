@@ -40,5 +40,5 @@ def update_dict_recursively(current_dict, *others):
 
 
 class DictAsObject(object):
-    def __init__(self, dict):
-        self.__dict__ = dict
+    def __init__(self, dictin):
+        self.__dict__ = dictin

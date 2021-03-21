@@ -133,16 +133,14 @@ class DecimalNumber(VMobject):
         - num_decimal_places
         - field_name (e.g. 0 or 0.real)
         """
-        config = dict(
-            [
-                (attr, getattr(self, attr))
-                for attr in [
-                    "include_sign",
-                    "group_with_commas",
-                    "num_decimal_places",
-                ]
+        config = {
+            attr: getattr(self, attr)
+            for attr in [
+                "include_sign",
+                "group_with_commas",
+                "num_decimal_places",
             ]
-        )
+        }
         config.update(kwargs)
         return "".join(
             [

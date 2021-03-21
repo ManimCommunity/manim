@@ -378,7 +378,9 @@ class Mobject(Container):
     def __isub__(self, other):
         raise NotImplementedError
 
-    def set(self, **kwargs) -> "Mobject":
+    def set(
+        self, **kwargs
+    ) -> "Mobject":  # This should be renamed and/or depricated as set is a function in the standerd libary and cuases a flake error
         """Sets attributes.
 
         Mainly to be used along with :attr:`animate` to

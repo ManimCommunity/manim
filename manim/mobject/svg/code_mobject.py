@@ -597,8 +597,8 @@ def insert_line_numbers_in_html(html, line_no_from):
 
     html = html.replace(pre_close, "</pre></td></tr></table>")
     numbers = range(line_no_from, line_no_from + pre.count("\n") + 1)
-    format = "%" + str(len(str(numbers[-1]))) + "i"
-    lines = "\n".join(format % i for i in numbers)
+    f_string = "%" + str(len(str(numbers[-1]))) + "i"
+    lines = "\n".join(f_string % i for i in numbers)
     html = html.replace(
         pre_open, "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open
     )
