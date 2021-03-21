@@ -234,7 +234,7 @@ sticks to our coding conventions.
   to your pull request. Make sure not to introduce any Sphinx errors, and have
   a look at the built HTML files to see whether the formatting of the documentation
   you added looks like you intended. You can build the documentation locally
-  by running ``pip install -r requirements.txt`` from the ``docs`` directory
+  by running ``pip install -r docs/requirements.txt``
   and then running ``make html``.
 
 Finally, if the pipeline passes and you are satisfied with your changes: wait for
