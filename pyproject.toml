@@ -62,6 +62,7 @@ pep8-naming = "^0.11.1"
 flake8-builtins = "^1.5.3"
 flake8-comprehensions = "^3.4.0"
 flake8-pytest-style = "^1.4.0"
+darglint = "^1.7.0"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
