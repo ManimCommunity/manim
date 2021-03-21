@@ -231,7 +231,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
+test = ["flake8 (3.7.8)", "hypothesis (3.55.3)"]
 
 [[package]]
 name = "contextvars"
@@ -294,6 +294,14 @@ description = "Discover and load entry points from installed packages."
 category = "main"
 optional = true
 python-versions = ">=2.7"
+
+[[package]]
+name = "glcontext"
+version = "2.3.3"
+description = "Portable OpenGL Context"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "grpcio"
@@ -373,7 +381,7 @@ zipp = ">=0.5"
 
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "pytest-enabler", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
 
 [[package]]
 name = "iniconfig"
@@ -465,7 +473,7 @@ python-versions = ">=3.6"
 parso = ">=0.8.0,<0.9.0"
 
 [package.extras]
-qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
+qa = ["flake8 (3.8.3)", "mypy (0.782)"]
 testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<6.0.0)"]
 
 [[package]]
@@ -513,7 +521,7 @@ format_nongpl = ["idna", "jsonpointer (>1.13)", "webcolors", "rfc3986-validator 
 
 [[package]]
 name = "jupyter-client"
-version = "6.1.11"
+version = "6.1.12"
 description = "Jupyter protocol implementation and client libraries"
 category = "main"
 optional = true
@@ -528,7 +536,7 @@ traitlets = "*"
 
 [package.extras]
 doc = ["sphinx (>=1.3.6)", "sphinx-rtd-theme", "sphinxcontrib-github-alt"]
-test = ["jedi (<=0.17.2)", "ipykernel", "ipython", "mock", "pytest", "pytest-asyncio", "async-generator", "pytest-timeout"]
+test = ["async-generator", "ipykernel", "ipython", "mock", "pytest-asyncio", "pytest-timeout", "pytest", "jedi (<0.18)"]
 
 [[package]]
 name = "jupyter-core"
@@ -662,6 +670,17 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "mapbox-earcut"
+version = "0.12.10"
+description = "Python bindings for the mapbox earcut C++ polygon triangulation library."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = "*"
+
+[[package]]
 name = "markupsafe"
 version = "1.1.1"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -700,6 +719,53 @@ description = "The fastest markdown parser in pure Python"
 category = "main"
 optional = true
 python-versions = "*"
+
+[[package]]
+name = "moderngl"
+version = "5.6.4"
+description = "ModernGL: High performance rendering for Python 3"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+glcontext = ">=2,<3"
+
+[[package]]
+name = "moderngl-window"
+version = "2.3.0"
+description = "A cross platform helper library for ModernGL making window creation and resource loading simple"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+moderngl = "<6"
+numpy = ">=1.16,<2"
+Pillow = ">=5"
+pyglet = ">=1.5.8,<2"
+pyrr = ">=0.10.3,<1"
+
+[package.extras]
+pysdl2 = ["pysdl2"]
+pyside2 = ["PySide2 (<6)"]
+glfw = ["glfw"]
+pygame = ["pygame (2.0.0.dev10)"]
+pyqt5 = ["pyqt5"]
+pywavefront = ["pywavefront (>=1.2.0,<2)"]
+tk = ["pyopengltk (>=0.0.3)"]
+trimesh = ["trimesh (>=3.2.6,<4)", "scipy (>=1.3.2)"]
+
+[[package]]
+name = "multipledispatch"
+version = "0.6.0"
+description = "Multiple dispatch"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
 
 [[package]]
 name = "mypy-extensions"
@@ -768,11 +834,11 @@ testpath = "*"
 traitlets = ">=4.2"
 
 [package.extras]
-all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)", "tornado (>=4.0)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
+all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (0.2.2)", "tornado (>=4.0)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
 docs = ["sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
 serve = ["tornado (>=4.0)"]
-test = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)"]
-webpdf = ["pyppeteer (==0.2.2)"]
+test = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (0.2.2)"]
+webpdf = ["pyppeteer (0.2.2)"]
 
 [[package]]
 name = "nbformat"
@@ -889,7 +955,7 @@ optional = true
 python-versions = ">=3.6"
 
 [package.extras]
-qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
+qa = ["flake8 (3.8.3)", "mypy (0.782)"]
 testing = ["docopt", "pytest (<6.0.0)"]
 
 [[package]]
@@ -1015,6 +1081,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "pyglet"
+version = "1.5.15"
+description = "Cross-platform windowing and multimedia library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pygments"
 version = "2.8.1"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -1047,6 +1121,18 @@ description = "Python parsing module"
 category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
+name = "pyrr"
+version = "0.10.3"
+description = "3D mathematical functions using NumPy"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+multipledispatch = "*"
+numpy = "*"
 
 [[package]]
 name = "pyrsistent"
@@ -1156,7 +1242,7 @@ python-versions = "*"
 
 [package.extras]
 security = ["cryptography (>=1.3.4)", "idna (>=2.0.0)", "pyOpenSSL (>=0.14)"]
-socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
 [[package]]
 name = "rich"
@@ -1622,6 +1708,32 @@ entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
     {file = "entrypoints-0.3.tar.gz", hash = "sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"},
 ]
+glcontext = [
+    {file = "glcontext-2.3.3-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:f518379551a2b60d45c1eec23759cb1ee85517d4b943fc31530b6ab13e304fe4"},
+    {file = "glcontext-2.3.3-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:d3a8fbc27f43766d168bae02474790459f4050adeb25832ff0a227cc5006c933"},
+    {file = "glcontext-2.3.3-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:aa1d9e4f9bd6eda3d195f39c47c849b3721caf65813a4ad1e006a20fa02d33e4"},
+    {file = "glcontext-2.3.3-cp35-cp35m-win32.whl", hash = "sha256:8b4ee9cb5573e2ae313e1681fdfe2c5ac5b8780b20e857daf8f95e318c36aa2f"},
+    {file = "glcontext-2.3.3-cp35-cp35m-win_amd64.whl", hash = "sha256:b92ca447a04c3a05afb3974a6e94f584e60f55444c3e55ecd31fbfacad6ee07a"},
+    {file = "glcontext-2.3.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:b102a00e7bbce03a5e8bb02692197f96fcb77c51dbe133859b70afa361eef5b7"},
+    {file = "glcontext-2.3.3-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:ea3975a9d86a97b49f9524713c8e3f0df92044715cfbe5a24102e10762673b23"},
+    {file = "glcontext-2.3.3-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:5f2e7fb61ea1f69c44db0799f8929ea66ad207619c18063ae60cfb26ad0f447f"},
+    {file = "glcontext-2.3.3-cp36-cp36m-win32.whl", hash = "sha256:bf8c3fa5f3a8962c9bcc03a869a0bb178bd1681619225b9f0a070a65ff3f766d"},
+    {file = "glcontext-2.3.3-cp36-cp36m-win_amd64.whl", hash = "sha256:e0b637f2ac1c2dd1e0dbfcbad6d7be2dae75290f9af8f82aa67aa55b977766e1"},
+    {file = "glcontext-2.3.3-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:2002d29dee90e9ba800c8699e13e1ff8b0fa1292a7c5bb0a98ef50b5f6cd3f14"},
+    {file = "glcontext-2.3.3-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:941be8972ad64e70080ad4702c037c64c09d1378ddd9b1b4576b957bc2d7f1c2"},
+    {file = "glcontext-2.3.3-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:0eb69c4add7f724017169bcefc2a8ef8ce053183e9384cc4770162e934090592"},
+    {file = "glcontext-2.3.3-cp37-cp37m-win32.whl", hash = "sha256:f63aed2116907225f7392921df790a391fd1a843cd1af0756dcd533e9d3ecf2b"},
+    {file = "glcontext-2.3.3-cp37-cp37m-win_amd64.whl", hash = "sha256:2fa9b939c15f5f7e63110a1021e8d20341c03921b8d3aebbb4bb191f11414d86"},
+    {file = "glcontext-2.3.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:44f95953bbd6a26caa9489b4f838b106470ede432c5ef837cd3e0d3657ca2a06"},
+    {file = "glcontext-2.3.3-cp38-cp38-manylinux1_i686.whl", hash = "sha256:843d3361bf46aec487f268bb7f680700166640995a82424fa86e53f428dc43ae"},
+    {file = "glcontext-2.3.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:be3e25a8595976699b6d30a2619ca4faf7bd5e60ff38dcd4445fa38a8f3b2cf9"},
+    {file = "glcontext-2.3.3-cp38-cp38-win32.whl", hash = "sha256:7abbd227bf9e4e62ec196360fa0f440143a66b7aae3d3deb7960b87aac654043"},
+    {file = "glcontext-2.3.3-cp38-cp38-win_amd64.whl", hash = "sha256:b91010d033789d1f876789e4aa4e6498e87cd284b4d0cb7a4aa1b7e620caaf57"},
+    {file = "glcontext-2.3.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:0a851f569f165a13f8fedf60dd4f2831f7c2ffbb9bc9f867d6e0e3fdd1846c8d"},
+    {file = "glcontext-2.3.3-cp39-cp39-win32.whl", hash = "sha256:f36935ba84e8c52ed22bb9f683875bdf1690abd318ae704f40511f1afca5f71a"},
+    {file = "glcontext-2.3.3-cp39-cp39-win_amd64.whl", hash = "sha256:69e3a04c677e4925c0b6daf5efc5469a86d0982b05bb1d0ca29bce57f4aaf7d1"},
+    {file = "glcontext-2.3.3.tar.gz", hash = "sha256:f86a6c4ad99f941623911f964da74c443dc3f833fac7eb03cd485fae82acb80c"},
+]
 grpcio = [
     {file = "grpcio-1.33.2-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:c5030be8a60fb18de1fc8d93d130d57e4296c02f229200df814f6578da00429e"},
     {file = "grpcio-1.33.2-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:5b21d3de520a699cb631cfd3a773a57debeb36b131be366bf832153405cc5404"},
@@ -1787,8 +1899,8 @@ jsonschema = [
     {file = "jsonschema-3.2.0.tar.gz", hash = "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"},
 ]
 jupyter-client = [
-    {file = "jupyter_client-6.1.11-py3-none-any.whl", hash = "sha256:5eaaa41df449167ebba5e1cf6ca9b31f7fd4f71625069836e2e4fee07fe3cb13"},
-    {file = "jupyter_client-6.1.11.tar.gz", hash = "sha256:649ca3aca1e28f27d73ef15868a7c7f10d6e70f761514582accec3ca6bb13085"},
+    {file = "jupyter_client-6.1.12-py3-none-any.whl", hash = "sha256:e053a2c44b6fa597feebe2b3ecb5eea3e03d1d91cc94351a52931ee1426aecfc"},
+    {file = "jupyter_client-6.1.12.tar.gz", hash = "sha256:c4bca1d0846186ca8be97f4d2fa6d2bae889cce4892a167ffa1ba6bd1f73e782"},
 ]
 jupyter-core = [
     {file = "jupyter_core-4.7.1-py3-none-any.whl", hash = "sha256:8c6c0cac5c1b563622ad49321d5ec47017bd18b94facb381c6973a0486395f8e"},
@@ -1958,6 +2070,40 @@ mccabe = [
 mistune = [
     {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},
     {file = "mistune-0.8.4.tar.gz", hash = "sha256:59a3429db53c50b5c6bcc8a07f8848cb00d7dc8bdb431a4ab41920d201d4756e"},
+]
+moderngl = [
+    {file = "moderngl-5.6.4-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:bc3764d67f037b67051871345a1d0b7a3d2c19cb5c0c0af0a84c532e802d6642"},
+    {file = "moderngl-5.6.4-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:90006d9dfd5333da604a7d26b2a5e70e1a570f291cd745b8bf80e4833d8821b6"},
+    {file = "moderngl-5.6.4-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:af44437545380a840dafd09658eb56592831dbd4fb481d320249d0d42c591bae"},
+    {file = "moderngl-5.6.4-cp35-cp35m-win32.whl", hash = "sha256:b5023633bcbfbab90be6a6f4edcde75f9c1e244d9acbda94678f3e3fb238b363"},
+    {file = "moderngl-5.6.4-cp35-cp35m-win_amd64.whl", hash = "sha256:ffc48fc4deeb525ed33a828d13ca4c12c5af8e5cb0449011f1802e18b5fc3c25"},
+    {file = "moderngl-5.6.4-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:331fd4bce60b10a08eed81a3ed4c70b7c297c38f981fdf3968d03a1c892af247"},
+    {file = "moderngl-5.6.4-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:1bd864b5cc2fc1255785e33575cec98fa5ded698503c4f8f3fa9230abeaa3a04"},
+    {file = "moderngl-5.6.4-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:b22534529f5bc52c1fe43336787c06d51123ae978fb56e74e47cabd85056c934"},
+    {file = "moderngl-5.6.4-cp36-cp36m-win32.whl", hash = "sha256:ee5b1eced39d7f6dc68782c2abf01c1130a40b6d83d333d175ee71adbea7c721"},
+    {file = "moderngl-5.6.4-cp36-cp36m-win_amd64.whl", hash = "sha256:52ee915a559762f0e992344961b35e0d241be32f8aa7464494e958f777e0534c"},
+    {file = "moderngl-5.6.4-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:f83f6ab1fafdba2d9c06a7a1c8a4e460689ea1d514146606acc74f14e0831d93"},
+    {file = "moderngl-5.6.4-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:c350e06affea9fabc636b2350cf6e58d83ee2e7264527eee0f5d142c167f5463"},
+    {file = "moderngl-5.6.4-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:3eb65afc8ec4a1d4a4c48696fb0f4f6cf7a7ada6bef97818d717dbca73c57b11"},
+    {file = "moderngl-5.6.4-cp37-cp37m-win32.whl", hash = "sha256:4fd721eb83e73d34c3f7b5a11aec656fef461b51bbe7503b07ea27370c593cbd"},
+    {file = "moderngl-5.6.4-cp37-cp37m-win_amd64.whl", hash = "sha256:01c71d94dbd59b5d37ead463991e2998c0924426cffa393b9da2b8334551c998"},
+    {file = "moderngl-5.6.4-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:d2ec6ecd845f21ba44a08c11521cb71f2a9c2ea2ec189b7ed30d17837d392d70"},
+    {file = "moderngl-5.6.4-cp38-cp38-manylinux1_i686.whl", hash = "sha256:40f74a2246e5302f93f2d46f76c0d2a26cbed1eb29731674c4052476f1e9c9ea"},
+    {file = "moderngl-5.6.4-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:5e158e6881034c7e1d0c583d7c82ff608439606f2359dc6098e4be4fd93cef9d"},
+    {file = "moderngl-5.6.4-cp38-cp38-win32.whl", hash = "sha256:a28dc741469eeb69549ee85b4ddbf8e9cfca6a2b19ce0406df9fde20f78082c8"},
+    {file = "moderngl-5.6.4-cp38-cp38-win_amd64.whl", hash = "sha256:ce87962b91635d857cac4a753c5d5f647d94dc66dcb0f090bb8d758fd226c3e8"},
+    {file = "moderngl-5.6.4-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:3fb139bcdd25eae2c546e5788e9d8719f6c4b18a2ba68a9df31699b4ac57d62d"},
+    {file = "moderngl-5.6.4-cp39-cp39-win32.whl", hash = "sha256:fc5cc1601a3df8f45f1901c6b9960731e0619d1781b0d036e12341fbf2ef55d3"},
+    {file = "moderngl-5.6.4-cp39-cp39-win_amd64.whl", hash = "sha256:1c74b71c9acee9f0e69807a086d76e92f37c1960c3bb1d6a6e2472fd03f7be5b"},
+    {file = "moderngl-5.6.4.tar.gz", hash = "sha256:8c6d04559f5e3bf75a18525cd46d213c0f3a8409363718978e6de691bdb551fb"},
+]
+moderngl-window = [
+    {file = "moderngl_window-2.3.0-py3-none-any.whl", hash = "sha256:79056e6b6a1e8c540031166d2ec308a40806baf461e5d492730966c3cf372a31"},
+]
+multipledispatch = [
+    {file = "multipledispatch-0.6.0-py2-none-any.whl", hash = "sha256:407e6d8c5fa27075968ba07c4db3ef5f02bea4e871e959570eeb69ee39a6565b"},
+    {file = "multipledispatch-0.6.0-py3-none-any.whl", hash = "sha256:a55c512128fb3f7c2efd2533f2550accb93c35f1045242ef74645fc92a2c3cba"},
+    {file = "multipledispatch-0.6.0.tar.gz", hash = "sha256:a7ab1451fd0bf9b92cab3edbd7b205622fb767aeefb4fb536c2e3de9e0a38bea"},
 ]
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
@@ -2157,6 +2303,10 @@ pylint = [
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
+]
+pyrr = [
+    {file = "pyrr-0.10.3-py3-none-any.whl", hash = "sha256:d8af23fb9bb29262405845e1c98f7339fbba5e49323b98528bd01160a75c65ac"},
+    {file = "pyrr-0.10.3.tar.gz", hash = "sha256:3c0f7b20326e71f706a610d58f2190fff73af01eef60c19cb188b186f0ec7e1d"},
 ]
 pyrsistent = [
     {file = "pyrsistent-0.17.3.tar.gz", hash = "sha256:2e636185d9eb976a18a8a8e96efce62f2905fea90041958d8cc2a189756ebf3e"},

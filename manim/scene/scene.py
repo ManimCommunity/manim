@@ -22,10 +22,13 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject, _AnimationBuilder
+from ..mobject.opengl_mobject import OpenGLPoint
 from ..utils.iterables import list_update, list_difference_update
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
+from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
+from ..utils.space_ops import rotate_vector
 
 
 class Scene(Container):
@@ -79,6 +82,11 @@ class Scene(Container):
         self.time_progression = None
         self.duration = None
         self.last_t = None
+
+        if config["use_opengl_renderer"]:
+            # Items associated with interaction
+            self.mouse_point = OpenGLPoint()
+            self.mouse_drag_point = OpenGLPoint()
 
         if renderer is None:
             self.renderer = CairoRenderer(
@@ -300,9 +308,15 @@ class Scene(Container):
         list
             List of mobject family members.
         """
-        return extract_mobject_family_members(
-            self.mobjects, use_z_index=self.renderer.camera.use_z_index
-        )
+        if config["use_opengl_renderer"]:
+            family_members = []
+            for mob in self.mobjects:
+                family_members.extend(mob.get_family())
+            return family_members
+        else:
+            return extract_mobject_family_members(
+                self.mobjects, use_z_index=self.renderer.camera.use_z_index
+            )
 
     def add(self, *mobjects):
         """
@@ -320,15 +334,20 @@ class Scene(Container):
             The same scene after adding the Mobjects in.
 
         """
-        mobjects = [*mobjects, *self.foreground_mobjects]
-        self.restructure_mobjects(to_remove=mobjects)
-        self.mobjects += mobjects
-        if self.moving_mobjects:
-            self.restructure_mobjects(
-                to_remove=mobjects, mobject_list_name="moving_mobjects"
-            )
-            self.moving_mobjects += mobjects
-        return self
+        if config["use_opengl_renderer"]:
+            new_mobjects = mobjects
+            self.remove(*new_mobjects)
+            self.mobjects += new_mobjects
+        else:
+            mobjects = [*mobjects, *self.foreground_mobjects]
+            self.restructure_mobjects(to_remove=mobjects)
+            self.mobjects += mobjects
+            if self.moving_mobjects:
+                self.restructure_mobjects(
+                    to_remove=mobjects, mobject_list_name="moving_mobjects"
+                )
+                self.moving_mobjects += mobjects
+            return self
 
     def add_mobjects_from_animations(self, animations):
 
@@ -352,9 +371,16 @@ class Scene(Container):
         *mobjects : Mobject
             The mobjects to remove.
         """
-        for list_name in "mobjects", "foreground_mobjects":
-            self.restructure_mobjects(mobjects, list_name, False)
-        return self
+        if config["use_opengl_renderer"]:
+            mobjects_to_remove = mobjects
+            self.mobjects = restructure_list_to_exclude_certain_family_members(
+                self.mobjects, mobjects_to_remove
+            )
+            return self
+        else:
+            for list_name in "mobjects", "foreground_mobjects":
+                self.restructure_mobjects(mobjects, list_name, False)
+            return self
 
     def restructure_mobjects(
         self, to_remove, mobject_list_name="mobjects", extract_families=True
@@ -722,7 +748,7 @@ class Scene(Container):
         if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
-            step = 1 / self.renderer.camera.frame_rate
+            step = 1 / config["frame_rate"]
             times = np.arange(0, run_time, step)
         time_progression = tqdm(
             times,
@@ -793,26 +819,27 @@ class Scene(Container):
         self.stop_condition = None
         self.moving_mobjects = None
         self.static_mobjects = None
-        if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
-            self.update_mobjects(dt=0)  # Any problems with this?
-            if self.should_update_mobjects():
-                # TODO, be smart about setting a static image
-                # the same way Scene.play does
-                self.renderer.static_image = None
-                self.stop_condition = self.animations[0].stop_condition
+        if not config["use_opengl_renderer"]:
+            if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
+                self.update_mobjects(dt=0)  # Any problems with this?
+                if self.should_update_mobjects():
+                    # TODO, be smart about setting a static image
+                    # the same way Scene.play does
+                    self.renderer.static_image = None
+                    self.stop_condition = self.animations[0].stop_condition
+                else:
+                    self.duration = self.animations[0].duration
+                    if not skip_rendering:
+                        self.add_static_frames(self.animations[0].duration)
+                    return None
             else:
-                self.duration = self.animations[0].duration
-                if not skip_rendering:
-                    self.add_static_frames(self.animations[0].duration)
-                return None
-        else:
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            (
-                self.moving_mobjects,
-                self.static_mobjects,
-            ) = self.get_moving_and_static_mobjects(self.animations)
-            self.renderer.save_static_frame_data(self, self.static_mobjects)
+                # Paint all non-moving objects onto the screen, so they don't
+                # have to be rendered every frame
+                (
+                    self.moving_mobjects,
+                    self.static_mobjects,
+                ) = self.get_moving_and_static_mobjects(self.animations)
+                self.renderer.save_static_frame_data(self, self.static_mobjects)
 
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
@@ -841,7 +868,7 @@ class Scene(Container):
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering:
-                self.renderer.render(self, self.moving_mobjects)
+                self.renderer.render(self, t, self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
                 break
@@ -852,6 +879,57 @@ class Scene(Container):
         if not self.renderer.skip_animations:
             self.update_mobjects(0)
         self.renderer.static_image = None
+
+    def interact(self):
+        self.quit_interaction = False
+        while not (self.renderer.window.is_closing or self.quit_interaction):
+            self.renderer.animation_start_time = 0
+            dt = 1 / config["frame_rate"]
+            self.renderer.render(self, dt, self.moving_mobjects)
+            self.update_mobjects(dt)
+        if self.renderer.window.is_closing:
+            self.renderer.window.destroy()
+
+    def embed(self):
+        if not config["preview"]:
+            logger.warning("Called embed() while no preview window is available.")
+            return
+        if config["write_to_movie"]:
+            logger.warning("embed() is skipped while writing to a file.")
+            return
+
+        self.renderer.render(self, -1, self.moving_mobjects)
+
+        # Configure IPython shell.
+        from IPython.terminal.embed import InteractiveShellEmbed
+
+        shell = InteractiveShellEmbed()
+
+        # Have the frame update after each command
+        shell.events.register(
+            "post_run_cell",
+            lambda *a, **kw: self.renderer.render(self, -1, self.moving_mobjects),
+        )
+
+        # Use the locals of the caller as the local namespace
+        # once embeded, and add a few custom shortcuts.
+        local_ns = inspect.currentframe().f_back.f_locals
+        # local_ns["touch"] = self.interact
+        for method in (
+            "play",
+            "wait",
+            "add",
+            "remove",
+            "interact",
+            # "clear",
+            # "save_state",
+            # "restore",
+        ):
+            local_ns[method] = getattr(self, method)
+        shell(local_ns=local_ns, stack_depth=2)
+
+        # End scene when exiting an embed.
+        raise Exception("Exiting scene.")
 
     def update_to_time(self, t):
         dt = t - self.last_t
@@ -890,3 +968,45 @@ class Scene(Container):
             return
         time = self.renderer.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
+
+    def on_mouse_motion(self, point, d_point):
+        self.mouse_point.move_to(point)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            shift = -d_point
+            shift[0] *= self.camera.get_width() / 2
+            shift[1] *= self.camera.get_height() / 2
+            transform = self.camera.inverse_rotation_matrix
+            shift = np.dot(np.transpose(transform), shift)
+            self.camera.shift(shift)
+
+    def on_mouse_scroll(self, point, offset):
+        if CTRL_VALUE in self.renderer.pressed_keys:
+            factor = 1 + np.arctan(-20 * offset[1])
+            self.camera.scale(factor, about_point=point)
+
+        transform = self.camera.inverse_rotation_matrix
+        shift = np.dot(np.transpose(transform), offset)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
+        else:
+            self.camera.shift(20.0 * shift)
+
+    def on_key_press(self, symbol, modifiers):
+        try:
+            char = chr(symbol)
+        except OverflowError:
+            logger.warning("The value of the pressed key is too large.")
+            return
+
+        if char == "r":
+            self.camera.to_default_state()
+        elif char == "q":
+            self.quit_interaction = True
+
+    def on_key_release(self, symbol, modifiers):
+        pass
+
+    def on_mouse_drag(self, point, d_point, buttons, modifiers):
+        self.mouse_drag_point.move_to(point)
+        self.camera.increment_theta(-d_point[0])
+        self.camera.increment_phi(d_point[1])

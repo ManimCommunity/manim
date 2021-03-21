@@ -1,6 +1,7 @@
 import os
 import pytest
 import subprocess
+import sys
 
 from ..utils.commands import capture
 from ..utils.video_tester import *
@@ -15,7 +16,7 @@ def test_wait_skip(tmp_path, manim_cfg_file, simple_scenes_path):
     # Test for PR #468. Intended to test if wait calls are correctly skipped.
     scene_name = "SceneWithMultipleWaitCalls"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         "-ql",
@@ -39,7 +40,7 @@ def test_play_skip(tmp_path, manim_cfg_file, simple_scenes_path):
     # Intended to test if play calls are correctly skipped.
     scene_name = "SceneWithMultipleCalls"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         "-ql",
