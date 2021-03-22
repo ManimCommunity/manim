@@ -383,6 +383,7 @@ class OpenGLRenderer:
     def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
         if scene.compile_animation_data(*args, **kwargs):
+            scene.begin_animations()
             scene.play_internal()
 
     def render(self, scene, frame_offset, moving_mobjects):
