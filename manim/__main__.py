@@ -20,14 +20,14 @@ from .cli.render.commands import render
     version=__version__, prog_name="Manim Community", message="%(prog)s v%(version)s"
 )
 @click.pass_context
-def manim(ctx):
+def main(ctx):
     """The entry point for manim."""
     pass
 
 
-manim.add_command(cfg)
-manim.add_command(plugins)
-manim.add_command(render)
+main.add_command(cfg)
+main.add_command(plugins)
+main.add_command(render)
 
 if __name__ == "__main__":
-    manim()
+    main()

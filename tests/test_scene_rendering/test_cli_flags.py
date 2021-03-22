@@ -3,7 +3,7 @@ import sys
 import numpy as np
 from PIL import Image
 from pathlib import Path
-from manim.__main__ import manim
+from manim.__main__ import main
 from click.testing import CliRunner
 
 from ..utils.video_tester import *
@@ -216,7 +216,7 @@ def test_dash_as_filename(tmp_path):
         "-",
     ]
     runner = CliRunner()
-    result = runner.invoke(manim, command, input=code)
+    result = runner.invoke(main, command, input=code)
     assert result.exit_code == 0
     exists = add_version_before_extension(
         tmp_path / "images" / "-" / "Test.png"
