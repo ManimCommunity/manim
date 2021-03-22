@@ -310,7 +310,7 @@ class Code(VGroup):
             number = str(self.line_no_from + line_no)
             line_numbers_array.append(number)
         line_numbers = Paragraph(
-            *[i for i in line_numbers_array],
+            *list(line_numbers_array),
             line_spacing=self.line_spacing,
             alignment="right",
             font=self.font,
@@ -336,7 +336,7 @@ class Code(VGroup):
                 line_str = line_str + self.code_json[line_no][word_index][0]
             lines_text.append(self.tab_spaces[line_no] * "\t" + line_str)
         code = Paragraph(
-            *[i for i in lines_text],
+            *list(lines_text),
             line_spacing=self.line_spacing,
             tab_width=self.tab_width,
             font=self.font,

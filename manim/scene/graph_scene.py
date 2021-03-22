@@ -303,7 +303,8 @@ class GraphScene(Scene):
                         dot = Dot().move_to(self.coords_to_point(time, dat))
                         self.add(dot)
         """
-        assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
+        assert hasattr(self, "x_axis")
+        assert hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
         result += self.y_axis.number_to_point(y)[1] * UP
         return result

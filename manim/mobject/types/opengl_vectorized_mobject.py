@@ -995,11 +995,11 @@ class OpenGLVMobject(OpenGLMobject):
         return result
 
     def get_fill_uniforms(self):
-        return dict(
-            is_fixed_in_frame=float(self.is_fixed_in_frame),
-            gloss=self.gloss,
-            shadow=self.shadow,
-        )
+        return {
+            "is_fixed_in_frame": float(self.is_fixed_in_frame),
+            "gloss": self.gloss,
+            "shadow": self.shadow,
+        }
 
     def get_stroke_shader_data(self):
         points = self.data["points"]

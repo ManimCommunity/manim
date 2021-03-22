@@ -428,7 +428,7 @@ def earclip_triangulation(verts, ring_ends):
     rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends)]
     attached_rings = rings[:1]
     detached_rings = rings[1:]
-    loop_connections = dict()
+    loop_connections = {}
 
     while detached_rings:
         i_range, j_range = [

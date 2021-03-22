@@ -68,7 +68,7 @@ class Mobject(Container):
         self.init_colors()
 
         # OpenGL data.
-        self.data = dict()
+        self.data = {}
         self.depth_test = False
         self.is_fixed_in_frame = False
         self.gloss = 0.0

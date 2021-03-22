@@ -166,7 +166,7 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number, **config):
-        full_config = dict()
+        full_config = {}
         full_config.update(self.initial_config)
         full_config.update(config)
         new_decimal = DecimalNumber(number, **full_config)

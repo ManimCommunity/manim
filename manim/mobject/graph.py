@@ -379,7 +379,7 @@ class Graph(VMobject):
                     v: MathTex(v, fill_color=label_fill_color) for v in vertices
                 }
             else:
-                self._labels = dict()
+                self._labels = {}
 
         if self._labels and vertex_type is Dot:
             vertex_type = LabeledDot
