@@ -28,6 +28,7 @@ from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
+from ..utils.file_ops import open_media_file
 from ..utils.space_ops import rotate_vector
 
 
@@ -168,9 +169,14 @@ class Scene(Container):
                 result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
-    def render(self):
+    def render(self, preview=False):
         """
-        Render this Scene.
+        Renders this Scene.
+
+        Parameters
+        ---------
+        preview : bool
+            If true, opens scene in a file viewer.
         """
         self.setup()
         try:
@@ -180,9 +186,17 @@ class Scene(Container):
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
+
         logger.info(
             f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
         )
+
+        # If preview open up the render after rendering.
+        if preview:
+            config["preview"] = True
+
+        if config["preview"] or config["show_in_file_browser"]:
+            open_media_file(self.renderer.file_writer)
 
     def setup(self):
         """

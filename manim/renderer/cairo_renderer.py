@@ -1,3 +1,4 @@
+import time
 import numpy as np
 from .. import config
 from ..utils.iterables import list_update
@@ -36,6 +37,7 @@ def handle_play_like_call(func):
     """
 
     def wrapper(self, scene, *args, **kwargs):
+        self.animation_start_time = time.time()
         self.file_writer.begin_animation(not self.skip_animations)
         func(self, scene, *args, **kwargs)
         self.file_writer.end_animation(not self.skip_animations)

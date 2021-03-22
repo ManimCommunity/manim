@@ -104,7 +104,7 @@ class Flash(AnimationGroup):
         flash_radius: float = 0.3,
         line_stroke_width: int = 3,
         color: str = YELLOW,
-        run_time: int = 1,
+        run_time: float = 1.0,
         **kwargs
     ) -> None:
         self.point = point

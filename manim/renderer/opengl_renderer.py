@@ -1,3 +1,7 @@
+from manim.utils.exceptions import EndSceneEarlyException
+from manim.utils.caching import handle_caching_play
+from manim.renderer.cairo_renderer import pass_scene_reference, handle_play_like_call
+from manim.utils.color import color_to_rgba
 import moderngl
 from .opengl_renderer_window import Window
 from .shader_wrapper import ShaderWrapper
@@ -177,11 +181,15 @@ JOINT_TYPE_MAP = {
 
 
 class OpenGLRenderer:
-    def __init__(self):
+    def __init__(self, skip_animations=False):
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
+
+        self.original_skipping_status = skip_animations
+        self.skip_animations = skip_animations
+        self.animations_hashes = []
         self.num_plays = 0
-        self.skip_animations = False
+
         self.camera = OpenGLCamera()
         self.pressed_keys = set()
 
@@ -214,6 +222,12 @@ class OpenGLRenderer:
             moderngl.ONE,
             moderngl.ONE,
         )
+
+        # Initialize shader map.
+        self.id_to_shader_program = {}
+
+        # Initialize texture map.
+        self.path_to_texture_id = {}
 
     def update_depth_test(self, context, shader_wrapper):
         if shader_wrapper.depth_test:
@@ -348,25 +362,28 @@ class OpenGLRenderer:
             except KeyError:
                 pass
 
-    def play(self, scene, *args, **kwargs):
-        if len(args) == 0:
-            logger.warning("Called Scene.play with no animations")
-            return
+    def update_skipping_status(self):
+        """
+        This method is used internally to check if the current
+        animation needs to be skipped or not. It also checks if
+        the number of animations that were played correspond to
+        the number of animations that need to be played, and
+        raises an EndSceneEarlyException if they don't correspond.
+        """
+        if config["from_animation_number"]:
+            if self.num_plays < config["from_animation_number"]:
+                self.skip_animations = True
+        if config["upto_animation_number"]:
+            if self.num_plays > config["upto_animation_number"]:
+                self.skip_animations = True
+                raise EndSceneEarlyException()
 
+    @handle_caching_play
+    @handle_play_like_call
+    def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
         if scene.compile_animation_data(*args, **kwargs):
-            self.animation_start_time = time.time()
-            self.animation_elapsed_time = 0
-
-            temp_name = f"media/temp_{self.num_plays}.mp4"
-            self.partial_movie_files.append(temp_name)
-            self.file_writer.begin_animation(
-                not self.skip_animations, file_path=temp_name
-            )
             scene.play_internal()
-            self.file_writer.end_animation(not self.skip_animations)
-
-        self.num_plays += 1
 
     def render(self, scene, frame_offset, moving_mobjects):
         def update_frame():
@@ -375,8 +392,11 @@ class OpenGLRenderer:
             self.render_mobjects(scene.mobjects)
             self.animation_elapsed_time = time.time() - self.animation_start_time
 
-        window_background_color = (0.2, 0.2, 0.2, 1)
+        window_background_color = color_to_rgba(config["background_color"])
         update_frame()
+
+        if self.skip_animations:
+            return
 
         if config["write_to_movie"]:
             self.file_writer.write_frame(self)
@@ -388,7 +408,7 @@ class OpenGLRenderer:
                 self.window.swap_buffers()
 
     def scene_finished(self, scene):
-        self.file_writer.finish(self.partial_movie_files)
+        self.file_writer.finish()
 
     def save_static_frame_data(self, scene, static_mobjects):
         pass
