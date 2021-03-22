@@ -149,7 +149,7 @@ class ShowCreation(ShowPartial):
         self,
         mobject: typing.Union[VMobject, OpenGLVMobject],
         lag_ratio: float = 1.0,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
