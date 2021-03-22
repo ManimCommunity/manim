@@ -58,6 +58,7 @@ r"""Animate the display or removal of a mobject from a scene.
 
 __all__ = [
     "ShowPartial",
+    "ShowCreation",
     "Create",
     "Uncreate",
     "DrawBorderThenFill",
@@ -155,28 +156,8 @@ class Create(ShowPartial):
         return (0, alpha)
 
 
-class ShowCreation(ShowPartial):
-    """Deprecated class. Use Create() instead.
-
-        Incrementally show a VMobject.
-    Parameters
-    ----------
-    mobject : :class:`~.VMobject`
-        The VMobject to animate.
-    Raises
-    ------
-    :class:`TypeError`
-        If ``mobject`` is not an instance of :class:`~.VMobject`.
-    Examples
-    --------
-    .. manim:: ShowCreationScene
-        class ShowCreationScene(Scene):
-            def construct(self):
-                self.play(ShowCreation(Square()))
-    See Also
-    --------
-    :class:`~.ShowPassingFlash`
-    """
+class ShowCreation(Create):
+    """Deprecated. Use :class:`~.Create` instead."""
 
     logger.warning(
         "ShowCreation has been deprecated in favor of Create. Please use Create instead!"
