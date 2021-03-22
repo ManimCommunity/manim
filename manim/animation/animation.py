@@ -34,7 +34,7 @@ class Animation:
         # If 0 < lag_ratio < 1, its applied to each
         # with lagged start times
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
-        run_time: int = DEFAULT_ANIMATION_RUN_TIME,
+        run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: typing.Callable[[float, float], np.ndarray] = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
@@ -117,7 +117,7 @@ class Animation:
             *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
         )
 
-    def update_mobjects(self, dt: int) -> None:
+    def update_mobjects(self, dt: float) -> None:
         """
         Updates things like starting_mobject, and (for
         Transforms) target_mobject.  Note, since typically
@@ -259,7 +259,7 @@ class Wait(Animation):
     def clean_up_from_scene(self, scene: "Scene") -> None:
         pass
 
-    def update_mobjects(self, dt: int) -> None:
+    def update_mobjects(self, dt: float) -> None:
         pass
 
     def interpolate(self, alpha: float) -> None:
