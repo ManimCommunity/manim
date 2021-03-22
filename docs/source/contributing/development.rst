@@ -41,21 +41,21 @@ For first-time contributors
 
       git remote add upstream https://github.com/ManimCommunity/manim.git
  
-#. Now, ``git remove -v`` should show two remote repositores named:
+#. Now, ``git remote -v`` should show two remote repositores named:
    
    - ``origin``, your forked repository
    - ``upstream`` the ManimCommunity repository
 
 #. Install Manim:
  
-   - See our :doc:`instructions for developers<../installation/for_dev>` for
+   - See our :doc:`instructions for developers<installation/for_dev>` for
      details and continue here afterwards
 
 #. Install Pre-Commit (recommended):
 
    .. code-block:: shell
 
-      pre-commit install
+      poetry run pre-commit install
    
    This is optional and will ensure during development that each of your
    commit is properly formatted against our formatter, ``black``.
@@ -63,7 +63,7 @@ For first-time contributors
 You are now ready to work on manim!
 
 Develop your contribution
--------------------------
+--------------------------
 
 #. Checkout your local repository's master branch and pull the latest
    changes from ManimCommunity, `upstream`, into your local repository:
@@ -71,7 +71,7 @@ Develop your contribution
    .. code-block:: shell
 
       git checkout master 
-      git pull upstream master
+      git pull --rebase upstream master
 
 #. Create a branch for the changes you want to work on rather than working
    off of master:
@@ -87,7 +87,7 @@ Develop your contribution
 
    Depending on your changes, you may need to update or add new tests. For new
    features, it is required that you include tests with your PR. Details of
-   our testing system are explained in the :doc:`testing section<testing>`.
+   our testing system are explained in the `corresponding Wiki Entry <https://github.com/ManimCommunity/manim/wiki/Testing>`_.
 
 #. Write some awesome code!
 
@@ -111,16 +111,15 @@ Develop your contribution
 
 #. Update docstrings and documentation:
 
-   Update the docstrings (the text in triple quotation marks) of any
-   functions or classes you change and include them with any new functions
-   you add. Please view our :doc:`documentation guidelines<documentation>`
-   for more information about how we prefer our code to be documented. The
-   content of the docstrings will be rendered in the :doc:`reference manual
-   <../reference>`.
+   Update the docstrings (the text in triple quotation marks) of any functions
+   or classes you change and include them with any new functions you add.
+   There is a `Wiki Entry for Documentation <https://github.com/ManimCommunity/manim/wiki/Documentation-guidelines-(WIP)>`_
+   with more information about how we prefer our code to be documented. The content
+   of the docstrings will be rendered in the :doc:`reference manual <reference>`.
 
    .. tip::
 
-      Use the :mod:`manim directive for Sphinx <..manim_directive>` to add examples
+      Use the :mod:`manim directive for Sphinx <.manim_directive>` to add examples
       to the documentation!
 
       .. autosummary::
@@ -212,7 +211,7 @@ sticks to our coding conventions.
   to your pull request. Make sure not to introduce any Sphinx errors, and have
   a look at the built HTML files to see whether the formatting of the documentation
   you added looks like you intended. You can build the documentation locally
-  by running ``pip install -r requirements.txt`` from the ``docs`` directory
+  by running ``pip install -r docs/requirements.txt``
   and then running ``make html``.
 
 Finally, if the pipeline passes and you are satisfied with your changes: wait for
@@ -222,7 +221,7 @@ an indictment of your work, but rather a strong signal that the community
 wants to merge your changes! Once approved, your changes may be merged!
 
 Further useful guidelines
--------------------------
+=========================
 
 #. When submitting a PR, please make special note of whether your proposed
    changes will result in breaking changes.
