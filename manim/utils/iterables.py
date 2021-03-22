@@ -49,7 +49,7 @@ def resize_with_interpolation(nparray, length):
     )
 
 
-def remove_list_redundancies(i):
+def remove_list_redundancies(lst):
     """
     Used instead of list(set(l)) to maintain order
     Keeps the last occurrence of each element
