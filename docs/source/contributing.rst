@@ -101,7 +101,7 @@ Develop your contribution
 
    .. code-block:: shell
 
-      git checkout -b <new branch name>
+      git checkout -b <new branch name> upstream/master
 
    This ensures you can easily update your local repository's master with the
    first step and switch branches to work on multiple features.
