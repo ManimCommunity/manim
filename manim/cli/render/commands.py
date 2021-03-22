@@ -203,8 +203,6 @@ def open_file_if_needed(file_writer):
     "--fps",
     "--frame_rate",
     "frame_rate",
-    default=30,
-    show_default=True,
     type=float,
     help="Render at this frame rate.",
 )
