@@ -351,7 +351,7 @@ class SceneFileWriter(object):
         self.partial_movie_file_path = file_path
 
         fps = config["frame_rate"]
-        if fps == int(fps): # fps is integer
+        if fps == int(fps):  # fps is integer
             fps = int(fps)
         if config["use_opengl_renderer"]:
             width, height = self.renderer.get_pixel_shape()
