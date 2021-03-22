@@ -1,11 +1,11 @@
 import click
 from click_default_group import DefaultGroup
-from manim import __version__
-from manim.constants import EPILOG
-from manim.constants import CONTEXT_SETTINGS
-from manim.cli.cfg.commands import cfg
-from manim.cli.plugins.commands import plugins
-from manim.cli.render.commands import render
+from . import __version__
+from .constants import EPILOG
+from .constants import CONTEXT_SETTINGS
+from .cli.cfg.commands import cfg
+from .cli.plugins.commands import plugins
+from .cli.render.commands import render
 
 
 @click.group(
@@ -17,7 +17,7 @@ from manim.cli.render.commands import render
     epilog=EPILOG,
 )
 @click.version_option(
-    version=__version__, prog_name="Manim", message="%(prog)s v%(version)s"
+    version=__version__, prog_name="Manim Community", message="%(prog)s v%(version)s"
 )
 @click.pass_context
 def manim(ctx):

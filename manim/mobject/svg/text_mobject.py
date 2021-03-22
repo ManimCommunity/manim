@@ -693,7 +693,7 @@ class Text(SVGMobject):
     def __init__(
         self,
         text: str,
-        fill_opacity: int = 1,
+        fill_opacity: float = 1.0,
         stroke_width: int = 0,
         color: str = WHITE,
         size: int = 1,
