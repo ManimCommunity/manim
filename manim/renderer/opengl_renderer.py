@@ -1,6 +1,6 @@
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.caching import handle_caching_play
-from manim.renderer.cairo_renderer import pass_scene_reference, handle_play_like_call
+from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.color import color_to_rgba
 import moderngl
 from .opengl_renderer_window import Window
