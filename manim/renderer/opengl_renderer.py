@@ -185,7 +185,7 @@ class OpenGLRenderer:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
 
-        self.original_skipping_status = skip_animations
+        self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
