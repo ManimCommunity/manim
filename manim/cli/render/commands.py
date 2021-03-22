@@ -201,6 +201,8 @@ def open_file_if_needed(file_writer):
 )
 @optgroup.option(
     "--fps",
+    "--frame_rate",
+    "frame_rate",
     default=30,
     show_default=True,
     type=float,
@@ -273,7 +275,7 @@ def render(
     save_last_frame,
     quality,
     resolution,
-    fps,
+    frame_rate,
     webgl_renderer,
     transparent,
     background_color,
@@ -309,7 +311,7 @@ def render(
         "save_last_frame": save_last_frame,
         "quality": quality,
         "resolution": resolution,
-        "frame_rate": fps,
+        "frame_rate": frame_rate,
         "webgl_renderer": webgl_renderer,
         "transparent": transparent,
         "background_color": background_color,

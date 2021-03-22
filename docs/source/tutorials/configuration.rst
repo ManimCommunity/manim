@@ -81,7 +81,7 @@ Usually, manim is ran from the command line by executing
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName
+   $ manim [OPTIONS] [FILE] [SCENES]
 
 This asks manim to search for a Scene class called :code:`SceneName` inside the
 file <file.py> and render it.  One can also specify the render quality by using
@@ -90,7 +90,7 @@ high, and 4k quality, respectively.
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName -ql
+   $ manim -ql <file.py> SceneName 
 
 These flags set the values of the config options ``config.pixel_width``,
 ``config.pixel_height``, ``config.frame_rate``, and ``config.quality``.
@@ -110,7 +110,7 @@ instead of the whole video, you can execute
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName -sqh
+   $ manim -sqh <file.py> SceneName 
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
@@ -120,7 +120,7 @@ open the file after it is rendered.
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName -o myscene -i -n 0,10 -c WHITE
+   $ manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
 
 .. tip:: There are many more command line flags that manim accepts.  All the
 	 possible flags are shown by executing ``manim -h``.  A complete list
@@ -162,7 +162,7 @@ Now, executing the following command
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName -o myscene -i -c WHITE
+   $ manim -o myscene -i -c WHITE <file.py> SceneName 
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
@@ -187,7 +187,7 @@ file being rendered, and **not** in the directory of execution.  For example,
 
 .. code-block:: bash
 
-   $ manim <path/to/file.py> SceneName -o myscene -i -c WHITE
+   $ manim -o myscene -i -c WHITE <path/to/file.py> SceneName
 
 will use the config file found in ``path/to/file.py``, if any.  It will **not**
 use the config file found in the current working directory, even if it exists.
@@ -260,15 +260,16 @@ using any config files and executing
 
 .. code-block:: bash
 
-   manim <file.py> SceneName -o myscene -c WHITE
+   manim -o myscene -c WHITE <file.py> SceneName
 
 Any command line flags have precedence over any config file.  For example,
-using the previous two config files and executing :code:`manim <file.py>
-SceneName -c RED` is equivalent to not using any config files and executing
+using the previous two config files and executing :code:`manim -c RED
+<file.py> SceneName` is equivalent to not using any config files and
+executing
 
 .. code-block:: bash
 
-   manim <file.py> SceneName -o myscene -c RED
+   manim -o myscene -c RED <file.py> SceneName
 
 There is also a **library-wide** config file that determines manim's default
 behavior, and applies to every user of the library.  It has the least
@@ -347,7 +348,7 @@ A list of all config options
 .. testoutput::
    :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
 
-   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity', 'bottom', 'custom_folders', 'disable_caching', 'dry_run', 'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate', 'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius', 'from_animation_number', 'images_dir', 'input_file', 'left_side', 'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width', 'movie_file_extension', 'output_file', 'partial_movie_dir', 'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview', 'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame', 'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir', 'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent', 'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer', 'verbosity', 'video_dir', 'webgl_renderer_path', 'webgl_updater_fps', 'write_all', 'write_to_movie']
+   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity', 'bottom', 'custom_folders', 'disable_caching', 'dry_run', 'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate', 'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius', 'from_animation_number', 'images_dir', 'input_file', 'left_side', 'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width', 'movie_file_extension', 'output_file', 'partial_movie_dir', 'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview', 'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame', 'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir', 'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent', 'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer', 'verbosity', 'video_dir', 'webgl_renderer_path', 'write_all', 'write_to_movie']
 
 
 A list of all CLI flags

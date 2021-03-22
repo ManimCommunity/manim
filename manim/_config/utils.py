@@ -115,13 +115,6 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
 
 
 def _determine_quality(args: argparse.Namespace) -> str:
-    old_qualities = {
-        "k": "fourk_quality",
-        "e": "high_quality",
-        "m": "medium_quality",
-        "l": "low_quality",
-    }
-
     for quality in constants.QUALITIES:
         if quality == constants.DEFAULT_QUALITY:
             # Skip so we prioritize anything that overwrites the default quality.
@@ -132,13 +125,6 @@ def _determine_quality(args: argparse.Namespace) -> str:
             and args.quality == constants.QUALITIES[quality]["flag"]
         ):
             return quality
-
-    for quality in old_qualities:
-        if getattr(args, quality, None):
-            logging.getLogger("manim").warning(
-                f"Option -{quality} is deprecated please use the --quality/-q flag."
-            )
-            return old_qualities[quality]
 
     return constants.DEFAULT_QUALITY
 
@@ -289,7 +275,6 @@ class ManimConfig(MutableMapping):
         "upto_animation_number",
         "use_opengl_renderer",
         "use_webgl_renderer",
-        "webgl_updater_fps",
         "verbosity",
         "video_dir",
         "write_all",
@@ -524,12 +509,10 @@ class ManimConfig(MutableMapping):
         for key in [
             "from_animation_number",
             "upto_animation_number",
-            "frame_rate",
             "max_files_cached",
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
-            "webgl_updater_fps",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -556,6 +539,7 @@ class ManimConfig(MutableMapping):
         # float keys
         for key in [
             "background_opacity",
+            "frame_rate",
             # the next two are floats but have their own logic, applied later
             # "frame_width",
             # "frame_height",
@@ -642,10 +626,8 @@ class ManimConfig(MutableMapping):
             "scene_names",
             "verbosity",
             "background_color",
-            "fps",
             "use_opengl_renderer",
             "use_webgl_renderer",
-            "webgl_updater_fps",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -694,6 +676,10 @@ class ManimConfig(MutableMapping):
         if rflag:
             self.pixel_width = int(rflag[0])
             self.pixel_height = int(rflag[1])
+
+        fps = args.frame_rate
+        if fps:
+            self.frame_rate = float(fps)
 
         # Handle --custom_folders
         if args.custom_folders:
@@ -933,7 +919,7 @@ class ManimConfig(MutableMapping):
     frame_rate = property(
         lambda self: self._d["frame_rate"],
         lambda self, val: self._d.__setitem__("frame_rate", val),
-        doc="Frame rate in frames per second (-q).",
+        doc="Frame rate in frames per second.",
     )
 
     background_color = property(
@@ -1087,12 +1073,6 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["webgl_renderer_path"],
         lambda self, val: self._d.__setitem__("webgl_renderer_path", val),
         doc="Path to WebGL renderer.",
-    )
-
-    webgl_updater_fps = property(
-        lambda self: self._d["webgl_updater_fps"],
-        lambda self, val: self._d.__setitem__("webgl_updater_fps", val),
-        doc="Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend.",
     )
 
     media_dir = property(

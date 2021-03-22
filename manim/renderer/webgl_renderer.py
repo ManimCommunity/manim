@@ -59,4 +59,4 @@ class WebGLRenderer:
 class WebGLCamera:
     def __init__(self, use_z_index=True):
         self.use_z_index = use_z_index
-        self.frame_rate = config["webgl_updater_fps"]
+        self.frame_rate = config["frame_rate"]
