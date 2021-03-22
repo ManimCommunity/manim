@@ -66,10 +66,10 @@ else:
 
             args = line.split()
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
-                main(args, standalone_mode=False)
+                main(args, standalone_mode=False, prog_name="manim")
                 return
             modified_args = ["--jupyter"] + args[:-1] + [""] + [args[-1]]
-            args = main(modified_args, standalone_mode=False)
+            args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
                 exec(f"{config['scene_names'][0]}().render()", local_ns)

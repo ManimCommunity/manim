@@ -16,9 +16,9 @@ def test_manim_version():
 def test_manim_cfg_subcommand():
     command = ["cfg"]
     runner = CliRunner()
-    result = runner.invoke(main, command)
+    result = runner.invoke(main, command, prog_name="manim")
     expected_output = """\
-Usage: main cfg [OPTIONS] COMMAND [ARGS]...
+Usage: manim cfg [OPTIONS] COMMAND [ARGS]...
 
   Manages Manim configuration files.
 
@@ -38,9 +38,9 @@ Commands:
 def test_manim_plugins_subcommand():
     command = ["plugins"]
     runner = CliRunner()
-    result = runner.invoke(main, command)
+    result = runner.invoke(main, command, prog_name="manim")
     expected_output = """\
-Usage: main plugins [OPTIONS]
+Usage: manim plugins [OPTIONS]
 
   Manages Manim plugins.
 
