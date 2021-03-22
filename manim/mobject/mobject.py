@@ -1656,7 +1656,17 @@ class Mobject(Container):
     def get_critical_point(self, direction):
         """Picture a box bounding the mobject.  Such a box has
         9 'critical points': 4 corners, 4 edge center, the
-        center.  This returns one of them.
+        center. This returns one of them, along the given direction.
+
+        ::
+
+            sample = Arc(start_angle=PI/7, angle = PI/5)
+
+            # These are all equivalent
+            max_y_1 = sample.get_top()[1]
+            max_y_2 = sample.get_critical_point(UP)[1]
+            max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
+
         """
         result = np.zeros(self.dim)
         all_points = self.get_points_defining_boundary()
