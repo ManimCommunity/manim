@@ -5,12 +5,12 @@ Manim's render subcommand is accessed in the command-line interface via
 can specify options, subcommands, and subgroups for the render command.
 
 """
-import os
 import re
 import sys
 import click
 
 from manim import config, logger, console
+from textwrap import dedent
 
 from ...constants import EPILOG
 from ...constants import CONTEXT_SETTINGS
@@ -260,6 +260,27 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
+    for scene in scenes:
+        if str(scene).startswith("-"):
+            logger.warn(
+                dedent(
+                    """\
+                Manim Community has moved to Click for the CLI.
+
+                This means that options in the CLI are provided BEFORE the positional
+                arguments for your FILE and SCENE(s):
+                `manim render [OPTIONS] [FILE] [SCENES]...`
+
+                For example:
+                New way - `manim -p -ql file.py SceneName1 SceneName2 ...`
+                Old way - `manim file.py SceneName1 SceneName2 ... -p -ql`
+
+                To see the help page for the new available options, run:
+                `manim render -h`
+                """
+                )
+            )
+            sys.exit()
     args = {
         "ctx": ctx,
         "file": file,
