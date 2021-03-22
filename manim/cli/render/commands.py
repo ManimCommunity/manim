@@ -11,7 +11,7 @@ import re
 import sys
 import click
 
-from manim import config, logger
+from manim import config, logger, console
 
 from manim.constants import EPILOG
 from manim.constants import CONTEXT_SETTINGS
@@ -153,6 +153,7 @@ def open_file_if_needed(file_writer):
 @optgroup.option(
     "-a",
     "--write_all",
+    is_flag=True,
     help="Render all scenes in the input file.",
 )
 @optgroup.option(

@@ -153,11 +153,11 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
         sys.executable,
         "-m",
         "manim",
-        infallible_scenes_path,
         "-ql",
         "--media_dir",
         str(tmp_path),
         "-a",
+        infallible_scenes_path,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
