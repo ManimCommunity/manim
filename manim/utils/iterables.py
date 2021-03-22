@@ -56,7 +56,7 @@ def remove_list_redundancies(i):
     """
     reversed_result = []
     used = set()
-    for x in reversed(i):
+    for x in reversed(lst):
         if x not in used:
             reversed_result.append(x)
             used.add(x)
