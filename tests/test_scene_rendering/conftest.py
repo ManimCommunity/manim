@@ -27,3 +27,5 @@ def using_temp_config(tmpdir):
 def disabling_caching():
     with tempconfig({"disable_caching": True}):
         yield
+def infallible_scenes_path():
+    return str(Path(__file__).parent / "infallible_scenes.py")

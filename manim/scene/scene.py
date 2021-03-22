@@ -22,11 +22,13 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject, _AnimationBuilder
+from ..mobject.opengl_mobject import OpenGLPoint
 from ..utils.iterables import list_update, list_difference_update
 from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
+from ..utils.space_ops import rotate_vector
 
 
 class Scene(Container):
@@ -80,6 +82,11 @@ class Scene(Container):
         self.time_progression = None
         self.duration = None
         self.last_t = None
+
+        if config["use_opengl_renderer"]:
+            # Items associated with interaction
+            self.mouse_point = OpenGLPoint()
+            self.mouse_drag_point = OpenGLPoint()
 
         if renderer is None:
             self.renderer = CairoRenderer(
@@ -896,6 +903,16 @@ class Scene(Container):
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
+    def interact(self):
+        self.quit_interaction = False
+        while not (self.renderer.window.is_closing or self.quit_interaction):
+            self.renderer.animation_start_time = 0
+            dt = 1 / config["frame_rate"]
+            self.renderer.render(self, dt, self.moving_mobjects)
+            self.update_mobjects(dt)
+        if self.renderer.window.is_closing:
+            self.renderer.window.destroy()
+
     def embed(self):
         if not config["preview"]:
             logger.warning("Called embed() while no preview window is available.")
@@ -926,6 +943,7 @@ class Scene(Container):
             "wait",
             "add",
             "remove",
+            "interact",
             # "clear",
             # "save_state",
             # "restore",
@@ -965,3 +983,45 @@ class Scene(Container):
             return
         time = self.renderer.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
+
+    def on_mouse_motion(self, point, d_point):
+        self.mouse_point.move_to(point)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            shift = -d_point
+            shift[0] *= self.camera.get_width() / 2
+            shift[1] *= self.camera.get_height() / 2
+            transform = self.camera.inverse_rotation_matrix
+            shift = np.dot(np.transpose(transform), shift)
+            self.camera.shift(shift)
+
+    def on_mouse_scroll(self, point, offset):
+        if CTRL_VALUE in self.renderer.pressed_keys:
+            factor = 1 + np.arctan(-20 * offset[1])
+            self.camera.scale(factor, about_point=point)
+
+        transform = self.camera.inverse_rotation_matrix
+        shift = np.dot(np.transpose(transform), offset)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
+        else:
+            self.camera.shift(20.0 * shift)
+
+    def on_key_press(self, symbol, modifiers):
+        try:
+            char = chr(symbol)
+        except OverflowError:
+            logger.warning("The value of the pressed key is too large.")
+            return
+
+        if char == "r":
+            self.camera.to_default_state()
+        elif char == "q":
+            self.quit_interaction = True
+
+    def on_key_release(self, symbol, modifiers):
+        pass
+
+    def on_mouse_drag(self, point, d_point, buttons, modifiers):
+        self.mouse_drag_point.move_to(point)
+        self.camera.increment_theta(-d_point[0])
+        self.camera.increment_phi(d_point[1])

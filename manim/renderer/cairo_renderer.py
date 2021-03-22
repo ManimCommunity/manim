@@ -1,4 +1,5 @@
 import typing
+import time
 import numpy as np
 
 from manim.utils.hashing import get_hash_from_play_call
