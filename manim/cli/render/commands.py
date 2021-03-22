@@ -262,7 +262,7 @@ def render(
     """
     for scene in scenes:
         if str(scene).startswith("-"):
-            logger.warn(
+            logger.warning(
                 dedent(
                     """\
                 Manim Community has moved to Click for the CLI.
