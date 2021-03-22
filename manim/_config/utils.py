@@ -575,7 +575,7 @@ class ManimConfig(MutableMapping):
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
-            self.ffmpeg_loglevel
+            self.ffmpeg_loglevel = val
 
         val = parser["jupyter"].get("media_width")
         if val:
@@ -649,7 +649,7 @@ class ManimConfig(MutableMapping):
 
         # dry_run is special because it can only be set to True
         if hasattr(args, "dry_run"):
-            if args.dry_run:
+            if getattr(args, "dry_run"):
                 self["dry_run"] = True
 
         for key in [
@@ -714,7 +714,7 @@ class ManimConfig(MutableMapping):
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
         if self.use_opengl_renderer:
-            if getattr(args, "write_to_movie") is None:  # noqa: B009
+            if getattr(args, "write_to_movie") is None:
                 # --write_to_movie was not passed on the command line, so don't generate video.
                 self["write_to_movie"] = False
 
