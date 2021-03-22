@@ -1,4 +1,4 @@
-"A camera converts the mobjects contained in a Scene into an array of pixels."
+"""A camera converts the mobjects contained in a Scene into an array of pixels."""
 
 
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
@@ -649,7 +649,7 @@ class Camera:
             ctx.new_sub_path()
             start = subpath[0]
             ctx.move_to(*start[:2])
-            for p0, p1, p2, p3 in quads:
+            for _p0, p1, p2, p3 in quads:
                 ctx.curve_to(*p1[:2], *p2[:2], *p3[:2])
             if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
                 ctx.close_path()

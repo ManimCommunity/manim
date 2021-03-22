@@ -134,7 +134,7 @@ class Scene(Container):
                 free_variable_map = inspect.getclosurevars(updater).nonlocals
                 cloned_co_freevars = []
                 cloned_closure = []
-                for i, free_variable_name in enumerate(updater.__code__.co_freevars):
+                for free_variable_name in updater.__code__.co_freevars:
                     free_variable_value = free_variable_map[free_variable_name]
 
                     # If the referenced variable has not been cloned, raise.

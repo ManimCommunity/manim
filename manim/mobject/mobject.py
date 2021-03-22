@@ -1862,7 +1862,7 @@ class Mobject(Container):
         center=True,
         **kwargs,
     ):
-        """sort mobjects next to each other on screen.
+        """Sorts mobjects next to each other on screen.
 
         Examples
         --------
@@ -2007,7 +2007,7 @@ class Mobject(Container):
         new_submobs = []
         for submob, sf in zip(self.submobjects, split_factors):
             new_submobs.append(submob)
-            for k in range(1, sf):
+            for _ in range(1, sf):
                 new_submobs.append(submob.copy().fade(1))
         self.submobjects = new_submobs
         return self
