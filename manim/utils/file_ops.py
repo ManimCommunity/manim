@@ -96,4 +96,4 @@ def open_media_file(file_writer):
         if config["preview"]:
             open_file(file_path, False)
 
-        logger.info(f"Previewed File at: {file_path}")
+            logger.info(f"Previewed File at: {file_path}")
