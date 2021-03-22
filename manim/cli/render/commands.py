@@ -53,6 +53,7 @@ def validate_resolution(ctx, param, value):
             logger.error("Resolution option is invalid.")
             exit()
 
+
 @click.group(
     invoke_without_command=True,
     context_settings=CONTEXT_SETTINGS,
