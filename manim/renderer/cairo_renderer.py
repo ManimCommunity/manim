@@ -11,6 +11,7 @@ from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 from ..mobject.mobject import Mobject
 
+
 def handle_play_like_call(func):
     """
     This method is used internally to wrap the
@@ -32,11 +33,11 @@ def handle_play_like_call(func):
         to the video file stream.
     """
 
-    # NOTE : This is only kept for OpenGL renderer. 
-    # The play logic of the cairo renderer as been refactored and does not need this function anymore. 
-    # When OpenGL renderer will have a proper testing system, 
-    # the play logic of the latter has to be refactored in the same way the cairo renderer has been, and thus this 
-    # method has to be deleted. 
+    # NOTE : This is only kept for OpenGL renderer.
+    # The play logic of the cairo renderer as been refactored and does not need this function anymore.
+    # When OpenGL renderer will have a proper testing system,
+    # the play logic of the latter has to be refactored in the same way the cairo renderer has been, and thus this
+    # method has to be deleted.
 
     def wrapper(self, scene, *args, **kwargs):
         self.animation_start_time = time.time()
@@ -47,13 +48,14 @@ def handle_play_like_call(func):
 
     return wrapper
 
+
 class CairoRenderer:
     """A renderer using Cairo.
 
     num_plays : Number of play() functions in the scene.
     time: time elapsed since initialisation of scene.
     """
-    
+
     def __init__(self, camera_class=None, skip_animations=False, **kwargs):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
