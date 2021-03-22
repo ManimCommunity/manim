@@ -1,9 +1,16 @@
 [flake8]
 max-line-length = 88
-                #Required
-extend-ignore = E203, E266, E501, B006, A003, 
+                #Black Compatability
+extend-ignore = E203, E266,  
+                #I belive these are unfixable
+                B006
+                #Issue #1148 needs to be closed before removal
+                A003,
+                #Issue #1149 needs to be closed before removal
+                W605,
                 #Code Changes - Remove later
-                W503, F403, F401, F405, W605, F821, E731, B009, B008, 
+                F405, F403, F401, F821, B008, E501
                 #Docstring Formatting - Remove Later
-                RST304, D400, D401, D205, D105, D103, RST210, RST303, D102, D102, D107, RST212, D200, D100, D101, D412, D202, RST305, 
-                RST301, D301, RST213, D104, RST201,  RST215, RST203, D104, D209, RST205, D402, D210, RST202
+                RST304, D400, D401, D205, D105, D103, RST210, RST303, D102, D102, D107, RST212, D200, D100, D101, 
+                D412, D202, RST305, RST301, D301, RST213, D104, RST201, RST215, RST203, D104, D209, RST205, D402, 
+                D210, RST202
