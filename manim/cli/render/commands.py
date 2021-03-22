@@ -5,7 +5,6 @@ Manim's render subcommand is accessed in the command-line interface via
 can specify options, subcommands, and subgroups for the render command.
 
 """
-from inspect import Traceback
 import os
 import re
 import sys
@@ -13,10 +12,10 @@ import click
 
 from manim import config, logger, console
 
-from manim.constants import EPILOG
-from manim.constants import CONTEXT_SETTINGS
-from manim.utils.module_ops import scene_classes_from_file
-from manim.utils.file_ops import open_file as open_media_file
+from ...constants import EPILOG
+from ...constants import CONTEXT_SETTINGS
+from ...utils.module_ops import scene_classes_from_file
+from ...utils.file_ops import open_file as open_media_file
 
 from pathlib import Path
 

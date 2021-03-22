@@ -338,33 +338,30 @@ highest precedence, is:
 A list of all config options
 ****************************
 
-.. testcode::
-   :hide:
+.. code::
 
-   from manim._config import ManimConfig
-   from inspect import getmembers
-   print(sorted([n for n, _ in getmembers(ManimConfig, lambda v: isinstance(v, property))]))
-
-.. testoutput::
-   :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
-
-   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity', 'bottom', 'custom_folders', 'disable_caching', 'dry_run', 'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate', 'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius', 'from_animation_number', 'images_dir', 'input_file', 'left_side', 'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width', 'movie_file_extension', 'output_file', 'partial_movie_dir', 'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview', 'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame', 'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir', 'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent', 'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer', 'verbosity', 'video_dir', 'webgl_renderer_path', 'write_all', 'write_to_movie']
+   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity',
+   'bottom', 'custom_folders', 'disable_caching', 'dry_run',
+   'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate',
+   'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
+   'from_animation_number', 'images_dir', 'input_file', 'left_side',
+   'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
+   'movie_file_extension', 'output_file', 'partial_movie_dir',
+   'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',
+   'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
+   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
+   'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
+   'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
+   'verbosity', 'video_dir', 'webgl_renderer_path', 'write_all',
+   'write_to_movie']
 
 
 A list of all CLI flags
 ***********************
 
-.. testcode::
-   :hide:
+.. code::
 
-   import subprocess
-   import os
-   is_windows = os.name == 'nt'
-   result = subprocess.run(['manim', '-h'], shell=is_windows, stdout=subprocess.PIPE)
-   print(result.stdout.decode('utf-8'))
-
-.. testoutput::
-   :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
+   manim -h
 
    Usage: manim [OPTIONS] COMMAND [ARGS]...
 
@@ -381,3 +378,10 @@ A list of all CLI flags
 
      Made with <3 by Manim Community developers.
      
+Each of the subcommands has their own help page which can be 
+
+.. code::
+
+   manim render -h
+   manim cfg -h
+   manim plugins -h

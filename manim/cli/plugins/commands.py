@@ -7,10 +7,10 @@ group.
 """
 import click
 
-from manim.constants import EPILOG
-from manim.constants import CONTEXT_SETTINGS
+from ...constants import EPILOG
+from ...constants import CONTEXT_SETTINGS
 
-from manim.plugins.plugins_flags import list_plugins
+from ...plugins.plugins_flags import list_plugins
 
 
 @click.command(
@@ -19,7 +19,7 @@ from manim.plugins.plugins_flags import list_plugins
     epilog=EPILOG,
     help="Manages Manim plugins.",
 )
-@click.option("-l", "--list", is_flag=True, help="List available plugins")
+@click.option("-l", "--list", is_flag=True, help="List available plugins.")
 def plugins(list):
     if list:
         list_plugins()

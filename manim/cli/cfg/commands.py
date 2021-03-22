@@ -8,15 +8,15 @@ group.
 import os
 import click
 
-from manim.constants import EPILOG
-from manim.constants import CONTEXT_SETTINGS
+from ...constants import EPILOG
+from ...constants import CONTEXT_SETTINGS
 
 from ast import literal_eval
 from typing import Union
 
 from manim import config, console
-from manim._config.utils import config_file_paths, make_config_parser
-from manim.utils.file_ops import guarantee_existence, open_file
+from ..._config.utils import config_file_paths, make_config_parser
+from ...utils.file_ops import guarantee_existence, open_file
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
