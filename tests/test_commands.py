@@ -50,5 +50,4 @@ Options:
 
   Made with <3 by Manim Community developers.
 """
-    print(result.output)
     assert expected_output == result.output
