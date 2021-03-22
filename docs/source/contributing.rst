@@ -271,8 +271,10 @@ Further useful guidelines
    general as tidy as possible.
 
 
-You can find examples for the ``docs`` in many places:
-In ``Example Gallery`` , ``Tutorials`` , ``Reference Classes`` and ``Reference Modules``.
+You can find examples for the ``docs`` in several places:
+the :doc:`Example Gallery<examples>`, :doc:`Tutorials<tutorials>`,
+and :doc:`Reference Classes<reference>`.
+
 In case you are contributing, please have a look at this flowchart:
 
 .. raw:: html

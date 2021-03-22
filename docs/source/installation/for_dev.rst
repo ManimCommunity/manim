@@ -8,6 +8,7 @@ Thank you for your interest in contributing! Please see our documentation on
 developer. This documentation assumes you have already taken the necessary
 steps to clone your fork.
 
+
 .. warning::
 
    If you have installed a non-developer version of manim, please uninstall
