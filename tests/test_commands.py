@@ -1,10 +1,6 @@
-import subprocess
-import sys
-
 from manim import __version__
 from manim.__main__ import manim
 from click.testing import CliRunner
-from .test_plugins.test_plugins import function_like_plugin
 from textwrap import dedent
 
 
