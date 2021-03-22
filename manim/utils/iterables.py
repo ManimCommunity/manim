@@ -169,4 +169,4 @@ def remove_nones(sequence):
 
 
 def concatenate_lists(*list_of_lists):
-    return [item for i in list_of_lists for item in i]
+    return [item for lst in list_of_lists for item in lst]
