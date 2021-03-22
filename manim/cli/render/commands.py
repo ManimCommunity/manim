@@ -53,35 +53,6 @@ def validate_resolution(ctx, param, value):
             logger.error("Resolution option is invalid.")
             exit()
 
-
-def open_file_if_needed(file_writer):
-    if config["verbosity"] != "DEBUG":
-        curr_stdout = sys.stdout
-        sys.stdout = open(os.devnull, "w")
-
-    open_file = any([config["preview"], config["show_in_file_browser"]])
-
-    if open_file:
-        file_paths = []
-
-        if config["save_last_frame"]:
-            file_paths.append(file_writer.image_file_path)
-        if config["write_to_movie"] and not config["save_as_gif"]:
-            file_paths.append(file_writer.movie_file_path)
-        if config["save_as_gif"]:
-            file_paths.append(file_writer.gif_file_path)
-
-        for file_path in file_paths:
-            if config["show_in_file_browser"]:
-                open_media_file(file_path, True)
-            if config["preview"]:
-                open_media_file(file_path, False)
-
-    if config["verbosity"] != "DEBUG":
-        sys.stdout.close()
-        sys.stdout = curr_stdout
-
-
 @click.group(
     invoke_without_command=True,
     context_settings=CONTEXT_SETTINGS,
@@ -361,7 +332,6 @@ def render(
             try:
                 scene = SceneClass()
                 scene.render()
-                open_file_if_needed(scene.renderer.file_writer)
             except Exception:
                 console.print_exception()
     return args
