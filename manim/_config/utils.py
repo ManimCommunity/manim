@@ -579,7 +579,7 @@ class ManimConfig(MutableMapping):
 
         val = parser["jupyter"].get("media_width")
         if val:
-            self.media_width = val
+            setattr(self, "media_width", val)
 
         return self
 
