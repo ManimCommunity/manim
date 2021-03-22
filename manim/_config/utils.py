@@ -1214,6 +1214,8 @@ class ManimConfig(MutableMapping):
 
         all_args = {k: self._d[k] for k in dirs}
         all_args.update(kwargs)
+        if self.frame_rate == int(self.frame_rate):
+            self.frame_rate = int(self.frame_rate)
         all_args["quality"] = f"{self.pixel_height}p{self.frame_rate}"
 
         path = self._d[key]
@@ -1226,7 +1228,6 @@ class ManimConfig(MutableMapping):
                     + "keyword arguments: "
                     + " ".join(exc.args)
                 ) from exc
-
         return Path(path) if path else None
 
     def _set_dir(self, key: str, val: typing.Union[str, Path]):
