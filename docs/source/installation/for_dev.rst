@@ -20,7 +20,7 @@ Finally, after having cloned this repo, run the following:
 
    python3 -m pip install .
 
-Please see page :doc:`<../contributing>` for more details about contributing to Manim.
+Please see :doc:`our contributing guide<contributing>` for more details about contributing to Manim.
 
 .. warning::
 
