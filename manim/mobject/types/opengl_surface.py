@@ -124,7 +124,7 @@ class OpenGLSurface(OpenGLMobject):
         return normalize_along_axis(normals, 1)
 
     def pointwise_become_partial(self, smobject, a, b, axis=None):
-        assert isinstance(smobject, Surface)
+        assert isinstance(smobject, OpenGLSurface)
         if axis is None:
             axis = self.prefered_creation_axis
         if a <= 0 and b >= 1:

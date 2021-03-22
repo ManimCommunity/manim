@@ -148,6 +148,34 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
+def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        infallible_scenes_path,
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "-a",
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    one_is_not_empty = (
+        tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait1.mp4"
+    ).is_file()
+    assert one_is_not_empty, "running manim with -a flag did not render the first scene"
+
+    two_is_not_empty = (
+        tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait2.mp4"
+    ).is_file()
+    assert (
+        two_is_not_empty
+    ), "running manim with -a flag did not render the second scene"
+
+
+@pytest.mark.slow
 def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
