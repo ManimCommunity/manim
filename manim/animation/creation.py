@@ -102,10 +102,8 @@ class ShowPartial(Animation):
 
     """
 
-    def __init__(self, mobject: VMobject, **kwargs):
-        if not isinstance(mobject, VMobject) and not isinstance(
-            mobject, OpenGLVMobject
-        ):
+    def __init__(self, mobject: typing.Union[VMobject, OpenGLVMobject], **kwargs):
+        if not isinstance(mobject, (VMobject, OpenGLVMobject)):
             raise TypeError("This Animation only works on vectorized mobjects")
         super().__init__(mobject, **kwargs)
 
@@ -147,7 +145,12 @@ class ShowCreation(ShowPartial):
 
     """
 
-    def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
+    def __init__(
+        self,
+        mobject: typing.Union[VMobject, OpenGLVMobject],
+        lag_ratio: float = 1.0,
+        **kwargs
+    ) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
     def _get_bounds(self, alpha: float) -> typing.Tuple[int, float]:
@@ -173,7 +176,7 @@ class Uncreate(ShowCreation):
 
     def __init__(
         self,
-        mobject: VMobject,
+        mobject: typing.Union[VMobject, OpenGLVMobject],
         rate_func: typing.Callable[[float, float], np.ndarray] = lambda t: smooth(
             1 - t
         ),
@@ -197,7 +200,7 @@ class DrawBorderThenFill(Animation):
 
     def __init__(
         self,
-        vmobject: VMobject,
+        vmobject: typing.Union[VMobject, OpenGLVMobject],
         run_time: float = 2,
         rate_func: typing.Callable[[float], np.ndarray] = double_smooth,
         stroke_width: float = 2,
@@ -214,9 +217,11 @@ class DrawBorderThenFill(Animation):
         self.fill_animation_config = fill_animation_config
         self.outline = None
 
-    def _typecheck_input(self, vmobject: VMobject) -> None:
-        if not isinstance(vmobject, VMobject):
-            raise TypeError("DrawBorderThenFill only works for VMobjects")
+    def _typecheck_input(
+        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
+    ) -> None:
+        if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
+            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
 
     def begin(self) -> None:
         self.outline = self.get_outline()
@@ -229,7 +234,9 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(self, vmobject: VMobject) -> Color:
+    def get_stroke_color(
+        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
+    ) -> Color:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
@@ -264,7 +271,7 @@ class Write(DrawBorderThenFill):
 
     def __init__(
         self,
-        vmobject: VMobject,
+        vmobject: typing.Union[VMobject, OpenGLVMobject],
         run_time: float = None,
         lag_ratio: float = None,
         rate_func: typing.Callable[[float], np.ndarray] = linear,
@@ -281,7 +288,9 @@ class Write(DrawBorderThenFill):
             **kwargs,
         )
 
-    def _set_default_config_from_length(self, vmobject: VMobject) -> None:
+    def _set_default_config_from_length(
+        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
+    ) -> None:
         length = len(vmobject.family_members_with_points())
         if self.run_time is None:
             if length < 15:
