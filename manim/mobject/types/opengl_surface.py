@@ -42,7 +42,7 @@ class OpenGLSurface(OpenGLMobject):
         shader_folder=None,
         **kwargs
     ):
-        self.passes_uv_func = uv_func
+        self.passed_uv_func = uv_func
         self.u_range = u_range if u_range is not None else (0, 1)
         self.v_range = v_range if v_range is not None else (0, 1)
         # Resolution counts number of points sampled, which for
@@ -68,8 +68,8 @@ class OpenGLSurface(OpenGLMobject):
 
     def uv_func(self, u, v):
         # To be implemented in subclasses
-        if self.passes_uv_func:
-            return self.passes_uv_func(u, v)
+        if self.passed_uv_func:
+            return self.passed_uv_func(u, v)
         return (u, v, 0.0)
 
     def init_points(self):
