@@ -1145,7 +1145,7 @@ class ManimConfig(MutableMapping):
         Some directories depend on information that is not available to
         :class:`ManimConfig`. For example, the default value of `video_dir`
         includes the name of the input file and the video quality
-        (e.g. 480p15.0). This informamtion has to be supplied via ``kwargs``:
+        (e.g. 480p15). This informamtion has to be supplied via ``kwargs``:
 
         .. code-block:: python
 
@@ -1155,7 +1155,7 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             KeyError: 'video_dir {media_dir}/videos/{module_name}/{quality} requires the following keyword arguments: module_name'
             >>> config.get_dir("video_dir", module_name="myfile").as_posix()
-            'my_media_dir/videos/myfile/1080p60.0'
+            'my_media_dir/videos/myfile/1080p60'
 
         Note the quality does not need to be passed as keyword argument since
         :class:`ManimConfig` does store information about quality.
@@ -1172,7 +1172,7 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             KeyError: 'partial_movie_dir {video_dir}/partial_movie_files/{scene_name} requires the following keyword arguments: scene_name'
             >>> config.get_dir("partial_movie_dir", module_name="myfile", scene_name="myscene").as_posix()
-            'my_media_dir/videos/myfile/1080p60.0/partial_movie_files/myscene'
+            'my_media_dir/videos/myfile/1080p60/partial_movie_files/myscene'
 
         Standard f-string syntax is used.  Arbitrary names can be used when
         defining directories, as long as the corresponding values are passed to
