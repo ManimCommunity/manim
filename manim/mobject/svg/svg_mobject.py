@@ -432,39 +432,62 @@ class SVGMobject(VMobject):
             y = -self.attribute_to_float(element.getAttribute("y"))
             mobject.shift(x * RIGHT + y * UP)
 
-        transform = element.getAttribute("transform")
-        suffix = ")"
+        transform_attr_value = element.getAttribute("transform")
 
-        # Transform matrix
-        if transform.startswith("matrix(") and transform.endswith(suffix):
-            transform = transform[len("matrix(") : -len(suffix)]
-            transform = string_to_numbers(transform)
-            transform = np.array(transform).reshape([3, 2])
-            x = transform[2][0]
-            y = -transform[2][1]
-            matrix = np.identity(self.dim)
-            matrix[:2, :2] = transform[:2, :]
-            matrix[1] *= -1
-            matrix[:, 1] *= -1
+        # parse the various transforms in the attribute value
 
-            for mob in mobject.family_members_with_points():
-                mob.points = np.dot(mob.points, matrix)
-            mobject.shift(x * RIGHT + y * UP)
+        transform_names = ["matrix", "translate", "scale", "rotate", "skewX", "skewY"]
 
-        elif transform.startswith("scale(") and transform.endswith(suffix):
-            transform = transform[len("scale(") : -len(suffix)]
-            scale_values = string_to_numbers(transform)
-            if len(scale_values) == 2:
-                scale_x, scale_y = scale_values
-                mobject.scale(np.array([scale_x, scale_y, 1]), about_point=ORIGIN)
-            elif len(scale_values) == 1:
-                scale = scale_values[0]
-                mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
+        # Borrowed from:
+        # https://github.com/cjlano/svg/blob/3ea3384457c9780fa7d67837c9c5fd4ebc42cb3b/svg/svg.py#L75
 
-        elif transform.startswith("translate(") and transform.endswith(suffix):
-            transform = transform[len("translate(") : -len(suffix)]
-            x, y = string_to_numbers(transform)
-            mobject.shift(x * RIGHT + y * DOWN)
+        # match any SVG transformation with its parameter (until final parenthese)
+        # [^)]*    == anything but a closing parenthese
+        # '|'.join == OR-list of SVG transformations
+        transforms = re.findall(
+            "|".join([x + r"[^)]*\)" for x in transform_names]), transform_attr_value
+        )
+
+        transform_name_args = []
+        number_re = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
+
+        for t in transforms:
+            op, arg = t.split("(")
+            op = op.strip()
+            # Keep only numbers
+            arg = [float(x) for x in re.findall(number_re, arg)]
+            transform_name_args.append((op, arg))
+
+        for t in transform_name_args:
+            if t[0] == "matrix":
+                transform = t[1]
+                transform = np.array(transform).reshape([3, 2])
+                x = transform[2][0]
+                y = -transform[2][1]
+                matrix = np.identity(self.dim)
+                matrix[:2, :2] = transform[:2, :]
+                matrix[1] *= -1
+                matrix[:, 1] *= -1
+
+                for mob in mobject.family_members_with_points():
+                    mob.points = np.dot(mob.points, matrix)
+                mobject.shift(x * RIGHT + y * UP)
+
+            if t[0] == "scale":
+                scale_values = t[1]
+                if len(scale_values) == 2:
+                    scale_x, scale_y = scale_values
+                    mobject.scale(np.array([scale_x, scale_y, 1]), about_point=ORIGIN)
+                elif len(scale_values) == 1:
+                    scale = scale_values[0]
+                    mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
+
+            if t[0] == "translate":
+                x, y = t[1]
+                mobject.shift(x * RIGHT + y * DOWN)
+
+            # TODO: handle rotate, skewX and skewY
+            # at least should add a warning message
 
     def flatten(self, input_list):
         """A helper method to flatten the ``input_list`` into an 1D array."""
