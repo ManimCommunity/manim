@@ -7,7 +7,8 @@ are done installing the dependencies, come back to this page to install manim
 itself.
 
 .. tip::
-    In case that you want to try manim online without installation, open it in `Binder <https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb>`_
+
+    In case that you want to try manim online without installation, open it in `Binder <https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb>`_.
 
 Installing dependencies
 ***********************
