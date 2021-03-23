@@ -3,9 +3,7 @@
 
 __all__ = ["NumberLine", "UnitInterval"]
 
-import logging
 
-logging.basicConfig()
 import numpy as np
 import operator as op
 
