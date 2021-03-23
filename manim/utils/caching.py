@@ -24,7 +24,7 @@ def handle_caching_play(func):
     # method has to be deleted.
 
     def wrapper(self, scene, *args, **kwargs):
-        self.skip_animations = self.original_skipping_status
+        self.skip_animations = self._original_skipping_status
         self.update_skipping_status()
         animations = scene.compile_animations(*args, **kwargs)
         scene.add_mobjects_from_animations(animations)
