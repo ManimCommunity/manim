@@ -49,19 +49,19 @@ class ParametricFunction(VMobject):
     def __init__(
         self,
         function=None,
-        t_min=0,
-        t_max=1,
-        step_size=0.01,
+        t_range=None,
         dt=1e-8,
         discontinuities=None,
+        use_smoothing=True,
         **kwargs
     ):
         self.function = function
-        self.t_min = t_min
-        self.t_max = t_max
-        self.step_size = step_size
+        t_range = [0, 1, 0.1] if t_range is None else t_range
         self.dt = dt
         self.discontinuities = [] if discontinuities is None else discontinuities
+        self.use_smoothing = use_smoothing
+        self.t_min, self.t_max, self.t_step = t_range
+
         VMobject.__init__(self, **kwargs)
 
     def get_function(self):
@@ -70,72 +70,41 @@ class ParametricFunction(VMobject):
     def get_point_from_function(self, t):
         return self.function(t)
 
-    def get_step_size(self, t=None):
-        if self.step_size == "auto":
-            """
-            for x between -1 to 1, return 0.01
-            else, return log10(x) (rounded)
-            e.g.: 10.5 -> 0.1 ; 1040 -> 10
-            """
-            if t == 0:
-                scale = 0
-            else:
-                scale = math.log10(abs(t))
-                if scale < 0:
-                    scale = 0
-
-                scale = math.floor(scale)
-
-            scale -= 2
-            return math.pow(10, scale)
-        else:
-            return self.step_size
-
     def generate_points(self):
-        t_min, t_max = self.t_min, self.t_max
-        dt = self.dt
 
-        discontinuities = filter(lambda t: t_min <= t <= t_max, self.discontinuities)
+        discontinuities = filter(
+            lambda t: self.t_min <= t <= self.t_max, self.discontinuities
+        )
         discontinuities = np.array(list(discontinuities))
         boundary_times = [
             self.t_min,
             self.t_max,
-            *(discontinuities - dt),
-            *(discontinuities + dt),
+            *(discontinuities - self.dt),
+            *(discontinuities + self.dt),
         ]
         boundary_times.sort()
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
-            t_range = list(np.arange(t1, t2, self.get_step_size(t1)))
-            if t_range[-1] != t2:
-                t_range.append(t2)
+            t_range = [*np.arange(t1, t2, self.t_step), t2]
             points = np.array([self.function(t) for t in t_range])
-            valid_indices = np.apply_along_axis(np.all, 1, np.isfinite(points))
-            points = points[valid_indices]
-            if len(points) > 0:
-                self.start_new_path(points[0])
-                self.add_points_as_corners(points[1:])
-        self.make_smooth()
+            self.start_new_path(points[0])
+            self.add_points_as_corners(points[1:])
+        if self.use_smoothing:
+            # TODO: not in line with upstream, approx_smooth does not exist
+            self.make_smooth()
         return self
 
 
 class FunctionGraph(ParametricFunction):
-    def __init__(self, function, x_min=None, x_max=None, color=YELLOW, **kwargs):
-        if x_min is None:
-            x_min = -config["frame_x_radius"]
-        if x_max is None:
-            x_max = config["frame_x_radius"]
-        self.x_min = x_min
-        self.x_max = x_max
+    def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
+        if x_range is None:
+            x_range = np.array(
+                [-config["frame_x_radius"], config["frame_x_radius"], 0.25]
+            )
+
+        self.x_range = x_range
         self.parametric_function = lambda t: np.array([t, function(t), 0])
-        ParametricFunction.__init__(
-            self,
-            self.parametric_function,
-            t_min=self.x_min,
-            t_max=self.x_max,
-            color=color,
-            **kwargs
-        )
         self.function = function
+        super().__init__(self.parametric_function, self.x_range, color=color, **kwargs)
 
     def get_function(self):
         return self.function
