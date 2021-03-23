@@ -5,11 +5,11 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 
 import numpy as np
 import numbers
-
+import math
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow
+from ..mobject.geometry import Arrow, DashedLine
 from ..mobject.geometry import Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
@@ -17,7 +17,7 @@ from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
-from ..utils.color import LIGHT_GREY, WHITE, BLUE_D, BLUE
+from ..utils.color import LIGHT_GREY, WHITE, BLUE_D, BLUE, GREY_A
 
 
 # TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene
@@ -28,12 +28,43 @@ class CoordinateSystem:
     Abstract class for Axes and NumberPlane
     """
 
-    def __init__(self, x_min=None, x_max=None, y_min=None, y_max=None, dim=2):
-        self.dimension = dim
-        self.x_min = -config["frame_x_radius"] if x_min is None else x_min
-        self.x_max = config["frame_x_radius"] if x_max is None else x_max
-        self.y_min = -config["frame_y_radius"] if y_min is None else y_min
-        self.y_max = config["frame_y_radius"] if y_max is None else y_max
+    def __init__(
+        self,
+        x_range=None,
+        y_range=None,
+        x_length=None,
+        y_length=None,
+        dimension=2,
+    ):
+        self.dimension = dimension
+
+        self.x_range = (
+            np.array(
+                [
+                    math.ceil(-config["frame_x_radius"]),
+                    math.floor(config["frame_x_radius"]),
+                    1.0,
+                ]
+            )
+            if x_range is None
+            else x_range
+        )
+
+        self.y_range = (
+            np.array(
+                [
+                    math.ceil(-config["frame_y_radius"]),
+                    math.floor(config["frame_y_radius"]),
+                    1.0,
+                ]
+            )
+            if y_range is None
+            else y_range
+        )
+
+        self.num_sampled_graph_points_per_tick = 5
+        self.x_length = x_length
+        self.y_length = y_length
 
     def coords_to_point(self, *coords):
         raise NotImplementedError()
@@ -69,7 +100,7 @@ class CoordinateSystem:
             label_tex, self.get_x_axis(), edge, direction, **kwargs
         )
 
-    def get_y_axis_label(self, label_tex, edge=UP, direction=DR, **kwargs):
+    def get_y_axis_label(self, label_tex, edge=UP, direction=LEFT, **kwargs):
         return self.get_axis_label(
             label_tex, self.get_y_axis(), edge, direction, **kwargs
         )
@@ -87,14 +118,32 @@ class CoordinateSystem:
         )
         return self.axis_labels
 
+    def get_line_from_axis_to_point(
+        self, index, point, line_func=DashedLine, color=LIGHT_GREY, stroke_width=2
+    ):
+        axis = self.get_axis(index)
+        line = line_func(axis.get_projection(point), point)
+        line.set_stroke(color, stroke_width)
+        return line
+
+    def get_vertical_line(self, point, **kwargs):
+        return self.get_line_from_axis_to_point(0, point, **kwargs)
+
+    def get_horizontal_line(self, point, **kwargs):
+        return self.get_line_from_axis_to_point(1, point, **kwargs)
+
+    # graphing
+
     def get_graph(self, function, **kwargs):
-        x_min = kwargs.pop("x_min", self.x_min)
-        x_max = kwargs.pop("x_max", self.x_max)
+        t_range = self.x_range
+
+        if len(t_range) < 3:
+            t_range[2] = self.num_sampled_graph_points_per_tick
+        # For axes, the third coordinate of x_range indicates
+        # tick frequency.  But for functions, it indicates a
+        # sample frequency
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)),
-            t_min=x_min,
-            t_max=x_max,
-            **kwargs,
+            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
         )
         graph.underlying_function = function
         return graph
@@ -116,8 +165,8 @@ class CoordinateSystem:
                     0
                 ],
                 target=x,
-                lower_bound=self.x_min,
-                upper_bound=self.x_max,
+                lower_bound=self.x_range[0],
+                upper_bound=self.x_range[1],
             )
             if alpha is not None:
                 return graph.point_from_proportion(alpha)
@@ -128,47 +177,39 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem):
     def __init__(
         self,
-        x_min=None,
-        x_max=None,
-        y_min=None,
-        y_max=None,
+        x_range=None,
+        y_range=None,
+        x_length=None,
+        y_length=None,
         axis_config=None,
         x_axis_config=None,
         y_axis_config=None,
-        center_point=ORIGIN,
-        **kwargs
+        **kwargs,
     ):
-        CoordinateSystem.__init__(
-            self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max
-        )
-        VGroup.__init__(self, **kwargs)
+        x_length = config.frame_width - 2 if x_length is None else x_length
+        y_length = config.frame_height - 2 if y_length is None else y_length
 
-        self.axis_config = {
-            "color": LIGHT_GREY,
-            "include_tip": True,
-            "exclude_zero_from_default_numbers": True,
-        }
-        self.x_axis_config = {"x_min": self.x_min, "x_max": self.x_max}
-        self.y_axis_config = {
-            "x_min": self.y_min,
-            "x_max": self.y_max,
-            "label_direction": LEFT,
-            "rotation": 90 * DEGREES,
-        }
+        VGroup.__init__(self, **kwargs)
+        CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
+
+        self.axis_config = {"include_tip": True, "numbers_to_exclude": [0]}
+        self.x_axis_config = {}
+        self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
         self.update_default_configs(
             (self.axis_config, self.x_axis_config, self.y_axis_config),
             (axis_config, x_axis_config, y_axis_config),
         )
-        self.center_point = center_point
-        self.x_axis = self.create_axis(self.x_axis_config)
-        self.y_axis = self.create_axis(self.y_axis_config)
+        self.x_axis = self.create_axis(self.x_range, self.x_axis_config, self.x_length)
+        self.y_axis = self.create_axis(self.y_range, self.y_axis_config, self.y_length)
+
+        # self.y_axis.shift(UP)
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
-        self.axes = VGroup(self.x_axis, self.y_axis, dim=self.dim)
+        self.axes = VGroup(self.x_axis, self.y_axis)
         self.add(*self.axes)
-        self.shift(self.center_point)
+        self.center()
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
@@ -176,8 +217,19 @@ class Axes(VGroup, CoordinateSystem):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
-    def create_axis(self, axis_config):
-        return NumberLine(**merge_dicts_recursively(self.axis_config, axis_config))
+    def create_axis(self, range_terms, axis_config, length):
+        new_config = merge_dicts_recursively(self.axis_config, axis_config)
+        new_config["length"] = length
+        axis = NumberLine(range_terms, **new_config)
+
+        # without the if/elif, graph does not exist when min > 0 or max < 0
+        if range_terms[0] > 0:
+            axis.shift(-axis.number_to_point(range_terms[0]))
+        elif range_terms[1] < 0:
+            axis.shift(-axis.number_to_point(range_terms[1]))
+        else:
+            axis.shift(-axis.number_to_point(0))
+        return axis
 
     def coords_to_point(self, *coords):
         origin = self.x_axis.number_to_point(0)
@@ -186,66 +238,71 @@ class Axes(VGroup, CoordinateSystem):
             result += axis.number_to_point(coord) - origin
         return result
 
-    def c2p(self, *coords):
-        return self.coords_to_point(*coords)
-
     def point_to_coords(self, point):
         return tuple([axis.point_to_number(point) for axis in self.get_axes()])
-
-    def p2c(self, point):
-        return self.point_to_coords(point)
 
     def get_axes(self):
         return self.axes
 
-    def get_coordinate_labels(self, x_vals=None, y_vals=None):
-        if x_vals is None:
-            x_vals = []
-        if y_vals is None:
-            y_vals = []
-        x_mobs = self.get_x_axis().get_number_mobjects(*x_vals)
-        y_mobs = self.get_y_axis().get_number_mobjects(*y_vals)
-
-        self.coordinate_labels = VGroup(x_mobs, y_mobs)
+    def get_coordinate_labels(self, x_values=None, y_values=None, **kwargs):
+        axes = self.get_axes()
+        self.coordinate_labels = VGroup()
+        for axis, values in zip(axes, [x_values, y_values]):
+            labels = axis.add_numbers(values, **kwargs)
+            self.coordinate_labels.add(labels)
         return self.coordinate_labels
 
-    def add_coordinates(self, x_vals=None, y_vals=None):
-        self.add(self.get_coordinate_labels(x_vals, y_vals))
+    # get rid of add_cordinates ? only get_coordinate_labels
+    def add_coordinates(self, x_values=None, y_values=None):
+        self.add(self.get_coordinate_labels(x_values, y_values))
         return self
 
 
 class ThreeDAxes(Axes):
     def __init__(
         self,
-        x_min=-5.5,
-        x_max=5.5,
-        y_min=-5.5,
-        y_max=5.5,
-        z_min=-3.5,
-        z_max=3.5,
+        x_range=None,
+        y_range=None,
+        z_range=None,
+        z_length=4,
         z_axis_config=None,
         z_normal=DOWN,
         num_axis_pieces=20,
+        # opengl stuff (?)
+        depth=None,
+        gloss=0.5,
+        # relic of old
         light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
-        **kwargs
+        **kwargs,
     ):
-        Axes.__init__(
-            self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, **kwargs
-        )
-        self.z_min = z_min
-        self.z_max = z_max
-        self.z_axis_config = {"x_min": self.z_min, "x_max": self.z_max}
+        x_range = np.array([-6, 6, 1]) if x_range is None else x_range
+        y_range = np.array([-5, 5, 1]) if y_range is None else y_range
+        z_range = np.array([-4, 4, 1]) if z_range is None else z_range
+
+        Axes.__init__(self, x_range=x_range, y_range=y_range, **kwargs)
+
+        self.z_range = z_range
+        self.z_length = z_length
+
+        self.z_axis_config = {}
         self.update_default_configs((self.z_axis_config,), (z_axis_config,))
+
         self.z_normal = z_normal
         self.num_axis_pieces = num_axis_pieces
+
         self.light_source = light_source
+
         self.dimension = 3
-        z_axis = self.z_axis = self.create_axis(self.z_axis_config)
-        z_axis.shift(self.center_point)
-        z_axis.rotate_about_zero(-np.pi / 2, UP)
-        z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
+
+        z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
+
+        z_axis.rotate(-PI / 2, UP, about_point=ORIGIN)
+        z_axis.rotate(angle_of_vector(self.z_normal), OUT, about_point=ORIGIN)
+        z_axis.shift(self.x_axis.n2p(0))
+
         self.axes.add(z_axis)
         self.add(z_axis)
+        self.z_axis = z_axis
 
         self.add_3d_pieces()
         self.set_axis_shading()
@@ -275,16 +332,21 @@ class ThreeDAxes(Axes):
 class NumberPlane(Axes):
     def __init__(
         self,
+        x_range=None,
+        y_range=None,
+        x_length=None,
+        y_length=None,
         axis_config=None,
         y_axis_config=None,
         background_line_style=None,
         faded_line_style=None,
-        x_line_frequency=1,
-        y_line_frequency=1,
         faded_line_ratio=1,
         make_smooth_after_applying_functions=True,
-        **kwargs
+        **kwargs,
     ):
+        x_length = config.frame_width if x_length is None else x_length
+        y_length = config.frame_height if y_length is None else y_length
+        # configs
         self.axis_config = {
             "stroke_color": WHITE,
             "stroke_width": 2,
@@ -292,7 +354,7 @@ class NumberPlane(Axes):
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DR,
-            "number_scale_val": 0.5,
+            "number_scale_value": 0.5,
         }
         self.y_axis_config = {"label_direction": DR}
         self.background_line_style = {
@@ -308,12 +370,16 @@ class NumberPlane(Axes):
 
         # Defaults to a faded version of line_config
         self.faded_line_style = faded_line_style
-        self.x_line_frequency = x_line_frequency
-        self.y_line_frequency = y_line_frequency
         self.faded_line_ratio = faded_line_ratio
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
 
+        # init
+
         super().__init__(
+            x_range=x_range,
+            y_range=y_range,
+            x_length=x_length,
+            y_length=y_length,
             axis_config=self.axis_config,
             y_axis_config=self.y_axis_config,
             **kwargs,
@@ -353,19 +419,17 @@ class NumberPlane(Axes):
         """
         x_axis = self.get_x_axis()
         y_axis = self.get_y_axis()
-        x_freq = self.x_line_frequency
-        y_freq = self.y_line_frequency
 
         x_lines1, x_lines2 = self.get_lines_parallel_to_axis(
             x_axis,
             y_axis,
-            x_freq,
+            self.x_axis.x_step,
             self.faded_line_ratio,
         )
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
             y_axis,
             x_axis,
-            y_freq,
+            self.y_axis.x_step,
             self.faded_line_ratio,
         )
         lines1 = VGroup(*x_lines1, *y_lines1)
@@ -396,25 +460,23 @@ class NumberPlane(Axes):
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
             The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
+
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
         if ratio_faded_lines == 0:  # don't show faded lines
             ratio_faded_lines = 1  # i.e. set ratio to 1
         step = (1 / ratio_faded_lines) * freq
         lines1 = VGroup()
         lines2 = VGroup()
-        unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
-        ranges = (
-            np.arange(0, axis_perpendicular_to.x_max, step),
-            np.arange(0, axis_perpendicular_to.x_min, -step),
+        inputs = np.arange(
+            axis_perpendicular_to.x_min, axis_perpendicular_to.x_max + step, step
         )
-        for inputs in ranges:
-            for k, x in enumerate(inputs):
-                new_line = line.copy()
-                new_line.shift(unit_vector_axis_perp_to * x)
-                if k % ratio_faded_lines == 0:
-                    lines1.add(new_line)
-                else:
-                    lines2.add(new_line)
+        for k, x in enumerate(inputs):
+            new_line = line.copy()
+            new_line.shift(axis_perpendicular_to.n2p(x) - axis_perpendicular_to.n2p(0))
+            if k % ratio_faded_lines == 0:
+                lines1.add(new_line)
+            else:
+                lines2.add(new_line)
         return lines1, lines2
 
     def get_center_point(self):
@@ -444,11 +506,9 @@ class NumberPlane(Axes):
 
 
 class ComplexPlane(NumberPlane):
-    def __init__(self, color=BLUE, x_line_frequency=1, y_line_frequency=1, **kwargs):
+    def __init__(self, color=BLUE, **kwargs):
         super().__init__(
             color=color,
-            x_line_frequency=x_line_frequency,
-            y_line_frequency=y_line_frequency,
             **kwargs,
         )
 
@@ -467,8 +527,8 @@ class ComplexPlane(NumberPlane):
         return self.point_to_number(point)
 
     def get_default_coordinate_values(self):
-        x_numbers = self.get_x_axis().default_numbers_to_display()
-        y_numbers = self.get_y_axis().default_numbers_to_display()
+        x_numbers = self.get_x_axis().get_tick_range()[1:]
+        y_numbers = self.get_y_axis().get_tick_range()[1:]
         y_numbers = [complex(0, y) for y in y_numbers if y != 0]
         return [*x_numbers, *y_numbers]
 
@@ -482,10 +542,7 @@ class ComplexPlane(NumberPlane):
             if abs(z.imag) > abs(z.real):
                 axis = self.get_y_axis()
                 value = z.imag
-                kwargs = merge_dicts_recursively(
-                    kwargs,
-                    {"number_config": {"unit": "i"}},
-                )
+                kwargs["unit"] = "i"
             else:
                 axis = self.get_x_axis()
                 value = z.real
