@@ -24,6 +24,7 @@ class NumberLine(Line):
         color=LIGHT_GREY,
         unit_size=1,
         width=None,
+        rotation=0,
         include_ticks=True,
         tick_size=0.1,
         tick_frequency=1,
@@ -53,7 +54,7 @@ class NumberLine(Line):
         self.unit_size = unit_size
         self.include_ticks = include_ticks
         self.tick_size = tick_size
-        self.width = width
+        self.rotation = rotation
         self.tick_frequency = tick_frequency
         self.leftmost_tick = leftmost_tick
         self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
@@ -83,8 +84,8 @@ class NumberLine(Line):
             color=color,
             **kwargs,
         )
-        if self.width is not None:
-            self.set_width(self.width)
+        if width is not None:
+            self.width = width
             self.unit_size = self.get_unit_size()
         self.shift(-self.number_to_point(self.number_at_center))
 
@@ -93,8 +94,15 @@ class NumberLine(Line):
             self.add_tip()
         if self.include_ticks:
             self.add_tick_marks()
+        self.rotate_about_zero(self.rotation)
         if self.include_numbers:
             self.add_numbers()
+
+    def rotate_about_zero(self, angle, axis=OUT, **kwargs):
+        return self.rotate_about_number(0, angle, axis, **kwargs)
+
+    def rotate_about_number(self, number, angle, axis=OUT, **kwargs):
+        return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
     def init_leftmost_tick(self):
         if self.leftmost_tick is None:
@@ -187,7 +195,12 @@ class NumberLine(Line):
         return numbers
 
     def get_number_mobject(
-        self, number, number_config=None, scale_val=None, direction=None, buff=None
+        self,
+        number,
+        number_config=None,
+        scale_val=None,
+        direction=None,
+        buff=None,
     ):
         number_config = merge_dicts_recursively(
             self.decimal_number_config,
