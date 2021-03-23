@@ -46,17 +46,7 @@ def main():
         config.digest_args(args)
         input_file = config.get_dir("input_file")
 
-        if config["use_opengl_renderer"]:
-            from manim.renderer.opengl_renderer import OpenGLRenderer
-
-            for SceneClass in scene_classes_from_file(input_file):
-                try:
-                    renderer = OpenGLRenderer()
-                    scene = SceneClass(renderer)
-                    scene.render()
-                except Exception:
-                    console.print_exception()
-        elif config["use_webgl_renderer"]:
+        if config["use_webgl_renderer"]:
             try:
                 from manim.grpc.impl import frame_server_impl
 
