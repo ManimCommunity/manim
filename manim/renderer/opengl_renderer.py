@@ -272,7 +272,7 @@ class OpenGLRenderer:
 
     def render_render_group(self, render_group):
         shader_wrapper = render_group["shader_wrapper"]
-        # shader_program = render_group["prog"] Unused?
+        shader_program = render_group["prog"]
         self.set_shader_uniforms(render_group["prog"], render_group["shader_wrapper"])
         self.update_depth_test(self.context, shader_wrapper)
         render_group["vao"].render(int(shader_wrapper.render_primitive))
@@ -447,8 +447,7 @@ class OpenGLRenderer:
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):
         pw, ph = config["pixel_width"], config["pixel_height"]
-        fh = config["frame_height"]
-        # fw = config["frame_width"] Unused?
+        fw, fh = config["frame_width"], config["frame_height"]
         fc = self.camera.get_center()
         if relative:
             return 2 * np.array([px / pw, py / ph, 0])

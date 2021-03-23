@@ -970,7 +970,9 @@ class LinearTransformationScene(VectorScene):
             The animation of the movement.
         """
         for label in self.transformable_labels:
-            label.target = self.get_vector_label(label.vector.target, label.target_text, **label.kwargs)
+            label.target = self.get_vector_label(
+                label.vector.target, label.target_text, **label.kwargs
+            )
         return self.get_piece_movement(self.transformable_labels)
 
     def apply_matrix(self, matrix, **kwargs):
