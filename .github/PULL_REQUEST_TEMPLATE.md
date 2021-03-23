@@ -40,7 +40,7 @@ testing-related comments. -->
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
 - [ ] I have written a descriptive PR title (see top of PR template for examples)
 - [ ] I have written a changelog entry for the PR or deem it unnecessary
-- [ ] My new functions/classes are either have a docstring or are private
+- [ ] My new functions/classes either have a docstring or are private
 - [ ] My new functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] My new documentation builds, looks correctly formatted, and adds no additional build warnings
 <!-- Once again, thanks for contributing to ManimCommunity! -->
@@ -51,6 +51,6 @@ testing-related comments. -->
 - [ ] The PR title is descriptive enough
 - [ ] The PR is labeled correctly
 - [ ] The changelog entry is completed if necessary
-- [ ] Newly added functions/classes are either have a docstring or are private
+- [ ] Newly added functions/classes either have a docstring or are private
 - [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
