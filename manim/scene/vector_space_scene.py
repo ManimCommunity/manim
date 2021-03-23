@@ -8,7 +8,7 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..animation.animation import Animation
-from ..animation.creation import ShowCreation
+from ..animation.creation import Create
 from ..animation.creation import Write
 from ..animation.fading import FadeOut
 from ..animation.growing import GrowArrow
@@ -60,7 +60,7 @@ class VectorScene(Scene):
         Parameters
         ----------
         animate : bool, optional
-            Whether or not to animate the addition of the plane via ShowCreation.
+            Whether or not to animate the addition of the plane via Create.
         **kwargs
             Any valid keyword arguments accepted by NumberPlane.
 
@@ -71,7 +71,7 @@ class VectorScene(Scene):
         """
         plane = NumberPlane(**kwargs)
         if animate:
-            self.play(ShowCreation(plane, lag_ratio=0.5))
+            self.play(Create(plane, lag_ratio=0.5))
         self.add(plane)
         return plane
 
@@ -82,13 +82,13 @@ class VectorScene(Scene):
         Parameters
         ----------
         animate : bool, optional
-            Whether or not to animate the addition of the axes through ShowCreation.
+            Whether or not to animate the addition of the axes through Create.
         color : bool, optional
             The color of the axes. Defaults to WHITE.
         """
         axes = Axes(color=color, tick_frequency=1)
         if animate:
-            self.play(ShowCreation(axes))
+            self.play(Create(axes))
         self.add(axes)
         return axes
 
@@ -402,7 +402,7 @@ class VectorScene(Scene):
                 lambda x: self.position_x_coordinate(x, x_line, vector), x_coord
             )
         )
-        self.play(ShowCreation(x_line))
+        self.play(Create(x_line))
         animations = [
             ApplyFunction(
                 lambda y: self.position_y_coordinate(y, y_line, vector), y_coord
@@ -411,8 +411,8 @@ class VectorScene(Scene):
         ]
         self.play(*animations)
         y_coord, _ = [anim.mobject for anim in animations]
-        self.play(ShowCreation(y_line))
-        self.play(ShowCreation(arrow))
+        self.play(Create(y_line))
+        self.play(Create(arrow))
         self.wait()
         if clean_up:
             self.clear()
@@ -458,9 +458,9 @@ class VectorScene(Scene):
         brackets = array.get_brackets()
 
         if show_creation:
-            self.play(ShowCreation(arrow))
-        self.play(ShowCreation(x_line), Write(x_coord_start), run_time=1)
-        self.play(ShowCreation(y_line), Write(y_coord_start), run_time=1)
+            self.play(Create(arrow))
+        self.play(Create(x_line), Write(x_coord_start), run_time=1)
+        self.play(Create(y_line), Write(y_coord_start), run_time=1)
         self.wait()
         self.play(
             Transform(x_coord_start, x_coord, lag_ratio=0),

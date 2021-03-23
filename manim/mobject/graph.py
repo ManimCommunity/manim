@@ -224,7 +224,7 @@ class Graph(VMobject):
                 vertices = [1, 2, 3, 4]
                 edges = [(1, 2), (2, 3), (3, 4), (1, 3), (1, 4)]
                 g = Graph(vertices, edges)
-                self.play(ShowCreation(g))
+                self.play(Create(g))
                 self.wait()
                 self.play(g[1].animate.move_to([1, 1, 0]),
                           g[2].animate.move_to([-1, 1, 0]),
@@ -311,7 +311,7 @@ class Graph(VMobject):
                 G.add_nodes_from([0, 1, 2, 3])
                 G.add_edges_from([(0, 2), (0,3), (1, 2)])
                 graph = Graph(list(G.nodes), list(G.edges), layout="partite", partitions=[[0, 1]])
-                self.play(ShowCreation(graph))
+                self.play(Create(graph))
 
     The custom tree layout can be used to show the graph
     by distance from the root vertex. You must pass the root vertex
@@ -337,7 +337,7 @@ class Graph(VMobject):
                     G.add_edge("Child_%i" % i, "Grandchild_%i" % i)
                     G.add_edge("Grandchild_%i" % i, "Greatgrandchild_%i" % i)
 
-                self.play(ShowCreation(
+                self.play(Create(
                     Graph(list(G.nodes), list(G.edges), layout="tree", root_vertex="ROOT")))
     """
 
@@ -479,7 +479,7 @@ class Graph(VMobject):
             class ImportNetworkxGraph(Scene):
                 def construct(self):
                     G = Graph.from_networkx(nxgraph, layout="spring", layout_scale=3.5)
-                    self.play(ShowCreation(G))
+                    self.play(Create(G))
                     self.play(*[G[v].animate.move_to(5*RIGHT*np.cos(ind/7 * PI) +
                                                      3*UP*np.sin(ind/7 * PI))
                                 for ind, v in enumerate(G.vertices)])
@@ -512,7 +512,7 @@ class Graph(VMobject):
                               layout={1: [-2, 0, 0], 2: [-1, 0, 0], 3: [0, 0, 0],
                                       4: [1, 0, 0], 5: [2, 0, 0]}
                               )
-                    self.play(ShowCreation(G))
+                    self.play(Create(G))
                     self.play(G.animate.change_layout("circular"))
                     self.wait()
         """
