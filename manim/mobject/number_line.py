@@ -16,29 +16,31 @@ from ..utils.bezier import interpolate
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
-from ..utils.color import LIGHT_GREY, WHITE, PURPLE
+from ..utils.color import LIGHT_GREY
 
 
 class NumberLine(Line):
     def __init__(
         self,
-        x_range=None,
-        color=LIGHT_GREY,
-        unit_size=1,
+        x_range=None,  # must be first
         length=None,
+        unit_size=1,
+        # ticks
         include_ticks=True,
         tick_size=0.1,
+        # visuals
+        color=LIGHT_GREY,
         rotation=0,
         stroke_width=2.0,
-        # Change name
-        include_numbers=False,
-        numbers_to_show=None,
-        longer_tick_multiple=2,
-        label_direction=DOWN,
-        line_to_number_buff=MED_SMALL_BUFF,
+        # tip
         include_tip=False,
         tip_width=0.25,
         tip_height=0.25,
+        # numbers
+        include_numbers=False,
+        longer_tick_multiple=2,
+        label_direction=DOWN,
+        line_to_number_buff=MED_SMALL_BUFF,
         decimal_number_config={"num_decimal_places": 0, "font_size": 24},
         numbers_with_elongated_ticks=[],
         numbers_to_exclude=[],
@@ -49,13 +51,13 @@ class NumberLine(Line):
         if x_range is None:
             x_range = [-config["frame_x_radius"], config["frame_x_radius"], 1.0]
 
+
         self.stroke_width = stroke_width
         self.unit_size = unit_size
         self.include_ticks = include_ticks
         self.tick_size = tick_size
         self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
         self.include_numbers = include_numbers
-        self.numbers_to_show = numbers_to_show
         self.longer_tick_multiple = longer_tick_multiple
         self.label_direction = label_direction
         self.line_to_number_buff = line_to_number_buff
@@ -92,6 +94,12 @@ class NumberLine(Line):
         self.rotate(self.rotation)
         if self.include_numbers:
             self.add_numbers(excluding=self.numbers_to_exclude)
+
+    def rotate_about_zero(self, angle, axis=OUT, **kwargs):
+        return self.rotate_about_number(0, angle, axis, **kwargs)
+
+    def rotate_about_number(self, number, angle, axis=OUT, **kwargs):
+        return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
     def add_ticks(self):
         ticks = VGroup()
@@ -200,12 +208,23 @@ class UnitInterval(NumberLine):
         self,
         unit_size=10,
         tick_frequency=0.1,
-        numbers_with_elongated_ticks=[0, 1],
-        decimal_number_config={
-            "num_decimal_places": 1,
-        },
+        numbers_with_elongated_ticks=None,
+        decimal_number_config=None,
         **kwargs
     ):
+        numbers_with_elongated_ticks = (
+            [0, 1]
+            if numbers_with_elongated_ticks is None
+            else numbers_with_elongated_ticks
+        )
+        decimal_number_config = (
+            {
+                "num_decimal_places": 1,
+            }
+            if decimal_number_config is None
+            else decimal_number_config
+        )
+
         NumberLine.__init__(
             self,
             x_range=[0, 1, 0.1],

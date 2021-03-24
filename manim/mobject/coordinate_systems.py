@@ -295,9 +295,8 @@ class ThreeDAxes(Axes):
         self.dimension = 3
 
         z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
-
-        z_axis.rotate(-PI / 2, UP, about_point=ORIGIN)
-        z_axis.rotate(angle_of_vector(self.z_normal), OUT, about_point=ORIGIN)
+        z_axis.rotate_about_zero(-PI / 2, UP)
+        z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
         z_axis.shift(self.x_axis.n2p(0))
 
         self.axes.add(z_axis)
