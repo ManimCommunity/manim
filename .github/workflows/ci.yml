@@ -32,18 +32,18 @@ jobs:
           pip install wheel
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
-      - name: Get pip cache dir
+      - name: Get Poetry Cache Dir
         shell: bash
         id: pip-cache-and-time
         run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+          echo "::set-output name=dir::$(poetry config cache-dir)"
           echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
 
       - name: pip cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.pip-cache-and-time.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python }}-${{ steps.pip-cache-and-time.outputs.date }}
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
