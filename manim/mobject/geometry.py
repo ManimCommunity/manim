@@ -766,7 +766,7 @@ class DashedLine(Line):
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self):
+    def calculate_num_dashes(self) -> int:
         """Returns the number of dashes in the dashed line.
 
         Examples
@@ -775,8 +775,6 @@ class DashedLine(Line):
 
             >>> DashedLine().calculate_num_dashes()
             20
-
-        :class:`int`
         """
 
         try:
@@ -788,7 +786,7 @@ class DashedLine(Line):
     def calculate_positive_space_ratio(self):
         return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
-    def get_start(self):
+    def get_start(self) -> np.ndarray:
         """Returns the start point of the line.
 
         Examples
@@ -797,8 +795,6 @@ class DashedLine(Line):
 
             >>> DashedLine().get_start()
             array([-1.,  0.,  0.])
-
-        :class:`numpy.ndarray`
         """
 
         if len(self.submobjects) > 0:
@@ -806,7 +802,7 @@ class DashedLine(Line):
         else:
             return Line.get_start(self)
 
-    def get_end(self):
+    def get_end(self) -> np.ndarray:
         """Returns the end point of the line.
 
         Examples
@@ -815,8 +811,6 @@ class DashedLine(Line):
 
             >>> DashedLine().get_end()
             array([0.99871795, 0.        , 0.        ])
-
-        :class:`numpy.ndarray`
         """
 
         if len(self.submobjects) > 0:
@@ -824,7 +818,7 @@ class DashedLine(Line):
         else:
             return Line.get_end(self)
 
-    def get_first_handle(self):
+    def get_first_handle(self) -> np.ndarray:
         """Returns the point of the first handle.
 
         Examples
@@ -833,12 +827,11 @@ class DashedLine(Line):
 
             >>> DashedLine().get_first_handle()
             array([-0.98333333,  0.        ,  0.        ])
-
-        :class:`numpy.ndarray`
         """
+
         return self.submobjects[0].points[1]
 
-    def get_last_handle(self):
+    def get_last_handle(self) -> np.ndarray:
         """Returns the point of the last handle.
 
         Examples
@@ -847,14 +840,13 @@ class DashedLine(Line):
 
             >>> DashedLine().get_last_handle()
             array([0.98205128, 0.        , 0.        ])
-
-        :class:`numpy.ndarray`
         """
+
         return self.submobjects[-1].points[-2]
 
 
 class TangentLine(Line):
-    """Constructs a line tangent to a VMobject at a specific point.
+    """Constructs a line tangent to a :class:`~.VMobject` at a specific point.
 
     Parameters
     ----------
@@ -865,7 +857,7 @@ class TangentLine(Line):
     length : :class:`float`, optional
         Length of the tangent line.
     d_alpha: :class:`float`, optional
-        The `dx` value
+        The ``dx`` value
     kwargs : Any
         Additional arguments to be passed to :class:`Line`
 
@@ -884,7 +876,7 @@ class TangentLine(Line):
 
     See Also
     --------
-    :meth:`~VMobject.point_from_proportion`
+    :meth:`~.VMobject.point_from_proportion`
     """
 
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
@@ -920,10 +912,10 @@ class Elbow(VMobject):
         class ElbowExample(Scene):
             def construct(self):
                 elbow_1 = Elbow()
-                elbow_2 = Elbow(width=4.0)
-                elbow_3 = Elbow(width=4.0, angle=5*PI/4)
+                elbow_2 = Elbow(width=2.0)
+                elbow_3 = Elbow(width=2.0, angle=5*PI/4)
 
-                elbow_group = Group(elbow_1, elbow_2, elbow_3)
+                elbow_group = Group(elbow_1, elbow_2, elbow_3).arrange(buff=1)
                 self.add(elbow_group)
 
     See Also
@@ -951,9 +943,9 @@ class Arrow(Line):
     buff : :class:`float`, optional
         The distance of the arrow from its start and end points.
     max_tip_length_to_length_ratio : :class:`float`, optional
-        :attr:`tip_length` scales with length. Modifying this ratio influences the max value of :attr:`tip_length`.
+        :attr:`tip_length` scales with the length of the arrow. Increasing this ratio raises the max value of :attr:`tip_length`.
     max_stroke_width_to_length_ratio : :class:`float`, optional
-        :attr:`stroke_width` scales with the length of the arrow. Modifying this ratio influences the max value of :attr:`stroke_width`.
+        :attr:`stroke_width` scales with the length of the arrow. Increasing this ratio ratios the max value of :attr:`stroke_width`.
     preserve_tip_size_when_scaling : :class:`bool`, optional
         No purpose.
     kwargs : Any
@@ -1063,7 +1055,7 @@ class Arrow(Line):
             self.add_tip(tip=old_tips[1], at_start=True)
         return self
 
-    def get_normal_vector(self):
+    def get_normal_vector(self) -> np.ndarray:
         """Returns the normal of a vector.
 
         Examples
@@ -1072,9 +1064,8 @@ class Arrow(Line):
 
             >>> Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
             array([ 0.,  0., -1.])
-
-        :class:`numpy.ndarray`
         """
+
         p0, p1, p2 = self.tip.get_start_anchors()[:3]
         return normalize(np.cross(p2 - p1, p1 - p0))
 
@@ -1083,7 +1074,7 @@ class Arrow(Line):
         self.normal_vector = self.get_normal_vector()
         return self
 
-    def get_default_tip_length(self):
+    def get_default_tip_length(self) -> float:
         """Returns the default tip_length of the arrow.
 
         Examples
@@ -1093,14 +1084,13 @@ class Arrow(Line):
 
             >>> Arrow().get_default_tip_length()
             0.35
-
-        :class:`float`
         """
+
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
     def set_stroke_width_from_length(self):
-        """Used internally. Sets stroke width based on length"""
+        """Used internally. Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         self.set_stroke(
             width=min(self.initial_stroke_width, max_ratio * self.get_length()),
