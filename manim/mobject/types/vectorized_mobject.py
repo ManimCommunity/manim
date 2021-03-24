@@ -1084,7 +1084,6 @@ class VMobject(Mobject):
             Points generated.
         """
 
-    def insert_n_curves_to_point_list(self, n, points):
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
             return np.repeat(points, nppcc * n, 0)

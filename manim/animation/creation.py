@@ -347,8 +347,6 @@ class Unwrite(Write):
         **kwargs,
     ) -> None:
 
-        backwards_rate_func = lambda t: -rate_func(t) + 1
-
         self.vmobject = vmobject
         self.run_time = run_time
         self.lag_ratio = lag_ratio
@@ -358,7 +356,7 @@ class Unwrite(Write):
             vmobject,
             run_time=run_time,
             lag_ratio=lag_ratio,
-            rate_func=backwards_rate_func,
+            rate_func=lambda t: -rate_func(t) + 1,
             **kwargs,
         )
 

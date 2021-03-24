@@ -549,7 +549,7 @@ class SceneFileWriter(object):
                 len(cached_partial_movies) - config["max_files_cached"]
             )
             oldest_files_to_delete = sorted(
-                [partial_movie_file for partial_movie_file in cached_partial_movies],
+                cached_partial_movies,
                 key=os.path.getatime,
             )[:number_files_to_delete]
             # oldest_file_path = min(cached_partial_movies, key=os.path.getatime)

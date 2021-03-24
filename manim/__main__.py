@@ -63,7 +63,7 @@ def main():
                 server = frame_server_impl.get(input_file)
                 server.start()
                 server.wait_for_termination()
-            except ModuleNotFoundError as e:
+            except ModuleNotFoundError:
                 console.print(
                     "Dependencies for the WebGL render are missing. Run "
                     "pip install manim[webgl_renderer] to install them."
