@@ -299,9 +299,11 @@ class Mobject(Container):
             ValueError: Mobject cannot contain self
 
         """
-        if self in mobjects:
-            raise ValueError("Mobject cannot contain self")
         for mobject in mobjects:
+            if self in mobjects:
+                raise ValueError("Mobject cannot contain self")
+            if not isinstance(mobject, Mobject):
+                raise TypeError("All submobjects must be of type Mobject")
             if mobject not in self.submobjects:
                 self.submobjects = list_update(self.submobjects, mobjects)
             # if self not in mobject.parents:
@@ -617,12 +619,8 @@ class Mobject(Container):
         """
         return copy.deepcopy(self)
 
-    def generate_target(self, use_deepcopy=False):
-        self.target = None  # Prevent unbounded linear recursion
-        if use_deepcopy:
-            self.target = copy.deepcopy(self)
-        else:
-            self.target = self.copy()
+    def generate_target(self):
+        self.target = self.copy()
         return self.target
 
     # Updating
@@ -785,6 +783,7 @@ class Mobject(Container):
             self.updaters.insert(index, update_function)
         if call_updater:
             update_function(self, 0)
+            # self.update()
         return self
 
     def remove_updater(self, update_function: Updater) -> "Mobject":
@@ -919,6 +918,8 @@ class Mobject(Container):
         if recursive:
             for submob in self.submobjects:
                 submob.resume_updating(recursive)
+        # for parent in self.parents:
+        #     parent.resume_updating(recurse=False, call_updater=False)
         self.update(dt=0, recursive=recursive)
         return self
 
@@ -969,13 +970,12 @@ class Mobject(Container):
                 about_edge=None,
                 works_on_bounding_box=True,
             )
-            return self
         else:
             total_vector = reduce(op.add, vectors)
             for mob in self.family_members_with_points():
                 mob.points = mob.points.astype("float")
                 mob.points += total_vector
-            return self
+        return self
 
     def scale(self, scale_factor: float, **kwargs) -> "Mobject":
         """Scale the size by a factor.
@@ -1005,14 +1005,19 @@ class Mobject(Container):
                 works_on_bounding_box=True,
                 **kwargs,
             )
-            return self
         else:
             self.apply_points_function_about_point(
                 lambda points: scale_factor * points, **kwargs
             )
-            return self
+        return self
+        # self.apply_function_to_points(
+        #     lambda points: scale_factor * points,
+        #     works_on_bounding_box=True,
+        #     **kwargs,
+        # )
+        # return self
 
-    def rotate_about_origin(self, angle, axis=OUT, axes=[]):
+    def rotate_about_origin(self, angle, axis=OUT):
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(self, angle, axis=OUT, **kwargs):
@@ -1021,13 +1026,12 @@ class Mobject(Container):
             self.apply_points_function(
                 lambda points: np.dot(points, rot_matrix_T), **kwargs
             )
-            return self
         else:
             rot_matrix = rotation_matrix(angle, axis)
             self.apply_points_function_about_point(
                 lambda points: np.dot(points, rot_matrix.T), **kwargs
             )
-            return self
+        return self
 
     def flip(self, axis=UP, **kwargs):
         return self.rotate(TAU / 2, axis, **kwargs)
@@ -1037,14 +1041,19 @@ class Mobject(Container):
             points[:, dim] *= factor
             return points
 
-        self.apply_points_function_about_point(func, **kwargs)
+        self.apply_function_to_points(func, works_on_bounding_box=True, **kwargs)
         return self
 
     def apply_function(self, function, **kwargs):
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        self.apply_points_function_about_point(
+        # if config["use_opengl_renderer"]:
+        #     self.apply_points_function(
+        #         lambda points: np.array([function(p) for p in points]), **kwargs
+        #     )
+        # else:
+        self.apply_function_to_points(
             lambda points: np.apply_along_axis(function, 1, points), **kwargs
         )
         return self
@@ -1058,6 +1067,12 @@ class Mobject(Container):
             submob.apply_function_to_position(function)
         return self
 
+    def apply_function_to_points(self, function, *args, **kwargs):
+        if config["use_opengl_renderer"]:
+            self.apply_points_function(function, *args, **kwargs)
+        else:
+            self.apply_points_function_about_point(function, *args, **kwargs)
+
     def apply_matrix(self, matrix, **kwargs):
         # Default to applying matrix about the origin, not mobjects center
         if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
@@ -1065,7 +1080,7 @@ class Mobject(Container):
         full_matrix = np.identity(self.dim)
         matrix = np.array(matrix)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-        self.apply_points_function_about_point(
+        self.apply_function_to_points(
             lambda points: np.dot(points, full_matrix.T), **kwargs
         )
         return self
@@ -1109,7 +1124,12 @@ class Mobject(Container):
     # Note, much of these are now redundant with default behavior of
     # above methods
     def apply_points_function(
-        self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
+        self,
+        func,
+        about_point=None,
+        about_edge=ORIGIN,
+        works_on_bounding_box=False,
+        **kwargs,
     ):
         if about_point is None and about_edge is not None:
             about_point = self.get_bounding_box_point(about_edge)
@@ -1135,7 +1155,7 @@ class Mobject(Container):
         return self
 
     def apply_points_function_about_point(
-        self, func, about_point=None, about_edge=None
+        self, func, about_point=None, about_edge=None, **kwargs
     ):
         if about_point is None:
             if about_edge is None:
@@ -1854,6 +1874,8 @@ class Mobject(Container):
             return remove_list_redundancies(all_mobjects)
 
     def assemble_family(self):
+        # if not config["use_opengl_renderer"]:
+        #     return
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *it.chain(*sub_families)]
         # self.refresh_has_updater_status()
