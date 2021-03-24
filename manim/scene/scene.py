@@ -28,6 +28,7 @@ from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
+from ..utils.file_ops import open_media_file
 from ..utils.space_ops import rotate_vector
 
 
@@ -134,7 +135,7 @@ class Scene(Container):
                 free_variable_map = inspect.getclosurevars(updater).nonlocals
                 cloned_co_freevars = []
                 cloned_closure = []
-                for i, free_variable_name in enumerate(updater.__code__.co_freevars):
+                for free_variable_name in updater.__code__.co_freevars:
                     free_variable_value = free_variable_map[free_variable_name]
 
                     # If the referenced variable has not been cloned, raise.
@@ -168,9 +169,14 @@ class Scene(Container):
                 result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
         return result
 
-    def render(self):
+    def render(self, preview=False):
         """
-        Render this Scene.
+        Renders this Scene.
+
+        Parameters
+        ---------
+        preview : bool
+            If true, opens scene in a file viewer.
         """
         self.setup()
         try:
@@ -180,9 +186,17 @@ class Scene(Container):
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
+
         logger.info(
             f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
         )
+
+        # If preview open up the render after rendering.
+        if preview:
+            config["preview"] = True
+
+        if config["preview"] or config["show_in_file_browser"]:
+            open_media_file(self.renderer.file_writer)
 
     def setup(self):
         """
@@ -807,10 +821,25 @@ class Scene(Container):
         """
         self.wait(max_time, stop_condition=stop_condition)
 
-    def compile_animation_data(self, *animations, skip_rendering=False, **play_kwargs):
+    def compile_animation_data(self, *animations: Animation, **play_kwargs):
+        """Given a list of animations, compile statics and moving mobjects, duration from them.
+
+        This also begin the animations.
+
+        Parameters
+        ----------
+        skip_rendering : bool, optional
+            Whether the rendering should be skipped, by default False
+
+        Returns
+        -------
+        self, None
+            None if there is nothing to play, or self otherwise.
+        """
+        # NOTE TODO : returns statement of this method are wrong. It should return nothing, as it makes a little sense to get any information from this method.
+        # The return are kept to keep webgl renderer from breaking.
         if len(animations) == 0:
-            warnings.warn("Called Scene.play with no animations")
-            return None
+            raise ValueError("Called Scene.play with no animations")
 
         self.animations = self.compile_animations(*animations, **play_kwargs)
         self.add_mobjects_from_animations(self.animations)
@@ -819,18 +848,16 @@ class Scene(Container):
         self.stop_condition = None
         self.moving_mobjects = None
         self.static_mobjects = None
+
         if not config["use_opengl_renderer"]:
             if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
                 self.update_mobjects(dt=0)  # Any problems with this?
                 if self.should_update_mobjects():
-                    # TODO, be smart about setting a static image
-                    # the same way Scene.play does
-                    self.renderer.static_image = None
                     self.stop_condition = self.animations[0].stop_condition
                 else:
                     self.duration = self.animations[0].duration
-                    if not skip_rendering:
-                        self.add_static_frames(self.animations[0].duration)
+                    # Static image logic when the wait is static is done by the renderer, not here.
+                    self.animations[0].is_static_wait = True
                     return None
             else:
                 # Paint all non-moving objects onto the screen, so they don't
@@ -839,17 +866,21 @@ class Scene(Container):
                     self.moving_mobjects,
                     self.static_mobjects,
                 ) = self.get_moving_and_static_mobjects(self.animations)
-                self.renderer.save_static_frame_data(self, self.static_mobjects)
-
         self.duration = self.get_run_time(self.animations)
-        self.time_progression = self._get_animation_time_progression(
-            self.animations, self.duration
-        )
+        return self
 
+    def begin_animations(self) -> None:
+        """Start the animations of the scene."""
         for animation in self.animations:
             animation.begin()
 
-        return self
+    def is_current_animation_frozen_frame(self) -> bool:
+        """Returns wether the current animation produces a static frame (generally a Wait)."""
+        return (
+            isinstance(self.animations[0], Wait)
+            and len(self.animations) == 1
+            and self.animations[0].is_static_wait
+        )
 
     def play_internal(self, skip_rendering=False):
         """
@@ -865,6 +896,10 @@ class Scene(Container):
             named parameters affecting what was passed in ``args``,
             e.g. ``run_time``, ``lag_ratio`` and so on.
         """
+        self.duration = self.get_run_time(self.animations)
+        self.time_progression = self._get_animation_time_progression(
+            self.animations, self.duration
+        )
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering:
@@ -879,6 +914,8 @@ class Scene(Container):
         if not self.renderer.skip_animations:
             self.update_mobjects(0)
         self.renderer.static_image = None
+        # Closing the progress bar at the end of the play.
+        self.time_progression.close()
 
     def interact(self):
         self.quit_interaction = False
@@ -939,14 +976,6 @@ class Scene(Container):
             alpha = t / animation.run_time
             animation.interpolate(alpha)
         self.update_mobjects(dt)
-
-    def add_static_frames(self, duration):
-        self.renderer.update_frame(self)
-        dt = 1 / self.renderer.camera.frame_rate
-        self.renderer.add_frame(
-            self.renderer.get_frame(),
-            num_frames=int(duration / dt),
-        )
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """

@@ -15,7 +15,7 @@ class InteractiveDevelopment(Scene):
         circle.set_stroke(BLUE_E, width=4)
         square = OpenGLSquare()
 
-        self.play(ShowCreation(square))
+        self.play(Create(square))
         self.wait()
 
         # This opens an iPython termnial where you can keep writing
@@ -98,7 +98,7 @@ class SurfaceExample(Scene):
 
         self.play(
             FadeIn(surface),
-            ShowCreation(surface.mesh, lag_ratio=0.01, run_time=3),
+            Create(surface.mesh, lag_ratio=0.01, run_time=3),
         )
         for mob in surfaces:
             mob.add(mob.mesh)

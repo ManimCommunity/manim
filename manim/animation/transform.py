@@ -200,7 +200,7 @@ class ApplyMethod(Transform):
         self, method: types.MethodType, *args, **kwargs
     ) -> None:  # method typing? for args?
         """
-        method is a method of Mobject, ``args`` are arguments for
+        Method is a method of Mobject, ``args`` are arguments for
         that method.  Key word arguments should be passed in
         as the last arg, as a dict, since ``kwargs`` is for
         configuration of the transform itself

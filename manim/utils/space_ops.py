@@ -318,7 +318,7 @@ def midpoint(point1, point2):
 
 def line_intersection(line1, line2):
     """
-    return intersection point of two lines,
+    Returns intersection point of two lines,
     each defined with a pair of vectors determining
     the end points
     """
@@ -428,7 +428,7 @@ def earclip_triangulation(verts, ring_ends):
     rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends)]
     attached_rings = rings[:1]
     detached_rings = rings[1:]
-    loop_connections = dict()
+    loop_connections = {}
 
     while detached_rings:
         i_range, j_range = [
@@ -474,7 +474,7 @@ def earclip_triangulation(verts, ring_ends):
     # Find an ordering of indices walking around the polygon
     indices = []
     i = 0
-    for x in range(len(verts) + len(ring_ends) - 1):
+    for _ in range(len(verts) + len(ring_ends) - 1):
         # starting = False
         if i in loop_connections:
             j = loop_connections[i]

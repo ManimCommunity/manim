@@ -20,7 +20,7 @@ def merge_dicts_recursively(*dicts):
 
     When values are dictionaries, it is applied recursively
     """
-    result = dict()
+    result = {}
     all_items = it.chain(*[d.items() for d in dicts])
     for key, value in all_items:
         if key in result and isinstance(result[key], dict) and isinstance(value, dict):
@@ -40,5 +40,5 @@ def update_dict_recursively(current_dict, *others):
 
 
 class DictAsObject(object):
-    def __init__(self, dict):
-        self.__dict__ = dict
+    def __init__(self, dictin):
+        self.__dict__ = dictin

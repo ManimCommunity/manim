@@ -22,6 +22,7 @@ class OpenGLSurface(OpenGLMobject):
 
     def __init__(
         self,
+        uv_func=None,
         u_range=None,
         v_range=None,
         # Resolution counts number of points sampled, which for
@@ -41,6 +42,7 @@ class OpenGLSurface(OpenGLMobject):
         shader_folder=None,
         **kwargs
     ):
+        self.passed_uv_func = uv_func
         self.u_range = u_range if u_range is not None else (0, 1)
         self.v_range = v_range if v_range is not None else (0, 1)
         # Resolution counts number of points sampled, which for
@@ -66,6 +68,8 @@ class OpenGLSurface(OpenGLMobject):
 
     def uv_func(self, u, v):
         # To be implemented in subclasses
+        if self.passed_uv_func:
+            return self.passed_uv_func(u, v)
         return (u, v, 0.0)
 
     def init_points(self):
@@ -124,7 +128,7 @@ class OpenGLSurface(OpenGLMobject):
         return normalize_along_axis(normals, 1)
 
     def pointwise_become_partial(self, smobject, a, b, axis=None):
-        assert isinstance(smobject, Surface)
+        assert isinstance(smobject, OpenGLSurface)
         if axis is None:
             axis = self.prefered_creation_axis
         if a <= 0 and b >= 1:

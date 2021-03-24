@@ -27,7 +27,7 @@ else:
     class ManimMagic(Magics):
         def __init__(self, shell):
             super(ManimMagic, self).__init__(shell)
-            self.rendered_files = dict()
+            self.rendered_files = {}
 
         @needs_local_scope
         @line_cell_magic
@@ -103,7 +103,7 @@ else:
                 display(
                     Video(
                         tmpfile,
-                        html_attributes='controls autoplay loop style="max-width: 100%;"',
+                        html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
                         embed=video_embed,
                     )
                 )
