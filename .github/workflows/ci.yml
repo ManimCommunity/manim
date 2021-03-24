@@ -13,6 +13,7 @@ jobs:
     env:
       POETRY_VIRTUALENVS_CREATE: false
       DISPLAY: :0
+      PYTEST_ADDOPTS: "--color=yes" # colors in pytest
     strategy:
       fail-fast: false
       matrix:
@@ -84,6 +85,10 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           release: false
+          msystem: MINGW64
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-mesa
 
       - name: Download system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
@@ -109,15 +114,16 @@ jobs:
           Invoke-WebRequest "https://github.com/ManimCommunity/pango-windows-binaries/releases/download/$($pangoVersion)/pango-windows-binaires-x64.zip" -O "$($env:TMP)\Pango.zip"
           mkdir "$($PWD)\ManimCache\Pango"
           7z x "$($env:TMP)\Pango.zip" -o"$($PWD)\ManimCache\Pango"
-          msys2 -c "pacman -S mingw-w64-x86_64-mesa"
 
       - name: Add Windows dependecies to path
         if: runner.os == 'Windows'
         run: |
+          Remove-Item C:\msys64\mingw64\bin\python.exe -Force
           $env:Path += ";" + "$($PWD)\ManimCache\FFmpeg\bin"
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path += ";" + "$($PWD)\ManimCache\Pango\pango"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
+          $env:PATH = "C:\msys64\mingw64\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install manim
