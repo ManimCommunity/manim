@@ -1193,7 +1193,7 @@ class ArcPolygon(VMobject):
                                             {'angle': 20*DEGREES, 'color': BLUE},
                                             {'radius': 1}])
                 ap_group = VGroup(ap1, ap2, ap3, ap4).arrange()
-                self.play(*[ShowCreation(ap) for ap in [ap1, ap2, ap3, ap4]])
+                self.play(*[Create(ap) for ap in [ap1, ap2, ap3, ap4]])
                 self.wait()
 
     For further examples see :class:`ArcPolygonFromArcs`.
@@ -1294,7 +1294,7 @@ class ArcPolygonFromArcs(VMobject):
     after the arcpolygon has been initialized.
 
     Also both the arcs contained in an :class:`~.ArcPolygonFromArcs`, as well as the
-    arcpolygon itself are drawn, which affects draw time in :class:`~.ShowCreation`
+    arcpolygon itself are drawn, which affects draw time in :class:`~.Create`
     for example. In most cases the arcs themselves don't
     need to be drawn, in which case they can be passed as invisible.
 
@@ -1489,7 +1489,7 @@ class ArrowTip(VMobject):
         >>> from manim import Scene
         >>> class CustomTipExample(Scene):
         ...     def construct(self):
-        ...         self.play(ShowCreation(arr))
+        ...         self.play(Create(arr))
 
     Using a class inherited from :class:`ArrowTip` to get a non-filled
     tip is a shorthand to manually specifying the arrow tip style as follows::

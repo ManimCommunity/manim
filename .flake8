@@ -1,0 +1,21 @@
+[flake8]
+max-line-length = 88
+                #Black Compatability
+extend-ignore = E203, E266,  
+                #Style Changes
+                
+                #Temp
+                F841, B007,
+                #I belive these are unfixable
+                B006
+                #Code Changes - Remove later
+                F405, F403, F401, F821, B008, E501, B009, B010, E731
+                #docstring Formatting - Remove Later
+                RST304, D400, D401, D205, D105, D103, RST210, RST303, D102, D102, D107, RST212, D200, D100, D101, 
+                D412, D202, RST305, RST301, D301, RST213, D104, RST201, RST215, RST203, D104, D209, RST205, D402, 
+                D210, RST202
+
+                #Issue #1148 needs to be closed before removal
+                A003,
+                #Issue #1149 needs to be closed before removal
+                W605,
