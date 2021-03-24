@@ -82,7 +82,7 @@ class OpenGLVMobject(OpenGLMobject):
         flat_stroke=True,
         render_primitive=moderngl.TRIANGLES,
         triangulation_locked=False,
-        **kwargs
+        **kwargs,
     ):
         self.fill_color = fill_color
         self.fill_opacity = fill_opacity
@@ -880,7 +880,7 @@ class OpenGLVMobject(OpenGLMobject):
     def triggers_refreshed_triangulation(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
-            old_points = self.get_points()
+            old_points = self.get_points().copy()
             func(self, *args, **kwargs)
             if not np.all(self.get_points() == old_points):
                 self.refresh_triangulation()
@@ -904,6 +904,11 @@ class OpenGLVMobject(OpenGLMobject):
         super().apply_function(function, **kwargs)
         if self.make_smooth_after_applying_functions or make_smooth:
             self.make_approximately_smooth()
+        return self
+
+    @triggers_refreshed_triangulation
+    def apply_points_function(self, *args, **kwargs):
+        super().apply_points_function(*args, **kwargs)
         return self
 
     @triggers_refreshed_triangulation
@@ -1054,7 +1059,7 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         stroke_width=0,
         artificial_width=0.01,
         artificial_height=0.01,
-        **kwargs
+        **kwargs,
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
