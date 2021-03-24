@@ -174,6 +174,7 @@ class Dot3D(Sphere):
     def __init__(self, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
         Sphere.__init__(self, radius=radius, **kwargs)
         self.set_color(color)
+    """
 
 
 class Cube(VGroup):
