@@ -1518,7 +1518,7 @@ class OpenGLPoint(Mobject):
         return self.get_location()
 
     def set_location(self, new_loc):
-        self.points = np.array(new_loc, ndmin=2, dtype=float)
+        self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
 
 class _AnimationBuilder:

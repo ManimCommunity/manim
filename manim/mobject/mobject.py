@@ -16,6 +16,7 @@ import warnings
 
 from pathlib import Path
 from colour import Color
+from manim.utils.bezier import integer_interpolate
 import moderngl
 import numpy as np
 
@@ -29,6 +30,7 @@ from ..utils.iterables import (
     list_update,
     listify,
     make_even,
+    resize_preserving_order,
     resize_with_interpolation,
 )
 from ..utils.iterables import remove_list_redundancies
@@ -101,6 +103,7 @@ class Mobject(Container):
         self.needs_new_bounding_box = True
         self.locked_data_keys = set()
 
+        self.opengl = config["use_opengl_renderer"]
         self.opacity = opacity
         # For shaders
         self.render_primitive = render_primitive
@@ -121,7 +124,7 @@ class Mobject(Container):
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        if config["use_opengl_renderer"]:
+        if self.opengl:
             self.color = color
         else:
             self.color = Color(color)
@@ -129,7 +132,7 @@ class Mobject(Container):
         self.init_data()
         self.init_uniforms()
         self.reset_points()
-        self.init_event_listners()
+        # self.init_event_listners()
         self.generate_points()
         self.init_colors()
 
@@ -139,8 +142,8 @@ class Mobject(Container):
 
         Container.__init__(self, **kwargs)
 
-    def init_event_listners(self):
-        self.event_listners = []
+    # def init_event_listners(self):
+    #     self.event_listners = []
 
     def get_points(self):
         return self.points
@@ -174,7 +177,7 @@ class Mobject(Container):
     def compute_bounding_box(self):
         all_points = np.vstack(
             [
-                self.points,
+                self.get_points(),
                 *(
                     mob.get_bounding_box()
                     for mob in self.get_family()[1:]
@@ -290,7 +293,7 @@ class Mobject(Container):
 
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
         """
-        pass
+        self.set_color(self.color, self.opacity)
 
     def generate_points(self):
         """Initializes :attr:`points` and therefore the shape.
@@ -306,6 +309,9 @@ class Mobject(Container):
     @points.setter
     def points(self, value):
         self.data["points"] = value
+
+    def match_points(self, mobject):
+        self.set_points(mobject.get_points())
 
     def set_points(self, points):
         if len(points) == len(self.points):
@@ -1061,7 +1067,7 @@ class Mobject(Container):
         :meth:`move_to`
         """
 
-        if config["use_opengl_renderer"]:
+        if self.opengl:
             self.apply_points_function(
                 lambda points: points + vectors[0],
                 about_edge=None,
@@ -1096,7 +1102,7 @@ class Mobject(Container):
         :meth:`move_to`
 
         """
-        if config["use_opengl_renderer"]:
+        if self.opengl:
             self.apply_points_function(
                 lambda points: scale_factor * points,
                 works_on_bounding_box=True,
@@ -1118,7 +1124,7 @@ class Mobject(Container):
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(self, angle, axis=OUT, **kwargs):
-        if config["use_opengl_renderer"]:
+        if self.opengl:
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
                 lambda points: np.dot(points, rot_matrix_T), **kwargs
@@ -1145,7 +1151,7 @@ class Mobject(Container):
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        # if config["use_opengl_renderer"]:
+        # if self.opengl:
         #     self.apply_points_function(
         #         lambda points: np.array([function(p) for p in points]), **kwargs
         #     )
@@ -1165,7 +1171,7 @@ class Mobject(Container):
         return self
 
     def apply_function_to_points(self, function, *args, **kwargs):
-        if config["use_opengl_renderer"]:
+        if self.opengl:
             self.apply_points_function(function, *args, **kwargs)
         else:
             self.apply_points_function_about_point(function, *args, **kwargs)
@@ -1203,8 +1209,14 @@ class Mobject(Container):
         return self
 
     def reverse_points(self):
+        # if self.opengl:
+        #     for mob in self.get_family():
+        #         for key in mob.data:
+        #             mob.data[key] = mob.data[key][::-1]
+        # else:
         for mob in self.family_members_with_points():
             mob.apply_over_attr_arrays(lambda arr: np.array(list(reversed(arr))))
+
         return self
 
     def repeat(self, count: int):
@@ -1233,8 +1245,8 @@ class Mobject(Container):
 
         for mob in self.get_family():
             arrs = []
-            if len(self.points):
-                arrs.append(mob.points)
+            if mob.has_points():
+                arrs.append(mob.get_points())
             if works_on_bounding_box:
                 arrs.append(mob.get_bounding_box())
 
@@ -1802,6 +1814,12 @@ class Mobject(Container):
         return result
 
     def get_all_points(self):
+        # if self.opengl:
+        #     if self.submobjects:
+        #         return np.vstack([sm.get_points() for sm in self.get_family()])
+        #     else:
+        #         return self.get_points()
+
         return self.get_merged_array("points")
 
     # Getters
@@ -1863,9 +1881,31 @@ class Mobject(Container):
         return np.apply_along_axis(np.mean, 0, self.get_all_points())
 
     def get_boundary_point(self, direction):
+        if self.opengl:
+            all_points = self.get_all_points()
+            boundary_directions = all_points - self.get_center()
+            norms = np.linalg.norm(boundary_directions, axis=1)
+            boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
+            index = np.argmax(np.dot(boundary_directions, np.array(direction).T))
+            return all_points[index]
+
         all_points = self.get_points_defining_boundary()
         index = np.argmax(np.dot(all_points, np.array(direction).T))
         return all_points[index]
+
+    def get_continuous_bounding_box_point(self, direction):
+        dl, center, ur = self.get_bounding_box()
+        corner_vect = ur - center
+        return center + direction / np.max(
+            np.abs(
+                np.true_divide(
+                    direction,
+                    corner_vect,
+                    out=np.zeros(len(direction)),
+                    where=((corner_vect) != 0),
+                )
+            )
+        )
 
     def get_top(self):
         return self.get_edge_center(UP)
@@ -1886,6 +1926,10 @@ class Mobject(Container):
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
+        if self.opengl:
+            bb = self.get_bounding_box()
+            return abs((bb[2] - bb[0])[dim])
+
         return self.reduce_across_dimension(
             np.max, np.max, dim
         ) - self.reduce_across_dimension(np.min, np.min, dim)
@@ -1893,6 +1937,15 @@ class Mobject(Container):
     def get_coord(self, dim, direction=ORIGIN):
         """Meant to generalize get_x, get_y, get_z"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
+
+    def get_width(self):
+        return self.length_over_dim(0)
+
+    def get_height(self):
+        return self.length_over_dim(1)
+
+    def get_depth(self):
+        return self.length_over_dim(2)
 
     def get_x(self, direction=ORIGIN):
         return self.get_coord(0, direction)
@@ -1915,11 +1968,17 @@ class Mobject(Container):
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
-        raise NotImplementedError("Please override in a child class.")
+        points = self.get_points()
+        i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
+        return interpolate(points[i], points[i + 1], subalpha)
+
+    def pfp(self, alpha):
+        """Abbreviation fo point_from_proportion"""
+        return self.point_from_proportion(alpha)
 
     def get_pieces(self, n_pieces):
         template = self.copy()
-        template.submobjects = []
+        template.set_submobjects([])
         alphas = np.linspace(0, 1, n_pieces + 1)
         return Group(
             *[
@@ -1938,11 +1997,6 @@ class Mobject(Container):
 
     def has_no_points(self):
         return not self.has_points()
-
-    def set_data(self, data):
-        for key in data:
-            self.data[key] = data[key].copy()
-        return self
 
     def set_uniforms(self, uniforms):
         for key in uniforms:
@@ -2024,7 +2078,7 @@ class Mobject(Container):
         return result + self.submobjects
 
     def get_family(self, recurse=True):
-        if config["use_opengl_renderer"]:
+        if self.opengl:
             if recurse:
                 return self.family
             else:
@@ -2035,7 +2089,7 @@ class Mobject(Container):
             return remove_list_redundancies(all_mobjects)
 
     def assemble_family(self):
-        # if not config["use_opengl_renderer"]:
+        # if not self.opengl:
         #     return
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *it.chain(*sub_families)]
@@ -2164,12 +2218,29 @@ class Mobject(Container):
 
     # Alignment
     def align_data(self, mobject):
-        self.null_point_align(mobject)
-        self.align_submobjects(mobject)
-        self.align_points(mobject)
-        # Recurse
-        for m1, m2 in zip(self.submobjects, mobject.submobjects):
-            m1.align_data(m2)
+        if self.opengl:
+            # In case any data arrays get resized when aligned to shader data
+            # self.refresh_shader_data()
+            for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
+                # Separate out how points are treated so that subclasses
+                # can handle that case differently if they choose
+                mob1.align_points(mob2)
+                for key in mob1.data.keys() & mob2.data.keys():
+                    if key == "points":
+                        continue
+                    arr1 = mob1.data[key]
+                    arr2 = mob2.data[key]
+                    if len(arr2) > len(arr1):
+                        mob1.data[key] = resize_preserving_order(arr1, len(arr2))
+                    elif len(arr1) > len(arr2):
+                        mob2.data[key] = resize_preserving_order(arr2, len(arr1))
+        else:
+            self.null_point_align(mobject)
+            self.align_submobjects(mobject)
+            self.align_points(mobject)
+            # Recurse
+            for m1, m2 in zip(self.submobjects, mobject.submobjects):
+                m1.align_data(m2)
 
     def get_point_mobject(self, center=None):
         """The simplest mobject to be transformed to or from self.
@@ -2179,6 +2250,11 @@ class Mobject(Container):
         raise NotImplementedError(msg)
 
     def align_points(self, mobject):
+        if self.opengl:
+            max_len = max(self.get_num_points(), mobject.get_num_points())
+            for mob in (self, mobject):
+                mob.resize_points(max_len, resize_func=resize_preserving_order)
+            return self
         count1 = self.get_num_points()
         count2 = mobject.get_num_points()
         if count1 < count2:
@@ -2212,8 +2288,8 @@ class Mobject(Container):
 
     def push_self_into_submobjects(self):
         copy = self.copy()
-        copy.submobjects = []
-        self.reset_points()
+        copy.set_submobjects([])
+        self.reset_points(0)
         self.add(copy)
         return self
 
@@ -2224,14 +2300,13 @@ class Mobject(Container):
         curr = len(self.submobjects)
         if curr == 0:
             # If empty, simply add n point mobjects
-            if config["use_opengl_renderer"]:
+            if self.opengl:
                 null_mob = self.copy()
                 null_mob.set_points([self.get_center()])
                 self.set_submobjects([null_mob.copy() for k in range(n)])
-                return self
             else:
                 self.submobjects = [self.get_point_mobject() for k in range(n)]
-                return
+            return self
 
         target = curr + n
         # TODO, factor this out to utils so as to reuse
@@ -2242,6 +2317,12 @@ class Mobject(Container):
         for submob, sf in zip(self.submobjects, split_factors):
             new_submobs.append(submob)
             for _ in range(1, sf):
+                if self.opengl:
+                    new_submob = submob.copy()
+                    # If the submobject is at all transparent, then
+                    # make the copy completely transparent
+                    if submob.get_opacity() < 1:
+                        new_submob.set_opacity(0)
                 new_submobs.append(submob.copy().fade(1))
         self.set_submobjects(new_submobs)
         return self
@@ -2270,7 +2351,7 @@ class Mobject(Container):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        if config["use_opengl_renderer"]:
+        if self.opengl:
             for key in self.data:
                 if key in self.locked_data_keys:
                     continue
@@ -2330,7 +2411,7 @@ class Mobject(Container):
                     circ.become(square)
                     self.wait(0.5)
         """
-        if config["use_opengl_renderer"]:
+        if self.opengl:
             self.align_family(mobject)
             for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
                 sm1.set_data(sm2.data)
@@ -2360,7 +2441,7 @@ class Mobject(Container):
         interpolate can skip this, and so that it's not
         read into the shader_wrapper objects needlessly
         """
-        if self.has_updaters:
+        if self.updaters:
             return
         # Be sure shader data has most up to date information
         self.refresh_shader_data()
@@ -2407,12 +2488,12 @@ class Mobject(Container):
 
     @affects_shader_info_id
     def fix_in_frame(self):
-        self.is_fixed_in_frame = 1.0
+        self.uniforms["is_fixed_in_frame"] = 1.0
         return self
 
     @affects_shader_info_id
     def unfix_from_frame(self):
-        self.is_fixed_in_frame = 0.0
+        self.uniforms["is_fixed_in_frame"] = 0.0
         return self
 
     @affects_shader_info_id
@@ -2519,10 +2600,9 @@ class Mobject(Container):
         # or the length of the array
         d_len = len(self.data[data_key])
         if d_len != 1 and d_len != len(array):
-            self.data[data_key] = (
-                resize_with_interpolation(self.data[data_key], len(array)),
+            self.data[data_key] = resize_with_interpolation(
+                self.data[data_key], len(array)
             )
-
         return self
 
     def get_resized_shader_data_array(self, length):
