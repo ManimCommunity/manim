@@ -166,9 +166,10 @@ class Dot3D(Sphere):
 
     Parameters
     --------
-    radius : :class:`float`
+    radius : :class:`float`, optional
         The radius of the dot.
-    """
+    color : :class:`~.Colors`, optional
+        The color of the :class:`Dot3D`
 
     def __init__(self, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
         Sphere.__init__(self, radius=radius, **kwargs)
