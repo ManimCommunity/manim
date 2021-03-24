@@ -390,7 +390,7 @@ class CairoText(SVGMobject):
             font = setting.font.decode("utf-8")
             slant = self.str2slant(setting.slant)
             weight = self.str2weight(setting.weight)
-            text = self.text[setting.start : setting.end].replace("\n", " ")
+            text = self.text[setting.start: setting.end].replace("\n", " ")
 
             context.select_font_face(font, slant, weight)
             if setting.line_num != last_line_num:
@@ -451,7 +451,7 @@ class Paragraph(VGroup):
         for line_index in range(lines_str_list.__len__()):
             chars_lines_text_list.add(
                 self.lines_text[
-                    char_index_counter : char_index_counter
+                    char_index_counter: char_index_counter
                     + lines_str_list[line_index].__len__()
                     + 1
                 ]
@@ -494,7 +494,7 @@ class Paragraph(VGroup):
             chars.add(VGroup())
             chars[line_no].add(
                 *self.lines_text.chars[
-                    char_index_counter : char_index_counter
+                    char_index_counter: char_index_counter
                     + lines_str_list[line_no].__len__()
                     + 1
                 ]
@@ -1278,14 +1278,14 @@ class MarkupText(SVGMobject):
         for col in colormap:
             self.chars[
                 col["start"]
-                - col["start_offset"] : col["end"]
+                - col["start_offset"]: col["end"]
                 - col["start_offset"]
                 - col["end_offset"]
             ].set_color(self._parse_color(col["color"]))
         for grad in gradientmap:
             self.chars[
                 grad["start"]
-                - grad["start_offset"] : grad["end"]
+                - grad["start_offset"]: grad["end"]
                 - grad["start_offset"]
                 - grad["end_offset"]
             ].set_color_by_gradient(

@@ -516,14 +516,14 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         remainder = len(points) % nppc
         points = points[: len(points) - remainder]
-        return [points[i : i + nppc] for i in range(0, len(points), nppc)]
+        return [points[i: i + nppc] for i in range(0, len(points), nppc)]
 
     def get_bezier_tuples(self):
         return self.get_bezier_tuples_from_points(self.get_points())
 
     def get_subpaths_from_points(self, points):
         nppc = self.n_points_per_curve
-        diffs = points[nppc - 1 : -1 : nppc] - points[nppc::nppc]
+        diffs = points[nppc - 1: -1: nppc] - points[nppc::nppc]
         splits = (diffs * diffs).sum(1) > self.tolerance_for_point_equality
         split_indices = np.arange(nppc, len(points), nppc, dtype=int)[splits]
 
@@ -544,7 +544,7 @@ class OpenGLVMobject(OpenGLMobject):
     def get_nth_curve_points(self, n):
         assert n < self.get_num_curves()
         nppc = self.n_points_per_curve
-        return self.get_points()[nppc * n : nppc * (n + 1)]
+        return self.get_points()[nppc * n: nppc * (n + 1)]
 
     def get_nth_curve_function(self, n):
         return bezier(self.get_nth_curve_points(n))
@@ -570,11 +570,11 @@ class OpenGLVMobject(OpenGLMobject):
         return [points[i::nppc] for i in range(nppc)]
 
     def get_start_anchors(self):
-        return self.get_points()[0 :: self.n_points_per_curve]
+        return self.get_points()[0:: self.n_points_per_curve]
 
     def get_end_anchors(self):
         nppc = self.n_points_per_curve
-        return self.get_points()[nppc - 1 :: nppc]
+        return self.get_points()[nppc - 1:: nppc]
 
     def get_anchors(self):
         points = self.get_points()
@@ -624,7 +624,7 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         points = self.get_points()
         p0 = points[0::nppc]
-        p1 = points[nppc - 1 :: nppc]
+        p1 = points[nppc - 1:: nppc]
 
         # Each term goes through all edges [(x1, y1, z1), (x2, y2, z2)]
         return 0.5 * np.array(

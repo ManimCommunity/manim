@@ -185,7 +185,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
                                 break
                             printed_lines += 1
 
-                        for line in log[lineno : lineno + printed_lines + 1]:
+                        for line in log[lineno: lineno + printed_lines + 1]:
                             logger.error(line)
 
             raise ValueError(

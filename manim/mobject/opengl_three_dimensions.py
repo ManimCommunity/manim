@@ -47,7 +47,7 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
         for ui in u_indices:
             path = OpenGLVMobject()
             full_ui = full_nv * ui
-            path.set_points_smoothly(nudged_points[full_ui : full_ui + full_nv])
+            path.set_points_smoothly(nudged_points[full_ui: full_ui + full_nv])
             self.add(path)
         for vi in v_indices:
             path = OpenGLVMobject()

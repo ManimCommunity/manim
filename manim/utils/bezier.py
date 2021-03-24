@@ -291,7 +291,7 @@ def diag_to_matrix(l_and_u: typing.Tuple[int, int], diag: np.ndarray) -> np.ndar
     matrix = np.zeros((dim, dim))
     for i in range(l + u + 1):
         np.fill_diagonal(
-            matrix[max(0, i - u) :, max(0, u - i) :], diag[i, max(0, u - i) :]
+            matrix[max(0, i - u):, max(0, u - i):], diag[i, max(0, u - i):]
         )
     return matrix
 

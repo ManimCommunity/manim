@@ -91,8 +91,8 @@ class ParametricSurface(VGroup):
         faces = VGroup()
         for i in range(len(u_values) - 1):
             for j in range(len(v_values) - 1):
-                u1, u2 = u_values[i : i + 2]
-                v1, v2 = v_values[j : j + 2]
+                u1, u2 = u_values[i: i + 2]
+                v1, v2 = v_values[j: j + 2]
                 face = ThreeDVMobject()
                 face.set_points_as_corners(
                     [

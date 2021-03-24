@@ -1908,7 +1908,7 @@ class Mobject(Container):
             n = len(submobs) // n_cols
         Group(
             *[
-                Group(*submobs[i : i + n]).arrange(v1, **kwargs)
+                Group(*submobs[i: i + n]).arrange(v1, **kwargs)
                 for i in range(0, len(submobs), n)
             ]
         ).arrange(v2, **kwargs)
@@ -1916,7 +1916,7 @@ class Mobject(Container):
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
         if submob_func is None:
-            submob_func = lambda m: point_to_num_func(m.get_center())
+            def submob_func(m): return point_to_num_func(m.get_center())
         self.submobjects.sort(key=submob_func)
         return self
 

@@ -802,7 +802,7 @@ class VMobject(Mobject):
         remainder = len(points) % nppcc
         points = points[: len(points) - remainder]
         # Basically take every nppcc element.
-        return (points[i : i + nppcc] for i in range(0, len(points), nppcc))
+        return (points[i: i + nppcc] for i in range(0, len(points), nppcc))
 
     def get_cubic_bezier_tuples(self):
         return self.get_cubic_bezier_tuples_from_points(self.get_points())
@@ -880,7 +880,7 @@ class VMobject(Mobject):
         """
         assert n < self.get_num_curves()
         nppcc = self.n_points_per_cubic_curve
-        return self.points[nppcc * n : nppcc * (n + 1)]
+        return self.points[nppcc * n: nppcc * (n + 1)]
 
     def get_nth_curve_function(self, n: int) -> typing.Callable[[float], np.ndarray]:
         """Returns the expression of the nth curve.
@@ -949,7 +949,7 @@ class VMobject(Mobject):
         np.ndarray
             Starting anchors
         """
-        return self.points[0 :: self.n_points_per_cubic_curve]
+        return self.points[0:: self.n_points_per_cubic_curve]
 
     def get_end_anchors(self) -> np.ndarray:
         """Return the starting anchors of the bezier curves.
@@ -960,7 +960,7 @@ class VMobject(Mobject):
             Starting anchors
         """
         nppcc = self.n_points_per_cubic_curve
-        return self.points[nppcc - 1 :: nppcc]
+        return self.points[nppcc - 1:: nppcc]
 
     def get_anchors(self) -> np.ndarray:
         """Returns the anchors of the curves forming the VMobject.
@@ -1198,7 +1198,7 @@ class VMobject(Mobject):
             self.append_points(
                 partial_bezier_points(bezier_quads[lower_index], lower_residue, 1)
             )
-            for quad in bezier_quads[lower_index + 1 : upper_index]:
+            for quad in bezier_quads[lower_index + 1: upper_index]:
                 self.append_points(quad)
             self.append_points(
                 partial_bezier_points(bezier_quads[upper_index], 0, upper_residue)

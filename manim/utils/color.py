@@ -305,7 +305,7 @@ def hex_to_rgb(hex_code):
     hex_part = hex_code[1:]
     if len(hex_part) == 3:
         hex_part = "".join([2 * c for c in hex_part])
-    return np.array([int(hex_part[i : i + 2], 16) / 255 for i in range(0, 6, 2)])
+    return np.array([int(hex_part[i: i + 2], 16) / 255 for i in range(0, 6, 2)])
 
 
 def invert_color(color):

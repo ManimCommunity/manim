@@ -117,7 +117,7 @@ class OpenGLSurface(OpenGLMobject):
     def get_surface_points_and_nudged_points(self):
         points = self.get_points()
         k = len(points) // 3
-        return points[:k], points[k : 2 * k], points[2 * k :]
+        return points[:k], points[k: 2 * k], points[2 * k:]
 
     def get_unit_normals(self):
         s_points, du_points, dv_points = self.get_surface_points_and_nudged_points()
@@ -160,7 +160,7 @@ class OpenGLSurface(OpenGLMobject):
             points[:lower_index] = interpolate(
                 points[lower_index], points[lower_index + 1], lower_residue
             )
-            points[upper_index + 1 :] = interpolate(
+            points[upper_index + 1:] = interpolate(
                 points[upper_index], points[upper_index + 1], upper_residue
             )
         else:
@@ -168,7 +168,7 @@ class OpenGLSurface(OpenGLMobject):
             points[:, :lower_index] = interpolate(
                 points[:, lower_index], points[:, lower_index + 1], lower_residue
             ).reshape(shape)
-            points[:, upper_index + 1 :] = interpolate(
+            points[:, upper_index + 1:] = interpolate(
                 points[:, upper_index], points[:, upper_index + 1], upper_residue
             ).reshape(shape)
         return points.reshape((nu * nv, *resolution[2:]))
