@@ -3,7 +3,6 @@ import numpy as np
 import moderngl
 
 from ...constants import *
-from ...mobject.opengl_mobject import OpenGLMobject
 from ...utils.bezier import integer_interpolate
 from ...utils.bezier import interpolate
 from ...utils.images import get_full_raster_image_path
