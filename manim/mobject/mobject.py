@@ -65,6 +65,11 @@ class Mobject(Container):
 
     """
 
+    shader_dtype = [
+        ("point", np.float32, (3,)),
+    ]
+    shader_folder = ""
+
     def __init__(
         self,
         color=WHITE,
@@ -78,6 +83,7 @@ class Mobject(Container):
         # For shaders
         render_primitive=moderngl.TRIANGLE_STRIP,
         texture_paths=None,
+        opacity=1,
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
         is_fixed_in_frame=False,
@@ -92,11 +98,10 @@ class Mobject(Container):
         self.is_fixed_in_frame = is_fixed_in_frame
         self.gloss = gloss
         self.shadow = shadow
-        self.init_data()
-        self.init_uniforms()
         self.needs_new_bounding_box = True
         self.locked_data_keys = set()
 
+        self.opacity = opacity
         # For shaders
         self.render_primitive = render_primitive
         self.texture_paths = texture_paths
@@ -109,19 +114,33 @@ class Mobject(Container):
         self.submobjects = []
         self.parents = []
         self.updaters = []
+        self.updating_suspended = False
         self.family = [self]
-        self.color = Color(color)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        self.updating_suspended = False
+        if config["use_opengl_renderer"]:
+            self.color = color
+        else:
+            self.color = Color(color)
+
+        self.init_data()
+        self.init_uniforms()
         self.reset_points()
+        self.init_event_listners()
         self.generate_points()
         self.init_colors()
 
+        self.shader_indices = None
+        if self.depth_test:
+            self.apply_depth_test()
+
         Container.__init__(self, **kwargs)
+
+    def init_event_listners(self):
+        self.event_listners = []
 
     def get_points(self):
         return self.points
@@ -2205,8 +2224,14 @@ class Mobject(Container):
         curr = len(self.submobjects)
         if curr == 0:
             # If empty, simply add n point mobjects
-            self.submobjects = [self.get_point_mobject() for k in range(n)]
-            return
+            if config["use_opengl_renderer"]:
+                null_mob = self.copy()
+                null_mob.set_points([self.get_center()])
+                self.set_submobjects([null_mob.copy() for k in range(n)])
+                return self
+            else:
+                self.submobjects = [self.get_point_mobject() for k in range(n)]
+                return
 
         target = curr + n
         # TODO, factor this out to utils so as to reuse
@@ -2218,7 +2243,7 @@ class Mobject(Container):
             new_submobs.append(submob)
             for _ in range(1, sf):
                 new_submobs.append(submob.copy().fade(1))
-        self.submobjects = new_submobs
+        self.set_submobjects(new_submobs)
         return self
 
     def repeat_submobject(self, submob):
