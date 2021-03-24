@@ -45,6 +45,10 @@ from ..utils.space_ops import rotation_matrix_transpose
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
 
 
+def interpolate(start: int, end: int, alpha: float) -> float:
+    return (1 - alpha) * start + alpha * end
+
+
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -83,11 +87,12 @@ class Mobject(Container):
         **kwargs,
     ):
         # OpenGL data.
-        self.init_data()
+
         # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = is_fixed_in_frame
         self.gloss = gloss
         self.shadow = shadow
+        self.init_data()
         self.needs_new_bounding_box = True
         self.locked_data_keys = set()
 
@@ -125,6 +130,11 @@ class Mobject(Container):
             "points": np.zeros((0, 3)),
             "bounding_box": np.zeros((3, 3)),
             "rgbas": np.zeros((1, 4)),
+        }
+        self.uniforms = {
+            "is_fixed_in_frame": float(self.is_fixed_in_frame),
+            "gloss": self.gloss,
+            "shadow": self.shadow,
         }
 
     def resize_points(self, new_length, resize_func=resize_array):
@@ -1898,6 +1908,16 @@ class Mobject(Container):
     def has_no_points(self):
         return not self.has_points()
 
+    def set_data(self, data):
+        for key in data:
+            self.data[key] = data[key].copy()
+        return self
+
+    def set_uniforms(self, uniforms):
+        for key in uniforms:
+            self.uniforms[key] = uniforms[key]  # Copy?
+        return self
+
     # Match other mobject properties
 
     def match_color(self, mobject):
@@ -2214,8 +2234,28 @@ class Mobject(Container):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        self.points = path_func(mobject1.points, mobject2.points, alpha)
-        self.interpolate_color(mobject1, mobject2, alpha)
+        if config["use_opengl_renderer"]:
+            for key in self.data:
+                if key in self.locked_data_keys:
+                    continue
+                if len(self.data[key]) == 0:
+                    continue
+                if key not in mobject1.data or key not in mobject2.data:
+                    continue
+
+                if key in ("points", "bounding_box"):
+                    func = path_func
+                else:
+                    func = interpolate
+
+                self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
+            for key in self.uniforms:
+                self.uniforms[key] = interpolate(
+                    mobject1.uniforms[key], mobject2.uniforms[key], alpha
+                )
+        else:
+            self.points = path_func(mobject1.points, mobject2.points, alpha)
+            self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
     def interpolate_color(self, mobject1, mobject2, alpha):
@@ -2223,6 +2263,19 @@ class Mobject(Container):
 
     def pointwise_become_partial(self, mobject, a, b):
         raise NotImplementedError("Please override in a child class.")
+
+    def align_family(self, mobject):
+        mob1 = self
+        mob2 = mobject
+        n1 = len(mob1)
+        n2 = len(mob2)
+        if n1 != n2:
+            mob1.add_n_more_submobjects(max(0, n2 - n1))
+            mob2.add_n_more_submobjects(max(0, n1 - n2))
+        # Recurse
+        for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects):
+            sm1.align_family(sm2)
+        return self
 
     def become(self, mobject: "Mobject", copy_submobjects: bool = True):
         """Edit points, colors and submobjects to be identical
@@ -2241,20 +2294,27 @@ class Mobject(Container):
                     circ.become(square)
                     self.wait(0.5)
         """
-        self.align_data(mobject)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
-            sm1.points = np.array(sm2.points)
-            sm1.interpolate_color(sm1, sm2, 1)
-        return self
+        if config["use_opengl_renderer"]:
+            self.align_family(mobject)
+            for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+                sm1.set_data(sm2.data)
+                sm1.set_uniforms(sm2.uniforms)
+            self.refresh_bounding_box(recurse_down=True)
+        else:
+            self.align_data(mobject)
+            for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+                sm1.points = np.array(sm2.points)
+                sm1.interpolate_color(sm1, sm2, 1)
+            return self
 
     # Locking data
 
-    def uniforms(self):
-        return {
-            "is_fixed_in_frame": float(self.is_fixed_in_frame),
-            "gloss": self.gloss,
-            "shadow": self.shadow,
-        }
+    # def uniforms(self):
+    #     return {
+    #         "is_fixed_in_frame": float(self.is_fixed_in_frame),
+    #         "gloss": self.gloss,
+    #         "shadow": self.shadow,
+    #     }
 
     def lock_data(self, keys):
         """
@@ -2413,6 +2473,9 @@ class Mobject(Container):
         self.points = np.vstack([self.points, new_points])
         self.refresh_bounding_box()
         return self
+
+    def clear_points(self):
+        self.resize_points(0)
 
     def check_data_alignment(self, array, data_key):
         # Makes sure that self.data[key] can be brodcast into
