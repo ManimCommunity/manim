@@ -79,6 +79,12 @@ jobs:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
 
+      - name: Setup MSYS2
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          release: false
+
       - name: Download system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
