@@ -71,10 +71,8 @@ class OpenGLCamera(Mobject):
 
     def generate_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
-        # self.set_width(self.frame_shape[0], stretch=True)
-        # self.set_height(self.frame_shape[1], stretch=True)
-        self.width = self.frame_shape[0]
-        self.height = self.frame_shape[1]
+        self.set_width(self.frame_shape[0], stretch=True)
+        self.set_height(self.frame_shape[1], stretch=True)
         self.move_to(self.center_point)
 
     def to_default_state(self):

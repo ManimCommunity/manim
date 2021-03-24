@@ -93,6 +93,7 @@ class Mobject(Container):
         self.gloss = gloss
         self.shadow = shadow
         self.init_data()
+        self.init_uniforms()
         self.needs_new_bounding_box = True
         self.locked_data_keys = set()
 
@@ -131,6 +132,8 @@ class Mobject(Container):
             "bounding_box": np.zeros((3, 3)),
             "rgbas": np.zeros((1, 4)),
         }
+
+    def init_uniforms(self):
         self.uniforms = {
             "is_fixed_in_frame": float(self.is_fixed_in_frame),
             "gloss": self.gloss,
@@ -1494,6 +1497,15 @@ class Mobject(Container):
         self.shift(shift_vect)
         return self
 
+    def set_width(self, width, stretch=False, **kwargs):
+        return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
+
+    def set_height(self, height, stretch=False, **kwargs):
+        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
+
+    def set_depth(self, depth, stretch=False, **kwargs):
+        return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
+
     def set_x(self, x, direction=ORIGIN):
         return self.set_coord(x, 0, direction)
 
@@ -2008,10 +2020,9 @@ class Mobject(Container):
         #     return
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *it.chain(*sub_families)]
-        # self.refresh_has_updater_status()
         self.refresh_bounding_box()
-        # for parent in self.parents:
-        #     parent.assemble_family()
+        for parent in self.parents:
+            parent.assemble_family()
         return self
 
     def family_members_with_points(self):
@@ -2305,7 +2316,7 @@ class Mobject(Container):
             for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
                 sm1.points = np.array(sm2.points)
                 sm1.interpolate_color(sm1, sm2, 1)
-            return self
+        return self
 
     # Locking data
 

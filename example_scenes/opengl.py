@@ -54,6 +54,18 @@ class InteractiveDevelopment(Scene):
         # always(circle.move_to, self.mouse_point)
 
 
+class SquareToCircle(Scene):
+    def construct(self):
+        square = OpenGLSquare()
+        circle = OpenGLCircle()
+
+        self.add(square)
+        self.wait()
+
+        self.play(Transform(square, circle))
+        self.wait()
+
+
 class SurfaceExample(Scene):
     def construct(self):
         # surface_text = Text("For 3d scenes, try using surfaces")
@@ -123,7 +135,6 @@ class SurfaceExample(Scene):
         # light_text = Text("You can move around the light source")
         # light_text.move_to(surface_text)
         # light_text.fix_in_frame()
-
         # self.play(FadeTransform(surface_text, light_text))
         light = self.camera.light_source
         self.add(light)

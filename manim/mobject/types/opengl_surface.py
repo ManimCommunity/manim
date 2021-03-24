@@ -68,7 +68,6 @@ class OpenGLSurface(Mobject):
         self.compute_triangle_indices()
 
     def uv_func(self, u, v):
-        # To be implemented in subclasses
         if self.passed_uv_func:
             return self.passed_uv_func(u, v)
         return (u, v, 0.0)
@@ -248,7 +247,6 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.v_range = uv_surface.v_range
         self.resolution = uv_surface.resolution
         self.gloss = self.uv_surface.gloss
-        self.num_textures = self.num_textures
         super().__init__(texture_paths=texture_paths, **kwargs)
 
     def init_data(self):
@@ -257,9 +255,8 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.data["opacity"] = np.zeros((0, 1))
 
     def generate_points(self):
-        super().generate_points()
         nu, nv = self.uv_surface.resolution
-        self.points = self.uv_surface.points
+        self.set_points(self.uv_surface.get_points())
         self.data["im_coords"] = np.array(
             [
                 [u, v]
@@ -267,6 +264,10 @@ class OpenGLTexturedSurface(OpenGLSurface):
                 for v in np.linspace(1, 0, nv)  # Reverse y-direction
             ]
         )
+
+    def init_uniforms(self):
+        super().init_uniforms()
+        self.uniforms["num_textures"] = self.num_textures
 
     def init_colors(self):
         self.data["opacity"] = np.array([self.uv_surface.data["rgbas"][:, 3]])
