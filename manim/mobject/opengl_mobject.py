@@ -85,12 +85,12 @@ class OpenGLMobject:
     def __str__(self):
         return self.__class__.__name__
 
-    def init_data(self):
-        self.data = {
-            "points": np.zeros((0, 3)),
-            "bounding_box": np.zeros((3, 3)),
-            "rgbas": np.zeros((1, 4)),
-        }
+    # def init_data(self):
+    #     self.data = {
+    #         "points": np.zeros((0, 3)),
+    #         "bounding_box": np.zeros((3, 3)),
+    #         "rgbas": np.zeros((1, 4)),
+    #     }
 
     # def init_uniforms(self):
     #     self.uniforms = {
@@ -99,8 +99,8 @@ class OpenGLMobject:
     #         "shadow": self.shadow,
     #     }
 
-    def init_colors(self):
-        self.set_color(self.color, self.opacity)
+    # def init_colors(self):
+    #     self.set_color(self.color, self.opacity)
 
     # def init_points(self):
     #     # Typically implemented in subclass, unlpess purposefully left blank
@@ -144,11 +144,11 @@ class OpenGLMobject:
     #     self.refresh_bounding_box()
     #     return self
 
-    def reverse_points(self):
-        for mob in self.get_family():
-            for key in mob.data:
-                mob.data[key] = mob.data[key][::-1]
-        return self
+    # def reverse_points(self):
+    #     for mob in self.get_family():
+    #         for key in mob.data:
+    #             mob.data[key] = mob.data[key][::-1]
+    #     return self
 
     # def apply_points_function(
     #     self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
@@ -178,14 +178,14 @@ class OpenGLMobject:
 
     # Others related to points
 
-    def match_points(self, mobject):
-        self.set_points(mobject.get_points())
+    # def match_points(self, mobject):
+    #     self.set_points(mobject.get_points())
 
-    def get_points(self):
-        return self.data["points"]
+    # def get_points(self):
+    #     return self.data["points"]
 
-    def clear_points(self):
-        self.resize_points(0)
+    # def clear_points(self):
+    #     self.resize_points(0)
 
     # def get_num_points(self):
     #     return len(self.data["points"])
@@ -872,27 +872,27 @@ class OpenGLMobject:
     #             mob.data[name] = rgbas.copy()
     #     return self
 
-    def set_color(self, color, opacity=None, recurse=True):
-        self.set_rgba_array(color, opacity, recurse=False)
-        # Recurse to submobjects differently from how set_rgba_array
-        # in case they implement set_color differently
-        if recurse:
-            for submob in self.submobjects:
-                submob.set_color(color, recurse=True)
-        return self
+    # def set_color(self, color, opacity=None, recurse=True):
+    #     self.set_rgba_array(color, opacity, recurse=False)
+    #     # Recurse to submobjects differently from how set_rgba_array
+    #     # in case they implement set_color differently
+    #     if recurse:
+    #         for submob in self.submobjects:
+    #             submob.set_color(color, recurse=True)
+    #     return self
 
-    def set_opacity(self, opacity, recurse=True):
-        self.set_rgba_array(color=None, opacity=opacity, recurse=False)
-        if recurse:
-            for submob in self.submobjects:
-                submob.set_opacity(opacity, recurse=True)
-        return self
+    # def set_opacity(self, opacity, recurse=True):
+    #     self.set_rgba_array(color=None, opacity=opacity, recurse=False)
+    #     if recurse:
+    #         for submob in self.submobjects:
+    #             submob.set_opacity(opacity, recurse=True)
+    #     return self
 
-    def get_color(self):
-        return rgb_to_hex(self.data["rgbas"][0, :3])
+    # def get_color(self):
+    #     return rgb_to_hex(self.data["rgbas"][0, :3])
 
-    def get_opacity(self):
-        return self.data["rgbas"][0, 3]
+    # def get_opacity(self):
+    #     return self.data["rgbas"][0, 3]
 
     # def set_color_by_gradient(self, *colors):
     #     self.set_submobject_colors_by_gradient(*colors)
@@ -912,8 +912,8 @@ class OpenGLMobject:
     #         mob.set_color(color)
     #     return self
 
-    def fade(self, darkness=0.5, recurse=True):
-        self.set_opacity(1.0 - darkness, recurse=recurse)
+    # def fade(self, darkness=0.5, recurse=True):
+    #     self.set_opacity(1.0 - darkness, recurse=recurse)
 
     # def get_gloss(self):
     #     return self.uniforms["gloss"]
@@ -1140,110 +1140,110 @@ class OpenGLMobject:
         self.align_family(mobject)
         self.align_data(mobject)
 
-    def align_data(self, mobject):
-        # In case any data arrays get resized when aligned to shader data
-        # self.refresh_shader_data()
-        for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
-            # Separate out how points are treated so that subclasses
-            # can handle that case differently if they choose
-            mob1.align_points(mob2)
-            for key in mob1.data.keys() & mob2.data.keys():
-                if key == "points":
-                    continue
-                arr1 = mob1.data[key]
-                arr2 = mob2.data[key]
-                if len(arr2) > len(arr1):
-                    mob1.data[key] = resize_preserving_order(arr1, len(arr2))
-                elif len(arr1) > len(arr2):
-                    mob2.data[key] = resize_preserving_order(arr2, len(arr1))
+    # def align_data(self, mobject):
+    #     # In case any data arrays get resized when aligned to shader data
+    #     # self.refresh_shader_data()
+    #     for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
+    #         # Separate out how points are treated so that subclasses
+    #         # can handle that case differently if they choose
+    #         mob1.align_points(mob2)
+    #         for key in mob1.data.keys() & mob2.data.keys():
+    #             if key == "points":
+    #                 continue
+    #             arr1 = mob1.data[key]
+    #             arr2 = mob2.data[key]
+    #             if len(arr2) > len(arr1):
+    #                 mob1.data[key] = resize_preserving_order(arr1, len(arr2))
+    #             elif len(arr1) > len(arr2):
+    #                 mob2.data[key] = resize_preserving_order(arr2, len(arr1))
 
-    def align_points(self, mobject):
-        max_len = max(self.get_num_points(), mobject.get_num_points())
-        for mob in (self, mobject):
-            mob.resize_points(max_len, resize_func=resize_preserving_order)
-        return self
+    # def align_points(self, mobject):
+    #     max_len = max(self.get_num_points(), mobject.get_num_points())
+    #     for mob in (self, mobject):
+    #         mob.resize_points(max_len, resize_func=resize_preserving_order)
+    #     return self
 
-    def align_family(self, mobject):
-        mob1 = self
-        mob2 = mobject
-        n1 = len(mob1)
-        n2 = len(mob2)
-        if n1 != n2:
-            mob1.add_n_more_submobjects(max(0, n2 - n1))
-            mob2.add_n_more_submobjects(max(0, n1 - n2))
-        # Recurse
-        for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects):
-            sm1.align_family(sm2)
-        return self
+    # def align_family(self, mobject):
+    #     mob1 = self
+    #     mob2 = mobject
+    #     n1 = len(mob1)
+    #     n2 = len(mob2)
+    #     if n1 != n2:
+    #         mob1.add_n_more_submobjects(max(0, n2 - n1))
+    #         mob2.add_n_more_submobjects(max(0, n1 - n2))
+    #     # Recurse
+    #     for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects):
+    #         sm1.align_family(sm2)
+    #     return self
 
-    def push_self_into_submobjects(self):
-        copy = self.deepcopy()
-        copy.set_submobjects([])
-        self.resize_points(0)
-        self.add(copy)
-        return self
+    # def push_self_into_submobjects(self):
+    #     copy = self.deepcopy()
+    #     copy.set_submobjects([])
+    #     self.resize_points(0)
+    #     self.add(copy)
+    #     return self
 
-    def add_n_more_submobjects(self, n):
-        if n == 0:
-            return self
+    # def add_n_more_submobjects(self, n):
+    #     if n == 0:
+    #         return self
 
-        curr = len(self.submobjects)
-        if curr == 0:
-            # If empty, simply add n point mobjects
-            null_mob = self.copy()
-            null_mob.set_points([self.get_center()])
-            self.set_submobjects([null_mob.copy() for k in range(n)])
-            return self
-        target = curr + n
-        repeat_indices = (np.arange(target) * curr) // target
-        split_factors = [(repeat_indices == i).sum() for i in range(curr)]
-        new_submobs = []
-        for submob, sf in zip(self.submobjects, split_factors):
-            new_submobs.append(submob)
-            for _ in range(1, sf):
-                new_submob = submob.copy()
-                # If the submobject is at all transparent, then
-                # make the copy completely transparent
-                if submob.get_opacity() < 1:
-                    new_submob.set_opacity(0)
-                new_submobs.append(new_submob)
-        self.set_submobjects(new_submobs)
-        return self
+    #     curr = len(self.submobjects)
+    #     if curr == 0:
+    #         # If empty, simply add n point mobjects
+    #         null_mob = self.copy()
+    #         null_mob.set_points([self.get_center()])
+    #         self.set_submobjects([null_mob.copy() for k in range(n)])
+    #         return self
+    #     target = curr + n
+    #     repeat_indices = (np.arange(target) * curr) // target
+    #     split_factors = [(repeat_indices == i).sum() for i in range(curr)]
+    #     new_submobs = []
+    #     for submob, sf in zip(self.submobjects, split_factors):
+    #         new_submobs.append(submob)
+    #         for _ in range(1, sf):
+    #             new_submob = submob.copy()
+    #             # If the submobject is at all transparent, then
+    #             # make the copy completely transparent
+    #             if submob.get_opacity() < 1:
+    #                 new_submob.set_opacity(0)
+    #             new_submobs.append(new_submob)
+    #     self.set_submobjects(new_submobs)
+    #     return self
 
     # Interpolate
 
-    def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
-        for key in self.data:
-            if key in self.locked_data_keys:
-                continue
-            if len(self.data[key]) == 0:
-                continue
-            if key not in mobject1.data or key not in mobject2.data:
-                continue
+    # def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
+    #     for key in self.data:
+    #         if key in self.locked_data_keys:
+    #             continue
+    #         if len(self.data[key]) == 0:
+    #             continue
+    #         if key not in mobject1.data or key not in mobject2.data:
+    #             continue
 
-            if key in ("points", "bounding_box"):
-                func = path_func
-            else:
-                func = interpolate
+    #         if key in ("points", "bounding_box"):
+    #             func = path_func
+    #         else:
+    #             func = interpolate
 
-            self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
-        for key in self.uniforms:
-            self.uniforms[key] = interpolate(
-                mobject1.uniforms[key], mobject2.uniforms[key], alpha
-            )
-        return self
+    #         self.data[key][:] = func(mobject1.data[key], mobject2.data[key], alpha)
+    #     for key in self.uniforms:
+    #         self.uniforms[key] = interpolate(
+    #             mobject1.uniforms[key], mobject2.uniforms[key], alpha
+    #         )
+    #     return self
 
-    def become(self, mobject):
-        """
-        Edit all data and submobjects to be idential
-        to another mobject
-        """
-        self.align_family(mobject)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
-            sm1.set_data(sm2.data)
-            sm1.set_uniforms(sm2.uniforms)
-        self.refresh_bounding_box(recurse_down=True)
-        return self
+    # def become(self, mobject):
+    #     """
+    #     Edit all data and submobjects to be idential
+    #     to another mobject
+    #     """
+    #     self.align_family(mobject)
+    #     for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+    #         sm1.set_data(sm2.data)
+    #         sm1.set_uniforms(sm2.uniforms)
+    #     self.refresh_bounding_box(recurse_down=True)
+    #     return self
 
     # # Operations touching shader uniforms
 

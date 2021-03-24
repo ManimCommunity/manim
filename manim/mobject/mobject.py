@@ -75,6 +75,7 @@ class Mobject(Container):
     def __init__(
         self,
         color=WHITE,
+        opacity=1,
         name=None,
         dim=3,
         target=None,
@@ -85,7 +86,6 @@ class Mobject(Container):
         # For shaders
         render_primitive=moderngl.TRIANGLE_STRIP,
         texture_paths=None,
-        opacity=1,
         depth_test=False,
         # If true, the mobject will not get rotated according to camera position
         is_fixed_in_frame=False,
@@ -113,25 +113,23 @@ class Mobject(Container):
         # Must match in attributes of vert shader
         # Event listener
         self.listen_to_events = listen_to_events
-
+        self.dim = dim
         self.submobjects = []
         self.parents = []
         self.updaters = []
         self.updating_suspended = False
         self.family = [self]
         self.name = self.__class__.__name__ if name is None else name
-        self.dim = dim
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        if self.opengl:
-            self.color = color
-        else:
-            self.color = Color(color)
 
         self.init_data()
         self.init_uniforms()
         self.reset_points()
+
+        self.color = Color(color)
+
         # self.init_event_listners()
         self.generate_points()
         self.init_colors()
@@ -141,9 +139,6 @@ class Mobject(Container):
             self.apply_depth_test()
 
         Container.__init__(self, **kwargs)
-
-    # def init_event_listners(self):
-    #     self.event_listners = []
 
     def get_points(self):
         return self.points
@@ -1209,13 +1204,13 @@ class Mobject(Container):
         return self
 
     def reverse_points(self):
-        # if self.opengl:
-        #     for mob in self.get_family():
-        #         for key in mob.data:
-        #             mob.data[key] = mob.data[key][::-1]
-        # else:
-        for mob in self.family_members_with_points():
-            mob.apply_over_attr_arrays(lambda arr: np.array(list(reversed(arr))))
+        if self.opengl:
+            for mob in self.get_family():
+                for key in mob.data:
+                    mob.data[key] = mob.data[key][::-1]
+        else:
+            for mob in self.family_members_with_points():
+                mob.apply_over_attr_arrays(lambda arr: np.array(list(reversed(arr))))
 
         return self
 
@@ -1688,6 +1683,7 @@ class Mobject(Container):
         should be further implemented based on the the inner workings
         of color
         """
+        self.set_rgba_array(color, opacity, recurse=False)
         if family:
             for submob in self.submobjects:
                 submob.set_color(color, opacity, family=family)
@@ -1748,12 +1744,17 @@ class Mobject(Container):
         return self
 
     def fade(self, darkness=0.5, family=True):
+        if self.opengl:
+            self.set_opacity(1.0 - darkness, recurse=family)
+            return
         if family:
             for submob in self.submobjects:
                 submob.fade(darkness, family)
         return self
 
     def get_color(self):
+        if self.opengl:
+            return rgb_to_hex(self.data["rgbas"][0, :3])
         return self.color
 
     def get_gloss(self):
@@ -2089,8 +2090,8 @@ class Mobject(Container):
             return remove_list_redundancies(all_mobjects)
 
     def assemble_family(self):
-        # if not self.opengl:
-        #     return
+        if not self.opengl:
+            return
         sub_families = (sm.get_family() for sm in self.submobjects)
         self.family = [self, *it.chain(*sub_families)]
         self.refresh_bounding_box()
@@ -2289,7 +2290,7 @@ class Mobject(Container):
     def push_self_into_submobjects(self):
         copy = self.copy()
         copy.set_submobjects([])
-        self.reset_points(0)
+        self.reset_points()
         self.add(copy)
         return self
 
@@ -2326,6 +2327,16 @@ class Mobject(Container):
                 new_submobs.append(submob.copy().fade(1))
         self.set_submobjects(new_submobs)
         return self
+
+    def set_opacity(self, opacity, recurse=True):
+        self.set_rgba_array(color=None, opacity=opacity, recurse=False)
+        if recurse:
+            for submob in self.submobjects:
+                submob.set_opacity(opacity, recurse=True)
+        return self
+
+    def get_opacity(self):
+        return self.data["rgbas"][0, 3]
 
     def repeat_submobject(self, submob):
         return submob.copy()
