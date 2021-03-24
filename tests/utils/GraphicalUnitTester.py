@@ -32,6 +32,7 @@ class GraphicalUnitTester:
         scene_object,
         module_tested,
         tmpdir,
+        rgb_atol=0
     ):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
@@ -46,6 +47,7 @@ class GraphicalUnitTester:
         self.path_control_data = os.path.join(
             tests_directory, "control_data", "graphical_units_data", module_tested
         )
+        self.rgb_atol = rgb_atol
 
         # IMPORTANT NOTE : The graphical units tests don't use for now any
         # custom manim.cfg, since it is impossible to manually select a
@@ -126,15 +128,15 @@ class GraphicalUnitTester:
             + f"\nframe_data.shape = {frame_data.shape}"
         )
 
-        test_result = np.array_equal(frame_data, expected_frame_data)
-        if not test_result:
-            incorrect_indices = np.argwhere(frame_data != expected_frame_data)
+        mismatches = np.logical_not(np.isclose(frame_data, expected_frame_data, atol=self.rgb_atol, rtol=0))
+        if mismatches.any():
+            incorrect_indices = np.argwhere(mismatches)
             first_incorrect_index = incorrect_indices[0][:2]
             first_incorrect_point = frame_data[tuple(first_incorrect_index)]
             expected_point = expected_frame_data[tuple(first_incorrect_index)]
             if show_diff:
                 self._show_diff_helper(frame_data, expected_frame_data)
-            assert test_result, (
+            assert not mismatches.any(), (
                 f"The frames don't match. {str(self.scene).replace('Test', '')} has been modified."
                 + "\nPlease ignore if it was intended."
                 + f"\nFirst unmatched index is at {first_incorrect_index}: {first_incorrect_point} != {expected_point}"
