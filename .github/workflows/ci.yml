@@ -59,6 +59,7 @@ jobs:
         shell: bash
         id: pip-cache-and-time
         run: |
+          export PATH="$HOME/.poetry/bin:$PATH"
           echo "::set-output name=dir::$(poetry config cache-dir)"
           echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
 
