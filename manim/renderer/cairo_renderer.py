@@ -240,7 +240,7 @@ class CairoRenderer:
         typing.Iterable[Mobject]
             the static image computed.
         """
-        if static_mobjects == None or len(static_mobjects) == 0:
+        if not static_mobjects:
             self.static_image = None
             return
         self.update_frame(scene, mobjects=static_mobjects)
