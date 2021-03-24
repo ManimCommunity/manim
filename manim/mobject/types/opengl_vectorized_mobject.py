@@ -6,6 +6,7 @@ import moderngl
 import numpy as np
 
 from ...constants import *
+from ....mobject.mobject import Mobject
 from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
@@ -40,7 +41,7 @@ JOINT_TYPE_MAP = {
 }
 
 
-class OpenGLVMobject(OpenGLMobject):
+class OpenGLVMobject(Mobject):
     fill_dtype = [
         ("point", np.float32, (3,)),
         ("unit_normal", np.float32, (3,)),

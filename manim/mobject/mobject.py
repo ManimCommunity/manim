@@ -4,7 +4,7 @@
 __all__ = ["Mobject", "Group", "override_animate"]
 
 
-from functools import reduce
+from functools import reduce, wraps
 import copy
 import itertools as it
 import operator as op
@@ -23,7 +23,13 @@ from ..constants import *
 from ..container import Container
 from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C, color_to_rgb
 from ..utils.color import interpolate_color
-from ..utils.iterables import list_update, listify, make_even
+from ..utils.iterables import (
+    batch_by_property,
+    list_update,
+    listify,
+    make_even,
+    resize_with_interpolation,
+)
 from ..utils.iterables import remove_list_redundancies
 from ..utils.iterables import resize_array
 from ..utils.paths import straight_path
@@ -1132,7 +1138,7 @@ class Mobject(Container):
         **kwargs,
     ):
         if about_point is None and about_edge is not None:
-            about_point = self.get_bounding_box_point(about_edge)
+            about_point = self.get_critical_point(about_edge)
 
         for mob in self.get_family():
             arrs = []
@@ -1482,6 +1488,7 @@ class Mobject(Container):
         self.shift(start - curr_start)
         return self
 
+    # TODO: This should be moved to VM object for consistency
     def set_rgba_array(self, color=None, opacity=None, recurse=True):
         if color is not None:
             rgbs = np.array([color_to_rgb(c) for c in listify(color)])
@@ -1573,7 +1580,6 @@ class Mobject(Container):
             for submob in self.submobjects:
                 submob.set_color(color, opacity, family=family)
         self.color = Color(color)
-        self.set_rgba_array(color, opacity, recurse=False)
         return self
 
     def set_color_by_gradient(self, *colors):
@@ -1595,6 +1601,7 @@ class Mobject(Container):
             return self.set_color(*colors)
 
         mobs = self.family_members_with_points()
+        # mobs = self.submobjects
         new_colors = color_gradient(colors, len(mobs))
 
         for mob, color in zip(mobs, new_colors):
@@ -1636,6 +1643,22 @@ class Mobject(Container):
 
     def get_color(self):
         return self.color
+
+    def get_gloss(self):
+        return self.gloss
+
+    def set_gloss(self, gloss, recurse=True):
+        for mob in self.get_family(recurse):
+            mob.gloss = gloss
+        return self
+
+    def get_shadow(self):
+        return self.shadow
+
+    def set_shadow(self, shadow, recurse=True):
+        for mob in self.get_family(recurse):
+            mob.shadow = shadow
+        return self
 
     ##
 
@@ -2132,10 +2155,7 @@ class Mobject(Container):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        if config["use_opengl_renderer"]:
-            self.points = path_func(mobject1.points, mobject2.points, alpha)
-        else:
-            self.points = path_func(mobject1.points, mobject2.points, alpha)
+        self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
@@ -2168,20 +2188,300 @@ class Mobject(Container):
             sm1.interpolate_color(sm1, sm2, 1)
         return self
 
+    # Locking data
+
+    @property
+    def data(self):
+        return {
+            "points": self.points,
+            "bounding_box": self.bounding_box,
+            "rgbas": self.rgbas,
+        }
+
+    @property
+    def uniforms(self):
+        return {
+            "is_fixed_in_frame": float(self.is_fixed_in_frame),
+            "bounding_box": self.gloss,
+            "rgbas": self.shadow,
+        }
+
+    def lock_data(self, keys):
+        """
+        To speed up some animations, particularly transformations,
+        it can be handy to acknowledge which pieces of data
+        won't change during the animation so that calls to
+        interpolate can skip this, and so that it's not
+        read into the shader_wrapper objects needlessly
+        """
+        if self.has_updaters:
+            return
+        # Be sure shader data has most up to date information
+        self.refresh_shader_data()
+        self.locked_data_keys = set(keys)
+
+    def lock_matching_data(self, mobject1, mobject2):
+        for sm, sm1, sm2 in zip(
+            self.get_family(), mobject1.get_family(), mobject2.get_family()
+        ):
+            keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
+            sm.lock_data(
+                list(
+                    filter(
+                        lambda key: np.all(sm1.data[key] == sm2.data[key]),
+                        keys,
+                    )
+                )
+            )
+        return self
+
+    def unlock_data(self):
+        for mob in self.get_family():
+            mob.locked_data_keys = set()
+
     # Errors
     def throw_error_if_no_points(self):
-        if config["use_opengl_renderer"]:
-            if len(self.points) == 0:
-                caller_name = sys._getframe(1).f_code.co_name
-                raise Exception(
-                    f"Cannot call Mobject.{caller_name} for a Mobject with no points"
-                )
-        else:
-            if self.has_no_points():
-                caller_name = sys._getframe(1).f_code.co_name
-                raise Exception(
-                    f"Cannot call Mobject.{caller_name} for a Mobject with no points"
-                )
+        if self.has_no_points():
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call Mobject.{caller_name} for a Mobject with no points"
+            )
+
+    # Operations touching shader uniforms
+
+    def affects_shader_info_id(func):
+        @wraps(func)
+        def wrapper(self):
+            for mob in self.get_family():
+                func(mob)
+                # mob.refresh_shader_wrapper_id()
+            return self
+
+        return wrapper
+
+    @affects_shader_info_id
+    def fix_in_frame(self):
+        self.is_fixed_in_frame = 1.0
+        return self
+
+    @affects_shader_info_id
+    def unfix_from_frame(self):
+        self.is_fixed_in_frame = 0.0
+        return self
+
+    @affects_shader_info_id
+    def apply_depth_test(self):
+        self.depth_test = True
+        return self
+
+    @affects_shader_info_id
+    def deactivate_depth_test(self):
+        self.depth_test = False
+        return self
+
+    # Shader code manipulation
+
+    def replace_shader_code(self, old, new):
+        # TODO, will this work with VMobject structure, given
+        # that it does not simpler return shader_wrappers of
+        # family?
+        for wrapper in self.get_shader_wrapper_list():
+            wrapper.replace_code(old, new)
+        return self
+
+    def set_color_by_code(self, glsl_code):
+        """
+        Takes a snippet of code and inserts it into a
+        context which has the following variables:
+        vec4 color, vec3 point, vec3 unit_normal.
+        The code should change the color variable
+        """
+        self.replace_shader_code("///// INSERT COLOR FUNCTION HERE /////", glsl_code)
+        return self
+
+    def set_color_by_xyz_func(
+        self, glsl_snippet, min_value=-5.0, max_value=5.0, colormap="viridis"
+    ):
+        """
+        Pass in a glsl expression in terms of x, y and z which returns
+        a float.
+        """
+        # TODO, add a version of this which changes the point data instead
+        # of the shader code
+        raise NotImplementedError()
+        # for char in "xyz":
+        #     glsl_snippet = glsl_snippet.replace(char, "point." + char)
+        # rgb_list = get_colormap_list(colormap)
+        # self.set_color_by_code(
+        #     "color.rgb = float_to_color({}, {}, {}, {});".format(
+        #         glsl_snippet,
+        #         float(min_value),
+        #         float(max_value),
+        #         get_colormap_code(rgb_list),
+        #     )
+        # )
+        # return self
+
+    # For shader data
+
+    # def refresh_shader_wrapper_id(self):
+    #     self.shader_wrapper.refresh_id()
+    #     return self
+
+    def get_shader_wrapper(self):
+        from ..renderer.shader_wrapper import ShaderWrapper
+
+        self.shader_wrapper = ShaderWrapper(
+            vert_data=self.get_shader_data(),
+            vert_indices=self.get_shader_vert_indices(),
+            uniforms=self.get_shader_uniforms(),
+            depth_test=self.depth_test,
+            texture_paths=self.texture_paths,
+            render_primitive=self.render_primitive,
+            shader_folder=self.__class__.shader_folder,
+        )
+        return self.shader_wrapper
+
+    def get_shader_wrapper_list(self):
+        shader_wrappers = it.chain(
+            [self.get_shader_wrapper()],
+            *[sm.get_shader_wrapper_list() for sm in self.submobjects],
+        )
+        batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
+
+        result = []
+        for wrapper_group, _ in batches:
+            shader_wrapper = wrapper_group[0]
+            if not shader_wrapper.is_valid():
+                continue
+            shader_wrapper.combine_with(*wrapper_group[1:])
+            if len(shader_wrapper.vert_data) > 0:
+                result.append(shader_wrapper)
+        return result
+
+    def check_data_alignment(self, array, data_key):
+        # Makes sure that self.data[key] can be brodcast into
+        # the given array, meaning its length has to be either 1
+        # or the length of the array
+        d_len = len(self.data[data_key])
+        if d_len != 1 and d_len != len(array):
+            setattr(
+                self,
+                data_key,
+                resize_with_interpolation(self.data[data_key], len(array)),
+            )
+        return self
+
+    def get_resized_shader_data_array(self, length):
+        # If possible, try to populate an existing array, rather
+        # than recreating it each frame
+        shader_data = np.zeros(len(self.points), dtype=self.shader_dtype)
+        return shader_data
+
+    def read_data_to_shader(self, shader_data, shader_data_key, data_key):
+        if data_key in self.locked_data_keys:
+            return
+        self.check_data_alignment(shader_data, data_key)
+        shader_data[shader_data_key] = self.data[data_key]
+
+    def get_shader_data(self):
+        shader_data = self.get_resized_shader_data_array(self.get_num_points())
+        self.read_data_to_shader(shader_data, "point", "points")
+        return shader_data
+
+    def refresh_shader_data(self):
+        self.get_shader_data()
+
+    def get_shader_uniforms(self):
+        return self.uniforms
+
+    def get_shader_vert_indices(self):
+        return self.shader_indices
+
+    # Event Handlers
+    """
+        Event handling follows the Event Bubbling model of DOM in javascript.
+        Return false to stop the event bubbling.
+        To learn more visit https://www.quirksmode.org/js/events_order.html
+
+        Event Callback Argument is a callable function taking two arguments:
+            1. Mobject
+            2. EventData
+    """
+
+    def init_event_listners(self):
+        self.event_listners = []
+
+    def add_event_listner(self, event_type, event_callback):
+        event_listner = EventListner(self, event_type, event_callback)
+        self.event_listners.append(event_listner)
+        EVENT_DISPATCHER.add_listner(event_listner)
+        return self
+
+    def remove_event_listner(self, event_type, event_callback):
+        event_listner = EventListner(self, event_type, event_callback)
+        while event_listner in self.event_listners:
+            self.event_listners.remove(event_listner)
+        EVENT_DISPATCHER.remove_listner(event_listner)
+        return self
+
+    def clear_event_listners(self, recurse=True):
+        self.event_listners = []
+        if recurse:
+            for submob in self.submobjects:
+                submob.clear_event_listners(recurse=recurse)
+        return self
+
+    def get_event_listners(self):
+        return self.event_listners
+
+    def get_family_event_listners(self):
+        return list(it.chain(*[sm.get_event_listners() for sm in self.get_family()]))
+
+    def get_has_event_listner(self):
+        return any(mob.get_event_listners() for mob in self.get_family())
+
+    def add_mouse_motion_listner(self, callback):
+        self.add_event_listner(EventType.MouseMotionEvent, callback)
+
+    def remove_mouse_motion_listner(self, callback):
+        self.remove_event_listner(EventType.MouseMotionEvent, callback)
+
+    def add_mouse_press_listner(self, callback):
+        self.add_event_listner(EventType.MousePressEvent, callback)
+
+    def remove_mouse_press_listner(self, callback):
+        self.remove_event_listner(EventType.MousePressEvent, callback)
+
+    def add_mouse_release_listner(self, callback):
+        self.add_event_listner(EventType.MouseReleaseEvent, callback)
+
+    def remove_mouse_release_listner(self, callback):
+        self.remove_event_listner(EventType.MouseReleaseEvent, callback)
+
+    def add_mouse_drag_listner(self, callback):
+        self.add_event_listner(EventType.MouseDragEvent, callback)
+
+    def remove_mouse_drag_listner(self, callback):
+        self.remove_event_listner(EventType.MouseDragEvent, callback)
+
+    def add_mouse_scroll_listner(self, callback):
+        self.add_event_listner(EventType.MouseScrollEvent, callback)
+
+    def remove_mouse_scroll_listner(self, callback):
+        self.remove_event_listner(EventType.MouseScrollEvent, callback)
+
+    def add_key_press_listner(self, callback):
+        self.add_event_listner(EventType.KeyPressEvent, callback)
+
+    def remove_key_press_listner(self, callback):
+        self.remove_event_listner(EventType.KeyPressEvent, callback)
+
+    def add_key_release_listner(self, callback):
+        self.add_event_listner(EventType.KeyReleaseEvent, callback)
+
+    def remove_key_release_listner(self, callback):
+        self.remove_event_listner(EventType.KeyReleaseEvent, callback)
 
     # About z-index
     def set_z_index(self, z_index_value: Union[int, float]):
