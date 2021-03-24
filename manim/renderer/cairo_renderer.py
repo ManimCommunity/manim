@@ -91,8 +91,9 @@ class CairoRenderer:
             )
             if self.file_writer.is_already_cached(hash_current_animation):
                 logger.info(
-                    f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)", {
-                        "hash_current_animation": hash_current_animation}, )
+                    f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
+                    {"hash_current_animation": hash_current_animation},
+                )
                 self.skip_animations = True
         else:
             hash_current_animation = f"uncached_{self.num_plays:05}"
@@ -239,7 +240,7 @@ class CairoRenderer:
         typing.Iterable[Mobject]
             the static image computed.
         """
-        if static_mobjects is None or len(static_mobjects) == 0:
+        if static_mobjects == None or len(static_mobjects) == 0:
             self.static_image = None
             return
         self.update_frame(scene, mobjects=static_mobjects)
