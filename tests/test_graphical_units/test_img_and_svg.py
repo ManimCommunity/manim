@@ -169,6 +169,13 @@ class VideoIconTest(Scene):
         self.wait()
 
 
+class MutlipleTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("multiple_transforms.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
 class ImageMobjectTest(Scene):
     def construct(self):
         file_path = get_test_resource("tree_img_640x351.png")

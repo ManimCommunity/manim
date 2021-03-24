@@ -415,7 +415,7 @@ class SVGMobject(VMobject):
 
     def handle_transforms(self, element, mobject):
         """Applies the SVG transform to the specified mobject. Transforms include:
-        ``rotate``, ``translate``, ``scale``, and ``skew``.
+        ``rotate``, ``translate``, and ``scale``.
 
         Parameters
         ----------
@@ -435,37 +435,30 @@ class SVGMobject(VMobject):
         transform_attr_value = element.getAttribute("transform")
 
         # parse the various transforms in the attribute value
-
         transform_names = ["matrix", "translate", "scale", "rotate", "skewX", "skewY"]
 
-        # Borrowed from:
+        # Borrowed/Inspired from:
         # https://github.com/cjlano/svg/blob/3ea3384457c9780fa7d67837c9c5fd4ebc42cb3b/svg/svg.py#L75
 
         # match any SVG transformation with its parameter (until final parenthese)
         # [^)]*    == anything but a closing parenthese
         # '|'.join == OR-list of SVG transformations
-        transforms = re.findall(
-            "|".join([x + r"[^)]*\)" for x in transform_names]), transform_attr_value
-        )
+        transform_regex = "|".join([x + r"[^)]*\)" for x in transform_names])
+        transforms = re.findall(transform_regex, transform_attr_value)
 
-        transform_name_args = []
-        number_re = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
+        number_regex = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
 
         for t in transforms:
-            op, arg = t.split("(")
-            op = op.strip()
-            # Keep only numbers
-            arg = [float(x) for x in re.findall(number_re, arg)]
-            transform_name_args.append((op, arg))
+            op_name, op_args = t.split("(")
+            op_name = op_name.strip()
+            op_args = [float(x) for x in re.findall(number_regex, op_args)]
 
-        for t in transform_name_args:
-            if t[0] == "matrix":
-                transform = t[1]
-                transform = np.array(transform).reshape([3, 2])
-                x = transform[2][0]
-                y = -transform[2][1]
+            if op_name == "matrix":
+                transform_args = np.array(op_args).reshape([3, 2])
+                x = transform_args[2][0]
+                y = -transform_args[2][1]
                 matrix = np.identity(self.dim)
-                matrix[:2, :2] = transform[:2, :]
+                matrix[:2, :2] = transform_args[:2, :]
                 matrix[1] *= -1
                 matrix[:, 1] *= -1
 
@@ -473,8 +466,8 @@ class SVGMobject(VMobject):
                     mob.points = np.dot(mob.points, matrix)
                 mobject.shift(x * RIGHT + y * UP)
 
-            if t[0] == "scale":
-                scale_values = t[1]
+            if op_name == "scale":
+                scale_values = op_args
                 if len(scale_values) == 2:
                     scale_x, scale_y = scale_values
                     mobject.scale(np.array([scale_x, scale_y, 1]), about_point=ORIGIN)
@@ -482,8 +475,8 @@ class SVGMobject(VMobject):
                     scale = scale_values[0]
                     mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
 
-            if t[0] == "translate":
-                x, y = t[1]
+            if op_name == "translate":
+                x, y = op_args
                 mobject.shift(x * RIGHT + y * DOWN)
 
             # TODO: handle rotate, skewX and skewY
