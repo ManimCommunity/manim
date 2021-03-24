@@ -109,6 +109,7 @@ jobs:
           Invoke-WebRequest "https://github.com/ManimCommunity/pango-windows-binaries/releases/download/$($pangoVersion)/pango-windows-binaires-x64.zip" -O "$($env:TMP)\Pango.zip"
           mkdir "$($PWD)\ManimCache\Pango"
           7z x "$($env:TMP)\Pango.zip" -o"$($PWD)\ManimCache\Pango"
+          msys2 -c "pacman -S mingw-w64-x86_64-mesa"
 
       - name: Add Windows dependecies to path
         if: runner.os == 'Windows'
