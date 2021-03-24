@@ -415,7 +415,7 @@ class SVGMobject(VMobject):
 
     def handle_transforms(self, element, mobject):
         """Applies the SVG transform to the specified mobject. Transforms include:
-        ``rotate``, ``translate``, and ``scale``.
+        ``matrix``, ``translate``, and ``scale``.
 
         Parameters
         ----------
