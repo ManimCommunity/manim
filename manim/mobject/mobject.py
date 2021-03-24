@@ -25,6 +25,7 @@ from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C
 from ..utils.color import interpolate_color
 from ..utils.iterables import list_update
 from ..utils.iterables import remove_list_redundancies
+from ..utils.iterables import resize_array
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector
@@ -61,6 +62,7 @@ class Mobject(Container):
         self.z_index = z_index
         self.point_hash = None
         self.submobjects = []
+        self.parents = []
         self.updaters = []
         self.updating_suspended = False
         self.reset_points()
@@ -68,40 +70,38 @@ class Mobject(Container):
         self.init_colors()
 
         # OpenGL data.
-        self.data = {}
         self.depth_test = False
+        # If true, the mobject will not get rotated according to camera position
         self.is_fixed_in_frame = False
         self.gloss = 0.0
         self.shadow = 0.0
         self.needs_new_bounding_box = True
-        self.parents = []
         self.family = [self]
 
         self.init_gl_data()
-        self.init_gl_points()
-        self.init_gl_colors()
 
         Container.__init__(self, **kwargs)
 
     def init_gl_data(self):
-        pass
+        self.rgbas = np.zeros((1, 4))
+        self.bounding_box = np.zeros((3, 3))
 
-    def init_gl_points(self):
-        pass
-
-    def init_gl_colors(self):
-        pass
+    def resize_points(self, new_length, resize_func=resize_array):
+        if new_length != len(self.points):
+            self.points = resize_func(self.points, new_length)
+        self.refresh_bounding_box()
+        return self
 
     def get_bounding_box(self):
         if self.needs_new_bounding_box:
-            self.data["bounding_box"] = self.compute_bounding_box()
+            self.bounding_box = self.compute_bounding_box()
             self.needs_new_bounding_box = False
-        return self.data["bounding_box"]
+        return self.bounding_box
 
     def compute_bounding_box(self):
         all_points = np.vstack(
             [
-                self.data["points"],
+                self.points,
                 *(
                     mob.get_bounding_box()
                     for mob in self.get_family()[1:]
@@ -229,10 +229,16 @@ class Mobject(Container):
     def refresh_bounding_box(self, recurse_down=False, recurse_up=True):
         for mob in self.get_family(recurse_down):
             mob.needs_new_bounding_box = True
-        if recurse_up:
-            for parent in self.parents:
-                parent.refresh_bounding_box()
+        # if recurse_up:
+        # for parent in self.parents:
+        #     parent.refresh_bounding_box()
         return self
+
+    def is_point_touching(self, point, buff=MED_SMALL_BUFF):
+        bb = self.get_bounding_box()
+        mins = bb[0] - buff
+        maxs = bb[2] + buff
+        return (point >= mins).all() and (point <= maxs).all()
 
     def add(self, *mobjects: "Mobject") -> "Mobject":
         """Add mobjects as submobjects.
@@ -293,30 +299,26 @@ class Mobject(Container):
             ValueError: Mobject cannot contain self
 
         """
-        if config["use_opengl_renderer"]:
-            if self in mobjects:
-                raise Exception("Mobject cannot contain self")
-            for mobject in mobjects:
-                if mobject not in self.submobjects:
-                    self.submobjects.append(mobject)
-                if self not in mobject.parents:
-                    mobject.parents.append(self)
-            self.assemble_family()
-            return self
-        else:
-            for m in mobjects:
-                if not isinstance(m, Mobject):
-                    raise TypeError("All submobjects must be of type Mobject")
-                if m is self:
-                    raise ValueError("Mobject cannot contain self")
-            self.submobjects = list_update(self.submobjects, mobjects)
-            return self
+        if self in mobjects:
+            raise ValueError("Mobject cannot contain self")
+        for mobject in mobjects:
+            if mobject not in self.submobjects:
+                self.submobjects = list_update(self.submobjects, mobjects)
+            # if self not in mobject.parents:
+            #     mobject.parents = list_update(self.submobjects, mobject.parents)
+        self.assemble_family()
+        return self
 
     def __add__(self, mobject):
         raise NotImplementedError
 
     def __iadd__(self, mobject):
         raise NotImplementedError
+
+    def set_submobjects(self, submobject_list):
+        self.remove(*self.submobjects)
+        self.add(*submobject_list)
+        return self
 
     def add_to_back(self, *mobjects: "Mobject") -> "Mobject":
         """Add all passed mobjects to the back of the submobjects.
@@ -341,8 +343,7 @@ class Mobject(Container):
             first, which places the corresponding mobjects behind the
             subsequent list members.
         """
-        self.remove(*mobjects)
-        self.submobjects = list(mobjects) + self.submobjects
+        self.set_submobjects(list_update(mobjects, self.submobjects))
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
@@ -370,6 +371,9 @@ class Mobject(Container):
         for mobject in mobjects:
             if mobject in self.submobjects:
                 self.submobjects.remove(mobject)
+            # if self in mobject.parents:
+            #     mobject.parents.remove(self)
+        self.assemble_family()
         return self
 
     def __sub__(self, other):
@@ -971,8 +975,6 @@ class Mobject(Container):
             for mob in self.family_members_with_points():
                 mob.points = mob.points.astype("float")
                 mob.points += total_vector
-                if hasattr(mob, "data") and "points" in mob.data:
-                    mob.data["points"] += total_vector
             return self
 
     def scale(self, scale_factor: float, **kwargs) -> "Mobject":
@@ -1114,8 +1116,8 @@ class Mobject(Container):
 
         for mob in self.get_family():
             arrs = []
-            if len(self.data["points"]):
-                arrs.append(mob.data["points"])
+            if len(self.points):
+                arrs.append(mob.points)
             if works_on_bounding_box:
                 arrs.append(mob.get_bounding_box())
 
@@ -1426,7 +1428,7 @@ class Mobject(Container):
     def replace(self, mobject, dim_to_match=0, stretch=False):
         if not mobject.get_num_points() and not mobject.submobjects:
             raise Warning("Attempting to replace mobject with no points")
-            return self
+
         if stretch:
             self.stretch_to_fit_width(mobject.width)
             self.stretch_to_fit_height(mobject.height)
@@ -1637,10 +1639,7 @@ class Mobject(Container):
         return self.get_all_points()
 
     def get_num_points(self):
-        if config["use_opengl_renderer"]:
-            return len(self.data["points"])
-        else:
-            return len(self.points)
+        return len(self.points)
 
     def get_extremum_along_dim(self, points=None, dim=0, key=0):
         if points is None:
@@ -1735,17 +1734,11 @@ class Mobject(Container):
 
     def get_start(self):
         self.throw_error_if_no_points()
-        if config["use_opengl_renderer"]:
-            return np.array(self.data["points"][0])
-        else:
-            return np.array(self.points[0])
+        return np.array(self.points[0])
 
     def get_end(self):
         self.throw_error_if_no_points()
-        if config["use_opengl_renderer"]:
-            return np.array(self.data["points"][-1])
-        else:
-            return np.array(self.points[-1])
+        return np.array(self.points[-1])
 
     def get_start_and_end(self):
         return self.get_start(), self.get_end()
@@ -1860,8 +1853,17 @@ class Mobject(Container):
             all_mobjects = [self] + list(it.chain(*sub_families))
             return remove_list_redundancies(all_mobjects)
 
+    def assemble_family(self):
+        sub_families = (sm.get_family() for sm in self.submobjects)
+        self.family = [self, *it.chain(*sub_families)]
+        # self.refresh_has_updater_status()
+        self.refresh_bounding_box()
+        # for parent in self.parents:
+        #     parent.assemble_family()
+        return self
+
     def family_members_with_points(self):
-        return [m for m in self.get_family() if m.get_num_points() > 0]
+        return [m for m in self.get_family() if m.has_points()]
 
     def arrange(
         self,
@@ -1893,26 +1895,62 @@ class Mobject(Container):
             self.center()
         return self
 
-    def arrange_in_grid(self, n_rows=None, n_cols=None, **kwargs):
+    def arrange_in_grid(
+        self,
+        n_rows=None,
+        n_cols=None,
+        buff=None,
+        h_buff=None,
+        v_buff=None,
+        buff_ratio=None,
+        h_buff_ratio=0.5,
+        v_buff_ratio=0.5,
+        aligned_edge=ORIGIN,
+        fill_rows_first=True,
+    ):
         submobs = self.submobjects
         if n_rows is None and n_cols is None:
-            n_cols = int(np.sqrt(len(submobs)))
+            n_rows = int(np.sqrt(len(submobs)))
+        if n_rows is None:
+            n_rows = len(submobs) // n_cols
+        elif n_cols is None:
+            n_cols = len(submobs) // n_rows
 
-        if n_rows is not None:
-            v1 = RIGHT
-            v2 = DOWN
-            n = len(submobs) // n_rows
-        elif n_cols is not None:
-            v1 = DOWN
-            v2 = RIGHT
-            n = len(submobs) // n_cols
-        Group(
-            *[
-                Group(*submobs[i : i + n]).arrange(v1, **kwargs)
-                for i in range(0, len(submobs), n)
-            ]
-        ).arrange(v2, **kwargs)
+        if buff is not None:
+            h_buff = buff
+            v_buff = buff
+        else:
+            if buff_ratio is not None:
+                v_buff_ratio = buff_ratio
+                h_buff_ratio = buff_ratio
+            if h_buff is None:
+                h_buff = h_buff_ratio * self[0].get_width()
+            if v_buff is None:
+                v_buff = v_buff_ratio * self[0].get_height()
+
+        x_unit = h_buff + max([sm.get_width() for sm in submobs])
+        y_unit = v_buff + max([sm.get_height() for sm in submobs])
+
+        for index, sm in enumerate(submobs):
+            if fill_rows_first:
+                x, y = index % n_cols, index // n_cols
+            else:
+                x, y = index // n_rows, index % n_rows
+            sm.move_to(ORIGIN, aligned_edge)
+            sm.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
+        self.center()
         return self
+
+    def get_grid(self, n_rows, n_cols, height=None, **kwargs):
+        """
+        Returns a new mobject containing multiple copies of this one
+        arranged in a grid
+        """
+        grid = self.get_group_class()(*(self.copy() for n in range(n_rows * n_cols)))
+        grid.arrange_in_grid(n_rows, n_cols, **kwargs)
+        if height is not None:
+            grid.set_height(height)
+        return grid
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
         if submob_func is None:
@@ -2045,9 +2083,7 @@ class Mobject(Container):
                     self.add(dotL, dotR, dotMiddle)
         """
         if config["use_opengl_renderer"]:
-            self.data["points"][:] = path_func(
-                mobject1.data["points"], mobject2.data["points"], alpha
-            )
+            self.points = path_func(mobject1.points, mobject2.points, alpha)
         else:
             self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
@@ -2085,7 +2121,7 @@ class Mobject(Container):
     # Errors
     def throw_error_if_no_points(self):
         if config["use_opengl_renderer"]:
-            if len(self.data["points"]) == 0:
+            if len(self.points) == 0:
                 caller_name = sys._getframe(1).f_code.co_name
                 raise Exception(
                     f"Cannot call Mobject.{caller_name} for a Mobject with no points"
