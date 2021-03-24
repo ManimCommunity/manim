@@ -375,7 +375,7 @@ def serialize_mobject(mobject):
         mob_proto.style.fill_opacity = float(mob_style["fill_opacity"])
         assets_dir_path = str(config.get_dir("assets_dir"))
         if mobject.path.startswith(assets_dir_path):
-            mob_proto.image_mobject_data.path = mobject.path[len(assets_dir_path) + 1:]
+            mob_proto.image_mobject_data.path = mobject.path[len(assets_dir_path) + 1 :]
         else:
             logger.info(
                 f"Expected path {mobject.path} to be under the assets dir ({assets_dir_path})"

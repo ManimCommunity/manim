@@ -85,16 +85,16 @@ class OldMultiCamera(Camera):
             shifted_camera.camera.capture_mobjects(mobjects, **kwargs)
 
             self.pixel_array[
-                shifted_camera.start_y: shifted_camera.end_y,
-                shifted_camera.start_x: shifted_camera.end_x,
+                shifted_camera.start_y : shifted_camera.end_y,
+                shifted_camera.start_x : shifted_camera.end_x,
             ] = shifted_camera.camera.pixel_array
 
     def set_background(self, pixel_array, **kwargs):
         for shifted_camera in self.shifted_cameras:
             shifted_camera.camera.set_background(
                 pixel_array[
-                    shifted_camera.start_y: shifted_camera.end_y,
-                    shifted_camera.start_x: shifted_camera.end_x,
+                    shifted_camera.start_y : shifted_camera.end_y,
+                    shifted_camera.start_x : shifted_camera.end_x,
                 ],
                 **kwargs,
             )
@@ -104,8 +104,8 @@ class OldMultiCamera(Camera):
         for shifted_camera in self.shifted_cameras:
             shifted_camera.camera.set_pixel_array(
                 pixel_array[
-                    shifted_camera.start_y: shifted_camera.end_y,
-                    shifted_camera.start_x: shifted_camera.end_x,
+                    shifted_camera.start_y : shifted_camera.end_y,
+                    shifted_camera.start_x : shifted_camera.end_x,
                 ],
                 **kwargs,
             )

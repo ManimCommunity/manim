@@ -122,7 +122,7 @@ class SVGPathMobject(VMobject):
         elif command == "C":  # Cubic
             # points must be added in groups of 3.
             for i in range(0, len(new_points), 3):
-                self.add_cubic_bezier_curve_to(*new_points[i: i + 3])
+                self.add_cubic_bezier_curve_to(*new_points[i : i + 3])
             return
 
         elif command == "S":  # Smooth cubic

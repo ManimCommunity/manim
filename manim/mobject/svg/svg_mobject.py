@@ -437,7 +437,7 @@ class SVGMobject(VMobject):
 
         # Transform matrix
         if transform.startswith("matrix(") and transform.endswith(suffix):
-            transform = transform[len("matrix("): -len(suffix)]
+            transform = transform[len("matrix(") : -len(suffix)]
             transform = string_to_numbers(transform)
             transform = np.array(transform).reshape([3, 2])
             x = transform[2][0]
@@ -452,7 +452,7 @@ class SVGMobject(VMobject):
             mobject.shift(x * RIGHT + y * UP)
 
         elif transform.startswith("scale(") and transform.endswith(suffix):
-            transform = transform[len("scale("): -len(suffix)]
+            transform = transform[len("scale(") : -len(suffix)]
             scale_values = string_to_numbers(transform)
             if len(scale_values) == 2:
                 scale_x, scale_y = scale_values
@@ -462,7 +462,7 @@ class SVGMobject(VMobject):
                 mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
 
         elif transform.startswith("translate(") and transform.endswith(suffix):
-            transform = transform[len("translate("): -len(suffix)]
+            transform = transform[len("translate(") : -len(suffix)]
             x, y = string_to_numbers(transform)
             mobject.shift(x * RIGHT + y * DOWN)
 
