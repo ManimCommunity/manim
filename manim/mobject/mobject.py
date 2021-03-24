@@ -16,6 +16,7 @@ import warnings
 
 from pathlib import Path
 from colour import Color
+import moderngl
 import numpy as np
 
 from .. import config
@@ -60,37 +61,71 @@ class Mobject(Container):
 
     """
 
-    def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
+    def __init__(
+        self,
+        color=WHITE,
+        name=None,
+        dim=3,
+        target=None,
+        z_index=0,
+        gloss=0.0,
+        # Positive shadow up to 1 makes a side opposite the light darker
+        shadow=0.0,
+        # For shaders
+        render_primitive=moderngl.TRIANGLE_STRIP,
+        texture_paths=None,
+        depth_test=False,
+        # If true, the mobject will not get rotated according to camera position
+        is_fixed_in_frame=False,
+        # Must match in attributes of vert shader
+        # Event listener
+        listen_to_events=False,
+        **kwargs,
+    ):
+        # OpenGL data.
+        self.init_data()
+        # If true, the mobject will not get rotated according to camera position
+        self.is_fixed_in_frame = is_fixed_in_frame
+        self.gloss = gloss
+        self.shadow = shadow
+        self.needs_new_bounding_box = True
+        self.locked_data_keys = set()
+
+        # For shaders
+        self.render_primitive = render_primitive
+        self.texture_paths = texture_paths
+        self.depth_test = depth_test
+
+        # Must match in attributes of vert shader
+        # Event listener
+        self.listen_to_events = listen_to_events
+
+        self.submobjects = []
+        self.parents = []
+        self.updaters = []
+        self.family = [self]
         self.color = Color(color)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        self.submobjects = []
-        self.parents = []
-        self.updaters = []
         self.updating_suspended = False
         self.reset_points()
         self.generate_points()
         self.init_colors()
 
-        # OpenGL data.
-        self.depth_test = False
-        # If true, the mobject will not get rotated according to camera position
-        self.is_fixed_in_frame = False
-        self.gloss = 0.0
-        self.shadow = 0.0
-        self.needs_new_bounding_box = True
-        self.family = [self]
-
-        self.init_gl_data()
-
         Container.__init__(self, **kwargs)
 
-    def init_gl_data(self):
-        self.rgbas = np.zeros((1, 4))
-        self.bounding_box = np.zeros((3, 3))
+    def get_points(self):
+        return self.points
+
+    def init_data(self):
+        self.data = {
+            "points": np.zeros((0, 3)),
+            "bounding_box": np.zeros((3, 3)),
+            "rgbas": np.zeros((1, 4)),
+        }
 
     def resize_points(self, new_length, resize_func=resize_array):
         if new_length != len(self.points):
@@ -100,9 +135,9 @@ class Mobject(Container):
 
     def get_bounding_box(self):
         if self.needs_new_bounding_box:
-            self.bounding_box = self.compute_bounding_box()
+            self.data["bounding_box"] = self.compute_bounding_box()
             self.needs_new_bounding_box = False
-        return self.bounding_box
+        return self.data["bounding_box"]
 
     def compute_bounding_box(self):
         all_points = np.vstack(
@@ -232,12 +267,36 @@ class Mobject(Container):
         """
         pass
 
+    @property
+    def points(self):
+        return self.data["points"]
+
+    @points.setter
+    def points(self, value):
+        self.data["points"] = value
+
+    def set_points(self, points):
+        if len(points) == len(self.points):
+            self.points[:] = points
+        elif isinstance(points, np.ndarray):
+            self.points = points.copy()
+        else:
+            self.points = np.array(points)
+        self.refresh_bounding_box()
+
+        return self
+
+    def set_data(self, data):
+        for key in data:
+            self.data[key] = data[key].copy()
+        return self
+
     def refresh_bounding_box(self, recurse_down=False, recurse_up=True):
         for mob in self.get_family(recurse_down):
             mob.needs_new_bounding_box = True
-        # if recurse_up:
-        # for parent in self.parents:
-        #     parent.refresh_bounding_box()
+        if recurse_up:
+            for parent in self.parents:
+                parent.refresh_bounding_box()
         return self
 
     def is_point_touching(self, point, buff=MED_SMALL_BUFF):
@@ -1489,7 +1548,7 @@ class Mobject(Container):
         return self
 
     # TODO: This should be moved to VM object for consistency
-    def set_rgba_array(self, color=None, opacity=None, recurse=True):
+    def set_rgba_array(self, color=None, opacity=None, name="rgbas", recurse=True):
         if color is not None:
             rgbs = np.array([color_to_rgb(c) for c in listify(color)])
         if opacity is not None:
@@ -1498,20 +1557,20 @@ class Mobject(Container):
         # Color only
         if color is not None and opacity is None:
             for mob in self.get_family(recurse):
-                mob.rgbas = resize_array(mob.rgbas, len(rgbs))
-                mob.rgbas[:, :3] = rgbs
+                mob.data[name] = resize_array(mob.data[name], len(rgbs))
+                mob.data[name][:, :3] = rgbs
 
         # Opacity only
         if color is None and opacity is not None:
             for mob in self.get_family(recurse):
-                mob.rgbas = resize_array(mob.rgbas, len(opacities))
-                mob.rgbas[:, 3] = opacities
+                mob.data[name] = resize_array(mob.data[name], len(opacities))
+                mob.data[name][:, 3] = opacities
 
         # Color and opacity
         if color is not None and opacity is not None:
             rgbas = np.array([[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))])
             for mob in self.get_family(recurse):
-                mob.rgbas = rgbas.copy()
+                mob.data[name] = rgbas.copy()
         return self
 
     # Background rectangle
@@ -2190,20 +2249,11 @@ class Mobject(Container):
 
     # Locking data
 
-    @property
-    def data(self):
-        return {
-            "points": self.points,
-            "bounding_box": self.bounding_box,
-            "rgbas": self.rgbas,
-        }
-
-    @property
     def uniforms(self):
         return {
             "is_fixed_in_frame": float(self.is_fixed_in_frame),
-            "bounding_box": self.gloss,
-            "rgbas": self.shadow,
+            "gloss": self.gloss,
+            "shadow": self.shadow,
         }
 
     def lock_data(self, keys):
@@ -2359,17 +2409,21 @@ class Mobject(Container):
                 result.append(shader_wrapper)
         return result
 
+    def append_points(self, new_points):
+        self.points = np.vstack([self.points, new_points])
+        self.refresh_bounding_box()
+        return self
+
     def check_data_alignment(self, array, data_key):
         # Makes sure that self.data[key] can be brodcast into
         # the given array, meaning its length has to be either 1
         # or the length of the array
         d_len = len(self.data[data_key])
         if d_len != 1 and d_len != len(array):
-            setattr(
-                self,
-                data_key,
+            self.data[data_key] = (
                 resize_with_interpolation(self.data[data_key], len(array)),
             )
+
         return self
 
     def get_resized_shader_data_array(self, length):

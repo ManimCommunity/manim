@@ -32,7 +32,7 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
             **kwargs
         )
 
-    def init_points(self):
+    def generate_points(self):
         uv_surface = self.uv_surface
 
         full_nu, full_nv = uv_surface.resolution

@@ -1,20 +1,15 @@
+from manim.mobject.mobject import Mobject
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.caching import handle_caching_play
 from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.color import color_to_rgba
 import moderngl
 from .opengl_renderer_window import Window
-from .shader_wrapper import ShaderWrapper
 import numpy as np
-from ..mobject.types.vectorized_mobject import VMobject
 import itertools as it
 import time
-from .. import logger
 from ..constants import *
 from ..utils.space_ops import (
-    cross2d,
-    earclip_triangulation,
-    z_to_vector,
     quaternion_mult,
     quaternion_from_angle_axis,
     rotation_matrix_transpose_from_quaternion,
@@ -30,7 +25,7 @@ from manim import config
 from ..scene.scene_file_writer import SceneFileWriter
 
 
-class OpenGLCamera(OpenGLMobject):
+class OpenGLCamera(Mobject):
     def __init__(
         self,
         frame_shape=None,
@@ -74,10 +69,12 @@ class OpenGLCamera(OpenGLMobject):
         self.data["euler_angles"] = np.array(self.euler_angles, dtype=float)
         self.refresh_rotation_matrix()
 
-    def init_points(self):
+    def generate_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
-        self.set_width(self.frame_shape[0], stretch=True)
-        self.set_height(self.frame_shape[1], stretch=True)
+        # self.set_width(self.frame_shape[0], stretch=True)
+        # self.set_height(self.frame_shape[1], stretch=True)
+        self.width = self.frame_shape[0]
+        self.height = self.frame_shape[1]
         self.move_to(self.center_point)
 
     def to_default_state(self):

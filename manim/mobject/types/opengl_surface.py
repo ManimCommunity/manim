@@ -1,3 +1,4 @@
+from manim.mobject.mobject import Mobject
 import numpy as np
 import moderngl
 
@@ -11,7 +12,7 @@ from ...utils.color import *
 from ...utils.space_ops import normalize_along_axis
 
 
-class OpenGLSurface(OpenGLMobject):
+class OpenGLSurface(Mobject):
     shader_dtype = [
         ("point", np.float32, (3,)),
         ("du_point", np.float32, (3,)),
@@ -72,7 +73,7 @@ class OpenGLSurface(OpenGLMobject):
             return self.passed_uv_func(u, v)
         return (u, v, 0.0)
 
-    def init_points(self):
+    def generate_points(self):
         dim = self.dim
         nu, nv = self.resolution
         u_range = np.linspace(*self.u_range, nu)
@@ -211,7 +212,7 @@ class OpenGLSurfaceGroup(OpenGLSurface):
         super().__init__(uv_func=None, **kwargs)
         self.add(*parametric_surfaces)
 
-    def init_points(self):
+    def generate_points(self):
         pass  # Needed?
 
 
@@ -247,6 +248,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.v_range = uv_surface.v_range
         self.resolution = uv_surface.resolution
         self.gloss = self.uv_surface.gloss
+        self.num_textures = self.num_textures
         super().__init__(texture_paths=texture_paths, **kwargs)
 
     def init_data(self):
@@ -254,9 +256,10 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.data["im_coords"] = np.zeros((0, 2))
         self.data["opacity"] = np.zeros((0, 1))
 
-    def init_points(self):
+    def generate_points(self):
+        super().generate_points()
         nu, nv = self.uv_surface.resolution
-        self.set_points(self.uv_surface.get_points())
+        self.points = self.uv_surface.points
         self.data["im_coords"] = np.array(
             [
                 [u, v]
@@ -264,10 +267,6 @@ class OpenGLTexturedSurface(OpenGLSurface):
                 for v in np.linspace(1, 0, nv)  # Reverse y-direction
             ]
         )
-
-    def init_uniforms(self):
-        super().init_uniforms()
-        self.uniforms["num_textures"] = self.num_textures
 
     def init_colors(self):
         self.data["opacity"] = np.array([self.uv_surface.data["rgbas"][:, 3]])
