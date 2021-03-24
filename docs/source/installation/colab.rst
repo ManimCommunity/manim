@@ -9,4 +9,4 @@ You can install Colab by running the following in a cell:
    !pip install manim
    !pip install IPython --upgrade
 
- After the execution has completed, you will be prompted to restart the runtime. Click the "restart runtime" button at the bottom of the cell output.
+After the execution has completed, you will be prompted to restart the runtime. Click the "restart runtime" button at the bottom of the cell output.
