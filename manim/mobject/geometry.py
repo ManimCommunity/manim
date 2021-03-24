@@ -968,7 +968,7 @@ class Polygon(VMobject):
     Parameters
     ----------
     vertices : :class:`list`
-        The vertices of the mobject. The first one is repeated to close the shape. Must define 3-dimensions: `[x,y,z]`
+        The vertices of the mobject. The first one is repeated to close the shape. Must define 3-dimensions: ``[x,y,z]``
     color : :class:`~.Colors`, optional
         The color of the polygon.
     kwargs : Any
@@ -1001,7 +1001,7 @@ class Polygon(VMobject):
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
-        """Get the vertices of a given polygon.
+        """Gets the vertices of the polygon.
 
         Examples
         --------
@@ -1024,7 +1024,7 @@ class Polygon(VMobject):
         return self.get_start_anchors()
 
     def round_corners(self, radius=0.5):
-        """Rounds off the corners of a polygon.
+        """Rounds off the corners of the polygon.
 
         Parameters
         ----------
