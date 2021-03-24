@@ -32,19 +32,6 @@ jobs:
           pip install wheel
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
-      - name: Get Poetry Cache Dir
-        shell: bash
-        id: pip-cache-and-time
-        run: |
-          echo "::set-output name=dir::$(poetry config cache-dir)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
-
-      - name: pip cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache-and-time.outputs.dir }}
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
-
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -67,6 +54,19 @@ jobs:
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Get Poetry Cache Dir
+        shell: bash
+        id: pip-cache-and-time
+        run: |
+          echo "::set-output name=dir::$(poetry config cache-dir)"
+          echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
+
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache-and-time.outputs.dir }}
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
 
       - name: Cache Windows
         id: cache-windows
