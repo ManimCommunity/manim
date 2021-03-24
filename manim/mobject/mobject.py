@@ -21,9 +21,9 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..container import Container
-from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C
+from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C, color_to_rgb
 from ..utils.color import interpolate_color
-from ..utils.iterables import list_update
+from ..utils.iterables import list_update, listify, make_even
 from ..utils.iterables import remove_list_redundancies
 from ..utils.iterables import resize_array
 from ..utils.paths import straight_path
@@ -782,8 +782,8 @@ class Mobject(Container):
         else:
             self.updaters.insert(index, update_function)
         if call_updater:
-            update_function(self, 0)
-            # self.update()
+            # update_function(self, 0)
+            self.update()
         return self
 
     def remove_updater(self, update_function: Updater) -> "Mobject":
@@ -918,8 +918,8 @@ class Mobject(Container):
         if recursive:
             for submob in self.submobjects:
                 submob.resume_updating(recursive)
-        # for parent in self.parents:
-        #     parent.resume_updating(recurse=False, call_updater=False)
+        for parent in self.parents:
+            parent.resume_updating(recurse=False, call_updater=False)
         self.update(dt=0, recursive=recursive)
         return self
 
@@ -1480,6 +1480,31 @@ class Mobject(Container):
             about_point=curr_start,
         )
         self.shift(start - curr_start)
+        return self
+
+    def set_rgba_array(self, color=None, opacity=None, name="rgbas", recurse=True):
+        if color is not None:
+            rgbs = np.array([color_to_rgb(c) for c in listify(color)])
+        if opacity is not None:
+            opacities = listify(opacity)
+
+        # Color only
+        if color is not None and opacity is None:
+            for mob in self.get_family(recurse):
+                mob.data[name] = resize_array(mob.data[name], len(rgbs))
+                mob.data[name][:, :3] = rgbs
+
+        # Opacity only
+        if color is None and opacity is not None:
+            for mob in self.get_family(recurse):
+                mob.data[name] = resize_array(mob.data[name], len(opacities))
+                mob.data[name][:, 3] = opacities
+
+        # Color and opacity
+        if color is not None and opacity is not None:
+            rgbas = np.array([[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))])
+            for mob in self.get_family(recurse):
+                mob.data[name] = rgbas.copy()
         return self
 
     # Background rectangle
