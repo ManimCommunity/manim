@@ -27,13 +27,7 @@ class GraphicalUnitTester:
         The scene tested
     """
 
-    def __init__(
-        self,
-        scene_object,
-        module_tested,
-        tmpdir,
-        rgb_atol=0
-    ):
+    def __init__(self, scene_object, module_tested, tmpdir, rgb_atol=0):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
         tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -128,7 +122,9 @@ class GraphicalUnitTester:
             + f"\nframe_data.shape = {frame_data.shape}"
         )
 
-        mismatches = np.logical_not(np.isclose(frame_data, expected_frame_data, atol=self.rgb_atol, rtol=0))
+        mismatches = np.logical_not(
+            np.isclose(frame_data, expected_frame_data, atol=self.rgb_atol, rtol=0)
+        )
         if mismatches.any():
             incorrect_indices = np.argwhere(mismatches)
             first_incorrect_index = incorrect_indices[0][:2]

@@ -22,4 +22,6 @@ MODULE_NAME = "opengl"
 def test_scene(scene_to_test, tmpdir, show_diff):
     with tempconfig({"use_opengl_renderer": True}):
         # allow 2/255 differences with opengl because of system dependencies
-        GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir, rgb_atol=2).test(show_diff=show_diff)
+        GraphicalUnitTester(scene_to_test[1], MODULE_NAME, tmpdir, rgb_atol=2).test(
+            show_diff=show_diff
+        )

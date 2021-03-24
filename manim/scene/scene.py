@@ -94,13 +94,10 @@ class Scene(Container):
             skip_animations = kwargs.get("skip_animations", False)
             # If renderer is unspecified, use the configs for a sensible default.
             if config["use_opengl_renderer"]:
-                self.renderer = OpenGLRenderer(
-                    skip_animations=skip_animations
-                )
+                self.renderer = OpenGLRenderer(skip_animations=skip_animations)
             else:
                 self.renderer = CairoRenderer(
-                    camera_class=self.camera_class,
-                    skip_animations=skip_animations
+                    camera_class=self.camera_class, skip_animations=skip_animations
                 )
         else:
             self.renderer = renderer
