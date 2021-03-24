@@ -5,18 +5,11 @@ import sys
 import moderngl
 from functools import wraps
 from ..utils.color import *
-from ..utils.iterables import listify
 
 import numpy as np
 
 from .. import config
 from ..constants import *
-
-from ..utils.color import color_gradient
-
-# from ..utils.color import get_colormap_list
-from ..utils.color import rgb_to_hex
-from ..utils.color import color_to_rgb
 
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import list_update
@@ -1225,7 +1218,7 @@ class OpenGLMobject:
         new_submobs = []
         for submob, sf in zip(self.submobjects, split_factors):
             new_submobs.append(submob)
-            for k in range(1, sf):
+            for _ in range(1, sf):
                 new_submob = submob.copy()
                 # If the submobject is at all transparent, then
                 # make the copy completely transparent
@@ -1416,7 +1409,7 @@ class OpenGLMobject:
         batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
 
         result = []
-        for wrapper_group, sid in batches:
+        for wrapper_group, _ in batches:
             shader_wrapper = wrapper_group[0]
             if not shader_wrapper.is_valid():
                 continue

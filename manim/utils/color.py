@@ -289,7 +289,7 @@ def color_to_rgba(color, alpha=1):
 def rgb_to_color(rgb):
     try:
         return Color(rgb=rgb)
-    except:
+    except Exception:
         return Color(WHITE)
 
 

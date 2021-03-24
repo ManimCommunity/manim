@@ -395,6 +395,35 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
+    """A circle.
+
+    Parameters
+    ----------
+    color : :class:`~.Colors`, optional
+        The color of the shape.
+    close_new_points : :class:`bool`, optional
+        No purpose.
+    anchors_span_full_range : :class:`bool`, optional
+        No purpose.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Arc`
+
+    Examples
+    --------
+
+    .. manim:: CircleExample
+        :save_last_frame:
+
+        class CircleExample(Scene):
+            def construct(self):
+                circle_1 = Circle(radius=1.0)
+                circle_2 = Circle(radius=1.5, color=GREEN)
+                circle_3 = Circle(radius=1.0, color=BLUE_B, fill_opacity=1)
+
+                circle_group = Group(circle_1, circle_2, circle_3).arrange(buff=1)
+                self.add(circle_group)
+    """
+
     def __init__(
         self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
     ):
@@ -409,6 +438,43 @@ class Circle(Arc):
         )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
+        """Modifies a circle so that it surrounds a given mobject.
+
+        Parameters
+        ----------
+        mobject : :class:`~.Mobject`
+            The mobject that the circle will be surrounding.
+        dim_to_match : :class:`int`, optional
+        buffer_factor :  :class:`float`, optional
+            Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject.
+        stretch : :class:`bool`, optional
+            Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class:`Line`
+
+        Examples
+        --------
+
+        .. manim:: CircleSurround
+            :save_last_frame:
+
+            class CircleSurround(Scene):
+                def construct(self):
+                    triangle1 = Triangle()
+                    circle1 = Circle().surround(triangle1)
+                    group1 = Group(triangle1,circle1) # treat the two mobjects as one
+
+                    line2 = Line()
+                    circle2 = Circle().surround(line2, buffer_factor=2.0)
+                    group2 = Group(line2,circle2)
+
+                    # buffer_factor < 1, so the circle is smaller than the square
+                    square3 = Square()
+                    circle3 = Circle().surround(square3, buffer_factor=0.5)
+                    group3 = Group(square3, circle3)
+
+                    group = Group(group1, group2, group3).arrange(buff=1)
+                    self.add(group)
+        """
+
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: Perhaps create an ellipse class to handle single-dimension stretching
 
@@ -420,11 +486,71 @@ class Circle(Arc):
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
+        """Returns the position of a point on the circle.
+
+        Parameters
+        ----------
+        angle : class: `float`
+            The angle of the point along the circle in radians.
+
+        Examples
+        --------
+
+        .. manim:: PointAtAngleExample
+            :save_last_frame:
+
+            class PointAtAngleExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=2.0)
+                    p1 = circle.point_at_angle(PI/2)
+                    p2 = circle.point_at_angle(270*DEGREES)
+
+                    s1 = Square(side_length=0.25).move_to(p1)
+                    s2 = Square(side_length=0.25).move_to(p2)
+                    self.add(circle, s1, s2)
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The location of the point along the circle's circumference.
+        """
+
         start_angle = angle_of_vector(self.points[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
 
 
 class Dot(Circle):
+    """A circle with a very small radius.
+
+    Parameters
+    ----------
+    point : Union[:class:`list`, :class:`numpy.ndarray`], optional
+        The location of the dot.
+    radius : Optional[:class:`float`]
+        The radius of the dot.
+    stroke_width : :class:`float`, optional
+        The thickness of the outline of the dot.
+    fill_opacity : :class:`float`, optional
+        The opacity of the dot's fill_colour
+    color : :class:`~.Colors`, optional
+        The color of the dot.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Circle`
+
+    Examples
+    --------
+
+    .. manim:: DotExample
+        :save_last_frame:
+
+        class DotExample(Scene):
+            def construct(self):
+                dot1 = Dot(point=LEFT, radius=0.08)
+                dot2 = Dot(point=ORIGIN)
+                dot3 = Dot(point=RIGHT)
+                self.add(dot1,dot2,dot3)
+    """
+
     def __init__(
         self,
         point=ORIGIN,
@@ -1067,7 +1193,7 @@ class ArcPolygon(VMobject):
                                             {'angle': 20*DEGREES, 'color': BLUE},
                                             {'radius': 1}])
                 ap_group = VGroup(ap1, ap2, ap3, ap4).arrange()
-                self.play(*[ShowCreation(ap) for ap in [ap1, ap2, ap3, ap4]])
+                self.play(*[Create(ap) for ap in [ap1, ap2, ap3, ap4]])
                 self.wait()
 
     For further examples see :class:`ArcPolygonFromArcs`.
@@ -1168,7 +1294,7 @@ class ArcPolygonFromArcs(VMobject):
     after the arcpolygon has been initialized.
 
     Also both the arcs contained in an :class:`~.ArcPolygonFromArcs`, as well as the
-    arcpolygon itself are drawn, which affects draw time in :class:`~.ShowCreation`
+    arcpolygon itself are drawn, which affects draw time in :class:`~.Create`
     for example. In most cases the arcs themselves don't
     need to be drawn, in which case they can be passed as invisible.
 
@@ -1240,6 +1366,38 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
+    """A quadrilateral with two sets of parallel sides.
+
+    Parameters
+    ----------
+    color : :class:`~.Colors`, optional
+        The color of the rectangle.
+    height : :class:`float`, optional
+        The vertical height of the rectangle.
+    width : :class:`float`, optional
+        The horizontal width of the rectangle.
+    mark_paths_closed : :class:`bool`, optional
+        No purpose.
+    close_new_points : :class:`bool`, optional
+        No purpose.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Polygon`
+
+    Examples
+    ----------
+
+    .. manim:: RectangleExample
+        :save_last_frame:
+
+        class RectangleExample(Scene):
+            def construct(self):
+                rect1 = Rectangle(width=4.0, height=2.0)
+                rect2 = Rectangle(width=1.0, height=4.0)
+
+                rects = Group(rect1,rect2).arrange(buff=1)
+                self.add(rects)
+    """
+
     def __init__(
         self,
         color=WHITE,
@@ -1257,6 +1415,29 @@ class Rectangle(Polygon):
 
 
 class Square(Rectangle):
+    """A rectangle with equal side lengths.
+
+    Parameters
+    ----------
+    side_length : :class:`float`, optional
+        The length of the sides of the square.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Square`
+
+    Examples
+    --------
+
+    .. manim:: SquareExample
+        :save_last_frame:
+
+        class SquareExample(Scene):
+            def construct(self):
+                square_1 = Square(side_length=2.0).shift(DOWN)
+                square_2 = Square(side_length=1.0).next_to(square_1, direction=UP)
+                square_3 = Square(side_length=0.5).next_to(square_2, direction=UP)
+                self.add(square_1, square_2, square_3)
+    """
+
     def __init__(self, side_length=2.0, **kwargs):
         self.side_length = side_length
         Rectangle.__init__(self, height=side_length, width=side_length, **kwargs)
@@ -1308,7 +1489,7 @@ class ArrowTip(VMobject):
         >>> from manim import Scene
         >>> class CustomTipExample(Scene):
         ...     def construct(self):
-        ...         self.play(ShowCreation(arr))
+        ...         self.play(Create(arr))
 
     Using a class inherited from :class:`ArrowTip` to get a non-filled
     tip is a shorthand to manually specifying the arrow tip style as follows::
