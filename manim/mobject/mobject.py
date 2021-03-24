@@ -1482,7 +1482,7 @@ class Mobject(Container):
         self.shift(start - curr_start)
         return self
 
-    def set_rgba_array(self, color=None, opacity=None, name="rgbas", recurse=True):
+    def set_rgba_array(self, color=None, opacity=None, recurse=True):
         if color is not None:
             rgbs = np.array([color_to_rgb(c) for c in listify(color)])
         if opacity is not None:
@@ -1491,20 +1491,20 @@ class Mobject(Container):
         # Color only
         if color is not None and opacity is None:
             for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(mob.data[name], len(rgbs))
-                mob.data[name][:, :3] = rgbs
+                mob.rgbas = resize_array(mob.rgbas, len(rgbs))
+                mob.rgbas[:, :3] = rgbs
 
         # Opacity only
         if color is None and opacity is not None:
             for mob in self.get_family(recurse):
-                mob.data[name] = resize_array(mob.data[name], len(opacities))
-                mob.data[name][:, 3] = opacities
+                mob.rgbas = resize_array(mob.rgbas, len(opacities))
+                mob.rgbas[:, 3] = opacities
 
         # Color and opacity
         if color is not None and opacity is not None:
             rgbas = np.array([[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))])
             for mob in self.get_family(recurse):
-                mob.data[name] = rgbas.copy()
+                mob.rgbas = rgbas.copy()
         return self
 
     # Background rectangle
@@ -1561,7 +1561,9 @@ class Mobject(Container):
 
     # Color functions
 
-    def set_color(self, color: Color = YELLOW_C, family: bool = True):
+    def set_color(
+        self, color: Color = YELLOW_C, opacity: float = None, family: bool = True
+    ):
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
         should be further implemented based on the the inner workings
@@ -1569,8 +1571,9 @@ class Mobject(Container):
         """
         if family:
             for submob in self.submobjects:
-                submob.set_color(color, family=family)
+                submob.set_color(color, opacity, family=family)
         self.color = Color(color)
+        self.set_rgba_array(color, opacity, recurse=False)
         return self
 
     def set_color_by_gradient(self, *colors):
