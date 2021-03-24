@@ -91,7 +91,7 @@ class Scene(Container):
             self.mouse_drag_point = OpenGLPoint()
 
         if renderer is None:
-            skip_animations = kwargs.get("skip_animations", False),
+            skip_animations = kwargs.get("skip_animations", False)
             # If renderer is unspecified, use the configs for a sensible default.
             if config["use_opengl_renderer"]:
                 self.renderer = OpenGLRenderer(
