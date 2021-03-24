@@ -28,6 +28,8 @@ class NumberLine(Line):
         # ticks
         include_ticks=True,
         tick_size=0.1,
+        numbers_with_elongated_ticks=[],
+        longer_tick_multiple=2,
         # visuals
         color=LIGHT_GREY,
         rotation=0,
@@ -38,11 +40,9 @@ class NumberLine(Line):
         tip_height=0.25,
         # numbers
         include_numbers=False,
-        longer_tick_multiple=2,
         label_direction=DOWN,
         line_to_number_buff=MED_SMALL_BUFF,
         decimal_number_config={"num_decimal_places": 0, "font_size": 24},
-        numbers_with_elongated_ticks=[],
         numbers_to_exclude=[],
         # temp, because DecimalNumber() needs to be updated
         number_scale_value=0.75,
@@ -50,32 +50,39 @@ class NumberLine(Line):
     ):
         if x_range is None:
             x_range = [-config["frame_x_radius"], config["frame_x_radius"], 1.0]
+        if len(x_range) == 2:
+            # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
+            x_range = [*x_range, 1]
 
-
-        self.stroke_width = stroke_width
+        self.x_min, self.x_max, self.x_step = x_range
+        self.length = length
         self.unit_size = unit_size
+        # ticks
         self.include_ticks = include_ticks
         self.tick_size = tick_size
         self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
-        self.include_numbers = include_numbers
         self.longer_tick_multiple = longer_tick_multiple
-        self.label_direction = label_direction
-        self.line_to_number_buff = line_to_number_buff
+        # visuals
+        self.stroke_width = stroke_width
+        self.rotation = rotation
+        self.color = color
+        # tip
         self.include_tip = include_tip
         self.tip_width = tip_width
         self.tip_height = tip_height
+        # numbers
+        self.include_numbers = include_numbers
+        self.label_direction = label_direction
+        self.line_to_number_buff = line_to_number_buff
         self.decimal_number_config = decimal_number_config
         self.numbers_to_exclude = numbers_to_exclude
-        self.length = length
-        self.rotation = rotation
         self.number_scale_value = number_scale_value
-        self.x_min, self.x_max, self.x_step = x_range
 
         super().__init__(
             self.x_min * RIGHT,
             self.x_max * RIGHT,
             stroke_width=self.stroke_width,
-            color=color,
+            color=self.color,
             **kwargs,
         )
         if self.length:
@@ -217,6 +224,7 @@ class UnitInterval(NumberLine):
             if numbers_with_elongated_ticks is None
             else numbers_with_elongated_ticks
         )
+
         decimal_number_config = (
             {
                 "num_decimal_places": 1,
