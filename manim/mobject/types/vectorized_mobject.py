@@ -1084,7 +1084,6 @@ class VMobject(Mobject):
             Points generated.
         """
 
-    def insert_n_curves_to_point_list(self, n, points):
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
             return np.repeat(points, nppcc * n, 0)
@@ -1265,7 +1264,7 @@ class VMobject(Mobject):
                     cw = RegularPolygon(5)
                     cw.shift(RIGHT).reverse_direction()
 
-                    self.play(ShowCreation(ccw), ShowCreation(cw),
+                    self.play(Create(ccw), Create(cw),
                     run_time=4)
         """
         self.points = self.points[::-1]
@@ -1469,7 +1468,7 @@ class VDict(VMobject):
                 my_dict = VDict(pairs, show_keys=True)
 
                 # display it just like a VGroup
-                self.play(ShowCreation(my_dict))
+                self.play(Create(my_dict))
                 self.wait()
 
                 text = Tex("Some text").set_color(GREEN).next_to(square, DOWN)
@@ -1514,12 +1513,12 @@ class VDict(VMobject):
 
                 vdict_from_plain_dict = VDict(plain_dict)
                 vdict_from_plain_dict.shift(1.5 * (UP + LEFT))
-                self.play(ShowCreation(vdict_from_plain_dict))
+                self.play(Create(vdict_from_plain_dict))
 
                 # you can even use zip
                 vdict_using_zip = VDict(zip(["s", "c", "r"], [Square(), Circle(), Rectangle()]))
                 vdict_using_zip.shift(1.5 * RIGHT)
-                self.play(ShowCreation(vdict_using_zip))
+                self.play(Create(vdict_using_zip))
                 self.wait()
     """
 
@@ -1605,7 +1604,7 @@ class VDict(VMobject):
         --------
         Normal usage::
 
-           self.play(ShowCreation(my_dict['s']))
+           self.play(Create(my_dict['s']))
         """
         submob = self.submob_dict[key]
         return submob
@@ -1704,7 +1703,7 @@ class VDict(VMobject):
         Normal usage::
 
             for submob in my_dict.get_all_submobjects():
-                self.play(ShowCreation(submob))
+                self.play(Create(submob))
         """
         submobjects = self.submob_dict.values()
         return submobjects

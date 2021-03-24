@@ -41,8 +41,8 @@ class Brace(MathTex):
             def construct(self):
                 circle = Circle()
                 brace = Brace(circle, direction=RIGHT)
-                self.play(ShowCreation(circle))
-                self.play(ShowCreation(brace))
+                self.play(Create(circle))
+                self.play(Create(brace))
                 self.wait(2)
 
     """
@@ -201,8 +201,8 @@ class BraceBetweenPoints(Brace):
                     p1 = [0,0,0]
                     p2 = [1,2,0]
                     brace = BraceBetweenPoints(p1,p2)
-                    self.play(ShowCreation(NumberPlane()))
-                    self.play(ShowCreation(brace))
+                    self.play(Create(NumberPlane()))
+                    self.play(Create(brace))
                     self.wait(2)
     """
 

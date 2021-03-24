@@ -28,7 +28,7 @@ render scenes that are defined within doctests, for example::
         <Color #fc6255>
         >>> class DirectiveDoctestExample(Scene):
         ...     def construct(self):
-        ...         self.play(ShowCreation(dot))
+        ...         self.play(Create(dot))
 
 
 Options

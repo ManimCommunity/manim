@@ -34,7 +34,7 @@ pydub = "*"
 pygments = "*"
 rich = "^6.0"
 pycairo = "^1.19"
-manimpango = "^0.2.0"
+manimpango = "^0.2.4"
 networkx = "^2.5"
 setuptools = "*"
 importlib-metadata = {version = "*", python = "<3.8"}
@@ -42,6 +42,9 @@ grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
 watchdog = { version = "*", optional = true }
 jupyterlab = { version = "^3.0", optional = true }
+moderngl = "^5.6.3"
+moderngl-window = "^2.3.0"
+mapbox-earcut = "^0.12.10"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
@@ -53,6 +56,14 @@ pylint = "*"
 guzzle_sphinx_theme = "*"
 recommonmark = "*"
 matplotlib = "^3.3.2"
+flake8 = "^3.9.0"
+flake8-bugbear = "^21.3.2"
+flake8-builtins = "^1.5.3"
+flake8-comprehensions = "^3.4.0"
+flake8-pytest-style = "^1.4.0"
+flake8-logging-format = "^0.6.0"
+flake8-rst-docstrings = "^0.0.14"
+flake8-docstrings = "^1.6.0"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"

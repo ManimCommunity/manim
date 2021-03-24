@@ -1,8 +1,8 @@
-name: black-check
+name: Linting
 on:
   pull_request:
-      branches:
-        - master
+    branches:
+      - master
 
 jobs:
   check-format:
@@ -68,3 +68,22 @@ jobs:
             echo "The Filed changed are `n`n $(git ls-files -m)"
             exit 1
           }
+  flake-checks:
+    runs-on: windows-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: Run Flake8
+        run: |
+          poetry run flake8 manim
