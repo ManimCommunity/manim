@@ -23,7 +23,15 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..container import Container
-from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C, color_to_rgb
+from ..utils.color import (
+    Colors,
+    color_gradient,
+    WHITE,
+    BLACK,
+    YELLOW_C,
+    color_to_rgb,
+    rgb_to_hex,
+)
 from ..utils.color import interpolate_color
 from ..utils.iterables import (
     batch_by_property,
@@ -45,6 +53,17 @@ from ..utils.space_ops import rotation_matrix_transpose
 # TODO: Explain array_attrs
 
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
+
+
+def affects_shader_info_id(func):
+    @wraps(func)
+    def wrapper(self):
+        for mob in self.get_family():
+            func(mob)
+            # mob.refresh_shader_wrapper_id()
+        return self
+
+    return wrapper
 
 
 def interpolate(start: int, end: int, alpha: float) -> float:
@@ -2487,16 +2506,6 @@ class Mobject(Container):
             )
 
     # Operations touching shader uniforms
-
-    def affects_shader_info_id(func):
-        @wraps(func)
-        def wrapper(self):
-            for mob in self.get_family():
-                func(mob)
-                # mob.refresh_shader_wrapper_id()
-            return self
-
-        return wrapper
 
     @affects_shader_info_id
     def fix_in_frame(self):

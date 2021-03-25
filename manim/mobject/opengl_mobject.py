@@ -47,40 +47,40 @@ class OpenGLMobject:
     ):
 
         self.color = color
-        self.opacity = opacity
-        self.dim = dim  # TODO, get rid of this
-        # Lighting parameters
-        # Positive gloss up to 1 makes it reflect the light.
-        self.gloss = gloss
-        # Positive shadow up to 1 makes a side opposite the light darker
-        self.shadow = shadow
-        # For shaders
-        self.render_primitive = render_primitive
-        self.texture_paths = texture_paths
-        self.depth_test = depth_test
-        # If true, the mobject will not get rotated according to camera position
-        self.is_fixed_in_frame = is_fixed_in_frame
-        # Must match in attributes of vert shader
-        # Event listener
-        self.listen_to_events = listen_to_events
+        # self.opacity = opacity
+        # self.dim = dim  # TODO, get rid of this
+        # # Lighting parameters
+        # # Positive gloss up to 1 makes it reflect the light.
+        # self.gloss = gloss
+        # # Positive shadow up to 1 makes a side opposite the light darker
+        # self.shadow = shadow
+        # # For shaders
+        # self.render_primitive = render_primitive
+        # self.texture_paths = texture_paths
+        # self.depth_test = depth_test
+        # # If true, the mobject will not get rotated according to camera position
+        # self.is_fixed_in_frame = is_fixed_in_frame
+        # # Must match in attributes of vert shader
+        # # Event listener
+        # self.listen_to_events = listen_to_events
 
-        self.submobjects = []
-        self.parents = []
-        self.family = [self]
-        self.locked_data_keys = set()
-        self.needs_new_bounding_box = True
+        # self.submobjects = []
+        # self.parents = []
+        # self.family = [self]
+        # self.locked_data_keys = set()
+        # self.needs_new_bounding_box = True
 
-        self.init_data()
+        # self.init_data()
         # self.init_uniforms()
         # self.init_updaters()
         # self.init_event_listners()
-        self.init_points()
-        self.init_colors()
+        # self.init_points()
+        # self.init_colors()
 
-        self.shader_indices = None
+        # self.shader_indices = None
 
-        if self.depth_test:
-            self.apply_depth_test()
+        # if self.depth_test:
+        #     self.apply_depth_test()
 
     def __str__(self):
         return self.__class__.__name__
