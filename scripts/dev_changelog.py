@@ -24,29 +24,24 @@ Note
 ----
 This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
-import os
-import sys
 import re
+import sys
+from collections import defaultdict
+from textwrap import dedent
+from pathlib import Path
+import git
+from tqdm import tqdm
 from git import Repo
 from github import Github
 
 if sys.version_info[:2] < (3, 6):
     raise RuntimeError("Python version must be >= 3.6")
 
-this_repo = Repo(os.path.join(os.path.dirname(__file__), ".."))
-
-author_msg = """
-A total of %d people contributed to this release.  People with a "+" by their
-names contributed a patch for the first time.
-"""
-
-pull_request_msg = """
-A total of %d pull requests were merged for this release.
-"""
+this_repo = Repo(str(Path(__file__).resolve().parent.parent))
 
 
 def get_authors(revision_range):
-    pat = u"^.*\\t(.*)$"
+    pat = "^.*\\t(.*)$"
     lst_release, cur_release = [r.strip() for r in revision_range.split("..")]
 
     # authors, in current release and previous to current release.
@@ -54,30 +49,72 @@ def get_authors(revision_range):
     pre = set(re.findall(pat, this_repo.git.shortlog("-s", lst_release), re.M))
 
     # Append '+' to new authors.
-    authors = [s + u" +" for s in cur - pre] + [s for s in cur & pre]
+    authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
     authors.sort()
     return authors
 
 
-def get_pull_requests(repo, revision_range):
+def get_pr_nums(repo, revision_range):
+    print("Getting PR Numbers:")
     prnums = []
 
     # From regular merges
     merges = this_repo.git.log("--oneline", "--merges", revision_range)
-    issues = re.findall(u"Merge pull request \\#(\\d*)", merges)
+    issues = re.findall("Merge pull request \\#(\\d*)", merges)
     prnums.extend(int(s) for s in issues)
 
     # From fast forward squash-merges
     commits = this_repo.git.log(
         "--oneline", "--no-merges", "--first-parent", revision_range
     )
-    issues = re.findall(u"^.*\\(\\#(\\d+)\\)$", commits, re.M)
+    issues = re.findall("^.*\\(\\#(\\d+)\\)$", commits, re.M)
     prnums.extend(int(s) for s in issues)
 
-    # get PR data from github repo
-    prnums.sort()
-    prs = [repo.get_pull(n) for n in prnums]
-    return prs
+    print(prnums)
+    return prnums
+
+
+def sort_by_labels(github_repo, pr_nums, labels):
+    """Sorts PR into groups based on labels.
+
+    This implementation sorts based on importance into a singular group. If a
+    PR uses multiple labels, it is sorted under one label.
+
+    The importance order (for the end-user):
+    - breaking changes
+    - highlight
+    - feature
+    - enhancement
+    - bug
+    - documentation
+    - testing
+    - infrastructure
+    - unlabeled
+    """
+    pr_by_labels = defaultdict(list)
+    for num in tqdm(pr_nums, desc="Sorting by labels"):
+        pr = github_repo.get_pull(num)
+        labels = pr.labels
+        if "breaking changes" in labels:
+            pr_by_labels["breaking changes"].append(pr)
+        elif "highlight" in labels:
+            pr_by_labels["highlight"].append(pr)
+        elif "new feature" in labels:
+            pr_by_labels["new feature"].append(pr)
+        elif "enhancement" in labels:
+            pr_by_labels["enhancement"].append(pr)
+        elif "bug" in labels:
+            pr_by_labels["bug"].append(pr)
+        elif "documentation" in labels:
+            pr_by_labels["documentation"].append(pr)
+        elif "testing" in labels:
+            pr_by_labels["testing"].append(pr)
+        elif "infrastructure" in labels:
+            pr_by_labels["infrastructure"].append(pr)
+        else:  # PR doesn't have label :( Create one!
+            pr_by_labels["unlabeled"].append(pr)
+
+    return pr_by_labels
 
 
 def main(token, revision_range):
@@ -88,34 +125,58 @@ def main(token, revision_range):
 
     # document authors
     authors = get_authors(revision_range)
-    heading = u"Contributors"
-    print()
-    print(heading)
-    print(u"=" * len(heading))
-    print(author_msg % len(authors))
 
-    for s in authors:
-        print(u"* " + s)
+    # TODO: Decide where to place changelog file
+    changelog_file = (
+        Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog.rst"
+    )
 
-    # document pull requests
-    pull_requests = get_pull_requests(github_repo, revision_range)
-    heading = u"Pull requests merged"
-    pull_msg = u"* `#{0} <{1}>`__: {2}"
+    with changelog_file.open("w", encoding="utf8") as f:
+        heading = "Contributors"
+        f.write(f"{heading}\n")
+        f.write("=" * len(heading) + "\n\n")
+        f.write(
+            dedent(
+                f"""\
+            A total of {len(authors)} people contributed to this release.
+            People with a '+' by their names contributed a patch for the first time.\n
+            """
+            )
+        )
 
-    print()
-    print(heading)
-    print(u"=" * len(heading))
-    print(pull_request_msg % len(pull_requests))
+        for author in authors:
+            f.write("* " + author + "\n")
 
-    for pull in pull_requests:
-        title = re.sub(u"\\s+", u" ", pull.title.strip())
-        if len(title) > 60:
-            remainder = re.sub(u"\\s.*$", u"...", title[60:])
-            if len(remainder) > 20:
-                remainder = title[:80] + u"..."
-            else:
-                title = title[:60] + remainder
-        print(pull_msg.format(pull.number, pull.html_url, title))
+        # document pull requests
+        pr_nums = get_pr_nums(github_repo, revision_range)
+
+        heading = "Pull requests merged"
+        f.write("\n")
+        f.write(heading + "\n")
+        f.write("=" * len(heading) + "\n\n")
+        f.write(
+            f"A total of {len(pr_nums)} pull requests were merged for this release.\n"
+        )
+
+        labels = [
+            "breaking changes",
+            "highlight",
+            "new feature",
+            "enhancement",
+            "bug",
+            "documentation",
+            "testing",
+            "infrastructure",
+            "unlabeled",
+        ]
+        pr_by_labels = sort_by_labels(github_repo, pr_nums, labels)
+        for label in labels:
+            for PR in pr_by_labels[label]:
+                num = PR.number
+                url = PR.html_url
+                title = PR.title
+
+                f.write(f"* `#{num} <{url}>`__: {title}\n")
 
 
 if __name__ == "__main__":
