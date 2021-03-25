@@ -74,3 +74,39 @@ def test_chaining_overridden_animate():
         NotImplementedError, match="not supported for overridden animations"
     ):
         DotsWithLine().animate.remove_line().shift((1, 0, 0))
+
+
+def test_animate_with_args():
+    s = Square()
+    scale_factor = 2
+    run_time = 2
+
+    anim = s.animate(run_time=run_time).scale(scale_factor).build()
+    assert anim.mobject.target.width == scale_factor * s.width
+    assert anim.run_time == run_time
+
+
+def test_chained_animate_with_args():
+    s = Square()
+    scale_factor = 2
+    direction = np.array((1, 1, 0))
+    run_time = 2
+
+    anim = s.animate(run_time=run_time).scale(scale_factor).shift(direction).build()
+    assert (
+        anim.mobject.target.width == scale_factor * s.width
+        and (anim.mobject.target.get_center() == direction).all()
+    )
+    assert anim.run_time == run_time
+
+
+def test_animate_with_args_misplaced():
+    s = Square()
+    scale_factor = 2
+    run_time = 2
+
+    with pytest.raises(ValueError, match="must be passed before"):
+        s.animate.scale(scale_factor)(run_time=run_time)
+
+    with pytest.raises(ValueError, match="must be passed before"):
+        s.animate(run_time=run_time)(run_time=run_time).scale(scale_factor)

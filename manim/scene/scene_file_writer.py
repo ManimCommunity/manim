@@ -68,7 +68,7 @@ class SceneFileWriter(object):
         else:
             module_name = ""
 
-        if config["output_file"]:
+        if config["output_file"] and not config["write_all"]:
             default_name = config.get_dir("output_file")
         else:
             default_name = Path(scene_name)
@@ -102,7 +102,7 @@ class SceneFileWriter(object):
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
                     "partial_movie_dir",
-                    scene_name=default_name,
+                    scene_name=scene_name,
                     module_name=module_name,
                 )
             )
@@ -430,10 +430,7 @@ class SceneFileWriter(object):
         # which effectively has cuts at all the places you might want.  But for
         # viewing the scene as a whole, one of course wants to see it as a
         # single piece.
-        if not config["use_opengl_renderer"]:
-            partial_movie_files = [
-                el for el in self.partial_movie_files if el is not None
-            ]
+        partial_movie_files = [el for el in self.partial_movie_files if el is not None]
         # NOTE : Here we should do a check and raise an exception if partial
         # movie file is empty.  We can't, as a lot of stuff (in particular, in
         # tests) use scene initialization, and this error would be raised as
@@ -479,7 +476,11 @@ class SceneFileWriter(object):
                 self.gif_file_path = str(
                     add_version_before_extension(self.gif_file_path)
                 )
-            commands += [self.gif_file_path]
+            commands += [
+                "-vf",
+                f"fps={np.clip(config['frame_rate'], 1, 50)},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
+                self.gif_file_path,
+            ]
 
         if not self.includes_sound:
             commands.insert(-1, "-an")
@@ -548,7 +549,7 @@ class SceneFileWriter(object):
                 len(cached_partial_movies) - config["max_files_cached"]
             )
             oldest_files_to_delete = sorted(
-                [partial_movie_file for partial_movie_file in cached_partial_movies],
+                cached_partial_movies,
                 key=os.path.getatime,
             )[:number_files_to_delete]
             # oldest_file_path = min(cached_partial_movies, key=os.path.getatime)
