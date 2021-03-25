@@ -47,14 +47,15 @@ class TransformMatchingAbstractBase(AnimationGroup):
     kwargs
         All further keyword arguments are passed to the submobject transformations.
 
-    .. note::
 
-        If neither ``transform_mismatches`` nor ``fade_transform_mismatches``
-        are set to ``True``, submobjects without matching keys in the starting
-        mobject are faded out in the direction of the unmatched submobjects in
-        the target mobject, and unmatched submobjects in the target mobject
-        are faded in from the direction of the unmatched submobjects in the
-        start mobject.
+    Note
+    ----
+    If neither ``transform_mismatches`` nor ``fade_transform_mismatches``
+    are set to ``True``, submobjects without matching keys in the starting
+    mobject are faded out in the direction of the unmatched submobjects in
+    the target mobject, and unmatched submobjects in the target mobject
+    are faded in from the direction of the unmatched submobjects in the
+    start mobject.
 
     """
 
@@ -166,6 +167,9 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
     See also
     --------
     :class:`~.TransformMatchingAbstractBase`
+
+    Examples
+    --------
 
     .. manim:: Anagram
 
