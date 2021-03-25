@@ -105,12 +105,18 @@ def sort_by_labels(github_repo, pr_nums):
             pr_by_labels["enhancement"].append(pr)
         elif "bug" in labels:
             pr_by_labels["bug"].append(pr)
+        elif "deprecation" in labels:
+            pr_by_labels["deprecation"].append(pr)
         elif "documentation" in labels:
             pr_by_labels["documentation"].append(pr)
+        elif "release" in labels:
+            pr_by_labels["release"].append(pr)
         elif "testing" in labels:
             pr_by_labels["testing"].append(pr)
         elif "infrastructure" in labels:
             pr_by_labels["infrastructure"].append(pr)
+        elif "style" in labels:
+            pr_by_labels["style"].append(pr)
         else:  # PR doesn't have label :( Create one!
             pr_by_labels["unlabeled"].append(pr)
 
@@ -174,9 +180,12 @@ def main(token, revision_range, outfile=None):
             "new feature",
             "enhancement",
             "bug",
+            "deprecation",
             "documentation",
+            "release",
             "testing",
             "infrastructure",
+            "style",
             "unlabeled",
         ]
         pr_by_labels = sort_by_labels(github_repo, pr_nums)
