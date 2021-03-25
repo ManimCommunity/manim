@@ -78,7 +78,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         target_map = self.get_shape_map(target_mobject)
 
         if key_map is None:
-            key_map = dict()
+            key_map = {}
 
         # Create two mobjects whose submobjects all match each other
         # according to whatever keys are used for source_map and
@@ -247,7 +247,8 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         key_map=None,
         **kwargs
     ):
-        assert hasattr(mobject, "tex_string") and hasattr(target_mobject, "tex_string")
+        assert hasattr(mobject, "tex_string")
+        assert hasattr(target_mobject, "tex_string")
         super().__init__(
             mobject,
             target_mobject,
