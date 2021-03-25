@@ -154,13 +154,31 @@ class FadeOutAndShift(FadeOut):
 
 
 class FadeOutToPoint(FadeOut):
+    """Fades out a mobject while moving it to a specified point.
+
+    Parameters
+    ----------
+    mobject
+        The :class:`~.Mobject` to be animated.
+    point
+        Either a point or another :class:`~.Mobject` to whose center the
+        Mobject is moved in the animation. Defaults to ``ORIGIN``.
+    kwargs
+        Further keyword arguments are passed to the parent class.
+
+    """
+
     def __init__(
-        self, mobject: "Mobject", point: np.ndarray = ORIGIN, **kwargs
+        self,
+        mobject: "Mobject",
+        point: typing.Union["Mobject", np.ndarray] = ORIGIN,
+        **kwargs
     ) -> None:
         self.point = point
         super().__init__(mobject, **kwargs)
 
     def create_target(self) -> "Mobject":
+        """Creates the target of the animation."""
         target = super().create_target()
         target.move_to(self.point)
         return target
