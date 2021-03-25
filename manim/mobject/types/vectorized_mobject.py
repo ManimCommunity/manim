@@ -102,25 +102,34 @@ class VMobject(Mobject):
         return VGroup
 
     # Colors
-    def init_colors(self):
+    def init_colors(self, propagate_colors=True):
         self.set_fill(
             color=self.fill_color or self.color,
             opacity=self.fill_opacity,
+            family=propagate_colors,
         )
         self.set_stroke(
             color=self.stroke_color or self.color,
             width=self.stroke_width,
             opacity=self.stroke_opacity,
+            family=propagate_colors,
         )
         self.set_background_stroke(
             color=self.background_stroke_color,
             width=self.background_stroke_width,
             opacity=self.background_stroke_opacity,
+            family=propagate_colors,
         )
         self.set_sheen(
             factor=self.sheen_factor,
             direction=self.sheen_direction,
+            family=propagate_colors,
         )
+
+        if not propagate_colors:
+            for submobject in self.submobjects:
+                submobject.init_colors(propagate_colors=False)
+
         return self
 
     def generate_rgbas_array(self, color, opacity):
@@ -186,14 +195,20 @@ class VMobject(Mobject):
         if background:
             array_name = "background_stroke_rgbas"
             width_name = "background_stroke_width"
+            opacity_name = "background_stroke_opacity"
+            color_name = "background_stroke_color"
         else:
             array_name = "stroke_rgbas"
             width_name = "stroke_width"
+            opacity_name = "stroke_opacity"
+            color_name = "stroke_color"
         self.update_rgbas_array(array_name, color, opacity)
         if width is not None:
             setattr(self, width_name, width)
         if opacity is not None:
-            self.stroke_opacity = opacity
+            setattr(self, opacity_name, opacity)
+        if color is not None:
+            setattr(self, color_name, color)
         return self
 
     def set_background_stroke(self, **kwargs):
@@ -280,7 +295,12 @@ class VMobject(Mobject):
     def set_color(self, color, family=True):
         self.set_fill(color, family=family)
         self.set_stroke(color, family=family)
-        self.color = colour.Color(color)
+
+        # check if a list of colors is passed to color
+        if isinstance(color, str):
+            self.color = colour.Color(color)
+        else:
+            self.color = color
         return self
 
     def set_opacity(self, opacity, family=True):
@@ -508,6 +528,24 @@ class VMobject(Mobject):
             self.append_points(new_points)
         else:
             self.append_points([self.get_last_point()] + new_points)
+
+    def add_quadratic_bezier_curve_to(
+        self, handle: np.ndarray, anchor: np.ndarray
+    ) -> "VMobject":
+        """Add Quadratic bezier curve to the path."""
+        # How does one approximate a quadratic with a cubic?
+        # refer to the Wikipedia page on Bezier curves
+        # https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Degree_elevation, accessed Jan 20, 2021
+        # 1. Copy the end points, and then
+        # 2. Place the 2 middle control points 2/3 along the line segments
+        # from the end points to the quadratic curve's middle control point.
+        # I think that's beautiful.
+        self.add_cubic_bezier_curve_to(
+            2 / 3 * handle + 1 / 3 * self.get_last_point(),
+            2 / 3 * handle + 1 / 3 * anchor,
+            anchor,
+        )
+        return self
 
     def add_line_to(self, point: np.ndarray) -> "VMobject":
         """Add a straight line from the last point of VMobject to the given point.
@@ -1046,7 +1084,6 @@ class VMobject(Mobject):
             Points generated.
         """
 
-    def insert_n_curves_to_point_list(self, n, points):
         if len(points) == 1:
             nppcc = self.n_points_per_cubic_curve
             return np.repeat(points, nppcc * n, 0)
@@ -1227,7 +1264,7 @@ class VMobject(Mobject):
                     cw = RegularPolygon(5)
                     cw.shift(RIGHT).reverse_direction()
 
-                    self.play(ShowCreation(ccw), ShowCreation(cw),
+                    self.play(Create(ccw), Create(cw),
                     run_time=4)
         """
         self.points = self.points[::-1]
@@ -1431,7 +1468,7 @@ class VDict(VMobject):
                 my_dict = VDict(pairs, show_keys=True)
 
                 # display it just like a VGroup
-                self.play(ShowCreation(my_dict))
+                self.play(Create(my_dict))
                 self.wait()
 
                 text = Tex("Some text").set_color(GREEN).next_to(square, DOWN)
@@ -1476,12 +1513,12 @@ class VDict(VMobject):
 
                 vdict_from_plain_dict = VDict(plain_dict)
                 vdict_from_plain_dict.shift(1.5 * (UP + LEFT))
-                self.play(ShowCreation(vdict_from_plain_dict))
+                self.play(Create(vdict_from_plain_dict))
 
                 # you can even use zip
                 vdict_using_zip = VDict(zip(["s", "c", "r"], [Square(), Circle(), Rectangle()]))
                 vdict_using_zip.shift(1.5 * RIGHT)
-                self.play(ShowCreation(vdict_using_zip))
+                self.play(Create(vdict_using_zip))
                 self.wait()
     """
 
@@ -1567,7 +1604,7 @@ class VDict(VMobject):
         --------
         Normal usage::
 
-           self.play(ShowCreation(my_dict['s']))
+           self.play(Create(my_dict['s']))
         """
         submob = self.submob_dict[key]
         return submob
@@ -1666,7 +1703,7 @@ class VDict(VMobject):
         Normal usage::
 
             for submob in my_dict.get_all_submobjects():
-                self.play(ShowCreation(submob))
+                self.play(Create(submob))
         """
         submobjects = self.submob_dict.values()
         return submobjects
@@ -1735,10 +1772,12 @@ class VectorizedPoint(VMobject):
         )
         self.set_points(np.array([location]))
 
-    def get_width(self):
+    @VMobject.width.getter
+    def width(self):
         return self.artificial_width
 
-    def get_height(self):
+    @VMobject.height.getter
+    def height(self):
         return self.artificial_height
 
     def get_location(self):

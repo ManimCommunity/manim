@@ -3,12 +3,14 @@
 __all__ = [
     "bezier",
     "partial_bezier_points",
+    "partial_quadratic_bezier_points",
     "interpolate",
     "integer_interpolate",
     "mid",
     "inverse_interpolate",
     "match_interpolate",
     "get_smooth_handle_points",
+    "get_smooth_cubic_bezier_handle_points",
     "diag_to_matrix",
     "is_closed",
 ]
@@ -20,6 +22,8 @@ import numpy as np
 from scipy import linalg
 
 from ..utils.simple_functions import choose
+from ..utils.space_ops import cross2d
+from ..utils.space_ops import find_intersection
 
 CLOSED_THRESHOLD: float = 0.001
 
@@ -76,6 +80,28 @@ def partial_bezier_points(points: np.ndarray, a: float, b: float) -> np.ndarray:
     return np.array([bezier(a_to_1[: i + 1])(end_prop) for i in range(len(points))])
 
 
+# Shortened version of partial_bezier_points just for quadratics,
+# since this is called a fair amount
+def partial_quadratic_bezier_points(points, a, b):
+    if a == 1:
+        return 3 * [points[-1]]
+
+    def curve(t):
+        return (
+            points[0] * (1 - t) * (1 - t)
+            + 2 * points[1] * t * (1 - t)
+            + points[2] * t * t
+        )
+
+    # bezier(points)
+    h0 = curve(a) if a > 0 else points[0]
+    h2 = curve(b) if b < 1 else points[2]
+    h1_prime = (1 - a) * points[1] + a * points[2]
+    end_prop = (b - a) / (1.0 - a)
+    h1 = (1 - end_prop) * h0 + end_prop * h1_prime
+    return [h0, h1, h2]
+
+
 # Linear interpolation variants
 
 
@@ -85,7 +111,7 @@ def interpolate(start: int, end: int, alpha: float) -> float:
 
 def integer_interpolate(start: float, end: float, alpha: float) -> int:
     """
-    alpha is a float between 0 and 1.  This returns
+    Alpha is a float between 0 and 1.  This returns
     an integer between start and end (inclusive) representing
     appropriate interpolation between them, along with a
     "residue" representing a new proportion between the
@@ -121,6 +147,64 @@ def match_interpolate(
 
 
 # Figuring out which bezier curves most smoothly connect a sequence of points
+
+
+def get_smooth_cubic_bezier_handle_points(points):
+    points = np.array(points)
+    num_handles = len(points) - 1
+    dim = points.shape[1]
+    if num_handles < 1:
+        return np.zeros((0, dim)), np.zeros((0, dim))
+    # Must solve 2*num_handles equations to get the handles.
+    # l and u are the number of lower an upper diagonal rows
+    # in the matrix to solve.
+    l, u = 2, 1
+    # diag is a representation of the matrix in diagonal form
+    # See https://www.particleincell.com/2012/bezier-splines/
+    # for how to arive at these equations
+    diag = np.zeros((l + u + 1, 2 * num_handles))
+    diag[0, 1::2] = -1
+    diag[0, 2::2] = 1
+    diag[1, 0::2] = 2
+    diag[1, 1::2] = 1
+    diag[2, 1:-2:2] = -2
+    diag[3, 0:-3:2] = 1
+    # last
+    diag[2, -2] = -1
+    diag[1, -1] = 2
+    # This is the b as in Ax = b, where we are solving for x,
+    # and A is represented using diag.  However, think of entries
+    # to x and b as being points in space, not numbers
+    b = np.zeros((2 * num_handles, dim))
+    b[1::2] = 2 * points[1:]
+    b[0] = points[0]
+    b[-1] = points[-1]
+
+    def solve_func(b):
+        return linalg.solve_banded((l, u), diag, b)
+
+    use_closed_solve_function = is_closed(points)
+    if use_closed_solve_function:
+        # Get equations to relate first and last points
+        matrix = diag_to_matrix((l, u), diag)
+        # last row handles second derivative
+        matrix[-1, [0, 1, -2, -1]] = [2, -1, 1, -2]
+        # first row handles first derivative
+        matrix[0, :] = np.zeros(matrix.shape[1])
+        matrix[0, [0, -1]] = [1, 1]
+        b[0] = 2 * points[0]
+        b[-1] = np.zeros(dim)
+
+        def closed_curve_solve_func(b):
+            return linalg.solve(matrix, b)
+
+    handle_pairs = np.zeros((2 * num_handles, dim))
+    for i in range(dim):
+        if use_closed_solve_function:
+            handle_pairs[:, i] = closed_curve_solve_func(b[:, i])
+        else:
+            handle_pairs[:, i] = solve_func(b[:, i])
+    return handle_pairs[0::2], handle_pairs[1::2]
 
 
 def get_smooth_handle_points(
@@ -210,6 +294,76 @@ def diag_to_matrix(l_and_u: typing.Tuple[int, int], diag: np.ndarray) -> np.ndar
             matrix[max(0, i - u) :, max(0, u - i) :], diag[i, max(0, u - i) :]
         )
     return matrix
+
+
+# Given 4 control points for a cubic bezier curve (or arrays of such)
+# return control points for 2 quadratics (or 2n quadratics) approximating them.
+def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
+    a0 = np.array(a0, ndmin=2)
+    h0 = np.array(h0, ndmin=2)
+    h1 = np.array(h1, ndmin=2)
+    a1 = np.array(a1, ndmin=2)
+    # Tangent vectors at the start and end.
+    T0 = h0 - a0
+    T1 = a1 - h1
+
+    # Search for inflection points.  If none are found, use the
+    # midpoint as a cut point.
+    # Based on http://www.caffeineowl.com/graphics/2d/vectorial/cubic-inflexion.html
+    has_infl = np.ones(len(a0), dtype=bool)
+
+    p = h0 - a0
+    q = h1 - 2 * h0 + a0
+    r = a1 - 3 * h1 + 3 * h0 - a0
+
+    a = cross2d(q, r)
+    b = cross2d(p, r)
+    c = cross2d(p, q)
+
+    disc = b * b - 4 * a * c
+    has_infl &= disc > 0
+    sqrt_disc = np.sqrt(np.abs(disc))
+    settings = np.seterr(all="ignore")
+    ti_bounds = []
+    for sgn in [-1, +1]:
+        ti = (-b + sgn * sqrt_disc) / (2 * a)
+        ti[a == 0] = (-c / b)[a == 0]
+        ti[(a == 0) & (b == 0)] = 0
+        ti_bounds.append(ti)
+    ti_min, ti_max = ti_bounds
+    np.seterr(**settings)
+    ti_min_in_range = has_infl & (0 < ti_min) & (ti_min < 1)
+    ti_max_in_range = has_infl & (0 < ti_max) & (ti_max < 1)
+
+    # Choose a value of t which starts at 0.5,
+    # but is updated to one of the inflection points
+    # if they lie between 0 and 1
+
+    t_mid = 0.5 * np.ones(len(a0))
+    t_mid[ti_min_in_range] = ti_min[ti_min_in_range]
+    t_mid[ti_max_in_range] = ti_max[ti_max_in_range]
+
+    m, n = a0.shape
+    t_mid = t_mid.repeat(n).reshape((m, n))
+
+    # Compute bezier point and tangent at the chosen value of t
+    mid = bezier([a0, h0, h1, a1])(t_mid)
+    Tm = bezier([h0 - a0, h1 - h0, a1 - h1])(t_mid)
+
+    # Intersection between tangent lines at end points
+    # and tangent in the middle
+    i0 = find_intersection(a0, T0, mid, Tm)
+    i1 = find_intersection(a1, T1, mid, Tm)
+
+    m, n = np.shape(a0)
+    result = np.zeros((6 * m, n))
+    result[0::6] = a0
+    result[1::6] = i0
+    result[2::6] = mid
+    result[3::6] = mid
+    result[4::6] = i1
+    result[5::6] = a1
+    return result
 
 
 def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:

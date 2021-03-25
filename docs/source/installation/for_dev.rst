@@ -1,9 +1,7 @@
 Manim Installation For Developers
 =================================
 
-	This documentation is for developers who want to contribute to ``ManimCommunity/manim``.
-
-
+   This documentation is intended for developers who want to contribute to ``ManimCommunity/manim``.
 
 Manim Installation For Developers with pip
 ******************************************
@@ -22,7 +20,7 @@ Finally, after having cloned this repo, run the following:
 
    python3 -m pip install .
 
-Please see :doc:`contributing` for more details about contributing to Manim.
+Please see :doc:`our contributing guide<../contributing>` for more details about contributing to Manim.
 
 .. warning::
 

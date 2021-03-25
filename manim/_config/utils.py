@@ -14,6 +14,7 @@ import configparser
 import copy
 import logging
 import os
+import errno
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -262,6 +263,7 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
+        "media_width",
         "webgl_renderer_path",
         "leave_progress_bars",
         "log_dir",
@@ -286,6 +288,7 @@ class ManimConfig(MutableMapping):
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
+        "use_opengl_renderer",
         "use_webgl_renderer",
         "webgl_updater_fps",
         "verbosity",
@@ -509,6 +512,7 @@ class ManimConfig(MutableMapping):
             "disable_caching",
             "flush_cache",
             "custom_folders",
+            "use_opengl_renderer",
             "use_webgl_renderer",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
@@ -567,11 +571,15 @@ class ManimConfig(MutableMapping):
         # other logic
         val = parser["CLI"].get("tex_template_file")
         if val:
-            setattr(self, "tex_template_file", val)
+            self.tex_template_file = val
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
-            setattr(self, "ffmpeg_loglevel", val)
+            self.ffmpeg_loglevel = val
+
+        val = parser["jupyter"].get("media_width")
+        if val:
+            setattr(self, "media_width", val)
 
         return self
 
@@ -616,6 +624,7 @@ class ManimConfig(MutableMapping):
             "show_in_file_browser",
             "sound",
             "leave_progress_bars",
+            "progress_bar",
             "write_to_movie",
             "save_last_frame",
             "save_pngs",
@@ -627,6 +636,7 @@ class ManimConfig(MutableMapping):
             "scene_names",
             "verbosity",
             "background_color",
+            "use_opengl_renderer",
             "use_webgl_renderer",
             "webgl_updater_fps",
         ]:
@@ -699,6 +709,15 @@ class ManimConfig(MutableMapping):
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
 
+        # Handle --tex_template
+        if args.tex_template:
+            self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
+
+        if self.use_opengl_renderer:
+            if getattr(args, "write_to_movie") is None:
+                # --write_to_movie was not passed on the command line, so don't generate video.
+                self["write_to_movie"] = False
+
         return self
 
     def digest_file(self, filename: str) -> "ManimConfig":
@@ -732,6 +751,13 @@ class ManimConfig(MutableMapping):
         multiple times.
 
         """
+        if not os.path.isfile(filename):
+            raise FileNotFoundError(
+                errno.ENOENT,
+                "Error: --config_file could not find a valid config file.",
+                filename,
+            )
+
         if filename:
             return self.digest_parser(make_config_parser(filename))
 
@@ -831,6 +857,12 @@ class ManimConfig(MutableMapping):
             "ffmpeg_loglevel", val, ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         ),
         doc="Verbosity level of ffmpeg (no flag).",
+    )
+
+    media_width = property(
+        lambda self: self._d["media_width"],
+        lambda self, val: self._d.__setitem__("media_width", val),
+        doc="Media width in Jupyter notebook",
     )
 
     pixel_width = property(
@@ -1034,8 +1066,17 @@ class ManimConfig(MutableMapping):
             )
 
     @property
+    def use_opengl_renderer(self):
+        """Whether or not to use the OpenGL renderer."""
+        return self._d["use_opengl_renderer"]
+
+    @use_opengl_renderer.setter
+    def use_opengl_renderer(self, val: bool) -> None:
+        self._d["use_opengl_renderer"] = val
+
+    @property
     def use_webgl_renderer(self):
-        """Whether to use WebGL renderer or not (default)."""
+        """Whether or not to use WebGL renderer."""
         return self._d["use_webgl_renderer"]
 
     @use_webgl_renderer.setter

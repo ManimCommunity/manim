@@ -94,7 +94,8 @@ Basic Concepts
                 [[i * 256 / n for i in range(0, n)] for _ in range(0, n)]
             )
             image = ImageMobject(imageArray).scale(2)
-            self.add(image)
+            image.background_rectangle = SurroundingRectangle(image, GREEN)
+            self.add(image, image.background_rectangle)
 
 .. manim:: BezierSpline
     :save_last_frame:
@@ -213,6 +214,16 @@ Animations
             self.play(square.animate.scale(0.3))
             self.play(square.animate.rotate(0.4))
 
+.. manim:: MovingGroupToDestination
+
+    class MovingGroupToDestination(Scene):
+        def construct(self):
+            group = VGroup(Dot(LEFT), Dot(ORIGIN), Dot(RIGHT, color=RED), Dot(2 * RIGHT)).scale(1.4)
+            dest = Dot([4, 3, 0], color=YELLOW)
+            self.add(group, dest)
+            self.play(group.animate.shift(dest.get_center() - group[2].get_center()))
+            self.wait(0.5)
+
 .. manim:: MovingFrameBox
     :ref_modules: manim.mobject.svg.tex_mobject
     :ref_classes: MathTex SurroundingRectangle
@@ -227,7 +238,7 @@ Animations
             framebox1 = SurroundingRectangle(text[1], buff = .1)
             framebox2 = SurroundingRectangle(text[3], buff = .1)
             self.play(
-                ShowCreation(framebox1),
+                Create(framebox1),
             )
             self.wait()
             self.play(
@@ -330,7 +341,7 @@ Plotting with Manim
                 y_max=6,
                 x_labeled_nums=[0,2,3],
                 **kwargs)
-        
+
         def construct(self):
             self.setup_axes()
             curve1 = self.get_graph(lambda x: 4 * x - x ** 2, x_min=0, x_max=4)
@@ -386,9 +397,9 @@ Special Camera Settings
     class FollowingGraphCamera(GraphScene, MovingCameraScene):
         def setup(self):
             GraphScene.setup(self)
-            MovingCameraScene.setup(self)
+
         def construct(self):
-            self.camera_frame.save_state()
+            self.camera.frame.save_state()
             self.setup_axes(animate=False)
             graph = self.get_graph(lambda x: np.sin(x),
                                    color=BLUE,
@@ -400,16 +411,16 @@ Special Camera Settings
             dot_at_start_graph = Dot().move_to(graph.points[0])
             dot_at_end_graph = Dot().move_to(graph.points[-1])
             self.add(graph, dot_at_end_graph, dot_at_start_graph, moving_dot)
-            self.play(self.camera_frame.animate.scale(0.5).move_to(moving_dot))
+            self.play(self.camera.frame.animate.scale(0.5).move_to(moving_dot))
 
             def update_curve(mob):
                 mob.move_to(moving_dot.get_center())
 
-            self.camera_frame.add_updater(update_curve)
+            self.camera.frame.add_updater(update_curve)
             self.play(MoveAlongPath(moving_dot, graph, rate_func=linear))
-            self.camera_frame.remove_updater(update_curve)
+            self.camera.frame.remove_updater(update_curve)
 
-            self.play(Restore(self.camera_frame))
+            self.play(Restore(self.camera.frame))
 
 .. manim:: MovingZoomedSceneAround
     :ref_modules: manim.scene.zoomed_scene
@@ -435,7 +446,7 @@ Special Camera Settings
             dot = Dot().shift(UL * 2)
             image = ImageMobject(np.uint8([[0, 100, 30, 200],
                                            [255, 0, 5, 33]]))
-            image.set_height(7)
+            image.height = 7
             frame_text = Text("Frame", color=PURPLE).scale(1.4)
             zoomed_camera_text = Text("Zoomed camera", color=RED).scale(1.4)
 
@@ -457,7 +468,7 @@ Special Camera Settings
 
             frame_text.next_to(frame, DOWN)
 
-            self.play(ShowCreation(frame), FadeInFrom(frame_text, direction=DOWN))
+            self.play(Create(frame), FadeInFrom(frame_text, direction=DOWN))
             self.activate_zooming()
 
             self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera)
@@ -603,7 +614,7 @@ Advanced Projects
 =================
 
 .. manim:: OpeningManim
-    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane ShowCreation
+    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane Create
     :ref_functions: NumberPlane.prepare_for_nonlinear_transform
 
     class OpeningManim(Scene):
@@ -634,7 +645,7 @@ Advanced Projects
             self.play(
                 FadeOut(title),
                 FadeInFrom(grid_title, direction=DOWN),
-                ShowCreation(grid, run_time=3, lag_ratio=0.1),
+                Create(grid, run_time=3, lag_ratio=0.1),
             )
             self.wait()
 
@@ -701,7 +712,6 @@ Advanced Projects
         def show_circle(self):
             circle = Circle(radius=1)
             circle.move_to(self.origin_point)
-
             self.add(circle)
             self.circle = circle
 

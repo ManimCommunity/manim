@@ -4,13 +4,12 @@ from ..gen import frameserver_pb2_grpc
 from ..gen import renderserver_pb2
 from ..gen import renderserver_pb2_grpc
 from concurrent import futures
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
 import grpc
 import subprocess as sp
 import threading
 import time
 import traceback
+import os
 import types
 from ...utils.module_ops import (
     get_module,
@@ -29,47 +28,12 @@ from ...mobject.types.vectorized_mobject import VMobject
 from ...mobject.types.image_mobject import ImageMobject
 
 
-class ScriptUpdateHandler(FileSystemEventHandler):
-    def __init__(self, frame_server):
-        super().__init__()
-        self.frame_server = frame_server
-
-    def catch_all_handler(self, event):
-        print(event)
-
-    def on_moved(self, event):
-        self.catch_all_handler(event)
-
-    def on_created(self, event):
-        self.catch_all_handler(event)
-
-    def on_deleted(self, event):
-        self.catch_all_handler(event)
-
-    def on_modified(self, event):
-        self.frame_server.load_scene_module()
-
-        with grpc.insecure_channel("localhost:50052") as channel:
-            stub = renderserver_pb2_grpc.RenderServerStub(channel)
-            try:
-                self.frame_server.update_renderer_scene_data()
-            except grpc._channel._InactiveRpcError:
-                logger.warning("No frontend was detected at localhost:50052.")
-                sp.Popen(config["webgl_renderer_path"])
-
-
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
     def __init__(self, server, input_file_path):
         self.server = server
         self.input_file_path = input_file_path
         self.exception = None
         self.load_scene_module()
-
-        observer = Observer()
-        event_handler = ScriptUpdateHandler(self)
-        path = self.input_file_path
-        observer.schedule(event_handler, path)
-        observer.start()  # When / where to stop?
 
         try:
             self.update_renderer_scene_data()
@@ -251,7 +215,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 self.previous_scene = requested_scene
                 self.previous_scene_index = requested_scene_index
             return resp
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
 
     def FetchSceneData(self, request, context):
@@ -267,14 +231,26 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                         for scene in self.keyframes
                     ],
                 ),
+                path=str(self.input_file_path),
             )
             if hasattr(self.scene.camera, "background_color"):
                 request.scene.background_color = self.scene.camera.background_color
             else:
                 request.scene.background_color = "#000000"
             return request
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
+
+    def ScriptUpdated(self, request, context):
+        self.load_scene_module()
+        with grpc.insecure_channel("localhost:50052") as channel:
+            stub = renderserver_pb2_grpc.RenderServerStub(channel)
+            try:
+                self.update_renderer_scene_data()
+            except grpc._channel._InactiveRpcError:
+                logger.warning("No frontend was detected at localhost:50052.")
+                sp.Popen(config["js_renderer_path"])
+        return frameserver_pb2.EmptyResponse()
 
     def load_scene_module(self):
         self.exception = None
@@ -404,8 +380,8 @@ def serialize_mobject(mobject):
             logger.info(
                 f"Expected path {mobject.path} to be under the assets dir ({assets_dir_path})"
             )
-        mob_proto.image_mobject_data.height = mobject.get_height()
-        mob_proto.image_mobject_data.width = mobject.get_width()
+        mob_proto.image_mobject_data.height = mobject.height
+        mob_proto.image_mobject_data.width = mobject.width
         mob_center = mobject.get_center()
         mob_proto.image_mobject_data.center.x = mob_center[0]
         mob_proto.image_mobject_data.center.y = mob_center[1]

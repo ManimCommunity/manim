@@ -238,8 +238,8 @@ class Code(VGroup):
                 foreground = VGroup(self.code, self.line_numbers)
             else:
                 foreground = self.code
-            height = foreground.get_height() + 0.1 * 3 + 2 * self.margin
-            width = foreground.get_width() + 0.1 * 3 + 2 * self.margin
+            height = foreground.height + 0.1 * 3 + 2 * self.margin
+            width = foreground.width + 0.1 * 3 + 2 * self.margin
 
             rect = RoundedRectangle(
                 corner_radius=self.corner_radius,
@@ -262,7 +262,7 @@ class Code(VGroup):
             )
 
             self.background_mobject = VGroup(rect, buttons)
-            x = (height - foreground.get_height()) / 2 - 0.1 * 3
+            x = (height - foreground.height) / 2 - 0.1 * 3
             self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
         if self.insert_line_no:
@@ -310,7 +310,7 @@ class Code(VGroup):
             number = str(self.line_no_from + line_no)
             line_numbers_array.append(number)
         line_numbers = Paragraph(
-            *[i for i in line_numbers_array],
+            *list(line_numbers_array),
             line_spacing=self.line_spacing,
             alignment="right",
             font=self.font,
@@ -336,7 +336,7 @@ class Code(VGroup):
                 line_str = line_str + self.code_json[line_no][word_index][0]
             lines_text.append(self.tab_spaces[line_no] * "\t" + line_str)
         code = Paragraph(
-            *[i for i in lines_text],
+            *list(lines_text),
             line_spacing=self.line_spacing,
             tab_width=self.tab_width,
             font=self.font,
@@ -597,8 +597,8 @@ def insert_line_numbers_in_html(html, line_no_from):
 
     html = html.replace(pre_close, "</pre></td></tr></table>")
     numbers = range(line_no_from, line_no_from + pre.count("\n") + 1)
-    format = "%" + str(len(str(numbers[-1]))) + "i"
-    lines = "\n".join(format % i for i in numbers)
+    format_lines = "%" + str(len(str(numbers[-1]))) + "i"
+    lines = "\n".join(format_lines % i for i in numbers)
     html = html.replace(
         pre_open, "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open
     )
