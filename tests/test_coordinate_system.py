@@ -8,21 +8,23 @@ from manim import config, tempconfig, ORIGIN, LEFT
 def test_initial_config():
     """Check that all attributes are defined properly from the config."""
     cs = CS()
-    assert cs.x_min == -config["frame_x_radius"]
-    assert cs.x_max == config["frame_x_radius"]
-    assert cs.y_min == -config["frame_y_radius"]
-    assert cs.y_max == config["frame_y_radius"]
+    assert cs.x_range[0] == -config["frame_x_radius"]
+    assert cs.x_range[1] == config["frame_x_radius"]
+    assert cs.x_range[2] == 1.0
+    assert cs.y_range[0] == -config["frame_y_radius"]
+    assert cs.y_range[1] == config["frame_y_radius"]
+    assert cs.y_range[2] == 1.0
 
     ax = Axes()
-    assert np.allclose(ax.center_point, ORIGIN)
+    assert np.allclose(ax.get_center(), ORIGIN)
     assert np.allclose(ax.y_axis_config["label_direction"], LEFT)
 
     with tempconfig({"frame_x_radius": 100, "frame_y_radius": 200}):
         cs = CS()
-        assert cs.x_min == -100
-        assert cs.x_max == 100
-        assert cs.y_min == -200
-        assert cs.y_max == 200
+        assert cs.x_range[0] == -100
+        assert cs.x_range[1] == 100
+        assert cs.y_range[0] == -200
+        assert cs.y_range[1] == 200
 
 
 def test_dimension():

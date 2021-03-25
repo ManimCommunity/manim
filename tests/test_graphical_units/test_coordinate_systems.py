@@ -8,14 +8,14 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 class NumberPlaneTest(Scene):
     def construct(self):
         plane = NumberPlane(
-            axis_config={"include_numbers": True, "x_min": -8},
-            x_min=-4,
-            x_max=6,
+            x_range=[-4,6,1],
+            axis_config={"include_numbers": True},
             x_axis_config={"unit_size": 1.2},
-            y_min=-2,
-            y_axis_config={"x_max": 5, "width": 6, "label_direction": UL},
-            center_point=2 * DL,
+            y_range=[-2,5],
+            y_length=6,
+            y_axis_config={"label_direction": UL},
         )
+        plane.shift(1.5*DL)
         self.play(Animation(plane))
 
 

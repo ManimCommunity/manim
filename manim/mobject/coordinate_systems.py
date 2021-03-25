@@ -41,8 +41,8 @@ class CoordinateSystem:
         self.x_range = (
             np.array(
                 [
-                    math.ceil(-config["frame_x_radius"]),
-                    math.floor(config["frame_x_radius"]),
+                    -config["frame_x_radius"],
+                    config["frame_x_radius"],
                     1.0,
                 ]
             )
@@ -53,8 +53,8 @@ class CoordinateSystem:
         self.y_range = (
             np.array(
                 [
-                    math.ceil(-config["frame_y_radius"]),
-                    math.floor(config["frame_y_radius"]),
+                    -config["frame_y_radius"],
+                    config["frame_y_radius"],
                     1.0,
                 ]
             )
@@ -343,6 +343,32 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
+
+        # use ceilings and floors to make the box bound the screen when None is passed.
+        y_range = (
+            np.array(
+                [
+                    math.ceil(-config["frame_y_radius"]),
+                    math.floor(config["frame_y_radius"]),
+                    1.0,
+                ]
+            )
+            if y_range is None
+            else y_range
+        )
+
+        x_range = (
+            np.array(
+                [
+                    math.ceil(-config["frame_x_radius"]),
+                    math.floor(config["frame_x_radius"]),
+                    1.0,
+                ]
+            )
+            if x_range is None
+            else x_range
+        )
+
         x_length = config.frame_width if x_length is None else x_length
         y_length = config.frame_height if y_length is None else y_length
         # configs
