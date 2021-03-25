@@ -74,7 +74,7 @@ def get_pr_nums(repo, revision_range):
     return prnums
 
 
-def sort_by_labels(github_repo, pr_nums, labels):
+def sort_by_labels(github_repo, pr_nums):
     """Sorts PR into groups based on labels.
 
     This implementation sorts based on importance into a singular group. If a
@@ -169,7 +169,7 @@ def main(token, revision_range):
             "infrastructure",
             "unlabeled",
         ]
-        pr_by_labels = sort_by_labels(github_repo, pr_nums, labels)
+        pr_by_labels = sort_by_labels(github_repo, pr_nums)
         for label in labels:
             for PR in pr_by_labels[label]:
                 num = PR.number
@@ -177,6 +177,7 @@ def main(token, revision_range):
                 title = PR.title
 
                 f.write(f"* `#{num} <{url}>`__: {title}\n")
+    print(f"Wrote changelog to: {changelog_file}")
 
 
 if __name__ == "__main__":
