@@ -169,7 +169,7 @@ class VideoIconTest(Scene):
         self.wait()
 
 
-class MutlipleTransformTest(Scene):
+class MultipleTransformTest(Scene):
     def construct(self):
         svg_obj = SVGMobject(get_test_resource("multiple_transforms.svg"))
         self.add(svg_obj)
