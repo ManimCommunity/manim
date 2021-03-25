@@ -288,7 +288,8 @@ class Mobject(Container):
 
         Gets called upon creation. This is an empty method that can be implemented by subclasses.
         """
-        self.set_color(self.color, self.opacity)
+        if self.opengl:
+            self.set_color(self.color, self.opacity)
 
     def generate_points(self):
         """Initializes :attr:`points` and therefore the shape.
