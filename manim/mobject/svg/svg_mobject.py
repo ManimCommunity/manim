@@ -14,6 +14,8 @@ from xml.dom.minidom import Element as MinidomElement, parse as minidom_parse
 
 from typing import Dict, List
 
+from manim import logger
+
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
 from ... import config
@@ -466,7 +468,7 @@ class SVGMobject(VMobject):
                     mob.points = np.dot(mob.points, matrix)
                 mobject.shift(x * RIGHT + y * UP)
 
-            if op_name == "scale":
+            elif op_name == "scale":
                 scale_values = op_args
                 if len(scale_values) == 2:
                     scale_x, scale_y = scale_values
@@ -475,12 +477,16 @@ class SVGMobject(VMobject):
                     scale = scale_values[0]
                     mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
 
-            if op_name == "translate":
+            elif op_name == "translate":
                 x, y = op_args
                 mobject.shift(x * RIGHT + y * DOWN)
 
-            # TODO: handle rotate, skewX and skewY
-            # at least should add a warning message
+            else:
+                # TODO: handle rotate, skewX and skewY
+                # for now adding a warning message
+                logger.warning(
+                    "Handling of %s transform is not supported yet!", op_name
+                )
 
     def flatten(self, input_list):
         """A helper method to flatten the ``input_list`` into an 1D array."""

@@ -176,6 +176,27 @@ class MultipleTransformTest(Scene):
         self.wait()
 
 
+class SkewXTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("skewX.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class SkewYTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("skewY.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class RotateTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("rotate.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
 class ImageMobjectTest(Scene):
     def construct(self):
         file_path = get_test_resource("tree_img_640x351.png")
