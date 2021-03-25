@@ -27,7 +27,7 @@ This script was taken from Numpy under the terms of BSD-3-Clause license.
 import re
 import sys
 from collections import defaultdict
-from textwrap import dedent
+from textwrap import dedent, indent
 from pathlib import Path
 import git
 from tqdm import tqdm
@@ -54,7 +54,7 @@ def get_authors(revision_range):
     return authors
 
 
-def get_pr_nums(repo, revision_range):
+def get_pr_nums(revision_range):
     print("Getting PR Numbers:")
     prnums = []
 
@@ -116,8 +116,14 @@ def sort_by_labels(github_repo, pr_nums):
 
     return pr_by_labels
 
+def get_summary(body):
+    pattern = "<!--changelog-start-->([^\"]*)<!--changelog-end-->"
+    has_changelog_pattern = re.search(pattern, body)
+    if has_changelog_pattern:
 
-def main(token, revision_range):
+        return has_changelog_pattern.group()[22:-21].strip()
+
+def main(token, revision_range, outfile=None):
     lst_release, cur_release = [r.strip() for r in revision_range.split("..")]
 
     github = Github(token)
@@ -126,12 +132,14 @@ def main(token, revision_range):
     # document authors
     authors = get_authors(revision_range)
 
-    # TODO: Decide where to place changelog file
-    changelog_file = (
-        Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog.rst"
-    )
+    if not outfile:
+        outfile = (
+            Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog.rst"
+        )
+    else:
+        outfile = Path(outfile).resolve()
 
-    with changelog_file.open("w", encoding="utf8") as f:
+    with outfile.open("w", encoding="utf8") as f:
         heading = "Contributors"
         f.write(f"{heading}\n")
         f.write("=" * len(heading) + "\n\n")
@@ -148,7 +156,7 @@ def main(token, revision_range):
             f.write("* " + author + "\n")
 
         # document pull requests
-        pr_nums = get_pr_nums(github_repo, revision_range)
+        pr_nums = get_pr_nums(revision_range)
 
         heading = "Pull requests merged"
         f.write("\n")
@@ -171,24 +179,33 @@ def main(token, revision_range):
         ]
         pr_by_labels = sort_by_labels(github_repo, pr_nums)
         for label in labels:
-            f.write(f"{label.capitalize()}\n")
-            f.write("-" * len(label) + "\n\n")
+            pr_of_label = pr_by_labels[label]
 
-            for PR in pr_by_labels[label]:
-                num = PR.number
-                url = PR.html_url
-                title = PR.title
-                label = PR.labels
-                f.write(f"* `#{num} <{url}>`__: {title}\n")
+            if pr_of_label:
+                f.write(f"{label.capitalize()}\n")
+                f.write("-" * len(label) + "\n\n")
 
-    print(f"Wrote changelog to: {changelog_file}")
+                for PR in pr_by_labels[label]:
+                    num = PR.number
+                    url = PR.html_url
+                    title = PR.title
+                    label = PR.labels
+                    f.write(f"* `#{num} <{url}>`__: {title}\n")
+                    overview = get_summary(PR.body)
+                    if overview:
+                        f.write(indent(f"{overview}\n", "   "))
+                    else:
+                        f.write("\n")
+
+    print(f"Wrote changelog to: {outfile}")
 
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser
+    from argparse import ArgumentParser, FileType
 
     parser = ArgumentParser(description="Generate author/pr lists for release")
     parser.add_argument("token", help="github access token")
     parser.add_argument("revision_range", help="<revision>..<revision>")
+    parser.add_argument('-o', '--outfile', type=str, help="path and file name of the changelog output")
     args = parser.parse_args()
-    main(args.token, args.revision_range)
+    main(args.token, args.revision_range, args.outfile)
