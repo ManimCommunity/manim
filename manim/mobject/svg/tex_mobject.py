@@ -403,10 +403,14 @@ class MathTex(SingleStringMathTex):
         patterns = ["{{", "}}"]
         # Separate out any strings specified in the isolate
         # or tex_to_color_map lists.
-        patterns.extend([
-            "({})".format(re.escape(ss))
-            for ss in it.chain(self.substrings_to_isolate, self.tex_to_color_map.keys())
-        ])
+        patterns.extend(
+            [
+                "({})".format(re.escape(ss))
+                for ss in it.chain(
+                    self.substrings_to_isolate, self.tex_to_color_map.keys()
+                )
+            ]
+        )
         pattern = "|".join(patterns)
         pieces = []
         for s in tex_strings:
