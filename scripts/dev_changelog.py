@@ -116,12 +116,14 @@ def sort_by_labels(github_repo, pr_nums):
 
     return pr_by_labels
 
+
 def get_summary(body):
-    pattern = "<!--changelog-start-->([^\"]*)<!--changelog-end-->"
+    pattern = '<!--changelog-start-->([^"]*)<!--changelog-end-->'
     has_changelog_pattern = re.search(pattern, body)
     if has_changelog_pattern:
 
         return has_changelog_pattern.group()[22:-21].strip()
+
 
 def main(token, revision_range, outfile=None):
     lst_release, cur_release = [r.strip() for r in revision_range.split("..")]
@@ -206,6 +208,8 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="Generate author/pr lists for release")
     parser.add_argument("token", help="github access token")
     parser.add_argument("revision_range", help="<revision>..<revision>")
-    parser.add_argument('-o', '--outfile', type=str, help="path and file name of the changelog output")
+    parser.add_argument(
+        "-o", "--outfile", type=str, help="path and file name of the changelog output"
+    )
     args = parser.parse_args()
     main(args.token, args.revision_range, args.outfile)
