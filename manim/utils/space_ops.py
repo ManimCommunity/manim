@@ -415,9 +415,10 @@ def earclip_triangulation(verts, ring_ends):
     Returns a list of indices giving a triangulation
     of a polygon, potentially with holes
 
-    - verts is a numpy array of points
+        - verts is a numpy array of points
 
-    - ring_ends is a list of indices indicating where
+        - ring_ends is a list of indices indicating where
+
     the ends of new paths are
     """
 

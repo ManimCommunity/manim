@@ -865,8 +865,10 @@ class Text(SVGMobject):
                 self.chars[start:end].set_color(color)
 
     def set_color_by_t2g(self, t2g=None):
-        """Internally used. Sets gradient colors for specified
-        strings. Behaves similarly to ``set_color_by_t2c``."""
+        """
+        Internally used. Sets gradient colors for specified
+        strings. Behaves similarly to ``set_color_by_t2c``.
+        """
         t2g = t2g if t2g else self.t2g
         for word, gradient in list(t2g.items()):
             for start, end in self.find_indexes(word, self.original_text):
@@ -888,8 +890,10 @@ class Text(SVGMobject):
         return hasher.hexdigest()[:16]
 
     def text2settings(self):
-        """Internally used function. Converts the texts and styles
-        to a setting for parsing."""
+        """
+        Internally used function. Converts the texts and styles
+        to a setting for parsing.
+        """
         settings = []
         t2x = [self.t2f, self.t2s, self.t2w]
         for i in range(len(t2x)):
@@ -1337,10 +1341,12 @@ class MarkupText(SVGMobject):
         )
 
     def _count_real_chars(self, s):
-        """Counts characters that will be displayed.
+        """
+        Counts characters that will be displayed.
 
         This is needed for partial coloring or gradients, because space
-        counts to the text's `len`, but has no corresponding character."""
+        counts to the text's `len`, but has no corresponding character.
+        """
         count = 0
         level = 0
         # temporarily replace HTML entities by single char

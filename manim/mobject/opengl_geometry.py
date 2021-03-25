@@ -161,8 +161,10 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         return result
 
     def get_tip(self):
-        """Returns the TipableVMobject instance's (first) tip,
-        otherwise throws an exception."""
+        """
+        Returns the TipableVMobject instance's (first) tip,
+        otherwise throws an exception.
+        """
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")
@@ -342,7 +344,7 @@ class OpenGLDot(OpenGLCircle):
 
 
 class OpenGLSmallDot(OpenGLDot):
-    """ Deprecated"""
+    """Deprecated"""
 
     def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
         logger.warning(

@@ -43,6 +43,7 @@ class SVGMobject(VMobject):
                 self.play(
                     FadeIn(SVGMobject("manim-logo-sidebar.svg"))
                 )
+
     Parameters
     --------
     file_name : :class:`str`

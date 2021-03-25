@@ -1005,7 +1005,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def quality(self):
-        """Video quality (-q)."""
+        """Video quality (-q)."""  # noqa: D402
         keys = ["pixel_width", "pixel_height", "frame_rate"]
         q = {k: self[k] for k in keys}
         for qual in constants.QUALITIES:

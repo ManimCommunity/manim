@@ -64,6 +64,7 @@ flake8-pytest-style = "^1.4.0"
 flake8-logging-format = "^0.6.0"
 flake8-rst-docstrings = "^0.0.14"
 flake8-docstrings = "^1.6.0"
+darglint = "^1.7.0"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"

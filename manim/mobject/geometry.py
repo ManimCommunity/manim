@@ -225,8 +225,10 @@ class TipableVMobject(VMobject):
         return result
 
     def get_tip(self):
-        """Returns the TipableVMobject instance's (first) tip,
-        otherwise throws an exception."""
+        """
+        Returns the TipableVMobject instance's (first) tip,
+        otherwise throws an exception.
+        """
         tips = self.get_tips()
         if len(tips) == 0:
             raise Exception("tip not found")

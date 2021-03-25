@@ -344,6 +344,7 @@ class Camera:
         coords_to_colors_func : function
             The function whose input is an (x,y) pair of coordinates and
             whose return values must be the colors for that point
+
         Returns
         -------
         np.array
@@ -842,12 +843,15 @@ class Camera:
         ----------
         pmobject : PMobject
             Point Cloud Mobject
+
         points : list
             The points to display in the point cloud mobject
+
         rgbas : np.array
 
         thickness : int, float
             The thickness of each point of the PMobject
+
         pixel_array : np.array
             The pixel array to modify.
         """
