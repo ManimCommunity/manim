@@ -282,7 +282,7 @@ class SceneFileWriter(object):
         else:
             frame = frame_or_renderer
             if config["write_to_movie"]:
-                self.writing_process.stdin.write(frame.tostring())
+                self.writing_process.stdin.write(frame.tobytes())
             if config["save_pngs"]:
                 path, extension = os.path.splitext(self.image_file_path)
                 Image.fromarray(frame).save(f"{path}{self.frame_count}{extension}")
