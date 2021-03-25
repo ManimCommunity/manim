@@ -49,14 +49,14 @@ def resize_with_interpolation(nparray, length):
     )
 
 
-def remove_list_redundancies(l):
+def remove_list_redundancies(lst):
     """
     Used instead of list(set(l)) to maintain order
     Keeps the last occurrence of each element
     """
     reversed_result = []
     used = set()
-    for x in reversed(l):
+    for x in reversed(lst):
         if x not in used:
             reversed_result.append(x)
             used.add(x)
@@ -169,4 +169,4 @@ def remove_nones(sequence):
 
 
 def concatenate_lists(*list_of_lists):
-    return [item for l in list_of_lists for item in l]
+    return [item for lst in list_of_lists for item in lst]

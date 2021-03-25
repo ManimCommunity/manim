@@ -51,11 +51,20 @@ webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
 jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
+pytest-cov = "*"
 pytest = "^6.0"
 pylint = "*"
 guzzle_sphinx_theme = "*"
 recommonmark = "*"
 matplotlib = "^3.3.2"
+flake8 = "^3.9.0"
+flake8-bugbear = "^21.3.2"
+flake8-builtins = "^1.5.3"
+flake8-comprehensions = "^3.4.0"
+flake8-pytest-style = "^1.4.0"
+flake8-logging-format = "^0.6.0"
+flake8-rst-docstrings = "^0.0.14"
+flake8-docstrings = "^1.6.0"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
@@ -65,6 +74,13 @@ markers = "platform_python_implementation == 'CPython'"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
+addopts = "--cov=manim --cov-report xml --cov-report term"
+
+[tool.coverage.run]
+omit = ["*tests*"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover"]
 
 [tool.poetry.plugins]
 [tool.poetry.plugins."console_scripts"]

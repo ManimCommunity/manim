@@ -199,7 +199,7 @@ class BarChart(VGroup):
         ticks = VGroup()
         heights = np.linspace(0, height, self.n_ticks + 1)
         values = np.linspace(0, self.max_value, self.n_ticks + 1)
-        for y, value in zip(heights, values):
+        for y, _value in zip(heights, values):
             tick = Line(LEFT, RIGHT)
             tick.width = self.tick_width
             tick.move_to(y * UP)

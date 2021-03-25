@@ -77,7 +77,7 @@ should look like this:
            square.flip(RIGHT)                   # flip horizontally
            square.rotate(-3 * TAU / 8)          # rotate a certain amount
 
-           self.play(ShowCreation(square))      # animate the creation of the square
+           self.play(Create(square))      # animate the creation of the square
            self.play(Transform(square, circle)) # interpolate the square into the circle
            self.play(FadeOut(square))           # fade out animation
 

@@ -1,6 +1,6 @@
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.caching import handle_caching_play
-from manim.renderer.cairo_renderer import pass_scene_reference, handle_play_like_call
+from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.color import color_to_rgba
 import moderngl
 from .opengl_renderer_window import Window
@@ -185,7 +185,7 @@ class OpenGLRenderer:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
 
-        self.original_skipping_status = skip_animations
+        self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
@@ -383,6 +383,7 @@ class OpenGLRenderer:
     def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
         if scene.compile_animation_data(*args, **kwargs):
+            scene.begin_animations()
             scene.play_internal()
 
     def render(self, scene, frame_offset, moving_mobjects):
