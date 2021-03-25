@@ -94,7 +94,7 @@ def sort_by_labels(github_repo, pr_nums):
     pr_by_labels = defaultdict(list)
     for num in tqdm(pr_nums, desc="Sorting by labels"):
         pr = github_repo.get_pull(num)
-        labels = pr.labels
+        labels = [label.name for label in pr.labels]
         if "breaking changes" in labels:
             pr_by_labels["breaking changes"].append(pr)
         elif "highlight" in labels:
@@ -155,7 +155,7 @@ def main(token, revision_range):
         f.write(heading + "\n")
         f.write("=" * len(heading) + "\n\n")
         f.write(
-            f"A total of {len(pr_nums)} pull requests were merged for this release.\n"
+            f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
         )
 
         labels = [
@@ -171,12 +171,16 @@ def main(token, revision_range):
         ]
         pr_by_labels = sort_by_labels(github_repo, pr_nums)
         for label in labels:
+            f.write(f"{label.capitalize()}\n")
+            f.write("-" * len(label) + "\n\n")
+
             for PR in pr_by_labels[label]:
                 num = PR.number
                 url = PR.html_url
                 title = PR.title
-
+                label = PR.labels
                 f.write(f"* `#{num} <{url}>`__: {title}\n")
+
     print(f"Wrote changelog to: {changelog_file}")
 
 
