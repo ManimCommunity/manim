@@ -241,7 +241,6 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         self,
         mobject,
         target_mobject,
-        group_type=VGroup,
         transform_mismatches=False,
         fade_transform_mismatches=False,
         key_map=None,
@@ -252,7 +251,6 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         super().__init__(
             mobject,
             target_mobject,
-            group_type=group_type,
             transform_mismatches=transform_mismatches,
             fade_transform_mismatches=fade_transform_mismatches,
             key_map=key_map,
