@@ -12,7 +12,6 @@ class AxesTest(Scene):
             y_range=[-10,10,1],
             x_length=6,
             y_length=6,
-            axis_config={"include_tip":False},
             color=WHITE
         )
         labels = graph.get_axis_labels()
