@@ -1,37 +1,79 @@
 """Animations that try to transform Mobjects while keeping track of identical parts."""
 
-__all__ = [
-    "TransformMatchingShapes",
-    "TransformMatchingTex"
-]
+__all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
 
 import numpy as np
+from typing import Optional
 
 from .composition import AnimationGroup
-from .fading import FadeInFromPoint, FadeOutToPoint, FadeTransformPieces
-from .transform import Transform, ReplacementTransform
+from .fading import FadeInFromPoint, FadeOutToPoint
+from .transform import Transform, ReplacementTransform, FadeTransformPieces
 
 from ..mobject.mobject import Mobject, Group
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..mobject.svg.tex_mobject import MathTex
 
 
-# TODO: make abstract base class?
 class TransformMatchingAbstractBase(AnimationGroup):
+    """Abstract base class for transformations that keep track of matching parts.
+
+    Subclasses have to implement the two static methods
+    :meth:`~.TransformMatchingAbstractBase.get_mobject_parts` and
+    :meth:`~.TransformMatchingAbstractBase.get_mobject_key`.
+
+    Basically, this transformation first maps all submobjects returned
+    by the ``get_mobject_parts`` method to certain keys by applying the
+    ``get_mobject_key`` method. Then, submobjects with matching keys
+    are transformed into each other.
+
+    Parameters
+    ----------
+    mobject
+        The starting :class:`~.Mobject`.
+    target_mobject
+        The target :class:`~.Mobject`.
+    transform_mismatches
+        Controls whether submobjects without a matching key are transformed
+        into each other by using :class:`~.Transform`. Default: ``False``.
+    fade_transform_mismatches
+        Controls whether submobjects without a matching key are transformed
+        into each other by using :class:`~.FadeTransform`. Default: ``False``.
+    key_map
+        Optional. A dictionary mapping keys belonging to some of the starting mobject's
+        submobjects (i.e., the return values of the ``get_mobject_key`` method)
+        to some keys belonging to the target mobject's submobjects that should
+        be transformed although the keys don't match.
+    kwargs
+        All further keyword arguments are passed to the submobject transformations.
+
+    .. note::
+
+        If neither ``transform_mismatches`` nor ``fade_transform_mismatches``
+        are set to ``True``, submobjects without matching keys in the starting
+        mobject are faded out in the direction of the unmatched submobjects in
+        the target mobject, and unmatched submobjects in the target mobject
+        are faded in from the direction of the unmatched submobjects in the
+        start mobject.
+
+    """
+
     def __init__(
         self,
-        mobject,
-        target_mobject,
-        mobject_type=Mobject,
-        group_type=Group,
-        transform_mismatches=False,
-        fade_transform_mismatches=False,
-        key_map=None,
+        mobject: "Mobject",
+        target_mobject: "Mobject",
+        transform_mismatches: bool = False,
+        fade_transform_mismatches: bool = False,
+        key_map: Optional[dict] = None,
         **kwargs
     ):
-        assert isinstance(mobject, mobject_type)
-        assert isinstance(target_mobject, mobject_type)
+        assert type(mobject) is type(target_mobject)
+
+        if isinstance(mobject, VMobject):
+            group_type = VGroup
+        else:
+            group_type = Group
+
         source_map = self.get_shape_map(mobject)
         target_map = self.get_shape_map(target_mobject)
 
@@ -60,11 +102,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
                 target_map.pop(key2, None)
         if len(key_mapped_source) > 0:
             anims.append(
-                FadeTransformPieces(
-                    key_mapped_source,
-                    key_mapped_target,
-                    **kwargs
-                )
+                FadeTransformPieces(key_mapped_source, key_mapped_target, **kwargs)
             )
 
         fade_source = group_type()
@@ -117,12 +155,35 @@ class TransformMatchingAbstractBase(AnimationGroup):
 
 
 class TransformMatchingShapes(TransformMatchingAbstractBase):
+    """An animation trying to transform groups by matching the shape
+    of their submobjects.
+
+    Two submobjects match if the hash of their point coordinates after
+    normalization (i.e., after translation to the origin, fixing the submobject
+    height at 1 unit, and rounding the coordinates to three decimal places)
+    matches.
+
+    See also
+    --------
+    :class:`~.TransformMatchingAbstractBase`
+
+    .. manim:: Anagram
+
+        class Anagram(Scene):
+            def construct(self):
+                src = Text("the morse code")
+                tar = Text("here come dots")
+                self.play(Write(src))
+                self.wait(0.5)
+                self.play(TransformMatchingShapes(src, tar, path_arc=PI/2))
+                self.wait(0.5)
+
+    """
+
     def __init__(
         self,
         mobject,
         target_mobject,
-        mobject_type=VMobject,
-        group_type=VGroup,
         transform_mismatches=False,
         fade_transform_mismatches=False,
         key_map=None,
@@ -131,8 +192,6 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         super().__init__(
             mobject,
             target_mobject,
-            mobject_type=mobject_type,
-            group_type=group_type,
             transform_mismatches=transform_mismatches,
             fade_transform_mismatches=fade_transform_mismatches,
             key_map=key_map,
@@ -154,21 +213,44 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
 
 
 class TransformMatchingTex(TransformMatchingAbstractBase):
+    """A transformation trying to transform rendered LaTeX strings.
+
+    Two submobjects match if their ``tex_string`` matches.
+
+    See also
+    --------
+    :class:`~.TransformMatchingAbstractBase`
+
+    Examples
+    --------
+
+    .. manim:: MatchingEquationParts
+
+        class MatchingEquationParts(Scene):
+            def construct(self):
+                eq1 = MathTex("{{a^2}} + {{b^2}} = {{c^2}}")
+                eq2 = MathTex("{{a^2}} = {{c^2}} - {{b^2}}")
+                self.add(eq1)
+                self.wait(0.5)
+                self.play(TransformMatchingTex(eq1, eq2))
+                self.wait(0.5)
+
+    """
+
     def __init__(
         self,
         mobject,
         target_mobject,
-        mobject_type=MathTex,  # Tex inherits from MathTex...
         group_type=VGroup,
         transform_mismatches=False,
         fade_transform_mismatches=False,
         key_map=None,
         **kwargs
     ):
+        assert hasattr(mobject, "tex_string") and hasattr(target_mobject, "tex_string")
         super().__init__(
             mobject,
             target_mobject,
-            mobject_type=mobject_type,
             group_type=group_type,
             transform_mismatches=transform_mismatches,
             fade_transform_mismatches=fade_transform_mismatches,
