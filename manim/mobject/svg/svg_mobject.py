@@ -478,7 +478,11 @@ class SVGMobject(VMobject):
                     mobject.scale(np.array([scale, scale, 1]), about_point=ORIGIN)
 
             elif op_name == "translate":
-                x, y = op_args
+                if len(op_args) == 2:
+                    x, y = op_args
+                else:
+                    x = op_args
+                    y = 0
                 mobject.shift(x * RIGHT + y * DOWN)
 
             else:

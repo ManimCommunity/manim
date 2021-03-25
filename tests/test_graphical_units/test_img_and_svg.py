@@ -176,6 +176,27 @@ class MultipleTransformTest(Scene):
         self.wait()
 
 
+class MatrixTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("matrix.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class ScaleTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("scale.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class TranslateTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("translate.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
 class SkewXTransformTest(Scene):
     def construct(self):
         svg_obj = SVGMobject(get_test_resource("skewX.svg"))
