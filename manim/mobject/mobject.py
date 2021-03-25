@@ -690,10 +690,7 @@ class Mobject(Container):
         :meth:`get_time_based_updaters`
 
         """
-        for updater in self.updaters:
-            if "dt" in get_parameters(updater):
-                return True
-        return False
+        return any("dt" in get_parameters(updater) for updater in self.updaters)
 
     def get_updaters(self) -> List[Updater]:
         """Return all updaters.

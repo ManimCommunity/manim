@@ -366,9 +366,8 @@ class CairoText(SVGMobject):
         size = self.size * 10
         line_spacing = self.line_spacing * 10
 
-        if self.font == "":
-            if NOT_SETTING_FONT_MSG:
-                logger.warning(NOT_SETTING_FONT_MSG)
+        if self.font == "" and NOT_SETTING_FONT_MSG:
+            logger.warning(NOT_SETTING_FONT_MSG)
 
         dir_name = config.get_dir("text_dir")
         if not os.path.exists(dir_name):

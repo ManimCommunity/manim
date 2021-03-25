@@ -257,10 +257,10 @@ class CairoRenderer:
         """
         if config["save_last_frame"]:
             self.skip_animations = True
-        if config["from_animation_number"]:
+        if config["from_animation_number"]:  # noqa: SIM102
             if self.num_plays < config["from_animation_number"]:
                 self.skip_animations = True
-        if config["upto_animation_number"]:
+        if config["upto_animation_number"]:  # noqa: SIM102
             if self.num_plays > config["upto_animation_number"]:
                 self.skip_animations = True
                 raise EndSceneEarlyException()

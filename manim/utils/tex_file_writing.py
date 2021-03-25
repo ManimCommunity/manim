@@ -183,7 +183,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
                         for _ in range(10):
                             if log[lineno + printed_lines].startswith("l."):
                                 break
-                            printed_lines += 1
+                            printed_lines += 1  # noqa: SIM113
 
                         for line in log[lineno : lineno + printed_lines + 1]:
                             logger.error(line)

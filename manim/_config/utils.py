@@ -648,9 +648,8 @@ class ManimConfig(MutableMapping):
                     self[key] = attr
 
         # dry_run is special because it can only be set to True
-        if hasattr(args, "dry_run"):
-            if getattr(args, "dry_run"):
-                self["dry_run"] = True
+        if getattr(args, "dry_run", False):
+            self["dry_run"] = True
 
         for key in [
             "media_dir",  # always set this one first
@@ -713,10 +712,9 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
-        if self.use_opengl_renderer:
-            if getattr(args, "write_to_movie") is None:
-                # --write_to_movie was not passed on the command line, so don't generate video.
-                self["write_to_movie"] = False
+        if self.use_opengl_renderer and getattr(args, "write_to_movie") is None:
+            # --write_to_movie was not passed on the command line, so don't generate video.
+            self["write_to_movie"] = False
 
         return self
 

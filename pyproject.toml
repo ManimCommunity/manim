@@ -65,6 +65,11 @@ flake8-pytest-style = "^1.4.0"
 flake8-logging-format = "^0.6.0"
 flake8-rst-docstrings = "^0.0.14"
 flake8-docstrings = "^1.6.0"
+flake8-variables-names = "^0.0.4"
+flake8-simplify = "^0.14.0"
+flake8-fixme = "^1.1.1"
+cohesion = "^1.0.0"
+flake8-alfred = "^1.1.1"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"

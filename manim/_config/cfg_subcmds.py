@@ -234,7 +234,7 @@ Are you sure you want to continue? (y/n)""",
             style="red bold",
             end="",
         )
-        proceed = True if input().lower() == "y" else False
+        proceed = bool(input().lower() == "y")
     else:
         proceed = True
     if proceed:

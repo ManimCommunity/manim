@@ -370,14 +370,13 @@ class Code(VGroup):
             os.makedirs(
                 os.path.join("assets", "codes", "generated_html_files"), exist_ok=True
             )
-            file = open(
+            with open(
                 os.path.join(
                     "assets", "codes", "generated_html_files", self.file_name + ".html"
                 ),
                 "w",
-            )
-            file.write(self.html_string)
-            file.close()
+            ) as html_file:
+                html_file.write(self.html_string)
 
     def gen_code_json(self):
         """Function to background_color, generate code_json and tab_spaces from html_string.
