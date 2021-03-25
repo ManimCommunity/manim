@@ -657,7 +657,7 @@ test = ["pytest"]
 
 [[package]]
 name = "jupyter-server"
-version = "1.5.0"
+version = "1.5.1"
 description = "The backend—i.e. core services, APIs, and REST endpoints—to Jupyter web applications."
 category = "main"
 optional = true
@@ -1193,7 +1193,7 @@ python-versions = "*"
 
 [[package]]
 name = "pyflakes"
-version = "2.3.0"
+version = "2.3.1"
 description = "passive checker of Python programs"
 category = "dev"
 optional = false
@@ -1694,7 +1694,7 @@ webgl_renderer = ["grpcio", "grpcio-tools", "watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "103c351263df5bf4f3480065cb3041aadf264d0b646badcd9d4771f0d96ad1c9"
+content-hash = "7b29a18f5c7ea1224303b572dbe335023de52073e7837da08be8752a35a354bd"
 
 [metadata.files]
 alabaster = [
@@ -2137,8 +2137,8 @@ jupyter-packaging = [
     {file = "jupyter_packaging-0.7.12-py2.py3-none-any.whl", hash = "sha256:e36efa5edd52b302f0b784ff2a4d1f2cd50f7058af331151315e98b73f947b8d"},
 ]
 jupyter-server = [
-    {file = "jupyter_server-1.5.0-py3-none-any.whl", hash = "sha256:028277d67cb4a9705758b304c6f3727c8e1bd052ea83769ffaedfd0ffaac23c4"},
-    {file = "jupyter_server-1.5.0.tar.gz", hash = "sha256:ff127713a57ab7aa7b23f7df9b082951cc4b05d8d64cc0949d01ea02ac24c70c"},
+    {file = "jupyter_server-1.5.1-py3-none-any.whl", hash = "sha256:951b944f25dcf7e34106415859630273f59a472fdb24e866f63ef431b232d3a0"},
+    {file = "jupyter_server-1.5.1.tar.gz", hash = "sha256:db646c991c17ad3dff12e419d36e2b91025912dfd21d13f8ddd524531e6d63bf"},
 ]
 jupyterlab = [
     {file = "jupyterlab-3.0.12-py3-none-any.whl", hash = "sha256:dbbbf6329c18422e7e22e95494933e7ea28b0fad09965cd60431b1b857f80ca2"},
@@ -2586,8 +2586,8 @@ pydub = [
     {file = "pydub-0.25.1.tar.gz", hash = "sha256:980a33ce9949cab2a569606b65674d748ecbca4f0796887fd6f46173a7b0d30f"},
 ]
 pyflakes = [
-    {file = "pyflakes-2.3.0-py2.py3-none-any.whl", hash = "sha256:910208209dcea632721cb58363d0f72913d9e8cf64dc6f8ae2e02a3609aba40d"},
-    {file = "pyflakes-2.3.0.tar.gz", hash = "sha256:e59fd8e750e588358f1b8885e5a4751203a0516e0ee6d34811089ac294c8806f"},
+    {file = "pyflakes-2.3.1-py2.py3-none-any.whl", hash = "sha256:7893783d01b8a89811dd72d7dfd4d84ff098e5eed95cfa8905b22bbffe52efc3"},
+    {file = "pyflakes-2.3.1.tar.gz", hash = "sha256:f5bc8ecabc05bb9d291eb5203d6810b49040f6ff446a756326104746cc00c1db"},
 ]
 pyglet = [
     {file = "pyglet-1.5.15-py3-none-any.whl", hash = "sha256:4401cc176580e4e17e2df8bbf7536f27e691327dc3f38f209a12f1859c70aed2"},
