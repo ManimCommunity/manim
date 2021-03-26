@@ -45,7 +45,6 @@ Examples
 
 __all__ = ["GraphScene"]
 
-
 import itertools as it
 
 from .. import config
@@ -68,6 +67,7 @@ from ..utils.color import color_gradient, GREY, BLUE, GREEN, YELLOW, BLACK, WHIT
 from ..utils.color import invert_color
 from ..utils.space_ops import angle_of_vector
 
+
 # TODO, this should probably reimplemented entirely, especially so as to
 # better reuse code from mobject/coordinate_systems.
 # Also, I really dislike how the configuration is set up, this
@@ -77,12 +77,12 @@ from ..utils.space_ops import angle_of_vector
 class GraphScene(Scene):
     def __init__(
         self,
-        x_range = None,
+        x_range=None,
         x_length=9,
         x_leftmost_tick=None,  # Change if different from x_min
         x_labeled_nums=None,
         x_axis_label="$x$",
-        y_range = None,
+        y_range=None,
         y_length=6,
         y_bottom_tick=None,  # Change if different from y_min
         y_labeled_nums=None,
@@ -132,12 +132,12 @@ class GraphScene(Scene):
         self.x_axis_config = {} if x_axis_config is None else x_axis_config
         self.y_axis_config = {} if y_axis_config is None else y_axis_config
 
-        x_range = np.array([-1,10,1]) if x_range is None else x_range
-        y_range = np.array([-1,10,1]) if y_range is None else y_range
+        x_range = np.array([-1, 10, 1]) if x_range is None else x_range
+        y_range = np.array([-1, 10, 1]) if y_range is None else y_range
 
         if len(x_range) == 2:
             x_range = [*x_range, 1]
-        if len(y_range) ==2:
+        if len(y_range) == 2:
             y_range = [*y_range, 1]
 
         self.x_min, self.x_max, self.x_step = x_range
@@ -145,7 +145,6 @@ class GraphScene(Scene):
 
         self.x_range = x_range
         self.y_range = y_range
-
 
         super().__init__(**kwargs)
 
