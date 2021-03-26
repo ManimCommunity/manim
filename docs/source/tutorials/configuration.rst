@@ -81,7 +81,7 @@ Usually, manim is ran from the command line by executing
 
 .. code-block:: bash
 
-   $ manim [OPTIONS] [FILE] [SCENES]
+   $ manim <file.py> SceneName
 
 This asks manim to search for a Scene class called :code:`SceneName` inside the
 file <file.py> and render it.  One can also specify the render quality by using
