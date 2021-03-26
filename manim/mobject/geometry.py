@@ -168,11 +168,11 @@ class TipableVMobject(VMobject):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
         tip.rotate(
             0 if anchor[2] == 0 else PI / 2 - np.arccos(normalize(anchor)[2]),
             axis=rotate_vector(tip.vector, -PI / 2),
         )
+        tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
         tip.shift(anchor - tip.tip_point)
         return tip
 
