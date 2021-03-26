@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""
-Script to generate contributor and pull request lists
+"""Script to generate contributor and pull request lists
 This script generates contributor and pull request lists for release
 changelogs using Github v3 protocol. Use requires an authentication token in
 order to have sufficient bandwidth, you can get one following the directions at
@@ -8,9 +7,12 @@ order to have sufficient bandwidth, you can get one following the directions at
 Don't add any scope, as the default is read access to public information. The
 token may be stored in an environment variable as you only get one chance to
 see it.
+
 Usage::
     $ ./scripts/dev_changelog.py <token> <revision range>
+
 The output is utf8 rst.
+
 Dependencies
 ------------
 - gitpython
@@ -20,6 +22,7 @@ Examples
 --------
 From the bash command line with $GITHUB token::
     $ ./scripts/dev_changelog.py $GITHUB v0.3.0..v0.4.0 > 1.14.0-changelog.rst
+
 Note
 ----
 This script was taken from Numpy under the terms of BSD-3-Clause license.
@@ -40,7 +43,7 @@ if sys.version_info[:2] < (3, 6):
 this_repo = Repo(str(Path(__file__).resolve().parent.parent))
 
 
-def get_authors(revision_range):
+def get_authors_and_reviewers(revision_range, github_repo, pr_nums):
     pat = "^.*\\t(.*)$"
     lst_release, cur_release = [r.strip() for r in revision_range.split("..")]
 
@@ -51,7 +54,14 @@ def get_authors(revision_range):
     # Append '+' to new authors.
     authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
     authors.sort()
-    return authors
+
+    reviewers = []
+    for num in tqdm(pr_nums, desc="Fetching reviewer comments"):
+        pr = github_repo.get_pull(num)
+        reviewers.extend(rev.user.name for rev in pr.get_reviews())
+    reviewers = sorted(set(rev for rev in reviewers if rev is not None))
+
+    return {'authors': authors, 'reviewers': reviewers}
 
 
 def get_pr_nums(revision_range):
@@ -60,7 +70,7 @@ def get_pr_nums(revision_range):
 
     # From regular merges
     merges = this_repo.git.log("--oneline", "--merges", revision_range)
-    issues = re.findall("Merge pull request \\#(\\d*)", merges)
+    issues = re.findall(".*\\(\\#(\\d+)\\)", merges)
     prnums.extend(int(s) for s in issues)
 
     # From fast forward squash-merges
@@ -140,8 +150,12 @@ def main(token, revision_range, outfile=None):
     github = Github(token)
     github_repo = github.get_repo("ManimCommunity/manim")
 
+    pr_nums = get_pr_nums(revision_range)
+
     # document authors
-    authors = get_authors(revision_range)
+    contributors = get_authors_and_reviewers(revision_range, github_repo, pr_nums)
+    authors = contributors['authors']
+    reviewers = contributors['reviewers']
 
     if not outfile:
         outfile = (
@@ -157,18 +171,32 @@ def main(token, revision_range, outfile=None):
         f.write(
             dedent(
                 f"""\
-            A total of {len(authors)} people contributed to this release.
-            People with a '+' by their names contributed a patch for the first time.\n
-            """
+                A total of {len(set(authors).union(set(reviewers)))} people contributed to this
+                release. People with a '+' by their names authored a patch for the first
+                time.\n
+                """
             )
         )
 
         for author in authors:
-            f.write("* " + author + "\n")
+            f.write(f"* {author}\n")
+        
+        f.write("\n")
+        f.write(
+            dedent(
+                """
+                The patches included in this release have been reviewed by
+                the following contributors.\n
+                """
+            )
+        )
+        
+        for reviewer in reviewers:
+            f.write(f"* {reviewer}\n")
+
+            
 
         # document pull requests
-        pr_nums = get_pr_nums(revision_range)
-
         heading = "Pull requests merged"
         f.write("\n")
         f.write(heading + "\n")
