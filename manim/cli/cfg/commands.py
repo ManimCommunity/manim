@@ -14,7 +14,7 @@ from ...constants import CONTEXT_SETTINGS
 from ast import literal_eval
 from typing import Union
 
-from manim import config, console
+from .. import config, console
 from ..._config.utils import config_file_paths, make_config_parser
 from ...utils.file_ops import guarantee_existence, open_file
 from rich.errors import StyleSyntaxError
