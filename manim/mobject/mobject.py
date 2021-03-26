@@ -1136,11 +1136,16 @@ class Mobject(Container):
         :meth:`move_to`
 
         """
-        self.apply_function_to_points(
-            lambda points: scale_factor * points,
-            works_on_bounding_box=True,
-            **kwargs,
-        )
+        if self.opengl:
+            self.apply_points_function(
+                lambda points: scale_factor * points,
+                works_on_bounding_box=True,
+                **kwargs,
+            )
+        else:
+            self.apply_points_function_about_point(
+                lambda points: scale_factor * points, **kwargs
+            )
         return self
 
     def rotate_about_origin(self, angle, axis=OUT):
