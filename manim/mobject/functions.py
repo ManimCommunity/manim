@@ -56,7 +56,10 @@ class ParametricFunction(VMobject):
         **kwargs
     ):
         self.function = function
-        t_range = [0, 1, 0.1] if t_range is None else t_range
+        t_range = np.array([0, 1, 0.01]) if t_range is None else t_range
+        if len(t_range) == 2:
+            t_range = [*t_range, 0.01]
+
         self.dt = dt
         self.discontinuities = [] if discontinuities is None else discontinuities
         self.use_smoothing = use_smoothing
@@ -96,10 +99,12 @@ class ParametricFunction(VMobject):
 
 class FunctionGraph(ParametricFunction):
     def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
+
         if x_range is None:
             x_range = np.array(
-                [-config["frame_x_radius"], config["frame_x_radius"], 0.25]
+                [-config["frame_x_radius"], config["frame_x_radius"]]
             )
+
 
         self.x_range = x_range
         self.parametric_function = lambda t: np.array([t, function(t), 0])
