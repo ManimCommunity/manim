@@ -19,7 +19,7 @@ from ..utils.space_ops import (
 from ..utils.simple_functions import clip
 
 from ..mobject import opengl_geometry
-from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ..mobject.opengl_mobject import OpenGLPoint
 from PIL import Image
 from manim import config
 from ..scene.scene_file_writer import SceneFileWriter

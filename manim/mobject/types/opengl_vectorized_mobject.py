@@ -7,7 +7,7 @@ import numpy as np
 
 from ...constants import *
 from ...mobject.mobject import Mobject
-from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ...mobject.opengl_mobject import OpenGLPoint
 
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
 from ...utils.bezier import (
