@@ -104,6 +104,11 @@ def validate_resolution(ctx, param, value):
     help="Specify the filename(s) of the rendered scene(s).",
 )
 @optgroup.option(
+    "--write_to_movie",
+    is_flag = True,
+    help="Write to a file.",
+)
+@optgroup.option(
     "--media_dir", type=click.Path(), help="Path to store rendered videos and latex."
 )
 @optgroup.option("--log_dir", type=click.Path(), help="Path to store render logs.")
@@ -241,6 +246,7 @@ def render(
     tex_template,
     verbose,
     output,
+    write_to_movie,
     media_dir,
     log_dir,
     log_to_file,
@@ -299,6 +305,7 @@ def render(
         "tex_template": tex_template,
         "verbosity": verbose,
         "output_file": output,
+        "write_to_movie": write_to_movie,
         "media_dir": media_dir,
         "log_dir": log_dir,
         "log_to_file": log_to_file,
@@ -309,7 +316,7 @@ def render(
         "quality": quality,
         "resolution": resolution,
         "frame_rate": frame_rate,
-        "webgl_renderer": opengl_renderer,
+        "use_opengl_renderer": opengl_renderer,
         "webgl_renderer": webgl_renderer,
         "transparent": transparent,
         "background_color": background_color,
@@ -346,6 +353,7 @@ def render(
 
 
     if opengl_renderer:
+        click.echo("OKAY")
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
         for SceneClass in scene_classes_from_file(file):
