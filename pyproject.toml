@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.2.0"
+version = "0.4.0"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers","3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -26,7 +26,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.6.2"
 colour = "*"
-numpy = "*"
+numpy = "^1.9"
 Pillow = "*"
 scipy = "*"
 tqdm = "*"
@@ -34,25 +34,37 @@ pydub = "*"
 pygments = "*"
 rich = "^6.0"
 pycairo = "^1.19"
-manimpango = "^0.2.0"
+manimpango = "^0.2.4"
 networkx = "^2.5"
 setuptools = "*"
-importlib-metadata = {version = "^1.0", python = "<3.8"}
+importlib-metadata = {version = "*", python = "<3.8"}
 grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
 watchdog = { version = "*", optional = true }
 jupyterlab = { version = "^3.0", optional = true }
+moderngl = "^5.6.3"
+moderngl-window = "^2.3.0"
+mapbox-earcut = "^0.12.10"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
 jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
+pytest-cov = "*"
 pytest = "^6.0"
 pylint = "*"
 guzzle_sphinx_theme = "*"
 recommonmark = "*"
 matplotlib = "^3.3.2"
+flake8 = "^3.9.0"
+flake8-bugbear = "^21.3.2"
+flake8-builtins = "^1.5.3"
+flake8-comprehensions = "^3.4.0"
+flake8-pytest-style = "^1.4.0"
+flake8-logging-format = "^0.6.0"
+flake8-rst-docstrings = "^0.0.14"
+flake8-docstrings = "^1.6.0"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
@@ -62,6 +74,13 @@ markers = "platform_python_implementation == 'CPython'"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
+addopts = "--cov=manim --cov-report xml --cov-report term"
+
+[tool.coverage.run]
+omit = ["*tests*"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover"]
 
 [tool.poetry.plugins]
 [tool.poetry.plugins."console_scripts"]

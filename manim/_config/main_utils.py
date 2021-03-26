@@ -111,7 +111,6 @@ def parse_args(args: list) -> argparse.Namespace:
     elif subcmd == "plugins":
         return _parse_args_plugins(args)
     elif args[1] == "--version":
-        print(f"Manim Community Edition v{ __version__ }")
         sys.exit()
     # elif subcmd == some_other_future_subcmd:
     #     return _parse_args_some_other_subcmd(args)
@@ -409,6 +408,13 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
         "instead of the first animation.  If you pass in two comma "
         "separated values, e.g. '3,6', it will end "
         "the rendering at the second value",
+    )
+
+    parser.add_argument(
+        "--use_opengl_renderer",
+        help="Render animations using the OpenGL renderer",
+        action="store_const",
+        const=True,
     )
 
     parser.add_argument(

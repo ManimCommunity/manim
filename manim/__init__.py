@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
+
+__version__ = importlib_metadata.version(__name__)
+
+
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
@@ -42,10 +50,12 @@ from .mobject.numbers import *
 from .mobject.probability import *
 from .mobject.shape_matchers import *
 from .mobject.svg.brace import *
+from .mobject.svg.code_mobject import *
+from .mobject.svg.style_utils import *
 from .mobject.svg.svg_mobject import *
+from .mobject.svg.svg_path import *
 from .mobject.svg.tex_mobject import *
 from .mobject.svg.text_mobject import *
-from .mobject.svg.code_mobject import *
 from .mobject.three_d_utils import *
 from .mobject.three_dimensions import *
 from .mobject.types.image_mobject import *
@@ -96,10 +106,3 @@ else:
         ipy.register_magics(ManimMagic)
 
 from .plugins import *
-
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
-
-__version__ = importlib_metadata.version(__name__)

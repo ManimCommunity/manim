@@ -114,9 +114,9 @@ class DecimalNumber(VMobject):
         for i, c in enumerate(num_string):
             if c == "-" and len(num_string) > i + 1:
                 self[i].align_to(self[i + 1], UP)
-                self[i].shift(self[i + 1].get_height() * DOWN / 2)
+                self[i].shift(self[i + 1].height * DOWN / 2)
             elif c == ",":
-                self[i].shift(self[i].get_height() * DOWN / 2)
+                self[i].shift(self[i].height * DOWN / 2)
         if self.unit and self.unit.startswith("^"):
             self.unit_sign.align_to(self, UP)
         #
@@ -133,16 +133,14 @@ class DecimalNumber(VMobject):
         - num_decimal_places
         - field_name (e.g. 0 or 0.real)
         """
-        config = dict(
-            [
-                (attr, getattr(self, attr))
-                for attr in [
-                    "include_sign",
-                    "group_with_commas",
-                    "num_decimal_places",
-                ]
+        config = {
+            attr: getattr(self, attr)
+            for attr in [
+                "include_sign",
+                "group_with_commas",
+                "num_decimal_places",
             ]
-        )
+        }
         config.update(kwargs)
         return "".join(
             [
@@ -168,7 +166,7 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number, **config):
-        full_config = dict()
+        full_config = {}
         full_config.update(self.initial_config)
         full_config.update(config)
         new_decimal = DecimalNumber(number, **full_config)
@@ -187,7 +185,7 @@ class DecimalNumber(VMobject):
                 new_submobject.original_id = generated_id
 
         # Make sure last digit has constant height
-        new_decimal.scale(self[-1].get_height() / new_decimal[-1].get_height())
+        new_decimal.scale(self[-1].height / new_decimal[-1].height)
         new_decimal.move_to(self, self.edge_to_fix)
         new_decimal.match_style(self)
 
