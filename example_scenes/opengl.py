@@ -54,13 +54,42 @@ class InteractiveDevelopment(Scene):
         # always(circle.move_to, self.mouse_point)
 
 
+class SquareToCircle(Scene):
+    def construct(self):
+        square = OpenGLSquare()
+        circle = OpenGLCircle()
+
+        self.add(square)
+        self.wait()
+
+        self.play(Transform(square, circle))
+        self.wait()
+
+
+class UpdaterTest(Scene):
+    def construct(self):
+        squares = OpenGLVGroup()
+        for _ in range(9):
+            squares.add(OpenGLSquare(1, stroke_opacity=0).set_fill(WHITE, 0.5))
+        squares.arrange_in_grid(3, 3, buff=0)
+
+        def line():
+            return OpenGLLine(ORIGIN, squares.get_corner(UL))
+
+        self.add(always_redraw(line))
+        self.play(squares.animate.to_edge(UP))
+        self.play(squares.animate.to_edge(DR))
+        self.play(squares.animate.shift(LEFT * 10))
+        self.wait()
+
+
 class SurfaceExample(Scene):
     def construct(self):
-        # surface_text = Text("For 3d scenes, try using surfaces")
-        # surface_text.fix_in_frame()
-        # surface_text.to_edge(UP)
-        # self.add(surface_text)
-        # self.wait(0.1)
+        surface_text = Tex("For 3d scenes, try using surfaces")
+        surface_text.fix_in_frame()
+        surface_text.to_edge(UP)
+        self.add(surface_text)
+        self.wait(0.1)
 
         torus1 = OpenGLTorus(r1=1, r2=1)
         torus2 = OpenGLTorus(r1=3, r2=1)
@@ -123,7 +152,6 @@ class SurfaceExample(Scene):
         # light_text = Text("You can move around the light source")
         # light_text.move_to(surface_text)
         # light_text.fix_in_frame()
-
         # self.play(FadeTransform(surface_text, light_text))
         light = self.camera.light_source
         self.add(light)

@@ -1,8 +1,8 @@
+from manim.mobject.mobject import Mobject
 import numpy as np
 import moderngl
 
 from ...constants import *
-from ...mobject.opengl_mobject import OpenGLMobject
 from ...utils.bezier import integer_interpolate
 from ...utils.bezier import interpolate
 from ...utils.images import get_full_raster_image_path
@@ -11,7 +11,7 @@ from ...utils.color import *
 from ...utils.space_ops import normalize_along_axis
 
 
-class OpenGLSurface(OpenGLMobject):
+class OpenGLSurface(Mobject):
     shader_dtype = [
         ("point", np.float32, (3,)),
         ("du_point", np.float32, (3,)),
@@ -67,12 +67,11 @@ class OpenGLSurface(OpenGLMobject):
         self.compute_triangle_indices()
 
     def uv_func(self, u, v):
-        # To be implemented in subclasses
         if self.passed_uv_func:
             return self.passed_uv_func(u, v)
         return (u, v, 0.0)
 
-    def init_points(self):
+    def generate_points(self):
         dim = self.dim
         nu, nv = self.resolution
         u_range = np.linspace(*self.u_range, nu)
@@ -211,7 +210,7 @@ class OpenGLSurfaceGroup(OpenGLSurface):
         super().__init__(uv_func=None, **kwargs)
         self.add(*parametric_surfaces)
 
-    def init_points(self):
+    def generate_points(self):
         pass  # Needed?
 
 
@@ -254,7 +253,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.data["im_coords"] = np.zeros((0, 2))
         self.data["opacity"] = np.zeros((0, 1))
 
-    def init_points(self):
+    def generate_points(self):
         nu, nv = self.uv_surface.resolution
         self.set_points(self.uv_surface.get_points())
         self.data["im_coords"] = np.array(
