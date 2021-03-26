@@ -33,4 +33,4 @@ def test_axes_with_xy_shift():
     G = GraphScene(x_range=[1, 5], x_axis_label="", y_range=[-5, 1], y_axis_label="")
     G.setup_axes()
     assert all(np.isclose(G.graph_origin, G.x_axis.n2p(1)))
-    assert all(np.isclose(G.graph_origin, G.y_axis.n2p(-5)))
+    assert all(np.isclose(G.graph_origin, G.y_axis.n2p(0)))

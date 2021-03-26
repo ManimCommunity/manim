@@ -106,6 +106,17 @@ class GraphScene(Scene):
         y_axis_config=None,
         **kwargs,
     ):
+        x_range = np.array([-1, 10, 1]) if x_range is None else x_range
+        y_range = np.array([-1, 10, 1]) if y_range is None else y_range
+
+        if len(x_range) == 2:
+            x_range = [*x_range, 1]
+        if len(y_range) == 2:
+            y_range = [*y_range, 1]
+
+        self.x_min, self.x_max, self.x_step = x_range
+        self.y_min, self.y_max, self.y_step = y_range
+
         self.x_length = x_length
         self.x_leftmost_tick = x_leftmost_tick
         self.x_labeled_nums = x_labeled_nums
@@ -131,17 +142,6 @@ class GraphScene(Scene):
         self.y_label_position = y_label_position
         self.x_axis_config = {} if x_axis_config is None else x_axis_config
         self.y_axis_config = {} if y_axis_config is None else y_axis_config
-
-        x_range = np.array([-1, 10, 1]) if x_range is None else x_range
-        y_range = np.array([-1, 10, 1]) if y_range is None else y_range
-
-        if len(x_range) == 2:
-            x_range = [*x_range, 1]
-        if len(y_range) == 2:
-            y_range = [*y_range, 1]
-
-        self.x_min, self.x_max, self.x_step = x_range
-        self.y_min, self.y_max, self.y_step = y_range
 
         self.x_range = x_range
         self.y_range = y_range
@@ -180,6 +180,7 @@ class GraphScene(Scene):
         self.x_axis_config = dict(
             {
                 "x_range": self.x_range,
+                "length": self.x_length,
                 "unit_size": self.space_unit_to_x,
                 "leftmost_tick": self.x_leftmost_tick,
                 "numbers_with_elongated_ticks": self.x_labeled_nums,
@@ -221,6 +222,7 @@ class GraphScene(Scene):
         self.y_axis_config = dict(
             {
                 "x_range": self.y_range,
+                "length": self.y_length,
                 "unit_size": self.space_unit_to_y,
                 "leftmost_tick": self.y_bottom_tick,
                 "numbers_with_elongated_ticks": self.y_labeled_nums,

@@ -90,6 +90,7 @@ class NumberLine(Line):
             self.unit_size = self.get_unit_size()
         else:
             self.scale(self.unit_size)
+
         self.center()
 
         if self.include_tip:
