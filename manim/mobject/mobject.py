@@ -1136,23 +1136,12 @@ class Mobject(Container):
         :meth:`move_to`
 
         """
-        if self.opengl:
-            self.apply_points_function(
-                lambda points: scale_factor * points,
-                works_on_bounding_box=True,
-                **kwargs,
-            )
-        else:
-            self.apply_points_function_about_point(
-                lambda points: scale_factor * points, **kwargs
-            )
+        self.apply_function_to_points(
+            lambda points: scale_factor * points,
+            works_on_bounding_box=True,
+            **kwargs,
+        )
         return self
-        # self.apply_function_to_points(
-        #     lambda points: scale_factor * points,
-        #     works_on_bounding_box=True,
-        #     **kwargs,
-        # )
-        # return self
 
     def rotate_about_origin(self, angle, axis=OUT):
         return self.rotate(angle, axis, about_point=ORIGIN)
@@ -1185,11 +1174,6 @@ class Mobject(Container):
         # Default to applying matrix about the origin, not mobjects center
         if len(kwargs) == 0:
             kwargs["about_point"] = ORIGIN
-        # if self.opengl:
-        #     self.apply_points_function(
-        #         lambda points: np.array([function(p) for p in points]), **kwargs
-        #     )
-        # else:
         self.apply_function_to_points(
             lambda points: np.apply_along_axis(function, 1, points), **kwargs
         )
@@ -1854,12 +1838,6 @@ class Mobject(Container):
         return result
 
     def get_all_points(self):
-        # if self.opengl:
-        #     if self.submobjects:
-        #         return np.vstack([sm.get_points() for sm in self.get_family()])
-        #     else:
-        #         return self.get_points()
-
         return self.get_merged_array("points")
 
     # Getters
@@ -2476,13 +2454,6 @@ class Mobject(Container):
 
     # Locking data
 
-    # def uniforms(self):
-    #     return {
-    #         "is_fixed_in_frame": float(self.is_fixed_in_frame),
-    #         "gloss": self.gloss,
-    #         "shadow": self.shadow,
-    #     }
-
     def lock_data(self, keys):
         """
         To speed up some animations, particularly transformations,
@@ -2565,29 +2536,6 @@ class Mobject(Container):
         """
         self.replace_shader_code("///// INSERT COLOR FUNCTION HERE /////", glsl_code)
         return self
-
-    def set_color_by_xyz_func(
-        self, glsl_snippet, min_value=-5.0, max_value=5.0, colormap="viridis"
-    ):
-        """
-        Pass in a glsl expression in terms of x, y and z which returns
-        a float.
-        """
-        # TODO, add a version of this which changes the point data instead
-        # of the shader code
-        raise NotImplementedError()
-        # for char in "xyz":
-        #     glsl_snippet = glsl_snippet.replace(char, "point." + char)
-        # rgb_list = get_colormap_list(colormap)
-        # self.set_color_by_code(
-        #     "color.rgb = float_to_color({}, {}, {}, {});".format(
-        #         glsl_snippet,
-        #         float(min_value),
-        #         float(max_value),
-        #         get_colormap_code(rgb_list),
-        #     )
-        # )
-        # return self
 
     # For shader data
 
