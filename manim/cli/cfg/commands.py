@@ -1,7 +1,7 @@
 """Manim's cfg subcommand.
 
-Manim's cfg subcommand is accessed in the command-line interface via `manim
-cfg`. Here you can specify options, subcommands, and subgroups for the cfg
+Manim's cfg subcommand is accessed in the command-line interface via ``manim
+cfg``. Here you can specify options, subcommands, and subgroups for the cfg
 group.
 
 """
