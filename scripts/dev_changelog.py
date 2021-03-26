@@ -37,14 +37,12 @@ from tqdm import tqdm
 from git import Repo
 from github import Github
 
-if sys.version_info[:2] < (3, 6):
-    raise RuntimeError("Python version must be >= 3.6")
 
 this_repo = Repo(str(Path(__file__).resolve().parent.parent))
 
 
 def get_authors_and_reviewers(revision_range, github_repo, pr_nums):
-    pat = "^.*\\t(.*)$"
+    pat = r"^.*\t(.*)$"
     lst_release, cur_release = [r.strip() for r in revision_range.split("..")]
 
     # authors, in current release and previous to current release.
@@ -61,7 +59,7 @@ def get_authors_and_reviewers(revision_range, github_repo, pr_nums):
         reviewers.extend(rev.user.name for rev in pr.get_reviews())
     reviewers = sorted(set(rev for rev in reviewers if rev is not None))
 
-    return {'authors': authors, 'reviewers': reviewers}
+    return {"authors": authors, "reviewers": reviewers}
 
 
 def get_pr_nums(revision_range):
@@ -70,14 +68,14 @@ def get_pr_nums(revision_range):
 
     # From regular merges
     merges = this_repo.git.log("--oneline", "--merges", revision_range)
-    issues = re.findall(".*\\(\\#(\\d+)\\)", merges)
+    issues = re.findall(r".*\(\#(\d+)\)", merges)
     prnums.extend(int(s) for s in issues)
 
     # From fast forward squash-merges
     commits = this_repo.git.log(
         "--oneline", "--no-merges", "--first-parent", revision_range
     )
-    issues = re.findall("^.*\\(\\#(\\d+)\\)$", commits, re.M)
+    issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
     prnums.extend(int(s) for s in issues)
 
     print(prnums)
@@ -154,8 +152,8 @@ def main(token, revision_range, outfile=None):
 
     # document authors
     contributors = get_authors_and_reviewers(revision_range, github_repo, pr_nums)
-    authors = contributors['authors']
-    reviewers = contributors['reviewers']
+    authors = contributors["authors"]
+    reviewers = contributors["reviewers"]
 
     if not outfile:
         outfile = (
@@ -180,7 +178,7 @@ def main(token, revision_range, outfile=None):
 
         for author in authors:
             f.write(f"* {author}\n")
-        
+
         f.write("\n")
         f.write(
             dedent(
@@ -190,11 +188,9 @@ def main(token, revision_range, outfile=None):
                 """
             )
         )
-        
+
         for reviewer in reviewers:
             f.write(f"* {reviewer}\n")
-
-            
 
         # document pull requests
         heading = "Pull requests merged"
@@ -205,7 +201,7 @@ def main(token, revision_range, outfile=None):
             f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
         )
 
-        #TODO: Use labels list in sort_by_labels, simplify logic
+        # TODO: Use labels list in sort_by_labels, simplify logic
         labels = [
             "breaking changes",
             "highlight",
