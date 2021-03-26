@@ -302,7 +302,7 @@ Plotting with Manim
             GraphScene.__init__(
                 self,
                 x_range = [-10,10.3],
-                y_range = [1.5, 1.5],
+                y_range = [-1.5, 1.5],
                 num_graph_anchor_points=100,
                 graph_origin=ORIGIN,
                 axes_color=GREEN,
