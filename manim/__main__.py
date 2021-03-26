@@ -2,51 +2,19 @@ import os
 import sys
 import traceback
 
-from manim import logger, config
+from manim import logger, console, config, __version__
 from manim.utils.module_ops import (
     get_module,
     get_scene_classes_from_module,
     get_scenes_to_render,
     scene_classes_from_file,
 )
-from manim.utils.file_ops import open_file as open_media_file
+
 from manim._config.main_utils import parse_args
-
-try:
-    from manim.grpc.impl import frame_server_impl
-except ImportError:
-    frame_server_impl = None
-
-
-def open_file_if_needed(file_writer):
-    if config["verbosity"] != "DEBUG":
-        curr_stdout = sys.stdout
-        sys.stdout = open(os.devnull, "w")
-
-    open_file = any([config["preview"], config["show_in_file_browser"]])
-
-    if open_file:
-        file_paths = []
-
-        if config["save_last_frame"]:
-            file_paths.append(file_writer.image_file_path)
-        if config["write_to_movie"] and not config["save_as_gif"]:
-            file_paths.append(file_writer.movie_file_path)
-        if config["save_as_gif"]:
-            file_paths.append(file_writer.gif_file_path)
-
-        for file_path in file_paths:
-            if config["show_in_file_browser"]:
-                open_media_file(file_path, True)
-            if config["preview"]:
-                open_media_file(file_path, False)
-
-    if config["verbosity"] != "DEBUG":
-        sys.stdout.close()
-        sys.stdout = curr_stdout
 
 
 def main():
+    console.print(f"Manim Community [green]v{__version__}[/green]")
     args = parse_args(sys.argv)
 
     if hasattr(args, "cmd"):
@@ -77,27 +45,37 @@ def main():
     else:
         config.digest_args(args)
         input_file = config.get_dir("input_file")
-        if config["use_js_renderer"]:
+
+        if config["use_opengl_renderer"]:
+            from manim.renderer.opengl_renderer import OpenGLRenderer
+
+            for SceneClass in scene_classes_from_file(input_file):
+                try:
+                    renderer = OpenGLRenderer()
+                    scene = SceneClass(renderer)
+                    scene.render()
+                except Exception:
+                    console.print_exception()
+        elif config["use_webgl_renderer"]:
             try:
-                if frame_server_impl is None:
-                    raise ImportError("Dependencies for JS renderer is not installed.")
+                from manim.grpc.impl import frame_server_impl
+
                 server = frame_server_impl.get(input_file)
                 server.start()
                 server.wait_for_termination()
-            except Exception:
-                print("\n\n")
-                traceback.print_exc()
-                print("\n\n")
+            except ModuleNotFoundError:
+                console.print(
+                    "Dependencies for the WebGL render are missing. Run "
+                    "pip install manim[webgl_renderer] to install them."
+                )
+                console.print_exception()
         else:
             for SceneClass in scene_classes_from_file(input_file):
                 try:
                     scene = SceneClass()
                     scene.render()
-                    open_file_if_needed(scene.renderer.file_writer)
                 except Exception:
-                    print("\n\n")
-                    traceback.print_exc()
-                    print("\n\n")
+                    console.print_exception()
 
 
 if __name__ == "__main__":

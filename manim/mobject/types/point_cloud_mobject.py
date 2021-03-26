@@ -28,7 +28,7 @@ class PMobject(Mobject):
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
         """
-        points must be a Nx3 numpy array, as must rgbas if it is not None
+        Points must be a Nx3 numpy array, as must rgbas if it is not None
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -115,7 +115,7 @@ class PMobject(Mobject):
 
     def sort_points(self, function=lambda p: p[0]):
         """
-        function is any map from R^3 to R
+        Function is any map from R^3 to R
         """
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
@@ -214,7 +214,7 @@ class PointCloudDot(Mobject1D):
     def __init__(
         self,
         center=ORIGIN,
-        radius=0.075,
+        radius=2.0,
         stroke_width=2,
         density=DEFAULT_POINT_DENSITY_1D,
         color=YELLOW,
@@ -235,8 +235,11 @@ class PointCloudDot(Mobject1D):
         self.add_points(
             [
                 r * (np.cos(theta) * RIGHT + np.sin(theta) * UP)
-                for r in np.arange(0, self.radius, self.epsilon)
-                for theta in np.arange(0, 2 * np.pi, self.epsilon / r)
+                for r in np.arange(self.epsilon, self.radius, self.epsilon)
+                # Num is equal to int(stop - start)/ (step + 1) reformulated.
+                for theta in np.linspace(
+                    0, 2 * np.pi, num=int(2 * np.pi * (r + self.epsilon) / self.epsilon)
+                )
             ]
         )
 

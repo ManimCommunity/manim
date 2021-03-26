@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
+
+__version__ = importlib_metadata.version(__name__)
+
+
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
@@ -42,10 +50,12 @@ from .mobject.numbers import *
 from .mobject.probability import *
 from .mobject.shape_matchers import *
 from .mobject.svg.brace import *
+from .mobject.svg.code_mobject import *
+from .mobject.svg.style_utils import *
 from .mobject.svg.svg_mobject import *
+from .mobject.svg.svg_path import *
 from .mobject.svg.tex_mobject import *
 from .mobject.svg.text_mobject import *
-from .mobject.svg.code_mobject import *
 from .mobject.three_d_utils import *
 from .mobject.three_dimensions import *
 from .mobject.types.image_mobject import *
@@ -59,10 +69,6 @@ from .scene.graph_scene import *
 from .scene.moving_camera_scene import *
 from .scene.reconfigurable_scene import *
 
-try:
-    from .scene.js_scene import *
-except ModuleNotFoundError:
-    pass  # optional deps
 from .scene.scene import *
 from .scene.sample_space_scene import *
 from .scene.three_d_scene import *
@@ -87,5 +93,16 @@ from .utils.space_ops import *
 from .utils.strings import *
 from .utils.tex import *
 from .utils.tex_templates import *
+from .utils import unit
+
+try:
+    from IPython import get_ipython
+    from .utils.ipython_magic import ManimMagic
+except ImportError:
+    pass
+else:
+    ipy = get_ipython()
+    if ipy is not None:
+        ipy.register_magics(ManimMagic)
 
 from .plugins import *

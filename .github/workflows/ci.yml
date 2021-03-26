@@ -32,32 +32,19 @@ jobs:
           pip install wheel
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
-      - name: Get pip cache dir
-        shell: bash
-        id: pip-cache-and-time
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
-
-      - name: pip cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache-and-time.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python }}-${{ steps.pip-cache-and-time.outputs.date }}
-
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt update
           sudo apt install -y ffmpeg
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa
+          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
           brew install openssl readline ffmpeg pyenv pyenv-virtualenv
-          brew cask install basictex
+          brew install --cask basictex
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           brew install pkg-config
@@ -67,6 +54,20 @@ jobs:
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Get Poetry Cache Dir
+        shell: bash
+        id: pip-cache-and-time
+        run: |
+          export PATH="$HOME/.poetry/bin:$PATH"
+          echo "::set-output name=dir::$(poetry config cache-dir)"
+          echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
+
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache-and-time.outputs.dir }}
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
 
       - name: Cache Windows
         id: cache-windows
@@ -112,13 +113,16 @@ jobs:
 
       - name: Install manim
         run: |
-          poetry install -E js_renderer
+          poetry install -E webgl_renderer
 
       - name: Run tests
         run: poetry run pytest
 
       - name: Run module doctests
-        run: poetry run pytest --doctest-modules manim
+        run: poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
 
       - name: Run doctests in rst files
         run: cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1

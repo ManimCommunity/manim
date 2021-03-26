@@ -37,6 +37,8 @@ Mobjects
    ~mobject.vector_field
    ~mobject.svg.brace
    ~mobject.svg.code_mobject
+   ~mobject.svg.style_utils
+   ~mobject.svg.svg_path
    ~mobject.svg.svg_mobject
    ~mobject.svg.tex_mobject
    ~mobject.svg.text_mobject
@@ -121,6 +123,7 @@ Utilities
    ~utils.color
    ~utils.config_ops
    ~utils.hashing
+   ~utils.ipython_magic
    ~utils.images
    ~utils.iterables
    ~utils.paths

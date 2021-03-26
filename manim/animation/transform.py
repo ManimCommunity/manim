@@ -31,6 +31,7 @@ import numpy as np
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..utils.paths import path_along_arc, straight_path
 from ..utils.rate_functions import smooth, squish_rate_func
 
@@ -189,7 +190,8 @@ class MoveToTarget(Transform):
 
 
 class _MethodAnimation(MoveToTarget):
-    def __init__(self, mobject):
+    def __init__(self, mobject, methods):
+        self.methods = methods
         super().__init__(mobject)
 
 
@@ -198,7 +200,7 @@ class ApplyMethod(Transform):
         self, method: types.MethodType, *args, **kwargs
     ) -> None:  # method typing? for args?
         """
-        method is a method of Mobject, ``args`` are arguments for
+        Method is a method of Mobject, ``args`` are arguments for
         that method.  Key word arguments should be passed in
         as the last arg, as a dict, since ``kwargs`` is for
         configuration of the transform itself
@@ -216,7 +218,7 @@ class ApplyMethod(Transform):
                 "Whoops, looks like you accidentally invoked "
                 "the method you want to animate"
             )
-        assert isinstance(method.__self__, Mobject)
+        assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
     def create_target(self) -> Mobject:
         method = self.method
