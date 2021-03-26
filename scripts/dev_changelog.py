@@ -9,7 +9,7 @@ token may be stored in an environment variable as you only get one chance to
 see it.
 
 Usage::
-    $ ./scripts/dev_changelog.py <token> <revision range>
+    $ ./scripts/dev_changelog.py <token> <revision range> <output_file>
 
 The output is utf8 rst.
 
@@ -21,7 +21,7 @@ Dependencies
 Examples
 --------
 From the bash command line with $GITHUB token::
-    $ ./scripts/dev_changelog.py $GITHUB v0.3.0..v0.4.0 > 0.4.0-changelog.rst
+    $ ./scripts/dev_changelog.py $GITHUB v0.3.0..v0.4.0 -o 0.4.0-changelog.rst
 
 Note
 ----
