@@ -440,6 +440,25 @@ class Mobject(Container):
         self.add(*submobject_list)
         return self
 
+    def replace_submobject(self, index, new_submob):
+        old_submob = self.submobjects[index]
+        if self in old_submob.parents:
+            old_submob.parents.remove(self)
+        self.submobjects[index] = new_submob
+        self.assemble_family()
+        return self
+
+    def digest_mobject_attrs(self):
+        """
+        Ensures all attributes which are mobjects are included
+        in the submobjects list.
+        """
+        mobject_attrs = [
+            x for x in list(self.__dict__.values()) if isinstance(x, Mobject)
+        ]
+        self.set_submobjects(list_update(self.submobjects, mobject_attrs))
+        return self
+
     def add_to_back(self, *mobjects: "Mobject") -> "Mobject":
         """Add all passed mobjects to the back of the submobjects.
 
