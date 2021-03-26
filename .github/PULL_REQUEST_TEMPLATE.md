@@ -33,7 +33,7 @@ is also intended for other testing-related comments. -->
 that might be useful for reviewers.. -->
 
 ## Acknowledgements
-- [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
+- [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/stable/contributing.html)
 - [ ] I have chosen a descriptive PR title (see top of PR template for examples)
 <!-- Once again, thanks for helping out by contributing to manim! -->
 
