@@ -95,6 +95,7 @@ def sort_by_labels(github_repo, pr_nums):
     for num in tqdm(pr_nums, desc="Sorting by labels"):
         pr = github_repo.get_pull(num)
         labels = [label.name for label in pr.labels]
+        # TODO: Make use of label names directly from main
         if "breaking changes" in labels:
             pr_by_labels["breaking changes"].append(pr)
         elif "highlight" in labels:
@@ -115,6 +116,8 @@ def sort_by_labels(github_repo, pr_nums):
             pr_by_labels["testing"].append(pr)
         elif "infrastructure" in labels:
             pr_by_labels["infrastructure"].append(pr)
+        elif "maintenance":
+            pr_by_labels["maintenance"].append(pr)
         elif "style" in labels:
             pr_by_labels["style"].append(pr)
         else:  # PR doesn't have label :( Create one!
@@ -174,6 +177,7 @@ def main(token, revision_range, outfile=None):
             f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
         )
 
+        #TODO: Use labels list in sort_by_labels, simplify logic
         labels = [
             "breaking changes",
             "highlight",
@@ -185,6 +189,7 @@ def main(token, revision_range, outfile=None):
             "release",
             "testing",
             "infrastructure",
+            "maintenance",
             "style",
             "unlabeled",
         ]
