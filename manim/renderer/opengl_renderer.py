@@ -195,7 +195,7 @@ class OpenGLRenderer:
         # but don't support anything else yet.
         if camera_class is not None and camera_class is not OpenGLCamera:
             raise ValueError(
-                f"OpenGLRenderer only accepts a camera class of OpenGLCamera."
+                "OpenGLRenderer only accepts a camera class of OpenGLCamera."
             )
         self.camera = OpenGLCamera()
 
