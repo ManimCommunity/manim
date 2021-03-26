@@ -56,6 +56,7 @@ def validate_resolution(ctx, param, value):
 
 @click.group(
     invoke_without_command=True,
+    no_args_is_help=True,
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
@@ -179,7 +180,6 @@ def validate_resolution(ctx, param, value):
 )
 @optgroup.option(
     "--webgl_renderer",
-    # show_default=f"Current directory {os.getcwd()}",
     default=None,
     type=click.Path(),
     help="Render scenes using the WebGL frontend. Requires a path to the WebGL frontend.",
