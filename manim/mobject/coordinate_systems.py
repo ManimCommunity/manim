@@ -182,16 +182,13 @@ class Axes(VGroup, CoordinateSystem):
         self,
         x_range=None,
         y_range=None,
-        x_length=None,
-        y_length=None,
+        x_length=config.frame_width - 2,
+        y_length=config.frame_height - 2,
         axis_config=None,
         x_axis_config=None,
         y_axis_config=None,
         **kwargs,
     ):
-        x_length = config.frame_width - 2 if x_length is None else x_length
-        y_length = config.frame_height - 2 if y_length is None else y_length
-
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
@@ -267,7 +264,9 @@ class ThreeDAxes(Axes):
         x_range=None,
         y_range=None,
         z_range=None,
-        z_length=4,
+        x_length=config.frame_height + 2.5,
+        y_length=config.frame_height + 2.5,
+        z_length=config.frame_height - 1.5,
         z_axis_config=None,
         z_normal=DOWN,
         num_axis_pieces=20,
@@ -278,11 +277,18 @@ class ThreeDAxes(Axes):
         light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
         **kwargs,
     ):
-        x_range = np.array([-6, 6, 1]) if x_range is None else x_range
-        y_range = np.array([-5, 5, 1]) if y_range is None else y_range
-        z_range = np.array([-4, 4, 1]) if z_range is None else z_range
+        x_range = np.array([-5.5, 5.5, 1]) if x_range is None else x_range
+        y_range = np.array([-5.5, 5.5, 1]) if y_range is None else y_range
+        z_range = np.array([-3.5, 3.5, 1]) if z_range is None else z_range
 
-        Axes.__init__(self, x_range=x_range, y_range=y_range, **kwargs)
+        Axes.__init__(
+            self,
+            x_range=x_range,
+            x_length=x_length,
+            y_range=y_range,
+            y_length=y_length,
+            **kwargs,
+        )
 
         self.z_range = z_range
         self.z_length = z_length
@@ -336,8 +342,8 @@ class NumberPlane(Axes):
         self,
         x_range=None,
         y_range=None,
-        x_length=None,
-        y_length=None,
+        x_length=config.frame_width,
+        y_length=config.frame_height,
         axis_config=None,
         y_axis_config=None,
         background_line_style=None,
@@ -372,8 +378,6 @@ class NumberPlane(Axes):
             else x_range
         )
 
-        x_length = config.frame_width if x_length is None else x_length
-        y_length = config.frame_height if y_length is None else y_length
         # configs
         self.axis_config = {
             "stroke_color": WHITE,
