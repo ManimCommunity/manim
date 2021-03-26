@@ -263,8 +263,8 @@ class DrawBorderThenFill(Animation):
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, outline, alpha: float
-    ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
+        self, submobject: Mobject, starting_submobject: Mobject, alpha: float
+    ) -> None:  # I just removed outline, If this breaks anything let me know. Otherwise Delete this in the future.
         index, subalpha = integer_interpolate(0, 2, alpha)
         if index == 0:
             submobject.pointwise_become_partial(outline, 0, subalpha)

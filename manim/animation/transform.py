@@ -190,7 +190,7 @@ class MoveToTarget(Transform):
 
 
 class _MethodAnimation(MoveToTarget):
-    def __init__(self, mobject, methods):
+    def __init__(self, mobject: Mobject, methods: list):
         self.methods = methods
         super().__init__(mobject)
 
@@ -313,8 +313,8 @@ class ApplyMatrix(ApplyPointwiseFunction):
     def __init__(self, matrix: np.ndarray, mobject: Mobject, **kwargs) -> None:
         matrix = self.initialize_matrix(matrix)
 
-        def func(p):
-            return np.dot(p, matrix.T)
+        def func(number: typing.Union[int, float]):
+            return np.dot(number, matrix.T)
 
         super().__init__(func, mobject, **kwargs)
 

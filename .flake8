@@ -1,13 +1,6 @@
 [flake8]
 max-line-length = 88
 
-#Alfred
-enable-extensions = B1
-warn-symbols =
-    obsolete_module = Warning! This module is obsolete!
-    module.obsolete_function = Warning! This function is obsolete!
-    module.submodule.constant = Warning! this variable will be removed!
-
 #flake8-docstrings
 docstring-convention = numpy
 
@@ -19,33 +12,31 @@ strictness=long
 extend-ignore = E203, E266,  
 
                 #Style Changes
-                T101
+                T101, ANN101,
 
                 #Temp
-                F841, B007, T100
+                F841, B007, T100,
 
-                #I belive these are unfixable
-                B006,
+                #Type Hints
+                ANN204, ANN003, ANN204, ANN002, ANN202, 
 
                 #Minor Changes - Remove Later
                 VNE002, SIM106, SIM105, SIM109,
 
                 #Code Changes - Remove later
-                F405, F403, F401, F821, B008, E501, B009, B010, E731, H601, VNE001
+                B006, F405, F403, F401, F821, B008, E501, B009, B010, E731, H601, VNE001,
+                ANN201,
 
                 #docstring Formatting - Remove Later
                 D400, D401, D205, D105, D103, D102, D102, D107, D200, D100, D101, 
                 D412, D202, D301, D104, D405, D409, D404, D411, D410, D209, D210,
                 D407,
 
-                RST304, RST305, RST301, RST213, RST201, RST215, RST210, RST303, RST212, 
-                RST202, RST203, RST205,
-
                 DAR103, DAR202, DAR401, DAR101, DAR102, DAR203, DAR002, DAR201 DAR005,
-                DAR301
+                DAR301,
 
                 #Issue #1148 needs to be closed before removal
                 A003,
 
                 #Issue #1149 needs to be closed before removal
-                W605
+                W605,
