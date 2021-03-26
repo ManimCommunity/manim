@@ -181,7 +181,7 @@ JOINT_TYPE_MAP = {
 
 
 class OpenGLRenderer:
-    def __init__(self, skip_animations=False):
+    def __init__(self, camera_class=None, skip_animations=False):
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
 
@@ -189,9 +189,15 @@ class OpenGLRenderer:
         self.skip_animations = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
-
-        self.camera = OpenGLCamera()
         self.pressed_keys = set()
+
+        # provide compatibility with function signature,
+        # but don't support anything else yet.
+        if camera_class is not None and camera_class is not OpenGLCamera:
+            raise ValueError(
+                f"OpenGLRenderer only accepts a camera class of OpenGLCamera."
+            )
+        self.camera = OpenGLCamera()
 
         # Initialize shader map.
         self.id_to_shader_program = {}
