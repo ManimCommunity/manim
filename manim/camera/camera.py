@@ -50,7 +50,7 @@ class Camera:
 
     def __init__(
         self,
-        background_image: any = None,  # I'm just going to put any for now. TODO: Fix this - Union[MappingCamera, OldMultiCamera, SplitScreenCamera, MovingCamera, MultiCamera, WebGLCamera] = None
+        background_image: Image = None,
         frame_center: str = ORIGIN,
         image_mode: str = "RGBA",
         n_channels: int = 4,
@@ -979,39 +979,39 @@ class Camera:
         # Paint on top of existing pixel array
         self.overlay_PIL_image(pixel_array, full_image)
 
-    def overlay_rgba_array(self, pixel_array, new_array):
+    def overlay_rgba_array(self, pixel_array: np.array, new_array: np.array):
         """Overlays an RGBA array on top of the given Pixel array.
 
         Parameters
         ----------
-        pixel_array : np.array
+        pixel_array
             The original pixel array to modify.
-        new_array : np.array
+        new_array
             The new pixel array to overlay.
         """
         self.overlay_PIL_image(pixel_array, self.get_image(new_array))
 
-    def overlay_PIL_image(self, pixel_array, image):
+    def overlay_PIL_image(self, pixel_array: np.ndarray, image: Image):
         """Overlays a PIL image on the passed pixel array.
 
         Parameters
         ----------
-        pixel_array : np.ndarray
+        pixel_array
             The Pixel array
-        image : PIL.Image
+        image
             The Image to overlay.
         """
         pixel_array[:, :] = np.array(
             Image.alpha_composite(self.get_image(pixel_array), image), dtype="uint8"
         )
 
-    def adjust_out_of_range_points(self, points):
+    def adjust_out_of_range_points(self, points: np.array):
         """If any of the points in the passed array are out of
         the viable range, they are adjusted suitably.
 
         Parameters
         ----------
-        points : np.array
+        points
             The points to adjust
 
         Returns
@@ -1033,7 +1033,7 @@ class Camera:
         return points
 
     def transform_points_pre_display(
-        self, mobject, points
+        self, mobject:Mobject, points: np.array
     ):  # TODO: Write more detailed docstrings for this method.
         # NOTE: There seems to be an unused argument `mobject`.
 
@@ -1046,7 +1046,7 @@ class Camera:
         return points
 
     def points_to_pixel_coords(
-        self, mobject, points
+        self, mobject:Mobject, points: np.array
     ):  # TODO: Write more detailed docstrings for this method.
         points = self.transform_points_pre_display(mobject, points)
         shifted_points = points - self.frame_center
@@ -1067,13 +1067,13 @@ class Camera:
         result[:, 1] = shifted_points[:, 1] * height_mult + height_add
         return result.astype("int")
 
-    def on_screen_pixels(self, pixel_coords):
+    def on_screen_pixels(self, pixel_coords: np.array):
         """Returns array of pixels that are on the screen from a given
         array of pixel_coordinates
 
         Parameters
         ----------
-        pixel_coords : np.array
+        pixel_coords
             The pixel coords to check.
 
         Returns
@@ -1091,13 +1091,13 @@ class Camera:
             ],
         )
 
-    def adjusted_thickness(self, thickness):
+    def adjusted_thickness(self, thickness: Union[int, float]):
         """
 
         Parameters
         ----------
-        thickness : int, float
-
+        thickness
+        
         Returns
         -------
         float
@@ -1109,12 +1109,12 @@ class Camera:
         factor = fdiv(big_sum, this_sum)
         return 1 + (thickness - 1) / factor
 
-    def get_thickening_nudges(self, thickness):
+    def get_thickening_nudges(self, thickness: Union[int, float]):
         """
 
         Parameters
         ----------
-        thickness : int, float
+        thickness
 
         Returns
         -------
@@ -1125,15 +1125,15 @@ class Camera:
         _range = list(range(-thickness // 2 + 1, thickness // 2 + 1))
         return np.array(list(it.product(_range, _range)))
 
-    def thickened_coordinates(self, pixel_coords, thickness):
+    def thickened_coordinates(self, pixel_coords: np.array, thickness: Union[int, float]):
         """Returns thickened coordinates for a passed array of pixel coords and
         a thickness to thicken by.
 
         Parameters
         ----------
-        pixel_coords : np.array
+        pixel_coords
             Pixel coordinates
-        thickness : int, float
+        thickness
             Thickness
 
         Returns
@@ -1184,7 +1184,7 @@ class Camera:
 # NOTE: The methods of the following class have not been mentioned outside of their definitons.
 # Their DocStrings are not as detailed as preferred.
 class BackgroundColoredVMobjectDisplayer:
-    def __init__(self, camera):
+    def __init__(self, camera: Camera):
         """
         Parameters
         ----------
@@ -1200,19 +1200,19 @@ class BackgroundColoredVMobjectDisplayer:
         self.pixel_array[:, :] = 0
 
     def resize_background_array(
-        self, background_array, new_width, new_height, mode="RGBA"
+        self, background_array: np.array, new_width: Union[int, float], new_height: Union[int, float], mode:Optional[str] ="RGBA"
     ):
         """Resizes the pixel array representing the background.
 
         Parameters
         ----------
-        background_array : np.array
+        background_array
             The pixel
-        new_width : int, float
+        new_width
             The new width of the background
-        new_height : int, float
+        new_height
             The new height of the background
-        mode : str, optional
+        mode
             The PIL image mode, by default "RGBA"
 
         Returns
@@ -1225,14 +1225,14 @@ class BackgroundColoredVMobjectDisplayer:
         resized_image = image.resize((new_width, new_height))
         return np.array(resized_image)
 
-    def resize_background_array_to_match(self, background_array, pixel_array):
+    def resize_background_array_to_match(self, background_array: np.array, pixel_array: np.array):
         """Resizes the background array to match the passed pixel array.
 
         Parameters
         ----------
-        background_array : np.array
+        background_array
             The prospective pixel array.
-        pixel_array : np.array
+        pixel_array
             The pixel array whose width and height should be matched.
 
         Returns
@@ -1244,12 +1244,12 @@ class BackgroundColoredVMobjectDisplayer:
         mode = "RGBA" if pixel_array.shape[2] == 4 else "RGB"
         return self.resize_background_array(background_array, width, height, mode)
 
-    def get_background_array(self, file_name):
+    def get_background_array(self, file_name: str):
         """Gets the background array that has the passed file_name.
 
         Parameters
         ----------
-        file_name : str
+        file_name
             The file_name of the background image.
 
         Returns
@@ -1270,12 +1270,12 @@ class BackgroundColoredVMobjectDisplayer:
         self.file_name_to_pixel_array_map[file_name] = back_array
         return back_array
 
-    def display(self, *cvmobjects):
+    def display(self, *cvmobjects: VMobject):
         """Displays the colored VMobjects.
 
         Parameters
         ----------
-        *cvmobjects : VMobject
+        *cvmobjects
             The VMobjects
 
         Returns
