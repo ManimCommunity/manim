@@ -11,11 +11,12 @@ import os
 from ast import literal_eval
 from typing import Union
 
-from manim import config, console
-from manim._config.utils import config_file_paths, make_config_parser
-from manim.utils.file_ops import guarantee_existence, open_file
 from rich.errors import StyleSyntaxError
 from rich.style import Style
+
+from manim import console
+from manim._config.utils import config_file_paths, make_config_parser
+from manim.utils.file_ops import guarantee_existence, open_file
 
 __all__ = ["write", "show", "export"]
 

@@ -3,11 +3,9 @@ import operator as op
 from functools import reduce, wraps
 
 import moderngl
-import numpy as np
 
 from ...constants import *
 from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
 from ...utils.bezier import (
     bezier,
@@ -18,11 +16,9 @@ from ...utils.bezier import (
     partial_quadratic_bezier_points,
 )
 from ...utils.color import *
-
 # from manimlib.utils.iterables import resize_array
 # from manimlib.utils.color import rgb_to_hex
 from ...utils.iterables import listify, make_even, resize_with_interpolation
-
 # from manimlib.utils.space_ops import angle_between_vectors
 from ...utils.space_ops import (
     cross2d,
@@ -963,7 +959,6 @@ class OpenGLVMobject(OpenGLMobject):
         )
 
     def get_shader_wrapper_list(self):
-        from ...renderer.shader_wrapper import ShaderWrapper
 
         # Build up data lists
         fill_shader_wrappers = []

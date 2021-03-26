@@ -69,12 +69,11 @@ import typing
 
 import numpy as np
 
-from .. import logger
 from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..constants import DOWN
-from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import interpolate
 from ..utils.rate_functions import there_and_back
 

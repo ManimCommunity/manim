@@ -5,8 +5,8 @@ __all__ = ["Animation", "Wait"]
 
 
 import typing
-from typing import Union
 from copy import deepcopy
+from typing import Union
 
 import numpy as np
 

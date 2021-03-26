@@ -1,16 +1,10 @@
-import os
 import sys
-import traceback
 
 from manim import logger, console, config, __version__
+from manim._config.main_utils import parse_args
 from manim.utils.module_ops import (
-    get_module,
-    get_scene_classes_from_module,
-    get_scenes_to_render,
     scene_classes_from_file,
 )
-
-from manim._config.main_utils import parse_args
 
 
 def main():

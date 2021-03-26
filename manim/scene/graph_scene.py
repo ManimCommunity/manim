@@ -68,6 +68,7 @@ from ..utils.color import color_gradient, GREY, BLUE, GREEN, YELLOW, BLACK, WHIT
 from ..utils.color import invert_color
 from ..utils.space_ops import angle_of_vector
 
+
 # TODO, this should probably reimplemented entirely, especially so as to
 # better reuse code from mobject/coordinate_systems.
 # Also, I really dislike how the configuration is set up, this

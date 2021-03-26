@@ -11,12 +11,12 @@ __all__ = [
 
 import os
 import platform
-import time
 import subprocess as sp
-from manim import config, logger
+import time
 from pathlib import Path
 
 from manim import __version__
+from manim import config, logger
 
 
 def add_extension_if_not_present(file_name, extension):

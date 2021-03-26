@@ -7,7 +7,6 @@ import shutil
 from pathlib import Path
 
 from manim import config, tempconfig
-
 from .._config.main_utils import parse_args
 
 try:

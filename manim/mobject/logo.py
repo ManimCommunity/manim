@@ -4,14 +4,14 @@ __all__ = ["ManimBanner"]
 
 import numpy as np
 
-from ..constants import LEFT, UP, RIGHT, DOWN, ORIGIN, TAU
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.fading import FadeIn
 from ..animation.transform import ApplyMethod
+from ..constants import LEFT, UP, RIGHT, DOWN, ORIGIN, TAU
 from ..mobject.geometry import Circle, Square, Triangle
-from ..mobject.value_tracker import ValueTracker
 from ..mobject.svg.tex_mobject import Tex, MathTex
 from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.value_tracker import ValueTracker
 from ..utils.space_ops import normalize
 from ..utils.tex_templates import TexFontTemplates
 

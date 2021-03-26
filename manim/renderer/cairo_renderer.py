@@ -1,15 +1,15 @@
-import typing
 import time
+import typing
+
 import numpy as np
 
 from manim.utils.hashing import get_hash_from_play_call
-
 from .. import config, logger
 from ..camera.camera import Camera
+from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
-from ..mobject.mobject import Mobject
 
 
 def handle_play_like_call(func):

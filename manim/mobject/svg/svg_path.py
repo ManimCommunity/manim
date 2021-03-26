@@ -5,11 +5,9 @@ __all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
 
 
 import re
-
 from typing import List
 
 from manim import logger
-
 from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
 

@@ -49,12 +49,9 @@ import copy
 import hashlib
 import os
 import re
-import sys
-import typing
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict
-from xml.sax.saxutils import escape
 
 import cairo
 import manimpango

@@ -2,24 +2,22 @@ import copy
 import itertools as it
 import random
 import sys
-import moderngl
 from functools import wraps
-from ..utils.color import *
 
-import numpy as np
+import moderngl
 
 from .. import config
 from ..constants import *
-
+from ..utils.bezier import interpolate
+from ..utils.color import *
+from ..utils.iterables import batch_by_property
 # from ..utils.iterables import batch_by_property
 from ..utils.iterables import list_update
+from ..utils.iterables import listify
+from ..utils.iterables import make_even
 from ..utils.iterables import resize_array
 from ..utils.iterables import resize_preserving_order
 from ..utils.iterables import resize_with_interpolation
-from ..utils.iterables import make_even
-from ..utils.iterables import listify
-from ..utils.iterables import batch_by_property
-from ..utils.bezier import interpolate
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector

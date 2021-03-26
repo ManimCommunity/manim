@@ -4,19 +4,18 @@
 __all__ = ["Mobject", "Group", "override_animate"]
 
 
-from functools import reduce
 import copy
 import itertools as it
 import operator as op
 import random
 import sys
 import types
-from typing import Callable, List, Optional, Union
 import warnings
-
+from functools import reduce
 from pathlib import Path
+from typing import Callable, List, Optional, Union
+
 from colour import Color
-import numpy as np
 
 from .. import config
 from ..constants import *

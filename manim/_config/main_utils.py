@@ -1,11 +1,11 @@
 """Utilities called from ``__main__.py`` to interact with the config."""
 
-import os
 import argparse
-import typing
+import os
 import sys
-from manim import constants, __version__
+import typing
 
+from manim import constants
 
 __all__ = ["parse_args"]
 

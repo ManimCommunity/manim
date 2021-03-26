@@ -4,7 +4,6 @@ import numpy as np
 
 from .. import constants, config
 
-
 __all__ = ["Pixels", "Degrees", "Munits", "Percent"]
 
 

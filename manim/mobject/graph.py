@@ -4,16 +4,16 @@ __all__ = [
     "Graph",
 ]
 
-from ..utils.color import BLACK
-from .types.vectorized_mobject import VMobject
-from .geometry import Dot, Line, LabeledDot
-from .svg.tex_mobject import MathTex
-
+from copy import copy
 from typing import Hashable, Union, List, Tuple
 
-from copy import copy
 import networkx as nx
 import numpy as np
+
+from .geometry import Dot, Line, LabeledDot
+from .svg.tex_mobject import MathTex
+from .types.vectorized_mobject import VMobject
+from ..utils.color import BLACK
 
 
 def _determine_graph_layout(

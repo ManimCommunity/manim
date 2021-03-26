@@ -1,10 +1,13 @@
+import copy
 import os
 import re
+from pathlib import Path
+
 import moderngl
 import numpy as np
-import copy
+
 from .. import logger
-from pathlib import Path
+
 
 # from manimlib.utils.directories import get_shader_dir
 # from manimlib.utils.file_ops import find_file

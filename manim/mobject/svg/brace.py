@@ -2,17 +2,14 @@
 
 __all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweenPoints"]
 
-
-import numpy as np
-
 from ...animation.composition import AnimationGroup
-from ...constants import *
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
+from ...constants import *
+from ...mobject.geometry import Line
 from ...mobject.svg.tex_mobject import MathTex
 from ...mobject.svg.tex_mobject import Tex
 from ...mobject.types.vectorized_mobject import VMobject
-from ...mobject.geometry import Line
 from ...utils.space_ops import get_norm
 
 

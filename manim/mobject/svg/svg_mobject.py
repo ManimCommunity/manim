@@ -5,17 +5,14 @@ __all__ = ["SVGMobject", "string_to_numbers"]
 
 
 import itertools as it
-import re
 import os
+import re
 import string
 import warnings
-
+from typing import Dict, List
 from xml.dom.minidom import Element as MinidomElement, parse as minidom_parse
 
-from typing import Dict, List
-
 from manim import logger
-
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
 from ... import config

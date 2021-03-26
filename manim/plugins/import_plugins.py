@@ -1,5 +1,4 @@
 import types
-from importlib import import_module
 
 import pkg_resources
 

@@ -12,9 +12,9 @@ See :doc:`/tutorials/configuration` for an introduction to Manim's configuration
 import argparse
 import configparser
 import copy
+import errno
 import logging
 import os
-import errno
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -23,9 +23,9 @@ from pathlib import Path
 import colour
 import numpy as np
 
+from .logger_utils import set_file_logger
 from .. import constants
 from ..utils.tex import TexTemplate, TexTemplateFromFile
-from .logger_utils import set_file_logger
 
 
 def config_file_paths() -> typing.List[Path]:

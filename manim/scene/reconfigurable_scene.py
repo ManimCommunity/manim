@@ -1,7 +1,6 @@
 __all__ = ["ReconfigurableScene"]
 
 from ..animation.transform import Transform
-from ..constants import *
 from ..mobject.mobject import Mobject
 from ..scene.scene import Scene
 

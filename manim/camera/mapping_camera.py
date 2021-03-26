@@ -9,6 +9,7 @@ from ..camera.camera import Camera
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.config_ops import DictAsObject
 
+
 # TODO: Add an attribute to mobjects under which they can specify that they should just
 # map their centers but remain otherwise undistorted (useful for labels, etc.)
 

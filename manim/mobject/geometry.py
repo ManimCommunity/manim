@@ -58,27 +58,26 @@ __all__ = [
     "RightAngle",
 ]
 
-import warnings
-import numpy as np
 import math
+import warnings
 
+from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
+from ..mobject.types.vectorized_mobject import DashedVMobject
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.types.vectorized_mobject import DashedVMobject
+from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples
 from ..utils.iterables import adjacent_pairs
 from ..utils.simple_functions import fdiv
-from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import angle_between_vectors
+from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import compass_directions
-from ..utils.space_ops import line_intersection
 from ..utils.space_ops import get_norm
+from ..utils.space_ops import line_intersection
 from ..utils.space_ops import normalize
 from ..utils.space_ops import rotate_vector
-from ..utils.color import *
-from .. import logger
 
 DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04

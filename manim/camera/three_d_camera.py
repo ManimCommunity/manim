@@ -2,9 +2,6 @@
 
 __all__ = ["ThreeDCamera"]
 
-
-import numpy as np
-
 from .. import config
 from ..camera.camera import Camera
 from ..constants import *

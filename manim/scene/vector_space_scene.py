@@ -2,11 +2,7 @@
 
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
-
-import numpy as np
-
 from .. import config
-from ..constants import *
 from ..animation.animation import Animation
 from ..animation.creation import Create
 from ..animation.creation import Write
@@ -15,6 +11,7 @@ from ..animation.growing import GrowArrow
 from ..animation.transform import ApplyFunction
 from ..animation.transform import ApplyPointwiseFunction
 from ..animation.transform import Transform
+from ..constants import *
 from ..mobject.coordinate_systems import Axes
 from ..mobject.coordinate_systems import NumberPlane
 from ..mobject.geometry import Arrow
@@ -31,7 +28,7 @@ from ..mobject.svg.tex_mobject import Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
 from ..scene.scene import Scene
-from ..utils.color import GREEN_C, RED_C, BLUE_D, WHITE, YELLOW, GREY, LIGHT_GREY
+from ..utils.color import GREEN_C, RED_C, BLUE_D, WHITE, YELLOW, GREY
 from ..utils.rate_functions import rush_from
 from ..utils.rate_functions import rush_into
 from ..utils.space_ops import angle_of_vector

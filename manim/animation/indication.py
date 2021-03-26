@@ -17,11 +17,6 @@ __all__ = [
     "TurnInsideOut",
 ]
 
-
-import typing
-
-import numpy as np
-
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession

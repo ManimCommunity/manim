@@ -12,10 +12,10 @@ from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.bezier import interpolate
+from ..utils.color import LIGHT_GREY
 from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
-from ..utils.color import LIGHT_GREY
 
 
 class NumberLine(Line):

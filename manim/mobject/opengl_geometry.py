@@ -1,5 +1,3 @@
-import numpy as np
-
 from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject

@@ -8,9 +8,9 @@ from ..animation.transform import MoveToTarget
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromFunc
 from ..constants import *
-from ..scene.scene import Scene
 from ..mobject.probability import SampleSpace
 from ..mobject.types.vectorized_mobject import VGroup
+from ..scene.scene import Scene
 
 
 class SampleSpaceScene(Scene):

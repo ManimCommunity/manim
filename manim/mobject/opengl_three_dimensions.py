@@ -2,11 +2,8 @@ import math
 
 from ..constants import *
 from ..mobject.types.opengl_surface import OpenGLSurface
-from ..mobject.types.opengl_surface import OpenGLSurfaceGroup
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import z_to_vector
 
 
 class OpenGLSurfaceMesh(OpenGLVGroup):

@@ -13,6 +13,7 @@ __all__ = [
 
 
 import inspect
+
 import numpy as np
 
 from ..constants import DEGREES

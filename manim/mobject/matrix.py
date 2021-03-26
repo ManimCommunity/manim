@@ -35,9 +35,6 @@ __all__ = [
     "get_det_text",
 ]
 
-
-import numpy as np
-
 from ..constants import *
 from ..mobject.numbers import DecimalNumber
 from ..mobject.numbers import Integer

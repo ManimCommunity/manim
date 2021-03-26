@@ -32,21 +32,21 @@ __all__ = [
 ]
 
 
+import itertools as it
+import math
 from functools import reduce
 
 import numpy as np
-import math
 from mapbox_earcut import triangulate_float32 as earcut
 
+from .. import config
+from ..constants import DOWN
 from ..constants import OUT
 from ..constants import PI
 from ..constants import RIGHT
 from ..constants import TAU
-from ..constants import DOWN
 from ..utils.iterables import adjacent_pairs
 from ..utils.simple_functions import fdiv
-import itertools as it
-from .. import config
 
 
 def get_norm(vect):

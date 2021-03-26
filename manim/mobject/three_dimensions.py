@@ -14,13 +14,13 @@ __all__ = [
 ]
 
 from ..constants import *
-from ..mobject.geometry import Square, Circle, Line
+from ..mobject.geometry import Square, Circle
 from ..mobject.mobject import *
 from ..mobject.types.vectorized_mobject import VGroup
 from ..mobject.types.vectorized_mobject import VMobject
+from ..utils.color import *
 from ..utils.iterables import tuplify
 from ..utils.space_ops import z_to_vector, normalize, get_norm
-from ..utils.color import *
 
 
 class ThreeDVMobject(VMobject):
