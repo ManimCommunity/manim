@@ -7,3 +7,8 @@ repos:
     rev: 20.8b1
     hooks:
       - id: black
+  - repo: https://gitlab.com/PyCQA/flake8
+    rev: 3.9.0
+    hooks:
+    -   id: flake8
+        args: [--max-line-length=88, --extend-ignore=extend-ignore=E203, E266, F841, B007, B006, F405, F403, F401, F821, B008, E501, B009, B010, E731, RST304, D400, D401, D205, D105, D103, RST210, RST303, D102, D102, D107, RST212, D200, D100, D101, D412, D202, RST305, RST301, D301, RST213, D104, RST201, RST215, RST203, D104, D209, RST205, D402, D210, RST202, A003, W605,]
