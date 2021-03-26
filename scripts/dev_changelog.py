@@ -21,7 +21,7 @@ Dependencies
 Examples
 --------
 From the bash command line with $GITHUB token::
-    $ ./scripts/dev_changelog.py $GITHUB v0.3.0..v0.4.0 > 1.14.0-changelog.rst
+    $ ./scripts/dev_changelog.py $GITHUB v0.3.0..v0.4.0 > 0.4.0-changelog.rst
 
 Note
 ----

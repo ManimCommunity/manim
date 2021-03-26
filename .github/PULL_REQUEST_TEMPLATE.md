@@ -13,7 +13,9 @@ Before filling in the details, ensure:
 -->
 ## Changelog / Overview
 <!-- Optional (Recommended): a detailed overview of the PR for the upcoming
-release's changelog entry. Useful for when the PR title isn't enough. -->
+release's changelog entry. Useful for when the PR title isn't enough. 
+
+DO NOT REMOVE THE FOLLOWING CHANGELOG LINES, EVEN IF YOU DON'T USE THEM.-->
 <!--changelog-start-->
 
 <!--changelog-end-->
