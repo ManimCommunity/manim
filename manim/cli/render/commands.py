@@ -9,17 +9,16 @@ import re
 import sys
 import click
 
-from manim import config, logger, console
+from pathlib import Path
+from click_option_group import optgroup
 from textwrap import dedent
 
+from ... import config, logger, console
 from ...constants import EPILOG
 from ...constants import CONTEXT_SETTINGS
 from ...utils.module_ops import scene_classes_from_file
 from ...utils.file_ops import open_file as open_media_file
 
-from pathlib import Path
-
-from click_option_group import optgroup
 
 
 def validate_scene_range(ctx, param, value):
@@ -156,14 +155,16 @@ def validate_resolution(ctx, param, value):
         ],
         case_sensitive=False,
     ),
-    help="""
-    Render quality at the follow resolution framerates, respectively:
-    854x480 30FPS, 
-    1280x720 30FPS,
-    1920x1080 60FPS,
-    2560x1440 60FPS,
-    3840x2160 60FPS
-    """,
+    help=
+        """
+        Render quality at the follow resolution framerates, respectively:
+        854x480 30FPS, 
+        1280x720 30FPS,
+        1920x1080 60FPS,
+        2560x1440 60FPS,
+        3840x2160 60FPS
+        """
+    ,
 )
 @optgroup.option(
     "-r",

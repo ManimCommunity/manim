@@ -8,19 +8,16 @@ group.
 import os
 import click
 
-from ...constants import EPILOG
-from ...constants import CONTEXT_SETTINGS
-
 from ast import literal_eval
 from typing import Union
-
-from .. import config, console
-from ..._config.utils import config_file_paths, make_config_parser
-from ...utils.file_ops import guarantee_existence, open_file
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-__all__ = ["cfg", "write", "show", "export"]
+from ... import config, console
+from ...constants import EPILOG
+from ...constants import CONTEXT_SETTINGS
+from ..._config.utils import config_file_paths, make_config_parser
+from ...utils.file_ops import guarantee_existence, open_file
 
 RICH_COLOUR_INSTRUCTIONS: str = """
 [red]The default colour is used by the input statement.
