@@ -62,7 +62,7 @@ class CoordinateSystem:
             else y_range
         )
 
-        self.num_sampled_graph_points_per_tick = 5
+        self.num_sampled_graph_points_per_tick = 10
         self.x_length = x_length
         self.y_length = y_length
 
@@ -95,17 +95,19 @@ class CoordinateSystem:
     def get_z_axis(self):
         return self.get_axis(2)
 
-    def get_x_axis_label(self, label_tex, edge=RIGHT, direction=DL, **kwargs):
+    def get_x_axis_label(
+        self, label_tex, edge=RIGHT, direction=UP * 4 + RIGHT, **kwargs
+    ):
         return self.get_axis_label(
             label_tex, self.get_x_axis(), edge, direction, **kwargs
         )
 
-    def get_y_axis_label(self, label_tex, edge=UP, direction=LEFT, **kwargs):
+    def get_y_axis_label(self, label_tex, edge=UP, direction=UP + RIGHT * 2, **kwargs):
         return self.get_axis_label(
             label_tex, self.get_y_axis(), edge, direction, **kwargs
         )
 
-    def get_axis_label(self, label_tex, axis, edge, direction, buff=MED_SMALL_BUFF):
+    def get_axis_label(self, label_tex, axis, edge, direction, buff=SMALL_BUFF):
         label = MathTex(label_tex)
         label.next_to(axis.get_edge_center(edge), direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
@@ -137,8 +139,9 @@ class CoordinateSystem:
     def get_graph(self, function, **kwargs):
         t_range = self.x_range
 
-        if len(t_range) < 3:
-            t_range[2] = self.num_sampled_graph_points_per_tick
+        if len(t_range) == 3:
+            # if t_range has a defined step size, increase the number of sample points per tick
+            t_range[2] /= self.num_sampled_graph_points_per_tick
         # For axes, the third coordinate of x_range indicates
         # tick frequency.  But for functions, it indicates a
         # sample frequency

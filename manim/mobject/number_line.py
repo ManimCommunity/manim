@@ -135,7 +135,7 @@ class NumberLine(Line):
         if self.include_tip:
             x_max = self.x_max
         else:
-            x_max = self.x_max + self.x_step
+            x_max = self.x_max + 1e-6
         return np.arange(self.x_min, x_max, self.x_step)
 
     def number_to_point(self, number):

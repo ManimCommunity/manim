@@ -101,10 +101,7 @@ class FunctionGraph(ParametricFunction):
     def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
 
         if x_range is None:
-            x_range = np.array(
-                [-config["frame_x_radius"], config["frame_x_radius"]]
-            )
-
+            x_range = np.array([-config["frame_x_radius"], config["frame_x_radius"]])
 
         self.x_range = x_range
         self.parametric_function = lambda t: np.array([t, function(t), 0])

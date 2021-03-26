@@ -8,14 +8,15 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 class AxesTest(Scene):
     def construct(self):
         graph = Axes(
-            x_range=[-10,10,1],
-            y_range=[-10,10,1],
+            x_range=[-10, 10, 1],
+            y_range=[-10, 10, 1],
             x_length=6,
             y_length=6,
-            color=WHITE
+            color=WHITE,
         )
         labels = graph.get_axis_labels()
         self.play(Create(graph), Create(labels))
+
 
 MODULE_NAME = "plot"
 

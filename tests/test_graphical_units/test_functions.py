@@ -9,7 +9,7 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 class FunctionGraphTest(Scene):
     def construct(self):
         graph = FunctionGraph(
-            lambda x: 2 * np.cos(0.5 * x), x_range=[-PI,PI], color=BLUE
+            lambda x: 2 * np.cos(0.5 * x), x_range=[-PI, PI], color=BLUE
         )
         self.add(graph)
         self.wait()
