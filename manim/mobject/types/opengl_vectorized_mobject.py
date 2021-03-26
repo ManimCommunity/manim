@@ -6,7 +6,8 @@ import moderngl
 import numpy as np
 
 from ...constants import *
-from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ...mobject.mobject import Mobject
+from ...mobject.opengl_mobject import OpenGLPoint
 
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
 from ...utils.bezier import (
@@ -40,7 +41,7 @@ JOINT_TYPE_MAP = {
 }
 
 
-class OpenGLVMobject(OpenGLMobject):
+class OpenGLVMobject(Mobject):
     fill_dtype = [
         ("point", np.float32, (3,)),
         ("unit_normal", np.float32, (3,)),
@@ -114,11 +115,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = np.zeros(0, dtype="i4")
         super().__init__(**kwargs)
         self.refresh_unit_normal()
-
-        #
-        #     def get_group_class(self):
-        #         return VGroup
-        #
 
     def init_data(self):
         super().init_data()
@@ -645,7 +641,7 @@ class OpenGLVMobject(OpenGLMobject):
         if not recompute:
             return self.data["unit_normal"][0]
 
-        if len(self.data["points"]) < 3:
+        if len(self.points) < 3:
             return OUT
 
         area_vect = self.get_area_vector()
@@ -1007,7 +1003,7 @@ class OpenGLVMobject(OpenGLMobject):
         }
 
     def get_stroke_shader_data(self):
-        points = self.data["points"]
+        points = self.points
         stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
 
         nppc = self.n_points_per_curve
@@ -1024,7 +1020,7 @@ class OpenGLVMobject(OpenGLMobject):
         return stroke_data
 
     def get_fill_shader_data(self):
-        points = self.data["points"]
+        points = self.points
         fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
         fill_data["vert_index"][:, 0] = range(len(points))
 
