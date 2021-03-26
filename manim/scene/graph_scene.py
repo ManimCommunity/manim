@@ -77,15 +77,13 @@ from ..utils.space_ops import angle_of_vector
 class GraphScene(Scene):
     def __init__(
         self,
-        x_min=-1,
-        x_max=10,
-        x_axis_width=9,
+        x_range = None,
+        x_length=9,
         x_leftmost_tick=None,  # Change if different from x_min
         x_labeled_nums=None,
         x_axis_label="$x$",
-        y_min=-1,
-        y_max=10,
-        y_axis_height=6,
+        y_range = None,
+        y_length=6,
         y_bottom_tick=None,  # Change if different from y_min
         y_labeled_nums=None,
         y_axis_label="$y$",
@@ -108,15 +106,11 @@ class GraphScene(Scene):
         y_axis_config=None,
         **kwargs,
     ):
-        self.x_min = x_min
-        self.x_max = x_max
-        self.x_axis_width = x_axis_width
+        self.x_length = x_length
         self.x_leftmost_tick = x_leftmost_tick
         self.x_labeled_nums = x_labeled_nums
         self.x_axis_label = x_axis_label
-        self.y_min = y_min
-        self.y_max = y_max
-        self.y_axis_height = y_axis_height
+        self.y_length = y_length
         self.y_bottom_tick = y_bottom_tick
         self.y_labeled_nums = y_labeled_nums
         self.y_axis_label = y_axis_label
@@ -137,6 +131,22 @@ class GraphScene(Scene):
         self.y_label_position = y_label_position
         self.x_axis_config = {} if x_axis_config is None else x_axis_config
         self.y_axis_config = {} if y_axis_config is None else y_axis_config
+
+        x_range = np.array([-1,10,1]) if x_range is None else x_range
+        y_range = np.array([-1,10,1]) if y_range is None else y_range
+
+        if len(x_range) == 2:
+            x_range = [*x_range, 1]
+        if len(y_range) ==2:
+            y_range = [*y_range, 1]
+
+        self.x_min, self.x_max, self.x_step = x_range
+        self.y_min, self.y_max, self.y_step = y_range
+
+        self.x_range = x_range
+        self.y_range = y_range
+
+
         super().__init__(**kwargs)
 
     def setup(self):
@@ -160,7 +170,7 @@ class GraphScene(Scene):
         """
         # TODO, once eoc is done, refactor this to be less redundant.
         x_num_range = float(self.x_max - self.x_min)
-        self.space_unit_to_x = self.x_axis_width / x_num_range
+        self.space_unit_to_x = self.x_length / x_num_range
         if self.x_labeled_nums is None:
             self.x_labeled_nums = []
         if self.x_leftmost_tick is None:
@@ -170,8 +180,7 @@ class GraphScene(Scene):
         # that can be overridden through x_axis_config
         self.x_axis_config = dict(
             {
-                "x_min": self.x_min,
-                "x_max": self.x_max,
+                "x_range": self.x_range,
                 "unit_size": self.space_unit_to_x,
                 "leftmost_tick": self.x_leftmost_tick,
                 "numbers_with_elongated_ticks": self.x_labeled_nums,
@@ -189,7 +198,7 @@ class GraphScene(Scene):
         if len(self.x_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.x_labeled_nums = [x for x in self.x_labeled_nums if x != 0]
-            x_axis.add_numbers(*self.x_labeled_nums)
+            x_axis.add_numbers(self.x_labeled_nums)
         if self.x_axis_label:
             x_label = Tex(self.x_axis_label)
             x_label.next_to(
@@ -201,7 +210,7 @@ class GraphScene(Scene):
             self.x_axis_label_mob = x_label
 
         y_num_range = float(self.y_max - self.y_min)
-        self.space_unit_to_y = self.y_axis_height / y_num_range
+        self.space_unit_to_y = self.y_length / y_num_range
 
         if self.y_labeled_nums is None:
             self.y_labeled_nums = []
@@ -212,8 +221,7 @@ class GraphScene(Scene):
         # that can be overridden through y_axis_config
         self.y_axis_config = dict(
             {
-                "x_min": self.y_min,
-                "x_max": self.y_max,
+                "x_range": self.y_range,
                 "unit_size": self.space_unit_to_y,
                 "leftmost_tick": self.y_bottom_tick,
                 "numbers_with_elongated_ticks": self.y_labeled_nums,
@@ -234,7 +242,7 @@ class GraphScene(Scene):
         if len(self.y_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.y_labeled_nums = [y for y in self.y_labeled_nums if y != 0]
-            y_axis.add_numbers(*self.y_labeled_nums)
+            y_axis.add_numbers(self.y_labeled_nums)
         if self.y_axis_label:
             y_label = Tex(self.y_axis_label)
             y_label.next_to(
