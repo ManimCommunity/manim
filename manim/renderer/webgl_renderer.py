@@ -24,6 +24,7 @@ class WebGLRenderer:
                 self.skip_animations = False
                 break
         s = scene.compile_animation_data(*args, skip_rendering=True, **kwargs)
+        scene.begin_animations()
         self.skip_animations = True
 
         scene_copy = copy.deepcopy(scene)

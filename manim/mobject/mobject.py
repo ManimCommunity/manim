@@ -68,7 +68,7 @@ class Mobject(Container):
         self.init_colors()
 
         # OpenGL data.
-        self.data = dict()
+        self.data = {}
         self.depth_test = False
         self.is_fixed_in_frame = False
         self.gloss = 0.0
@@ -162,7 +162,7 @@ class Mobject(Container):
             class AnimateExample(Scene):
                 def construct(self):
                     s = Square()
-                    self.play(ShowCreation(s))
+                    self.play(Create(s))
                     self.play(s.animate.shift(RIGHT))
                     self.play(s.animate.scale(2))
                     self.play(s.animate.rotate(PI / 2))
@@ -174,7 +174,7 @@ class Mobject(Container):
             class AnimateChainExample(Scene):
                 def construct(self):
                     s = Square()
-                    self.play(ShowCreation(s))
+                    self.play(Create(s))
                     self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
                     self.play(Uncreate(s))
 
@@ -1870,7 +1870,7 @@ class Mobject(Container):
         center=True,
         **kwargs,
     ):
-        """sort mobjects next to each other on screen.
+        """Sorts mobjects next to each other on screen.
 
         Examples
         --------
@@ -2015,7 +2015,7 @@ class Mobject(Container):
         new_submobs = []
         for submob, sf in zip(self.submobjects, split_factors):
             new_submobs.append(submob)
-            for k in range(1, sf):
+            for _ in range(1, sf):
                 new_submobs.append(submob.copy().fade(1))
         self.submobjects = new_submobs
         return self
@@ -2220,7 +2220,7 @@ def override_animate(method):
 
     .. manim:: AnimationOverrideExample
 
-        from manim import Circle, Scene, ShowCreation, Text, Uncreate, VGroup
+        from manim import Circle, Scene, Create, Text, Uncreate, VGroup
 
         class CircleWithContent(VGroup):
             def __init__(self, content):
@@ -2244,7 +2244,7 @@ def override_animate(method):
             def construct(self):
                 t = Text("hello!")
                 my_mobject = CircleWithContent(t)
-                self.play(ShowCreation(my_mobject))
+                self.play(Create(my_mobject))
                 self.play(my_mobject.animate.clear_content())
                 self.wait()
 

@@ -30,7 +30,7 @@ class UpdateSceneDuringAnimationTest(Scene):
             self.add(Square())
 
         s = Circle().add_updater(f)
-        self.play(ShowCreation(s))
+        self.play(Create(s))
 
 
 class LastFrameWhenClearedTest(Scene):

@@ -282,7 +282,7 @@ class SceneFileWriter(object):
         else:
             frame = frame_or_renderer
             if config["write_to_movie"]:
-                self.writing_process.stdin.write(frame.tostring())
+                self.writing_process.stdin.write(frame.tobytes())
             if config["save_pngs"]:
                 path, extension = os.path.splitext(self.image_file_path)
                 Image.fromarray(frame).save(f"{path}{self.frame_count}{extension}")
@@ -476,7 +476,11 @@ class SceneFileWriter(object):
                 self.gif_file_path = str(
                     add_version_before_extension(self.gif_file_path)
                 )
-            commands += [self.gif_file_path]
+            commands += [
+                "-vf",
+                f"fps={np.clip(config['frame_rate'], 1, 50)},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
+                self.gif_file_path,
+            ]
 
         if not self.includes_sound:
             commands.insert(-1, "-an")
@@ -545,7 +549,7 @@ class SceneFileWriter(object):
                 len(cached_partial_movies) - config["max_files_cached"]
             )
             oldest_files_to_delete = sorted(
-                [partial_movie_file for partial_movie_file in cached_partial_movies],
+                cached_partial_movies,
                 key=os.path.getatime,
             )[:number_files_to_delete]
             # oldest_file_path = min(cached_partial_movies, key=os.path.getatime)

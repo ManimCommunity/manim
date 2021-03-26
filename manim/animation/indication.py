@@ -25,7 +25,7 @@ import numpy as np
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import ShowCreation, ShowPartial
+from ..animation.creation import Create, ShowPartial
 from ..animation.fading import FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
@@ -38,7 +38,6 @@ from ..utils.color import GREY, YELLOW
 from ..utils.rate_functions import there_and_back, wiggle
 
 if typing.TYPE_CHECKING:
-    from ..mobject.geometry import Dot
     from ..mobject.mobject import Mobject
 
 
@@ -180,7 +179,7 @@ class ShowPassingFlash(ShowPartial):
 
     See Also
     --------
-    :class:`~.ShowCreation`
+    :class:`~.Create`
 
     """
 
@@ -217,9 +216,7 @@ class ShowCreationThenDestruction(ShowPassingFlash):
 
 class ShowCreationThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
-        super().__init__(
-            ShowCreation(mobject), FadeOut(mobject), remover=remover, **kwargs
-        )
+        super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
 class AnimationOnSurroundingRectangle(AnimationGroup):

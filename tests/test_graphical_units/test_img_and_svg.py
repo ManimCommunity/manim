@@ -169,6 +169,55 @@ class VideoIconTest(Scene):
         self.wait()
 
 
+class MultipleTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("multiple_transforms.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class MatrixTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("matrix.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class ScaleTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("scale.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class TranslateTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("translate.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class SkewXTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("skewX.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class SkewYTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("skewY.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class RotateTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("rotate.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
 class ImageMobjectTest(Scene):
     def construct(self):
         file_path = get_test_resource("tree_img_640x351.png")
