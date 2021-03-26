@@ -558,7 +558,7 @@ class ManimConfig(MutableMapping):
         # other logic
         val = parser["CLI"].get("tex_template_file")
         if val:
-            setattr(self, "tex_template_file", val)
+            self.tex_template_file = val
 
         val = parser["CLI"].get("progress_bar")
         if val:
@@ -566,7 +566,7 @@ class ManimConfig(MutableMapping):
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
-            setattr(self, "ffmpeg_loglevel", val)
+            self.ffmpeg_loglevel = val
 
         val = parser["jupyter"].get("media_width")
         if val:

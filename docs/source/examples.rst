@@ -238,7 +238,7 @@ Animations
             framebox1 = SurroundingRectangle(text[1], buff = .1)
             framebox2 = SurroundingRectangle(text[3], buff = .1)
             self.play(
-                ShowCreation(framebox1),
+                Create(framebox1),
             )
             self.wait()
             self.play(
@@ -468,7 +468,7 @@ Special Camera Settings
 
             frame_text.next_to(frame, DOWN)
 
-            self.play(ShowCreation(frame), FadeInFrom(frame_text, direction=DOWN))
+            self.play(Create(frame), FadeInFrom(frame_text, direction=DOWN))
             self.activate_zooming()
 
             self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera)
@@ -614,7 +614,7 @@ Advanced Projects
 =================
 
 .. manim:: OpeningManim
-    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane ShowCreation
+    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane Create
     :ref_functions: NumberPlane.prepare_for_nonlinear_transform
 
     class OpeningManim(Scene):
@@ -645,7 +645,7 @@ Advanced Projects
             self.play(
                 FadeOut(title),
                 FadeInFrom(grid_title, direction=DOWN),
-                ShowCreation(grid, run_time=3, lag_ratio=0.1),
+                Create(grid, run_time=3, lag_ratio=0.1),
             )
             self.wait()
 

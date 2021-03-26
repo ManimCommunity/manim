@@ -180,6 +180,11 @@ def validate_resolution(ctx, param, value):
     help="Render at this frame rate.",
 )
 @optgroup.option(
+    "--opengl_renderer",
+    is_flag = True,
+    help="Render scenes using OpenGL."
+)
+@optgroup.option(
     "--webgl_renderer",
     default=None,
     type=click.Path(),
@@ -246,6 +251,7 @@ def render(
     quality,
     resolution,
     frame_rate,
+    opengl_renderer,
     webgl_renderer,
     transparent,
     background_color,
@@ -303,6 +309,7 @@ def render(
         "quality": quality,
         "resolution": resolution,
         "frame_rate": frame_rate,
+        "webgl_renderer": opengl_renderer,
         "webgl_renderer": webgl_renderer,
         "transparent": transparent,
         "background_color": background_color,
@@ -337,6 +344,17 @@ def render(
         return click_args
     config.digest_args(click_args)
 
+
+    if opengl_renderer:
+        from manim.renderer.opengl_renderer import OpenGLRenderer
+
+        for SceneClass in scene_classes_from_file(file):
+            try:
+                renderer = OpenGLRenderer()
+                scene = SceneClass(renderer)
+                scene.render()
+            except Exception:
+                console.print_exception()
     if webgl_renderer:
         try:
             from manim.grpc.impl import frame_server_impl
