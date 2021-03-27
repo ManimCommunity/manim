@@ -263,7 +263,11 @@ class DrawBorderThenFill(Animation):
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, outline: any, alpha: float
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        outline: any,
+        alpha: float,
     ) -> None:  # TODO: not matching the parent class? What is outline doing here?  TODO: Add a proper type to outline
         index, subalpha = integer_interpolate(0, 2, alpha)
         if index == 0:

@@ -5,6 +5,7 @@ __all__ = ["MultiCamera"]
 
 from ..camera.moving_camera import MovingCamera
 from ..utils.iterables import list_difference_update
+from ..mobject.
 
 
 class MultiCamera(MovingCamera):
@@ -12,15 +13,15 @@ class MultiCamera(MovingCamera):
 
     def __init__(
         self,
-        image_mobjects_from_cameras=None,
-        allow_cameras_to_capture_their_own_display=False,
+        image_mobjects_from_cameras: any = None,  # TODO: Type this.
+        allow_cameras_to_capture_their_own_display: bool = False,
         **kwargs
     ):
         """Initialises the MultiCamera
 
         Parameters
         ----------
-        image_mobjects_from_cameras : ImageMobject
+        image_mobjects_from_cameras
 
         kwargs
             Any valid keyword arguments of MovingCamera.

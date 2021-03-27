@@ -5,9 +5,11 @@ __all__ = ["MappingCamera", "OldMultiCamera", "SplitScreenCamera"]
 
 import numpy as np
 
+from typing import Callable
 from ..camera.camera import Camera
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.config_ops import DictAsObject
+from ..mobject.mobject import Mobject
 
 # TODO: Add an attribute to mobjects under which they can specify that they should just
 # map their centers but remain otherwise undistorted (useful for labels, etc.)
@@ -20,9 +22,9 @@ class MappingCamera(Camera):
 
     def __init__(
         self,
-        mapping_func=lambda p: p,
-        min_num_curves=50,
-        allow_object_intrusion=False,
+        mapping_func: Callable =lambda p: p,
+        min_num_curves: int =50,
+        allow_object_intrusion: bool = False,
         **kwargs
     ):
         self.mapping_func = mapping_func
@@ -30,12 +32,12 @@ class MappingCamera(Camera):
         self.allow_object_intrusion = allow_object_intrusion
         Camera.__init__(self, **kwargs)
 
-    def points_to_pixel_coords(self, points):
+    def points_to_pixel_coords(self, points: int):
         return Camera.points_to_pixel_coords(
             self, np.apply_along_axis(self.mapping_func, 1, points)
         )
 
-    def capture_mobjects(self, mobjects, **kwargs):
+    def capture_mobjects(self, mobjects: Mobject, **kwargs):
         mobjects = self.get_mobjects_to_display(mobjects, **kwargs)
         if self.allow_object_intrusion:
             mobject_copies = mobjects

@@ -191,7 +191,9 @@ class Camera:
         else:
             raise TypeError(f"Displaying an object of class {_type} is not supported")
 
-    def reset_pixel_shape(self, new_height: Union[int, float], new_width: Union[int, float]):
+    def reset_pixel_shape(
+        self, new_height: Union[int, float], new_width: Union[int, float]
+    ):
         """This method resets the height and width
         of a single pixel to the passed new_height and new_width.
         """
@@ -250,9 +252,7 @@ class Camera:
             )
             self.background[:, :] = background_rgba
 
-    def get_image(
-        self, pixel_array: Union[np.array, list, tuple, None] = None
-    ):
+    def get_image(self, pixel_array: Union[np.array, list, tuple, None] = None):
         """Returns an image from the passed
         pixel array, or from the current frame
         if the passed pixel array is none.
@@ -1033,7 +1033,7 @@ class Camera:
         return points
 
     def transform_points_pre_display(
-        self, mobject:Mobject, points: np.array
+        self, mobject: Mobject, points: np.array
     ):  # TODO: Write more detailed docstrings for this method.
         # NOTE: There seems to be an unused argument `mobject`.
 
@@ -1046,7 +1046,7 @@ class Camera:
         return points
 
     def points_to_pixel_coords(
-        self, mobject:Mobject, points: np.array
+        self, mobject: Mobject, points: np.array
     ):  # TODO: Write more detailed docstrings for this method.
         points = self.transform_points_pre_display(mobject, points)
         shifted_points = points - self.frame_center
@@ -1097,7 +1097,7 @@ class Camera:
         Parameters
         ----------
         thickness
-        
+
         Returns
         -------
         float
@@ -1125,7 +1125,9 @@ class Camera:
         _range = list(range(-thickness // 2 + 1, thickness // 2 + 1))
         return np.array(list(it.product(_range, _range)))
 
-    def thickened_coordinates(self, pixel_coords: np.array, thickness: Union[int, float]):
+    def thickened_coordinates(
+        self, pixel_coords: np.array, thickness: Union[int, float]
+    ):
         """Returns thickened coordinates for a passed array of pixel coords and
         a thickness to thicken by.
 
@@ -1200,7 +1202,11 @@ class BackgroundColoredVMobjectDisplayer:
         self.pixel_array[:, :] = 0
 
     def resize_background_array(
-        self, background_array: np.array, new_width: Union[int, float], new_height: Union[int, float], mode:Optional[str] ="RGBA"
+        self,
+        background_array: np.array,
+        new_width: Union[int, float],
+        new_height: Union[int, float],
+        mode: Optional[str] = "RGBA",
     ):
         """Resizes the pixel array representing the background.
 
@@ -1225,7 +1231,9 @@ class BackgroundColoredVMobjectDisplayer:
         resized_image = image.resize((new_width, new_height))
         return np.array(resized_image)
 
-    def resize_background_array_to_match(self, background_array: np.array, pixel_array: np.array):
+    def resize_background_array_to_match(
+        self, background_array: np.array, pixel_array: np.array
+    ):
         """Resizes the background array to match the passed pixel array.
 
         Parameters
