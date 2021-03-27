@@ -17,14 +17,8 @@ def handle_caching_play(func):
         Take the same parameters as `scene.play`.
     """
 
-    # NOTE : This is only kept for OpenGL renderer.
-    # The play logic of the cairo renderer as been refactored and does not need this function anymore.
-    # When OpenGL renderer will have a proper testing system,
-    # the play logic of the latter has to be refactored in the same way the cairo renderer has been, and thus this
-    # method has to be deleted.
-
     def wrapper(self, scene, *args, **kwargs):
-        self.skip_animations = self._original_skipping_status
+        self.skip_animations = self.original_skipping_status
         self.update_skipping_status()
         animations = scene.compile_animations(*args, **kwargs)
         scene.add_mobjects_from_animations(animations)

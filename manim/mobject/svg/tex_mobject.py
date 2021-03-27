@@ -171,12 +171,11 @@ __all__ = [
 from functools import reduce
 import operator as op
 
-from .style_utils import parse_style
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.svg.svg_path import SVGPathMobject
+from ...mobject.svg.svg_mobject import VMobjectFromSVGPathstring
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VectorizedPoint
 from ...utils.strings import split_string_list_to_isolate_substrings
@@ -187,8 +186,8 @@ from ...utils.tex import TexTemplate
 TEX_MOB_SCALE_FACTOR = 0.05
 
 
-class TexSymbol(SVGPathMobject):
-    """Purely a renaming of SVGPathMobject."""
+class TexSymbol(VMobjectFromSVGPathstring):
+    """Purely a renaming of VMobjectFromSVGPathstring."""
 
     pass
 
@@ -242,7 +241,7 @@ class SingleStringMathTex(SVGMobject):
             background_stroke_color=background_stroke_color,
             **kwargs,
         )
-        if height is None:
+        if self.height is None:
             self.scale(TEX_MOB_SCALE_FACTOR)
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
@@ -327,17 +326,14 @@ class SingleStringMathTex(SVGMobject):
     def get_tex_string(self):
         return self.tex_string
 
-    def path_string_to_mobject(self, path_string, style):
+    def path_string_to_mobject(self, path_string):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string, z_index=self.z_index, **parse_style(style))
+        return TexSymbol(path_string, z_index=self.z_index)
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
         return self
-
-    def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):
@@ -525,9 +521,7 @@ class BulletedList(Tex):
         self.dot_scale_factor = dot_scale_factor
         self.tex_environment = tex_environment
         line_separated_items = [s + "\\\\" for s in items]
-        Tex.__init__(
-            self, *line_separated_items, tex_environment=tex_environment, **kwargs
-        )
+        Tex.__init__(self, *line_separated_items, **kwargs)
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
             dot.next_to(part[0], LEFT, SMALL_BUFF)
@@ -564,16 +558,16 @@ class Title(Tex):
         self.match_underline_width_to_text = match_underline_width_to_text
         self.underline_buff = underline_buff
         Tex.__init__(self, *text_parts, **kwargs)
+        self.underline_width = config["frame_width"] - 2
         self.scale(self.scale_factor)
         self.to_edge(UP)
         if self.include_underline:
-            underline_width = config["frame_width"] - 2
             underline = Line(LEFT, RIGHT)
             underline.next_to(self, DOWN, buff=self.underline_buff)
             if self.match_underline_width_to_text:
                 underline.match_width(self)
             else:
-                underline.width = underline_width
+                underline.set_width(self.underline_width)
             self.add(underline)
             self.underline = underline
 

@@ -74,7 +74,6 @@ from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..constants import DOWN
 from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..utils.bezier import interpolate
 from ..utils.rate_functions import there_and_back
 
@@ -90,7 +89,7 @@ class FadeOut(Transform):
 
     def __init__(
         self,
-        vmobject: typing.Union[VMobject, OpenGLVMobject],
+        vmobject: VMobject,
         remover: bool = True,
         lag_ratio: float = DEFAULT_FADE_LAG_RATIO,
         **kwargs
@@ -107,10 +106,7 @@ class FadeOut(Transform):
 
 class FadeIn(Transform):
     def __init__(
-        self,
-        vmobject: typing.Union[VMobject, OpenGLVMobject],
-        lag_ratio: float = DEFAULT_FADE_LAG_RATIO,
-        **kwargs
+        self, vmobject: VMobject, lag_ratio: float = DEFAULT_FADE_LAG_RATIO, **kwargs
     ) -> None:
         super().__init__(vmobject, lag_ratio=lag_ratio, **kwargs)
 
@@ -120,8 +116,8 @@ class FadeIn(Transform):
     def create_starting_mobject(self) -> "Mobject":
         start = super().create_starting_mobject()
         start.fade(1)
-        if isinstance(start, (VMobject, OpenGLVMobject)):
-            start.set_stroke(opacity=0)
+        if isinstance(start, VMobject):
+            start.set_stroke(width=0)
             start.set_fill(opacity=0)
         return start
 

@@ -15,13 +15,9 @@ class SurroundingRectangle(Rectangle):
     def __init__(self, mobject, color=YELLOW, buff=SMALL_BUFF, **kwargs):
         self.color = color
         self.buff = buff
-        Rectangle.__init__(
-            self,
-            color=color,
-            width=mobject.width + 2 * self.buff,
-            height=mobject.height + 2 * self.buff,
-            **kwargs
-        )
+        kwargs["width"] = mobject.get_width() + 2 * self.buff
+        kwargs["height"] = mobject.get_height() + 2 * self.buff
+        Rectangle.__init__(self, color=color, **kwargs)
         self.move_to(mobject)
 
 
@@ -76,13 +72,15 @@ class BackgroundRectangle(SurroundingRectangle):
 
 class Cross(VGroup):
     def __init__(self, mobject, stroke_color=RED, stroke_width=6, **kwargs):
+        self.stroke_color = stroke_color
+        self.stroke_width = stroke_width
         VGroup.__init__(
             self,
             Line(UP + LEFT, DOWN + RIGHT),
             Line(UP + RIGHT, DOWN + LEFT),
         )
         self.replace(mobject, stretch=True)
-        self.set_stroke(color=stroke_color, width=stroke_width)
+        self.set_stroke(self.stroke_color, self.stroke_width)
 
 
 class Underline(Line):

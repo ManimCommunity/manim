@@ -10,7 +10,7 @@ import pkg_resources
 
 from manim import console
 
-__all__ = ["list_plugins"]
+__all__ = ["list_plugins", "update"]
 
 
 def get_plugins():

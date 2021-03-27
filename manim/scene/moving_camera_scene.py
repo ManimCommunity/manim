@@ -14,10 +14,10 @@ Examples
         def construct(self):
             text = Text("Hello World").set_color(BLUE)
             self.add(text)
-            self.camera.frame.save_state()
-            self.play(self.camera.frame.animate.set(width=text.width * 1.2))
+            self.camera_frame.save_state()
+            self.play(self.camera_frame.animate.set_width(text.get_width() * 1.2))
             self.wait(0.3)
-            self.play(Restore(self.camera.frame))
+            self.play(Restore(self.camera_frame))
 
 
 .. manim:: MovingCameraCenter
@@ -28,9 +28,9 @@ Examples
             t = Triangle(color=GREEN, fill_opacity=0.5).move_to(2 * RIGHT)
             self.wait(0.3)
             self.add(s, t)
-            self.play(self.camera.frame.animate.move_to(s))
+            self.play(self.camera_frame.animate.move_to(s))
             self.wait(0.3)
-            self.play(self.camera.frame.animate.move_to(t))
+            self.play(self.camera_frame.animate.move_to(t))
 
 
 .. manim:: MovingAndZoomingCamera
@@ -40,20 +40,20 @@ Examples
             s = Square(color=BLUE, fill_opacity=0.5).move_to(2 * LEFT)
             t = Triangle(color=YELLOW, fill_opacity=0.5).move_to(2 * RIGHT)
             self.add(s, t)
-            self.play(self.camera.frame.animate.move_to(s).set(width=s.width*2))
+            self.play(self.camera_frame.animate.move_to(s).set_width(s.get_width()*2))
             self.wait(0.3)
-            self.play(self.camera.frame.animate.move_to(t).set(width=t.width*2))
+            self.play(self.camera_frame.animate.move_to(t).set_width(t.get_width()*2))
 
-            self.play(self.camera.frame.animate.move_to(ORIGIN).set(width=14))
+            self.play(self.camera_frame.animate.move_to(ORIGIN).set_width(14))
 
 .. manim:: MovingCameraOnGraph
 
     class MovingCameraOnGraph(GraphScene, MovingCameraScene):
         def setup(self):
             GraphScene.setup(self)
-
+            MovingCameraScene.setup(self)
         def construct(self):
-            self.camera.frame.save_state()
+            self.camera_frame.save_state()
             self.setup_axes(animate=False)
             graph = self.get_graph(lambda x: np.sin(x),
                                    color=WHITE,
@@ -63,9 +63,9 @@ Examples
             dot_at_start_graph = Dot().move_to(graph.points[0])
             dot_at_end_graph = Dot().move_to(graph.points[-1])
             self.add(graph, dot_at_end_graph, dot_at_start_graph)
-            self.play(self.camera.frame.animate.scale(0.5).move_to(dot_at_start_graph))
-            self.play(self.camera.frame.animate.move_to(dot_at_end_graph))
-            self.play(Restore(self.camera.frame))
+            self.play(self.camera_frame.animate.scale(0.5).move_to(dot_at_start_graph))
+            self.play(self.camera_frame.animate.move_to(dot_at_end_graph))
+            self.play(Restore(self.camera_frame))
             self.wait()
 
 """
@@ -90,6 +90,18 @@ class MovingCameraScene(Scene):
 
     def __init__(self, camera_class=MovingCamera, **kwargs):
         Scene.__init__(self, camera_class=camera_class, **kwargs)
+
+    def setup(self):
+        """
+        This method is used internally by Manim
+        to set up the scene for proper use.
+        """
+        Scene.setup(self)
+        assert isinstance(self.renderer.camera, MovingCamera)
+        self.camera_frame = self.renderer.camera.frame
+        # Hmm, this currently relies on the fact that MovingCamera
+        # willd default to a full-sized frame.  Is that okay?
+        return self
 
     def get_moving_mobjects(self, *animations):
         """

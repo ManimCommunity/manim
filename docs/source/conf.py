@@ -115,7 +115,7 @@ def linkcode_resolve(domain, info):
         return None
     filename = info["module"].replace(".", "/")
     version = os.getenv("READTHEDOCS_VERSION", "master")
-    if version == "latest" or version == "stable":
+    if version == "latest":
         version = "master"
     return f"https://github.com/ManimCommunity/manim/blob/{version}/{filename}.py"
 

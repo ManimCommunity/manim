@@ -1,15 +1,8 @@
 <!--
-Thanks for your contribution to ManimCommunity!
+Thank you for contributing to manim!
 
-Before filling in the details, ensure:
-- Your local changes are up-to-date with ManimCommunity/manim
-  
-- The title of your PR gives a descriptive summary to end-users. Some examples:
-  - Fixed last animations not running to completion
-  - Added gradient support and documentation for SVG files
-  Examples of what *NOT* to do:
-  - "fixed that styling issue" - not descriptive enough
-  - "fixed issue #XYZ" - end-user needs to do further research
+Please ensure that your pull request works with the latest
+version of manim from this repository.
 -->
 
 ## Motivation
@@ -23,6 +16,14 @@ For PRs introducing new features, please provide code snippets
 using the newly introduced functionality and ideally even the
 expected rendered output. -->
 
+## Oneline Summary of Changes
+<!-- Please update the lines below with a oneline summary
+for your changes. It will be included in the list of upcoming changes at
+https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release -->
+```
+- Added new feature ... / Fixed bug ... / ... (:pr:`PR NUMBER HERE`)
+```
+
 ## Testing Status
 <!-- Optional (but recommended): your computer specs and
 what tests you ran with their results, if any. This section
@@ -34,7 +35,7 @@ that might be useful for reviewers.. -->
 
 ## Acknowledgements
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-- [ ] I have chosen a descriptive PR title (see top of PR template for examples)
+
 <!-- Once again, thanks for helping out by contributing to manim! -->
 
 
@@ -43,4 +44,4 @@ that might be useful for reviewers.. -->
 - [ ] Newly added functions/classes are either private or have a docstring
 - [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
-- [ ] The PR title is descriptive enough
+- [ ] The oneline summary has been included [in the wiki](https://github.com/ManimCommunity/manim/wiki/Changelog-for-next-release)

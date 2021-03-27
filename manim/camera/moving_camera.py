@@ -44,7 +44,7 @@ class MovingCamera(Camera):
         **kwargs
     ):
         """
-        Frame is a Mobject, (should almost certainly be a rectangle)
+        frame is a Mobject, (should almost certainly be a rectangle)
         determining which region of space the camera displays
         """
         self.fixed_dimension = fixed_dimension
@@ -69,7 +69,7 @@ class MovingCamera(Camera):
         float
             The height of the frame.
         """
-        return self.frame.height
+        return self.frame.get_height()
 
     @property
     def frame_width(self):
@@ -80,7 +80,7 @@ class MovingCamera(Camera):
         float
             The width of the frame.
         """
-        return self.frame.width
+        return self.frame.get_width()
 
     @property
     def frame_center(self):
@@ -158,9 +158,9 @@ class MovingCamera(Camera):
     # def realign_frame_shape(self):
     #     height, width = self.frame_shape
     #     if self.fixed_dimension == 0:
-    #         self.frame_shape = (height, self.frame.width
+    #         self.frame_shape = (height, self.frame.get_width())
     #     else:
-    #         self.frame_shape = (self.frame.height, width)
+    #         self.frame_shape = (self.frame.get_height(), width)
     #     self.resize_frame_shape(fixed_dimension=self.fixed_dimension)
 
     def get_mobjects_indicating_movement(self):

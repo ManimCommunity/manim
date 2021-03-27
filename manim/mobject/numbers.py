@@ -3,9 +3,6 @@
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 
-import copy
-import uuid
-from ..utils.family import extract_mobject_family_members
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
@@ -114,9 +111,9 @@ class DecimalNumber(VMobject):
         for i, c in enumerate(num_string):
             if c == "-" and len(num_string) > i + 1:
                 self[i].align_to(self[i + 1], UP)
-                self[i].shift(self[i + 1].height * DOWN / 2)
+                self[i].shift(self[i + 1].get_height() * DOWN / 2)
             elif c == ",":
-                self[i].shift(self[i].height * DOWN / 2)
+                self[i].shift(self[i].get_height() * DOWN / 2)
         if self.unit and self.unit.startswith("^"):
             self.unit_sign.align_to(self, UP)
         #
@@ -133,14 +130,16 @@ class DecimalNumber(VMobject):
         - num_decimal_places
         - field_name (e.g. 0 or 0.real)
         """
-        config = {
-            attr: getattr(self, attr)
-            for attr in [
-                "include_sign",
-                "group_with_commas",
-                "num_decimal_places",
+        config = dict(
+            [
+                (attr, getattr(self, attr))
+                for attr in [
+                    "include_sign",
+                    "group_with_commas",
+                    "num_decimal_places",
+                ]
             ]
-        }
+        )
         config.update(kwargs)
         return "".join(
             [
@@ -166,26 +165,12 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number, **config):
-        full_config = {}
+        full_config = dict()
         full_config.update(self.initial_config)
         full_config.update(config)
         new_decimal = DecimalNumber(number, **full_config)
-
-        if hasattr(self, "original_id"):
-            if not hasattr(self, "generated_original_ids"):
-                self.generated_original_ids = []
-            new_submobjects = extract_mobject_family_members(
-                new_decimal, only_those_with_points=True
-            )
-            while len(self.generated_original_ids) < len(new_submobjects):
-                self.generated_original_ids.append(str(uuid.uuid4()))
-            for new_submobject, generated_id in zip(
-                new_submobjects, self.generated_original_ids
-            ):
-                new_submobject.original_id = generated_id
-
         # Make sure last digit has constant height
-        new_decimal.scale(self[-1].height / new_decimal[-1].height)
+        new_decimal.scale(self[-1].get_height() / new_decimal[-1].get_height())
         new_decimal.move_to(self, self.edge_to_fix)
         new_decimal.match_style(self)
 

@@ -54,8 +54,6 @@ __all__ = [
     "Square",
     "RoundedRectangle",
     "Cutout",
-    "Angle",
-    "RightAngle",
 ]
 
 import warnings
@@ -78,7 +76,6 @@ from ..utils.space_ops import get_norm
 from ..utils.space_ops import normalize
 from ..utils.space_ops import rotate_vector
 from ..utils.color import *
-from .. import logger
 
 DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04
@@ -395,35 +392,6 @@ class CurvedDoubleArrow(CurvedArrow):
 
 
 class Circle(Arc):
-    """A circle.
-
-    Parameters
-    ----------
-    color : :class:`~.Colors`, optional
-        The color of the shape.
-    close_new_points : :class:`bool`, optional
-        No purpose.
-    anchors_span_full_range : :class:`bool`, optional
-        No purpose.
-    kwargs : Any
-        Additional arguments to be passed to :class:`Arc`
-
-    Examples
-    --------
-
-    .. manim:: CircleExample
-        :save_last_frame:
-
-        class CircleExample(Scene):
-            def construct(self):
-                circle_1 = Circle(radius=1.0)
-                circle_2 = Circle(radius=1.5, color=GREEN)
-                circle_3 = Circle(radius=1.0, color=BLUE_B, fill_opacity=1)
-
-                circle_group = Group(circle_1, circle_2, circle_3).arrange(buff=1)
-                self.add(circle_group)
-    """
-
     def __init__(
         self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
     ):
@@ -438,43 +406,6 @@ class Circle(Arc):
         )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
-        """Modifies a circle so that it surrounds a given mobject.
-
-        Parameters
-        ----------
-        mobject : :class:`~.Mobject`
-            The mobject that the circle will be surrounding.
-        dim_to_match : :class:`int`, optional
-        buffer_factor :  :class:`float`, optional
-            Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject.
-        stretch : :class:`bool`, optional
-            Stretches the circle to fit more tightly around the mobject. Note: Does not work with :class:`Line`
-
-        Examples
-        --------
-
-        .. manim:: CircleSurround
-            :save_last_frame:
-
-            class CircleSurround(Scene):
-                def construct(self):
-                    triangle1 = Triangle()
-                    circle1 = Circle().surround(triangle1)
-                    group1 = Group(triangle1,circle1) # treat the two mobjects as one
-
-                    line2 = Line()
-                    circle2 = Circle().surround(line2, buffer_factor=2.0)
-                    group2 = Group(line2,circle2)
-
-                    # buffer_factor < 1, so the circle is smaller than the square
-                    square3 = Square()
-                    circle3 = Circle().surround(square3, buffer_factor=0.5)
-                    group3 = Group(square3, circle3)
-
-                    group = Group(group1, group2, group3).arrange(buff=1)
-                    self.add(group)
-        """
-
         # Ignores dim_to_match and stretch; result will always be a circle
         # TODO: Perhaps create an ellipse class to handle single-dimension stretching
 
@@ -482,75 +413,15 @@ class Circle(Arc):
         # TODO: Figure out and fix
         self.replace(mobject, dim_to_match, stretch)
 
-        self.width = np.sqrt(mobject.width ** 2 + mobject.height ** 2)
+        self.set_width(np.sqrt(mobject.get_width() ** 2 + mobject.get_height() ** 2))
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle):
-        """Returns the position of a point on the circle.
-
-        Parameters
-        ----------
-        angle : class: `float`
-            The angle of the point along the circle in radians.
-
-        Examples
-        --------
-
-        .. manim:: PointAtAngleExample
-            :save_last_frame:
-
-            class PointAtAngleExample(Scene):
-                def construct(self):
-                    circle = Circle(radius=2.0)
-                    p1 = circle.point_at_angle(PI/2)
-                    p2 = circle.point_at_angle(270*DEGREES)
-
-                    s1 = Square(side_length=0.25).move_to(p1)
-                    s2 = Square(side_length=0.25).move_to(p2)
-                    self.add(circle, s1, s2)
-
-        Returns
-        -------
-        :class:`numpy.ndarray`
-            The location of the point along the circle's circumference.
-        """
-
         start_angle = angle_of_vector(self.points[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
 
 
 class Dot(Circle):
-    """A circle with a very small radius.
-
-    Parameters
-    ----------
-    point : Union[:class:`list`, :class:`numpy.ndarray`], optional
-        The location of the dot.
-    radius : Optional[:class:`float`]
-        The radius of the dot.
-    stroke_width : :class:`float`, optional
-        The thickness of the outline of the dot.
-    fill_opacity : :class:`float`, optional
-        The opacity of the dot's fill_colour
-    color : :class:`~.Colors`, optional
-        The color of the dot.
-    kwargs : Any
-        Additional arguments to be passed to :class:`Circle`
-
-    Examples
-    --------
-
-    .. manim:: DotExample
-        :save_last_frame:
-
-        class DotExample(Scene):
-            def construct(self):
-                dot1 = Dot(point=LEFT, radius=0.08)
-                dot2 = Dot(point=ORIGIN)
-                dot3 = Dot(point=RIGHT)
-                self.add(dot1,dot2,dot3)
-    """
-
     def __init__(
         self,
         point=ORIGIN,
@@ -572,13 +443,11 @@ class Dot(Circle):
 
 
 class SmallDot(Dot):
-    """Deprecated - A dot with small radius"""
+    """
+    A dot with small radius
+    """
 
     def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
-        logger.warning(
-            "SmallDot has been deprecated and will be removed in a future release. "
-            "Use Dot instead."
-        )
         Dot.__init__(self, radius=radius, **kwargs)
 
 
@@ -650,7 +519,9 @@ class LabeledDot(Dot):
             rendered_label = label
 
         if radius is None:
-            radius = 0.1 + max(rendered_label.width, rendered_label.height) / 2
+            radius = (
+                0.1 + max(rendered_label.get_width(), rendered_label.get_height()) / 2
+            )
         Dot.__init__(self, radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
         self.add(rendered_label)
@@ -659,8 +530,10 @@ class LabeledDot(Dot):
 class Ellipse(Circle):
     def __init__(self, width=2, height=1, **kwargs):
         Circle.__init__(self, **kwargs)
-        self.stretch_to_fit_width(width)
-        self.stretch_to_fit_height(height)
+        self.width = width
+        self.height = height
+        self.set_width(self.width, stretch=True)
+        self.set_height(self.height, stretch=True)
 
 
 class AnnularSector(Arc):
@@ -915,10 +788,11 @@ class TangentLine(Line):
 
 class Elbow(VMobject):
     def __init__(self, width=0.2, angle=0, **kwargs):
+        self.width = width
         self.angle = angle
         VMobject.__init__(self, **kwargs)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
-        self.scale_to_fit_width(width, about_point=ORIGIN)
+        self.set_width(self.width, about_point=ORIGIN)
         self.rotate(self.angle, about_point=ORIGIN)
 
 
@@ -982,7 +856,6 @@ class Arrow(Line):
 
         if scale_tips:
             VMobject.scale(self, factor, **kwargs)
-            self.set_stroke_width_from_length()
             return self
 
         has_tip = self.has_tip()
@@ -1038,37 +911,14 @@ class DoubleArrow(Arrow):
 
 
 class CubicBezier(VMobject):
-    """
-    Example
-    -------
-
-    .. manim:: BezierSplineExample
-        :save_last_frame:
-
-        class BezierSplineExample(Scene):
-            def construct(self):
-                p1 = np.array([-3, 1, 0])
-                p1b = p1 + [1, 0, 0]
-                d1 = Dot(point=p1).set_color(BLUE)
-                l1 = Line(p1, p1b)
-                p2 = np.array([3, -1, 0])
-                p2b = p2 - [1, 0, 0]
-                d2 = Dot(point=p2).set_color(RED)
-                l2 = Line(p2, p2b)
-                bezier = CubicBezier(p1b, p1b + 3 * RIGHT, p2b - 3 * RIGHT, p2b)
-                self.add(l1, d1, l2, d2, bezier)
-
-    """
-
-    def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):
+    def __init__(self, points, **kwargs):
         VMobject.__init__(self, **kwargs)
-        self.set_points([start_anchor, start_handle, end_handle, end_anchor])
+        self.set_points(points)
 
 
 class Polygon(VMobject):
     def __init__(self, *vertices, color=BLUE, **kwargs):
         VMobject.__init__(self, color=color, **kwargs)
-        # There are actually four corners, and the first one is repeated twice to form the four vertices.
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
@@ -1193,7 +1043,7 @@ class ArcPolygon(VMobject):
                                             {'angle': 20*DEGREES, 'color': BLUE},
                                             {'radius': 1}])
                 ap_group = VGroup(ap1, ap2, ap3, ap4).arrange()
-                self.play(*[Create(ap) for ap in [ap1, ap2, ap3, ap4]])
+                self.play(*[ShowCreation(ap) for ap in [ap1, ap2, ap3, ap4]])
                 self.wait()
 
     For further examples see :class:`ArcPolygonFromArcs`.
@@ -1294,7 +1144,7 @@ class ArcPolygonFromArcs(VMobject):
     after the arcpolygon has been initialized.
 
     Also both the arcs contained in an :class:`~.ArcPolygonFromArcs`, as well as the
-    arcpolygon itself are drawn, which affects draw time in :class:`~.Create`
+    arcpolygon itself are drawn, which affects draw time in :class:`~.ShowCreation`
     for example. In most cases the arcs themselves don't
     need to be drawn, in which case they can be passed as invisible.
 
@@ -1366,38 +1216,6 @@ class Triangle(RegularPolygon):
 
 
 class Rectangle(Polygon):
-    """A quadrilateral with two sets of parallel sides.
-
-    Parameters
-    ----------
-    color : :class:`~.Colors`, optional
-        The color of the rectangle.
-    height : :class:`float`, optional
-        The vertical height of the rectangle.
-    width : :class:`float`, optional
-        The horizontal width of the rectangle.
-    mark_paths_closed : :class:`bool`, optional
-        No purpose.
-    close_new_points : :class:`bool`, optional
-        No purpose.
-    kwargs : Any
-        Additional arguments to be passed to :class:`Polygon`
-
-    Examples
-    ----------
-
-    .. manim:: RectangleExample
-        :save_last_frame:
-
-        class RectangleExample(Scene):
-            def construct(self):
-                rect1 = Rectangle(width=4.0, height=2.0)
-                rect2 = Rectangle(width=1.0, height=4.0)
-
-                rects = Group(rect1,rect2).arrange(buff=1)
-                self.add(rects)
-    """
-
     def __init__(
         self,
         color=WHITE,
@@ -1407,37 +1225,16 @@ class Rectangle(Polygon):
         close_new_points=True,
         **kwargs
     ):
+        self.height = height
+        self.width = width
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
         Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
-        self.stretch_to_fit_width(width)
-        self.stretch_to_fit_height(height)
+        self.set_width(self.width, stretch=True)
+        self.set_height(self.height, stretch=True)
 
 
 class Square(Rectangle):
-    """A rectangle with equal side lengths.
-
-    Parameters
-    ----------
-    side_length : :class:`float`, optional
-        The length of the sides of the square.
-    kwargs : Any
-        Additional arguments to be passed to :class:`Square`
-
-    Examples
-    --------
-
-    .. manim:: SquareExample
-        :save_last_frame:
-
-        class SquareExample(Scene):
-            def construct(self):
-                square_1 = Square(side_length=2.0).shift(DOWN)
-                square_2 = Square(side_length=1.0).next_to(square_1, direction=UP)
-                square_3 = Square(side_length=0.5).next_to(square_2, direction=UP)
-                self.add(square_1, square_2, square_3)
-    """
-
     def __init__(self, side_length=2.0, **kwargs):
         self.side_length = side_length
         Rectangle.__init__(self, height=side_length, width=side_length, **kwargs)
@@ -1480,8 +1277,8 @@ class ArrowTip(VMobject):
         ...     def __init__(self, **kwargs):
         ...         RegularPolygon.__init__(self, n=5, **kwargs)
         ...         length = 0.35
-        ...         self.width = length
-        ...         self.stretch_to_fit_height(length)
+        ...         self.set_width(length)
+        ...         self.set_height(length, stretch=True)
         >>> arr = Arrow(np.array([-2, -2, 0]), np.array([2, 2, 0]),
         ...             tip_shape=MyCustomArrowTip)
         >>> isinstance(arr.tip, RegularPolygon)
@@ -1489,7 +1286,7 @@ class ArrowTip(VMobject):
         >>> from manim import Scene
         >>> class CustomTipExample(Scene):
         ...     def construct(self):
-        ...         self.play(Create(arr))
+        ...         self.play(ShowCreation(arr))
 
     Using a class inherited from :class:`ArrowTip` to get a non-filled
     tip is a shorthand to manually specifying the arrow tip style as follows::
@@ -1620,8 +1417,8 @@ class ArrowTriangleTip(ArrowTip, Triangle):
             start_angle=start_angle,
             **kwargs
         )
-        self.width = length
-        self.stretch_to_fit_height(length)
+        self.set_width(length)
+        self.set_height(length, stretch=True)
 
 
 class ArrowTriangleFilledTip(ArrowTriangleTip):
@@ -1651,8 +1448,8 @@ class ArrowCircleTip(ArrowTip, Circle):
         Circle.__init__(
             self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
         )
-        self.width = length
-        self.stretch_to_fit_height(length)
+        self.set_width(length)
+        self.set_height(length, stretch=True)
 
 
 class ArrowCircleFilledTip(ArrowCircleTip):
@@ -1683,8 +1480,8 @@ class ArrowSquareTip(ArrowTip, Square):
             side_length=length,
             **kwargs
         )
-        self.width = length
-        self.stretch_to_fit_height(length)
+        self.set_width(length)
+        self.set_height(length, stretch=True)
 
 
 class ArrowSquareFilledTip(ArrowSquareTip):
@@ -1740,243 +1537,3 @@ class Cutout(VMobject):
             sub_direction = "CW"
         for mobject in mobjects:
             self.append_points(mobject.force_direction(sub_direction).get_points())
-
-
-class Angle(Arc, Elbow):
-    """A circular arc or elbow-type mobject representing an angle of two lines.
-
-    Parameters
-    ----------
-    line1 : :class:`Line`
-        The first line.
-    line2 : :class:`Line`
-        The second line.
-    radius : :class:`float`
-        The radius of the :class:`Arc`.
-    quadrant : Sequence[:class:`int`]
-        A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
-        The first value indicates whether to anchor the arc on the first line closer to the end point (1)
-        or start point (-1), and the second value functions similarly for the end (1) or start (-1) of the second line.
-        Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
-    other_angle : :class:`bool`
-        Toggles between the two possible angles defined by two points and an arc center. If set to
-        False (default), the arc will always go counterclockwise from the point on line1 until
-        the point on line2 is reached. If set to True, the angle will go clockwise from line1 to line2.
-    dot : :class:`bool`
-        Allows for a :class:`Dot` in the arc. Mainly used as an convention to indicate a right angle.
-        The dot can be customized in the next three parameters.
-    dot_radius : :class:`float`
-        The radius of the :class:`Dot`. If not specified otherwise, this radius will be 1/10 of the arc radius.
-    dot_distance : :class:`float`
-        Relative distance from the center to the arc: 0 puts the dot in the center and 1 on the arc itself.
-    dot_color : :class:`~.Colors`
-        The color of the :class:`Dot`.
-    elbow : :class:`bool`
-        Produces an elbow-type mobject indicating a right angle, see :class:`RightAngle` for more information
-        and a shorthand.
-    **kwargs
-        Further keyword arguments that are passed to the constructor of :class:`Arc` or :class:`Elbow`.
-
-    Examples
-    --------
-    The first example shows some right angles with a dot in the middle while the second example shows
-    all 8 possible angles defined by two lines.
-
-    .. manim:: RightArcAngleExample
-        :save_last_frame:
-
-        class RightArcAngleExample(Scene):
-            def construct(self):
-                line1 = Line( LEFT, RIGHT )
-                line2 = Line( DOWN, UP )
-                rightarcangles = [
-                    Angle(line1, line2, dot=True),
-                    Angle(line1, line2, radius=0.4, quadrant=(1,-1), dot=True, other_angle=True),
-                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.04, other_angle=True),
-                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.08),
-                ]
-                line_list = VGroup( *[VGroup() for k in range(4)] )
-                for k in range(4):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( rightarcangles[k] )
-                line_list.arrange_in_grid(buff=1.5)
-                self.add(
-                    line_list
-                )
-
-    .. manim:: AngleExample
-        :save_last_frame:
-
-        class AngleExample(Scene):
-            def construct(self):
-                line1 = Line( LEFT + (1/3) * UP, RIGHT + (1/3) * DOWN )
-                line2 = Line( DOWN + (1/3) * RIGHT, UP + (1/3) * LEFT )
-                angles = [
-                    Angle(line1, line2),
-                    Angle(line1, line2, radius=0.4, quadrant=(1,-1), other_angle=True),
-                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, other_angle=True),
-                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED),
-                    Angle(line1, line2, other_angle=True),
-                    Angle(line1, line2, radius=0.4, quadrant=(1,-1)),
-                    Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
-                    Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
-                ]
-                line_list = VGroup( *[VGroup() for k in range(8)] )
-                for k in range(8):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( angles[k] )
-                line_list.arrange_in_grid(n_rows=2, n_cols=4, buff=1.5)
-                self.add(
-                    line_list
-                )
-
-    """
-
-    def __init__(
-        self,
-        line1,
-        line2,
-        radius=None,
-        quadrant=(1, 1),
-        other_angle=False,
-        dot=False,
-        dot_radius=None,
-        dot_distance=0.55,
-        dot_color=WHITE,
-        elbow=False,
-        **kwargs
-    ):
-        self.quadrant = quadrant
-        self.dot_distance = dot_distance
-        self.elbow = elbow
-        inter = line_intersection(
-            [line1.get_start(), line1.get_end()], [line2.get_start(), line2.get_end()]
-        )
-
-        if radius is None:
-            if quadrant[0] == 1:
-                dist_1 = np.linalg.norm(line1.get_end() - inter)
-            else:
-                dist_1 = np.linalg.norm(line1.get_start() - inter)
-            if quadrant[1] == 1:
-                dist_2 = np.linalg.norm(line2.get_end() - inter)
-            else:
-                dist_2 = np.linalg.norm(line2.get_start() - inter)
-            if np.minimum(dist_1, dist_2) < 0.6:
-                radius = (2 / 3) * np.minimum(dist_1, dist_2)
-            else:
-                radius = 0.4
-        else:
-            self.radius = radius
-
-        anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
-        anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
-
-        if elbow:
-            anchor_middle = (
-                inter
-                + quadrant[0] * radius * line1.get_unit_vector()
-                + quadrant[1] * radius * line2.get_unit_vector()
-            )
-            Elbow.__init__(self, **kwargs)
-            self.set_points_as_corners([anchor_angle_1, anchor_middle, anchor_angle_2])
-        else:
-            angle_1 = angle_of_vector(anchor_angle_1 - inter)
-            angle_2 = angle_of_vector(anchor_angle_2 - inter)
-
-            if not other_angle:
-                start_angle = angle_1
-                if angle_2 > angle_1:
-                    angle_fin = angle_2 - angle_1
-                else:
-                    angle_fin = 2 * np.pi - (angle_1 - angle_2)
-            else:
-                start_angle = angle_1
-                if angle_2 < angle_1:
-                    angle_fin = -angle_1 + angle_2
-                else:
-                    angle_fin = -2 * np.pi + (angle_2 - angle_1)
-
-            Arc.__init__(
-                self,
-                radius=radius,
-                angle=angle_fin,
-                start_angle=start_angle,
-                arc_center=inter,
-                **kwargs
-            )
-            if dot:
-                if dot_radius is None:
-                    dot_radius = radius / 10
-                else:
-                    self.dot_radius = dot_radius
-                right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
-                dot_anchor = (
-                    inter
-                    + (self.get_center() - inter)
-                    / np.linalg.norm(self.get_center() - inter)
-                    * radius
-                    * dot_distance
-                )
-                right_dot.move_to(dot_anchor)
-                self.add(right_dot)
-
-    def generate_points(self):
-        if self.elbow:
-            Elbow.generate_points(self)
-        else:
-            Arc.generate_points(self)
-
-
-class RightAngle(Angle):
-    """An elbow-type mobject representing a right angle between two lines.
-
-    Parameters
-    ----------
-    line1 : :class:`Line`
-        The first line.
-    line2 : :class:`Line`
-        The second line.
-    length : :class:`float`
-        The length of the arms.
-    **kwargs
-        Further keyword arguments that are passed to the constructor of :class:`Angle`.
-
-    Examples
-    --------
-
-    .. manim:: RightAngleExample
-        :save_last_frame:
-
-        class RightAngleExample(Scene):
-            def construct(self):
-                line1 = Line( LEFT, RIGHT )
-                line2 = Line( DOWN, UP )
-                rightangles = [
-                    RightAngle(line1, line2),
-                    RightAngle(line1, line2, length=0.4, quadrant=(1,-1)),
-                    RightAngle(line1, line2, length=0.5, quadrant=(-1,1), stroke_width=8),
-                    RightAngle(line1, line2, length=0.7, quadrant=(-1,-1), color=RED),
-                ]
-                line_list = VGroup( *[VGroup() for k in range(4)] )
-                for k in range(4):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( rightangles[k] )
-                line_list.arrange_in_grid(buff=1.5)
-                self.add(
-                    line_list
-                )
-
-    """
-
-    def __init__(self, line1, line2, length=None, **kwargs):
-        Angle.__init__(self, line1, line2, radius=length, elbow=True, **kwargs)

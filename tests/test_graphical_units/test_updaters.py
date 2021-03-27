@@ -30,18 +30,7 @@ class UpdateSceneDuringAnimationTest(Scene):
             self.add(Square())
 
         s = Circle().add_updater(f)
-        self.play(Create(s))
-
-
-class LastFrameWhenClearedTest(Scene):
-    def construct(self):
-        dot = Dot()
-        square = Square()
-        square.add_updater(lambda m: m.move_to(dot, UL))
-        self.add(square)
-        self.play(dot.animate.shift(UP * 2), rate_func=linear)
-        square.clear_updaters()
-        self.wait()
+        self.play(ShowCreation(s))
 
 
 MODULE_NAME = "updaters"

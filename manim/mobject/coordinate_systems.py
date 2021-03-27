@@ -14,7 +14,7 @@ from ..mobject.geometry import Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
+from ..utils.config_ops import merge_dicts_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 from ..utils.color import LIGHT_GREY, WHITE, BLUE_D, BLUE
@@ -28,12 +28,16 @@ class CoordinateSystem:
     Abstract class for Axes and NumberPlane
     """
 
-    def __init__(self, x_min=None, x_max=None, y_min=None, y_max=None, dim=2):
+    def __init__(self, dim=2):
         self.dimension = dim
-        self.x_min = -config["frame_x_radius"] if x_min is None else x_min
-        self.x_max = config["frame_x_radius"] if x_max is None else x_max
-        self.y_min = -config["frame_y_radius"] if y_min is None else y_min
-        self.y_max = config["frame_y_radius"] if y_max is None else y_max
+        if not hasattr(self, "x_min"):
+            self.x_min = -config["frame_x_radius"]
+        if not hasattr(self, "x_max"):
+            self.x_max = config["frame_x_radius"]
+        if not hasattr(self, "y_min"):
+            self.y_min = -config["frame_y_radius"]
+        if not hasattr(self, "y_max"):
+            self.y_max = config["frame_y_radius"]
 
     def coords_to_point(self, *coords):
         raise NotImplementedError()
@@ -128,41 +132,29 @@ class CoordinateSystem:
 class Axes(VGroup, CoordinateSystem):
     def __init__(
         self,
-        x_min=None,
-        x_max=None,
-        y_min=None,
-        y_max=None,
         axis_config=None,
         x_axis_config=None,
-        y_axis_config=None,
+        y_axis_config={"label_direction": LEFT},
         center_point=ORIGIN,
         **kwargs
     ):
-        CoordinateSystem.__init__(
-            self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max
-        )
-        VGroup.__init__(self, **kwargs)
-
-        self.axis_config = {
-            "color": LIGHT_GREY,
-            "include_tip": True,
-            "exclude_zero_from_default_numbers": True,
-        }
-        self.x_axis_config = {"x_min": self.x_min, "x_max": self.x_max}
-        self.y_axis_config = {
-            "x_min": self.y_min,
-            "x_max": self.y_max,
-            "label_direction": LEFT,
-            "rotation": 90 * DEGREES,
-        }
-
-        self.update_default_configs(
-            (self.axis_config, self.x_axis_config, self.y_axis_config),
-            (axis_config, x_axis_config, y_axis_config),
-        )
+        if axis_config is None:
+            axis_config = {
+                "color": LIGHT_GREY,
+                "include_tip": True,
+                "exclude_zero_from_default_numbers": True,
+            }
+        self.axis_config = axis_config
+        if x_axis_config is None:
+            x_axis_config = {}
+        self.x_axis_config = x_axis_config
+        self.y_axis_config = y_axis_config
         self.center_point = center_point
-        self.x_axis = self.create_axis(self.x_axis_config)
-        self.y_axis = self.create_axis(self.y_axis_config)
+        CoordinateSystem.__init__(self)
+        VGroup.__init__(self, **kwargs)
+        self.x_axis = self.create_axis(self.x_min, self.x_max, self.x_axis_config)
+        self.y_axis = self.create_axis(self.y_min, self.y_max, self.y_axis_config)
+        self.y_axis.rotate(90 * DEGREES, about_point=ORIGIN)
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
@@ -170,14 +162,13 @@ class Axes(VGroup, CoordinateSystem):
         self.add(*self.axes)
         self.shift(self.center_point)
 
-    @staticmethod
-    def update_default_configs(default_configs, passed_configs):
-        for default_config, passed_config in zip(default_configs, passed_configs):
-            if passed_config is not None:
-                update_dict_recursively(default_config, passed_config)
-
-    def create_axis(self, axis_config):
-        return NumberLine(**merge_dicts_recursively(self.axis_config, axis_config))
+    def create_axis(self, min_val, max_val, axis_config):
+        new_config = merge_dicts_recursively(
+            self.axis_config,
+            {"x_min": min_val, "x_max": max_val},
+            axis_config,
+        )
+        return NumberLine(**new_config)
 
     def coords_to_point(self, *coords):
         origin = self.x_axis.number_to_point(0)
@@ -217,33 +208,33 @@ class Axes(VGroup, CoordinateSystem):
 class ThreeDAxes(Axes):
     def __init__(
         self,
-        x_min=-5.5,
-        x_max=5.5,
-        y_min=-5.5,
-        y_max=5.5,
+        z_axis_config=None,
         z_min=-3.5,
         z_max=3.5,
-        z_axis_config=None,
         z_normal=DOWN,
         num_axis_pieces=20,
         light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
         **kwargs
     ):
-        Axes.__init__(
-            self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, **kwargs
-        )
+        if z_axis_config is None:
+            z_axis_config = {}
+        self.z_axis_config = z_axis_config
         self.z_min = z_min
         self.z_max = z_max
-        self.z_axis_config = {"x_min": self.z_min, "x_max": self.z_max}
-        self.update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_normal = z_normal
         self.num_axis_pieces = num_axis_pieces
         self.light_source = light_source
+        self.x_min = -5.5
+        self.x_max = 5.5
+        self.y_min = -5.5
+        self.y_max = 5.5
+        Axes.__init__(self, **kwargs)
         self.dimension = 3
-        z_axis = self.z_axis = self.create_axis(self.z_axis_config)
-        z_axis.shift(self.center_point)
-        z_axis.rotate_about_zero(-np.pi / 2, UP)
-        z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
+        z_axis = self.z_axis = self.create_axis(
+            self.z_min, self.z_max, self.z_axis_config
+        )
+        z_axis.rotate(-np.pi / 2, UP, about_point=ORIGIN)
+        z_axis.rotate(angle_of_vector(self.z_normal), OUT, about_point=ORIGIN)
         self.axes.add(z_axis)
         self.add(z_axis)
 
@@ -285,26 +276,28 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions=True,
         **kwargs
     ):
-        self.axis_config = {
-            "stroke_color": WHITE,
-            "stroke_width": 2,
-            "include_ticks": False,
-            "include_tip": False,
-            "line_to_number_buff": SMALL_BUFF,
-            "label_direction": DR,
-            "number_scale_val": 0.5,
-        }
-        self.y_axis_config = {"label_direction": DR}
-        self.background_line_style = {
-            "stroke_color": BLUE_D,
-            "stroke_width": 2,
-            "stroke_opacity": 1,
-        }
+        if axis_config is None:
+            axis_config = {
+                "stroke_color": WHITE,
+                "stroke_width": 2,
+                "include_ticks": False,
+                "include_tip": False,
+                "line_to_number_buff": SMALL_BUFF,
+                "label_direction": DR,
+                "number_scale_val": 0.5,
+            }
+        self.axis_config = axis_config
+        if y_axis_config is None:
+            y_axis_config = {"label_direction": DR}
+        self.y_axis_config = y_axis_config
 
-        self.update_default_configs(
-            (self.axis_config, self.y_axis_config, self.background_line_style),
-            (axis_config, y_axis_config, background_line_style),
-        )
+        if background_line_style is None:
+            background_line_style = {
+                "stroke_color": BLUE_D,
+                "stroke_width": 2,
+                "stroke_opacity": 1,
+            }
+        self.background_line_style = background_line_style
 
         # Defaults to a faded version of line_config
         self.faded_line_style = faded_line_style

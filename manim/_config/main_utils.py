@@ -3,8 +3,7 @@
 import os
 import argparse
 import typing
-import sys
-from manim import constants, __version__
+from manim import constants
 
 
 __all__ = ["parse_args"]
@@ -110,8 +109,6 @@ def parse_args(args: list) -> argparse.Namespace:
         return _parse_args_cfg_subcmd(args)
     elif subcmd == "plugins":
         return _parse_args_plugins(args)
-    elif args[1] == "--version":
-        sys.exit()
     # elif subcmd == some_other_future_subcmd:
     #     return _parse_args_some_other_subcmd(args)
     elif subcmd is None:
@@ -123,7 +120,7 @@ def _parse_args_cfg_subcmd(args: list) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Animation engine for explanatory math videos",
         prog="manim cfg",
-        epilog="Made with <3 by the ManimCommunity devs",
+        epilog="Made with <3 by the manim community devs",
     )
     subparsers = parser.add_subparsers(help="subcommand", dest="subcmd")
 
@@ -161,7 +158,7 @@ def _parse_args_plugins(args: list) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Utility command for managing plugins",
         prog="manim plugins",
-        epilog="Made with <3 by the ManimCommunity devs",
+        epilog="Made with <3 by the manim community devs",
         usage=("%(prog)s -h -l"),
     )
 
@@ -185,7 +182,7 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
             "%(prog)s file [flags] [scene [scene ...]]\n"
             "       %(prog)s {cfg,init,plugins} [opts]\n"
         ),
-        epilog="Made with <3 by the ManimCommunity devs",
+        epilog="Made with <3 by the manim community devs",
     )
 
     parser.add_argument(
@@ -411,28 +408,15 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "--use_opengl_renderer",
-        help="Render animations using the OpenGL renderer",
+        "--use_js_renderer",
+        help="Render animations using the javascript frontend",
         action="store_const",
         const=True,
     )
 
     parser.add_argument(
-        "--use_webgl_renderer",
-        help="Render animations using the WebGL frontend",
-        action="store_const",
-        const=True,
-    )
-
-    parser.add_argument(
-        "--webgl_renderer_path",
-        help="Path to the WebGL frontend",
-    )
-
-    parser.add_argument(
-        "--webgl_updater_fps",
-        type=int,
-        help="Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend",
+        "--js_renderer_path",
+        help="Path to the javascript frontend",
     )
 
     # Specify the manim.cfg file
@@ -459,12 +443,6 @@ def _parse_args_no_subcmd(args: list) -> argparse.Namespace:
             "the latter is specified in the config"
         ),
         choices=constants.VERBOSITY_CHOICES,
-    )
-
-    parser.add_argument(
-        "--version",
-        action="store_true",
-        help="Print the current version of Manim you are using",
     )
 
     # Specify if the progress bar should be displayed

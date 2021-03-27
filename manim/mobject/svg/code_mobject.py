@@ -52,9 +52,6 @@ class Code(VGroup):
     ----------
     file_name : :class:`str`
         Name of the code file to display.
-    code : :class:`str`
-        If ``file_name`` is not specified, a code string can be
-        passed directly.
     tab_width : :class:`int`, optional
         Number of space characters corresponding to a tab character. Defaults to 3.
     line_spacing : :class:`float`, optional
@@ -118,26 +115,13 @@ class Code(VGroup):
             language="cpp",
         )
 
-    We can also render code passed as a string (but note that
-    the language has to be specified in this case):
+    Remove unwanted invisible characters::
 
-    .. manim:: CodeFromString
-        :save_last_frame:
+        self.play(Transform(remove_invisible_chars(listing.code.chars[0:2]),
+                            remove_invisible_chars(listing.code.chars[3][0:3])))
 
-        class CodeFromString(Scene):
-            def construct(self):
-                code = '''from manim import Scene, Square
-
-        class FadeInSquare(Scene):
-            def construct(self):
-                s = Square()
-                self.play(FadeIn(s))
-                self.play(s.animate.scale(2))
-                self.wait()
-        '''
-                rendered_code = Code(code=code, tab_width=4, background="window",
-                                    language="Python", font="Monospace")
-                self.add(rendered_code)
+        remove_invisible_chars(listing.code)
+        remove_invisible_chars(listing)
 
     """
 
@@ -152,7 +136,6 @@ class Code(VGroup):
     def __init__(
         self,
         file_name=None,
-        code=None,
         tab_width=3,
         line_spacing=0.3,
         scale_factor=0.5,
@@ -194,20 +177,9 @@ class Code(VGroup):
         self.language = language
         self.generate_html_file = generate_html_file
 
-        self.file_path = None
-        self.file_name = file_name
-        if self.file_name:
-            self.ensure_valid_file()
-            with open(self.file_path, "r") as f:
-                self.code_string = f.read()
-        elif code:
-            self.code_string = code
-        else:
-            raise ValueError(
-                "Neither a code file nor a code string have been specified."
-            )
-        if isinstance(self.style, str):
-            self.style = self.style.lower()
+        self.file_name = file_name or self.file_name
+        self.ensure_valid_file()
+        self.style = self.style.lower()
         self.gen_html_string()
         strati = self.html_string.find("background:")
         self.background_color = self.html_string[strati + 12 : strati + 19]
@@ -238,8 +210,8 @@ class Code(VGroup):
                 foreground = VGroup(self.code, self.line_numbers)
             else:
                 foreground = self.code
-            height = foreground.height + 0.1 * 3 + 2 * self.margin
-            width = foreground.width + 0.1 * 3 + 2 * self.margin
+            height = foreground.get_height() + 0.1 * 3 + 2 * self.margin
+            width = foreground.get_width() + 0.1 * 3 + 2 * self.margin
 
             rect = RoundedRectangle(
                 corner_radius=self.corner_radius,
@@ -262,7 +234,7 @@ class Code(VGroup):
             )
 
             self.background_mobject = VGroup(rect, buttons)
-            x = (height - foreground.height) / 2 - 0.1 * 3
+            x = (height - foreground.get_height()) / 2 - 0.1 * 3
             self.background_mobject.shift(foreground.get_center())
             self.background_mobject.shift(UP * x)
         if self.insert_line_no:
@@ -293,7 +265,7 @@ class Code(VGroup):
                 return
         error = (
             f"From: {os.getcwd()}, could not find {self.file_name} at either "
-            + f"of these locations: {possible_paths}"
+            + "of these locations: {possible_paths}"
         )
         raise IOError(error)
 
@@ -310,7 +282,7 @@ class Code(VGroup):
             number = str(self.line_no_from + line_no)
             line_numbers_array.append(number)
         line_numbers = Paragraph(
-            *list(line_numbers_array),
+            *[i for i in line_numbers_array],
             line_spacing=self.line_spacing,
             alignment="right",
             font=self.font,
@@ -336,7 +308,7 @@ class Code(VGroup):
                 line_str = line_str + self.code_json[line_no][word_index][0]
             lines_text.append(self.tab_spaces[line_no] * "\t" + line_str)
         code = Paragraph(
-            *list(lines_text),
+            *[i for i in lines_text],
             line_spacing=self.line_spacing,
             tab_width=self.tab_width,
             font=self.font,
@@ -356,8 +328,11 @@ class Code(VGroup):
 
     def gen_html_string(self):
         """Function to generate html string with code highlighted and stores in variable html_string."""
+        file = open(self.file_path, "r")
+        code_str = file.read()
+        file.close()
         self.html_string = hilite_me(
-            self.code_string,
+            code_str,
             self.language,
             self.style,
             self.insert_line_no,
@@ -558,13 +533,9 @@ def hilite_me(
         cssstyles=defstyles + divstyles,
         prestyles="margin: 0",
     )
-    if language is None and file_path:
+    if language is None:
         lexer = guess_lexer_for_filename(file_path, code)
         html = highlight(code, lexer, formatter)
-    elif language is None:
-        raise ValueError(
-            "The code language has to be specified when rendering a code string"
-        )
     else:
         html = highlight(code, get_lexer_by_name(language, **{}), formatter)
     if insert_line_no:
@@ -597,8 +568,8 @@ def insert_line_numbers_in_html(html, line_no_from):
 
     html = html.replace(pre_close, "</pre></td></tr></table>")
     numbers = range(line_no_from, line_no_from + pre.count("\n") + 1)
-    format_lines = "%" + str(len(str(numbers[-1]))) + "i"
-    lines = "\n".join(format_lines % i for i in numbers)
+    format = "%" + str(len(str(numbers[-1]))) + "i"
+    lines = "\n".join(format % i for i in numbers)
     html = html.replace(
         pre_open, "<table><tr><td>" + pre_open + lines + "</pre></td><td>" + pre_open
     )

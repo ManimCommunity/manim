@@ -261,7 +261,7 @@ class StreamLines(VGroup):
         start_points = self.get_start_points(**self.start_points_generator_config)
         for point in start_points:
             points = [point]
-            for _ in np.arange(0, self.virtual_time, dt):
+            for t in np.arange(0, self.virtual_time, dt):
                 last_point = points[-1]
                 points.append(last_point + dt * func(last_point))
                 if get_norm(last_point) > self.cutoff_norm:

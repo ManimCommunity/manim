@@ -17,7 +17,7 @@ r"""Animate the display or removal of a mobject from a scene.
             VGroup(s5, s6, s7).set_x(0).arrange(buff=2.6).shift(2 * DOWN)
             t1 = Text("Write").scale(0.5).next_to(s1, UP)
             t2 = Text("AddTextLetterByLetter").scale(0.5).next_to(s2, UP)
-            t3 = Text("Create").scale(0.5).next_to(s3, UP)
+            t3 = Text("ShowCreation").scale(0.5).next_to(s3, UP)
             t4 = Text("Uncreate").scale(0.5).next_to(s4, UP)
             t5 = Text("DrawBorderThenFill").scale(0.5).next_to(s5, UP)
             t6 = Text("ShowIncreasingSubsets").scale(0.45).next_to(s6, UP)
@@ -43,7 +43,7 @@ r"""Animate the display or removal of a mobject from a scene.
                 Write(texts[0]),
                 AddTextLetterByLetter(texts[1]),
                 # mobject creation
-                Create(objs[0]),
+                ShowCreation(objs[0]),
                 Uncreate(objs[1]),
                 DrawBorderThenFill(objs[2]),
                 ShowIncreasingSubsets(objs[3]),
@@ -59,11 +59,9 @@ r"""Animate the display or removal of a mobject from a scene.
 __all__ = [
     "ShowPartial",
     "ShowCreation",
-    "Create",
     "Uncreate",
     "DrawBorderThenFill",
     "Write",
-    "Unwrite",
     "ShowIncreasingSubsets",
     "AddTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
@@ -76,8 +74,6 @@ import typing
 
 import numpy as np
 from colour import Color
-from .. import logger
-
 
 if typing.TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
@@ -86,7 +82,6 @@ from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
 
@@ -101,12 +96,12 @@ class ShowPartial(Animation):
 
     See Also
     --------
-    :class:`Create`, :class:`~.ShowPassingFlash`
+    :class:`ShowCreation`, :class:`~.ShowPassingFlash`
 
     """
 
-    def __init__(self, mobject: typing.Union[VMobject, OpenGLVMobject], **kwargs):
-        if not isinstance(mobject, (VMobject, OpenGLVMobject)):
+    def __init__(self, mobject: VMobject, **kwargs):
+        if not isinstance(mobject, VMobject):
             raise TypeError("This Animation only works on vectorized mobjects")
         super().__init__(mobject, **kwargs)
 
@@ -118,10 +113,10 @@ class ShowPartial(Animation):
         )
 
     def _get_bounds(self, alpha: float) -> None:
-        raise NotImplementedError("Please use Create or ShowPassingFlash")
+        raise NotImplementedError("Please use ShowCreation or ShowPassingFlash")
 
 
-class Create(ShowPartial):
+class ShowCreation(ShowPartial):
     """Incrementally show a VMobject.
 
     Parameters
@@ -136,11 +131,11 @@ class Create(ShowPartial):
 
     Examples
     --------
-    .. manim:: CreateScene
+    .. manim:: ShowCreationScene
 
-        class CreateScene(Scene):
+        class ShowCreationScene(Scene):
             def construct(self):
-                self.play(Create(Square()))
+                self.play(ShowCreation(Square()))
 
     See Also
     --------
@@ -148,33 +143,15 @@ class Create(ShowPartial):
 
     """
 
-    def __init__(
-        self,
-        mobject: typing.Union[VMobject, OpenGLVMobject],
-        lag_ratio: float = 1.0,
-        **kwargs,
-    ) -> None:
-        super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
-
-    def _get_bounds(self, alpha: float) -> typing.Tuple[int, float]:
-        return (0, alpha)
-
-
-class ShowCreation(Create):
-    """Deprecated. Use :class:`~.Create` instead."""
-
     def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
-        logger.warning(
-            "ShowCreation has been deprecated in favor of Create. Please use Create instead!"
-        )
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
     def _get_bounds(self, alpha: float) -> typing.Tuple[int, float]:
         return (0, alpha)
 
 
-class Uncreate(Create):
-    """Like :class:`Create` but in reverse.
+class Uncreate(ShowCreation):
+    """Like :class:`ShowCreation` but in reverse.
 
     Examples
     --------
@@ -186,18 +163,18 @@ class Uncreate(Create):
 
     See Also
     --------
-    :class:`Create`
+    :class:`ShowCreation`
 
     """
 
     def __init__(
         self,
-        mobject: typing.Union[VMobject, OpenGLVMobject],
+        mobject: VMobject,
         rate_func: typing.Callable[[float, float], np.ndarray] = lambda t: smooth(
             1 - t
         ),
         remover: bool = True,
-        **kwargs,
+        **kwargs
     ) -> None:
         super().__init__(mobject, rate_func=rate_func, remover=remover, **kwargs)
 
@@ -216,14 +193,14 @@ class DrawBorderThenFill(Animation):
 
     def __init__(
         self,
-        vmobject: typing.Union[VMobject, OpenGLVMobject],
+        vmobject: VMobject,
         run_time: float = 2,
         rate_func: typing.Callable[[float], np.ndarray] = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
         draw_border_animation_config: typing.Dict = {},  # what does this dict accept?
         fill_animation_config: typing.Dict = {},
-        **kwargs,
+        **kwargs
     ) -> None:
         self._typecheck_input(vmobject)
         super().__init__(vmobject, run_time=run_time, rate_func=rate_func, **kwargs)
@@ -233,11 +210,9 @@ class DrawBorderThenFill(Animation):
         self.fill_animation_config = fill_animation_config
         self.outline = None
 
-    def _typecheck_input(
-        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
-    ) -> None:
-        if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
+    def _typecheck_input(self, vmobject: VMobject) -> None:
+        if not isinstance(vmobject, VMobject):
+            raise TypeError("DrawBorderThenFill only works for VMobjects")
 
     def begin(self) -> None:
         self.outline = self.get_outline()
@@ -250,9 +225,7 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(
-        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
-    ) -> Color:
+    def get_stroke_color(self, vmobject: VMobject) -> Color:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
@@ -287,11 +260,11 @@ class Write(DrawBorderThenFill):
 
     def __init__(
         self,
-        vmobject: typing.Union[VMobject, OpenGLVMobject],
+        vmobject: VMobject,
         run_time: float = None,
         lag_ratio: float = None,
         rate_func: typing.Callable[[float], np.ndarray] = linear,
-        **kwargs,
+        **kwargs
     ) -> None:
         self.run_time = run_time
         self.lag_ratio = lag_ratio
@@ -304,9 +277,7 @@ class Write(DrawBorderThenFill):
             **kwargs,
         )
 
-    def _set_default_config_from_length(
-        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
-    ) -> None:
+    def _set_default_config_from_length(self, vmobject: VMobject) -> None:
         length = len(vmobject.family_members_with_points())
         if self.run_time is None:
             if length < 15:
@@ -315,72 +286,6 @@ class Write(DrawBorderThenFill):
                 self.run_time = 2
         if self.lag_ratio is None:
             self.lag_ratio = min(4.0 / length, 0.2)
-
-
-class Unwrite(Write):
-    """Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`.
-
-    Parameters
-    ----------
-    reverse : :class:`bool`
-        Set True to have the animation start erasing from the last submobject first.
-
-    Examples
-    --------
-
-    .. manim:: UnwriteReverseFalse
-
-        class UnwriteReverseFalse(Scene):
-            def construct(self):
-                text = Tex("Alice and Bob").scale(3)
-                self.add(text)
-                self.play(Unwrite(text))
-
-    .. manim :: UnwriteReverseTrue
-
-        class UnwriteReverseTrue(Scene):
-            def construct(self):
-                text = Tex("Alice and Bob").scale(3)
-                self.add(text)
-                self.play(Unwrite(text,reverse=True))
-
-    """
-
-    def __init__(
-        self,
-        vmobject: VMobject,
-        run_time: float = None,
-        lag_ratio: float = None,
-        rate_func: typing.Callable[[float], np.ndarray] = linear,
-        reverse: bool = False,
-        **kwargs,
-    ) -> None:
-
-        self.vmobject = vmobject
-        self.run_time = run_time
-        self.lag_ratio = lag_ratio
-        self.reverse = reverse
-        self._set_default_config_from_length(vmobject)
-        super().__init__(
-            vmobject,
-            run_time=run_time,
-            lag_ratio=lag_ratio,
-            rate_func=lambda t: -rate_func(t) + 1,
-            **kwargs,
-        )
-
-    def begin(self) -> None:
-        if not self.reverse:
-            self.reverse_submobjects()
-        super().begin()
-
-    def finish(self) -> None:
-        if not self.reverse:
-            self.reverse_submobjects()
-        super().finish()
-
-    def reverse_submobjects(self) -> None:
-        self.vmobject.invert(recursive=True)
 
 
 class ShowIncreasingSubsets(Animation):
@@ -404,7 +309,7 @@ class ShowIncreasingSubsets(Animation):
         group: Mobject,
         suspend_mobject_updating: bool = False,
         int_func: typing.Callable[[np.ndarray], np.ndarray] = np.floor,
-        **kwargs,
+        **kwargs
     ) -> None:
         self.all_submobs = list(group.submobjects)
         self.int_func = int_func
@@ -443,7 +348,7 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         rate_func: typing.Callable[[float], float] = linear,
         time_per_char: float = 0.1,
         run_time: typing.Optional[float] = None,
-        **kwargs,
+        **kwargs
     ) -> None:
         # time_per_char must be above 0.06, or the animation won't finish
         self.time_per_char = time_per_char
@@ -468,7 +373,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
         self,
         group: typing.Iterable[Mobject],
         int_func: typing.Callable[[np.ndarray], np.ndarray] = np.ceil,
-        **kwargs,
+        **kwargs
     ) -> None:
         new_group = Group(*group)
         super().__init__(new_group, int_func=int_func, **kwargs)
@@ -489,7 +394,7 @@ class AddTextWordByWord(Succession):
         text_mobject: "Text",
         run_time: float = None,
         time_per_char: float = 0.06,
-        **kwargs,
+        **kwargs
     ) -> None:
         self.time_per_char = time_per_char
         tpc = self.time_per_char

@@ -31,7 +31,6 @@ information here will make it easier for newcomers to get started using
    reference
    reporting_bugs
    contributing
-   conduct
 
 
 Navigation

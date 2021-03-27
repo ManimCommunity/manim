@@ -23,13 +23,6 @@ Every file containing code that produces a video with manim will be stored
 here, as well as any output files that manim produces and configuration files
 that manim needs.
 
-.. note::
-
-   In case you like to work with Jupyterlab / Jupyter notebooks, there is good news:
-   Manim ships with a ``%%manim`` IPython magic command which makes it easy to use
-   in such a setting as well. Find out more in the
-   :meth:`corresponding documentation <manim.utils.ipython_magic.ManimMagic.manim>`.
-
 
 Your first Scene
 ****************
@@ -51,7 +44,7 @@ and copy the following code in it.
        def construct(self):
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(Create(circle))     # show the circle on screen
+           self.play(ShowCreation(circle))     # show the circle on screen
 
 Then open your command line, navigate to your project directory, and execute
 the following command:
@@ -71,7 +64,7 @@ video playing the following animation.
        def construct(self):
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(Create(circle))     # show the circle on screen
+           self.play(ShowCreation(circle))     # show the circle on screen
 
 If you see the video and it looks correct, congrats! You just wrote your first
 manim scene from scratch.  If you get an error message instead, or if do not
@@ -96,7 +89,7 @@ The first line
 imports all of the contents of the library.  This is the recommended way of
 using manim, as usually in a single script you will be using quite a few names
 from the manim namespace.  In particular, this line includes all of the names
-used in the script: ``Scene``, ``Circle``, ``PINK`` and ``Create``.
+used in the script: ``Scene``, ``Circle``, ``PINK`` and ``ShowCreation``.
 
 Now let's look at the next two lines.
 
@@ -116,12 +109,12 @@ The next two lines create a circle and set its color and opacity.
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
 
-Finally, the last line uses the animation :class:`.Create` to display the
+Finally, the last line uses the animation :class:`.ShowCreation` to display the
 circle on screen.
 
 .. code-block:: python
 
-           self.play(Create(circle))     # show the circle on screen
+           self.play(ShowCreation(circle))     # show the circle on screen
 
 .. tip:: Every animation must be contained within the :meth:`~.Scene.construct` method of a
          class that derives from :class:`.Scene`.  Other code, for example auxiliary
@@ -147,7 +140,7 @@ Our scene is a little basic, so let's add some bells and whistles.  Modify the
            square.flip(RIGHT)                   # flip horizontally
            square.rotate(-3 * TAU / 8)          # rotate a certain amount
 
-           self.play(Create(square))      # animate the creation of the square
+           self.play(ShowCreation(square))      # animate the creation of the square
            self.play(Transform(square, circle)) # interpolate the square into the circle
            self.play(FadeOut(square))           # fade out animation
 
@@ -171,7 +164,7 @@ The output should look as follows.
            square.flip(RIGHT)                   # flip horizontally
            square.rotate(-3 * TAU / 8)          # rotate a certain amount
 
-           self.play(Create(square))      # animate the creation of the square
+           self.play(ShowCreation(square))      # animate the creation of the square
            self.play(Transform(square, circle)) # interpolate the square into the circle
            self.play(FadeOut(square))           # fade out animation
 

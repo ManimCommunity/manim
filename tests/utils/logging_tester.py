@@ -21,8 +21,7 @@ def _check_logs(reference_logfile, generated_logfile):
             msg_assert += f"Logs generated are LONGER than the expected logs.\n There are {diff} extra logs :\n"
             for log in generated_logs[len(reference_logs) :]:
                 msg_assert += log
-        msg_assert += f"\nPath of reference log: {reference_logfile}\nPath of generated logs: {generated_logfile}"
-        assert 0, msg_assert + reference_logfile + " " + generated_logfile
+        assert 0, msg_assert
 
     for index, ref, gen in zip(itertools.count(), reference_logs, generated_logs):
         # As they are string, we only need to check if they are equal. If they are not, we then compute a more precise difference, to debug.
@@ -36,10 +35,9 @@ def _check_logs(reference_logfile, generated_logfile):
         # \n and \t don't not work in f-strings.
         newline = "\n"
         tab = "\t"
-        assert len(diff_keys) == 0, (
-            f"Logs don't match at {index} log. : \n{newline.join([f'In {key} field, got -> {newline}{tab}{repr(gen_log[key])}. {newline}Expected : -> {newline}{tab}{repr(ref_log[key])}.' for key in diff_keys])}"
-            + f"\nPath of reference log: {reference_logfile}\nPath of generated logs: {generated_logfile}"
-        )
+        assert (
+            len(diff_keys) == 0
+        ), f"Logs don't match at {index} log. : \n{newline.join([f'In {key} field, got -> {newline}{tab}{repr(gen_log[key])}. {newline}Expected : -> {newline}{tab}{repr(ref_log[key])}.' for key in diff_keys])}"
 
 
 def logs_comparison(control_data_file, log_path_from_media_dir):

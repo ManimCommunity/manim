@@ -5,10 +5,10 @@ from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 
-class CreateTest(Scene):
+class ShowCreationTest(Scene):
     def construct(self):
         square = Square()
-        self.play(Create(square))
+        self.play(ShowCreation(square))
 
 
 class UncreateTest(Scene):
