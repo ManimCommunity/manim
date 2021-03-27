@@ -832,7 +832,20 @@ class Line(TipableVMobject):
 
 
 class DashedLine(Line):
-    """A dashed Line.
+    """A dashed :class:`Line`.
+
+    Parameters
+    ----------
+    args : Any
+        Arguments to be passed to :class:`Line`
+    dash_length : :class:`float`, optional
+        The length of each individual dash of the line.
+    dash_spacing : Optional[:class:`float`]
+        No purpose.
+    positive_space_ratio : :class:`float`, optional
+        The ratio of empty space to dash space. Range of 0-1.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Line`
 
     Examples
     --------
@@ -841,9 +854,17 @@ class DashedLine(Line):
 
         class DashedLineExample(Scene):
             def construct(self):
-                dashed_line = DashedLine(config.frame_width/2*LEFT, 4*RIGHT)
-                self.add(dashed_line)
+                # dash_length increased
+                dashed_1 = DashedLine(config.left_side, config.right_side, dash_length=2.0).shift(UP*2)
+                # normal
+                dashed_2 = DashedLine(config.left_side, config.right_side)
+                # positive_space_ratio decreased
+                dashed_3 = DashedLine(config.left_side, config.right_side, positive_space_ratio=0.1).shift(DOWN*2)
+                self.add(dashed_1, dashed_2, dashed_3)
 
+    See Also
+    --------
+    :class:`~.DashedVMobject`
     """
 
     def __init__(
@@ -860,15 +881,25 @@ class DashedLine(Line):
         Line.__init__(self, *args, **kwargs)
         dashes = DashedVMobject(
             self,
-            num_dashes=self.calculate_num_dashes(positive_space_ratio),
+            num_dashes=self.calculate_num_dashes(),
             positive_space_ratio=positive_space_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self, positive_space_ratio):
+    def calculate_num_dashes(self) -> int:
+        """Returns the number of dashes in the dashed line.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().calculate_num_dashes()
+            20
+        """
+
         try:
-            full_length = self.dash_length / positive_space_ratio
+            full_length = self.dash_length / self.positive_space_ratio
             return int(np.ceil(self.get_length() / full_length))
         except ZeroDivisionError:
             return 1
@@ -876,26 +907,99 @@ class DashedLine(Line):
     def calculate_positive_space_ratio(self):
         return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
-    def get_start(self):
+    def get_start(self) -> np.ndarray:
+        """Returns the start point of the line.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().get_start()
+            array([-1.,  0.,  0.])
+        """
+
         if len(self.submobjects) > 0:
             return self.submobjects[0].get_start()
         else:
             return Line.get_start(self)
 
-    def get_end(self):
+    def get_end(self) -> np.ndarray:
+        """Returns the end point of the line.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().get_end()
+            array([0.99871795, 0.        , 0.        ])
+        """
+
         if len(self.submobjects) > 0:
             return self.submobjects[-1].get_end()
         else:
             return Line.get_end(self)
 
-    def get_first_handle(self):
+    def get_first_handle(self) -> np.ndarray:
+        """Returns the point of the first handle.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().get_first_handle()
+            array([-0.98333333,  0.        ,  0.        ])
+        """
+
         return self.submobjects[0].points[1]
 
-    def get_last_handle(self):
+    def get_last_handle(self) -> np.ndarray:
+        """Returns the point of the last handle.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().get_last_handle()
+            array([0.98205128, 0.        , 0.        ])
+        """
+
         return self.submobjects[-1].points[-2]
 
 
 class TangentLine(Line):
+    """Constructs a line tangent to a :class:`~.VMobject` at a specific point.
+
+    Parameters
+    ----------
+    vmob : :class:`~.VMobject`
+        The VMobject on which the tangent line is drawn.
+    alpha : :class:`float`
+        How far along the shape that the line will be constructed. range: 0-1.
+    length : :class:`float`, optional
+        Length of the tangent line.
+    d_alpha: :class:`float`, optional
+        The ``dx`` value
+    kwargs : Any
+        Additional arguments to be passed to :class:`Line`
+
+    Examples
+    --------
+
+    .. manim:: TangentLineExample
+        :save_last_frame:
+
+        class TangentLineExample(Scene):
+            def construct(self):
+                circle = Circle(radius=2)
+                line_1 = TangentLine(circle, alpha=0.0, length=4, color=BLUE_D) # right
+                line_2 = TangentLine(circle, alpha=0.4, length=4, color=GREEN) # top left
+                self.add(circle, line_1, line_2)
+
+    See Also
+    --------
+    :meth:`~.VMobject.point_from_proportion`
+    """
+
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
         self.length = length
         self.d_alpha = d_alpha
@@ -909,6 +1013,37 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
+    """Two lines that create a right angle about each other: L-shape.
+
+    Parameters
+    ----------
+    width : :class:`float`, optional
+        The length of the elbow's sides.
+    angle : :class:`float`, optional
+        The rotation of the elbow.
+    kwargs : Any
+        Additional arguments to be passed to :class:`~.VMobject`
+
+    Examples
+    --------
+
+    .. manim:: ElbowExample
+        :save_last_frame:
+
+        class ElbowExample(Scene):
+            def construct(self):
+                elbow_1 = Elbow()
+                elbow_2 = Elbow(width=2.0)
+                elbow_3 = Elbow(width=2.0, angle=5*PI/4)
+
+                elbow_group = Group(elbow_1, elbow_2, elbow_3).arrange(buff=1)
+                self.add(elbow_group)
+
+    See Also
+    --------
+    :class:`RightAngle`
+    """
+
     def __init__(self, width=0.2, angle=0, **kwargs):
         self.angle = angle
         VMobject.__init__(self, **kwargs)
@@ -918,6 +1053,57 @@ class Elbow(VMobject):
 
 
 class Arrow(Line):
+    """An arrow.
+
+    Parameters
+    ----------
+    args : Any
+        Arguments to be passed to :class:`Line`.
+    stroke_width : :class:`float`, optional
+        The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`.
+    buff : :class:`float`, optional
+        The distance of the arrow from its start and end points.
+    max_tip_length_to_length_ratio : :class:`float`, optional
+        :attr:`tip_length` scales with the length of the arrow. Increasing this ratio raises the max value of :attr:`tip_length`.
+    max_stroke_width_to_length_ratio : :class:`float`, optional
+        :attr:`stroke_width` scales with the length of the arrow. Increasing this ratio ratios the max value of :attr:`stroke_width`.
+    preserve_tip_size_when_scaling : :class:`bool`, optional
+        No purpose.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Line`.
+
+    Examples
+    --------
+
+    .. manim:: ArrowExample
+        :save_last_frame:
+
+        from manim.mobject.geometry import ArrowSquareTip
+        class ArrowExample(Scene):
+            def construct(self):
+                arrow_1 = Arrow(start=RIGHT, end=LEFT, color=GOLD)
+                arrow_2 = Arrow(start=RIGHT, end=LEFT, color=GOLD, tip_shape=ArrowSquareTip).shift(DOWN)
+                g1 = Group(arrow_1, arrow_2)
+
+                # the effect of buff
+                square = Square(color=MAROON_A)
+                arrow_3 = Arrow(start=LEFT, end=RIGHT)
+                arrow_4 = Arrow(start=LEFT, end=RIGHT, buff=0).next_to(arrow_1, UP)
+                g2 = Group(arrow_3, arrow_4, square)
+
+                # a shorter arrow has a shorter tip and smaller stroke width
+                arrow_5 = Arrow(start=ORIGIN, end=config.top).shift(LEFT * 4)
+                arrow_6 = Arrow(start=config.top + DOWN, end=config.top).shift(LEFT * 3)
+                g3 = Group(arrow_5, arrow_6)
+
+                self.add(Group(g1, g2, g3).arrange(buff=2))
+
+    See Also
+    --------
+    :class:`ArrowTip`
+    :class:`CurvedArrow`
+    """
+
     def __init__(
         self,
         *args,
@@ -928,12 +1114,8 @@ class Arrow(Line):
         preserve_tip_size_when_scaling=True,
         **kwargs
     ):
-        self.max_tip_length_to_length_ratio = (
-            max_tip_length_to_length_ratio  # is this used anywhere
-        )
-        self.max_stroke_width_to_length_ratio = (
-            max_stroke_width_to_length_ratio  # is this used anywhere
-        )
+        self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
+        self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         self.preserve_tip_size_when_scaling = (
             preserve_tip_size_when_scaling  # is this used anywhere
         )
@@ -994,19 +1176,42 @@ class Arrow(Line):
             self.add_tip(tip=old_tips[1], at_start=True)
         return self
 
-    def get_normal_vector(self):
+    def get_normal_vector(self) -> np.ndarray:
+        """Returns the normal of a vector.
+
+        Examples
+        --------
+        ::
+
+            >>> Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
+            array([ 0.,  0., -1.])
+        """
+
         p0, p1, p2 = self.tip.get_start_anchors()[:3]
         return normalize(np.cross(p2 - p1, p1 - p0))
 
     def reset_normal_vector(self):
+        """Resets the normal of a vector"""
         self.normal_vector = self.get_normal_vector()
         return self
 
-    def get_default_tip_length(self):
+    def get_default_tip_length(self) -> float:
+        """Returns the default tip_length of the arrow.
+
+        Examples
+        --------
+
+        ::
+
+            >>> Arrow().get_default_tip_length()
+            0.35
+        """
+
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
     def set_stroke_width_from_length(self):
+        """Used internally. Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         self.set_stroke(
             width=min(self.initial_stroke_width, max_ratio * self.get_length()),
@@ -1016,6 +1221,31 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
+    """A vector specialized for use in graphs.
+
+    Parameters
+    ----------
+    direction : Union[:class:`list`, :class:`numpy.ndarray`]
+        The direction of the arrow.
+    buff : :class:`float`
+         The distance of the vector from its endpoints.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Arrow`
+
+    Examples
+    --------
+
+    .. manim:: VectorExample
+        :save_last_frame:
+
+        class VectorExample(Scene):
+            def construct(self):
+                plane = NumberPlane()
+                vector_1 = Vector([1,2])
+                vector_2 = Vector([-5,-2])
+                self.add(plane, vector_1, vector_2)
+    """
+
     def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
@@ -1024,6 +1254,36 @@ class Vector(Arrow):
 
 
 class DoubleArrow(Arrow):
+    """An arrow with tips on both ends.
+
+    Parameters
+    ----------
+    args : Any
+        Arguments to be passed to :class:`Arrow`
+    kwargs : Any
+        Additional arguments to be passed to :class:`Arrow`
+
+    Examples
+    --------
+
+    .. manim:: DoubleArrowExample
+        :save_last_frame:
+
+        from manim.mobject.geometry import ArrowCircleFilledTip
+        class DoubleArrowExample(Scene):
+            def construct(self):
+                circle = Circle(radius=2.0)
+                d_arrow = DoubleArrow(start=circle.get_left(), end=circle.get_right())
+                d_arrow_2 = DoubleArrow(tip_shape_end=ArrowCircleFilledTip, tip_shape_start=ArrowCircleFilledTip)
+                group = Group(Group(circle, d_arrow), d_arrow_2).arrange(UP, buff=1)
+                self.add(group)
+
+    See Also
+    --------
+    :class:`ArrowTip`
+    :class:`CurvedDoubleArrow`
+    """
+
     def __init__(self, *args, **kwargs):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
