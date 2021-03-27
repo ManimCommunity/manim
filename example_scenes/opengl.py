@@ -8,6 +8,15 @@ from pathlib import Path
 # Lines that do not yet work with the Community Version are commented.
 
 
+class TestLatex(Scene):
+    def construct(self):
+        # mob = OpenGLSVGMobject("../manim/media/Tex/184715fb937073ce.svg").scale(3)
+        # mob.set_color(WHITE)
+        mob = OpenGLTex("Manim Community").set_width(13)
+        self.play(Write(mob))
+        self.wait(10)
+
+
 class InteractiveDevelopment(Scene):
     def construct(self):
         circle = OpenGLCircle()

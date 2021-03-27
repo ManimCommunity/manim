@@ -14,6 +14,15 @@ from manim import *
 # for a 1920x1080 video)
 
 
+class TestLatex(Scene):
+    def construct(self):
+        # mob = SVGMobject("../manim/media/Tex/1e2155e0e4bdc7ad.svg").scale(3)
+        # mob.set_color(WHITE)
+        # self.play(FadeIn(mob))
+        mob = MathTex("a")
+        self.play(FadeIn(mob))
+
+
 class OpeningManim(Scene):
     def construct(self):
         title = Tex(r"This is some \LaTeX")

@@ -22,9 +22,11 @@ from ... import config
 from ...constants import *
 from ...mobject.geometry import Circle
 from ...mobject.geometry import Rectangle
+from ...mobject.opengl_geometry import OpenGLRectangle
 from ...mobject.geometry import RoundedRectangle
 from ...mobject.types.vectorized_mobject import VGroup
 from ...mobject.types.vectorized_mobject import VMobject
+from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
 
 
 class SVGMobject(VMobject):
@@ -199,9 +201,15 @@ class SVGMobject(VMobject):
             pass  # TODO
 
         result = [m for m in result if m is not None]
-        self.handle_transforms(element, VGroup(*result))
+        if config["use_opengl_renderer"]:
+            self.handle_transforms(element, OpenGLVGroup(*result))
+        else:
+            self.handle_transforms(element, VGroup(*result))
         if len(result) > 1 and not self.unpack_groups:
-            result = [VGroup(*result)]
+            if config["use_opengl_renderer"]:
+                result = [OpenGLVGroup(*result)]
+            else:
+                result = [VGroup(*result)]
 
         if within_defs and element.hasAttribute("id"):
             # it seems wasteful to throw away the actual element,
@@ -399,11 +407,19 @@ class SVGMobject(VMobject):
         parsed_style["stroke_width"] = stroke_width
 
         if corner_radius == 0:
-            mob = Rectangle(
-                width=self.attribute_to_float(rect_element.getAttribute("width")),
-                height=self.attribute_to_float(rect_element.getAttribute("height")),
-                **parsed_style,
-            )
+            if config["use_opengl_renderer"]:
+                mob = OpenGLRectangle(
+                    width=self.attribute_to_float(rect_element.getAttribute("width")),
+                    height=self.attribute_to_float(rect_element.getAttribute("height")),
+                    **parsed_style,
+                )
+            else:
+                mob = Rectangle(
+                    width=self.attribute_to_float(rect_element.getAttribute("width")),
+                    height=self.attribute_to_float(rect_element.getAttribute("height")),
+                    **parsed_style,
+                )
+
         else:
             mob = RoundedRectangle(
                 width=self.attribute_to_float(rect_element.getAttribute("width")),

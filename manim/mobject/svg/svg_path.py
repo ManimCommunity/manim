@@ -12,6 +12,7 @@ from manim import logger
 
 from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
+from ... import config
 
 
 def string_to_numbers(num_string: str) -> List[float]:
@@ -99,9 +100,11 @@ class SVGPathMobject(VMobject):
         command = command.upper()
 
         # Keep track of the most recently completed point
-        start_point = (
-            self.points[-1] if self.points.shape[0] else np.zeros((1, self.dim))
-        )
+        if config["use_opengl_renderer"]:
+            points = self.data["points"]
+        else:
+            points = self.points
+        start_point = points[-1] if points.shape[0] else np.zeros((1, self.dim))
 
         # Produce the (absolute) coordinates of the controls and handles
         new_points = self.string_to_points(
@@ -126,9 +129,13 @@ class SVGPathMobject(VMobject):
             return
 
         elif command == "S":  # Smooth cubic
+            if config["use_opengl_renderer"]:
+                points = self.data["points"]
+            else:
+                points = self.points
             prev_handle = start_point
             if prev_command.upper() in ["C", "S"]:
-                prev_handle = self.points[-2]
+                prev_handle = points[-2]
             for i in range(0, len(new_points), 2):
                 new_handle = 2 * start_point - prev_handle
                 self.add_cubic_bezier_curve_to(
@@ -148,7 +155,7 @@ class SVGPathMobject(VMobject):
             if prev_command.upper() in ["Q", "T"]:
                 # because of the conversion from quadratic to cubic,
                 # our actual previous handle was 3/2 in the direction of p[-2] from p[-1]
-                prev_quad_handle = 1.5 * self.points[-2] - 0.5 * self.points[-1]
+                prev_quad_handle = 1.5 * points[-2] - 0.5 * points[-1]
             for p in new_points:
                 new_quad_handle = 2 * start_point - prev_quad_handle
                 self.add_quadratic_bezier_curve_to(new_quad_handle, p)
