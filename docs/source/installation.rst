@@ -14,6 +14,7 @@ Installing dependencies
    installation/win
    installation/mac
    installation/linux
+   installation/colab
    installation/troubleshooting
    installation/for_dev
    installation/plugins
