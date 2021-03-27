@@ -5,7 +5,6 @@ __all__ = ["MultiCamera"]
 
 from ..camera.moving_camera import MovingCamera
 from ..utils.iterables import list_difference_update
-from ..mobject.
 
 
 class MultiCamera(MovingCamera):
