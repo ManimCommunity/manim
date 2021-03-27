@@ -40,7 +40,7 @@ class MovingCamera(Camera):
 
     def __init__(
         self,
-        frame: Optional(Mobject)=None,
+        frame: Optional[Mobject] = None,
         fixed_dimension: int =0,  # width
         default_frame_stroke_color: str =WHITE,
         default_frame_stroke_width: int =0,
@@ -86,7 +86,7 @@ class MovingCamera(Camera):
         return self.frame.width
 
     @property
-    def frame_center(self) -> np.array():
+    def frame_center(self) -> np.array:
         """Returns the centerpoint of the frame in cartesian coordinates.
 
         Returns
