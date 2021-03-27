@@ -10,9 +10,7 @@ Examples
         def __init__(self, **kwargs):
             GraphScene.__init__(
                 self,
-                y_min=0,
-                y_max=100,
-                y_axis_config={"tick_frequency": 10},
+                y_range = [0, 100, 10]
                 y_labeled_nums=np.arange(0, 100, 10),
                 **kwargs
             )

@@ -238,7 +238,6 @@ class UnitInterval(NumberLine):
             self,
             x_range=[0, 1, 0.1],
             unit_size=unit_size,
-            tick_frequency=tick_frequency,
             numbers_with_elongated_ticks=numbers_with_elongated_ticks,
             decimal_number_config=decimal_number_config,
             **kwargs,
