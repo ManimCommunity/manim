@@ -10,7 +10,7 @@ Examples
         def __init__(self, **kwargs):
             GraphScene.__init__(
                 self,
-                y_range = [0, 100, 10]
+                y_range = [0, 100, 10],
                 y_labeled_nums=np.arange(0, 100, 10),
                 **kwargs
             )
