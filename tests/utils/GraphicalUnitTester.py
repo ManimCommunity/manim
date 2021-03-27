@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from manim import config, tempconfig
+from manim.renderer.opengl_renderer import OpenGLRenderer
 
 
 class GraphicalUnitTester:
@@ -10,7 +11,7 @@ class GraphicalUnitTester:
 
     Parameters
     ----------
-    scene_object : :class:`~.Scene`
+    scene_class : :class:`~.Scene`
         The scene to be tested
     config_scene : :class:`dict`
         The configuration of the scene
@@ -27,7 +28,7 @@ class GraphicalUnitTester:
         The scene tested
     """
 
-    def __init__(self, scene_object, module_tested, tmpdir, rgb_atol=0):
+    def __init__(self, scene_class, module_tested, tmpdir, rgb_atol=0):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
         tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +37,7 @@ class GraphicalUnitTester:
             "test_graphical_units",
             "tests_cache",
             module_tested,
-            scene_object.__name__,
+            scene_class.__name__,
         )
         self.path_control_data = os.path.join(
             tests_directory, "control_data", "graphical_units_data", module_tested
@@ -60,7 +61,10 @@ class GraphicalUnitTester:
             os.makedirs(dir_temp)
 
         with tempconfig({"dry_run": True}):
-            self.scene = scene_object(skip_animations=True)
+            if config["use_opengl_renderer"]:
+                self.scene = scene_class(renderer=OpenGLRenderer())
+            else:
+                self.scene = scene_class(skip_animations=True)
             self.scene.render()
 
     def _load_data(self):
