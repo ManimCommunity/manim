@@ -25,7 +25,8 @@ from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLPoint
 from ..utils.iterables import list_update, list_difference_update
 from ..utils.family import extract_mobject_family_members
-from ..renderer import get_default_renderer_class
+from ..renderer.cairo_renderer import CairoRenderer
+from ..renderer.opengl_renderer import OpenGLRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
@@ -67,11 +68,12 @@ class Scene(Container):
     def __init__(
         self,
         renderer=None,
-        camera_class=None,
+        camera_class=Camera,
         always_update_mobjects=False,
         random_seed=0,
         **kwargs,
     ):
+        self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
 
@@ -89,11 +91,14 @@ class Scene(Container):
             self.mouse_drag_point = OpenGLPoint()
 
         if renderer is None:
-            renderer_cls = get_default_renderer_class()
-            self.renderer = renderer_cls(
-                camera_class=camera_class,
-                skip_animations=kwargs.get("skip_animations", False),
-            )
+            skip_animations = kwargs.get("skip_animations", False)
+            # If renderer is unspecified, use the configs for a sensible default.
+            if config["use_opengl_renderer"]:
+                self.renderer = OpenGLRenderer(skip_animations=skip_animations)
+            else:
+                self.renderer = CairoRenderer(
+                    camera_class=self.camera_class, skip_animations=skip_animations
+                )
         else:
             self.renderer = renderer
         self.renderer.init_scene(self)
