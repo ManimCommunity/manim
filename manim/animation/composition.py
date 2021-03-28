@@ -97,11 +97,7 @@ class AnimationGroup(Animation):
         # be a rescaled version.  But that's okay!
         time = alpha * self.max_end_time
         for anim, start_time, end_time in self.anims_with_timings:
-            if time < start_time:
-                continue
-            if time > end_time:
-                if anim.is_running:  # guarantee that animation is finished at some point
-                    anim.finish()
+            if time < start_time or time > end_time:
                 continue
             # here we have start_time <= time <= end_time
             anim_time = end_time - start_time
