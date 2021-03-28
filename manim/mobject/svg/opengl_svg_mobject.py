@@ -15,6 +15,8 @@ class OpenGLSVGMobject(OpenGLVMobject, SVGMobject):
         unpack_groups=True,  # if False, creates a hierarchy of VGroups
         stroke_width=DEFAULT_STROKE_WIDTH,
         fill_opacity=1.0,
+        should_subdivide_sharp_curves=False,
+        should_remove_null_curves=False,
         **kwargs,
     ):
         self.def_map = {}
@@ -22,6 +24,10 @@ class OpenGLSVGMobject(OpenGLVMobject, SVGMobject):
         self.ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
+        self.path_string_config = {
+            "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
+            "should_remove_null_curves": should_remove_null_curves,
+        }
         OpenGLVMobject.__init__(
             self, stroke_width=stroke_width, fill_opacity=fill_opacity, **kwargs
         )
@@ -31,4 +37,6 @@ class OpenGLSVGMobject(OpenGLVMobject, SVGMobject):
         self.generate_points()
 
     def path_string_to_mobject(self, path_string: str, style: dict):
-        return OpenGLSVGPathMobject(path_string, **parse_style(style))
+        return OpenGLSVGPathMobject(
+            path_string, **self.path_string_config, **parse_style(style)
+        )

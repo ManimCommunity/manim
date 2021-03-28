@@ -90,6 +90,12 @@ class SVGPathMobject(VMobject):
         for command, coord_string in pairs:
             self.handle_command(command, coord_string, prev_command)
             prev_command = command
+        if self.should_subdivide_sharp_curves:
+            # For a healthy triangulation later
+            self.subdivide_sharp_curves()
+        if self.should_remove_null_curves:
+            # Get rid of any null curves
+            self.set_points(self.get_points_without_null_curves())
         # people treat y-coordinate differently
         self.rotate(np.pi, RIGHT, about_point=ORIGIN)
 
@@ -166,7 +172,10 @@ class SVGPathMobject(VMobject):
             raise NotImplementedError()
 
         elif command == "Z":  # closepath
-            self.add_line_to(self.current_path_start)
+            if config["use_opengl_renderer"]:
+                self.close_path()
+            else:
+                self.add_line_to(self.current_path_start)
             return
 
     def string_to_points(self, command, is_relative, coord_string, start_point):

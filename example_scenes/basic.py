@@ -19,8 +19,9 @@ class TestLatex(Scene):
         # mob = SVGMobject("../manim/media/Tex/1e2155e0e4bdc7ad.svg").scale(3)
         # mob.set_color(WHITE)
         # self.play(FadeIn(mob))
-        mob = MathTex("a")
-        self.play(FadeIn(mob))
+        mob = Tex("C").set_height(7)
+        self.play(Write(mob))
+        self.wait(2)
 
 
 class OpeningManim(Scene):

@@ -23,7 +23,7 @@ from ...utils.color import *
 # from manimlib.utils.color import rgb_to_hex
 from ...utils.iterables import listify, make_even, resize_with_interpolation
 
-# from manimlib.utils.space_ops import angle_between_vectors
+from ...utils.space_ops import angle_between_vectors
 from ...utils.space_ops import (
     cross2d,
     earclip_triangulation,
@@ -77,6 +77,8 @@ class OpenGLVMobject(OpenGLMobject):
         tolerance_for_point_equality=1e-8,
         n_points_per_curve=3,
         long_lines=False,
+        should_subdivide_sharp_curves=False,
+        should_remove_null_curves=False,
         # Could also be "bevel", "miter", "round"
         joint_type="auto",
         flat_stroke=True,
@@ -103,6 +105,8 @@ class OpenGLVMobject(OpenGLMobject):
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_curve = n_points_per_curve
         self.long_lines = long_lines
+        self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
+        self.should_remove_null_curves = should_remove_null_curves
         # Could also be "bevel", "miter", "round"
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke

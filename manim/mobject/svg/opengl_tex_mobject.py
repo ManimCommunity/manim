@@ -241,6 +241,8 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
+            should_subdivide_sharp_curves=True,
+            should_remove_null_curves=True,
             **kwargs,
         )
         if height is None:
@@ -331,7 +333,9 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
     def path_string_to_mobject(self, path_string, style):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return OpenGLTexSymbol(path_string, **parse_style(style))
+        return OpenGLTexSymbol(
+            path_string, **self.path_string_config, **parse_style(style)
+        )
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])

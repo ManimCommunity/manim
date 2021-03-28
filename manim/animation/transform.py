@@ -34,6 +34,7 @@ from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..utils.paths import path_along_arc, straight_path
 from ..utils.rate_functions import smooth, squish_rate_func
+from .. import config
 
 if typing.TYPE_CHECKING:
     from ..scene.scene import Scene
@@ -78,7 +79,10 @@ class Transform(Animation):
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        self.mobject.align_data(self.target_copy)
+        if config["use_opengl_renderer"]:
+            self.mobject.align_data_and_family(self.target_copy)
+        else:
+            self.mobject.align_data(self.target_copy)
         super().begin()
 
     def create_target(self) -> typing.Union[Mobject, None]:

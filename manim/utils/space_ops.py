@@ -232,7 +232,11 @@ def angle_between_vectors(v1, v2):
     Returns the angle between two 3D vectors.
     This angle will always be btw 0 and pi
     """
-    return np.arccos(fdiv(np.dot(v1, v2), get_norm(v1) * get_norm(v2)))
+    if config["use_opengl_renderer"]:
+        diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
+        return min(diff, TAU - diff)
+    else:
+        return np.arccos(fdiv(np.dot(v1, v2), get_norm(v1) * get_norm(v2)))
 
 
 def project_along_vector(point, vector):
