@@ -48,6 +48,7 @@ class Animation:
         self.suspend_mobject_updating = suspend_mobject_updating
         self.lag_ratio = lag_ratio
         self.starting_mobject = None
+        self._is_running = False
         self.mobject = mobject
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
@@ -79,6 +80,7 @@ class Animation:
         # played.  As much initialization as possible,
         # especially any mobject copying, should live in
         # this method
+        self._is_running = True
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
@@ -91,6 +93,7 @@ class Animation:
         self.interpolate(0)
 
     def finish(self) -> None:
+        self._is_running = False
         self.interpolate(1)
         if self.suspend_mobject_updating:
             self.mobject.resume_updating()
@@ -246,10 +249,10 @@ class Wait(Animation):
         super().__init__(None, **kwargs)
 
     def begin(self) -> None:
-        pass
+        self._is_running = True
 
     def finish(self) -> None:
-        pass
+        self._is_running = False
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
         pass

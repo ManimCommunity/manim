@@ -48,6 +48,7 @@ class AnimationGroup(Animation):
         return super().get_run_time()
 
     def begin(self) -> None:
+        self._is_running = True
         for anim, start_time, end_time in self.anims_with_timings:
             if np.isclose(start_time, 0):
                 anim.begin()
@@ -92,17 +93,22 @@ class AnimationGroup(Animation):
         # be a rescaled version.  But that's okay!
         time = alpha * self.max_end_time
         for anim, start_time, end_time in self.anims_with_timings:
-            if not (start_time <= time <= end_time):
+            if time < start_time:
                 continue
+            if time > end_time:
+                if anim._is_running:  # guarantee that animation is finished at some point
+                    anim.finish()
+                continue
+            # here we have start_time <= time <= end_time
             anim_time = end_time - start_time
             if anim_time == 0:
                 sub_alpha = 0
             else:
                 sub_alpha = np.clip((time - start_time) / anim_time, 0, 1)
-            if np.isclose(sub_alpha, 0):
+            if not anim._is_running:
                 anim.begin()
             anim.interpolate(sub_alpha)
-            if np.isclose(sub_alpha, 1):
+            if time == end_time:
                 anim.finish()
 
 
@@ -112,12 +118,14 @@ class Succession(AnimationGroup):
 
     def begin(self) -> None:
         assert len(self.animations) > 0
+        self._is_running = True
         self.init_run_time()
         self.update_active_animation(0)
 
     def finish(self) -> None:
         while self.active_animation is not None:
             self.next_animation()
+        self._is_running = False
 
     def update_mobjects(self, dt: float) -> None:
         if self.active_animation:
