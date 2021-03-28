@@ -48,10 +48,14 @@ class AnimationGroup(Animation):
         return super().get_run_time()
 
     def begin(self) -> None:
-        self._is_running = True
+        self.is_running = True
         for anim, start_time, end_time in self.anims_with_timings:
-            if np.isclose(start_time, 0):
-                anim.begin()
+            anim.begin()
+
+    def finish(self) -> None:
+        for anim in self.animations:
+            anim.finish()
+        self.is_running = False
 
     def clean_up_from_scene(self, scene: Scene) -> None:
         for anim in self.animations:
@@ -59,7 +63,7 @@ class AnimationGroup(Animation):
 
     def update_mobjects(self, dt: float) -> None:
         for anim in self.animations:
-            if hasattr(anim, 'starting_mobject'):
+            if anim.is_running:
                 anim.update_mobjects(dt)
 
     def init_run_time(self) -> None:
@@ -96,7 +100,7 @@ class AnimationGroup(Animation):
             if time < start_time:
                 continue
             if time > end_time:
-                if anim._is_running:  # guarantee that animation is finished at some point
+                if anim.is_running:  # guarantee that animation is finished at some point
                     anim.finish()
                 continue
             # here we have start_time <= time <= end_time
@@ -105,7 +109,7 @@ class AnimationGroup(Animation):
                 sub_alpha = 0
             else:
                 sub_alpha = np.clip((time - start_time) / anim_time, 0, 1)
-            if not anim._is_running:
+            if not anim.is_running:
                 anim.begin()
             anim.interpolate(sub_alpha)
             if time == end_time:
@@ -118,14 +122,14 @@ class Succession(AnimationGroup):
 
     def begin(self) -> None:
         assert len(self.animations) > 0
-        self._is_running = True
+        self.is_running = True
         self.init_run_time()
         self.update_active_animation(0)
 
     def finish(self) -> None:
         while self.active_animation is not None:
             self.next_animation()
-        self._is_running = False
+        self.is_running = False
 
     def update_mobjects(self, dt: float) -> None:
         if self.active_animation:
