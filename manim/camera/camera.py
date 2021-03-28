@@ -124,7 +124,7 @@ class Camera:
         self.resize_frame_shape()
         self.reset()
 
-    def __deepcopy__(self):  # I removed memo, I hope nothing breaks.
+    def __deepcopy__(self, memo): 
         # This is to address a strange bug where deepcopying
         # will result in a segfault, which is somehow related
         # to the aggdraw library
