@@ -112,8 +112,6 @@ class AnimationGroup(Animation):
             if not anim.is_running:
                 anim.begin()
             anim.interpolate(sub_alpha)
-            if time == end_time:
-                anim.finish()
 
 
 class Succession(AnimationGroup):
