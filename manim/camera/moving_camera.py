@@ -22,7 +22,7 @@ import numpy as np
 
 # TODO, think about how to incorporate perspective
 class CameraFrame(VGroup):
-    def __init__(self, center:np.ndarray=ORIGIN, **kwargs):
+    def __init__(self, center: np.ndarray = ORIGIN, **kwargs):
         VGroup.__init__(self, center=center, **kwargs)
         self.width = config["frame_width"]
         self.height = config["frame_height"]
@@ -41,9 +41,9 @@ class MovingCamera(Camera):
     def __init__(
         self,
         frame: Optional[Mobject] = None,
-        fixed_dimension: int =0,  # width
-        default_frame_stroke_color: str =WHITE,
-        default_frame_stroke_width: int =0,
+        fixed_dimension: int = 0,  # width
+        default_frame_stroke_color: str = WHITE,
+        default_frame_stroke_width: int = 0,
         **kwargs
     ):
         """
@@ -102,7 +102,7 @@ class MovingCamera(Camera):
 
         Parameters
         ----------
-        frame_height 
+        frame_height
             The new frame_height.
         """
         self.frame.stretch_to_fit_height(frame_height)
@@ -113,7 +113,7 @@ class MovingCamera(Camera):
 
         Parameters
         ----------
-        frame_width 
+        frame_width
             The new frame_width.
         """
         self.frame.stretch_to_fit_width(frame_width)

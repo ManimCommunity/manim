@@ -22,8 +22,8 @@ class MappingCamera(Camera):
 
     def __init__(
         self,
-        mapping_func: Callable =lambda p: p,
-        min_num_curves: int =50,
+        mapping_func: Callable = lambda p: p,
+        min_num_curves: int = 50,
         allow_object_intrusion: bool = False,
         **kwargs
     ):

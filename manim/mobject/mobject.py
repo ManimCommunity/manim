@@ -1120,7 +1120,7 @@ class Mobject(Container):
         ----------
         scale_factor
             The scaling factor. Values 0 < |`scale_factor`| < 1 will shrink the mobject, 1 < |`scale_factor`| will increase it's size. A `scale_factor`<0 resuls in  additionally flipping by 180°.
-        kwargs :
+        kwargs
             Additional keyword arguments passed to :meth:`apply_points_function_about_point`.
 
         Returns
