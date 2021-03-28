@@ -980,9 +980,15 @@ class Scene(Container):
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
         This method is used to add a sound to the animation.
+
+        Parameters
+        ----------
+
+        sound_file : str
+            The path to the sound file.
+        time_offset : int,float, optional
             The offset in the sound file after which
             the sound can be played.
-
         gain : float
             Amplification of the sound.
 
