@@ -5,13 +5,12 @@ from manim.opengl import *
 from ..utils.testing_utils import get_scenes_to_test
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
-with tempconfig({"use_opengl_renderer": True}):
 
-    class CircleTest(Scene):
-        def construct(self):
-            circle = OpenGLCircle().set_color(RED)
-            self.add(circle)
-            self.wait()
+class CircleTest(Scene):
+    def construct(self):
+        circle = OpenGLCircle().set_color(RED)
+        self.add(circle)
+        self.wait()
 
 
 MODULE_NAME = "opengl"
