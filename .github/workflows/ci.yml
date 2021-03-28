@@ -119,6 +119,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           Remove-Item C:\msys64\mingw64\bin\python.exe -Force
+          Remove-Item C:\msys64\mingw64\bin\python3.exe -Force
           $env:Path += ";" + "$($PWD)\ManimCache\FFmpeg\bin"
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path += ";" + "$($PWD)\ManimCache\Pango\pango"
