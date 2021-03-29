@@ -86,7 +86,7 @@ class CairoRenderer:
 
         if config["disable_caching"]:
             hash_current_animation = f"uncached_{self.num_plays:05}"
-        elif self.skip_animations:
+        if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             hash_current_animation = None
         else :
