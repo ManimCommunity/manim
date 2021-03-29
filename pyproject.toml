@@ -45,13 +45,10 @@ jupyterlab = { version = "^3.0", optional = true }
 moderngl = "^5.6.3"
 moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
-ipython = {version = "^7.19", optional = true, python = ">=3.7,<4.0"}
-pyreadline = {version = "^2.1", platform = "win32"}
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
 jupyterlab = ["jupyterlab"]
-livestreaming = ["ipython"]
 
 [tool.poetry.dev-dependencies]
 pytest-cov = "*"
