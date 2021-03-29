@@ -2809,11 +2809,6 @@ class _AnimationBuilder:
 
         return anim
 
-    def is_dummy(self):
-        from ..animation.animation import animation_is_dummy
-
-        return animation_is_dummy(self)
-
 
 def override_animate(method):
     r"""Decorator for overriding method animations.
