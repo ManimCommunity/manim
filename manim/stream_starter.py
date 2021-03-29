@@ -31,7 +31,7 @@ them to manim.play(), e.g.
 >>> manim.play(ShowCreation(c))
 
 The current streaming class under the name `manim` inherits from the
-original Scene class. To create a streaming class which inherits from 
+original Scene class. To create a streaming class which inherits from
 another scene class, e.g. MovingCameraScene, create it with the syntax:
 
 >>> manim2 = get_streamer(MovingCameraScene)
@@ -42,7 +42,7 @@ Want to render the animation of an entire pre-baked scene? Here's an example:
 >>> play_scene(basic.WarpSquare)
 >>> play_scene(basic.OpeningManimExample, start=0, end=5)
 
-To view an image of the current state of the scene or mobject, use: 
+To view an image of the current state of the scene or mobject, use:
 
 >>> manim.show_frame()        # view image of current scene
 >>> c = Circle()
