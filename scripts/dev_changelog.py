@@ -157,8 +157,9 @@ def main(token, revision_range, outfile=None):
 
     if not outfile:
         outfile = (
-            Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog.rst"
+            Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog"
         )
+        outfile = outfile / f"{cur_release[1:]}-changelog.rst"
     else:
         outfile = Path(outfile).resolve()
 
