@@ -342,7 +342,6 @@ class OpenGLSingleStringMathTex(OpenGLSVGMobject):
         return self
 
     def init_colors(self, propagate_colors=True):
-        # OpenGLSVGMobject.init_colors(self, propagate_colors=propagate_colors)
         OpenGLSVGMobject.set_style(
             self,
             fill_color=self.fill_color or self.color,

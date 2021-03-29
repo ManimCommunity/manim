@@ -16,12 +16,20 @@ from manim import *
 
 class TestLatex(Scene):
     def construct(self):
-        # mob = SVGMobject("../manim/media/Tex/1e2155e0e4bdc7ad.svg").scale(3)
-        # mob.set_color(WHITE)
-        # self.play(FadeIn(mob))
-        mob = Text("This is some text").set_width(13)
-        self.play(Write(mob))
-        self.wait(2)
+        mob = Paragraph(
+            "this is a awesome",
+            "paragraph",
+            "With \nNewlines",
+            "\tWith Tabs",
+            "  With Spaces",
+            "With Alignments",
+            "center",
+            "left",
+            "right",
+        )
+        anim = Write(mob)
+        self.play(anim)
+        self.wait()
 
 
 class OpeningManim(Scene):

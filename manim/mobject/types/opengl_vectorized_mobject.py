@@ -119,10 +119,8 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
-        #
-        #     def get_group_class(self):
-        #         return VGroup
-        #
+    def get_group_class(self):
+        return OpenGLVGroup
 
     def init_data(self):
         super().init_data()

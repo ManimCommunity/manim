@@ -13,11 +13,13 @@ class TestLatex(Scene):
         config["background_color"] = "#333333"
         # mob = OpenGLSVGMobject("../manim/media/Tex/184715fb937073ce.svg").scale(3)
         # mob.set_color(WHITE)
-        mob = OpenGLCairoText("Manim Community").set_width(12)
-        self.play(Write(mob))
-        print(len(mob.submobjects))
+
+        mob = OpenGLTex("This is some text")
+
+        anim = Write(mob)
+        self.play(anim)
         self.wait()
-        # self.interact()
+        self.interact()
 
 
 class InteractiveDevelopment(Scene):
