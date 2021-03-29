@@ -31,9 +31,15 @@ class AnimationGroup(Animation):
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
         self.group = group
+        self.animations_with_mobjects = []
+        for anim in animations:
+            if isinstance(anim.mobject, Mobject):
+                self.animations_with_mobjects.append(anim)
         if self.group is None:
             self.group = Group(
-                *remove_list_redundancies([anim.mobject for anim in animations])
+                *remove_list_redundancies(
+                    [anim.mobject for anim in self.animations_with_mobjects]
+                )
             )
         super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
         self.run_time = run_time
