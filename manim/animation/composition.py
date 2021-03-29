@@ -33,7 +33,9 @@ class AnimationGroup(Animation):
         self.group = group
         if self.group is None:
             self.group = Group(
-                *remove_list_redundancies([anim.mobject for anim in animations])
+                *remove_list_redundancies(
+                    [anim.mobject for anim in self.animations if not anim.is_dummy()]
+                )
             )
         super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
         self.run_time = run_time

@@ -15,6 +15,11 @@ class SphereTest(ThreeDScene):
         self.play(Animation(Sphere()))
 
 
+class Dot3DTest(ThreeDScene):
+    def construct(self):
+        self.play(Animation(Dot3D()))
+
+
 class ConeTest(ThreeDScene):
     def construct(self):
         self.play(Animation(Cone()))
