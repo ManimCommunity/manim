@@ -28,7 +28,7 @@ class PMobject(Mobject):
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
         """
-        points must be a Nx3 numpy array, as must rgbas if it is not None
+        Points must be a Nx3 numpy array, as must rgbas if it is not None
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -115,7 +115,7 @@ class PMobject(Mobject):
 
     def sort_points(self, function=lambda p: p[0]):
         """
-        function is any map from R^3 to R
+        Function is any map from R^3 to R
         """
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))

@@ -4,6 +4,7 @@ __all__ = [
     "ThreeDVMobject",
     "ParametricSurface",
     "Sphere",
+    "Dot3D",
     "Cube",
     "Prism",
     "Cone",
@@ -158,6 +159,38 @@ class Sphere(ParametricSurface):
         self, u, v
     ):  # FIXME: An attribute defined in manim.mobject.three_dimensions line 56 hides this method
         return np.array([np.cos(v) * np.sin(u), np.sin(v) * np.sin(u), np.cos(u)])
+
+
+class Dot3D(Sphere):
+    """A spherical dot.
+
+    Parameters
+    --------
+    radius : :class:`float`, optional
+        The radius of the dot.
+    color : :class:`~.Colors`, optional
+        The color of the :class:`Dot3D`
+
+    Examples
+    --------
+
+    .. manim:: Dot3DExample
+        :save_last_frame:
+
+        class Dot3DExample(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=75*DEGREES, theta=-45*DEGREES)
+
+                axes = ThreeDAxes()
+                dot_1 = Dot3D(color=RED).move_to(axes.coords_to_point(0, 0, 1))
+                dot_2 = Dot3D(radius=0.1, color=BLUE).move_to(axes.coords_to_point(2, 0, 0))
+
+                self.add(axes, dot_1, dot_2)
+    """
+
+    def __init__(self, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
+        Sphere.__init__(self, radius=radius, **kwargs)
+        self.set_color(color)
 
 
 class Cube(VGroup):

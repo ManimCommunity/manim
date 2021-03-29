@@ -18,7 +18,6 @@ from ..mobject import mobject
 from ..mobject import opengl_mobject
 from ..mobject.mobject import Mobject
 from ..utils.rate_functions import smooth
-from ..mobject.opengl_mobject import OpenGLMobject
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
@@ -34,7 +33,7 @@ class Animation:
         # If 0 < lag_ratio < 1, its applied to each
         # with lagged start times
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
-        run_time: int = DEFAULT_ANIMATION_RUN_TIME,
+        run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: typing.Callable[[float, float], np.ndarray] = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
@@ -64,9 +63,7 @@ class Animation:
     def _typecheck_input(self, mobject: Mobject) -> None:
         if mobject is None:
             logger.debug("creating dummy animation")
-        elif not isinstance(mobject, Mobject) and not isinstance(
-            mobject, OpenGLMobject
-        ):
+        elif not isinstance(mobject, Mobject):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -117,7 +114,7 @@ class Animation:
             *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
         )
 
-    def update_mobjects(self, dt: int) -> None:
+    def update_mobjects(self, dt: float) -> None:
         """
         Updates things like starting_mobject, and (for
         Transforms) target_mobject.  Note, since typically
@@ -232,9 +229,6 @@ def prepare_animation(
     if isinstance(anim, mobject._AnimationBuilder):
         return anim.build()
 
-    if isinstance(anim, opengl_mobject._AnimationBuilder):
-        return anim.build()
-
     if isinstance(anim, Animation):
         return anim
 
@@ -248,6 +242,7 @@ class Wait(Animation):
         self.duration = duration
         self.mobject = None
         self.stop_condition = stop_condition
+        self.is_static_wait = False
         super().__init__(None, **kwargs)
 
     def begin(self) -> None:
@@ -259,7 +254,7 @@ class Wait(Animation):
     def clean_up_from_scene(self, scene: "Scene") -> None:
         pass
 
-    def update_mobjects(self, dt: int) -> None:
+    def update_mobjects(self, dt: float) -> None:
         pass
 
     def interpolate(self, alpha: float) -> None:

@@ -6,7 +6,8 @@ import moderngl
 import numpy as np
 
 from ...constants import *
-from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ...mobject.mobject import Mobject
+from ...mobject.opengl_mobject import OpenGLPoint
 
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
 from ...utils.bezier import (
@@ -40,7 +41,7 @@ JOINT_TYPE_MAP = {
 }
 
 
-class OpenGLVMobject(OpenGLMobject):
+class OpenGLVMobject(Mobject):
     fill_dtype = [
         ("point", np.float32, (3,)),
         ("unit_normal", np.float32, (3,)),
@@ -82,7 +83,7 @@ class OpenGLVMobject(OpenGLMobject):
         flat_stroke=True,
         render_primitive=moderngl.TRIANGLES,
         triangulation_locked=False,
-        **kwargs
+        **kwargs,
     ):
         self.fill_color = fill_color
         self.fill_opacity = fill_opacity
@@ -114,11 +115,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = np.zeros(0, dtype="i4")
         super().__init__(**kwargs)
         self.refresh_unit_normal()
-
-        #
-        #     def get_group_class(self):
-        #         return VGroup
-        #
 
     def init_data(self):
         super().init_data()
@@ -560,7 +556,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_anchors_and_handles(self):
         """
-        returns anchors1, handles, anchors2,
+        Returns anchors1, handles, anchors2,
         where (anchors1[i], handles[i], anchors2[i])
         will be three points defining a quadratic bezier curve
         for any i in range(0, len(anchors1))
@@ -645,7 +641,7 @@ class OpenGLVMobject(OpenGLMobject):
         if not recompute:
             return self.data["unit_normal"][0]
 
-        if len(self.data["points"]) < 3:
+        if len(self.points) < 3:
             return OUT
 
         area_vect = self.get_area_vector()
@@ -733,9 +729,9 @@ class OpenGLVMobject(OpenGLMobject):
             ipc = np.round(n * norms / sum(norms)).astype(int)
 
         diff = n - sum(ipc)
-        for x in range(diff):
+        for _ in range(diff):
             ipc[np.argmin(ipc)] += 1
-        for x in range(-diff):
+        for _ in range(-diff):
             ipc[np.argmax(ipc)] -= 1
 
         new_points = []
@@ -880,7 +876,7 @@ class OpenGLVMobject(OpenGLMobject):
     def triggers_refreshed_triangulation(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
-            old_points = self.get_points()
+            old_points = self.get_points().copy()
             func(self, *args, **kwargs)
             if not np.all(self.get_points() == old_points):
                 self.refresh_triangulation()
@@ -904,6 +900,11 @@ class OpenGLVMobject(OpenGLMobject):
         super().apply_function(function, **kwargs)
         if self.make_smooth_after_applying_functions or make_smooth:
             self.make_approximately_smooth()
+        return self
+
+    @triggers_refreshed_triangulation
+    def apply_points_function(self, *args, **kwargs):
+        super().apply_points_function(*args, **kwargs)
         return self
 
     @triggers_refreshed_triangulation
@@ -995,14 +996,14 @@ class OpenGLVMobject(OpenGLMobject):
         return result
 
     def get_fill_uniforms(self):
-        return dict(
-            is_fixed_in_frame=float(self.is_fixed_in_frame),
-            gloss=self.gloss,
-            shadow=self.shadow,
-        )
+        return {
+            "is_fixed_in_frame": float(self.is_fixed_in_frame),
+            "gloss": self.gloss,
+            "shadow": self.shadow,
+        }
 
     def get_stroke_shader_data(self):
-        points = self.data["points"]
+        points = self.points
         stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
 
         nppc = self.n_points_per_curve
@@ -1019,7 +1020,7 @@ class OpenGLVMobject(OpenGLMobject):
         return stroke_data
 
     def get_fill_shader_data(self):
-        points = self.data["points"]
+        points = self.points
         fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
         fill_data["vert_index"][:, 0] = range(len(points))
 
@@ -1054,7 +1055,7 @@ class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
         stroke_width=0,
         artificial_width=0.01,
         artificial_height=0.01,
-        **kwargs
+        **kwargs,
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height

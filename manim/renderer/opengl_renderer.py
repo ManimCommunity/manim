@@ -1,20 +1,15 @@
+from manim.mobject.mobject import Mobject
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.caching import handle_caching_play
-from manim.renderer.cairo_renderer import pass_scene_reference, handle_play_like_call
+from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.color import color_to_rgba
 import moderngl
 from .opengl_renderer_window import Window
-from .shader_wrapper import ShaderWrapper
 import numpy as np
-from ..mobject.types.vectorized_mobject import VMobject
 import itertools as it
 import time
-from .. import logger
 from ..constants import *
 from ..utils.space_ops import (
-    cross2d,
-    earclip_triangulation,
-    z_to_vector,
     quaternion_mult,
     quaternion_from_angle_axis,
     rotation_matrix_transpose_from_quaternion,
@@ -24,13 +19,13 @@ from ..utils.space_ops import (
 from ..utils.simple_functions import clip
 
 from ..mobject import opengl_geometry
-from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ..mobject.opengl_mobject import OpenGLPoint
 from PIL import Image
 from manim import config
 from ..scene.scene_file_writer import SceneFileWriter
 
 
-class OpenGLCamera(OpenGLMobject):
+class OpenGLCamera(Mobject):
     def __init__(
         self,
         frame_shape=None,
@@ -74,7 +69,7 @@ class OpenGLCamera(OpenGLMobject):
         self.data["euler_angles"] = np.array(self.euler_angles, dtype=float)
         self.refresh_rotation_matrix()
 
-    def init_points(self):
+    def generate_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
         self.set_width(self.frame_shape[0], stretch=True)
         self.set_height(self.frame_shape[1], stretch=True)
@@ -185,7 +180,7 @@ class OpenGLRenderer:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
 
-        self.original_skipping_status = skip_animations
+        self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animations_hashes = []
         self.num_plays = 0
@@ -383,6 +378,7 @@ class OpenGLRenderer:
     def play(self, scene, *args, **kwargs):
         # TODO: Handle data locking / unlocking.
         if scene.compile_animation_data(*args, **kwargs):
+            scene.begin_animations()
             scene.play_internal()
 
     def render(self, scene, frame_offset, moving_mobjects):
@@ -443,6 +439,13 @@ class OpenGLRenderer:
             dtype=dtype,
         )
         return ret
+
+    def get_frame(self):
+        # get current pixel values as numpy data in order to test output
+        raw = self.get_raw_frame_buffer_object_data(dtype="f1")
+        result_dimensions = (config["pixel_height"], config["pixel_width"], 4)
+        np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
+        return np_buf
 
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):
