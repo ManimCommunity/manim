@@ -72,7 +72,7 @@ For first-time contributors
 #. Install Manim:
  
    - See our :doc:`instructions for developers<installation/for_dev>` for
-     details and continue here afterwards
+     details and continue here afterwards.
 
 #. Install Pre-Commit (recommended):
 
@@ -106,7 +106,7 @@ Develop your contribution
    This ensures you can easily update your local repository's master with the
    first step and switch branches to work on multiple features.
 
-#. Add new or update existing test.
+#. Add new or update existing tests.
 
    Depending on your changes, you may need to update or add new tests. For new
    features, it is required that you include tests with your PR. Details of
@@ -116,7 +116,7 @@ Develop your contribution
 
    You're ready to make changes in your local repository's branch.
    You can add local files you've changed with in the current directory with
-   ``git add .``, or add specific files with:
+   ``git add .``, or add specific files with
 
    .. code-block:: shell
    
@@ -153,7 +153,7 @@ Develop your contribution
 As far as development on your local machine goes, these are the main steps you
 should follow.
 
-Polishing Changes and Submitting a Pull Request 
+Polishing Changes and Submitting a Pull Request
 -----------------------------------------------
 
 As soon as you are ready to share your local changes with the community
@@ -166,7 +166,7 @@ them."
 
    You do not need to have everything (code / documentation / tests) complete
    to open a pull request (PR). If the PR is still under development, please
-   mark it as a draft. Commnity developers will still be able to review the
+   mark it as a draft. Community developers will still be able to review the
    changes, discuss yet-to-be-implemented changes, and offer advice; however,
    the more complete your PR, the quicker it will be merged.
 
