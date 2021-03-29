@@ -1,4 +1,4 @@
-from manim.animation.animation import Animation
+from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, Succession
 from manim.animation.fading import FadeIn, FadeInFrom, FadeOutAndShift
 from manim.constants import DOWN
@@ -85,3 +85,15 @@ def test_animationbuilder_in_group():
     assert all(isinstance(anim, Animation) for anim in animation_group.animations)
     succession = Succession(sqr.animate.shift(DOWN).scale(2), FadeIn(circ))
     assert all(isinstance(anim, Animation) for anim in succession.animations)
+
+
+def test_animationgroup_with_wait():
+    sqr = Square()
+    sqr_anim = FadeIn(sqr)
+    wait = Wait()
+    animation_group = AnimationGroup(wait, sqr_anim, lag_ratio=1)
+
+    animation_group.begin()
+    timings = animation_group.anims_with_timings
+
+    assert timings == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
