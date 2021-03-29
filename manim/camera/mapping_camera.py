@@ -32,7 +32,7 @@ class MappingCamera(Camera):
         self.allow_object_intrusion = allow_object_intrusion
         Camera.__init__(self, **kwargs)
 
-    def points_to_pixel_coords(self, points: int):
+    def points_to_pixel_coords(self, points: np.array):
         return Camera.points_to_pixel_coords(
             self, np.apply_along_axis(self.mapping_func, 1, points)
         )
