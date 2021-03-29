@@ -1,4 +1,5 @@
 import pytest
+import sys
 import numpy as np
 from PIL import Image
 from pathlib import Path
@@ -15,7 +16,7 @@ from manim.utils.file_ops import add_version_before_extension
 def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         simple_scenes_path,
@@ -34,7 +35,7 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
 def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         simple_scenes_path,
@@ -55,7 +56,7 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 def test_n_flag(tmp_path, simple_scenes_path):
     scene_name = "SceneWithMultipleCalls"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         simple_scenes_path,
@@ -72,7 +73,7 @@ def test_n_flag(tmp_path, simple_scenes_path):
 def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "NoAnimations"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         simple_scenes_path,
@@ -96,7 +97,7 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
 def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         simple_scenes_path,
@@ -120,7 +121,7 @@ def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         simple_scenes_path,
@@ -145,10 +146,38 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
+def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        infallible_scenes_path,
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "-a",
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    one_is_not_empty = (
+        tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait1.mp4"
+    ).is_file()
+    assert one_is_not_empty, "running manim with -a flag did not render the first scene"
+
+    two_is_not_empty = (
+        tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait2.mp4"
+    ).is_file()
+    assert (
+        two_is_not_empty
+    ), "running manim with -a flag did not render the second scene"
+
+
+@pytest.mark.slow
 def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         simple_scenes_path,
@@ -173,7 +202,7 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
 def test_dash_as_filename(tmp_path):
     code = "class Test(Scene):\n    def construct(self):\n        self.add(Circle())\n        self.wait(1)"
     command = [
-        "python",
+        sys.executable,
         "-m",
         "manim",
         "-ql",

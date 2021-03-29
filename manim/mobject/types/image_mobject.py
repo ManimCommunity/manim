@@ -56,7 +56,7 @@ class AbstractImageMobject(Mobject):
         if self.scale_to_resolution:
             height = h / self.scale_to_resolution * config["frame_height"]
         else:
-            height = 3  ## this is the case for ImageMobjectFromCamera
+            height = 3  # this is the case for ImageMobjectFromCamera
         self.stretch_to_fit_height(height)
         self.stretch_to_fit_width(height * w / h)
 

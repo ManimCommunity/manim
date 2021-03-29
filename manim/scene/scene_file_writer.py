@@ -68,7 +68,7 @@ class SceneFileWriter(object):
         else:
             module_name = ""
 
-        if config["output_file"]:
+        if config["output_file"] and not config["write_all"]:
             default_name = config.get_dir("output_file")
         else:
             default_name = Path(scene_name)
@@ -102,7 +102,7 @@ class SceneFileWriter(object):
             self.partial_movie_directory = guarantee_existence(
                 config.get_dir(
                     "partial_movie_dir",
-                    scene_name=default_name,
+                    scene_name=scene_name,
                     module_name=module_name,
                 )
             )
@@ -238,7 +238,7 @@ class SceneFileWriter(object):
         self.add_audio_segment(new_segment, time, **kwargs)
 
     # Writers
-    def begin_animation(self, allow_write=False):
+    def begin_animation(self, allow_write=False, file_path=None):
         """
         Used internally by manim to stream the animation to FFMPEG for
         displaying or writing to a file.
@@ -249,7 +249,7 @@ class SceneFileWriter(object):
             Whether or not to write to a video file.
         """
         if config["write_to_movie"] and allow_write:
-            self.open_movie_pipe()
+            self.open_movie_pipe(file_path=file_path)
 
     def end_animation(self, allow_write=False):
         """
@@ -264,7 +264,7 @@ class SceneFileWriter(object):
         if config["write_to_movie"] and allow_write:
             self.close_movie_pipe()
 
-    def write_frame(self, frame):
+    def write_frame(self, frame_or_renderer):
         """
         Used internally by Manim to write a frame to
         the FFMPEG input buffer.
@@ -274,12 +274,19 @@ class SceneFileWriter(object):
         frame : np.array
             Pixel array of the frame.
         """
-        if config["write_to_movie"]:
-            self.writing_process.stdin.write(frame.tostring())
-        if config["save_pngs"]:
-            path, extension = os.path.splitext(self.image_file_path)
-            Image.fromarray(frame).save(f"{path}{self.frame_count}{extension}")
-            self.frame_count += 1
+        if config["use_opengl_renderer"]:
+            renderer = frame_or_renderer
+            self.writing_process.stdin.write(
+                renderer.get_raw_frame_buffer_object_data()
+            )
+        else:
+            frame = frame_or_renderer
+            if config["write_to_movie"]:
+                self.writing_process.stdin.write(frame.tobytes())
+            if config["save_pngs"]:
+                path, extension = os.path.splitext(self.image_file_path)
+                Image.fromarray(frame).save(f"{path}{self.frame_count}{extension}")
+                self.frame_count += 1
 
     def save_final_image(self, image):
         """
@@ -316,7 +323,7 @@ class SceneFileWriter(object):
             if time_diff < frame_duration:
                 sleep(frame_duration - time_diff)
 
-    def finish(self):
+    def finish(self, partial_movie_files=None):
         """
         Finishes writing to the FFMPEG buffer.
         Combines the partial movie files into the
@@ -327,24 +334,28 @@ class SceneFileWriter(object):
         if config["write_to_movie"]:
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
-            self.combine_movie_files()
+            self.combine_movie_files(partial_movie_files=partial_movie_files)
             if config["flush_cache"]:
                 self.flush_cache_directory()
             else:
                 self.clean_cache()
 
-    def open_movie_pipe(self):
+    def open_movie_pipe(self, file_path=None):
         """
         Used internally by Manim to initialise
         FFMPEG and begin writing to FFMPEG's input
         buffer.
         """
-        file_path = self.partial_movie_files[self.renderer.num_plays]
+        if file_path is None:
+            file_path = self.partial_movie_files[self.renderer.num_plays]
         self.partial_movie_file_path = file_path
 
         fps = config["frame_rate"]
-        height = config["pixel_height"]
-        width = config["pixel_width"]
+        if config["use_opengl_renderer"]:
+            width, height = self.renderer.get_pixel_shape()
+        else:
+            height = config["pixel_height"]
+            width = config["pixel_width"]
 
         command = [
             FFMPEG_BIN,
@@ -365,6 +376,8 @@ class SceneFileWriter(object):
             "-metadata",
             f"comment=Rendered with Manim Community v{__version__}",
         ]
+        if config["use_opengl_renderer"]:
+            command += ["-vf", "vflip"]
         if config["transparent"]:
             command += ["-vcodec", "qtrle"]
         else:
@@ -405,7 +418,7 @@ class SceneFileWriter(object):
         )
         return os.path.exists(path)
 
-    def combine_movie_files(self):
+    def combine_movie_files(self, partial_movie_files=None):
         """
         Used internally by Manim to combine the separate
         partial movie files that make up a Scene into a single
@@ -463,7 +476,11 @@ class SceneFileWriter(object):
                 self.gif_file_path = str(
                     add_version_before_extension(self.gif_file_path)
                 )
-            commands += [self.gif_file_path]
+            commands += [
+                "-vf",
+                f"fps={np.clip(config['frame_rate'], 1, 50)},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
+                self.gif_file_path,
+            ]
 
         if not self.includes_sound:
             commands.insert(-1, "-an")
@@ -472,16 +489,15 @@ class SceneFileWriter(object):
         combine_process.wait()
 
         if self.includes_sound:
-            sound_file_path = movie_file_path.replace(
-                config["movie_file_extension"], ".wav"
-            )
+            extension = config["movie_file_extension"]
+            sound_file_path = movie_file_path.replace(extension, ".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
             self.audio_segment.export(
                 sound_file_path,
                 bitrate="312k",
             )
-            temp_file_path = movie_file_path.replace(".", "_temp.")
+            temp_file_path = movie_file_path.replace(extension, f"_temp{extension}")
             commands = [
                 FFMPEG_BIN,
                 "-i",
@@ -532,7 +548,7 @@ class SceneFileWriter(object):
                 len(cached_partial_movies) - config["max_files_cached"]
             )
             oldest_files_to_delete = sorted(
-                [partial_movie_file for partial_movie_file in cached_partial_movies],
+                cached_partial_movies,
                 key=os.path.getatime,
             )[:number_files_to_delete]
             # oldest_file_path = min(cached_partial_movies, key=os.path.getatime)

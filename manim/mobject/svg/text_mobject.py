@@ -693,7 +693,7 @@ class Text(SVGMobject):
     def __init__(
         self,
         text: str,
-        fill_opacity: int = 1,
+        fill_opacity: float = 1.0,
         stroke_width: int = 0,
         color: str = WHITE,
         size: int = 1,
@@ -1223,7 +1223,7 @@ class MarkupText(SVGMobject):
         colormap = self.extract_color_tags()
         if len(colormap) > 0:
             logger.warning(
-                f'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
+                'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
             )
         gradientmap = self.extract_gradient_tags()
 
@@ -1361,7 +1361,7 @@ class MarkupText(SVGMobject):
         Removes the ``<gradient>`` tag, as it is not part of Pango's markup and would cause an error.
         """
         tags = re.finditer(
-            '<gradient\s+from="([^"]+)"\s+to="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</gradient>',
+            r'<gradient\s+from="([^"]+)"\s+to="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</gradient>',
             self.original_text,
             re.S,
         )
@@ -1403,7 +1403,7 @@ class MarkupText(SVGMobject):
         will be removed.
         """
         tags = re.finditer(
-            '<color\s+col="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</color>',
+            r'<color\s+col="([^"]+)"(\s+offset="([^"]+)")?>(.+?)</color>',
             self.original_text,
             re.S,
         )

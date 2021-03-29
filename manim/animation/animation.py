@@ -14,7 +14,9 @@ if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 
 from .. import logger
-from ..mobject.mobject import Mobject, _AnimationBuilder
+from ..mobject import mobject
+from ..mobject import opengl_mobject
+from ..mobject.mobject import Mobject
 from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
@@ -31,7 +33,7 @@ class Animation:
         # If 0 < lag_ratio < 1, its applied to each
         # with lagged start times
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
-        run_time: int = DEFAULT_ANIMATION_RUN_TIME,
+        run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: typing.Callable[[float, float], np.ndarray] = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
@@ -112,7 +114,7 @@ class Animation:
             *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
         )
 
-    def update_mobjects(self, dt: int) -> None:
+    def update_mobjects(self, dt: float) -> None:
         """
         Updates things like starting_mobject, and (for
         Transforms) target_mobject.  Note, since typically
@@ -195,7 +197,9 @@ class Animation:
         return self.remover
 
 
-def prepare_animation(anim: Union["Animation", "_AnimationBuilder"]) -> "Animation":
+def prepare_animation(
+    anim: Union["Animation", "mobject._AnimationBuilder"]
+) -> "Animation":
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
 
@@ -222,7 +226,7 @@ def prepare_animation(anim: Union["Animation", "_AnimationBuilder"]) -> "Animati
         TypeError: Object 42 cannot be converted to an animation
 
     """
-    if isinstance(anim, _AnimationBuilder):
+    if isinstance(anim, mobject._AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):
@@ -238,6 +242,7 @@ class Wait(Animation):
         self.duration = duration
         self.mobject = None
         self.stop_condition = stop_condition
+        self.is_static_wait = False
         super().__init__(None, **kwargs)
 
     def begin(self) -> None:
@@ -249,7 +254,7 @@ class Wait(Animation):
     def clean_up_from_scene(self, scene: "Scene") -> None:
         pass
 
-    def update_mobjects(self, dt: int) -> None:
+    def update_mobjects(self, dt: float) -> None:
         pass
 
     def interpolate(self, alpha: float) -> None:

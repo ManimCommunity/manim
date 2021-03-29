@@ -49,7 +49,7 @@ __all__ = ["GraphScene"]
 import itertools as it
 
 from .. import config
-from ..animation.creation import Write, DrawBorderThenFill, ShowCreation
+from ..animation.creation import Write, DrawBorderThenFill, Create
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
@@ -303,7 +303,8 @@ class GraphScene(Scene):
                         dot = Dot().move_to(self.coords_to_point(time, dat))
                         self.add(dot)
         """
-        assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
+        assert hasattr(self, "x_axis")
+        assert hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
         result += self.y_axis.number_to_point(y)[1] * UP
         return result
@@ -618,7 +619,7 @@ class GraphScene(Scene):
             else:
                 raise ValueError("Invalid input sample type")
             graph_point = self.input_to_graph_point(sample_input, graph)
-            if bounded_graph == None:
+            if bounded_graph is None:
                 y_point = 0
             else:
                 y_point = bounded_graph.underlying_function(x)
@@ -1007,7 +1008,7 @@ class GraphScene(Scene):
         if animated:
             self.play(
                 DrawBorderThenFill(triangle),
-                ShowCreation(v_line),
+                Create(v_line),
                 Write(T_label, run_time=1),
                 **kwargs,
             )
