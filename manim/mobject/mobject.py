@@ -2808,6 +2808,10 @@ class _AnimationBuilder:
             setattr(anim, attr, value)
 
         return anim
+    
+    def is_dummy(self):
+        from ..animation.animation import animation_is_dummy
+        return animation_is_dummy(self)
 
 
 def override_animate(method):

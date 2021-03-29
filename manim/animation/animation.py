@@ -195,7 +195,14 @@ class Animation:
 
     def is_remover(self) -> bool:
         return self.remover
+    
+    def is_dummy(self) -> bool:
+        return animation_is_dummy(self)
 
+def animation_is_dummy(
+    anim: Union["Animation", "mobject._AnimationBuilder"]
+) -> bool:
+    return True if anim.mobject is None else False
 
 def prepare_animation(
     anim: Union["Animation", "mobject._AnimationBuilder"]
