@@ -11,6 +11,7 @@ from manim.utils.module_ops import (
 )
 
 from manim._config.main_utils import parse_args
+from manim.stream_starter import livestream
 
 
 def main():
