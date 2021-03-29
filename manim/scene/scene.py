@@ -983,15 +983,34 @@ class Scene(Container):
 
         Parameters
         ----------
+
         sound_file : str
             The path to the sound file.
-
         time_offset : int,float, optional
             The offset in the sound file after which
             the sound can be played.
+        gain : float
+            Amplification of the sound.
 
-        gain :
+        Examples
+        --------
+        .. manim:: SoundExample
 
+            class SoundExample(Scene):
+                # Source of sound under Creative Commons 0 License. https://freesound.org/people/Druminfected/sounds/250551/
+                def construct(self):
+                    dot = Dot().set_color(GREEN)
+                    self.add_sound("click.wav")
+                    self.add(dot)
+                    self.wait()
+                    self.add_sound("click.wav")
+                    dot.set_color(BLUE)
+                    self.wait()
+                    self.add_sound("click.wav")
+                    dot.set_color(RED)
+                    self.wait()
+
+        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>`_ .
         """
         if self.renderer.skip_animations:
             return
