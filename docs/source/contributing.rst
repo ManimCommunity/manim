@@ -106,12 +106,6 @@ Develop your contribution
    This ensures you can easily update your local repository's master with the
    first step and switch branches to work on multiple features.
 
-#. Add new or update existing tests.
-
-   Depending on your changes, you may need to update or add new tests. For new
-   features, it is required that you include tests with your PR. Details of
-   our testing system are explained in the `corresponding Wiki Entry <https://github.com/ManimCommunity/manim/wiki/Testing>`_.
-
 #. Write some awesome code!
 
    You're ready to make changes in your local repository's branch.
@@ -130,6 +124,12 @@ Develop your contribution
    
       When crafting commit messages, it is highly recommended that
       you adhere to `these guidelines <https://www.conventionalcommits.org/en/v1.0.0/>`_.
+
+#. Add new or update existing tests.
+
+   Depending on your changes, you may need to update or add new tests. For new
+   features, it is required that you include tests with your PR. Details of
+   our testing system are explained in the `corresponding Wiki Entry <https://github.com/ManimCommunity/manim/wiki/Testing>`_.
 
 
 #. Update docstrings and documentation:
