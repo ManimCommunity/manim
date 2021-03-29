@@ -16,6 +16,9 @@ refactoring code.  As our repository is a Fork of `Manim by
 3b1b <https://github.com/3b1b/manim>`_, contributing in this way can be a bit
 confusing.  Here is a short guide on how to do it.
 
+.. NOTE::
+   Please ensure that you are reading the latest version of this guide by ensuring that "latest" is selected in the version switcher.
+
 
 Setup Manim and version control
 ===============================
