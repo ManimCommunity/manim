@@ -1,138 +1,427 @@
-Contributors
+#########
+Changelog
+#########
+
+.. contents:: Release history
+   :depth: 1
+   :local:
+   :backlinks: none
+
+
+****************
+Upcoming release
+****************
+
+:Date: TBD
+
+
+******
+v0.4.0
+******
+
+:Date: March 3, 2021
+
+The changes since Manim Community release v0.3.0 are listed below.
+
+Breaking Changes
+================
+
+- :pr:`915`: Manim's SVG engine has been reworked and is able to handle a wider variations of SVG files. In particular: fill and stroke properties are now retained from the original files. Breaking change: ``VMobjectFromSVGPathstring`` is deprecated and has been renamed to ``SVGPathMobject``.
+
+
+New Features
 ============
 
-A total of 30 people contributed to this
-release. People with a '+' by their names authored a patch for the first
-time.
+- :pr:`1026`: Add 3D Mobjects: :class:`~.Cone`, :class:`~.Cylinder`, :class:`~.Line3D`, :class:`~.Arrow3D` and :class:`~.Torus`
+- :pr:`1047`: Add documentation and examples for :class:`~.Matrix`
+- :pr:`1044`: ``register_font`` is available for macOS
+- :pr:`995`: Add generic :func:`~.Mobject.set` method and compatibility layer between properties and ``get_*``/``set_*`` methods
 
-* Abel Aebker +
-* Abhijith Muthyala
-* AntonBallmaier +
-* Aron
-* Benjamin Hackl
-* Bogdan Stăncescu +
-* Darylgolden
-* Devin Neal
-* GameDungeon +
-* Hugues Devimeux
-* Jason Villanueva
-* Kapil Sachdeva
-* KingWampy
-* Lionel Ray +
-* Mark Miller
-* Mohammad Al-Fetyani +
-* Naveen M K
-* Niklas Dewally +
-* Oliver +
-* Roopesh +
-* Seb Pearce +
-* aebkea +
-* friedkeenan
-* hydrobeam +
-* kolibril13
-* tfglynn +
+Bugfixes and Enhancements
+=========================
+
+- :pr:`981`: Fixed hot reload functionality for the WebGL renderer on Windows
+- :pr:`1053`: Repair links to source code in stable version of documentation
+- :pr:`1067`: Add ManimPango to ReadTheDocs requirements
+- :pr:`1058`: Replace ``<color>`` syntax by Pango's ``<span foreground>`` for coloring parts of :class:`~.MarkupText` and allow using colors for underline, overline and strikethrough in MarkupText
+- :pr:`1063`: Fix documentation related to ``.animate``
+- :pr:`1065`: Remove duplicate word 'vector'
+- :pr:`1060`: Update Linux installation instructions to mention the installation of Pango
+- :pr:`1050`: Ensure that the user-supplied stroke color and width gets applied to :class:`~.Cross`
+- :pr:`1059`: More descriptive error when accessing an unhandled mobject attribute
+- :pr:`1048`: Use absolute path in ``make_and_open_docs.py``
+- :pr:`1000`: Remove ``MovingCameraScene.setup`` and ``MovingCameraScene.camera_frame``
+- :pr:`1051`: Corrections for setting stroke related attributes on :class:`~.VMobject`
+- :pr:`1043`: Make :class:`~.CubicBezier` explicitly accept four points
+- :pr:`1046`: Use any version of ``importlib-metadata``
+- :pr:`1030`: Parse ``.log`` file and try to print LaTeX errors if compilation fails
+- :pr:`1015`: Documentation: Add more explicit instructions related to ``tlmgr``
+- :pr:`1028`: Documentation: Update installation guide on mac with Apple Silicon
+- :pr:`1032`: Remove ``Square.side_length`` property
+- :pr:`1031`: Fix link to wikipedia vector graphics page
+- :pr:`1021`: Documentation: Added example to :class:`~.CubicBezier`
+- :pr:`1017`: Added ``progress_bar`` to ``digest_args`` to fix the ``--progress_bar`` CLI flag
+- :pr:`1018`: Remove redundancy in :class:`~.FunctionGraph` arguments
+- :pr:`1024`: Migrate ``width`` / ``height`` / ``depth`` to properties
+- :pr:`1022`: Fix ``-p`` flag when passing ``-s``
+- :pr:`1008`: CI pipeline: fix release asset upload
+- :pr:`983`: Make sure last frame for animations with updaters is correct
+- :pr:`984`: Add manim version to CLI output, append version name for generated ``.gif`` and ``.png`` files, add version to metadata of rendered videos, change dark blue terminal text to default green
+- :pr:`993`: Fix setting Mobject color to a gradient by passing a list of colors in :meth:`~.VMobject.set_color`
+- :pr:`1003`: Fix animation :class:`~.GrowArrow`
+- :pr:`1010`: Disable STDIN interaction for ffmpeg concat.
+- :pr:`969`: Fix the ``--tex_template`` CLI flag
+- :pr:`989`: Fix the ``manim cfg export`` subcommand
+- :pr:`1005`: Fix the feature where ``-`` is used as the filename
+- :pr:`998`: Allow using hexadecimal color codes with 3 characters
+- :pr:`996`: Changed the message of ``manim --version`` to not include "Edition"
 
 
-The patches included in this release have been reviewed by
-the following contributors.
 
-* Abel Aebker
-* Abhijith Muthyala
-* Benjamin Hackl
-* Devin Neal
-* Jason Villanueva
-* KingWampy
-* Lionel Ray
-* Mark Miller
-* Naveen M K
-* Oliver
-* vector67
+******
+v0.3.0
+******
 
-Pull requests merged
-====================
+:Date: February 1, 2021
 
-A total of 17 pull requests were merged for this release.
+The changes since Manim Community release v0.2.0 are listed below.
 
-Highlight
----------
 
-* `#1075 <https://github.com/ManimCommunity/manim/pull/1075>`__: Add OpenGL Renderer
-   Adds an OpenGLRenderer, OpenGLCamera, OpenGL-enabled Mobjects, and a `--use_opengl_renderer` flag. When this flag is passed, you can pass the `-p` flag to preview animations, the `-w` flag to generate video, and the `-q` flag to specify render quality. If you don't pass either the `-p` or the `-w` flag, nothing will happen. Scenes rendered with the OpenGL renderer must *only* use OpenGL-enabled Mobjects.
-New feature
------------
+New Features
+============
 
-* `#1107 <https://github.com/ManimCommunity/manim/pull/1107>`__: Added :class:`~.Unwrite` animation class to complement :class:`~.Write`
-   Added :class:`Unwrite` which inherits from :class:`~.Write`. It automatically reverses the animation of :class:`~.Write` by passing the reversed rate function, but it also takes an additional boolean parameter `reverse` which, if `False`, renders the animation from left to right (assuming text oriented in the usual way), but if `True`, it renders right to left.
-* `#1085 <https://github.com/ManimCommunity/manim/pull/1085>`__: Added Angle/RightAngle classes for two intersecting lines
-   ``Angle`` and ``RightAngle`` both take two lines as input. If they intersect, or share a common vertex, an angle is drawn between them. Users can customize the look of the angle and also use a dotted right angle.
-Enhancement
------------
+- :pr:`945`: :meth:`~.Graph.change_layout` method for :class:`~.Graph` mobject
+- :pr:`943`: IPython %%manim magic
+- :pr:`970`: Added ``--version`` command line flag
+- :pr:`948`: Allow passing a code string to :class:`~.Code`
+- :pr:`917`: Allow overriding new-style method animations
+- :pr:`756`: Allow setting frame_height and frame_width via config file
+- :pr:`939`: Added custom font files support
+- :pr:`892`: Added ManimCommunity colors
+- :pr:`922`: Tree layout for Graph mobject
+- :pr:`935`: Added code of conduct
+- :pr:`916`: Multi-column layout for partite graphs
+- :pr:`742`: Units: Pixels, Munits, Percent in :mod:`~.utils.unit`
+- :pr:`893`: Convenience method :meth:`~.Graph.from_networkx` for creating a graph from a networkx graph
 
-* `#718 <https://github.com/ManimCommunity/manim/pull/718>`__: Rotating the numbers in y axis
-   In Axes, the y axis will be rotated 90deg but the numbers are
-   also rotated and shouldn't be. Fixes this issue.
-* `#1070 <https://github.com/ManimCommunity/manim/pull/1070>`__: Raise FileNotFoundError when unable to locate the .cfg file specified via `--config_file`
-   Raising the error will stop script execution and let the user know that there are problems with the `--config_file` location instead of reverting back to the default configuration.
-Bug
----
+Bugfixes and Enhancements
+=========================
 
-* `#1115 <https://github.com/ManimCommunity/manim/pull/1115>`__: Fixed bugs in :class:`~.OpenGLMobject` and added :class:`ApplyMethod` support 
-   Fixed undefined variables and converted :class:`Mobject` to :class:`OpenGLMobject`. Also, fixed assert statement in :class:`ApplyMethod`.
-* `#1092 <https://github.com/ManimCommunity/manim/pull/1092>`__: Refactored coordinate_systems.py, fixed bugs, added :class:`~.NumberPlane` test
-   The default behavior of :meth:`~.Mobject.rotate` is to rotate about the center of :class:`~.Mobject`. :class:`~.NumberLine` is symmetric about the point at the number 0 only when ``|x_min|`` == ``|x_max|``. Ideally, the rotation should coincide with
-   the point at number 0 on the line.
-
-   Added a regression test and additionally fixed some bugs introduced in :pr:`718`.
-* `#1078 <https://github.com/ManimCommunity/manim/pull/1078>`__: Removed stray print statements from `__main__.py`
-   Uses rich's print traceback instead and fixes an issue in printing the version twice when `manim --version` is called.
-* `#1086 <https://github.com/ManimCommunity/manim/pull/1086>`__: Fixed broken line spacing in :class:`~.Text`
-   The `line_spacing` kwarg was missing when creating :class:`Text` Mobjects; this adds it.
-* `#1083 <https://github.com/ManimCommunity/manim/pull/1083>`__: Corrected the shape of :class:`~.Torus`
-   :class:`Torus` draws a surface with an elliptical cross-section when `minor_radius` is different from 1. This PR ensures the cross-section is always a circle.
-Deprecation
------------
+- :pr:`988`: Fix Windows CI pipeline by adding missing LaTeX package
+- :pr:`961`: Added typings and docs for vectorized mobjects and bezier related functions
+- :pr:`977`: JupyterLab docker image and documentation for manim and IPython
+- :pr:`985`: Fix variable name for webgl renderer
+- :pr:`954`: Fix edges lagging behind vertices in animations of graphs
+- :pr:`980`: Allow usage of custom Pygments styles in Code
+- :pr:`952`: Allow passing tween information to the WebGL frontend
+- :pr:`978`: Fix ``possible_paths`` not printing in ``code_mobject``
+- :pr:`976`: Update ``ManimPango``
+- :pr:`967`: Automatically import plugins
+- :pr:`971`: Make ManimCommunity look consistent
+- :pr:`957`: Raise ``NotImplementedError`` when trying to chain overridden method animations
+- :pr:`947`: Several fixes and improvements for :class:`~.PointCloundDot`
+- :pr:`923`: Documentation: move installation instructions for developers to page for developers
+- :pr:`964`: Added unit test for :class:`~.NumberLine`'s unit vector
+- :pr:`960`: Magnitude of :class:`~.NumberLine`'s unit vector should be ``unit_size``, not 1
+- :pr:`958`: Fix code formatting in ``utils/debug.py``
+- :pr:`953`: Update license year
+- :pr:`944`: Interpolate stroke opacity in :class:`~.FadeIn` and update ``stroke_opacity`` and ``fill_opacity`` in :meth:`~.VMobject.set_stroke` and :meth:`~.VMobject.set_fill`
+- :pr:`865`: Rename ``get_submobject_index_labels`` to ``index_labels``
+- :pr:`941`: Added keyword arguments ``x_min``, ``x_max``, ``y_min``, ``y_max`` to :class:`~.ThreeDAxes`
+- :pr:`886`: Let the render progress bar show details about the rendered animation again
+- :pr:`936`: Fix :class:`~.BulletedList` TeX environment problem and add a typing to ``get_module``
+- :pr:`938`: Remove dependency on progressbar
+- :pr:`937`: Change 'brew cask install' to 'brew install --cask' for CI pipeline
+- :pr:`933`: Make matrix work with lists again
+- :pr:`932`: Correctly parse ``log_dir`` option
+- :pr:`920`: Raise error if markup in :class:`~.MarkupText` is invalid
+- :pr:`929`: Raise an error if a :class:`~.Matrix` object is created with < 2-dimensional input
+- :pr:`907`: Make Scene.add_sound work again (when running with ``--disable_caching``)
+- :pr:`906`: Allow new-style method animation to be used in animation groups
+- :pr:`908`: Removed deprecated command line arguments from documentation
+- :pr:`903`: Tiny grammar improvements
+- :pr:`904`: Added blank line between imports and class example
+- :pr:`898`: CI: fix publish workflow
 
-* `#1110 <https://github.com/ManimCommunity/manim/pull/1110>`__: Deprecated SmallDot + OpenGLSmallDot
-   `SmallDot` isn't necessary and a deprecation warning will be raised. This will be removed in a future release.
+
+******
+v0.2.0
+******
+
+:Date: January 1, 2021
+
+The changes since Manim Community release v0.1.1 are listed below.
+
+Breaking Changes
+================
+
+- Remove all CONFIG dictionaries and all calls to ``digest_config`` and allow
+  passing options directly to the constructor of the corresponding classes (:pr:`783`).
+
+  Practically, this means that old constructions using ``CONFIG`` like::
+
+      class SomeMobject(Thing):
+          CONFIG = {
+              "my_awesome_property": 42
+          }
+
+  where corresponding objects were then instantiated as ``my_mobject = SomeMobject()``
+  should now be created simply using ``my_mobject = SomeMobject(my_awesome_property=42)``.
+
+- Remove old syntax for animating mobject methods by passing the methods and arguments to ``self.play``,
+  and use a new syntax featuring the ``animate`` property (:pr:`881`).
+
+  For example: the old-style ``play`` call
+  ::
+
+      self.play(my_square.shift, LEFT)
+
+  should be replaced with the new following call using the ``animate`` property::
+
+      self.play(my_square.animate.shift(LEFT))
+
+New Features
+============
+
+- Added creation animation for :class:`~.ManimBanner` (:pr:`814`)
+- Added some documentation to :meth:`~.Scene.construct` (:pr:`753`)
+- Added a black and white monochromatic version of Manim's logo (:pr:`826`)
+- Added support for a plugin system (``manim plugin`` subcommand + documentation) (:pr:`784`)
+- Implemented ``__add__``, ``__iadd__``, ``__sub__``, and ``__isub__`` for :class:`~.Mobject` (allowing for notation like ``some_vgroup + some_mobject``) (:pr:`790`)
+- Added type hints to several files in the library (:pr:`835`)
+- Added some examples to :mod:`~.animation.creation` (:pr:`820`)
+- Added some examples to :class:`~.DashedLine` and :class:`~.CurvesAsSubmobjects` (:pr:`833`)
+- Added new implementation for text rendered with Pango, :class:`~.MarkupText`, which can be formatted with an HTML-like syntax (:pr:`855`)
+- Added Fading in and out examples and deprecation of ``FadeInFromDown`` and ``FadeOutAndShiftDown`` (:pr:`827`)
+- Added example for :class:`~.MoveAlongPath` to the docs (:pr:`873`)
+- Added ambient rotate for other angles - theta, phi, gamma (:pr:`660`)
+- Use custom bindings for Pango (:pr:`878`)
+- Added :class:`~.Graph`, a basic implementation for (graph theory) graphs (:pr:`861`)
+- Allow for chaining methods when using the new ``.animate`` syntax in :meth:`~.Scene.play` (:pr:`889`)
+
+Bugfixes
+========
+
+- Fix doctests in .rst files (:pr:`797`)
+- Fix failing doctest after adding ``manim plugin`` subcommand (:pr:`831`)
+- Normalize the direction vector in :meth:`~.mobject_update_utils.always_shift` (:pr:`839`)
+- Add ``disable_ligatures`` to :class:`~.Text` (via :pr:`804`)
+- Make scene caching aware of order of Mobjects (:pr:`845`)
+- Fix :class:`~.CairoText` to work with new config structure (:pr:`858`)
+- Added missing argument to classes inheriting from :class:`~.Matrix` (:pr:`859`)
+- Fixed: ``z_index`` of mobjects contained in others as submobjects is now properly respected (:pr:`872`)
+- Let :meth:`~.ParametricSurface.set_fill_by_checkboard` return the modified surface to allow method chaining (:pr:`883`)
+- Mobjects added during an updater are added to ``Scene.moving_mobjects`` (:pr:`838`)
+- Pass background color to JS renderer (:pr:`876`)
+- Small fixes to docstrings. Tiny cleanups. Remove ``digest_mobject_attrs``. (:pr:`834`)
+- Added closed shape detection in :class:`~.DashedVMobject` in order to achieve an even dash pattern (:pr:`884`)
+- Fix Spelling in docstrings and variables across the library (:pr:`890`)
+
+Other changes
+=============
+
+- Change library name to manim (:pr:`811`)
+- Docker: use local files when building an image (:pr:`803`)
+- Let ffmpeg render partial movie files directly instead of temp files (:pr:`817`)
+- ``manimce`` to ``manim`` & capitalizing Manim in readme (:pr:`794`)
+- Added flowchart for different docstring categories (:pr:`828`)
+- Improve example in module docstring of :mod:`~.animation.creation` + explicitly document buff parameter in :meth:`~.Mobject.arrange` (:pr:`825`)
+- Disable CI pipeline for Python 3.6 (:pr:`823`)
+- Update URLs in docs (:pr:`832`)
+- Move upcoming changelog to GitHub-wiki (:pr:`822`)
+- Change badges in readme (:pr:`854`)
+- Exclude generated gRPC files from source control (:pr:`868`)
+- Added linguist-generated attribute to ``.gitattributes`` (:pr:`877`)
+- Cleanup: removed inheritance from ``object`` for some classes, refactor some imports (:pr:`795`)
+- Change several ``str.format()`` to ``f``-strings (:pr:`867`)
+- Update javascript renderer (:pr:`830`)
+- Bump version number to 0.2.0, update changelog (:pr:`894`)
+
+
+******
+v0.1.1
+******
+
+:Date: December 1, 2020
+
+Changes since Manim Community release v0.1.0
+
+Plugins
+=======
+
+#. Provided a standardized method for plugin discoverability, creation,
+   installation, and usage. See the :ref:`documentation <plugins>`.
+
+Fixes
+=====
+
+#. JsRender is optional to install. (via :pr:`697`).
+#. Allow importing modules from the same directory as the input
+   file when using ``manim`` from the command line (via :pr:`724`).
+#. Remove some unnecessary or unpythonic methods from :class:`~.Scene`
+   (``get_mobjects``, ``add_mobjects_among``, ``get_mobject_copies``),
+   via :pr:`758`.
+#. Fix formatting of :class:`~.Code` (via :pr:`798`).
+
+Configuration
+=============
+
+#. Removed the ``skip_animations`` config option and added the
+   ``Renderer.skip_animations`` attribute instead (via :pr:`696`).
+#. The global ``config`` dict has been replaced by a global ``config`` instance
+   of the new class :class:`~.ManimConfig`.  This class has a dict-like API, so
+   this should not break user code, only make it more robust.  See the
+   Configuration tutorial for details.
+#. Added the option to configure a directory for external assets (via :pr:`649`).
+
+
 Documentation
+=============
+
+#. Add ``:issue:`` and ``:pr:`` directives for simplifying linking to issues and
+   pull requests on GitHub (via :pr:`685`).
+#. Add a ``skip-manim`` tag for skipping the ``.. manim::`` directive when
+   building the documentation locally (via :pr:`796`).
+
+
+Mobjects, Scenes, and Animations
+================================
+
+#. The ``alignment`` attribute to Tex and MathTex has been removed in favour of ``tex_environment``.
+#. :class:`~.Text` now uses Pango for rendering. ``PangoText`` has been removed. The old implementation is still available as a fallback as :class:`~.CairoText`.
+#. Variations of :class:`~.Dot` have been added as :class:`~.AnnotationDot`
+   (a bigger dot with bolder stroke) and :class:`~.LabeledDot` (a dot containing a
+   label).
+#. Scene.set_variables_as_attrs has been removed (via :pr:`692`).
+#. Ensure that the axes for graphs (:class:`GraphScene`) always intersect (:pr:`580`).
+#. Now Mobject.add_updater does not call the newly-added updater by default
+   (use ``call_updater=True`` instead) (via :pr:`710`)
+#. VMobject now has methods to determine and change the direction of the points (via :pr:`647`).
+#. Added BraceBetweenPoints (via :pr:`693`).
+#. Added ArcPolygon and ArcPolygonFromArcs (via :pr:`707`).
+#. Added Cutout (via :pr:`760`).
+#. Added Mobject raise not implemented errors for dunder methods and implementations for VGroup dunder methods (via :pr:`790`).
+#. Added :class:`~.ManimBanner` for a animated version of our logo and banner (via :pr:`729`)
+#. The background color of a scene can now be changed reliably by setting, e.g.,
+   ``self.camera.background_color = RED`` (via :pr:`716`).
+
+
+
+******
+v0.1.0
+******
+
+:Date: October 21, 2020
+
+This is the first release of manimce after forking from 3b1b/manim.  As such,
+developers have focused on cleaning up and refactoring the codebase while still
+maintaining backwards compatibility wherever possible.
+
+
+New Features
+============
+
+Command line
+------------
+
+#. Output of 'manim --help' has been improved
+#. Implement logging with the :code:`rich` library and a :code:`logger` object instead of plain ol' prints
+#. Added a flag :code:`--dry_run`, which doesn't write any media
+#. Allow for running manim with :code:`python3 -m manim`
+#. Refactored Tex Template management. You can now use custom templates with command line args using :code:`--tex_template`!
+#. Re-add :code:`--save_frames` flag, which will save each frame as a png
+#. Re-introduce manim feature that allows you to type manim code in :code:`stdin` if you pass a minus sign :code:`(-)` as filename
+#. Added the :code:`--custom_folders` flag which yields a simpler output folder structure
+#. Re-implement GIF export with the :code:`-i` flag (using this flag outputs ONLY a .gif file, and no .mp4 file)
+#. Added a :code:`--verbose` flag
+#. You can save the logs to a file by using :code:`--log_to_file`
+#. Read :code:`tex_template` from config file if not specified by :code:`--tex_template`.
+#. Add experimental javascript rendering with :code:`--use_js_renderer`
+#. Add :code:`-q/--quality [k|p|h|m|l]` flag and removed :code:`-m/-l` flags.
+#. Removed :code:`--sound` flag
+
+
+Config system
 -------------
 
-* `#1101 <https://github.com/ManimCommunity/manim/pull/1101>`__: Added documentation to :class:`~.Mobject`
-   Methods for which documentation was added or improved:
-   - :meth:`~.reset_points`
-   - :meth:`~.init_colors`
-   - :meth:`~.generate_points`
-   - :meth:`~.add`
-   - :meth:`~.add_to_back`
-   - :meth:`~.remove`
-   - :meth:`~.copy`
-   - :meth:`~.update`
-   - :meth:`~.get_time_based_updaters`
-   - :meth:`~.has_time_based_updater`
-   - :meth:`~.get_updaters`
-   - :meth:`~.add_updater`
-   - :meth:`~.remove_updater`
-   - :meth:`~.clear_updaters`
-   - :meth:`~.match_updaters`
-   - :meth:`~.suspend_updating`
-   - :meth:`~.resume_updating`
-   - :meth:`~.apply_to_family`
-   - :meth:`~.shift`
-   - :meth:`~.scale`
-   - :meth:`~.add_background_rectangle`
-* `#1088 <https://github.com/ManimCommunity/manim/pull/1088>`__: Added new svg files to documentation and imports
-   In particular, SVGPathMobject, VMobjectFromPathstring, and the style_utils functions to manim's namespace.
-* `#1076 <https://github.com/ManimCommunity/manim/pull/1076>`__: Improve documentation for GraphScene
-   Updated `coords_to_point` and `point_to_coords` under `manim/scene/graph_scene.py` as the dosctring of each function confusingly described the opposite of what it is supposed to do.
-Release
--------
+#. Implement a :code:`manim.cfg` config file system, that consolidates the global configuration, the command line argument parsing, and some of the constants defined in :code:`constants.py`
+#. Added utilities for manipulating Manim’s :code:`.cfg` files.
+#. Added a subcommand structure for easier use of utilities managing :code:`.cfg` files
+#. Also some variables have been moved from ``constants.py`` to the new config system:
 
-* `#1073 <https://github.com/ManimCommunity/manim/pull/1073>`__: Removed "one line summary" from PULL_REQUEST_TEMPLATE.md
+    #. ``FRAME_HEIGHT`` to ``config["frame_width"]``
+    #. ``TOP`` to ``config["frame_height"] / 2 * UP``
+    #. ``BOTTOM`` to ``config["frame_height"] / 2 * DOWN``
+    #. ``LEFT_SIDE`` to ``config["frame_width"] / 2 * LEFT``
+    #. ``RIGHT_SIDE`` to ``config["frame_width"] / 2 * RIGHT``
+    #. ``self.camera.frame_rate`` to ``config["frame_rate"]``
 
-Testing
--------
 
-* `#1100 <https://github.com/ManimCommunity/manim/pull/1100>`__: Rewrote test cases to use sys.executable in the command instead of "python"
-   Tests would fail due to `capture()` not spawning a subshell in the correct environment, so when python was called, the test would be unable to find necessary packages.
-* `#1079 <https://github.com/ManimCommunity/manim/pull/1079>`__: Removed the hardcoded value, `manim`, in `test_version.py`
 
+
+Mobjects, Scenes, and Animations
+--------------------------------
+
+#. Add customizable left and right bracket for :code:`Matrix` mobject and :code:`set_row_colors` method for matrix mobject
+#. Add :code:`AddTeXLetterByLetter` animation
+#. Enhanced GraphScene
+
+    #. You can now add arrow tips to axes
+    #. extend axes a bit at the start and/or end
+    #. have invisible axes
+    #. highlight the area between two curves
+#. ThreeDScene now supports 3dillusion_camera_rotation
+#. Add :code:`z_index` for manipulating depth of Objects on scene.
+#. Add a :code:`VDict` class: a :code:`VDict` is to a :code:`VGroup` what a :code:`dict` is to a :code:`list`
+#. Added Scene-caching feature. Now, if a partial movie file is unchanged in your code, it isn’t rendered again! [HIGHLY UNSTABLE We're working on it ;)]
+#. Most :code:`get_` and :code:`set_` methods have been removed in favor of instance attributes and properties
+#. The :code:`Container` class has been made into an AbstractBaseClass, i.e. in cannot be instantiated.  Instead, use one of its children classes
+#. The ``TextMobject`` and ``TexMobject`` objects have been deprecated, due to their confusing names, in favour of ``Tex`` and ``MathTex``. You can still, however, continue to use ``TextMobject`` and ``TexMobject``, albeit with Deprecation Warnings constantly reminding you to switch.
+#. Add a :code:`Variable` class for displaying text that continuously updates to reflect the value of a python variable.
+#. The ``Tex`` and ``MathTex`` objects allow you to specify a custom TexTemplate using the ``template`` keyword argument.
+#. :code:`VGroup` now supports printing the class names of contained mobjects and :code:`VDict` supports printing the internal dict of mobjects
+#. Add all the standard easing functions
+#. :code:`Scene` now renders when :code:`Scene.render()` is called rather than upon instantiation.
+#. :code:`ValueTracker` now supports increment using the `+=` operator (in addition to the already existing `increment_value` method)
+#. Add :class:`PangoText` for rendering texts using Pango.
+
+
+Documentation
+=============
+
+#. Added clearer installation instructions, tutorials, examples, and API reference [WIP]
+
+
+Fixes
+=====
+
+#. Initialization of directories has been moved to :code:`config.py`, and a bunch of bugs associated to file structure generation have been fixed
+#. Nonfunctional file :code:`media_dir.txt` has been removed
+#. Nonfunctional :code:`if` statements in :code:`scene_file_writer.py` have been removed
+#. Fix a bug where trying to render the example scenes without specifying the scene would show all scene objects in the library
+#. Many :code:`Exceptions` have been replaced for more specific exception subclasses
+#. Fixed a couple of subtle bugs in :code:`ArcBetweenPoints`
+
+
+Of interest to developers
+=========================
+
+#. Python code formatting is now enforced by using the :code:`black` tool
+#. PRs now require two approving code reviews from community devs before they can be merged
+#. Added tests to ensure stuff doesn't break between commits (For developers) [Uses Github CI, and Pytest]
+#. Add contribution guidelines (for developers)
+#. Added autogenerated documentation with sphinx and autodoc/autosummary [WIP]
+#. Made manim internally use relative imports
+#. Since the introduction of the :code:`TexTemplate` class, the files :code:`tex_template.tex` and :code:`ctex_template.tex` have been removed
+#. Added logging tests tools.
+#. Added ability to save logs in json
+#. Move to Poetry.
+#. Colors have moved to an Enum
+
+Other Changes
+=============
+
+#. Cleanup 3b1b Specific Files
+#. Rename package from manimlib to manim
+#. Move all imports to :code:`__init__`, so :code:`from manim import *` replaces :code:`from manimlib.imports import *`
+#. Global dir variable handling has been removed. Instead :code:`initialize_directories`, if needed, overrides the values from the cfg files at runtime.
