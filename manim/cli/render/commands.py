@@ -203,9 +203,14 @@ def validate_resolution(ctx, param, value):
 )
 @optgroup.option(
     "--use_webgl_renderer",
+    is_flag = True,
+    help="Render scenes using the WebGL frontend.",
+)
+@optgroup.option(
+    "--webgl_renderer_path",
     default=None,
     type=click.Path(),
-    help="Render scenes using the WebGL frontend. Requires a path to the WebGL frontend.",
+    help="The path to the WebGL frontend."
 )
 @optgroup.option(
     "-t", "--transparent", is_flag=True, help="Render scenes with alpha channel."
@@ -275,6 +280,7 @@ def render(
     renderer,
     use_opengl_renderer, # Deprecated
     use_webgl_renderer, # Deprecated
+    webgl_renderer_path,
     transparent,
     background_color,
     progress_bar,
@@ -332,8 +338,9 @@ def render(
         "resolution": resolution,
         "frame_rate": frame_rate,
         "renderer": renderer,
-        "use_opengl_renderer": use_opengl_renderer,
-        "use_webgl_renderer": use_webgl_renderer,
+        "use_opengl_renderer": use_opengl_renderer, # Deprecated
+        "use_webgl_renderer": use_webgl_renderer, # Deprecated
+        "webgl_renderer_path": webgl_renderer_path,
         "transparent": transparent,
         "background_color": background_color,
         "progress_bar": progress_bar,
