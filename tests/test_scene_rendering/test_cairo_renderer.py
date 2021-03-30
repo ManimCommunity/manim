@@ -38,8 +38,16 @@ def test_when_animation_is_cached(using_temp_config):
     scene = SquareToCircle()
     # Render twice to create a cache.
     scene.render()
+    pmf = scene.renderer.file_writer.partial_movie_files
+    scene = SquareToCircle()
+    scene.update_to_time = Mock()
     scene.render()
     assert scene.renderer.file_writer.is_already_cached(
         scene.renderer.animations_hashes[0]
     )
+    # Check that the same partial movie files has been used (with he same hash)
+    assert pmf == scene.renderer.file_writer.partial_movie_files
+    # Check that manim correctly skipped the animation.
+    scene.update_to_time.assert_called_once_with(1)
+    # Check that the ouput video has been generated.
     assert_file_exists(config["output_file"])
