@@ -1,5 +1,5 @@
 import os
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from manim import *
 
@@ -51,3 +51,10 @@ def test_when_animation_is_cached(using_temp_config):
     scene.update_to_time.assert_called_once_with(1)
     # Check that the ouput video has been generated.
     assert_file_exists(config["output_file"])
+
+def test_hash_logic_is_not_called_when_caching_is_disabled(using_temp_config, disabling_caching): 
+    with patch("manim.renderer.cairo_renderer.get_hash_from_play_call") as mocked:
+        scene = SquareToCircle()
+        scene.render()
+        mocked.assert_not_called()
+        assert_file_exists(config["output_file"])
