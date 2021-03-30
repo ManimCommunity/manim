@@ -89,7 +89,7 @@ class CairoRenderer:
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             hash_current_animation = None
-        else :
+        else:
             hash_current_animation = get_hash_from_play_call(
                 scene, self.camera, scene.animations, scene.mobjects
             )
