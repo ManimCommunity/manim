@@ -10,8 +10,8 @@ assignees: ''
 #### Preliminaries
 
 - [ ] I have followed the latest version of the
-      [installation instructions](https://docs.manim.community/en/latest/installation.html).
-- [ ] I have checked the [troubleshooting page](https://docs.manim.community/en/latest/installation/troubleshooting.html) and my problem is either not mentioned there,
+      [installation instructions](https://docs.manim.community/en/stable/installation.html).
+- [ ] I have checked the [troubleshooting page](https://docs.manim.community/en/stable/installation/troubleshooting.html) and my problem is either not mentioned there,
       or the solution given there does not help.
 
 ## Description of error

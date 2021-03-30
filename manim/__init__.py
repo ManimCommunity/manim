@@ -26,6 +26,7 @@ from .animation.movement import *
 from .animation.numbers import *
 from .animation.rotation import *
 from .animation.transform import *
+from .animation.transform_matching_parts import *
 from .animation.update import *
 
 from .renderer.cairo_renderer import *

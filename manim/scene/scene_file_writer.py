@@ -491,16 +491,15 @@ class SceneFileWriter(object):
         combine_process.wait()
 
         if self.includes_sound:
-            sound_file_path = movie_file_path.replace(
-                config["movie_file_extension"], ".wav"
-            )
+            extension = config["movie_file_extension"]
+            sound_file_path = movie_file_path.replace(extension, ".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
             self.audio_segment.export(
                 sound_file_path,
                 bitrate="312k",
             )
-            temp_file_path = movie_file_path.replace(".", "_temp.")
+            temp_file_path = movie_file_path.replace(extension, f"_temp{extension}")
             commands = [
                 FFMPEG_BIN,
                 "-i",

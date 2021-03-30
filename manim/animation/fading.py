@@ -58,6 +58,7 @@ __all__ = [
     "FadeIn",
     "FadeInFrom",
     "FadeOutAndShift",
+    "FadeOutToPoint",
     "FadeInFromPoint",
     "FadeInFromLarge",
     "VFadeIn",
@@ -72,7 +73,8 @@ import numpy as np
 from .. import logger
 from ..animation.animation import Animation
 from ..animation.transform import Transform
-from ..constants import DOWN
+from ..constants import DOWN, ORIGIN
+from ..mobject.mobject import Group
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..utils.bezier import interpolate
@@ -152,6 +154,37 @@ class FadeOutAndShift(FadeOut):
     def create_target(self) -> "Mobject":
         target = super().create_target()
         target.shift(self.direction)
+        return target
+
+
+class FadeOutToPoint(FadeOut):
+    """Fades out a mobject while moving it to a specified point.
+
+    Parameters
+    ----------
+    mobject
+        The :class:`~.Mobject` to be animated.
+    point
+        Either a point or another :class:`~.Mobject` to whose center the
+        Mobject is moved in the animation. Defaults to ``ORIGIN``.
+    kwargs
+        Further keyword arguments are passed to the parent class.
+
+    """
+
+    def __init__(
+        self,
+        mobject: "Mobject",
+        point: typing.Union["Mobject", np.ndarray] = ORIGIN,
+        **kwargs
+    ) -> None:
+        self.point = point
+        super().__init__(mobject, **kwargs)
+
+    def create_target(self) -> "Mobject":
+        """Creates the target of the animation."""
+        target = super().create_target()
+        target.move_to(self.point)
         return target
 
 

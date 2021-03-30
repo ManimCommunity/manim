@@ -86,6 +86,10 @@ DR: np.ndarray = DOWN + RIGHT
 # Geometry
 START_X: int = 30
 START_Y: int = 20
+DEFAULT_DOT_RADIUS = 0.08
+DEFAULT_SMALL_DOT_RADIUS = 0.04
+DEFAULT_DASH_LENGTH = 0.05
+DEFAULT_ARROW_TIP_LENGTH = 0.35
 
 # Default buffers (padding)
 SMALL_BUFF: float = 0.1
