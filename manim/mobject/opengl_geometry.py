@@ -214,7 +214,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.arc_center = arc_center
         OpenGLVMobject.__init__(self, **kwargs)
 
-    def generate_points(self):
+    def init_points(self):
         self.set_points(
             OpenGLArc.create_quadratic_bezier_points(
                 angle=self.angle,
@@ -383,7 +383,7 @@ class OpenGLAnnularSector(OpenGLArc):
             **kwargs
         )
 
-    def generate_points(self):
+    def init_points(self):
         inner_arc, outer_arc = [
             OpenGLArc(
                 start_angle=self.start_angle,
@@ -429,7 +429,7 @@ class OpenGLAnnulus(OpenGLCircle):
             **kwargs
         )
 
-    def generate_points(self):
+    def init_points(self):
         self.radius = self.outer_radius
         outer_circle = OpenGLCircle(radius=self.outer_radius)
         inner_circle = OpenGLCircle(radius=self.inner_radius)
@@ -447,7 +447,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         self.set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
 
-    def generate_points(self):
+    def init_points(self):
         self.set_points_by_ends(self.start, self.end, self.buff, self.path_arc)
 
     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
@@ -460,7 +460,7 @@ class OpenGLLine(OpenGLTipableVMobject):
 
     def set_path_arc(self, new_value):
         self.path_arc = new_value
-        self.generate_points()
+        self.init_points()
 
     def account_for_buff(self, buff):
         if buff == 0:
@@ -773,7 +773,7 @@ class OpenGLPolygon(OpenGLVMobject):
         self.vertices = vertices
         super().__init__(**kwargs)
 
-    def generate_points(self):
+    def init_points(self):
         verts = self.vertices
         self.set_points_as_corners([*verts, verts[0]])
 

@@ -11,36 +11,48 @@ Before filling in the details, ensure:
   - "fixed that styling issue" - not descriptive enough
   - "fixed issue #XYZ" - end-user needs to do further research
 -->
+## Changelog / Overview
+<!-- Optional (Recommended): a detailed overview of the PR for the upcoming
+release's changelog entry. Useful for when the PR title isn't enough. 
+
+DO NOT REMOVE THE FOLLOWING CHANGELOG LINES, EVEN IF YOU DON'T USE THEM.-->
+<!--changelog-start-->
+
+<!--changelog-end-->
 
 ## Motivation
-<!-- Outline your motivation: In what way do your changes improve the library? -->
+<!-- In what way do your changes improve the library? -->
 
-## Overview / Explanation for Changes
-<!-- Give an overview of your changes and explain how they
-resolve the situation described in the previous section.
+## Explanation for Changes
+<!-- How do your changes improve the library?
 
-For PRs introducing new features, please provide code snippets
-using the newly introduced functionality and ideally even the
-expected rendered output. -->
+For PRs introducing new features, please provide code snippets using the
+newly introduced functionality and ideally even the expected rendered output.
+-->
 
 ## Testing Status
-<!-- Optional (but recommended): your computer specs and
-what tests you ran with their results, if any. This section
-is also intended for other testing-related comments. -->
+<!-- Optional (Recommended): your computer specs and what tests you ran with
+their results, if any. This section is also intended for other
+testing-related comments. -->
 
 ## Further Comments
-<!-- Optional, any further comments regarding your PR
-that might be useful for reviewers.. -->
+<!-- Optional: any further comments that might be useful for reviewers. -->
 
-## Acknowledgements
+## Checklist
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
-- [ ] I have chosen a descriptive PR title (see top of PR template for examples)
-<!-- Once again, thanks for helping out by contributing to manim! -->
+- [ ] I have written a descriptive PR title (see top of PR template for examples)
+- [ ] I have written a changelog entry for the PR or deem it unnecessary
+- [ ] My new functions/classes either have a docstring or are private
+- [ ] My new functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
+- [ ] My new documentation builds, looks correctly formatted, and adds no additional build warnings
+<!-- Once again, thanks for contributing to ManimCommunity! -->
 
 
-<!-- Do not modify the lines below. -->
+<!-- Do not modify the lines below. These are for the reviewers of your PR -->
 ## Reviewer Checklist
-- [ ] Newly added functions/classes are either private or have a docstring
+- [ ] The PR title is descriptive enough
+- [ ] The PR is labeled correctly
+- [ ] The changelog entry is completed if necessary
+- [ ] Newly added functions/classes either have a docstring or are private
 - [ ] Newly added functions/classes have [tests](https://github.com/ManimCommunity/manim/wiki/Testing) added and (optional) examples in the docs
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
-- [ ] The PR title is descriptive enough

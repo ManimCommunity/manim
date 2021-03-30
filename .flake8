@@ -20,16 +20,16 @@ extend-ignore = E203, E266,
                 #Remove for fixme/todo warnings
                 T101, T100
 
-                #Type Hints
+                #Type Hints - Remove later -remove from .pre-commit-config.yaml
                 ANN204, ANN003, ANN204, ANN002, ANN202, ANN001, ANN205, ANN201
 
-                #Minor Changes - Remove Later
+                #Minor Changes - Remove Later - Remove later -remove from .pre-commit-config.yaml
                 VNE002, SIM106, SIM105, SIM109,
 
-                #Code Changes - Remove later
+                #Code Changes - Remove later - Remove later -remove from .pre-commit-config.yaml
                 B006, F405, F403, F401, F821, B008, E501, B009, B010, E731, H601, VNE001,
 
-                #docstring Formatting - Remove Later
+                #docstring Formatting - Remove Later - Remove later -remove from .pre-commit-config.yaml
                 D400, D401, D205, D105, D103, D102, D102, D107, D200, D100, D101, 
                 D412, D202, D301, D104, D405, D409, D404, D411, D410, D209, D210,
                 D407,
@@ -40,8 +40,9 @@ extend-ignore = E203, E266,
                 DAR103, DAR202, DAR401, DAR101, DAR102, DAR203, DAR002, DAR201 DAR005,
                 DAR301,
 
-                #Issue #1148 needs to be closed before removal
+                #Issue #1148 needs to be closed before removal -remove from .pre-commit-config.yaml
                 A003,
 
-                #Issue #1149 needs to be closed before removal
+                #Issue #1149 needs to be closed before removal -remove from .pre-commit-config.yaml
                 W605,
+
