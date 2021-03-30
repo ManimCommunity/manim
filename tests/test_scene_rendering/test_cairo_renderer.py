@@ -65,7 +65,8 @@ def test_hash_logic_is_not_called_when_caching_is_disabled(
 
 
 def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
-    with patch("manim.renderer.cairo_renderer.get_hash_from_play_call") as mocked:
+    from manim.renderer.cairo_renderer import get_hash_from_play_call
+    with patch("manim.renderer.cairo_renderer.get_hash_from_play_call", wraps=get_hash_from_play_call) as mocked:
         scene = SquareToCircle()
         scene.render()
         mocked.assert_called_once()
