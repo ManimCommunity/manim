@@ -16,6 +16,7 @@ from manim.utils.exceptions import EndSceneEarlyException
 
 from .. import logger
 
+
 class _Memoizer:
 
     _already_processed = set()
@@ -26,9 +27,9 @@ class _Memoizer:
     @classmethod
     def reset_already_processed(cls):
         cls._already_processed.clear()
-    
+
     @classmethod
-    def check_already_processed_decorator(cls:"_Memoizer", is_method = False):
+    def check_already_processed_decorator(cls: "_Memoizer", is_method=False):
         def layer(func):
             # NOTE : There is probably a better to separate both case when func is a method or a function.
             if is_method:
@@ -43,18 +44,23 @@ class _Memoizer:
     def check_already_processed(cls, obj):
         # When the object is not memorized, we return the object itself.
         return cls._handle_already_processed(obj, lambda x: x)
-        
+
     @classmethod
-    def _handle_already_processed(cls, obj, default_function: typing.Callable[[Any], Any]):
-        if isinstance(
-            obj,
-            (
-                int,
-                float,
-                str,
-                complex,
-            ),
-        ) and obj not in [None, cls._ALREADY_PROCESSED_PLACEHOLDER]:
+    def _handle_already_processed(
+        cls, obj, default_function: typing.Callable[[Any], Any]
+    ):
+        if (
+            isinstance(
+                obj,
+                (
+                    int,
+                    float,
+                    str,
+                    complex,
+                ),
+            )
+            and obj not in [None, cls._ALREADY_PROCESSED_PLACEHOLDER]
+        ):
             # It makes no sense (and it'd slower) to memoize objects of these primitive types.
             # Hence, we simply return the object.
             return obj
@@ -65,14 +71,18 @@ class _Memoizer:
 
     @classmethod
     def _return_with_memoizing(
-        cls, obj: typing.Any, obj_to_membership_sign: typing.Callable[[Any], int], default_func
+        cls,
+        obj: typing.Any,
+        obj_to_membership_sign: typing.Callable[[Any], int],
+        default_func,
     ) -> typing.Union[str, Any]:
-        
+
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
             return cls._ALREADY_PROCESSED_PLACEHOLDER
         cls._already_processed.add(obj_membership_sign)
         return default_func(obj)
+
 
 class _CustomEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -141,6 +151,7 @@ class _CustomEncoder(json.JSONEncoder):
         iterable : Iterable[Any]
             The iterable to check.
         """
+
         def _key_to_hash(key):
             return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
 
