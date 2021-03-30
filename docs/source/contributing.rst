@@ -19,7 +19,9 @@ some are detailed below:
 *  Testing (graphical, unit & video)
 *  Website design and development
 
-Contributing can be confusing, so here's a guide:
+.. NOTE::
+   Please ensure that you are reading the latest version of this guide by ensuring that "latest" is selected in the version switcher.
+
 
 
 Manim Development Process

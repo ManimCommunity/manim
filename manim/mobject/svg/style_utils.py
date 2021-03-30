@@ -72,13 +72,13 @@ def cascade_element_style(
             try:
                 key, value = style_spec.split(":")
             except ValueError as e:
-                if not style_spec:
+                if not style_spec.strip():
                     # there was just a stray semicolon at the end, producing an emptystring
                     pass
                 else:
                     raise e
             else:
-                style[key] = value
+                style[key.strip()] = value.strip()
 
     return style
 
