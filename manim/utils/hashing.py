@@ -1,19 +1,80 @@
 """Utilities for scene caching."""
 
-import json
-import zlib
-import inspect
+import collections
 import copy
-import numpy as np
-from types import ModuleType, MappingProxyType, FunctionType, MethodType
+import inspect
+import json
+import typing
+import zlib
 from time import perf_counter
+from types import FunctionType, MappingProxyType, MethodType, ModuleType
+from typing import Any
+
+import numpy as np
+
+from manim.utils.exceptions import EndSceneEarlyException
 
 from .. import logger
 
-ALREADY_PROCESSED_ID = {}
+class _Memoizer:
 
+    _already_processed = set()
 
-class CustomEncoder(json.JSONEncoder):
+    # Can be changed to whatever string to help debugging the JSon generation.
+    _ALREADY_PROCESSED_PLACEHOLDER = None
+
+    @classmethod
+    def reset_already_processed(cls):
+        cls._already_processed.clear()
+    
+    @classmethod
+    def check_already_processed_decorator(cls:"_Memoizer", is_method = False):
+        def layer(func):
+            # NOTE : There is probably a better to separate both case when func is a method or a function.
+            if is_method:
+                return lambda self, obj: cls._handle_already_processed(
+                    obj, default_function=lambda obj: func(self, obj)
+                )
+            return lambda obj: cls._handle_already_processed(obj, default_function=func)
+
+        return layer
+
+    @classmethod
+    def check_already_processed(cls, obj):
+        # When the object is not memorized, we return the object itself.
+        return cls._handle_already_processed(obj, lambda x: x)
+        
+    @classmethod
+    def _handle_already_processed(cls, obj, default_function: typing.Callable[[Any], Any]):
+        if isinstance(
+            obj,
+            (
+                int,
+                float,
+                str,
+                complex,
+            ),
+        ) and obj not in [None, cls._ALREADY_PROCESSED_PLACEHOLDER]:
+            # It makes no sense (and it'd slower) to memoize objects of these primitive types.
+            # Hence, we simply return the object.
+            return obj
+        if isinstance(obj, collections.Hashable):
+            return cls._return_with_memoizing(obj, hash, default_function)
+        else:
+            return cls._return_with_memoizing(obj, id, default_function)
+
+    @classmethod
+    def _return_with_memoizing(
+        cls, obj: typing.Any, obj_to_membership_sign: typing.Callable[[Any], int], default_func
+    ) -> typing.Union[str, Any]:
+        
+        obj_membership_sign = obj_to_membership_sign(obj)
+        if obj_membership_sign in cls._already_processed:
+            return cls._ALREADY_PROCESSED_PLACEHOLDER
+        cls._already_processed.add(obj_membership_sign)
+        return default_func(obj)
+
+class _CustomEncoder(json.JSONEncoder):
     def default(self, obj):
         """
         This method is used to serialize objects to JSON format.
@@ -51,7 +112,7 @@ class CustomEncoder(json.JSONEncoder):
                 # hash collision (due to the same, empty, code strings) at some point.
                 # See https://github.com/ManimCommunity/manim/pull/402.
                 code = ""
-            return self._check_iterable({"code": code, "nonlocals": cvardict})
+            return self._cleaned_iterable({"code": code, "nonlocals": cvardict})
         elif isinstance(obj, np.ndarray):
             if obj.size > 1000:
                 obj = np.resize(obj, (100, 100))
@@ -64,35 +125,12 @@ class CustomEncoder(json.JSONEncoder):
             # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):
                 return "MappingProxy"
-            return self._check_iterable(temp)
+            return self._cleaned_iterable(temp)
         elif isinstance(obj, np.uint8):
             return int(obj)
-
         return f"Unsupported type for serializing -> {str(type(obj))}"
 
-    def _handle_already_processed(self, obj):
-        """Handle if an object has been already processed by checking the id of the object.
-
-        This prevents the mechanism to handle an object several times, and is used to prevent any circular reference.
-
-        Parameters
-        ----------
-        obj : Any
-            The obj to check.
-
-        Returns
-        -------
-        Any
-            "already_processed" string if it has been processed, otherwise obj.
-        """
-        global ALREADY_PROCESSED_ID
-        if id(obj) in ALREADY_PROCESSED_ID:
-            return "already_processed"
-        if not isinstance(obj, (str, int, bool, float)):
-            ALREADY_PROCESSED_ID[id(obj)] = obj
-        return obj
-
-    def _check_iterable(self, iterable):
+    def _cleaned_iterable(self, iterable):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
         If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
@@ -103,49 +141,37 @@ class CustomEncoder(json.JSONEncoder):
         iterable : Iterable[Any]
             The iterable to check.
         """
-
         def _key_to_hash(key):
-            return zlib.crc32(json.dumps(key, cls=CustomEncoder).encode())
+            return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
 
+        @_Memoizer.check_already_processed_decorator(is_method=False)
         def _iter_check_list(lst):
-            # We have to make a copy, as we don't want to touch to the original list
-            # A deepcopy isn't necessary as it is already recursive.
-            lst_copy = copy.copy(lst)
-            if isinstance(lst, tuple):
-                # NOTE: Sometimes a tuple can pass through this function. As a tuple
-                # is immutable, we convert it to a list to be able to modify it.
-                # It's ok as it is a copy.
-                lst_copy = list(lst_copy)
+            processed_list = [None] * len(lst)
             for i, el in enumerate(lst):
-                if not isinstance(lst, tuple):
-                    lst_copy[i] = self._handle_already_processed(
-                        el
-                    )  # ISSUE here, because of copy.
                 if isinstance(el, (list, tuple)):
-                    lst_copy[i] = _iter_check_list(el)
+                    processed_list[i] = _iter_check_list(el)
                 elif isinstance(el, dict):
-                    lst_copy[i] = _iter_check_dict(el)
-            return lst_copy
+                    processed_list[i] = _iter_check_dict(el)
+                else:
+                    processed_list[i] = _Memoizer.check_already_processed(el)
+            return processed_list
 
+        @_Memoizer.check_already_processed_decorator(is_method=False)
         def _iter_check_dict(dct):
-            # We have to make a copy, as we don't want to touch to the original dict
-            # A deepcopy isn't necessary as it is already recursive.
-            dct_copy = copy.copy(dct)
+            processed_dict = {}
             for k, v in dct.items():
-                dct_copy[k] = self._handle_already_processed(v)
                 # We check if the k is of the right format (supporter by Json)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
                     k_new = _key_to_hash(k)
-                    # We delete the value coupled with the old key, as the value is now coupled with the new key.
-                    dct_copy[k_new] = dct_copy[k]
-                    del dct_copy[k]
                 else:
                     k_new = k
                 if isinstance(v, dict):
-                    dct_copy[k_new] = _iter_check_dict(v)
+                    processed_dict[k_new] = _iter_check_dict(v)
                 elif isinstance(v, (list, tuple)):
-                    dct_copy[k_new] = _iter_check_list(v)
-            return dct_copy
+                    processed_dict[k_new] = _iter_check_list(v)
+                else:
+                    processed_dict[k_new] = _Memoizer.check_already_processed(v)
+            return processed_dict
 
         if isinstance(iterable, (list, tuple)):
             return _iter_check_list(iterable)
@@ -167,10 +193,8 @@ class CustomEncoder(json.JSONEncoder):
         """
         # We need to mark as already processed the first object to go in the process,
         # As after, only objects that come from iterables will be marked as such.
-        global ALREADY_PROCESSED_ID
-        ALREADY_PROCESSED_ID[id(obj)] = obj
         if isinstance(obj, (dict, list, tuple)):
-            return super().encode(self._check_iterable(obj))
+            return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
 
 
@@ -187,7 +211,7 @@ def get_json(obj):
     :class:`str`
         The flattened object
     """
-    return json.dumps(obj, cls=CustomEncoder)
+    return json.dumps(obj, cls=_CustomEncoder)
 
 
 def get_camera_dict_for_hashing(camera_object):
@@ -214,7 +238,7 @@ def get_camera_dict_for_hashing(camera_object):
 
 def get_hash_from_play_call(
     scene_object, camera_object, animations_list, current_mobjects_list
-):
+) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 
     Parameters
@@ -237,10 +261,8 @@ def get_hash_from_play_call(
         A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`.
     """
     logger.debug("Hashing ...")
-    global ALREADY_PROCESSED_ID
-    # We add the scene object within the ALREADY_PROCESSED_ID, as we don't want to process because pretty much all of its attributes will be soon or later processed (in one of the three hashes).
-    ALREADY_PROCESSED_ID = {id(scene_object): scene_object}
     t_start = perf_counter()
+    _Memoizer.check_already_processed(scene_object)
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
     current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
@@ -248,64 +270,10 @@ def get_hash_from_play_call(
         zlib.crc32(repr(json_val).encode())
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
     ]
-    t_end = perf_counter()
-    logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})
     hash_complete = f"{hash_camera}_{hash_animations}_{hash_current_mobjects}"
-    # This will reset ALREADY_PROCESSED_ID as all the hashing process is finished.
-    ALREADY_PROCESSED_ID = {}
-    logger.debug("Hash generated :  %(h)s", {"h": hash_complete})
-    return hash_complete
-
-
-def get_hash_from_wait_call(
-    scene_object,
-    camera_object,
-    wait_time,
-    stop_condition_function,
-    current_mobjects_list,
-):
-    """Take a wait time, a boolean function as a stop condition and a list of mobjects, and then output their individual hashes. This is meant to be used for `scene.wait` function.
-
-    Parameters
-    -----------
-    scene_object : :class:`~.Scene`
-        The scene object.
-    camera_object : :class:`~.Camera`
-        The camera object.
-    wait_time : :class:`float`
-        The time to wait
-    stop_condition_function : Callable[[...], bool]
-        Boolean function used as a stop_condition in `wait`.
-
-    Returns
-    -------
-    :class:`str`
-        A concatenation of the respective hashes of `animations_list and `current_mobjects_list`, separated by `_`.
-    """
-    logger.debug("Hashing ...")
-    t_start = perf_counter()
-    global ALREADY_PROCESSED_ID
-    # We add the scene object within the ALREADY_PROCESSED_ID, as we don't want to process because pretty much all of its attributes will be soon or later processed (in one of the three hashes).
-    ALREADY_PROCESSED_ID = {id(scene_object): scene_object}
-    camera_json = get_json(get_camera_dict_for_hashing(camera_object))
-    current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
-    hash_current_mobjects = zlib.crc32(repr(current_mobjects_list_json).encode())
-    hash_camera = zlib.crc32(repr(camera_json).encode())
-    if stop_condition_function is not None:
-        hash_function = zlib.crc32(get_json(stop_condition_function).encode())
-        # This will reset ALREADY_PROCESSED_ID as all the hashing process is finished.
-        ALREADY_PROCESSED_ID = {}
-        t_end = perf_counter()
-        logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})
-        hash_complete = f"{hash_camera}_{str(wait_time).replace('.', '-')}{hash_function}_{hash_current_mobjects}"
-        logger.debug("Hash generated :  %(h)s", {"h": hash_complete})
-        return hash_complete
-    ALREADY_PROCESSED_ID = {}
     t_end = perf_counter()
     logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})
-    hash_complete = (
-        f"{hash_camera}_{str(wait_time).replace('.', '-')}_{hash_current_mobjects}"
-    )
-
+    # End of the hashing for the animation, reset all the memoize.
+    _Memoizer.reset_already_processed()
     logger.debug("Hash generated :  %(h)s", {"h": hash_complete})
     return hash_complete
