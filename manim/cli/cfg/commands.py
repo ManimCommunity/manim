@@ -121,7 +121,8 @@ def replace_keys(default: dict) -> dict:
     epilog=EPILOG,
     help="Manages Manim configuration files.",
 )
-def cfg():
+@click.pass_context
+def cfg(ctx):
     """Responsible for the cfg subcommand."""
     pass
 
@@ -249,7 +250,8 @@ def show():
 
 @cfg.command(context_settings=CONTEXT_SETTINGS)
 @click.option("-d", "--dir", default=os.getcwd())
-def export(dir):
+@click.pass_context
+def export(ctx,dir):
     if os.path.abspath(dir) == os.path.abspath(os.getcwd()):
         console.print(
             """You are reading the config from the same directory you are exporting to.
@@ -266,7 +268,7 @@ Are you sure you want to continue? (y/n)""",
             console.print(f"Creating folder: {dir}.", style="red bold")
             os.mkdir(dir)
         with open(os.path.join(dir, "manim.cfg"), "w") as outpath:
-            config.write(outpath)
+            ctx.invoke(write)
             from_path = os.path.join(os.getcwd(), "manim.cfg")
             to_path = os.path.join(dir, "manim.cfg")
         console.print(f"Exported final Config at {from_path} to {to_path}.")

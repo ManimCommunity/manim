@@ -20,7 +20,6 @@ from ...utils.module_ops import scene_classes_from_file
 from ...utils.file_ops import open_file as open_media_file
 
 
-
 def validate_scene_range(ctx, param, value):
     try:
         start = int(value)
@@ -105,7 +104,7 @@ def validate_resolution(ctx, param, value):
 )
 @optgroup.option(
     "--write_to_movie",
-    is_flag = True,
+    is_flag=True,
     help="Write to a file.",
 )
 @optgroup.option(
@@ -160,16 +159,14 @@ def validate_resolution(ctx, param, value):
         ],
         case_sensitive=False,
     ),
-    help=
-        """
+    help="""
         Render quality at the follow resolution framerates, respectively:
         854x480 30FPS, 
         1280x720 30FPS,
         1920x1080 60FPS,
         2560x1440 60FPS,
         3840x2160 60FPS
-        """
-    ,
+        """,
 )
 @optgroup.option(
     "-r",
@@ -194,23 +191,21 @@ def validate_resolution(ctx, param, value):
         ],
         case_sensitive=False,
     ),
-    help="Select a renderer for your Scene."
+    help="Select a renderer for your Scene.",
 )
 @optgroup.option(
-    "--use_opengl_renderer",
-    is_flag = True,
-    help="Render scenes using OpenGL."
+    "--use_opengl_renderer", is_flag=True, help="Render scenes using OpenGL."
 )
 @optgroup.option(
     "--use_webgl_renderer",
-    is_flag = True,
+    is_flag=True,
     help="Render scenes using the WebGL frontend.",
 )
 @optgroup.option(
     "--webgl_renderer_path",
     default=None,
     type=click.Path(),
-    help="The path to the WebGL frontend."
+    help="The path to the WebGL frontend.",
 )
 @optgroup.option(
     "-t", "--transparent", is_flag=True, help="Render scenes with alpha channel."
@@ -245,7 +240,7 @@ def validate_resolution(ctx, param, value):
         Preview the Scene's animation. OpenGL does a live preview in a
         popup window. Cairo opens the rendered video file in the system default
         media player.
-    """
+    """,
 )
 @optgroup.option(
     "-f",
@@ -278,8 +273,8 @@ def render(
     resolution,
     frame_rate,
     renderer,
-    use_opengl_renderer, # Deprecated
-    use_webgl_renderer, # Deprecated
+    use_opengl_renderer,  # Deprecated
+    use_webgl_renderer,  # Deprecated
     webgl_renderer_path,
     transparent,
     background_color,
@@ -338,8 +333,8 @@ def render(
         "resolution": resolution,
         "frame_rate": frame_rate,
         "renderer": renderer,
-        "use_opengl_renderer": use_opengl_renderer, # Deprecated
-        "use_webgl_renderer": use_webgl_renderer, # Deprecated
+        "use_opengl_renderer": use_opengl_renderer,  # Deprecated
+        "use_webgl_renderer": use_webgl_renderer,  # Deprecated
         "webgl_renderer_path": webgl_renderer_path,
         "transparent": transparent,
         "background_color": background_color,
@@ -350,10 +345,14 @@ def render(
     }
 
     if use_opengl_renderer:
-        logger.warning("--use_opengl_renderer is deprecated, please use --render=opengl instead!")
+        logger.warning(
+            "--use_opengl_renderer is deprecated, please use --render=opengl instead!"
+        )
         renderer = "opengl"
     if use_webgl_renderer:
-        logger.warning("--use_webgl_renderer is deprecated, please use --render=webgl instead!")
+        logger.warning(
+            "--use_webgl_renderer is deprecated, please use --render=webgl instead!"
+        )
         renderer = "webgl"
     if use_webgl_renderer and use_opengl_renderer:
         logger.warning("You may select only one renderer!")
@@ -382,7 +381,6 @@ def render(
     if jupyter:
         return click_args
     config.digest_args(click_args)
-
 
     if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer
