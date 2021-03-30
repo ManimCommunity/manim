@@ -185,12 +185,24 @@ def validate_resolution(ctx, param, value):
     help="Render at this frame rate.",
 )
 @optgroup.option(
-    "--opengl_renderer",
+    "--renderer",
+    type=click.Choice(
+        [
+            "cairo",
+            "opengl",
+            "webgl",
+        ],
+        case_sensitive=False,
+    ),
+    help="Select a renderer for your Scene."
+)
+@optgroup.option(
+    "--use_opengl_renderer",
     is_flag = True,
     help="Render scenes using OpenGL."
 )
 @optgroup.option(
-    "--webgl_renderer",
+    "--use_webgl_renderer",
     default=None,
     type=click.Path(),
     help="Render scenes using the WebGL frontend. Requires a path to the WebGL frontend.",
@@ -224,7 +236,11 @@ def validate_resolution(ctx, param, value):
     "-p",
     "--preview",
     is_flag=True,
-    help="Preview the rendered file(s) in default player.",
+    help="""
+        Preview the Scene's animation. OpenGL does a live preview in a
+        popup window. Cairo opens the rendered video file in the system default
+        media player.
+    """
 )
 @optgroup.option(
     "-f",
@@ -232,7 +248,6 @@ def validate_resolution(ctx, param, value):
     is_flag=True,
     help="Show the output file in the file browser.",
 )
-@optgroup.option("--sound", is_flag=True, help="Play a success/failure sound.")
 @optgroup.option("--jupyter", is_flag=True, help="Using jupyter notebook magic.")
 @click.pass_context
 def render(
@@ -257,14 +272,14 @@ def render(
     quality,
     resolution,
     frame_rate,
-    opengl_renderer,
-    webgl_renderer,
+    renderer,
+    use_opengl_renderer, # Deprecated
+    use_webgl_renderer, # Deprecated
     transparent,
     background_color,
     progress_bar,
     preview,
     show_in_file_browser,
-    sound,
     jupyter,
 ):
     """Render SCENE(S) from the input FILE.
@@ -316,16 +331,26 @@ def render(
         "quality": quality,
         "resolution": resolution,
         "frame_rate": frame_rate,
-        "use_opengl_renderer": opengl_renderer,
-        "webgl_renderer": webgl_renderer,
+        "renderer": renderer,
+        "use_opengl_renderer": use_opengl_renderer,
+        "use_webgl_renderer": use_webgl_renderer,
         "transparent": transparent,
         "background_color": background_color,
         "progress_bar": progress_bar,
         "preview": preview,
         "show_in_file_browser": show_in_file_browser,
-        "sound": sound,
         "jupyter": jupyter,
     }
+
+    if use_opengl_renderer:
+        logger.warning("--use_opengl_renderer is deprecated, please use --render=opengl instead!")
+        renderer = "opengl"
+    if use_webgl_renderer:
+        logger.warning("--use_webgl_renderer is deprecated, please use --render=webgl instead!")
+        renderer = "webgl"
+    if use_webgl_renderer and use_opengl_renderer:
+        logger.warning("You may select only one renderer!")
+        sys.exit()
 
     class ClickArgs:
         def __init__(self, args):
@@ -352,8 +377,7 @@ def render(
     config.digest_args(click_args)
 
 
-    if opengl_renderer:
-        click.echo("OKAY")
+    if config.renderer == "opengl":
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
         for SceneClass in scene_classes_from_file(file):
@@ -363,7 +387,7 @@ def render(
                 scene.render()
             except Exception:
                 console.print_exception()
-    if webgl_renderer:
+    elif config.renderer == "webgl":
         try:
             from manim.grpc.impl import frame_server_impl
 

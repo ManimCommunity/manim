@@ -268,11 +268,11 @@ class ManimConfig(MutableMapping):
         "save_pngs",
         "scene_names",
         "show_in_file_browser",
-        "sound",
         "tex_dir",
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
+        "renderer",
         "use_opengl_renderer",
         "use_webgl_renderer",
         "verbosity",
@@ -495,7 +495,6 @@ class ManimConfig(MutableMapping):
             "save_as_gif",
             "preview",
             "show_in_file_browser",
-            "sound",
             "log_to_file",
             "disable_caching",
             "flush_cache",
@@ -532,6 +531,7 @@ class ManimConfig(MutableMapping):
             "png_mode",
             "movie_file_extension",
             "background_color",
+            "renderer",
             "webgl_renderer_path",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
@@ -613,7 +613,6 @@ class ManimConfig(MutableMapping):
         for key in [
             "preview",
             "show_in_file_browser",
-            "sound",
             "write_to_movie",
             "save_last_frame",
             "save_pngs",
@@ -625,6 +624,7 @@ class ManimConfig(MutableMapping):
             "transparent",
             "scene_names",
             "verbosity",
+            "renderer",
             "background_color",
             "use_opengl_renderer",
             "use_webgl_renderer",
@@ -701,7 +701,7 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
-        if self.use_opengl_renderer:
+        if self.renderer == "opengl":
             if getattr(args, "write_to_movie") is None:
                 # --write_to_movie was not passed on the command line, so don't generate video.
                 self["write_to_movie"] = False
@@ -783,12 +783,6 @@ class ManimConfig(MutableMapping):
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
             set_file_logger(self, self["verbosity"])
-
-    sound = property(
-        lambda self: self._d["sound"],
-        lambda self, val: self._set_boolean("sound", val),
-        doc="Whether to play a sound to notify when a scene is rendered (no flag).",
-    )
 
     write_to_movie = property(
         lambda self: self._d["write_to_movie"],
@@ -1050,12 +1044,31 @@ class ManimConfig(MutableMapping):
             )
 
     @property
+    def renderer(self):
+        """Renderer: "cairo", "opengl", "webgl"""
+        return self._d["renderer"]
+
+    @renderer.setter
+    def renderer(self, val: str) -> None:
+        """Renderer for animations."""
+        self._set_from_list(
+            "renderer",
+            val,
+            ["cairo", "opengl", "webgl"],
+        )
+
+    @property
     def use_opengl_renderer(self):
         """Whether or not to use the OpenGL renderer."""
         return self._d["use_opengl_renderer"]
 
     @use_opengl_renderer.setter
     def use_opengl_renderer(self, val: bool) -> None:
+        self._set_from_list(
+            "renderer",
+            "opengl",
+            ["cairo", "opengl", "webgl"],
+        )
         self._d["use_opengl_renderer"] = val
 
     @property
@@ -1065,6 +1078,11 @@ class ManimConfig(MutableMapping):
 
     @use_webgl_renderer.setter
     def use_webgl_renderer(self, val: bool) -> None:
+        self._set_from_list(
+            "renderer",
+            "webgl",
+            ["cairo", "opengl", "webgl"],
+        )
         self._d["use_webgl_renderer"] = val
         if val:
             self["disable_caching"] = True
