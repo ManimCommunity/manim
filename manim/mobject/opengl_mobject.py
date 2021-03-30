@@ -167,7 +167,7 @@ class OpenGLMobject:
         self, func, about_point=None, about_edge=ORIGIN, works_on_bounding_box=False
     ):
         if about_point is None and about_edge is not None:
-            about_point = self.get_bounding_box_point(about_edge)
+            about_point = self.get_critical_point(about_edge)
 
         for mob in self.get_family():
             arrs = []
@@ -693,7 +693,7 @@ class OpenGLMobject:
             config["frame_y_radius"],
             0,
         )
-        point_to_align = self.get_bounding_box_point(direction)
+        point_to_align = self.get_critical_point(direction)
         shift_val = target_point - point_to_align - buff * np.array(direction)
         shift_val = shift_val * abs(np.sign(direction))
         self.shift(shift_val)
@@ -721,9 +721,7 @@ class OpenGLMobject:
                 target_aligner = mob[index_of_submobject_to_align]
             else:
                 target_aligner = mob
-            target_point = target_aligner.get_bounding_box_point(
-                aligned_edge + direction
-            )
+            target_point = target_aligner.get_critical_point(aligned_edge + direction)
         else:
             target_point = mobject_or_point
         if submobject_to_align is not None:
@@ -732,7 +730,7 @@ class OpenGLMobject:
             aligner = self[index_of_submobject_to_align]
         else:
             aligner = self
-        point_to_align = aligner.get_bounding_box_point(aligned_edge - direction)
+        point_to_align = aligner.get_critical_point(aligned_edge - direction)
         self.shift((target_point - point_to_align + buff * direction) * coor_mask)
         return self
 
@@ -819,10 +817,10 @@ class OpenGLMobject:
         self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
     ):
         if isinstance(point_or_mobject, OpenGLMobject):
-            target = point_or_mobject.get_bounding_box_point(aligned_edge)
+            target = point_or_mobject.get_critical_point(aligned_edge)
         else:
             target = point_or_mobject
-        point_to_align = self.get_bounding_box_point(aligned_edge)
+        point_to_align = self.get_critical_point(aligned_edge)
         self.shift((target - point_to_align) * coor_mask)
         return self
 
@@ -980,14 +978,53 @@ class OpenGLMobject:
         indices = (np.sign(direction) + 1).astype(int)
         return np.array([bb[indices[i]][i] for i in range(3)])
 
+    def get_points_defining_boundary(self):
+        return self.get_all_points()
+
+    def get_extremum_along_dim(self, points=None, dim=0, key=0):
+        if points is None:
+            points = self.get_points_defining_boundary()
+        values = points[:, dim]
+        if key < 0:
+            return np.min(values)
+        elif key == 0:
+            return (np.min(values) + np.max(values)) / 2
+        else:
+            return np.max(values)
+
+    def get_critical_point(self, direction):
+        """Picture a box bounding the mobject.  Such a box has
+        9 'critical points': 4 corners, 4 edge center, the
+        center. This returns one of them, along the given direction.
+
+        ::
+
+            sample = Arc(start_angle=PI/7, angle = PI/5)
+
+            # These are all equivalent
+            max_y_1 = sample.get_top()[1]
+            max_y_2 = sample.get_critical_point(UP)[1]
+            max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
+
+        """
+        result = np.zeros(self.dim)
+        all_points = self.get_points_defining_boundary()
+        if len(all_points) == 0:
+            return result
+        for dim in range(self.dim):
+            result[dim] = self.get_extremum_along_dim(
+                all_points, dim=dim, key=direction[dim]
+            )
+        return result
+
     def get_edge_center(self, direction):
-        return self.get_bounding_box_point(direction)
+        return self.get_critical_point(direction)
 
     def get_corner(self, direction):
-        return self.get_bounding_box_point(direction)
+        return self.get_critical_point(direction)
 
     def get_center(self):
-        return self.get_bounding_box()[1]
+        return self.get_critical_point(np.zeros(self.dim))
 
     def get_center_of_mass(self):
         return self.get_all_points().mean(0)
@@ -1140,7 +1177,7 @@ class OpenGLMobject:
         the center of mob2
         """
         if isinstance(mobject_or_point, OpenGLMobject):
-            point = mobject_or_point.get_bounding_box_point(direction)
+            point = mobject_or_point.get_critical_point(direction)
         else:
             point = mobject_or_point
 
