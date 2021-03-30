@@ -89,9 +89,13 @@ def test_vmob_add_to_back():
     """Test the Mobject add_to_back method"""
     a = VMobject()
     b = Line()
+    c = "text"
     with pytest.raises(ValueError):
         # Mobject cannot contain self
         a.add_to_back(a)
+    with pytest.raises(TypeError):
+        # All submobjects must be of type Mobject
+        a.add_to_back(c)
 
     # No submobject gets added twice
     a.add_to_back(b)
