@@ -10,11 +10,12 @@ from .simple_scenes import *
 def test_render(using_temp_config, disabling_caching):
     scene = SquareToCircle()
     renderer = scene.renderer
-    renderer.update_frame = Mock()
-    renderer.add_frame = Mock()
+    renderer.update_frame = Mock(wraps=renderer.update_frame)
+    renderer.add_frame = Mock(wraps=renderer.add_frame)
     scene.render()
     assert renderer.add_frame.call_count == config["frame_rate"]
     assert renderer.update_frame.call_count == config["frame_rate"]
+    assert_file_exists(config["output_file"])
 
 
 def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_caching):
@@ -52,7 +53,10 @@ def test_when_animation_is_cached(using_temp_config):
     # Check that the ouput video has been generated.
     assert_file_exists(config["output_file"])
 
-def test_hash_logic_is_not_called_when_caching_is_disabled(using_temp_config, disabling_caching): 
+
+def test_hash_logic_is_not_called_when_caching_is_disabled(
+    using_temp_config, disabling_caching
+):
     with patch("manim.renderer.cairo_renderer.get_hash_from_play_call") as mocked:
         scene = SquareToCircle()
         scene.render()
