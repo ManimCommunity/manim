@@ -61,7 +61,7 @@ class ThreeDCamera(Camera):
         self.theta_tracker = ValueTracker(self.theta)
         self.distance_tracker = ValueTracker(self.distance)
         self.gamma_tracker = ValueTracker(self.gamma)
-        self.fixed_orientation_mobjects = dict()
+        self.fixed_orientation_mobjects = {}
         self.fixed_in_frame_mobjects = set()
         self.reset_rotation_matrix()
 

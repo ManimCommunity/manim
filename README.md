@@ -39,7 +39,7 @@ Manim requires a few dependencies that must be installed prior to using it. If y
 want to try it out first before installing it locally, you can do so
 [in our online Jupyter environment](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
 
-For the local installation, please visit the [Documentation](https://docs.manim.community/en/latest/installation.html)
+For the local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
 and follow the appropriate instructions for your operating system.
 
 Once the dependencies have been installed, run the following in a terminal window:
@@ -64,7 +64,7 @@ class SquareToCircle(Scene):
         square.rotate(-3 * TAU / 8)
         circle.set_fill(PINK, opacity=0.5)
 
-        self.play(ShowCreation(square))
+        self.play(Create(square))
         self.play(Transform(square, circle))
         self.play(FadeOut(square))
 ```
@@ -76,10 +76,10 @@ manim example.py SquareToCircle -p -ql
 ```
 
 You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
-[GitHub repository](master/example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/latest/examples.html) for more advanced examples.
+[GitHub repository](master/example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
 
 Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the
-[corresponding documentation](https://docs.manim.community/en/latest/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and 
+[corresponding documentation](https://docs.manim.community/en/stable/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and 
 [try it out online](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
 
 ## Command line arguments
@@ -96,7 +96,7 @@ Some other useful flags include:
 -  `-n <number>` to skip ahead to the `n`'th animation of a scene.
 -  `-f` show the file in the file browser.
 
-For a thorough list of command line arguments, visit the [documentation](https://docs.manim.community/en/latest/tutorials/configuration.html).
+For a thorough list of command line arguments, visit the [documentation](https://docs.manim.community/en/stable/tutorials/configuration.html).
 
 ## Documentation
 
@@ -109,13 +109,13 @@ Server](https://discord.gg/mMRrZQW) or [Reddit Community](https://www.reddit.com
 
 ## Contributing
 
-Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/latest/contributing.html).
+Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/stable/contributing.html).
 
-Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more `poetry` and how to use it at its [documentation](https://docs.manim.community/en/latest/installation/for_dev.html).
+Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more `poetry` and how to use it at its [documentation](https://docs.manim.community/en/stable/installation/for_dev.html).
 
 ## Code of Conduct
 
-Our full code of conduct, and how we enforce it, can be read on [our website](https://docs.manim.community/en/latest/conduct.html).
+Our full code of conduct, and how we enforce it, can be read on [our website](https://docs.manim.community/en/stable/conduct.html).
 
 ## License
 

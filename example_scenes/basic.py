@@ -42,7 +42,7 @@ class OpeningManim(Scene):
         self.play(
             FadeOut(title),
             FadeInFrom(grid_title, direction=DOWN),
-            ShowCreation(grid, run_time=3, lag_ratio=0.1),
+            Create(grid, run_time=3, lag_ratio=0.1),
         )
         self.wait()
 
@@ -77,7 +77,7 @@ class SquareToCircle(Scene):
         square.rotate(-3 * TAU / 8)
         circle.set_fill(PINK, opacity=0.5)
 
-        self.play(ShowCreation(square))
+        self.play(Create(square))
         self.play(Transform(square, circle))
         self.play(FadeOut(square))
 
@@ -129,4 +129,4 @@ class UpdatersExample(Scene):
         self.wait()
 
 
-# See many more examples at https://docs.manim.community/en/latest/examples.html
+# See many more examples at https://docs.manim.community/en/stable/examples.html

@@ -33,7 +33,9 @@ class AnimationGroup(Animation):
         self.group = group
         if self.group is None:
             self.group = Group(
-                *remove_list_redundancies([anim.mobject for anim in animations])
+                *remove_list_redundancies(
+                    [anim.mobject for anim in self.animations if not anim.is_dummy()]
+                )
             )
         super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
         self.run_time = run_time
@@ -59,7 +61,7 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             anim.clean_up_from_scene(scene)
 
-    def update_mobjects(self, dt: int) -> None:
+    def update_mobjects(self, dt: float) -> None:
         for anim in self.animations:
             anim.update_mobjects(dt)
 
@@ -115,7 +117,7 @@ class Succession(AnimationGroup):
         while self.active_animation is not None:
             self.next_animation()
 
-    def update_mobjects(self, dt: int) -> None:
+    def update_mobjects(self, dt: float) -> None:
         if self.active_animation:
             self.active_animation.update_mobjects(dt)
 

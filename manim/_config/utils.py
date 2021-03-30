@@ -263,6 +263,7 @@ class ManimConfig(MutableMapping):
         "from_animation_number",
         "images_dir",
         "input_file",
+        "media_width",
         "webgl_renderer_path",
         "leave_progress_bars",
         "log_dir",
@@ -570,11 +571,15 @@ class ManimConfig(MutableMapping):
         # other logic
         val = parser["CLI"].get("tex_template_file")
         if val:
-            setattr(self, "tex_template_file", val)
+            self.tex_template_file = val
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
-            setattr(self, "ffmpeg_loglevel", val)
+            self.ffmpeg_loglevel = val
+
+        val = parser["jupyter"].get("media_width")
+        if val:
+            setattr(self, "media_width", val)
 
         return self
 
@@ -854,6 +859,12 @@ class ManimConfig(MutableMapping):
         doc="Verbosity level of ffmpeg (no flag).",
     )
 
+    media_width = property(
+        lambda self: self._d["media_width"],
+        lambda self, val: self._d.__setitem__("media_width", val),
+        doc="Media width in Jupyter notebook",
+    )
+
     pixel_width = property(
         lambda self: self._d["pixel_width"],
         lambda self, val: self._set_pos_number("pixel_width", val, False),
@@ -1062,8 +1073,6 @@ class ManimConfig(MutableMapping):
     @use_opengl_renderer.setter
     def use_opengl_renderer(self, val: bool) -> None:
         self._d["use_opengl_renderer"] = val
-        if val:
-            self["disable_caching"] = True
 
     @property
     def use_webgl_renderer(self):
