@@ -4,91 +4,141 @@ Contributing
 
 Thank you for contributing to Manim! However you have decided to contribute
 or interact with the community, please always be civil and respect other
-members of the community. If you haven't read our :doc:`code of
-conduct<conduct>`, do so here. Manim is a free open source software for
-mathematical animations, and as such we welcome **everyone** who is
-interested in mathematics, pedagogy, computer animations, open-source,
-software development, and beyond. Manim accepts contributions of many kinds,
-detailed below.
+members of the community. If you haven't read our :doc:`code of conduct<conduct>`,
+do so here. Manim is Free and Open Source Software (FOSS) for mathematical
+animations. As such, **we welcome everyone** who is interested in
+mathematics, pedagogy, computer animations, open-source,
+software development, and beyond. Manim accepts many kinds of contributions,
+some are detailed below:
 
-Many ways of contributing will involve writing, reading, testing, or
-refactoring code.  As our repository is a Fork of `Manim by
-3b1b <https://github.com/3b1b/manim>`_, contributing in this way can be a bit
-confusing.  Here is a short guide on how to do it.
+*  Code maintenance and development
+*  DevOps
+*  Documentation
+*  Developing educational content & narrative documentation
+*  Plugins to extend Manim functionality
+*  Testing (graphical, unit & video)
+*  Website design and development
 
 .. NOTE::
    Please ensure that you are reading the latest version of this guide by ensuring that "latest" is selected in the version switcher.
 
 
-Setup Manim and version control
-===============================
 
-#. *Make a fork of this repository on Github.*
-   You will need an account with Github. This will allow you to make pull requests (PR)
+Manim Development Process
+=========================
+
+For first-time contributors
+---------------------------
+#. Install git:
+
+   For instructions see https://git-scm.com/.
+
+
+#. Fork the project. Go to https://github.com/ManimCommunity/manim and
+   click the "fork" button to create your own copy of the project. You will
+   need a GitHub account. This will allow you to make a "pull request" (PR)
    to the ManimCommunity repo later on.
 
-#. *Clone your fork.*
-   You can clone your Github fork by running:
+#. Clone your fork to your local computer:
 
    .. code-block:: shell
 
-      git clone <your-fork-url>
-      cd manim
+      git clone https://github.com/<your-username>/manim.git
 
    GitHub will provide both a SSH (``git@github.com:<your-username>/manim.git``) and
-   HTTPS (``https://github.com/<your-username>/manim.git``) URL for cloning the repo.
-   You can use whichever one you are setup for.
+   HTTPS (``https://github.com/<your-username>/manim.git``) URL for cloning.
+   You can use SSH if you have SSH keys setup.
 
    .. WARNING::
 
-      Do not ``git clone`` the original ManimCommunity repository.  You must
-      clone your own fork.  After this step, there are three different
-      repositories to keep track of: the original ManimCommunity repo, your own
-      fork of it, and your local repository.
+      Do not clone the ManimCommunity repository. You must clone your own
+      fork.
 
-#. Make ``git`` aware of the ManimCommunity repo.
+#.  Change the directory to enter the project folder:
+
+    .. code-block:: shell
+
+       cd manim
+
+#. Add the upstream repository, ManimCommunity:
 
    .. code-block:: shell
 
       git remote add upstream https://github.com/ManimCommunity/manim.git
-      git fetch upstream
+ 
+#. Now, ``git remote -v`` should show two remote repositores named:
+   
+   - ``origin``, your forked repository
+   - ``upstream`` the ManimCommunity repository
 
-   After these commands, your local repository can keep track of your fork
-   (referred to as 'origin') as well as the main ManimCommunity repository
-   (referred to as 'upstream').
+#. Install Manim:
+ 
+   - See our :doc:`instructions for developers<installation/for_dev>` for
+     details and continue here afterwards.
 
-#. *Install manim.*
-   See the :doc:`installation instructions for developers <installation/for_dev>` for
-   details.
+#. Install Pre-Commit (recommended):
+
+   .. code-block:: shell
+
+      poetry run pre-commit install
+   
+   This is optional and will ensure during development that each of your
+   commit is properly formatted against our formatter, ``black``.
 
 You are now ready to work on manim!
 
+Develop your contribution
+-------------------------
 
-Changing manim's source code
-============================
-
-#. *Choose the branch for your changes.*
-   To work on the ManimCommunity master branch, you can change to it with:
-
-   .. code-block:: shell
-
-      git checkout -b master upstream/master
-
-   If you are starting a new branch, execute
+#. Checkout your local repository's master branch and pull the latest
+   changes from ManimCommunity, `upstream`, into your local repository:
 
    .. code-block:: shell
 
-      git checkout -b <new branch name>
+      git checkout master 
+      git pull --rebase upstream master
 
-#. *Write some awesome code!*
-   You're ready to make changes in your local repository, add them, and commit
-   them.
+#. Create a branch for the changes you want to work on rather than working
+   off of master:
 
-#. *Update docstrings and documentation.*
+   .. code-block:: shell
+
+      git checkout -b <new branch name> upstream/master
+
+   This ensures you can easily update your local repository's master with the
+   first step and switch branches to work on multiple features.
+
+#. Write some awesome code!
+
+   You're ready to make changes in your local repository's branch.
+   You can add local files you've changed with in the current directory with
+   ``git add .``, or add specific files with
+
+   .. code-block:: shell
+   
+      git add <file/directory>
+
+   and commit these changes to your local history with ``git commit``. If you
+   have installed pre-commit, your commit will succeed only if none of the
+   hooks fail.
+
+   .. tip::
+   
+      When crafting commit messages, it is highly recommended that
+      you adhere to `these guidelines <https://www.conventionalcommits.org/en/v1.0.0/>`_.
+
+#. Add new or update existing tests.
+
+   Depending on your changes, you may need to update or add new tests. For new
+   features, it is required that you include tests with your PR. Details of
+   our testing system are explained in the `corresponding Wiki Entry <https://github.com/ManimCommunity/manim/wiki/Testing>`_.
+
+
+#. Update docstrings and documentation:
+
    Update the docstrings (the text in triple quotation marks) of any functions
    or classes you change and include them with any new functions you add.
-   There is a `Wiki Entry for
-   Documentation <https://github.com/ManimCommunity/manim/wiki/Documentation-guidelines-(WIP)>`_
+   There is a `Wiki Entry for Documentation <https://github.com/ManimCommunity/manim/wiki/Documentation-guidelines-(WIP)>`_
    with more information about how we prefer our code to be documented. The content
    of the docstrings will be rendered in the :doc:`reference manual <reference>`.
 
@@ -102,53 +152,49 @@ Changing manim's source code
 
          manim_directive
 
-#. *Add new or update existing tests.*
-   Depending on the changes you are making you will need to update or add new tests.
-   It is strongly preferred that you include tests with your PR. Details of our testing
-   system are explained in the
-   `corresponding Wiki Entry <https://github.com/ManimCommunity/manim/wiki/Testing>`_.
-
 As far as development on your local machine goes, these are the main steps you
 should follow.
 
-Polishing your changes and submitting them for review
-=====================================================
+Polishing Changes and Submitting a Pull Request
+-----------------------------------------------
 
 As soon as you are ready to share your local changes with the community
 so that they can be discussed, go through the following steps to open a
-pull request.
+pull request. A pull request signifies to the ManimCommunity organization,
+"Here's some changes I wrote; I think it's worthwhile for you to maintain
+them."
 
 .. NOTE::
 
-   To open a pull request (PR), you do not need to have everything
-   (code / documentation / tests) complete and ready to go.  However, the more complete
-   your PR is, the easier it will be for community developers to review it, and the
-   quicker it will be merged.  If you open a PR that is still under development
-   and you want a quick overview or start some discussion about planned
-   yet-to-be-implemented changes, please mark your PR as a draft.
+   You do not need to have everything (code / documentation / tests) complete
+   to open a pull request (PR). If the PR is still under development, please
+   mark it as a draft. Community developers will still be able to review the
+   changes, discuss yet-to-be-implemented changes, and offer advice; however,
+   the more complete your PR, the quicker it will be merged.
 
-#. *Update your GitHub fork with local changes.*
-   To make your changes visible in your GitHub fork, instead of typing in
-   ``git push`` as usual, you need to enter the command below.
+#. Update your fork on GitHub to reflect your local changes:
 
    .. code-block:: shell
 
       git push -u origin <branch name>
 
-   Doing so creates a new branch with the updated contents of your fork on
-   GitHub (the 'origin').
+   Doing so creates a new branch on your remote fork, `origin`, with the
+   contents of your local repository on GitHub. In subsequent pushes, this
+   local branch will track the branch `origin` and ``git push`` is enough.
 
-#. *Make a Pull Request on Github.*
+
+#. Make a pull request (PR) on GitHub.
+
    In order to make the ManimCommunity development team aware of your changes,
-   you can make a Pull Request to the Manim Community repository from your fork.
+   you can make a PR to the ManimCommunity repository from your fork.
 
    .. WARNING::
 
       Make sure to select ``ManimCommunity/manim`` instead of ``3b1b/manim``
       as the base repository!
 
-   Choose the branch with your changes from your fork as the head
-   repository - see the screenshot below.
+   Choose the branch from your fork as the head repository - see the
+   screenshot below.
 
    .. image:: /_static/pull-requests.PNG
       :align: center
@@ -157,10 +203,11 @@ pull request.
    text you are shown when first opening the 'New Pull Request' page).
 
 
-Your changes are eligible to be merged, if
+Your changes are eligible to be merged if:
 
-#. there are no merge conflicts,
-#. and if the tests in our pipeline passes.
+#. there are no merge conflicts
+#. the tests in our pipeline pass
+#. at least one (two for more complex changes) Community Developer approves the changes
 
 You can check for merge conflicts between the current upstream/master and
 your branch by executing ``git pull upstream master`` locally. If this
@@ -189,15 +236,14 @@ sticks to our coding conventions.
   to your pull request. Make sure not to introduce any Sphinx errors, and have
   a look at the built HTML files to see whether the formatting of the documentation
   you added looks like you intended. You can build the documentation locally
-  by running ``make html`` from the ``docs`` directory.
+  by running ``pip install -r docs/requirements.txt``
+  and then running ``make html``.
 
 Finally, if the pipeline passes and you are satisfied with your changes: wait for
-feedback and iterate over requested changes. You will likely be asked to edit or
-modify your PR in one way or another during this process.
-This is not an indictment of your work, but rather a strong signal that the
-community wants to merge your changes! Overall, in order for your PR to be merged
-at least two approving code reviews from core community developers are required.
-
+feedback and iterate over any requested changes. You will likely be asked to
+edit or modify your PR in one way or another during this process. This is not
+an indictment of your work, but rather a strong signal that the community
+wants to merge your changes! Once approved, your changes may be merged!
 
 Further useful guidelines
 =========================
@@ -206,7 +252,7 @@ Further useful guidelines
    changes will result in breaking changes.
 
 #. When submitting a PR, make sure that your proposed changes are as general as
-   possible, and ready to be taken advantage of by all of manim's users.  In
+   possible, and ready to be taken advantage of by all of manim's users. In
    particular, leave out any machine-specific configurations, or any personal
    information it may contain.
 
@@ -217,9 +263,7 @@ Further useful guidelines
    them in your new issue (even if the old ones are closed).
 
 #. When submitting a code review, it is highly recommended that you adhere to
-   `these general guidelines <https://conventionalcomments.org/>`_.  Similarly,
-   when crafting commit messages, it is highly recommended that you adhere to
-   `these guidelines <https://www.conventionalcommits.org/en/v1.0.0/>`_.
+   `these general guidelines <https://conventionalcomments.org/>`_. 
 
 #. If you find stale or inactive issues that seem to be irrelevant, please post
    a comment saying 'This issue should be closed', and a community developer
@@ -241,4 +285,3 @@ In case you are contributing, please have a look at this flowchart:
     <script type="text/javascript" src="https://viewer.diagrams.net/embed2.js?&fetch=https%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1aKyJTloYB97IhrzwqEENOu-WQyuVWMjM%26export%3Ddownload"></script>
 
 **Thank you for contributing!**
-
