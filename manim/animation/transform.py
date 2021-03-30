@@ -31,6 +31,7 @@ import numpy as np
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..utils.paths import path_along_arc, straight_path
 from ..utils.rate_functions import smooth, squish_rate_func
 
@@ -217,7 +218,7 @@ class ApplyMethod(Transform):
                 "Whoops, looks like you accidentally invoked "
                 "the method you want to animate"
             )
-        assert isinstance(method.__self__, Mobject)
+        assert isinstance(method.__self__, (Mobject, OpenGLMobject))
 
     def create_target(self) -> Mobject:
         method = self.method
