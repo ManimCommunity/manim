@@ -8,7 +8,7 @@ Examples
 
     class UsefulAnnotations(Scene):
         def construct(self):
-            m0 = SmallDot()
+            m0 = Dot()
             m1 = AnnotationDot()
             m2 = LabeledDot("ii")
             m3 = LabeledDot(MathTex(r"\alpha").set_color(ORANGE))
