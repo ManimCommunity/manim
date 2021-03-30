@@ -62,3 +62,10 @@ def test_hash_logic_is_not_called_when_caching_is_disabled(
         scene.render()
         mocked.assert_not_called()
         assert_file_exists(config["output_file"])
+
+
+def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
+    with patch("manim.renderer.cairo_renderer.get_hash_from_play_call") as mocked:
+        scene = SquareToCircle()
+        scene.render()
+        mocked.assert_called_once()
