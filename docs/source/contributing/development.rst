@@ -106,16 +106,16 @@ Develop your contribution
 
    Depending on your changes, you may need to update or add new tests. For new
    features, it is required that you include tests with your PR. Details of
-   our testing system are explained in the `corresponding Wiki Entry <https://github.com/ManimCommunity/manim/wiki/Testing>`_.
+   our testing system are explained in the :doc:`testing guide <testing>`.
 
 
 #. Update docstrings and documentation:
 
    Update the docstrings (the text in triple quotation marks) of any functions
    or classes you change and include them with any new functions you add.
-   There is a `Wiki Entry for Documentation <https://github.com/ManimCommunity/manim/wiki/Documentation-guidelines-(WIP)>`_
-   with more information about how we prefer our code to be documented. The content
-   of the docstrings will be rendered in the :doc:`reference manual <reference>`.
+   See the :doc:`documentation guide <documentation>` for more information about how we
+   prefer our code to be documented. The content of the docstrings will be
+   rendered in the :doc:`reference manual <../reference>`.
 
    .. tip::
 
