@@ -88,7 +88,7 @@ For first-time contributors
 You are now ready to work on manim!
 
 Develop your contribution
---------------------------
+-------------------------
 
 #. Checkout your local repository's master branch and pull the latest
    changes from ManimCommunity, `upstream`, into your local repository:
