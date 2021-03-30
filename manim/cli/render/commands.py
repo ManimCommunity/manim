@@ -24,7 +24,7 @@ def validate_scene_range(ctx, param, value):
     try:
         start = int(value)
         return (start,)
-    except:
+    except Exception:
         pass
 
     if value:
@@ -34,7 +34,7 @@ def validate_scene_range(ctx, param, value):
                 start,
                 end,
             )
-        except:
+        except Exception:
             logger.error("Couldn't determine a range for -n option.")
             exit()
 
@@ -47,7 +47,7 @@ def validate_resolution(ctx, param, value):
                 start,
                 end,
             )
-        except:
+        except Exception:
             logger.error("Resolution option is invalid.")
             exit()
 
@@ -134,6 +134,7 @@ def validate_resolution(ctx, param, value):
 @optgroup.option(
     "-f",
     "--format",
+    "file_format",
     default="mp4",
     type=click.Choice(
         [
@@ -161,7 +162,7 @@ def validate_resolution(ctx, param, value):
     ),
     help="""
         Render quality at the follow resolution framerates, respectively:
-        854x480 30FPS, 
+        854x480 30FPS,
         1280x720 30FPS,
         1920x1080 60FPS,
         2560x1440 60FPS,
@@ -267,7 +268,7 @@ def render(
     log_to_file,
     from_animation_number,
     write_all,
-    format,
+    file_format,
     save_last_frame,
     quality,
     resolution,
@@ -327,7 +328,7 @@ def render(
         "log_to_file": log_to_file,
         "from_animation_number": from_animation_number,
         "write_all": write_all,
-        "format": format,
+        "format": file_format,
         "save_last_frame": save_last_frame,
         "quality": quality,
         "resolution": resolution,

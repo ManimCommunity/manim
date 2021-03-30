@@ -1,7 +1,7 @@
 """Manim's plugin subcommand.
 
 Manim's plugin subcommand is accessed in the command-line interface via ``manim
-plugin``. Here you can specify options, subcommands, and subgroups for the plugin 
+plugin``. Here you can specify options, subcommands, and subgroups for the plugin
 group.
 
 """
@@ -19,7 +19,9 @@ from ...plugins.plugins_flags import list_plugins
     epilog=EPILOG,
     help="Manages Manim plugins.",
 )
-@click.option("-l", "--list", is_flag=True, help="List available plugins.")
-def plugins(list):
-    if list:
+@click.option(
+    "-l", "--list", "list_available", is_flag=True, help="List available plugins."
+)
+def plugins(list_available):
+    if list_available:
         list_plugins()

@@ -663,7 +663,7 @@ class ManimConfig(MutableMapping):
             self.from_animation_number = nflag[0]
             try:
                 self.upto_animation_number = nflag[1]
-            except:
+            except Exception:
                 logging.getLogger("manim").info(
                     f"No end scene number specified in -n option. Rendering from {nflag[0]} onwards..."
                 )
