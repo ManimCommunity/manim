@@ -1,15 +1,20 @@
-from manim.mobject.mobject import Mobject
 from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.caching import handle_caching_play
 from manim.renderer.cairo_renderer import handle_play_like_call
 from manim.utils.color import color_to_rgba
 import moderngl
 from .opengl_renderer_window import Window
+from .shader_wrapper import ShaderWrapper
 import numpy as np
+from ..mobject.types.vectorized_mobject import VMobject
 import itertools as it
 import time
+from .. import logger
 from ..constants import *
 from ..utils.space_ops import (
+    cross2d,
+    earclip_triangulation,
+    z_to_vector,
     quaternion_mult,
     quaternion_from_angle_axis,
     rotation_matrix_transpose_from_quaternion,
@@ -19,13 +24,13 @@ from ..utils.space_ops import (
 from ..utils.simple_functions import clip
 
 from ..mobject import opengl_geometry
-from ..mobject.opengl_mobject import OpenGLPoint
+from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from PIL import Image
 from manim import config
 from ..scene.scene_file_writer import SceneFileWriter
 
 
-class OpenGLCamera(Mobject):
+class OpenGLCamera(OpenGLMobject):
     def __init__(
         self,
         frame_shape=None,
@@ -69,7 +74,7 @@ class OpenGLCamera(Mobject):
         self.data["euler_angles"] = np.array(self.euler_angles, dtype=float)
         self.refresh_rotation_matrix()
 
-    def generate_points(self):
+    def init_points(self):
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
         self.set_width(self.frame_shape[0], stretch=True)
         self.set_height(self.frame_shape[1], stretch=True)
