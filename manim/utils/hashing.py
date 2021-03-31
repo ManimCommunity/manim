@@ -29,7 +29,7 @@ class _Memoizer:
     _already_processed = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
-    ALREADY_PROCESSED_PLACEHOLDER = "CACA"
+    ALREADY_PROCESSED_PLACEHOLDER = None
 
     @classmethod
     def reset_already_processed(cls):
@@ -248,7 +248,6 @@ class _CustomEncoder(json.JSONEncoder):
         :class:`str`
            The object encoder with the standard json process.
         """
-        obj = _Memoizer.check_already_processed(obj)
         if isinstance(obj, (dict, list, tuple)):
             return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
