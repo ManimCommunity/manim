@@ -1,16 +1,23 @@
+import sys
 from manim import __version__
 from manim.__main__ import main
 from click.testing import CliRunner
+from .utils.video_tester import *
 from textwrap import dedent
 
 
 def test_manim_version():
     command = ["--version"]
 
-    runner = CliRunner()
-    result = runner.invoke(main, command)
-    assert result.exit_code == 0
-    assert __version__ in result.output
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "--version",
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+    assert __version__ in out
 
 
 def test_manim_cfg_subcommand():
