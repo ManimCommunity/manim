@@ -93,7 +93,7 @@ def validate_resolution(ctx, param, value):
         ],
         case_sensitive=False,
     ),
-    help=" Verbosity of CLI output. Changes ffmpeg log level unless 5+.",
+    help="Verbosity of CLI output. Changes ffmpeg log level unless 5+.",
 )
 @optgroup.group("Output options")
 @optgroup.option(

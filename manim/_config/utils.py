@@ -1064,12 +1064,13 @@ class ManimConfig(MutableMapping):
 
     @use_opengl_renderer.setter
     def use_opengl_renderer(self, val: bool) -> None:
-        self._set_from_list(
-            "renderer",
-            "opengl",
-            ["cairo", "opengl", "webgl"],
-        )
         self._d["use_opengl_renderer"] = val
+        if val:
+            self._set_from_list(
+                "renderer",
+                "opengl",
+                ["cairo", "opengl", "webgl"],
+            )
 
     @property
     def use_webgl_renderer(self):
@@ -1078,13 +1079,13 @@ class ManimConfig(MutableMapping):
 
     @use_webgl_renderer.setter
     def use_webgl_renderer(self, val: bool) -> None:
-        self._set_from_list(
-            "renderer",
-            "webgl",
-            ["cairo", "opengl", "webgl"],
-        )
         self._d["use_webgl_renderer"] = val
         if val:
+            self._set_from_list(
+                "renderer",
+                "webgl",
+                ["cairo", "opengl", "webgl"],
+            )
             self["disable_caching"] = True
 
     webgl_renderer_path = property(
