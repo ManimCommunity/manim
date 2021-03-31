@@ -215,7 +215,7 @@ Animations
             self.play(square.animate.rotate(0.4))
 
 .. manim:: MovingAngle
-    :ref_modules: manim.mobject.geometry.Angle
+    :ref_classes: Angle
     :ref_functions: Mobject.rotate
 
     class MovingAngle(Scene):
