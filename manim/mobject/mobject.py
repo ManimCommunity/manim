@@ -1015,7 +1015,7 @@ class Mobject(Container):
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(self, angle, axis=OUT, **kwargs):
-        """Rotates an mobject about a certain point e.g. ``m.rotate(PI, about_point = 2*LEFT)``"""
+        """Rotates an mobject about a certain point"""
         if config["use_opengl_renderer"]:
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
@@ -1416,12 +1416,15 @@ class Mobject(Container):
         return self
 
     def set_x(self, x, direction=ORIGIN):
+        """Set x value of the center of the mobject (``int`` or ``float``)"""
         return self.set_coord(x, 0, direction)
 
     def set_y(self, y, direction=ORIGIN):
+        """Set y value of the center of the mobject (``int`` or ``float``)"""
         return self.set_coord(y, 1, direction)
 
     def set_z(self, z, direction=ORIGIN):
+        """Set z value of the center of the mobject (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
     def space_out_submobjects(self, factor=1.5, **kwargs):
@@ -1433,6 +1436,7 @@ class Mobject(Container):
     def move_to(
         self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
     ):
+        """Move center of an mobject to certain coordinate"""
         if isinstance(point_or_mobject, Mobject):
             target = point_or_mobject.get_critical_point(aligned_edge)
         else:
@@ -1608,6 +1612,7 @@ class Mobject(Container):
     ##
 
     def save_state(self):
+        """save th current state (position, color & size). Can be restored with ``restore``"""
         if hasattr(self, "saved_state"):
             # Prevent exponential growth of data
             self.saved_state = None
@@ -1616,6 +1621,7 @@ class Mobject(Container):
         return self
 
     def restore(self):
+        """restores the state that was previously saved with ``saved_state``  """
         if not hasattr(self, "saved_state") or self.save_state is None:
             raise Exception("Trying to restore without having saved")
         self.become(self.saved_state)
@@ -1705,6 +1711,7 @@ class Mobject(Container):
         return self.get_critical_point(direction)
 
     def get_center(self):
+        """Center coordinates the mobject"""
         return self.get_critical_point(np.zeros(self.dim))
 
     def get_center_of_mass(self):
@@ -1716,15 +1723,19 @@ class Mobject(Container):
         return all_points[index]
 
     def get_top(self):
+        """Top coordinates the mobject"""
         return self.get_edge_center(UP)
 
     def get_bottom(self):
+        """Bottom coordinates the mobject"""
         return self.get_edge_center(DOWN)
 
     def get_right(self):
+        """RIGHT coordinates the mobject"""
         return self.get_edge_center(RIGHT)
 
     def get_left(self):
+        """LEFT coordinates the mobject"""
         return self.get_edge_center(LEFT)
 
     def get_zenith(self):
@@ -1743,15 +1754,15 @@ class Mobject(Container):
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
     def get_x(self, direction=ORIGIN):
-        """Returns x coordinate of the center of the ``mobject`` as ``numpy.float64`` """
+        """Returns x coordinate of the center of the mobject as ``numpy.float64`` """
         return self.get_coord(0, direction)
 
     def get_y(self, direction=ORIGIN):
-        """Returns y coordinate of the center of the ``mobject`` as ``numpy.float64`` """
+        """Returns y coordinate of the center of the mobject as ``numpy.float64`` """
         return self.get_coord(1, direction)
 
     def get_z(self, direction=ORIGIN):
-        """Returns z coordinate of the center of the ``mobject`` as ``numpy.float64`` """
+        """Returns z coordinate of the center of the mobject as ``numpy.float64`` """
         return self.get_coord(2, direction)
 
     def get_start(self):
@@ -1794,6 +1805,7 @@ class Mobject(Container):
         return z_index_group.get_center()
 
     def has_points(self):
+        """Check if mobject contains points"""
         return len(self.points) > 0
 
     def has_no_points(self):
