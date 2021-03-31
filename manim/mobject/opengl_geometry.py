@@ -352,6 +352,57 @@ class OpenGLSmallDot(OpenGLDot):
         super().__init__(radius=radius, **kwargs)
 
 
+class OpenGLLabeledDot(OpenGLDot):
+    """A :class:`Dot` containing a label in its center.
+
+    Parameters
+    ----------
+    label : Union[:class:`str`, :class:`~.SingleStringMathTex`, :class:`~.Text`, :class:`~.Tex`]
+        The label of the :class:`Dot`. This is rendered as :class:`~.MathTex`
+        by default (i.e., when passing a :class:`str`), but other classes
+        representing rendered strings like :class:`~.Text` or :class:`~.Tex`
+        can be passed as well.
+
+    radius : :class:`float`
+        The radius of the :class:`Dot`. If ``None`` (the default), the radius
+        is calculated based on the size of the ``label``.
+
+    Examples
+    --------
+
+    .. manim:: SeveralLabeledDots
+        :save_last_frame:
+
+        class SeveralLabeledDots(Scene):
+            def construct(self):
+                sq = Square(fill_color=RED, fill_opacity=1)
+                self.add(sq)
+                dot1 = LabeledDot(Tex("42", color=RED))
+                dot2 = LabeledDot(MathTex("a", color=GREEN))
+                dot3 = LabeledDot(Text("ii", color=BLUE))
+                dot4 = LabeledDot("3")
+                dot1.next_to(sq, UL)
+                dot2.next_to(sq, UR)
+                dot3.next_to(sq, DL)
+                dot4.next_to(sq, DR)
+                self.add(dot1, dot2, dot3, dot4)
+    """
+
+    def __init__(self, label, radius=None, **kwargs) -> None:
+        if isinstance(label, str):
+            from ..mobject.svg.opengl_tex_mobject import OpenGLMathTex
+
+            rendered_label = OpenGLMathTex(label, color=BLACK)
+        else:
+            rendered_label = label
+
+        if radius is None:
+            radius = 0.1 + max(rendered_label.width, rendered_label.height) / 2
+        OpenGLDot.__init__(self, radius=radius, **kwargs)
+        rendered_label.move_to(self.get_center())
+        self.add(rendered_label)
+
+
 class OpenGLEllipse(OpenGLCircle):
     def __init__(self, width=2, height=1, **kwargs):
         super().__init__(**kwargs)
