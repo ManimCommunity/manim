@@ -26,7 +26,6 @@ console.print(f"Manim Community [green]v{__version__}[/green]")
     epilog=EPILOG,
 )
 @click.option(
-    "-v",
     "--version",
     is_flag=True,
     help="Show version and exit.",
