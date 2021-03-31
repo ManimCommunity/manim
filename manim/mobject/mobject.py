@@ -1011,9 +1011,11 @@ class Mobject(Container):
             return self
 
     def rotate_about_origin(self, angle, axis=OUT, axes=[]):
+        """Rotates an mobject about the ORIGIN, which is at [0,0,0]"""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(self, angle, axis=OUT, **kwargs):
+        """Rotates an mobject about a certain point e.g. m.rotate(20*DEGREES, about_point = 2*LEFT)"""
         if config["use_opengl_renderer"]:
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
@@ -1028,6 +1030,7 @@ class Mobject(Container):
             return self
 
     def flip(self, axis=UP, **kwargs):
+        """Flips/Mirrows an mobject about its center"""
         return self.rotate(TAU / 2, axis, **kwargs)
 
     def stretch(self, factor, dim, **kwargs):
@@ -1721,19 +1724,23 @@ class Mobject(Container):
         ) - self.reduce_across_dimension(np.min, np.min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
-        """Meant to generalize get_x, get_y, get_z"""
+        """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
     def get_x(self, direction=ORIGIN):
+        """Returns x coordinate of the center of the ``mobject`` as ``numpy.float64`` """
         return self.get_coord(0, direction)
 
     def get_y(self, direction=ORIGIN):
+        """Returns y coordinate of the center of the ``mobject`` as ``numpy.float64`` """
         return self.get_coord(1, direction)
 
     def get_z(self, direction=ORIGIN):
+        """Returns z coordinate of the center of the ``mobject`` as ``numpy.float64`` """
         return self.get_coord(2, direction)
 
     def get_start(self):
+        """Returns the point, where the stroke that surrounds the mobject starts.  Type is a ``numpy.ndarray`` with 3 elements, e.g. [-1,0,0] """
         self.throw_error_if_no_points()
         if config["use_opengl_renderer"]:
             return np.array(self.data["points"][0])
@@ -1741,6 +1748,7 @@ class Mobject(Container):
             return np.array(self.points[0])
 
     def get_end(self):
+        """Returns the point, where the stroke that surrounds the mobject ends.  Type is a ``numpy.ndarray`` with 3 elements, e.g. [+1,0,0] """
         self.throw_error_if_no_points()
         if config["use_opengl_renderer"]:
             return np.array(self.data["points"][-1])
@@ -1748,6 +1756,7 @@ class Mobject(Container):
             return np.array(self.points[-1])
 
     def get_start_and_end(self):
+        """Returns starting and ending point of a stroke as a ``tuple``. """
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
