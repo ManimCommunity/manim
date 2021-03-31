@@ -1035,7 +1035,7 @@ class Mobject(Container):
         Examples
         --------
 
-        .. manim:: GeometricShapes
+        .. manim:: FlipExample
             :save_last_frame:
 
         class FlipExample(Scene):
@@ -1044,6 +1044,7 @@ class Mobject(Container):
                 self.add(s)
                 s2= s.copy().flip()
                 self.add(s2)
+
         """
         return self.rotate(TAU / 2, axis, **kwargs)
 
