@@ -30,6 +30,16 @@ class _Memoizer:
 
     @classmethod
     def check_already_processed_decorator(cls: "_Memoizer", is_method=False):
+        """Decorator to handle the arguments that goes through the decorated function. Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets the decorated function call go ahead.
+
+        Parameters
+        ----------
+        cls : _Memoizer
+            [description]
+        is_method : bool, optional
+            [description], by default False
+        """
+
         def layer(func):
             # NOTE : There is probably a better to separate both case when func is a method or a function.
             if is_method:
@@ -41,9 +51,32 @@ class _Memoizer:
         return layer
 
     @classmethod
-    def check_already_processed(cls, obj):
+    def check_already_processed(cls, obj: Any) -> Any:
+        """Checks if obj has been already processed, returns itself if it hasn't been or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has not.
+
+        Parameters
+        ----------
+        obj : Any
+            The object to check.
+
+        Returns
+        -------
+        Any
+            Either the object itself or the placeholder.
+        """
         # When the object is not memorized, we return the object itself.
         return cls._handle_already_processed(obj, lambda x: x)
+
+    @classmethod
+    def mark_as_processed(cls, obj: Any) -> None:
+        """Marks an object as processed.
+
+        Parameters
+        ----------
+        obj : Any
+            The object to mark as processed.
+        """
+        cls._handle_already_processed(obj, lambda x: x)
 
     @classmethod
     def _handle_already_processed(
@@ -202,8 +235,6 @@ class _CustomEncoder(json.JSONEncoder):
         :class:`str`
            The object encoder with the standard json process.
         """
-        # We need to mark as already processed the first object to go in the process,
-        # As after, only objects that come from iterables will be marked as such.
         if isinstance(obj, (dict, list, tuple)):
             return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
@@ -273,7 +304,7 @@ def get_hash_from_play_call(
     """
     logger.debug("Hashing ...")
     t_start = perf_counter()
-    _Memoizer.check_already_processed(scene_object)
+    _Memoizer.mark_as_processed(scene_object)
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
     current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
