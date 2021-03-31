@@ -57,7 +57,7 @@ Basic Concepts
 .. manim:: BraceAnnotation
     :save_last_frame:
     :ref_classes: Brace
-    :ref_functions: Brace.get_text Brace.get_tex
+    :ref_methods: Brace.get_text Brace.get_tex
 
     class BraceAnnotation(Scene):
         def construct(self):
@@ -100,7 +100,7 @@ Basic Concepts
 .. manim:: BezierSpline
     :save_last_frame:
     :ref_classes: Line VGroup
-    :ref_functions: VMobject.add_cubic_bezier_curve
+    :ref_methods: VMobject.add_cubic_bezier_curve
 
     class BezierSpline(Scene):
         def construct(self):
@@ -203,7 +203,7 @@ Animations
             self.wait()
 
 .. manim:: MovingAround
-    :ref_functions: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
+    :ref_methods: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
 
     class MovingAround(Scene):
         def construct(self):
@@ -344,7 +344,7 @@ Plotting with Manim
     :save_last_frame:
     :ref_modules: manim.scene.graph_scene
     :ref_classes: MathTex
-    :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
+    :ref_methods: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
 
     class SinAndCosFunctionPlot(GraphScene):
         def __init__(self, **kwargs):
@@ -378,7 +378,7 @@ Plotting with Manim
 .. manim:: GraphAreaPlot
     :save_last_frame:
     :ref_modules: manim.scenes.graph_scene
-    :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.get_area
+    :ref_methods: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.get_area
 
     class GraphAreaPlot(GraphScene):
         def __init__(self, **kwargs):
@@ -404,7 +404,7 @@ Plotting with Manim
 .. manim:: HeatDiagramPlot
     :save_last_frame:
     :ref_modules: manim.scenes.graph_scene
-    :ref_functions: GraphScene.setup_axes GraphScene.coords_to_point
+    :ref_methods: GraphScene.setup_axes GraphScene.coords_to_point
 
     class HeatDiagramPlot(GraphScene):
         def __init__(self, **kwargs):
@@ -441,7 +441,7 @@ Special Camera Settings
 .. manim:: FollowingGraphCamera
     :ref_modules: manim.scene.moving_camera_scene
     :ref_classes: GraphScene MovingCameraScene MoveAlongPath Restore
-    :ref_functions: Mobject.add_updater
+    :ref_methods: Mobject.add_updater
 
     class FollowingGraphCamera(GraphScene, MovingCameraScene):
         def setup(self):
@@ -474,7 +474,7 @@ Special Camera Settings
 .. manim:: MovingZoomedSceneAround
     :ref_modules: manim.scene.zoomed_scene
     :ref_classes: ZoomedScene BackgroundRectangle UpdateFromFunc
-    :ref_functions: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
+    :ref_methods: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
 
     class MovingZoomedSceneAround(ZoomedScene):
     # contributed by TheoremofBeethoven, www.youtube.com/c/TheoremofBeethoven
@@ -543,7 +543,7 @@ Special Camera Settings
 .. manim:: FixedInFrameMObjectTest
     :save_last_frame:
     :ref_classes: ThreeDScene
-    :ref_functions: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
+    :ref_methods: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
 
     class FixedInFrameMObjectTest(ThreeDScene):
         def construct(self):
@@ -558,7 +558,7 @@ Special Camera Settings
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
     :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
-    :ref_functions: ThreeDScene.set_camera_orientation
+    :ref_methods: ThreeDScene.set_camera_orientation
 
     class ThreeDLightSourcePosition(ThreeDScene):
         def construct(self):
@@ -577,7 +577,7 @@ Special Camera Settings
 
 .. manim:: ThreeDCameraRotation
     :ref_classes: ThreeDScene ThreeDAxes
-    :ref_functions: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
+    :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
 
     class ThreeDCameraRotation(ThreeDScene):
         def construct(self):
@@ -593,7 +593,7 @@ Special Camera Settings
 
 .. manim:: ThreeDCameraIllusionRotation
     :ref_classes: ThreeDScene ThreeDAxes
-    :ref_functions: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
+    :ref_methods: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
 
     class ThreeDCameraIllusionRotation(ThreeDScene):
         def construct(self):
@@ -664,7 +664,7 @@ Advanced Projects
 
 .. manim:: OpeningManim
     :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane Create
-    :ref_functions: NumberPlane.prepare_for_nonlinear_transform
+    :ref_methods: NumberPlane.prepare_for_nonlinear_transform
 
     class OpeningManim(Scene):
         def construct(self):
@@ -722,7 +722,8 @@ Advanced Projects
 
 .. manim:: SineCurveUnitCircle
     :ref_classes: MathTex Circle Dot Line VGroup
-    :ref_functions: Mobject.add_updater Mobject.remove_updater always_redraw
+    :ref_methods: Mobject.add_updater Mobject.remove_updater
+    :ref_functions: always_redraw
 
     class SineCurveUnitCircle(Scene):
         # contributed by heejin_park, https://infograph.tistory.com/230
