@@ -1711,7 +1711,7 @@ class Mobject(Container):
         return self.get_critical_point(direction)
 
     def get_center(self):
-        """Center coordinates the mobject"""
+        """Get center coordinates"""
         return self.get_critical_point(np.zeros(self.dim))
 
     def get_center_of_mass(self):
@@ -1723,19 +1723,19 @@ class Mobject(Container):
         return all_points[index]
 
     def get_top(self):
-        """Top coordinates the mobject"""
+        """Get top coordinates"""
         return self.get_edge_center(UP)
 
     def get_bottom(self):
-        """Bottom coordinates the mobject"""
+        """Get bottom coordinates"""
         return self.get_edge_center(DOWN)
 
     def get_right(self):
-        """RIGHT coordinates the mobject"""
+        """Get right coordinates"""
         return self.get_edge_center(RIGHT)
 
     def get_left(self):
-        """LEFT coordinates the mobject"""
+        """Get left coordinates"""
         return self.get_edge_center(LEFT)
 
     def get_zenith(self):
