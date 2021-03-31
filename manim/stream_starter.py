@@ -5,11 +5,9 @@ import readline
 import rlcompleter
 import subprocess
 
-from colorama import Fore, Style
-
-from . import config, logger
-from ._config.logger_utils import disable_logging
-from .scene.streaming_scene import get_streamer, play_scene
+from manim._config import config, logger, console
+from manim._config.logger_utils import disable_logging
+from manim.scene.streaming_scene import get_streamer, play_scene
 
 
 __all__ = ["livestream", "stream"]
@@ -24,29 +22,29 @@ sdp_path = config.streaming_config["sdp_path"]
 
 
 info = """
-Manim is now running in streaming mode. Stream animations by passing
-them to manim.play(), e.g.
+[green]Manim is now running in streaming mode. Stream animations by passing
+them to manim.play(), e.g.[/green]
 
->>> c = Circle()
->>> manim.play(ShowCreation(c))
+[cyan]>>> c = Circle()
+>>> manim.play(ShowCreation(c))[/cyan]
 
-The current streaming class under the name `manim` inherits from the
+[green]The current streaming class under the name `manim` inherits from the
 original Scene class. To create a streaming class which inherits from
-another scene class, e.g. MovingCameraScene, create it with the syntax:
+another scene class, e.g. MovingCameraScene, create it with the syntax:[/green]
 
->>> manim2 = get_streamer(MovingCameraScene)
+[cyan]>>> manim2 = get_streamer(MovingCameraScene)[/cyan]
 
-Want to render the animation of an entire pre-baked scene? Here's an example:
+[green]Want to render the animation of an entire pre-baked scene? Here's an example:[/green]
 
->>> from example_scenes import basic
->>> play_scene(basic.WarpSquare)
->>> play_scene(basic.OpeningManimExample, start=0, end=5)
+[cyan]>>> from example_scenes import basic[/cyan]
+[cyan]>>> play_scene(basic.WarpSquare)[/cyan]
+[cyan]>>> play_scene(basic.OpeningManimExample, start=0, end=5)[/cyan]
 
-To view an image of the current state of the scene or mobject, use:
+[green]To view an image of the current state of the scene or mobject, use:[/green]
 
->>> manim.show_frame()        # view image of current scene
->>> c = Circle()
->>> c.show()                  # view image of Mobject
+[cyan]>>> manim.show_frame()[/cyan]        [italic]# view image of current scene[/italic]
+[cyan]>>> c = Circle()[/cyan]
+[cyan]>>> c.show()[/cyan]                  [italic]# view image of Mobject[/italic]
 """
 
 
@@ -128,7 +126,7 @@ def livestream(use_ipython=False):
         from IPython import start_ipython
         import manim
 
-        print(f"{Fore.GREEN}{info}{Style.RESET_ALL}")
+        console.print(info)
         variables.update(vars(manim).copy())
         start_ipython(argv=[], user_ns=variables)
         return
@@ -137,7 +135,9 @@ def livestream(use_ipython=False):
     readline.parse_and_bind("tab: complete")
     shell = code.InteractiveConsole(variables)
     shell.push("from manim import *")
-    shell.interact(banner=f"{Fore.GREEN}{info}{Style.RESET_ALL}")
+
+    console.print(info)
+    shell.interact(banner="", exitmsg="")
 
 
 def stream():
