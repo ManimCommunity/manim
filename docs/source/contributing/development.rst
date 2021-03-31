@@ -66,7 +66,7 @@ Develop your contribution
 -------------------------
 
 #. Checkout your local repository's master branch and pull the latest
-   changes from ManimCommunity, `upstream`, into your local repository:
+   changes from ManimCommunity, ``upstream``, into your local repository:
 
    .. code-block:: shell
 
@@ -153,9 +153,9 @@ them."
 
       git push -u origin <branch name>
 
-   Doing so creates a new branch on your remote fork, `origin`, with the
+   Doing so creates a new branch on your remote fork, ``origin``, with the
    contents of your local repository on GitHub. In subsequent pushes, this
-   local branch will track the branch `origin` and ``git push`` is enough.
+   local branch will track the branch ``origin`` and ``git push`` is enough.
 
 
 #. Make a pull request (PR) on GitHub.
