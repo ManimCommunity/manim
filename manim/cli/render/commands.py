@@ -105,6 +105,7 @@ def validate_resolution(ctx, param, value):
 @optgroup.option(
     "--write_to_movie",
     is_flag=True,
+    default=None,
     help="Write to a file.",
 )
 @optgroup.option(
@@ -113,8 +114,6 @@ def validate_resolution(ctx, param, value):
 @optgroup.option("--log_dir", type=click.Path(), help="Path to store render logs.")
 @optgroup.option(
     "--log_to_file",
-    default=True,
-    show_default=True,
     is_flag=True,
     help="Log terminal output to file",
 )
@@ -214,8 +213,6 @@ def validate_resolution(ctx, param, value):
 @optgroup.option(
     "-c",
     "--background_color",
-    show_default=True,
-    default="#000000",
     help="Render scenes with background color.",
 )
 @optgroup.group("Ease of access options")
