@@ -82,6 +82,7 @@ Animations
    ~animation.numbers
    ~animation.rotation
    ~animation.transform
+   ~animation.transform_matching_parts
    ~animation.update
 
 

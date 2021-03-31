@@ -18,6 +18,7 @@ from ..mobject import mobject
 from ..mobject import opengl_mobject
 from ..mobject.mobject import Mobject
 from ..utils.rate_functions import smooth
+from ..mobject.opengl_mobject import OpenGLMobject
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
@@ -64,7 +65,9 @@ class Animation:
     def _typecheck_input(self, mobject: Mobject) -> None:
         if mobject is None:
             logger.debug("creating dummy animation")
-        elif not isinstance(mobject, Mobject):
+        elif not isinstance(mobject, Mobject) and not isinstance(
+            mobject, OpenGLMobject
+        ):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -199,6 +202,9 @@ class Animation:
     def is_remover(self) -> bool:
         return self.remover
 
+    def is_dummy(self) -> bool:
+        return self.mobject is None
+
 
 def prepare_animation(
     anim: Union["Animation", "mobject._AnimationBuilder"]
@@ -230,6 +236,9 @@ def prepare_animation(
 
     """
     if isinstance(anim, mobject._AnimationBuilder):
+        return anim.build()
+
+    if isinstance(anim, opengl_mobject._AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):

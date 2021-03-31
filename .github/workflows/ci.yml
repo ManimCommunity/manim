@@ -12,6 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       POETRY_VIRTUALENVS_CREATE: false
+      DISPLAY: :0
+      PYTEST_ADDOPTS: "--color=yes" # colors in pytest
     strategy:
       fail-fast: false
       matrix:
@@ -37,8 +39,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y ffmpeg
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev
+          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+          # start xvfb in the background
+          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
@@ -77,6 +81,16 @@ jobs:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
 
+      - name: Setup MSYS2
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          msystem: MINGW64
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-mesa
+
       - name: Download system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
@@ -105,10 +119,13 @@ jobs:
       - name: Add Windows dependecies to path
         if: runner.os == 'Windows'
         run: |
+          Remove-Item C:\msys64\mingw64\bin\python.exe -Force
+          Remove-Item C:\msys64\mingw64\bin\python3.exe -Force
           $env:Path += ";" + "$($PWD)\ManimCache\FFmpeg\bin"
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path += ";" + "$($PWD)\ManimCache\Pango\pango"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
+          $env:PATH = "C:\msys64\mingw64\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install manim
