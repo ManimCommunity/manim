@@ -138,7 +138,6 @@ class ManimDirective(Directive):
         "ref_classes": lambda arg: process_name_list(arg, "class"),
         "ref_functions": lambda arg: process_name_list(arg, "func"),
         "ref_methods": lambda arg: process_name_list(arg, "meth"),
-
     }
     final_argument_whitespace = True
 
@@ -170,7 +169,6 @@ class ManimDirective(Directive):
             + self.options.get("ref_classes", [])
             + self.options.get("ref_functions", [])
             + self.options.get("ref_methods", [])
-
         )
         if ref_content:
             ref_block = f"""
