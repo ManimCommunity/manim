@@ -11,7 +11,7 @@ def assert_file_exists(filepath: typing.Union[str, PathLike]) -> None:
 
     Parameters
     ----------
-    filepath : typing.Union[str, PathLike]
+    filepath
         Filepath to check.
 
     Raises
