@@ -298,8 +298,8 @@ Using coordinates of an mobject
 ===============================
 
 Mobjects contain points that define their boundaries.
-These points can be used to add other mobjects respectively to each other, e.g. by methods like ``m.get_center()`` ``m.get_top()``
-and ``m.get_start()`. Here is an example of some important coordinates:
+These points can be used to add other mobjects respectively to each other, e.g. by methods like ``m.get_center()`` , ``m.get_top()``
+and ``m.get_start()``. Here is an example of some important coordinates:
 
 .. manim:: MobjectExample
     :save_last_frame:
