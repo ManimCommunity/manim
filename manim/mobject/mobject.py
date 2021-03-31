@@ -1015,7 +1015,7 @@ class Mobject(Container):
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(self, angle, axis=OUT, **kwargs):
-        """Rotates an mobject about a certain point e.g. m.rotate(20*DEGREES, about_point = 2*LEFT)"""
+        """Rotates an mobject about a certain point e.g. `m.rotate(PI, about_point = 2*LEFT)`"""
         if config["use_opengl_renderer"]:
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
