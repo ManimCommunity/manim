@@ -22,7 +22,7 @@ class _Memoizer:
     _already_processed = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
-    _ALREADY_PROCESSED_PLACEHOLDER = None
+    ALREADY_PROCESSED_PLACEHOLDER = None
 
     @classmethod
     def reset_already_processed(cls):
@@ -92,15 +92,19 @@ class _Memoizer:
                     complex,
                 ),
             )
-            and obj not in [None, cls._ALREADY_PROCESSED_PLACEHOLDER]
+            and obj not in [None, cls.ALREADY_PROCESSED_PLACEHOLDER]
         ):
             # It makes no sense (and it'd slower) to memoize objects of these primitive types.
             # Hence, we simply return the object.
             return obj
-        if isinstance(obj, collections.Hashable):
-            return cls._return_with_memoizing(obj, hash, default_function)
-        else:
-            return cls._return_with_memoizing(obj, id, default_function)
+        if isinstance(obj, collections.abc.Hashable):
+            try:
+                return cls._return_with_memoizing(obj, hash, default_function)
+            except TypeError:
+                # In case of an error with the hash (eg an object is marked as hashable but contains a non hashable within it)
+                # Fallback to use id instead.
+                pass
+        return cls._return_with_memoizing(obj, id, default_function)
 
     @classmethod
     def _return_with_memoizing(
@@ -112,7 +116,7 @@ class _Memoizer:
 
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
-            return cls._ALREADY_PROCESSED_PLACEHOLDER
+            return cls.ALREADY_PROCESSED_PLACEHOLDER
         cls._already_processed.add(obj_membership_sign)
         return default_func(obj)
 
