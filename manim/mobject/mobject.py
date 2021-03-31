@@ -1038,12 +1038,12 @@ class Mobject(Container):
         .. manim:: FlipExample
             :save_last_frame:
 
-        class FlipExample(Scene):
-            def construct(self):
-                s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
-                self.add(s)
-                s2= s.copy().flip()
-                self.add(s2)
+            class FlipExample(Scene):
+                def construct(self):
+                    s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
+                    self.add(s)
+                    s2= s.copy().flip()
+                    self.add(s2)
 
         """
         return self.rotate(TAU / 2, axis, **kwargs)
