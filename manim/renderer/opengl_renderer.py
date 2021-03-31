@@ -445,6 +445,13 @@ class OpenGLRenderer:
         )
         return ret
 
+    def get_frame(self):
+        # get current pixel values as numpy data in order to test output
+        raw = self.get_raw_frame_buffer_object_data(dtype="f1")
+        result_dimensions = (config["pixel_height"], config["pixel_width"], 4)
+        np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
+        return np_buf
+
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):
         pw, ph = config["pixel_width"], config["pixel_height"]
