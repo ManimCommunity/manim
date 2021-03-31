@@ -1030,7 +1030,21 @@ class Mobject(Container):
             return self
 
     def flip(self, axis=UP, **kwargs):
-        """Flips/Mirrows an mobject about its center"""
+        """Flips/Mirrors an mobject about its center.
+
+        Examples
+        --------
+
+        .. manim:: GeometricShapes
+            :save_last_frame:
+
+        class FlipExample(Scene):
+            def construct(self):
+                s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
+                self.add(s)
+                s2= s.copy().flip()
+                self.add(s2)
+        """
         return self.rotate(TAU / 2, axis, **kwargs)
 
     def stretch(self, factor, dim, **kwargs):
