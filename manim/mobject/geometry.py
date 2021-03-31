@@ -655,14 +655,14 @@ class LabeledDot(Dot):
 class Ellipse(Circle):
     """A circular shape; oval, circle.
 
-     Parameters
-     ----------
-     width : :class:`float`, optional
-        The horizontal width of the ellipse.
-     height : :class:`float`, optional
-        The vertical height of the ellipse.
-     kwargs : Any
-        Additional arguments to be passed to :class:`Circle`
+    Parameters
+    ----------
+    width : :class:`float`, optional
+       The horizontal width of the ellipse.
+    height : :class:`float`, optional
+       The vertical height of the ellipse.
+    kwargs : Any
+       Additional arguments to be passed to :class:`Circle`
 
     Examples
     --------
