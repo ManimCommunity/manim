@@ -8,20 +8,6 @@ from pathlib import Path
 # Lines that do not yet work with the Community Version are commented.
 
 
-class TestLatex(Scene):
-    def construct(self):
-        config["background_color"] = "#333333"
-        # mob = OpenGLSVGMobject("../manim/media/Tex/184715fb937073ce.svg").scale(3)
-        # mob.set_color(WHITE)
-
-        mob = OpenGLTex("This is some text")
-
-        anim = Write(mob)
-        self.play(anim)
-        self.wait()
-        self.interact()
-
-
 class InteractiveDevelopment(Scene):
     def construct(self):
         circle = OpenGLCircle()

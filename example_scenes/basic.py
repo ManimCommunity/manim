@@ -14,24 +14,6 @@ from manim import *
 # for a 1920x1080 video)
 
 
-class TestLatex(Scene):
-    def construct(self):
-        mob = Paragraph(
-            "this is a awesome",
-            "paragraph",
-            "With \nNewlines",
-            "\tWith Tabs",
-            "  With Spaces",
-            "With Alignments",
-            "center",
-            "left",
-            "right",
-        )
-        anim = Write(mob)
-        self.play(anim)
-        self.wait()
-
-
 class OpeningManim(Scene):
     def construct(self):
         title = Tex(r"This is some \LaTeX")
