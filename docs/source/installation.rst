@@ -1,10 +1,10 @@
 Installation
 ============
 
-Manim has a few dependencies that need to be installed before it.  The
-following pages have instructions that are specific to your system.  Once you
-are done installing the dependencies, come back to this page to install manim
-itself.
+Manim has a few dependencies that need to be installed before it can be used.
+The following pages have instructions that are specific to your system. Once
+you are done installing the dependencies, come back to this page to install
+manim itself.
 
 Installing dependencies
 ***********************
@@ -14,6 +14,7 @@ Installing dependencies
    installation/win
    installation/mac
    installation/linux
+   installation/colab
    installation/troubleshooting
    installation/for_dev
    installation/plugins
@@ -38,4 +39,4 @@ found at `Docker Hub <https://hub.docker.com/r/manimcommunity/manim>`_.
 
 Installation For Developers
 ***************************
-If you want to contribute to manim, follow these installation instructions :doc:`installation/for_dev`.
+If you want to contribute to manim, follow the :doc:`contributing` instructions.

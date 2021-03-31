@@ -215,7 +215,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
                 self.previous_scene = requested_scene
                 self.previous_scene_index = requested_scene_index
             return resp
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
 
     def FetchSceneData(self, request, context):
@@ -238,7 +238,7 @@ class FrameServer(frameserver_pb2_grpc.FrameServerServicer):
             else:
                 request.scene.background_color = "#000000"
             return request
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
 
     def ScriptUpdated(self, request, context):

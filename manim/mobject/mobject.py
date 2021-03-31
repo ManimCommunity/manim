@@ -68,7 +68,7 @@ class Mobject(Container):
         self.init_colors()
 
         # OpenGL data.
-        self.data = dict()
+        self.data = {}
         self.depth_test = False
         self.is_fixed_in_frame = False
         self.gloss = 0.0
@@ -136,6 +136,19 @@ class Mobject(Container):
 
                 self.play(my_mobject.animate.shift(RIGHT).rotate(PI))
 
+        Keyword arguments that can be passed to :meth:`.Scene.play` can be passed
+        directly after accessing ``.animate``, like so::
+
+            self.play(my_mobject.animate(rate_func=linear).shift(RIGHT))
+
+        This is especially useful when animating simultaneous ``.animate`` calls that
+        you want to behave differently::
+
+            self.play(
+                mobject1.animate(run_time=2).rotate(PI),
+                mobject2.animate(rate_func=there_and_back).shift(RIGHT),
+            )
+
         .. seealso::
 
             :func:`override_animate`
@@ -149,7 +162,7 @@ class Mobject(Container):
             class AnimateExample(Scene):
                 def construct(self):
                     s = Square()
-                    self.play(ShowCreation(s))
+                    self.play(Create(s))
                     self.play(s.animate.shift(RIGHT))
                     self.play(s.animate.scale(2))
                     self.play(s.animate.rotate(PI / 2))
@@ -161,9 +174,24 @@ class Mobject(Container):
             class AnimateChainExample(Scene):
                 def construct(self):
                     s = Square()
-                    self.play(ShowCreation(s))
+                    self.play(Create(s))
                     self.play(s.animate.shift(RIGHT).scale(2).rotate(PI / 2))
                     self.play(Uncreate(s))
+
+        .. manim:: AnimateWithArgsExample
+
+            class AnimateWithArgsExample(Scene):
+                def construct(self):
+                    s = Square()
+                    c = Circle()
+
+                    VGroup(s, c).arrange(RIGHT, buff=2)
+                    self.add(s, c)
+
+                    self.play(
+                        s.animate(run_time=2).rotate(PI / 2),
+                        c.animate(rate_func=there_and_back).shift(RIGHT),
+                    )
 
         """
         return _AnimationBuilder(self)
@@ -1628,7 +1656,17 @@ class Mobject(Container):
     def get_critical_point(self, direction):
         """Picture a box bounding the mobject.  Such a box has
         9 'critical points': 4 corners, 4 edge center, the
-        center.  This returns one of them.
+        center. This returns one of them, along the given direction.
+
+        ::
+
+            sample = Arc(start_angle=PI/7, angle = PI/5)
+
+            # These are all equivalent
+            max_y_1 = sample.get_top()[1]
+            max_y_2 = sample.get_critical_point(UP)[1]
+            max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
+
         """
         result = np.zeros(self.dim)
         all_points = self.get_points_defining_boundary()
@@ -1832,7 +1870,7 @@ class Mobject(Container):
         center=True,
         **kwargs,
     ):
-        """sort mobjects next to each other on screen.
+        """Sorts mobjects next to each other on screen.
 
         Examples
         --------
@@ -1887,6 +1925,12 @@ class Mobject(Container):
             for submob in self.submobjects:
                 submob.shuffle(recursive=True)
         random.shuffle(self.submobjects)
+
+    def invert(self, recursive=False):
+        if recursive:
+            for submob in self.submobjects:
+                submob.invert(recursive=True)
+        list.reverse(self.submobjects)
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args, **kwargs):
@@ -1971,7 +2015,7 @@ class Mobject(Container):
         new_submobs = []
         for submob, sf in zip(self.submobjects, split_factors):
             new_submobs.append(submob)
-            for k in range(1, sf):
+            for _ in range(1, sf):
                 new_submobs.append(submob.copy().fade(1))
         self.submobjects = new_submobs
         return self
@@ -2094,10 +2138,26 @@ class Group(Mobject):
 class _AnimationBuilder:
     def __init__(self, mobject):
         self.mobject = mobject
-        self.overridden_animation = None
         self.mobject.generate_target()
+
+        self.overridden_animation = None
         self.is_chaining = False
         self.methods = []
+
+        # Whether animation args can be passed
+        self.cannot_pass_args = False
+        self.anim_args = {}
+
+    def __call__(self, **kwargs):
+        if self.cannot_pass_args:
+            raise ValueError(
+                "Animation arguments must be passed before accessing methods and can only be passed once"
+            )
+
+        self.anim_args = kwargs
+        self.cannot_pass_args = True
+
+        return self
 
     def __getattr__(self, method_name):
         method = getattr(self.mobject.target, method_name)
@@ -2120,15 +2180,22 @@ class _AnimationBuilder:
             return self
 
         self.is_chaining = True
+        self.cannot_pass_args = True
+
         return update_target
 
     def build(self):
         from ..animation.transform import _MethodAnimation
 
         if self.overridden_animation:
-            return self.overridden_animation
+            anim = self.overridden_animation
+        else:
+            anim = _MethodAnimation(self.mobject, self.methods)
 
-        return _MethodAnimation(self.mobject, self.methods)
+        for attr, value in self.anim_args.items():
+            setattr(anim, attr, value)
+
+        return anim
 
 
 def override_animate(method):
@@ -2153,7 +2220,7 @@ def override_animate(method):
 
     .. manim:: AnimationOverrideExample
 
-        from manim import Circle, Scene, ShowCreation, Text, Uncreate, VGroup
+        from manim import Circle, Scene, Create, Text, Uncreate, VGroup
 
         class CircleWithContent(VGroup):
             def __init__(self, content):
@@ -2177,7 +2244,7 @@ def override_animate(method):
             def construct(self):
                 t = Text("hello!")
                 my_mobject = CircleWithContent(t)
-                self.play(ShowCreation(my_mobject))
+                self.play(Create(my_mobject))
                 self.play(my_mobject.animate.clear_content())
                 self.wait()
 

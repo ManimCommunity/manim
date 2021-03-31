@@ -28,7 +28,7 @@ render scenes that are defined within doctests, for example::
         <Color #fc6255>
         >>> class DirectiveDoctestExample(Scene):
         ...     def construct(self):
-        ...         self.play(ShowCreation(dot))
+        ...         self.play(Create(dot))
 
 
 Options
@@ -64,7 +64,11 @@ directive:
         rendered in a reference block after the source code.
 
     ref_functions
-        A list of functions and methods, separated by spaces,
+        A list of functions, separated by spaces,
+        that is rendered in a reference block after the source code.
+
+    ref_methods
+        A list of methods, separated by spaces,
         that is rendered in a reference block after the source code.
 
 """
@@ -133,6 +137,7 @@ class ManimDirective(Directive):
         "ref_modules": lambda arg: process_name_list(arg, "mod"),
         "ref_classes": lambda arg: process_name_list(arg, "class"),
         "ref_functions": lambda arg: process_name_list(arg, "func"),
+        "ref_methods": lambda arg: process_name_list(arg, "meth"),
     }
     final_argument_whitespace = True
 
@@ -163,6 +168,7 @@ class ManimDirective(Directive):
             self.options.get("ref_modules", [])
             + self.options.get("ref_classes", [])
             + self.options.get("ref_functions", [])
+            + self.options.get("ref_methods", [])
         )
         if ref_content:
             ref_block = f"""

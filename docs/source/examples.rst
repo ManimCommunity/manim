@@ -57,7 +57,7 @@ Basic Concepts
 .. manim:: BraceAnnotation
     :save_last_frame:
     :ref_classes: Brace
-    :ref_functions: Brace.get_text Brace.get_tex
+    :ref_methods: Brace.get_text Brace.get_tex
 
     class BraceAnnotation(Scene):
         def construct(self):
@@ -94,12 +94,13 @@ Basic Concepts
                 [[i * 256 / n for i in range(0, n)] for _ in range(0, n)]
             )
             image = ImageMobject(imageArray).scale(2)
-            self.add(image)
+            image.background_rectangle = SurroundingRectangle(image, GREEN)
+            self.add(image, image.background_rectangle)
 
 .. manim:: BezierSpline
     :save_last_frame:
     :ref_classes: Line VGroup
-    :ref_functions: VMobject.add_cubic_bezier_curve
+    :ref_methods: VMobject.add_cubic_bezier_curve
 
     class BezierSpline(Scene):
         def construct(self):
@@ -202,7 +203,7 @@ Animations
             self.wait()
 
 .. manim:: MovingAround
-    :ref_functions: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
+    :ref_methods: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
 
     class MovingAround(Scene):
         def construct(self):
@@ -212,6 +213,65 @@ Animations
             self.play(square.animate.set_fill(ORANGE))
             self.play(square.animate.scale(0.3))
             self.play(square.animate.rotate(0.4))
+
+.. manim:: MovingAngle
+    :ref_classes: Angle
+    :ref_methods: Mobject.rotate
+
+    class MovingAngle(Scene):
+        def construct(self):
+            rotation_center = LEFT
+
+            theta_tracker = ValueTracker(110)
+            line1 = Line(LEFT, RIGHT)
+            line_moving = Line(LEFT, RIGHT)
+            line_ref = line_moving.copy()
+            line_moving.rotate(
+                theta_tracker.get_value() * DEGREES, about_point=rotation_center
+            )
+            a = Angle(line1, line_moving, radius=0.5, other_angle=False)
+            te = MathTex(r"\theta").move_to(
+                Angle(
+                    line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
+                ).point_from_proportion(0.5)
+            )
+
+            self.add(line1, line_moving, a, te)
+            self.wait()
+
+            line_moving.add_updater(
+                lambda x: x.become(line_ref.copy()).rotate(
+                    theta_tracker.get_value() * DEGREES, about_point=rotation_center
+                )
+            )
+
+            a.add_updater(
+                lambda x: x.become(Angle(line1, line_moving, radius=0.5, other_angle=False))
+            )
+            te.add_updater(
+                lambda x: x.move_to(
+                    Angle(
+                        line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
+                    ).point_from_proportion(0.5)
+                )
+            )
+
+            self.play(theta_tracker.animate.set_value(40))
+            self.play(theta_tracker.animate.increment_value(140))
+            self.play(te.animate.set_color(RED), run_time=0.5)
+            self.play(theta_tracker.animate.set_value(350))
+
+
+
+.. manim:: MovingGroupToDestination
+
+    class MovingGroupToDestination(Scene):
+        def construct(self):
+            group = VGroup(Dot(LEFT), Dot(ORIGIN), Dot(RIGHT, color=RED), Dot(2 * RIGHT)).scale(1.4)
+            dest = Dot([4, 3, 0], color=YELLOW)
+            self.add(group, dest)
+            self.play(group.animate.shift(dest.get_center() - group[2].get_center()))
+            self.wait(0.5)
 
 .. manim:: MovingFrameBox
     :ref_modules: manim.mobject.svg.tex_mobject
@@ -227,7 +287,7 @@ Animations
             framebox1 = SurroundingRectangle(text[1], buff = .1)
             framebox2 = SurroundingRectangle(text[3], buff = .1)
             self.play(
-                ShowCreation(framebox1),
+                Create(framebox1),
             )
             self.wait()
             self.play(
@@ -236,7 +296,7 @@ Animations
             self.wait()
 
 .. manim:: RotationUpdater
-    :ref_functions: Mobject.add_updater Mobject.remove_updater
+    :ref_methods: Mobject.add_updater Mobject.remove_updater
 
     class RotationUpdater(Scene):
         def construct(self):
@@ -257,7 +317,7 @@ Animations
 
 .. manim:: PointWithTrace
     :ref_classes: Rotating
-    :ref_functions: VMobject.set_points_as_corners Mobject.add_updater
+    :ref_methods: VMobject.set_points_as_corners Mobject.add_updater
 
     class PointWithTrace(Scene):
         def construct(self):
@@ -284,7 +344,7 @@ Plotting with Manim
     :save_last_frame:
     :ref_modules: manim.scene.graph_scene
     :ref_classes: MathTex
-    :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
+    :ref_methods: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
 
     class SinAndCosFunctionPlot(GraphScene):
         def __init__(self, **kwargs):
@@ -318,7 +378,7 @@ Plotting with Manim
 .. manim:: GraphAreaPlot
     :save_last_frame:
     :ref_modules: manim.scenes.graph_scene
-    :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.get_area
+    :ref_methods: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.get_area
 
     class GraphAreaPlot(GraphScene):
         def __init__(self, **kwargs):
@@ -344,7 +404,7 @@ Plotting with Manim
 .. manim:: HeatDiagramPlot
     :save_last_frame:
     :ref_modules: manim.scenes.graph_scene
-    :ref_functions: GraphScene.setup_axes GraphScene.coords_to_point
+    :ref_methods: GraphScene.setup_axes GraphScene.coords_to_point
 
     class HeatDiagramPlot(GraphScene):
         def __init__(self, **kwargs):
@@ -381,7 +441,7 @@ Special Camera Settings
 .. manim:: FollowingGraphCamera
     :ref_modules: manim.scene.moving_camera_scene
     :ref_classes: GraphScene MovingCameraScene MoveAlongPath Restore
-    :ref_functions: Mobject.add_updater
+    :ref_methods: Mobject.add_updater
 
     class FollowingGraphCamera(GraphScene, MovingCameraScene):
         def setup(self):
@@ -414,7 +474,7 @@ Special Camera Settings
 .. manim:: MovingZoomedSceneAround
     :ref_modules: manim.scene.zoomed_scene
     :ref_classes: ZoomedScene BackgroundRectangle UpdateFromFunc
-    :ref_functions: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
+    :ref_methods: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
 
     class MovingZoomedSceneAround(ZoomedScene):
     # contributed by TheoremofBeethoven, www.youtube.com/c/TheoremofBeethoven
@@ -457,7 +517,7 @@ Special Camera Settings
 
             frame_text.next_to(frame, DOWN)
 
-            self.play(ShowCreation(frame), FadeInFrom(frame_text, direction=DOWN))
+            self.play(Create(frame), FadeInFrom(frame_text, direction=DOWN))
             self.activate_zooming()
 
             self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera)
@@ -483,7 +543,7 @@ Special Camera Settings
 .. manim:: FixedInFrameMObjectTest
     :save_last_frame:
     :ref_classes: ThreeDScene
-    :ref_functions: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
+    :ref_methods: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
 
     class FixedInFrameMObjectTest(ThreeDScene):
         def construct(self):
@@ -498,7 +558,7 @@ Special Camera Settings
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
     :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
-    :ref_functions: ThreeDScene.set_camera_orientation
+    :ref_methods: ThreeDScene.set_camera_orientation
 
     class ThreeDLightSourcePosition(ThreeDScene):
         def construct(self):
@@ -517,7 +577,7 @@ Special Camera Settings
 
 .. manim:: ThreeDCameraRotation
     :ref_classes: ThreeDScene ThreeDAxes
-    :ref_functions: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
+    :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
 
     class ThreeDCameraRotation(ThreeDScene):
         def construct(self):
@@ -533,7 +593,7 @@ Special Camera Settings
 
 .. manim:: ThreeDCameraIllusionRotation
     :ref_classes: ThreeDScene ThreeDAxes
-    :ref_functions: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
+    :ref_methods: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
 
     class ThreeDCameraIllusionRotation(ThreeDScene):
         def construct(self):
@@ -603,8 +663,8 @@ Advanced Projects
 =================
 
 .. manim:: OpeningManim
-    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane ShowCreation
-    :ref_functions: NumberPlane.prepare_for_nonlinear_transform
+    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane Create
+    :ref_methods: NumberPlane.prepare_for_nonlinear_transform
 
     class OpeningManim(Scene):
         def construct(self):
@@ -634,7 +694,7 @@ Advanced Projects
             self.play(
                 FadeOut(title),
                 FadeInFrom(grid_title, direction=DOWN),
-                ShowCreation(grid, run_time=3, lag_ratio=0.1),
+                Create(grid, run_time=3, lag_ratio=0.1),
             )
             self.wait()
 
@@ -662,7 +722,8 @@ Advanced Projects
 
 .. manim:: SineCurveUnitCircle
     :ref_classes: MathTex Circle Dot Line VGroup
-    :ref_functions: Mobject.add_updater Mobject.remove_updater always_redraw
+    :ref_methods: Mobject.add_updater Mobject.remove_updater
+    :ref_functions: always_redraw
 
     class SineCurveUnitCircle(Scene):
         # contributed by heejin_park, https://infograph.tistory.com/230
@@ -701,7 +762,6 @@ Advanced Projects
         def show_circle(self):
             circle = Circle(radius=1)
             circle.move_to(self.origin_point)
-
             self.add(circle)
             self.circle = circle
 
