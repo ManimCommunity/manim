@@ -216,7 +216,7 @@ Animations
 
 .. manim:: MovingAngle
     :ref_classes: Angle
-    :ref_functions: Mobject.rotate
+    :ref_methods: Mobject.rotate
 
     class MovingAngle(Scene):
         def construct(self):
