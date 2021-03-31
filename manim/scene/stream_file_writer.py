@@ -40,6 +40,7 @@ class StreamFileWriter(SceneFileWriter):
         class. This is insignificant to the base class which has its own ways
         of acquiring this path.
         """
+        self.partial_movie_files = list(filter(lambda item: item is not None, self.partial_movie_files))
         return self.partial_movie_files[self.renderer.num_plays]
 
     def end_animation(self, allow_write=False):
@@ -91,7 +92,6 @@ class StreamFileWriter(SceneFileWriter):
     def close_movie_pipe(self):
         self.writing_process.stdin.close()
         self.writing_process.wait()
-        file_path = self.partial_movie_files[self.renderer.num_plays]
         logger.info(
             f"Animation {self.renderer.num_plays}: File at %(path)s",
             {"path": {self.file_path}},
