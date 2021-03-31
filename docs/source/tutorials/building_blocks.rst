@@ -294,6 +294,36 @@ Use the :code:`run_time` argument to control the duration.
 	   self.play(ApplyMethod(square.shift, UP), run_time=3)
 	   self.wait(1)
 
+Using coordinates of an mobject
+===============================
+
+Mobjects contain points that define their boundaries.
+These points can be used to add other mobjects respectively to each other, e.g. by methods like ``m.get_center()`` ``m.get_top()``
+and ``m.get_start()`. Here is an example of some important coordinates:
+
+.. manim:: MobjectExample
+    :save_last_frame:
+
+    class MobjectExample(Scene):
+        def construct(self):
+            a = ParametricFunction(lambda t: np.array((np.cos(t), np.sin(t), 0))*(1-t*0.05), t_min=0, t_max = 2*TAU, fill_opacity=0).set_color(RED).scale(3)
+
+            point_start= a.get_start()
+            point_end  = a.get_end()
+            point_center = a.get_center()
+            self.add(Text(f"a.get_start() = {np.round(point_start,2).tolist()}").scale(0.5).to_edge(UR))
+            self.add(Text(f"a.get_end() = {np.round(point_end,2).tolist()}").scale(0.5).next_to(self.mobjects[-1],DOWN))
+            self.add(Text(f"a.get_center() = {np.round(point_center,2).tolist()}").scale(0.5).next_to(self.mobjects[-1],DOWN))
+
+            self.add(Dot(a.get_center()).set_color(GREEN).scale(2))
+            self.add(Dot(a.get_start()).set_color(BLUE).scale(2))
+            self.add(Dot(a.get_end()).set_color(ORANGE).scale(2))
+            self.add(Dot(a.get_top()).set_color(GRAY).scale(2))
+            self.add(Dot(a.get_bottom()).set_color(PURPLE).scale(2))
+            self.add(Dot(a.point_from_proportion(0.5)).set_color(YELLOW).scale(2))
+            self.add(*[Dot(x) for x in a.get_points()[::190]])
+            self.add(a)
+
 
 ******
 Scenes
