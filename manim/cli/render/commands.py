@@ -211,7 +211,6 @@ def validate_resolution(ctx, param, value):
     "-t", "--transparent", is_flag=True, help="Render scenes with alpha channel."
 )
 @optgroup.option(
-    "-c",
     "--background_color",
     help="Render scenes with background color.",
 )
