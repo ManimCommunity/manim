@@ -1,7 +1,14 @@
-import manim.utils.hashing as hashing
-
 import json
 
+import manim.utils.hashing as hashing
+import pytest
+
+ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
+
+@pytest.fixture(autouse=True, scope="function")
+def reset_already_processed(): 
+    print("CALLED BITCH ")
+    hashing._Memoizer.reset_already_processed()
 
 def test_JSON_basic():
     o = {"test": 1, 2: 4, 3: 2.0}
@@ -81,8 +88,7 @@ def test_JSON_with_wrong_keys():
     a = {(1, 2): 3}
     b = {Test(): 3}
     c = {test: 3}
-
-    for el in (a, b, c):
+    for el in [a, b, c]:
         o_ser = hashing.get_json(el)
         dict_o = json.loads(o_ser)
         # check if this is an int (it meant that the lkey has been hashed)
@@ -99,7 +105,8 @@ def test_JSON_with_circular_references():
     B["circular_ref"] = A()
     o_ser = hashing.get_json(B)
     dict_o = json.loads(o_ser)
-    assert dict_o["circular_ref"]["b"]["circular_ref"] == "already_processed"
+    print(dict_o)
+    assert dict_o["circular_ref"]["b"] == ALREADY_PROCESSED_PLACEHOLDER
 
 
 def test_JSON_with_big_np_array():
