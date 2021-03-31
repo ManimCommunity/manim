@@ -4,10 +4,9 @@ Manim Installation For Developers
 	This documentation is for developers who want to contribute to ``ManimCommunity/manim``.
 
 Thank you for your interest in contributing! Please see our documentation on
-:doc:`contributing` to take the necessary steps before installing Manim as a
+:doc:`../contributing` to take the necessary steps before installing Manim as a
 developer. This documentation assumes you have already taken the necessary
 steps to clone your fork.
-
 
 .. warning::
 
