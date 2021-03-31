@@ -18,11 +18,18 @@ from .. import logger
 
 
 class _Memoizer:
+    """Implements the memoization logic to optimize the hashing procedure and prevent the circular references within iterable processed.
+
+    Keeps a record of all the processed objects, and handle the logic to return a place holder instead of the original object if the object has already been processed 
+    by the hashing logic (i.e, recusively checked, converted to JSON, etc..).
+    
+    This class used two signatures functions to keep a track of processed objects : hash or id. Whenever possible, hash is used to ensure a broader object content-equality detection.
+    """    
 
     _already_processed = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
-    ALREADY_PROCESSED_PLACEHOLDER = None
+    ALREADY_PROCESSED_PLACEHOLDER = "CACA"
 
     @classmethod
     def reset_already_processed(cls):
@@ -34,10 +41,8 @@ class _Memoizer:
 
         Parameters
         ----------
-        cls : _Memoizer
-            [description]
         is_method : bool, optional
-            [description], by default False
+            Whether the function passed is a method, by default Falsep
         """
 
         def layer(func):
@@ -53,6 +58,7 @@ class _Memoizer:
     @classmethod
     def check_already_processed(cls, obj: Any) -> Any:
         """Checks if obj has been already processed, returns itself if it hasn't been or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has not.
+        Marks the object as processed in the second case.
 
         Parameters
         ----------
@@ -77,6 +83,7 @@ class _Memoizer:
             The object to mark as processed.
         """
         cls._handle_already_processed(obj, lambda x: x)
+        return cls._return(obj, id, lambda x:x, memoizing=False)
 
     @classmethod
     def _handle_already_processed(
@@ -99,25 +106,27 @@ class _Memoizer:
             return obj
         if isinstance(obj, collections.abc.Hashable):
             try:
-                return cls._return_with_memoizing(obj, hash, default_function)
+                return cls._return(obj, hash, default_function)
             except TypeError:
                 # In case of an error with the hash (eg an object is marked as hashable but contains a non hashable within it)
                 # Fallback to use id instead.
                 pass
-        return cls._return_with_memoizing(obj, id, default_function)
+        return cls._return(obj, id, default_function)
 
     @classmethod
-    def _return_with_memoizing(
+    def _return(
         cls,
         obj: typing.Any,
         obj_to_membership_sign: typing.Callable[[Any], int],
         default_func,
+        memoizing = True
     ) -> typing.Union[str, Any]:
 
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
             return cls.ALREADY_PROCESSED_PLACEHOLDER
-        cls._already_processed.add(obj_membership_sign)
+        if memoizing:
+            cls._already_processed.add(obj_membership_sign)
         return default_func(obj)
 
 
@@ -239,6 +248,7 @@ class _CustomEncoder(json.JSONEncoder):
         :class:`str`
            The object encoder with the standard json process.
         """
+        obj = _Memoizer.check_already_processed(obj)
         if isinstance(obj, (dict, list, tuple)):
             return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
