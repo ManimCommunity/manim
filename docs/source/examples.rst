@@ -296,7 +296,7 @@ Animations
             self.wait()
 
 .. manim:: RotationUpdater
-    :ref_functions: Mobject.add_updater Mobject.remove_updater
+    :ref_methods: Mobject.add_updater Mobject.remove_updater
 
     class RotationUpdater(Scene):
         def construct(self):
@@ -317,7 +317,7 @@ Animations
 
 .. manim:: PointWithTrace
     :ref_classes: Rotating
-    :ref_functions: VMobject.set_points_as_corners Mobject.add_updater
+    :ref_methods: VMobject.set_points_as_corners Mobject.add_updater
 
     class PointWithTrace(Scene):
         def construct(self):
