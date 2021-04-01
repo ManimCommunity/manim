@@ -1723,19 +1723,19 @@ class Mobject(Container):
         return all_points[index]
 
     def get_top(self) -> np.ndarray:
-        """Get top coordinates"""
+        """Get top coordinates of a box bounding the mobject"""
         return self.get_edge_center(UP)
 
     def get_bottom(self) -> np.ndarray:
-        """Get bottom coordinates"""
+        """Get bottom coordinates of a box bounding the mobject"""
         return self.get_edge_center(DOWN)
 
     def get_right(self) -> np.ndarray:
-        """Get right coordinates"""
+        """Get right coordinates of a box bounding the mobject"""
         return self.get_edge_center(RIGHT)
 
     def get_left(self) -> np.ndarray:
-        """Get left coordinates"""
+        """Get left coordinates of a box bounding the mobject"""
         return self.get_edge_center(LEFT)
 
     def get_zenith(self):
@@ -1745,6 +1745,7 @@ class Mobject(Container):
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
+        """Measure the length of an mobject in a certain direction."""
         return self.reduce_across_dimension(
             np.max, np.max, dim
         ) - self.reduce_across_dimension(np.min, np.min, dim)
@@ -1784,9 +1785,6 @@ class Mobject(Container):
     def get_start_and_end(self):
         """Returns starting and ending point of a stroke as a ``tuple``. """
         return self.get_start(), self.get_end()
-
-    def get_middle_point(self):
-        return self.point_from_proportion(0.5)
 
     def point_from_proportion(self, alpha):
         raise NotImplementedError("Please override in a child class.")
