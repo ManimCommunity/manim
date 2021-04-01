@@ -1754,16 +1754,16 @@ class Mobject(Container):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
-    def get_x(self, direction=ORIGIN):
-        """Returns x coordinate of the center of the mobject as ``numpy.float64`` """
+    def get_x(self, direction=ORIGIN) -> np.float64:
+        """Returns x coordinate of the center of the mobject as ``float`` """
         return self.get_coord(0, direction)
 
-    def get_y(self, direction=ORIGIN):
-        """Returns y coordinate of the center of the mobject as ``numpy.float64`` """
+    def get_y(self, direction=ORIGIN) -> np.float64:
+        """Returns y coordinate of the center of the mobject as ``float`` """
         return self.get_coord(1, direction)
 
-    def get_z(self, direction=ORIGIN):
-        """Returns z coordinate of the center of the mobject as ``numpy.float64`` """
+    def get_z(self, direction=ORIGIN) -> np.float64:
+        """Returns z coordinate of the center of the mobject as ``float`` """
         return self.get_coord(2, direction)
 
     def get_start(self):
