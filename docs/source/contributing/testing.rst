@@ -8,9 +8,9 @@ feature has been broken and/or been unintentionally modified.
 How Manim Tests
 ---------------
 
-Manim uses ``pytest`` as its testing framework. Running ``pytest`` in the root directory of
-the project will start the testing process, and will show if there is
-something wrong.
+Manim uses pytest as its testing framework. 
+To start the testing process, go to the root directory of the project and run pytest in your terminal. 
+Any errors that occur during testing will be displayed in the terminal.
 
 Some useful pytest flags: 
 - ``-x``, that will make pytest stop at the first fail;
@@ -29,7 +29,7 @@ At the moment there are three type of tests:
 
 #. Unit Tests:
 
-   Tests for most of the basic functionality of manim. For example, there a test for
+   Tests for most of the basic functionalities of manim. For example, there a test for
    ``Mobject``, that checks if it can be added to a Scene, etc ..
 
 #. Graphical unit tests:
@@ -124,9 +124,8 @@ The Main Directories
 
 - ``control_data/``:
 
-  The directory containing control data; these are the expected and correct frame data for each test. In ``control_data/graphical_units_data/`` are all the
-  .npz (represented the last frame) used in graphical unit tests videos, and in
-  ``control_data/videos_data/`` some .json used to check videos.
+  The directory containing control data. ``control_data/graphical_units_data/`` contains the expected and correct frame data for graphical tests, and
+  ``control_data/videos_data/`` contains the .json files used to check videos.
 
 - ``test_graphical_units/``:
 
