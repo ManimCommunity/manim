@@ -220,7 +220,8 @@ It will look something like this :
     set_test_scene(CircleTest, "geometry") 
 
 ``set_test_scene`` takes two parameters: the scene to test, and the
-module name. It will automatically generate the control data in the
+module name. You can generate the test data by running the file (it suffices to type the name of the file in terminal; you do not have to run
+it like how you would normally run manim files). It will automatically generate the control data in the
 right directory (in this case,
 ``tests/control_data/graphical_units_data/geometry/CircleTest.npz``).
 
