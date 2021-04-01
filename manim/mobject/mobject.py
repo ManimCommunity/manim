@@ -373,10 +373,10 @@ class Mobject(Container):
                 raise ValueError("Mobject cannot contain self")
             if not isinstance(mobject, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
-            if mobject not in self.submobjects:
-                self.submobjects = list_update(self.submobjects, mobjects)
 
-        self.submobjects = list_update(mobjects, self.submobjects)
+        filtered = list_update(mobjects, self.submobjects)
+        self.remove(*mobjects)
+        self.submobjects = list(filtered) + self.submobjects
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
