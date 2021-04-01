@@ -13,7 +13,13 @@ from ..utils.rate_functions import linear
 if typing.TYPE_CHECKING:
     from ..mobject.types.vectorized_mobject import VGroup
 
-__all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
+__all__ = [
+    "AnimationGroup",
+    "Succession",
+    "LaggedStart",
+    "LaggedStartMap",
+    "BuiltinAnimation",
+]
 
 
 DEFAULT_LAGGED_START_LAG_RATIO: float = 0.05
@@ -27,7 +33,7 @@ class AnimationGroup(Animation):
         run_time: float = None,
         rate_func: typing.Callable[[float], float] = linear,
         lag_ratio: float = 0,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.animations = [prepare_animation(anim) for anim in animations]
         self.group = group
@@ -104,6 +110,53 @@ class AnimationGroup(Animation):
             anim.interpolate(sub_alpha)
 
 
+class BuiltinAnimation(Animation):
+    def __init__(
+        self,
+        mobject: Mobject,
+        animation_name: str = "default",
+        **kwargs,
+    ) -> None:
+        """Grabs an plays an animation from an :class: Mobject
+
+        Parameters
+        ----------
+        mobject
+            Mobject to animate
+        animation_name
+            Builtin Animation to grab
+        """
+
+        self.animation = mobject.get_animation(animation_name)
+        self.mobject = mobject
+        self.check()
+
+        prepare_animation(self.animation)
+
+        super().__init__(self.animation.mobject, **kwargs)
+
+    def check(self):
+        if self.animation is None:
+            raise TypeError(
+                f"{self.mobject.__class__.__name__} does not support this animation"
+            )
+
+    def begin(self) -> None:
+        self.animation.begin()
+
+    def finish(self) -> None:
+        self.animation.finish()
+
+    def clean_up_from_scene(self, scene: Scene) -> None:
+        self.animation.clean_up_from_scene(scene)
+
+    def update_mobjects(self, dt: float) -> None:
+        self.animation.update_mobjects(dt)
+
+    def interpolate(self, time: float) -> None:
+        self.animation.interpolate(time)
+
+
 class Succession(AnimationGroup):
     def __init__(self, *animations: Animation, lag_ratio: float = 1, **kwargs) -> None:
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
@@ -153,7 +206,7 @@ class LaggedStart(AnimationGroup):
         self,
         *animations: Animation,
         lag_ratio: float = DEFAULT_LAGGED_START_LAG_RATIO,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*animations, lag_ratio=lag_ratio, **kwargs)
 
@@ -165,7 +218,7 @@ class LaggedStartMap(LaggedStart):
         mobject: Mobject,
         arg_creator: typing.Callable[[Mobject], str] = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         args_list = []
         for submob in mobject:

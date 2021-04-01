@@ -11,7 +11,7 @@ import operator as op
 import random
 import sys
 import types
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Union, TYPE_CHECKING
 import warnings
 
 from pathlib import Path
@@ -31,6 +31,9 @@ from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix
 from ..utils.space_ops import rotation_matrix_transpose
+
+from ..animation.composition import AnimationGroup
+from ..animation.creation import Create
 
 # TODO: Explain array_attrs
 
@@ -1931,6 +1934,16 @@ class Mobject(Container):
             for submob in self.submobjects:
                 submob.invert(recursive=True)
         list.reverse(self.submobjects)
+
+    # Default Animations
+    def get_animation(
+        self, animation_name: str = "default"
+    ) -> Optional[AnimationGroup]:
+        """Grabs a builtin animation.
+        Implemented by children
+        """
+
+        return AnimationGroup(Create(self))
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args, **kwargs):
