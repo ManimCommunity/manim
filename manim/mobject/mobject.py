@@ -1011,11 +1011,11 @@ class Mobject(Container):
             return self
 
     def rotate_about_origin(self, angle, axis=OUT, axes=[]):
-        """Rotates an mobject about the ORIGIN, which is at [0,0,0]"""
+        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(self, angle, axis=OUT, **kwargs):
-        """Rotates an mobject about a certain point"""
+        """Rotates the :class:`~.Mobject` about a certain point."""
         if config["use_opengl_renderer"]:
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
@@ -1416,15 +1416,15 @@ class Mobject(Container):
         return self
 
     def set_x(self, x, direction=ORIGIN):
-        """Set x value of the center of the mobject (``int`` or ``float``)"""
+        """Set x value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(x, 0, direction)
 
     def set_y(self, y, direction=ORIGIN):
-        """Set y value of the center of the mobject (``int`` or ``float``)"""
+        """Set y value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(y, 1, direction)
 
     def set_z(self, z, direction=ORIGIN):
-        """Set z value of the center of the mobject (``int`` or ``float``)"""
+        """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
     def space_out_submobjects(self, factor=1.5, **kwargs):
@@ -1436,7 +1436,7 @@ class Mobject(Container):
     def move_to(
         self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
     ):
-        """Move center of an mobject to certain coordinate"""
+        """Move center of the :class:`~.Mobject` to certain coordinate."""
         if isinstance(point_or_mobject, Mobject):
             target = point_or_mobject.get_critical_point(aligned_edge)
         else:
@@ -1612,7 +1612,7 @@ class Mobject(Container):
     ##
 
     def save_state(self):
-        """save th current state (position, color & size). Can be restored with ``restore``"""
+        """Save the current state (position, color & size). Can be restored with :meth:`~.Mobject.restore`."""
         if hasattr(self, "saved_state"):
             # Prevent exponential growth of data
             self.saved_state = None
@@ -1621,7 +1621,7 @@ class Mobject(Container):
         return self
 
     def restore(self):
-        """restores the state that was previously saved with ``saved_state``  """
+        """Restores the state that was previously saved with :meth:`~.Mobject.saved_state`."""
         if not hasattr(self, "saved_state") or self.save_state is None:
             raise Exception("Trying to restore without having saved")
         self.become(self.saved_state)
@@ -1805,7 +1805,7 @@ class Mobject(Container):
         return z_index_group.get_center()
 
     def has_points(self):
-        """Check if mobject contains points"""
+         """Check if :class:`~.Mobject` contains points."""
         return len(self.points) > 0
 
     def has_no_points(self):
