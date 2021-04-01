@@ -1942,8 +1942,7 @@ class Mobject(Container):
         """Grabs a builtin animation.
         Implemented by children
         """
-
-        return AnimationGroup(Create(self))
+        return None
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args, **kwargs):

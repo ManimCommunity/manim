@@ -117,7 +117,7 @@ class BuiltinAnimation(Animation):
         animation_name: str = "default",
         **kwargs,
     ) -> None:
-        """Grabs an plays an animation from an :class: Mobject
+        """Grabs an plays an animation from an :class: `Mobject`
 
         Parameters
         ----------
