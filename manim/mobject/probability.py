@@ -172,7 +172,7 @@ class BarChart(VGroup):
         bar_stroke_width=3,
         bar_names=[],
         bar_label_scale_val=0.75,
-        **kwargs
+        **kwargs,
     ):
         VGroup.__init__(self, **kwargs)
         self.n_ticks = n_ticks

@@ -46,7 +46,7 @@ class FullScreenFadeRectangle(FullScreenRectangle):
             stroke_width=stroke_width,
             fill_color=fill_color,
             fill_opacity=fill_opacity,
-            **kwargs
+            **kwargs,
         )
 
 

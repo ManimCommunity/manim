@@ -53,7 +53,7 @@ class DecimalNumber(VMobject):
         unit=None,  # Aligned to bottom unless it starts with "^"
         include_background_rectangle=False,
         edge_to_fix=LEFT,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.number = number

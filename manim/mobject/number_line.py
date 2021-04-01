@@ -49,7 +49,7 @@ class NumberLine(Line):
         exclude_zero_from_default_numbers=False,
         x_min=-config["frame_x_radius"],
         x_max=config["frame_x_radius"],
-        **kwargs
+        **kwargs,
     ):
         self.unit_size = unit_size
         self.include_ticks = include_ticks
@@ -242,7 +242,7 @@ class UnitInterval(NumberLine):
         decimal_number_config={
             "num_decimal_places": 1,
         },
-        **kwargs
+        **kwargs,
     ):
         NumberLine.__init__(
             self,

@@ -155,7 +155,7 @@ class VectorField(VGroup):
         length_func=lambda norm: 0.45 * sigmoid(norm),
         opacity=1.0,
         vector_config=None,
-        **kwargs
+        **kwargs,
     ):
         self.delta_x = delta_x
         self.delta_y = delta_y
@@ -231,7 +231,7 @@ class StreamLines(VGroup):
         max_magnitude=1.5,
         colors=DEFAULT_SCALAR_FIELD_COLORS,
         cutoff_norm=15,
-        **kwargs
+        **kwargs,
     ):
         VGroup.__init__(
             self, stroke_color=stroke_color, stroke_width=stroke_width, **kwargs
@@ -354,7 +354,7 @@ class AnimatedStreamLines(VGroup):
             "rate_func": linear,
             "time_width": 0.3,
         },
-        **kwargs
+        **kwargs,
     ):
         VGroup.__init__(self, **kwargs)
         self.stream_lines = stream_lines

@@ -13,7 +13,7 @@ class PlotFunctions(GraphScene):
             function_color=RED,
             axes_color=GREEN,
             x_labeled_nums=range(-10, 12, 2),
-            **kwargs
+            **kwargs,
         )
 
     def construct(self):

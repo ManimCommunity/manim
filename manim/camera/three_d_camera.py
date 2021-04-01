@@ -33,7 +33,7 @@ class ThreeDCamera(Camera):
         phi=0,
         theta=-90 * DEGREES,
         gamma=0,
-        **kwargs
+        **kwargs,
     ):
         """Initializes the ThreeDCamera
 

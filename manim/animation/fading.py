@@ -95,7 +95,7 @@ class FadeOut(Transform):
         vmobject: typing.Union[VMobject, OpenGLVMobject],
         remover: bool = True,
         lag_ratio: float = DEFAULT_FADE_LAG_RATIO,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(vmobject, remover=remover, lag_ratio=lag_ratio, **kwargs)
 
@@ -112,7 +112,7 @@ class FadeIn(Transform):
         self,
         vmobject: typing.Union[VMobject, OpenGLVMobject],
         lag_ratio: float = DEFAULT_FADE_LAG_RATIO,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(vmobject, lag_ratio=lag_ratio, **kwargs)
 
@@ -176,7 +176,7 @@ class FadeOutToPoint(FadeOut):
         self,
         mobject: "Mobject",
         point: typing.Union["Mobject", np.ndarray] = ORIGIN,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.point = point
         super().__init__(mobject, **kwargs)
@@ -252,6 +252,6 @@ class VFadeInThenOut(VFadeIn):
         mobject: "Mobject",
         remover: bool = True,
         rate_func: typing.Callable[[float, float], float] = there_and_back,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(mobject, remover=remover, rate_func=rate_func, **kwargs)

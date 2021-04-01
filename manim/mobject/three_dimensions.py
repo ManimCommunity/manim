@@ -46,7 +46,7 @@ class ParametricSurface(VGroup):
         stroke_width=0.5,
         should_make_jagged=False,
         pre_function_handle_to_anchor_scale_factor=0.00001,
-        **kwargs
+        **kwargs,
     ):
         VGroup.__init__(self, **kwargs)
         self.u_min = u_min
@@ -140,7 +140,7 @@ class Sphere(ParametricSurface):
         u_max=PI - 0.001,
         v_min=0,
         v_max=TAU,
-        **kwargs
+        **kwargs,
     ):
         ParametricSurface.__init__(
             self,
@@ -200,7 +200,7 @@ class Cube(VGroup):
         fill_opacity=0.75,
         fill_color=BLUE,
         stroke_width=0,
-        **kwargs
+        **kwargs,
     ):
         self.side_length = side_length
         super().__init__(
@@ -283,7 +283,7 @@ class Cone(ParametricSurface):
         v_max=TAU,
         u_min=0,
         checkerboard_colors=False,
-        **kwargs
+        **kwargs,
     ):
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
@@ -411,7 +411,7 @@ class Cylinder(ParametricSurface):
         v_max=TAU,
         show_ends=True,
         resolution=24,
-        **kwargs
+        **kwargs,
     ):
         self._height = height
         self.radius = radius
@@ -613,7 +613,7 @@ class Arrow3D(Line3D):
         height=0.5,
         base_radius=0.25,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         Line3D.__init__(self, start=start, end=end, **kwargs)
 
@@ -665,7 +665,7 @@ class Torus(ParametricSurface):
         v_min=0,
         v_max=TAU,
         resolution=24,
-        **kwargs
+        **kwargs,
     ):
         self.R = major_radius
         self.r = minor_radius

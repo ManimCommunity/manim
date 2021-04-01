@@ -56,7 +56,7 @@ class OpenGLMobject:
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events=False,
-        **kwargs
+        **kwargs,
     ):
 
         self.color = color
@@ -1404,7 +1404,7 @@ class OpenGLMobject:
     def get_shader_wrapper_list(self):
         shader_wrappers = it.chain(
             [self.get_shader_wrapper()],
-            *[sm.get_shader_wrapper_list() for sm in self.submobjects]
+            *[sm.get_shader_wrapper_list() for sm in self.submobjects],
         )
         batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
 

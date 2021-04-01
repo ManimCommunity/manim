@@ -29,7 +29,7 @@ class Homotopy(Animation):
         mobject: "Mobject",
         run_time: float = 3,
         apply_function_kwargs: typing.Optional[typing.Dict[str, typing.Any]] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """
         Homotopy is a function from
@@ -66,7 +66,7 @@ class ComplexHomotopy(Homotopy):
         self,
         complex_homotopy: typing.Callable[[complex], float],
         mobject: "Mobject",
-        **kwargs
+        **kwargs,
     ) -> None:
         """
         Complex Homotopy a function Cx[0, 1] to C
@@ -91,7 +91,7 @@ class PhaseFlow(Animation):
         rate_func: typing.Callable[
             [typing.Union[np.ndarray, float]], typing.Union[np.ndarray, float]
         ] = linear,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.virtual_time = virtual_time
         self.function = function
@@ -99,7 +99,7 @@ class PhaseFlow(Animation):
             mobject,
             suspend_mobject_updating=suspend_mobject_updating,
             rate_func=rate_func,
-            **kwargs
+            **kwargs,
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
@@ -130,7 +130,7 @@ class MoveAlongPath(Animation):
         mobject: "Mobject",
         path: np.ndarray,
         suspend_mobject_updating: typing.Optional[bool] = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.path = path
         super().__init__(

@@ -54,7 +54,7 @@ class ParametricFunction(VMobject):
         step_size=0.01,
         dt=1e-8,
         discontinuities=None,
-        **kwargs
+        **kwargs,
     ):
         self.function = function
         self.t_min = t_min
@@ -133,7 +133,7 @@ class FunctionGraph(ParametricFunction):
             t_min=self.x_min,
             t_max=self.x_max,
             color=color,
-            **kwargs
+            **kwargs,
         )
         self.function = function
 

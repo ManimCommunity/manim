@@ -49,7 +49,7 @@ class FocusOn(Transform):
         color: str = GREY,
         run_time: float = 2,
         remover: bool = True,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.focus_point = focus_point
         self.color = color
@@ -82,7 +82,7 @@ class Indicate(Transform):
         rate_func: typing.Callable[
             [float, typing.Optional[float]], np.ndarray
         ] = there_and_back,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.color = color
         self.scale_factor = scale_factor
@@ -105,7 +105,7 @@ class Flash(AnimationGroup):
         line_stroke_width: int = 3,
         color: str = YELLOW,
         run_time: float = 1.0,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.point = point
         self.color = color
@@ -148,7 +148,7 @@ class CircleIndicate(Indicate):
             [float, typing.Optional[float]], np.ndarray
         ] = there_and_back,
         remover: bool = True,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.circle_config = circle_config
         circle = self.get_circle(mobject)
@@ -188,7 +188,7 @@ class ShowPassingFlash(ShowPartial):
         mobject: "Mobject",
         time_width: float = 0.1,
         remover: bool = True,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=remover, **kwargs)
@@ -225,7 +225,7 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         mobject: "Mobject",
         rect_animation: Animation = Animation,
         surrounding_rectangle_config: typing.Dict[str, typing.Any] = {},
-        **kwargs
+        **kwargs,
     ) -> None:
         # Callable which takes in a rectangle, and spits out some animation.  Could be
         # some animation class, could be something more
@@ -258,7 +258,7 @@ class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
         self,
         mobject: "Mobject",
         rect_animation: Animation = ShowCreationThenDestruction,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
@@ -268,7 +268,7 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
         self,
         mobject: "Mobject",
         rect_animation: Animation = ShowCreationThenFadeOut,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
@@ -280,7 +280,7 @@ class ApplyWave(Homotopy):
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
         run_time: float = 1,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.direction = direction
         self.amplitude = amplitude
@@ -309,7 +309,7 @@ class WiggleOutThenIn(Animation):
         scale_about_point: typing.Optional[np.ndarray] = None,
         rotate_about_point: typing.Optional[np.ndarray] = None,
         run_time: float = 2,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.scale_value = scale_value
         self.rotation_angle = rotation_angle

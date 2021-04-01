@@ -27,7 +27,7 @@ class Rotating(Animation):
         rate_func: typing.Callable[
             [typing.Union[np.ndarray, float]], typing.Union[np.ndarray, float]
         ] = linear,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.axis = axis
         self.radians = radians
@@ -53,7 +53,7 @@ class Rotate(Transform):
         axis: np.ndarray = OUT,
         about_point: typing.Optional[np.ndarray] = None,
         about_edge: typing.Optional[np.ndarray] = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         if "path_arc" not in kwargs:
             kwargs["path_arc"] = angle

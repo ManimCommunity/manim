@@ -56,7 +56,7 @@ class Brace(MathTex):
         max_num_quads=15,
         min_num_quads=0,
         background_stroke_width=0,
-        **kwargs
+        **kwargs,
     ):
         self.width_multiplier = width_multiplier
         self.max_num_quads = max_num_quads
@@ -123,7 +123,7 @@ class BraceLabel(VMobject):
         brace_direction=DOWN,
         label_constructor=MathTex,
         label_scale=1,
-        **kwargs
+        **kwargs,
     ):
         self.label_constructor = label_constructor
         self.label_scale = label_scale

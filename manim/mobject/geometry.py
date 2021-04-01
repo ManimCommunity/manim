@@ -107,7 +107,7 @@ class TipableVMobject(VMobject):
         tip_length=DEFAULT_ARROW_TIP_LENGTH,
         normal_vector=OUT,
         tip_style={},
-        **kwargs
+        **kwargs,
     ):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
@@ -266,7 +266,7 @@ class Arc(TipableVMobject):
         num_components=9,
         anchors_span_full_range=True,
         arc_center=ORIGIN,
-        **kwargs
+        **kwargs,
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
@@ -430,7 +430,7 @@ class Circle(Arc):
             color=color,
             close_new_points=close_new_points,
             anchors_span_full_range=anchors_span_full_range,
-            **kwargs
+            **kwargs,
         )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
@@ -554,7 +554,7 @@ class Dot(Circle):
         stroke_width=0,
         fill_opacity=1.0,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         Circle.__init__(
             self,
@@ -563,7 +563,7 @@ class Dot(Circle):
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -589,7 +589,7 @@ class AnnotationDot(Dot):
         stroke_width=5,
         stroke_color=WHITE,
         fill_color=BLUE,
-        **kwargs
+        **kwargs,
     ):
         Dot.__init__(
             self,
@@ -597,7 +597,7 @@ class AnnotationDot(Dot):
             stroke_width=stroke_width,
             stroke_color=stroke_color,
             fill_color=fill_color,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -658,11 +658,11 @@ class Ellipse(Circle):
     Parameters
     ----------
     width : :class:`float`, optional
-       The horizontal width of the ellipse.
+        The horizontal width of the ellipse.
     height : :class:`float`, optional
-       The vertical height of the ellipse.
+        The vertical height of the ellipse.
     kwargs : Any
-       Additional arguments to be passed to :class:`Circle`
+        Additional arguments to be passed to :class:`Circle`
 
     Examples
     --------
@@ -694,7 +694,7 @@ class AnnularSector(Arc):
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
@@ -705,7 +705,7 @@ class AnnularSector(Arc):
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
     def generate_points(self):
@@ -741,7 +741,7 @@ class Annulus(Circle):
         stroke_width=0,
         color=WHITE,
         mark_paths_closed=False,
-        **kwargs
+        **kwargs,
     ):
         self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
@@ -751,7 +751,7 @@ class Annulus(Circle):
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
     def generate_points(self):
@@ -899,7 +899,7 @@ class DashedLine(Line):
         dash_length=DEFAULT_DASH_LENGTH,
         dash_spacing=None,
         positive_space_ratio=0.5,
-        **kwargs
+        **kwargs,
     ):
         self.dash_length = dash_length
         self.dash_spacing = (dash_spacing,)
@@ -1138,7 +1138,7 @@ class Arrow(Line):
         max_tip_length_to_length_ratio=0.25,
         max_stroke_width_to_length_ratio=5,
         preserve_tip_size_when_scaling=True,
-        **kwargs
+        **kwargs,
     ):
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
@@ -1816,7 +1816,7 @@ class Rectangle(Polygon):
         width=4.0,
         mark_paths_closed=True,
         close_new_points=True,
-        **kwargs
+        **kwargs,
     ):
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
@@ -2046,14 +2046,14 @@ class ArrowTriangleTip(ArrowTip, Triangle):
         stroke_width=3,
         length=DEFAULT_ARROW_TIP_LENGTH,
         start_angle=PI,
-        **kwargs
+        **kwargs,
     ):
         Triangle.__init__(
             self,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             start_angle=start_angle,
-            **kwargs
+            **kwargs,
         )
         self.width = length
         self.stretch_to_fit_height(length)
@@ -2080,7 +2080,7 @@ class ArrowCircleTip(ArrowTip, Circle):
         stroke_width=3,
         length=DEFAULT_ARROW_TIP_LENGTH,
         start_angle=PI,
-        **kwargs
+        **kwargs,
     ):
         self.start_angle = start_angle
         Circle.__init__(
@@ -2108,7 +2108,7 @@ class ArrowSquareTip(ArrowTip, Square):
         stroke_width=3,
         length=DEFAULT_ARROW_TIP_LENGTH,
         start_angle=PI,
-        **kwargs
+        **kwargs,
     ):
         self.start_angle = start_angle
         Square.__init__(
@@ -2116,7 +2116,7 @@ class ArrowSquareTip(ArrowTip, Square):
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             side_length=length,
-            **kwargs
+            **kwargs,
         )
         self.width = length
         self.stretch_to_fit_height(length)
@@ -2285,7 +2285,7 @@ class Angle(Arc, Elbow):
         dot_distance=0.55,
         dot_color=WHITE,
         elbow=False,
-        **kwargs
+        **kwargs,
     ):
         self.quadrant = quadrant
         self.dot_distance = dot_distance
@@ -2344,7 +2344,7 @@ class Angle(Arc, Elbow):
                 angle=angle_fin,
                 start_angle=start_angle,
                 arc_center=inter,
-                **kwargs
+                **kwargs,
             )
             if dot:
                 if dot_radius is None:

@@ -136,7 +136,7 @@ class Axes(VGroup, CoordinateSystem):
         x_axis_config=None,
         y_axis_config=None,
         center_point=ORIGIN,
-        **kwargs
+        **kwargs,
     ):
         CoordinateSystem.__init__(
             self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max
@@ -227,7 +227,7 @@ class ThreeDAxes(Axes):
         z_normal=DOWN,
         num_axis_pieces=20,
         light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
-        **kwargs
+        **kwargs,
     ):
         Axes.__init__(
             self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, **kwargs
@@ -283,7 +283,7 @@ class NumberPlane(Axes):
         y_line_frequency=1,
         faded_line_ratio=1,
         make_smooth_after_applying_functions=True,
-        **kwargs
+        **kwargs,
     ):
         self.axis_config = {
             "stroke_color": WHITE,

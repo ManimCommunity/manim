@@ -537,7 +537,7 @@ class LinearTransformationScene(VectorScene):
         j_hat_color=Y_COLOR,
         leave_ghost_vectors=False,
         t_matrix=[[3, 0], [1, 2]],
-        **kwargs
+        **kwargs,
     ):
         VectorScene.__init__(self, **kwargs)
 

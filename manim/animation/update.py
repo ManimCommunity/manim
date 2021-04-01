@@ -24,7 +24,7 @@ class UpdateFromFunc(Animation):
         mobject: "Mobject",
         update_function: typing.Callable[["Mobject"], typing.Any],
         suspend_mobject_updating: bool = False,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.update_function = update_function
         super().__init__(

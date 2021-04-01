@@ -20,7 +20,7 @@ class SurroundingRectangle(Rectangle):
             color=color,
             width=mobject.width + 2 * self.buff,
             height=mobject.height + 2 * self.buff,
-            **kwargs
+            **kwargs,
         )
         self.move_to(mobject)
 
@@ -34,7 +34,7 @@ class BackgroundRectangle(SurroundingRectangle):
         stroke_opacity=0,
         fill_opacity=0.75,
         buff=0,
-        **kwargs
+        **kwargs,
     ):
         SurroundingRectangle.__init__(
             self,
@@ -44,7 +44,7 @@ class BackgroundRectangle(SurroundingRectangle):
             stroke_opacity=stroke_opacity,
             fill_opacity=fill_opacity,
             buff=buff,
-            **kwargs
+            **kwargs,
         )
         self.original_fill_opacity = self.fill_opacity
 
