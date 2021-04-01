@@ -1766,7 +1766,7 @@ class Mobject(Container):
         return self.get_coord(2, direction)
 
     def get_start(self):
-        """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts. 
+        """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
         if config["use_opengl_renderer"]:
             return np.array(self.data["points"][0])
