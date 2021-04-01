@@ -1704,13 +1704,13 @@ class Mobject(Container):
 
     # Pseudonyms for more general get_critical_point method
 
-    def get_edge_center(self, direction):
+    def get_edge_center(self, direction) -> np.ndarray:
         return self.get_critical_point(direction)
 
-    def get_corner(self, direction):
+    def get_corner(self, direction) -> np.ndarray:
         return self.get_critical_point(direction)
 
-    def get_center(self):
+    def get_center(self) -> np.ndarray:
         """Get center coordinates"""
         return self.get_critical_point(np.zeros(self.dim))
 
@@ -1722,19 +1722,19 @@ class Mobject(Container):
         index = np.argmax(np.dot(all_points, np.array(direction).T))
         return all_points[index]
 
-    def get_top(self):
+    def get_top(self) -> np.ndarray:
         """Get top coordinates"""
         return self.get_edge_center(UP)
 
-    def get_bottom(self):
+    def get_bottom(self) -> np.ndarray:
         """Get bottom coordinates"""
         return self.get_edge_center(DOWN)
 
-    def get_right(self):
+    def get_right(self) -> np.ndarray:
         """Get right coordinates"""
         return self.get_edge_center(RIGHT)
 
-    def get_left(self):
+    def get_left(self) -> np.ndarray:
         """Get left coordinates"""
         return self.get_edge_center(LEFT)
 
