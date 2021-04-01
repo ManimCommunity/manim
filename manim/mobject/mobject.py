@@ -1459,7 +1459,9 @@ class Mobject(Container):
         self.shift(mobject.get_center() - self.get_center())
         return self
 
-    def surround(self, mobject: "Mobject", dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF):
+    def surround(
+        self, mobject: "Mobject", dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF
+    ):
         self.replace(mobject, dim_to_match, stretch)
         length = mobject.length_over_dim(dim_to_match)
         self.scale_in_place((length + buff) / length)
@@ -1836,16 +1838,21 @@ class Mobject(Container):
             direction=direction,
         )
 
-    def match_x(self, mobject:"Mobject", direction=ORIGIN):
+    def match_x(self, mobject: "Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 0, direction)
 
-    def match_y(self, mobject:"Mobject", direction=ORIGIN):
+    def match_y(self, mobject: "Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 1, direction)
 
-    def match_z(self, mobject:"Mobject", direction=ORIGIN):
+    def match_z(self, mobject: "Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 2, direction)
 
-    def align_to(self, mobject_or_point:Union["Mobject",np.ndarray, List], direction=ORIGIN, alignment_vect=UP):
+    def align_to(
+        self,
+        mobject_or_point: Union["Mobject", np.ndarray, List],
+        direction=ORIGIN,
+        alignment_vect=UP,
+    ):
         """Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
@@ -1902,7 +1909,7 @@ class Mobject(Container):
 
     def arrange(
         self,
-        direction:Union[np.ndarray, List]=RIGHT,
+        direction: Union[np.ndarray, List] = RIGHT,
         buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center=True,
         **kwargs,
