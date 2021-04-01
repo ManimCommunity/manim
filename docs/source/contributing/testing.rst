@@ -13,11 +13,11 @@ To start the testing process, go to the root directory of the project and run py
 Any errors that occur during testing will be displayed in the terminal.
 
 Some useful pytest flags: 
-- ``-x``, that will make pytest stop at the first fail;
+- ``-x`` will make pytest stop at the first failure it encounters
   
-- ``-s``, that will make pytest display all the print messages (including those during scene generation, like DEBUG messages;
+- ``-s`` will make pytest display all the print messages (including those during scene generation, like DEBUG messages)
   
-- ``--skip_slow`` will skip the (arbitrarly) slow tests;
+- ``--skip_slow`` will skip the (arbitrarily) slow tests
   
 - ``--show_diff`` will show a visual comparison in case an unit test is
 failing. 
@@ -36,8 +36,8 @@ At the moment there are three type of tests:
 
    Because ``manim`` is a graphics library, we test frames. To do so, we create test scenes that render a specific feature.
    When pytest runs, it compares the last frame of every render to the control data; If it matches, the tests
-   pass. If you want visually see the what has changed, you can
-   use ``--show_diff`` flag with ``pytest``.
+   pass. If the test and control data differ, the tests fail. You can
+   use ``--show_diff`` flag with ``pytest`` to visually see the differences.
 
 #. Videos format tests:
 
