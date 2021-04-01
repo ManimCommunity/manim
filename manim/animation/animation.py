@@ -67,8 +67,8 @@ class Animation:
     def _typecheck_input(self) -> None:
         if self.mobject is None:
             logger.debug("creating dummy animation")
-        elif not isinstance(mobject, Mobject) and not isinstance(
-            mobject, OpenGLMobject
+        elif not all(isinstance(mob, Mobject) for mob in self.mobject) and not all(
+            isinstance(mob, OpenGLMobject) for mob in self.mobject
         ):
             raise TypeError("Animation only works on Mobjects")
 
