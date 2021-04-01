@@ -2740,11 +2740,74 @@ class Mobject(Container):
 
 
 class Group(Mobject):
-    """Groups together multiple Mobjects."""
+    """A group of mobjects.
+
+    This can be used to group multiple :class:`~.Mobject` instances together
+    in order to scale, move, or perform other animations on them together.
+
+    To add :class:`~.Mobject`s to a :class:`~.Group`, you can either use the
+    :meth:`~.Group.add` method, or use the `+` and `+=` operators. Similarly, you
+    can subtract elements of a Group via :meth:`~.Group.remove` method, or
+    `-` and `-=` operators:
+
+    See Also
+    --------
+    :class:`VGroup`
+    """
 
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)
+
+    def __repr__(self):
+        return (
+            self.__class__.__name__
+            + "("
+            + ", ".join(str(mob) for mob in self.submobjects)
+            + ")"
+        )
+
+    def __str__(self):
+        return (
+            f"{self.__class__.__name__} of {len(self.submobjects)} "
+            f"submobject{'s' if len(self.submobjects) > 0 else ''}"
+        )
+
+    def add(self, *mobjects):
+        """Checks if all passed elements are an instance of Mobject and then add them to submobjects
+
+        Parameters
+        ----------
+        mobjects : :class:`~.Mobject`
+            List of Mobjects to add
+
+        Returns
+        -------
+        :class:`Group`
+
+        Raises
+        ------
+        TypeError
+            If one element of the list is not an instance of Mobject
+
+        """
+        if not all(isinstance(m, Mobject) for m in mobjects):
+            raise TypeError("All submobjects must be of type Mobject")
+        return super().add(*mobjects)
+
+    def __add__(self, mobject):
+        return Group(*self.submobjects, mobject)
+
+    def __iadd__(self, mobject):
+        return self.add(mobject)
+
+    def __sub__(self, mobject):
+        copy = Group(*self.submobjects)
+        copy.remove(mobject)
+        return copy
+
+    def __isub__(self, mobject):
+        return self.remove(mobject)
 
 
 class _AnimationBuilder:

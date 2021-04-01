@@ -16,7 +16,7 @@ if typing.TYPE_CHECKING:
 from .. import logger
 from ..mobject import mobject
 from ..mobject import opengl_mobject
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Mobject, Group
 from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
@@ -26,7 +26,7 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 class Animation:
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         # If lag_ratio is 0, the animation is applied to all submobjects
         # at the same time
         # If 1, it is applied to each successively.
@@ -40,7 +40,11 @@ class Animation:
         suspend_mobject_updating: bool = True,
         **kwargs,
     ) -> None:
-        self._typecheck_input(mobject)
+        if len(mobjects) > 1:
+            self.mobject = Group(*mobjects)
+        else:
+            self.mobject = mobjects[0]
+            self._typecheck_input()
         self.run_time = run_time
         self.rate_func = rate_func
         self.name = name
@@ -48,7 +52,6 @@ class Animation:
         self.suspend_mobject_updating = suspend_mobject_updating
         self.lag_ratio = lag_ratio
         self.starting_mobject = None
-        self.mobject = mobject
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -60,10 +63,10 @@ class Animation:
                 )
             )
 
-    def _typecheck_input(self, mobject: Mobject) -> None:
-        if mobject is None:
+    def _typecheck_input(self) -> None:
+        if self.mobject is None:
             logger.debug("creating dummy animation")
-        elif not isinstance(mobject, Mobject):
+        elif not isinstance(self.mobject, Mobject):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
