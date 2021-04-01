@@ -32,9 +32,6 @@ from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix
 from ..utils.space_ops import rotation_matrix_transpose
 
-from ..animation.composition import AnimationGroup
-from ..animation.creation import Create
-
 # TODO: Explain array_attrs
 
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
@@ -1938,7 +1935,7 @@ class Mobject(Container):
     # Default Animations
     def get_animation(
         self, animation_name: str = "default"
-    ) -> Optional[AnimationGroup]:
+    ) -> Optional["AnimationGroup"]:
         """Grabs a builtin animation.
         Implemented by children
         """
