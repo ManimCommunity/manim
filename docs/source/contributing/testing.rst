@@ -1,21 +1,24 @@
 ============
 Adding Tests
 ============
-When adding a new feature, it should always be tested. Tests prevent
-manim from breaking at each new feature added by checking if any other
+If you are adding new features to manim, you should add appropriate tests for them. Tests prevent
+manim from breaking at each change by checking that no other
 feature has been broken and/or been unintentionally modified.
 
 How Manim Tests
 ---------------
 
-To conduct our tests, we use ``pytest``. Running ``pytest`` in the root of
+Manim uses ``pytest`` as its testing framework. Running ``pytest`` in the root directory of
 the project will start the testing process, and will show if there is
 something wrong.
 
 Some useful pytest flags: 
-- ``-x``, that will make pytest stop at the first fail,
-- ``-s``, that will make pytest display all the print messages (including those during scene generation, like DEBUG messages).
-- ``--skip_slow`` will skip the (arbitrarly) slow tests. 
+- ``-x``, that will make pytest stop at the first fail;
+  
+- ``-s``, that will make pytest display all the print messages (including those during scene generation, like DEBUG messages;
+  
+- ``--skip_slow`` will skip the (arbitrarly) slow tests;
+  
 - ``--show_diff`` will show a visual comparison in case an unit test is
 failing. 
 
@@ -26,30 +29,28 @@ At the moment there are three type of tests:
 
 #. Unit Tests:
 
-   Basically test for pretty much everything. For example, there a test for
+   Tests for most of the basic functionality of manim. For example, there a test for
    ``Mobject``, that checks if it can be added to a Scene, etc ..
 
 #. Graphical unit tests:
 
-   Because ``manim`` is a video library, we tests frames. To do so, we take a
-   frame of control data for each feature and compare the last frame of the
-   feature rendered (in the form of a numpy array). If it matches, the tests
-   are successful. If one wants to visually see the what has changed, you can
-   use ``--show_diff`` flag along with ``pytest`` to be able to visualize
-   what is different.
+   Because ``manim`` is a graphics library, we test frames. To do so, we create test scenes that render a specific feature.
+   When pytest runs, it compares the last frame of every render to the control data; If it matches, the tests
+   pass. If you want visually see the what has changed, you can
+   use ``--show_diff`` flag with ``pytest``.
 
 #. Videos format tests:
 
-   As Manim is a video library, we have to test videos as well. Unfortunalty,
-   we can't test directly video content as manim outputs videos that can
-   differ slightly from one system to another (for reasons related to
-   ffmpeg). As such, we just compare videos configuration values, exported in
+   As Manim is a video library, we have to test videos as well. Unfortunately,
+   we cannot directly test video content as rendered videos can
+   differ slightly depending on system (for reasons related to
+   ffmpeg). Therefore, we only compare video configuration values, exported in
    .json.
 
 Architecture
 ------------
 
-``manim/tests`` directory looks like this:
+The ``manim/tests`` directory looks like this:
 
 ::
 
@@ -123,29 +124,28 @@ The Main Directories
 
 - ``control_data/``:
 
-  Here control data is saved. These are generally frames
-  that we expect to see. In ``control_data/graphical_units_data/`` are all the
+  The directory containing control data; these are the expected and correct frame data for each test. In ``control_data/graphical_units_data/`` are all the
   .npz (represented the last frame) used in graphical unit tests videos, and in
   ``control_data/videos_data/`` some .json used to check videos.
 
 - ``test_graphical_units/``:
 
-  For tests related to visual items that can appear in media
+  Contains graphical tests.
     
 - ``test_scene_rendering/``:
 
-  For tests that need to render a scene in a way or another. For example, CLI
+  For tests that need to render a scene in some way, such as tests for CLI
   flags (end-to-end tests).
 
 - ``utils/``:
 
-  Useful internal functions used by pytest to test.
+  Useful internal functions used by pytest.
 
   .. Note:: fixtures are not contained here, they are in ``conftest.py``.
 
 - ``helpers/``:
 
-  Helper function for developers to setup graphical/video tests.
+  Helper functions for developers to setup graphical/video tests.
 
 Adding a New Test
 -----------------
@@ -154,21 +154,21 @@ Unit Tests
 ~~~~~~~~~~
 
 Pytest determines which functions are tests by searching for files whose
-names begin with "test\_" and then within those files for functions
-beginning with "test" or classes beginning with "Test". These kind of
+names begin with "test\_", and then within those files for functions
+beginning with "test" and classes beginning with "Test". These kind of
 tests must be in ``tests/`` (e.g. ``tests/test_container.py``).
 
 Graphical Unit Test
 ~~~~~~~~~~~~~~~~~~~
 
-The test must be written in the correct file and follow the structure
+The test must be written in the correct file (i.e. the file that corresponds to the appropriate category the feature belongs to) and follow the structure
 of unit tests.
 
 For example, to test the ``Circle`` VMobject which resides in
 ``manim/mobject/geometry.py``, add the CircleTest to
 ``test/test_geometry.py``.
 
-In ``test_geometry.py``:
+In ``test_geometry.py``, add:
 
 .. code:: python
 
@@ -183,7 +183,7 @@ we are testing whether Circle properly shows up with the generic
 
 .. Note:: 
 
-   If the file already exists, just add to its content. The 
+   If the file already exists, edit it and add the test within the file. The 
    ``Scene`` will be tested thanks to the ``GraphicalUnitTester`` that lives
    in ``tests/utils/GraphicalUnitTester.py``. Import it with ``from
    ..utils.GraphicalUnitTester import GraphicalUnitTester``.
@@ -202,14 +202,14 @@ It is used to run a test function several times with different
 parameters. Here, we pass in all the scenes as arguments.
 
 .. warning::
-  If you run pytest now, you will get a ``FileNotFound`` error. It's because
-  you haven't created control data for your test. 
+  If you run pytest now, you will get a ``FileNotFound`` error. This is because
+  you have not created control data for your test. 
 
 Next, we'll want to create control data for ``CircleTest``. In
-``tests/template_generate_graphical_units_data.py``, there exist the
+``tests/template_generate_graphical_units_data.py``, there exists the
 function, ``set_test_scene``, for this purpose.
 
-It will looks like this :
+It will look something like this :
 
 .. code:: python
 
@@ -220,17 +220,16 @@ It will looks like this :
 
     set_test_scene(CircleTest, "geometry") 
 
-``set_test_scene`` takes two parameters : the scene to test, and the
-module name. It will automatically generate the control data at the
-right place (in this case,
+``set_test_scene`` takes two parameters: the scene to test, and the
+module name. It will automatically generate the control data in the
+right directory (in this case,
 ``tests/control_data/graphical_units_data/geometry/CircleTest.npz``).
 
-That's all there is to it. Please make sure to add the control data to git as
-soon as it is produced with ``git add <your-control-data.npz>`` but do NOT
-include changes to the template script in your pull request so that others
-may continue to use the template file
-(template\_generate\_graphical\_units\_data.py) will be still available for
-others.
+Please make sure to add the control data to git as
+soon as it is produced with ``git add <your-control-data.npz>``. However, do not
+include changes to the template script (template\_generate\_graphical\_units\_data.py) in your pull request so that others
+may continue to use the unmodified file to generate their own tests.
+
 
 Videos tests
 ~~~~~~~~~~~~
@@ -285,8 +284,8 @@ you're done. Then run:
     save_control_data_from_video(<path-to-video>, "SquareToCircleWithlFlag.json"). 
 
 Running this will save
-``control_data/videos_data/SquareToCircleWithlFlag.json``, whoch will
-looks like this :
+``control_data/videos_data/SquareToCircleWithlFlag.json``, which will
+look like this:
 
 .. code:: json
 
@@ -302,5 +301,5 @@ looks like this :
         }
     }
 
-If you have any question don't hesitate to ask on `Discord
-<https://discord.gg/mMRrZQW>`_, in your pull request, or open an issue.
+If you have any questions, please don't hesitate to ask on `Discord
+<https://discord.gg/mMRrZQW>`_, in your pull request, or in an issue.
