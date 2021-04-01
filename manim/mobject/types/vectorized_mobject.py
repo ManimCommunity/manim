@@ -1292,7 +1292,7 @@ class VGroup(VMobject):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
-    in order to scale, move, ... them together.
+    in order to scale, move, or perform other animations on them together.
 
     Examples
     --------
@@ -1363,7 +1363,7 @@ class VGroup(VMobject):
         Parameters
         ----------
         vmobjects : :class:`~.VMobject`
-            List of VMobject to add
+            List of VMobjects to add
 
         Returns
         -------
