@@ -1459,7 +1459,7 @@ class Mobject(Container):
         self.shift(mobject.get_center() - self.get_center())
         return self
 
-    def surround(self, mobject, dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF):
+    def surround(self, mobject: "Mobject", dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF):
         self.replace(mobject, dim_to_match, stretch)
         length = mobject.length_over_dim(dim_to_match)
         self.scale_in_place((length + buff) / length)
@@ -1814,38 +1814,38 @@ class Mobject(Container):
 
     # Match other mobject properties
 
-    def match_color(self, mobject):
+    def match_color(self, mobject: "Mobject"):
         return self.set_color(mobject.get_color())
 
-    def match_dim_size(self, mobject, dim, **kwargs):
+    def match_dim_size(self, mobject: "Mobject", dim, **kwargs):
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
-    def match_width(self, mobject, **kwargs):
+    def match_width(self, mobject: "Mobject", **kwargs):
         return self.match_dim_size(mobject, 0, **kwargs)
 
-    def match_height(self, mobject, **kwargs):
+    def match_height(self, mobject: "Mobject", **kwargs):
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(self, mobject, **kwargs):
+    def match_depth(self, mobject: "Mobject", **kwargs):
         return self.match_dim_size(mobject, 2, **kwargs)
 
-    def match_coord(self, mobject, dim, direction=ORIGIN):
+    def match_coord(self, mobject: "Mobject", dim, direction=ORIGIN):
         return self.set_coord(
             mobject.get_coord(dim, direction),
             dim=dim,
             direction=direction,
         )
 
-    def match_x(self, mobject, direction=ORIGIN):
+    def match_x(self, mobject:"Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 0, direction)
 
-    def match_y(self, mobject, direction=ORIGIN):
+    def match_y(self, mobject:"Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 1, direction)
 
-    def match_z(self, mobject, direction=ORIGIN):
+    def match_z(self, mobject:"Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 2, direction)
 
-    def align_to(self, mobject_or_point, direction=ORIGIN, alignment_vect=UP):
+    def align_to(self, mobject_or_point:Union["Mobject",np.ndarray, List], direction=ORIGIN, alignment_vect=UP):
         """Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
@@ -1902,7 +1902,7 @@ class Mobject(Container):
 
     def arrange(
         self,
-        direction=RIGHT,
+        direction:Union[np.ndarray, List]=RIGHT,
         buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center=True,
         **kwargs,
