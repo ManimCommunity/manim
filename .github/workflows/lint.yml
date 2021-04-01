@@ -14,13 +14,7 @@ jobs:
           python-version: 3.8
 
       - name: Checkout the repository
-        shell: bash
-        run: |
-          prnum=$(python -c "import json;print(json.load(open(r'${GITHUB_EVENT_PATH}'))['number'])")
-          git init
-          git remote add origin https://github.com/ManimCommunity/manim.git
-          git fetch origin pull/${prnum}/head:pr-${prnum}
-          git checkout pr-${prnum}
+        uses: actions/checkout@v2
 
       - name: Install black
         run: pip install black
