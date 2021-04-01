@@ -8,6 +8,7 @@ RUN apt-get update -qq \
         libffi-dev \
         libpango1.0-dev \
         pkg-config \
+        make \
         wget
 
 # setup a minimal texlive installation
@@ -18,16 +19,17 @@ RUN wget -O /tmp/install-tl-unx.tar.gz http://mirror.ctan.org/systems/texlive/tl
     tar -xzf /tmp/install-tl-unx.tar.gz -C /tmp/install-tl --strip-components=1 && \
     /tmp/install-tl/install-tl --profile=/tmp/texlive-profile.txt \
     && tlmgr install \
-        amsmath babel-english cm-super doublestroke dvisvgm everysel fundus-calligra \
-        jknapltx latex-bin microtype ms physics preview ragged2e relsize rsfs \
-        setspace standalone tipa wasy wasysym xcolor xkeyval
+        amsmath babel-english cbfonts-fd cm-super ctex doublestroke dvisvgm everysel \
+        fontspec frcursive fundus-calligra gnu-freefont jknapltx latex-bin \
+        mathastext microtype ms physics preview ragged2e relsize rsfs \
+        setspace standalone tipa wasy wasysym xcolor xetex xkeyval
 
 # clone and build manim
 COPY . /opt/manim
 WORKDIR /opt/manim
 RUN pip install --no-cache .[jupyterlab,webgl_renderer]
-# required due to current incompatibility from latest jedi version
-RUN pip install jedi==0.17.2
+
+RUN pip install -r docs/requirements.txt
 
 ARG NB_USER=manimuser
 ARG NB_UID=1000
