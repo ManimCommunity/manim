@@ -1233,8 +1233,6 @@ class ManimConfig(MutableMapping):
 
         all_args = {k: self._d[k] for k in dirs}
         all_args.update(kwargs)
-        if self.frame_rate == int(self.frame_rate):
-            self.frame_rate = int(self.frame_rate)
         all_args["quality"] = f"{self.pixel_height}p{self.frame_rate}"
 
         path = self._d[key]
