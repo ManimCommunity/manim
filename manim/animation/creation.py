@@ -408,6 +408,8 @@ class ShowIncreasingSubsets(Animation):
     ) -> None:
         self.all_submobs = list(group.submobjects)
         self.int_func = int_func
+        for mobj in self.all_submobs:
+            mobj.set_opacity(0)
         super().__init__(
             group, suspend_mobject_updating=suspend_mobject_updating, **kwargs
         )
@@ -418,7 +420,8 @@ class ShowIncreasingSubsets(Animation):
         self.update_submobject_list(index)
 
     def update_submobject_list(self, index: int) -> None:
-        self.mobject.submobjects = self.all_submobs[:index]
+        for mobj in self.all_submobs[:index]:
+            mobj.set_opacity(1)
 
 
 class AddTextLetterByLetter(ShowIncreasingSubsets):
@@ -474,10 +477,11 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
         super().__init__(new_group, int_func=int_func, **kwargs)
 
     def update_submobject_list(self, index: int) -> None:
-        if index == 0:
-            self.mobject.submobjects = []
-        else:
-            self.mobject.submobjects = self.all_submobs[index - 1]
+        current_submobjects = self.all_submobs[:index]
+        for mobj in current_submobjects[:-1]:
+            mobj.set_opacity(0)
+        if len(current_submobjects) > 0:
+            current_submobjects[-1].set_opacity(1)
 
 
 # TODO, this is broken...
