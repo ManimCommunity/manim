@@ -368,8 +368,7 @@ class Mobject(Container):
             if mobject not in self.submobjects:
                 self.submobjects = list_update(self.submobjects, mobjects)
 
-        self.remove(*mobjects)
-        self.submobjects = list(mobjects) + self.submobjects
+        self.submobjects = list_update(mobjects, self.submobjects)
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
