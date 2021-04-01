@@ -1774,7 +1774,7 @@ class Mobject(Container):
             return np.array(self.points[0])
 
     def get_end(self):
-        """Returns the point, where the stroke that surrounds the mobject ends.  Type is a ``numpy.ndarray`` with 3 elements, e.g. [+1,0,0] """
+        """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends.  
         self.throw_error_if_no_points()
         if config["use_opengl_renderer"]:
             return np.array(self.data["points"][-1])
