@@ -1785,6 +1785,9 @@ class Mobject(Container):
         """Returns starting and ending point of a stroke as a ``tuple``. """
         return self.get_start(), self.get_end()
 
+    def get_middle_point(self):
+        return self.point_from_proportion(0.5)
+
     def point_from_proportion(self, alpha):
         raise NotImplementedError("Please override in a child class.")
 
@@ -1805,7 +1808,7 @@ class Mobject(Container):
         return z_index_group.get_center()
 
     def has_points(self):
-         """Check if :class:`~.Mobject` contains points."""
+        """Check if :class:`~.Mobject` contains points. """
         return len(self.points) > 0
 
     def has_no_points(self):
