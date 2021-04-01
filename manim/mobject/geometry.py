@@ -8,14 +8,15 @@ Examples
 
     class UsefulAnnotations(Scene):
         def construct(self):
-            m0 = SmallDot()
+            m0 = Dot()
             m1 = AnnotationDot()
             m2 = LabeledDot("ii")
             m3 = LabeledDot(MathTex(r"\alpha").set_color(ORANGE))
-            m4 = CurvedArrow(ORIGIN, 2*LEFT)
-            m5 = CurvedDoubleArrow(ORIGIN, 2*RIGHT)
+            m4 = CurvedArrow(2*LEFT, 2*RIGHT, radius= -5)
+            m5 = CurvedArrow(2*LEFT, 2*RIGHT, radius= 8)
+            m6 = CurvedDoubleArrow(ORIGIN, 2*RIGHT)
 
-            self.add(m0, m1, m2, m3, m4, m5)
+            self.add(m0, m1, m2, m3, m4, m5, m6)
             for i, mobj in enumerate(self.mobjects):
                 mobj.shift(DOWN * (i-3))
 
@@ -652,6 +653,31 @@ class LabeledDot(Dot):
 
 
 class Ellipse(Circle):
+    """A circular shape; oval, circle.
+
+    Parameters
+    ----------
+    width : :class:`float`, optional
+       The horizontal width of the ellipse.
+    height : :class:`float`, optional
+       The vertical height of the ellipse.
+    kwargs : Any
+       Additional arguments to be passed to :class:`Circle`
+
+    Examples
+    --------
+
+    .. manim:: EllipseExample
+        :save_last_frame:
+
+        class EllipseExample(Scene):
+            def construct(self):
+                ellipse_1 = Ellipse(width=2.0, height=4.0, color=BLUE_B)
+                ellipse_2 = Ellipse(width=4.0, height=1.0, color=BLUE_D)
+                ellipse_group = Group(ellipse_1,ellipse_2).arrange(buff=1)
+                self.add(ellipse_group)
+    """
+
     def __init__(self, width=2, height=1, **kwargs):
         Circle.__init__(self, **kwargs)
         self.stretch_to_fit_width(width)
@@ -1321,15 +1347,97 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
+    """A shape created by defining its vertices.
+
+    Parameters
+    ----------
+    vertices : :class:`list`
+        The vertices of the mobject. The first one is repeated to close the shape. Must define 3-dimensions: ``[x,y,z]``
+    color : :class:`~.Colors`, optional
+        The color of the polygon.
+    kwargs : Any
+        Additional arguments to be passed to :class:`.~VMobject`
+
+    Examples
+    --------
+
+    .. manim:: PolygonExample
+        :save_last_frame:
+
+        class PolygonExample(Scene):
+            def construct(self):
+                isosceles = Polygon([-5, 1.5, 0], [-2, 1.5, 0], [-3.5, -2, 0])
+                position_list = [
+                    [4, 1, 0],  # middle right
+                    [4, -2.5, 0],  # bottom right
+                    [0, -2.5, 0],  # bottom left
+                    [0, 3, 0],  # top left
+                    [2, 1, 0],  # middle
+                    [4, 3, 0],  # top right
+                ]
+                square_and_triangles = Polygon(*position_list, color=PURPLE_B)
+                self.add(isosceles, square_and_triangles)
+    """
+
     def __init__(self, *vertices, color=BLUE, **kwargs):
         VMobject.__init__(self, color=color, **kwargs)
         # There are actually four corners, and the first one is repeated twice to form the four vertices.
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
+        """Gets the vertices of the polygon.
+
+        Examples
+        --------
+        ::
+
+            >>> sq = Square()
+            >>> points = sq.get_vertices()
+            >>> points
+            array([[-1.,  1.,  0.],
+                   [ 1.,  1.,  0.],
+                   [ 1., -1.,  0.],
+                   [-1., -1.,  0.]])
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            Returns a list of the coordinates of polygon's vertices.
+        """
+
         return self.get_start_anchors()
 
     def round_corners(self, radius=0.5):
+        """Rounds off the corners of the polygon.
+
+        Parameters
+        ----------
+        radius : :class:`float`, optional
+            The curvature of the corners of the polygon.
+
+        Examples
+        --------
+
+        .. manim:: PolygonRoundCorners
+            :save_as_gif:
+
+            class PolygonRoundCorners(Scene):
+                def construct(self):
+                    points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
+                    parallelogram = Polygon(*points, stroke_color=LIGHT_PINK)
+                    rounded_1 = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
+                    rounded_2 = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
+
+                    self.play(Transform(parallelogram, rounded_1))
+                    self.wait(0.5)
+                    self.play(Transform(parallelogram, rounded_2))
+                    self.wait(0.5)
+
+        See Also
+        --------
+        :class:`RoundedRectangle`
+        """
+
         vertices = self.get_vertices()
         arcs = []
         for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
@@ -1365,6 +1473,33 @@ class Polygon(VMobject):
 
 
 class RegularPolygon(Polygon):
+    """An n-sided regular polygon.
+
+    Parameters
+    ----------
+    n : :class:`int`
+        The number of sides of the polygon.
+    start_angle : Optional[:class:`float`]
+        The angle at which the polygon is rotated.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Polygon`
+
+    Examples
+    --------
+
+    .. manim:: RegularPolygonExample
+        :save_last_frame:
+
+        class RegularPolygonExample(Scene):
+            def construct(self):
+                poly_1 = RegularPolygon(n=6)
+                poly_2 = RegularPolygon(n=6, start_angle=30*DEGREES, color=GREEN)
+                poly_3 = RegularPolygon(n=10, color=RED)
+
+                poly_group = Group(poly_1, poly_2, poly_3).scale(1.5).arrange(buff=1)
+                self.add(poly_group)
+    """
+
     def __init__(self, n=6, start_angle=None, **kwargs):
         self.start_angle = start_angle
         if self.start_angle is None:
@@ -1616,6 +1751,27 @@ class ArcPolygonFromArcs(VMobject):
 
 
 class Triangle(RegularPolygon):
+    """An equilateral triangle.
+
+    Parameters
+    ----------
+    kwargs : Any
+        Additonal arguments to be passed to :class:`RegularPolygon`
+
+    Examples
+    --------
+
+    .. manim:: TriangleExample
+        :save_last_frame:
+
+        class TriangleExample(Scene):
+            def construct(self):
+                triangle_1 = Triangle()
+                triangle_2 = Triangle().scale(2).rotate(60*DEGREES)
+                tri_group = Group(triangle_1, triangle_2).arrange(buff=1)
+                self.add(tri_group)
+    """
+
     def __init__(self, **kwargs):
         RegularPolygon.__init__(self, n=3, **kwargs)
 
@@ -1699,6 +1855,30 @@ class Square(Rectangle):
 
 
 class RoundedRectangle(Rectangle):
+    """A rectangle with rounded corners.
+
+    Parameters
+    ----------
+    corner_radius : :class:`float`, optional
+        The curvature of the corners of the rectangle.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Rectangle`
+
+    Examples
+    --------
+
+    .. manim:: RoundedRectangleExample
+        :save_last_frame:
+
+        class RoundedRectangleExample(Scene):
+            def construct(self):
+                rect_1 = RoundedRectangle(corner_radius=0.5)
+                rect_2 = RoundedRectangle(corner_radius=1.5, height=4.0, width=4.0)
+
+                rect_group = Group(rect_1, rect_2).arrange(buff=1)
+                self.add(rect_group)
+    """
+
     def __init__(self, corner_radius=0.5, **kwargs):
         self.corner_radius = corner_radius
         Rectangle.__init__(self, **kwargs)
