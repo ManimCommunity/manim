@@ -78,7 +78,7 @@ def linear(t: typing.Union[np.ndarray, float]) -> typing.Union[np.ndarray, float
     return t
 
 
-def smooth(t: float, inflection: float = 10.0) -> np.ndarray:
+def smooth(t: typing.Union[np.ndarray, float], inflection: float = 10.0) -> np.ndarray:
     error = sigmoid(-inflection / 2)
     return np.clip(
         (sigmoid(inflection * (t - 0.5)) - error) / (1 - 2 * error),

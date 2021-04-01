@@ -5,7 +5,7 @@ __all__ = ["Animation", "Wait"]
 
 
 import typing
-from typing import Union
+from typing import Union, Optional, Tuple, Iterator
 from copy import deepcopy
 
 import numpy as np
@@ -27,7 +27,7 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 class Animation:
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: Optional[Mobject],
         # If lag_ratio is 0, the animation is applied to all submobjects
         # at the same time
         # If 1, it is applied to each successively.
@@ -35,20 +35,22 @@ class Animation:
         # with lagged start times
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
-        rate_func: typing.Callable[[float, float], np.ndarray] = smooth,
+        rate_func: typing.Callable[
+            [Union[np.ndarray, float]], Union[np.ndarray, float]
+        ] = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
-        self.run_time = run_time
+        self.run_time: float = run_time
         self.rate_func = rate_func
         self.name = name
         self.remover = remover
         self.suspend_mobject_updating = suspend_mobject_updating
         self.lag_ratio = lag_ratio
-        self.starting_mobject = None
+        self.starting_mobject: Optional[Mobject] = None
         self.mobject = mobject
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
@@ -61,7 +63,7 @@ class Animation:
                 )
             )
 
-    def _typecheck_input(self, mobject: Mobject) -> None:
+    def _typecheck_input(self, mobject: Optional[Mobject]) -> None:
         if mobject is None:
             logger.debug("creating dummy animation")
         elif not isinstance(mobject, Mobject) and not isinstance(
@@ -83,7 +85,7 @@ class Animation:
         # especially any mobject copying, should live in
         # this method
         self.starting_mobject = self.create_starting_mobject()
-        if self.suspend_mobject_updating:
+        if self.suspend_mobject_updating and self.mobject is not None:
             # All calls to self.mobject's internal updaters
             # during the animation, either from this Animation
             # or from the surrounding scene, should do nothing.
@@ -95,26 +97,30 @@ class Animation:
 
     def finish(self) -> None:
         self.interpolate(1)
-        if self.suspend_mobject_updating:
+        if self.suspend_mobject_updating and self.mobject is not None:
             self.mobject.resume_updating()
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
         if self.is_remover():
             scene.remove(self.mobject)
 
-    def create_starting_mobject(self) -> Mobject:
+    def create_starting_mobject(self) -> Optional[Mobject]:
         # Keep track of where the mobject starts
-        return self.mobject.copy()
+        return self.mobject.copy() if self.mobject is not None else None
 
-    def get_all_mobjects(self) -> typing.Tuple[Mobject, typing.Union[Mobject, None]]:
+    def get_all_mobjects(self) -> Tuple[Optional[Mobject], Optional[Mobject]]:
         """
         Ordering must match the ordering of arguments to interpolate_submobject
         """
         return self.mobject, self.starting_mobject
 
-    def get_all_families_zipped(self) -> typing.Iterator[typing.Tuple]:
+    def get_all_families_zipped(self) -> Iterator[Tuple]:
         return zip(
-            *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
+            *[
+                mob.family_members_with_points()
+                for mob in self.get_all_mobjects()
+                if mob is not None
+            ]
         )
 
     def update_mobjects(self, dt: float) -> None:
@@ -138,11 +144,12 @@ class Animation:
         return deepcopy(self)
 
     # Methods for interpolation, the mean of an Animation
-    def interpolate(self, alpha: float) -> None:
-        alpha = np.clip(alpha, 0, 1)
+    def interpolate(self, alpha: Union[np.ndarray, float]) -> None:
+        # alpha = np.clip(alpha, 0, 1)
+        alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
 
-    def update(self, alpha: float) -> None:
+    def update(self, alpha: Union[np.ndarray, float]) -> None:
         """
         This method shouldn't exist, but it's here to
         keep many old scenes from breaking
@@ -153,19 +160,24 @@ class Animation:
         )
         self.interpolate(alpha)
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate_mobject(self, alpha: Union[np.ndarray, float]) -> None:
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))
             self.interpolate_submobject(*mobs, sub_alpha)
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, alpha: float
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        alpha: Union[np.ndarray, float],
     ) -> None:
         # Typically implemented by subclass
         pass
 
-    def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int):
+    def get_sub_alpha(
+        self, alpha: Union[np.ndarray, float], index: int, num_submobjects: int
+    ):
         # TODO, make this more understandable, and/or combine
         # its functionality with AnimationGroup's method
         # build_animations_with_timings
@@ -184,12 +196,17 @@ class Animation:
         return self.run_time
 
     def set_rate_func(
-        self, rate_func: typing.Callable[[float, float], np.ndarray]
+        self,
+        rate_func: typing.Callable[
+            [Union[np.ndarray, float]], Union[np.ndarray, float]
+        ],
     ) -> "Animation":
         self.rate_func = rate_func
         return self
 
-    def get_rate_func(self) -> typing.Callable[[float, float], np.ndarray]:
+    def get_rate_func(
+        self,
+    ) -> typing.Callable[[Union[np.ndarray, float]], Union[np.ndarray, float]]:
         return self.rate_func
 
     def set_name(self, name: str) -> "Animation":
@@ -266,5 +283,5 @@ class Wait(Animation):
     def update_mobjects(self, dt: float) -> None:
         pass
 
-    def interpolate(self, alpha: float) -> None:
+    def interpolate(self, alpha: Union[np.ndarray, float]) -> None:
         pass
