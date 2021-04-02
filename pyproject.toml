@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "manim"
-version = "0.5.0"
+version = "0.4.0"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers","3b1b <grant@3blue1brown.com>"]
 license="MIT"
@@ -25,6 +25,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
+click = "*"
+click-default-group = "*"
 colour = "*"
 numpy = "^1.9"
 Pillow = "*"
@@ -45,6 +47,7 @@ jupyterlab = { version = "^3.0", optional = true }
 moderngl = "^5.6.3"
 moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
+cloup = "^0.7.0"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
