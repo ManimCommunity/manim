@@ -33,6 +33,8 @@ Note
 
 This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
+
+import datetime
 import re
 import sys
 from collections import defaultdict
@@ -179,6 +181,9 @@ def main(token, revision_range, outfile=None, tag=None):
         f.write("*" * len(tag) + "\n")
         f.write(f"{tag}\n")
         f.write("*" * len(tag) + "\n\n")
+        
+        today = datetime.date.today()
+        f.write(f":Date: {today.strftime('%B %d, %Y')}\n\n")
         
         heading = "Contributors"
         f.write(f"{heading}\n")
