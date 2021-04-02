@@ -119,7 +119,7 @@ def sort_by_labels(github_repo, pr_nums):
         for label in PR_LABELS.keys():
             if label in pr_labels:
                 pr_by_labels[label].append(pr)
-                break # ensure that PR is only added in one category
+                break  # ensure that PR is only added in one category
         else:
             pr_by_labels["unlabeled"].append(pr)
 
