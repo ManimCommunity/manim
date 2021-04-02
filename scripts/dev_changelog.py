@@ -175,7 +175,7 @@ def main(token, revision_range, outfile=None, tag=None, additional=None):
         outfile = (
             Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog"
         )
-        outfile = outfile / f"{tag[1:] if tag.startswith("v") else tag}-changelog.rst"
+        outfile = outfile / f"{tag[1:] if tag.startswith('v') else tag}-changelog.rst"
     else:
         outfile = Path(outfile).resolve()
 
