@@ -935,6 +935,7 @@ class Scene(Container):
             logger.warning("embed() is skipped while writing to a file.")
             return
 
+        self.renderer.animation_start_time = 0
         self.renderer.render(self, -1, self.moving_mobjects)
 
         # Configure IPython shell.
