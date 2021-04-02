@@ -54,7 +54,7 @@ class Mobject(Container):
     """
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
-        self.color: Color = Color(color)
+        self.color  = Color(color)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
