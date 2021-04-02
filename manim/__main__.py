@@ -1,6 +1,5 @@
 import sys
 import click
-import requests
 from click_default_group import DefaultGroup
 from . import __version__, console
 from .constants import EPILOG
