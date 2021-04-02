@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Script to generate contributor and pull request lists
+"""Script to generate contributor and pull request lists.
+
 This script generates contributor and pull request lists for release
 changelogs using Github v3 protocol. Use requires an authentication token in
 order to have sufficient bandwidth, you can get one following the directions at
@@ -9,22 +10,27 @@ token may be stored in an environment variable as you only get one chance to
 see it.
 
 Usage::
+
     $ ./scripts/dev_changelog.py <token> <revision range> <output_file>
 
 The output is utf8 rst.
 
 Dependencies
 ------------
+
 - gitpython
 - pygithub
 
 Examples
 --------
+
 From the bash command line with $GITHUB token::
-    $ ./scripts/dev_changelog.py $GITHUB v0.3.0..v0.4.0 -o 0.4.0-changelog.rst
+
+    $ ./scripts/dev_changelog.py $GITHUB v0.3.0..HEAD -t v0.4.0 -o 0.4.0-changelog.rst
 
 Note
 ----
+
 This script was taken from Numpy under the terms of BSD-3-Clause license.
 """
 import re
@@ -142,7 +148,13 @@ def get_summary(body):
         return has_changelog_pattern.group()[22:-21].strip()
 
 
-def main(token, revision_range, outfile=None):
+def main(token, revision_range, outfile=None, tag=None):
+    if tag is None:
+        raise ValueError(
+            "The tag of the release this changelog is generated for "
+            "has to be passed via the -t flag."
+        )
+
     lst_release, cur_release = [r.strip() for r in revision_range.split("..")]
 
     github = Github(token)
@@ -159,11 +171,15 @@ def main(token, revision_range, outfile=None):
         outfile = (
             Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog"
         )
-        outfile = outfile / f"{cur_release[1:]}-changelog.rst"
+        outfile = outfile / f"{tag[1:] if tag.startswith("v") else tag}-changelog.rst"
     else:
         outfile = Path(outfile).resolve()
 
     with outfile.open("w", encoding="utf8") as f:
+        f.write("*" * len(tag) + "\n")
+        f.write(f"{tag}\n")
+        f.write("*" * len(tag) + "\n\n")
+        
         heading = "Contributors"
         f.write(f"{heading}\n")
         f.write("=" * len(heading) + "\n\n")
@@ -250,5 +266,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-o", "--outfile", type=str, help="path and file name of the changelog output"
     )
+    parser.add_argument(
+        "-t", "--tag", type=str, help="the tag of the new release"
+    )
     args = parser.parse_args()
-    main(args.token, args.revision_range, args.outfile)
+    main(args.token, args.revision_range, args.outfile, args.tag)
