@@ -34,6 +34,6 @@ global_options = option_group(
     option(
         "--notify_outdated_version",
         is_flag=True,
-        help="Display warnings for outdated installation",
+        help="Display warnings for outdated installation.",
     ),
 )
