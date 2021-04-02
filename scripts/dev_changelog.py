@@ -150,7 +150,7 @@ def get_summary(body):
         return has_changelog_pattern.group()[22:-21].strip()
 
 
-def main(token, revision_range, outfile=None, tag=None):
+def main(token, revision_range, outfile=None, tag=None, additional=None):
     if tag is None:
         raise ValueError(
             "The tag of the release this changelog is generated for "
@@ -163,6 +163,8 @@ def main(token, revision_range, outfile=None, tag=None):
     github_repo = github.get_repo("ManimCommunity/manim")
 
     pr_nums = get_pr_nums(revision_range)
+    if additional:
+        pr_nums = pr_nums.extend(additional)
 
     # document authors
     contributors = get_authors_and_reviewers(revision_range, github_repo, pr_nums)
@@ -274,5 +276,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-t", "--tag", type=str, help="the tag of the new release"
     )
+    parser.add_argument(
+        "-a", "--additional", type=int, action="append", help="include an additional PR in the changelog that has not been recognized automatically. flag can be added more than once."
+    )
     args = parser.parse_args()
-    main(args.token, args.revision_range, args.outfile, args.tag)
+    main(args.token, args.revision_range, args.outfile, args.tag, args.additional)
