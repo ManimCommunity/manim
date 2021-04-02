@@ -1841,15 +1841,15 @@ class Mobject(Container):
         )
 
     def match_x(self, mobject: "Mobject", direction=ORIGIN):
-        """match x coord. to the x coord. of another :class:`~.Mobject`"""
+        """Match x coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)
 
-    def match_y(self, mobject: "Mobject", direction=ORIGIN):
-        """match y coord. to the x coord. of another :class:`~.Mobject`"""
+    def Match_y(self, mobject: "Mobject", direction=ORIGIN):
+        """match y coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
     def match_z(self, mobject: "Mobject", direction=ORIGIN):
-        """match z coord. to the x coord. of another :class:`~.Mobject`"""
+        """Match z coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 2, direction)
 
     def align_to(
