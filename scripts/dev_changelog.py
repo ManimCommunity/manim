@@ -48,6 +48,21 @@ from github import Github
 
 this_repo = Repo(str(Path(__file__).resolve().parent.parent))
 
+PR_LABELS = {
+    "breaking changes": "Breaking changes",
+    "highlight": "Highlights",
+    "deprecation": "Deprecated classes and functions",
+    "new feature": "New features",
+    "enhancement": "Enhancements",
+    "bug": "Fixed bugs",
+    "documentation": "Documentation-related changes",
+    "testing": "Changes concerning the testing system",
+    "infrastructure": "Changes to our development infrastructure",
+    "maintenance": "Code quality improvements and similar refactors",
+    "reverts": "Changes that needed to be reverted again",
+    "unlabeled": "Unclassified changes",
+}
+
 
 def get_authors_and_reviewers(revision_range, github_repo, pr_nums):
     pat = r"^.*\t(.*)$"
@@ -96,47 +111,16 @@ def sort_by_labels(github_repo, pr_nums):
     This implementation sorts based on importance into a singular group. If a
     PR uses multiple labels, it is sorted under one label.
 
-    The importance order (for the end-user):
-    - breaking changes
-    - highlight
-    - feature
-    - enhancement
-    - bug
-    - documentation
-    - testing
-    - infrastructure
-    - unlabeled
     """
     pr_by_labels = defaultdict(list)
     for num in tqdm(pr_nums, desc="Sorting by labels"):
         pr = github_repo.get_pull(num)
-        labels = [label.name for label in pr.labels]
-        # TODO: Make use of label names directly from main
-        if "breaking changes" in labels:
-            pr_by_labels["breaking changes"].append(pr)
-        elif "highlight" in labels:
-            pr_by_labels["highlight"].append(pr)
-        elif "new feature" in labels:
-            pr_by_labels["new feature"].append(pr)
-        elif "enhancement" in labels:
-            pr_by_labels["enhancement"].append(pr)
-        elif "bug" in labels:
-            pr_by_labels["bug"].append(pr)
-        elif "deprecation" in labels:
-            pr_by_labels["deprecation"].append(pr)
-        elif "documentation" in labels:
-            pr_by_labels["documentation"].append(pr)
-        elif "release" in labels:
-            pr_by_labels["release"].append(pr)
-        elif "testing" in labels:
-            pr_by_labels["testing"].append(pr)
-        elif "infrastructure" in labels:
-            pr_by_labels["infrastructure"].append(pr)
-        elif "maintenance":
-            pr_by_labels["maintenance"].append(pr)
-        elif "style" in labels:
-            pr_by_labels["style"].append(pr)
-        else:  # PR doesn't have label :( Create one!
+        pr_labels = [label.name for label in pr.labels]
+        for label in PR_LABELS.keys():
+            if label in pr_labels:
+                pr_by_labels[label].append(pr)
+                break # ensure that PR is only added in one category
+        else:
             pr_by_labels["unlabeled"].append(pr)
 
     return pr_by_labels
@@ -183,10 +167,10 @@ def main(token, revision_range, outfile=None, tag=None, additional=None):
         f.write("*" * len(tag) + "\n")
         f.write(f"{tag}\n")
         f.write("*" * len(tag) + "\n\n")
-        
+
         today = datetime.date.today()
         f.write(f":Date: {today.strftime('%B %d, %Y')}\n\n")
-        
+
         heading = "Contributors"
         f.write(f"{heading}\n")
         f.write("=" * len(heading) + "\n\n")
@@ -225,29 +209,14 @@ def main(token, revision_range, outfile=None, tag=None, additional=None):
             f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
         )
 
-        # TODO: Use labels list in sort_by_labels, simplify logic
-        labels = [
-            "breaking changes",
-            "highlight",
-            "new feature",
-            "enhancement",
-            "bug",
-            "deprecation",
-            "documentation",
-            "release",
-            "testing",
-            "infrastructure",
-            "maintenance",
-            "style",
-            "unlabeled",
-        ]
         pr_by_labels = sort_by_labels(github_repo, pr_nums)
-        for label in labels:
+        for label in PR_LABELS.keys():
             pr_of_label = pr_by_labels[label]
 
             if pr_of_label:
-                f.write(f"{label.capitalize()}\n")
-                f.write("-" * len(label) + "\n\n")
+                heading = PR_LABELS[label]
+                f.write(f"{heading}\n")
+                f.write("-" * len(heading) + "\n\n")
 
                 for PR in pr_by_labels[label]:
                     num = PR.number
@@ -257,9 +226,9 @@ def main(token, revision_range, outfile=None, tag=None, additional=None):
                     f.write(f"* `#{num} <{url}>`__: {title}\n")
                     overview = get_summary(PR.body)
                     if overview:
-                        f.write(indent(f"{overview}\n", "   "))
+                        f.write(indent(f"{overview}\n\n", "   "))
                     else:
-                        f.write("\n")
+                        f.write("\n\n")
 
     print(f"Wrote changelog to: {outfile}")
 
@@ -273,11 +242,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "-o", "--outfile", type=str, help="path and file name of the changelog output"
     )
+    parser.add_argument("-t", "--tag", type=str, help="the tag of the new release")
     parser.add_argument(
-        "-t", "--tag", type=str, help="the tag of the new release"
-    )
-    parser.add_argument(
-        "-a", "--additional", type=int, action="append", help="include an additional PR in the changelog that has not been recognized automatically. flag can be added more than once."
+        "-a",
+        "--additional",
+        type=int,
+        action="append",
+        help="include an additional PR in the changelog that has not been recognized automatically. flag can be added more than once.",
     )
     args = parser.parse_args()
     main(args.token, args.revision_range, args.outfile, args.tag, args.additional)
