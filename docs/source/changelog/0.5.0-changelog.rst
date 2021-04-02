@@ -2,7 +2,7 @@
 v0.5.0
 ******
 
-:Date: April 01, 2021
+:Date: April 02, 2021
 
 Contributors
 ============
@@ -70,7 +70,7 @@ Highlights
 ----------
 
 * `#1075 <https://github.com/ManimCommunity/manim/pull/1075>`__: Add OpenGL Renderer
-   Adds an OpenGLRenderer, OpenGLCamera, OpenGL-enabled Mobjects, and a `--use_opengl_renderer` flag. When this flag is passed, you can pass the `-p` flag to preview animations, the `-w` flag to generate video, and the `-q` flag to specify render quality. If you don't pass either the `-p` or the `-w` flag, nothing will happen. Scenes rendered with the OpenGL renderer must *only* use OpenGL-enabled Mobjects.
+   Adds an OpenGLRenderer, OpenGLCamera, OpenGL-enabled Mobjects, and a ``--use_opengl_renderer`` flag. When this flag is passed, you can pass the ``-p`` flag to preview animations, the ``-w`` flag to generate video, and the ``-q`` flag to specify render quality. If you don't pass either the ``-p`` or the ``-w`` flag, nothing will happen. Scenes rendered with the OpenGL renderer must *only* use OpenGL-enabled Mobjects.
 
 Deprecated classes and functions
 --------------------------------
@@ -131,7 +131,7 @@ Enhancements
    In Axes, the y axis will be rotated 90deg but the numbers are
    also rotated and shouldn't be. Fixes this issue.
 
-* `#1070 <https://github.com/ManimCommunity/manim/pull/1070>`__: Raise FileNotFoundError when unable to locate the .cfg file specified via `--config_file`
+* `#1070 <https://github.com/ManimCommunity/manim/pull/1070>`__: Raise FileNotFoundError when unable to locate the .cfg file specified via ``--config_file``
    Raising the error will stop script execution and let the user know that there are problems with the `--config_file` location instead of reverting back to the default configuration.
 
 Fixed bugs
@@ -146,7 +146,7 @@ Fixed bugs
 * `#1192 <https://github.com/ManimCommunity/manim/pull/1192>`__: Fixed issue when an animation is cached, manim can't merge the partial movie files.
 
 
-* `#1193 <https://github.com/ManimCommunity/manim/pull/1193>`__: Fixed using :class:`Animation`s without a child :class:`~.Mobject` in :class:`~.AnimationGroup`
+* `#1193 <https://github.com/ManimCommunity/manim/pull/1193>`__: Fixed using :class:`~.Animation` without a child :class:`~.Mobject` in :class:`~.AnimationGroup`
    `AnimationGroup` may now take `Animation` objects which do not have a child `Mobject`, such as `Wait`.
 
 * `#1170 <https://github.com/ManimCommunity/manim/pull/1170>`__: Fixed minor SVG parsing bugs
@@ -159,9 +159,9 @@ Fixed bugs
    Fixed a bug in :class:`~.DrawBorderThenFill` that prevented :class:`~.Write` animations from working with :class:`~.OpenGLVMobjects` and slightly improved type hints for some animation functions to include :class:`~.OpenGLVMobject`.
 
 * `#1134 <https://github.com/ManimCommunity/manim/pull/1134>`__: Fixed the `-a` flag.
-   The `-a`/`--write-all` flag was broken. When used, it would cause Manim to crash just after beginning to render the second scene.
+   The ``-a`` / ``--write-all`` flag was broken. When used, it would cause Manim to crash just after beginning to render the second scene.
 
-* `#1115 <https://github.com/ManimCommunity/manim/pull/1115>`__: Fixed bugs in :class:`~.OpenGLMobject` and added :class:`ApplyMethod` support
+* `#1115 <https://github.com/ManimCommunity/manim/pull/1115>`__: Fixed bugs in :class:`~.OpenGLMobject` and added :class:`ApplyMethod` support 
    Fixed undefined variables and converted :class:`Mobject` to :class:`OpenGLMobject`. Also, fixed assert statement in :class:`ApplyMethod`.
 
 * `#1092 <https://github.com/ManimCommunity/manim/pull/1092>`__: Refactored coordinate_systems.py, fixed bugs, added :class:`~.NumberPlane` test
@@ -297,11 +297,11 @@ Code quality improvements and similar refactors
 
 * `#1019 <https://github.com/ManimCommunity/manim/pull/1019>`__: Refactored :meth:`~.Scene.play`
    - Removed the _**three**_ decorators of :meth:`~.Scene.play`, in particular: caching logic and file writer logic are now included within :meth:`~.Scene.play` (it wasn't possible before, because `scene.wait` and `scene.play` were two different things).
-   - Added `is_static_wait` attributes to Wait. (<=> if wait is a frozen frame).
-   - Renamed and moved `scene.add_static_frame` to `renderer.freeze_current_frame`.
+   - Added `is_static_wait` attributes to Wait. (<=> if wait is a frozen frame). 
+   - Renamed and moved `scene.add_static_frame` to `renderer.freeze_current_frame`. 
    - Now when calling play without animation, it raises `ValueError` instead of just a warning.
    - Fixed :pr:`874` by modfying `renderer.update_skipping_status`
    - `renderer` starts the animation with `scene.begin_animations` (`scene.compile_animation_data` used to do this)
-   - The run time and the time progression generation is now done in `scene.play_internal` although it'd make more sense that renderer processes it later.
+   - The run time and the time progression generation is now done in `scene.play_internal` although it'd make more sense that renderer processes it later. 
    - Added a bunch of cool tests thanks to mocks, and thanks to the new syntax `scene.render`
 
