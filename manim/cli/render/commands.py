@@ -156,7 +156,5 @@ def render(
             console.print(
                 "https://docs.manim.community/en/latest/tutorials/configuration.html"
             )
-        else:
-            console.print("[green]You are using the latest version of manim[/green]")
 
     return args
