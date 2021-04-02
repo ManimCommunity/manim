@@ -208,7 +208,7 @@ Next, we'll want to create control data for ``CircleTest``. In
 ``tests/template_generate_graphical_units_data.py``, there exists the
 function, ``set_test_scene``, for this purpose.
 
-It will look something like this :
+It will look something like this:
 
 .. code:: python
 
