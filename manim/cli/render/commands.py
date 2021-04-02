@@ -66,13 +66,13 @@ def render(
 
     if args["use_opengl_renderer"]:
         logger.warning(
-            "--use_opengl_renderer is deprecated, please use --render=opengl instead!"
+            "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!"
         )
         renderer = "opengl"
 
     if args["use_webgl_renderer"]:
         logger.warning(
-            "--use_webgl_renderer is deprecated, please use --render=webgl instead!"
+            "--use_webgl_renderer is deprecated, please use --renderer=webgl instead!"
         )
         renderer = "webgl"
 
