@@ -1973,6 +1973,22 @@ class Mobject(Container):
         random.shuffle(self.submobjects)
 
     def invert(self, recursive=False):
+        """Inverts the list of :attr:`submobjects`.
+
+        Examples
+        --------
+
+        .. manim:: InvertSumobjectsExample
+            :save_last_frame:
+
+            class InvertSumobjectsExample(Scene):
+                def construct(self):
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2= s.copy()
+                    s2.invert()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
         if recursive:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
@@ -1980,7 +1996,7 @@ class Mobject(Container):
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args, **kwargs):
-        """Arrange the position of submobjects with a small buffer
+        """Arrange the position of :attr:`submobjects` with a small buffer.
 
         Examples
         --------
@@ -2002,10 +2018,11 @@ class Mobject(Container):
         return self.arrange(*args, **kwargs)
 
     def sort_submobjects(self, *args, **kwargs):
+        """Sort the :attr:`submobjects`"""
         return self.sort(*args, **kwargs)
 
     def shuffle_submobjects(self, *args, **kwargs):
-        """Shuffles the order of submobjects
+        """Shuffles the order of :attr:`submobjects`
 
         Examples
         --------
