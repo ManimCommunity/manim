@@ -1,23 +1,23 @@
+"""Manim's cfg subcommand.
+
+Manim's cfg subcommand is accessed in the command-line interface via ``manim
+cfg``. Here you can specify options, subcommands, and subgroups for the cfg
+group.
+
 """
-cfg_subcmd.py
-------------
-
-General Config File Managing Utilities.
-The functions below can be called via the `manim cfg` subcommand.
-
-"""
-
 import os
+import click
+
 from ast import literal_eval
 from typing import Union
-
-from manim import config, console
-from manim._config.utils import config_file_paths, make_config_parser
-from manim.utils.file_ops import guarantee_existence, open_file
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
-__all__ = ["write", "show", "export"]
+from ... import config, console
+from ...constants import EPILOG
+from ...constants import CONTEXT_SETTINGS
+from ..._config.utils import config_file_paths, make_config_parser
+from ...utils.file_ops import guarantee_existence, open_file
 
 RICH_COLOUR_INSTRUCTIONS: str = """
 [red]The default colour is used by the input statement.
@@ -114,6 +114,28 @@ def replace_keys(default: dict) -> dict:
     return default
 
 
+@click.group(
+    context_settings=CONTEXT_SETTINGS,
+    invoke_without_command=True,
+    no_args_is_help=True,
+    epilog=EPILOG,
+    help="Manages Manim configuration files.",
+)
+@click.pass_context
+def cfg(ctx):
+    """Responsible for the cfg subcommand."""
+    pass
+
+
+@cfg.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
+@click.option(
+    "-l",
+    "--level",
+    type=click.Choice(["user", "cwd"], case_sensitive=False),
+    default="cwd",
+    help="Specify if this config is for user or the working directory.",
+)
+@click.option("-o", "--open", "openfile", is_flag=True)
 def write(level: str = None, openfile: bool = False) -> None:
     config_paths = config_file_paths()
     console.print(
@@ -208,7 +230,8 @@ modify write_cfg_subcmd_input to account for it."""
         open_file(cfg_file_path)
 
 
-def show() -> None:
+@cfg.command(context_settings=CONTEXT_SETTINGS)
+def show():
     parser = make_config_parser()
     rich_non_style_entries = [a.replace(".", "_") for a in RICH_NON_STYLE_ENTRIES]
     for category in parser:
@@ -225,8 +248,11 @@ def show() -> None:
         console.print("\n")
 
 
-def export(path):
-    if os.path.abspath(path) == os.path.abspath(os.getcwd()):
+@cfg.command(context_settings=CONTEXT_SETTINGS)
+@click.option("-d", "--directory", default=os.getcwd())
+@click.pass_context
+def export(ctx, directory):
+    if os.path.abspath(directory) == os.path.abspath(os.getcwd()):
         console.print(
             """You are reading the config from the same directory you are exporting to.
 This means that the exported config will overwrite the config for this directory.
@@ -238,14 +264,13 @@ Are you sure you want to continue? (y/n)""",
     else:
         proceed = True
     if proceed:
-        parser = make_config_parser()
-        if not os.path.isdir(path):
-            console.print(f"Creating folder: {path}.", style="red bold")
-            os.mkdir(path)
-        with open(os.path.join(path, "manim.cfg"), "w") as outpath:
-            parser.write(outpath)
+        if not os.path.isdir(directory):
+            console.print(f"Creating folder: {directory}.", style="red bold")
+            os.mkdir(directory)
+        with open(os.path.join(directory, "manim.cfg"), "w") as outpath:
+            ctx.invoke(write)
             from_path = os.path.join(os.getcwd(), "manim.cfg")
-            to_path = os.path.join(path, "manim.cfg")
+            to_path = os.path.join(directory, "manim.cfg")
         console.print(f"Exported final Config at {from_path} to {to_path}.")
     else:
         console.print("Aborted...", style="red bold")
