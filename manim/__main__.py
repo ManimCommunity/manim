@@ -15,11 +15,13 @@ def exit_early(ctx, param, value):
         sys.exit()
 
 
-latest = requests.get("https://api.github.com/repos/ManimCommunity/manim/releases/latest")
+latest = requests.get(
+    "https://api.github.com/repos/ManimCommunity/manim/releases/latest"
+)
 latest_tag = latest.json()["tag_name"]
 curr_version = "v" + __version__
 
-if(latest_tag == curr_version):
+if latest_tag == curr_version:
     console.print(f"Manim Community [green]{curr_version}[/green] (latest)\n")
 else:
     console.print(f"Manim Community [red]{curr_version}[/red] (outdated)")
