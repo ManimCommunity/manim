@@ -29,6 +29,7 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 -  [Installation](#installation)
 -  [Usage](#usage)
 -  [Documentation](#documentation)
+-  [Docker](#docker)
 -  [Help with Manim](#help-with-manim)
 -  [Contributing](#contributing)
 -  [License](#license)
@@ -79,7 +80,7 @@ You should see your native video player program pop up and play a simple scene i
 [GitHub repository](master/example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
 
 Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the
-[corresponding documentation](https://docs.manim.community/en/stable/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and 
+[corresponding documentation](https://docs.manim.community/en/stable/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and
 [try it out online](https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb).
 
 ## Command line arguments
@@ -101,6 +102,49 @@ For a thorough list of command line arguments, visit the [documentation](https:/
 ## Documentation
 
 Documentation is in progress at [ReadTheDocs](https://docs.manim.community/).
+
+## Docker
+
+The community also maintains a docker image (`manimcommunity/manim`), which can be found [on DockerHub](https://hub.docker.com/r/manimcommunity/manim). The following tags are supported:
+
+- `latest` -- the most recent version corresponding to [the master branch](https://github.com/ManimCommunity/manim)
+- `stable` -- the latest released version (according to [the releases page](https://github.com/ManimCommunity/manim/releases))
+- `vX.Y.Z` -- any particular released version (according to [the releases page](https://github.com/ManimCommunity/manim/releases))
+
+### Instructions for running the docker image
+
+#### Quick Example
+To render a scene `CircleToSquare` in a file `test_scenes.py` contained in your current working directory while preserving your user and group ID, use
+```
+docker run --rm -it  --user="$(id -u):$(id -g)" -v "$(pwd)":/manim manimcommunity/manim manim test_scenes.py CircleToSquare -qm
+```
+
+#### Running the image in the background
+Instead of using the "throwaway container" approach sketched above, you can also create a named container that you can also modify to your liking. First, run
+```
+docker run -it --name my-manim-container -v "$(pwd):/manim" manimcommunity/manim /bin/bash
+```
+to obtain an interactive shell inside your container allowing you to, e.g., install further dependencies (like texlive packages using `tlmgr`). Exit the container as soon as you are satisfied. Then, before using it, start the container by running
+```
+docker start my-manim-container
+```
+Then, to render a scene `CircleToSquare` in a file `test_scenes.py`, call
+```
+docker exec -it --user="$(id -u):$(id -g)" my-manim-container manim test.py CircleToSquare -qm
+```
+
+#### Jupyterlab
+Another alternative is to use the docker image to spin up a local webserver running
+JupyterLab in whose Python kernel manim is installed and can be accessed via the `%%manim` cell magic.
+To use JupyterLab, run
+```
+docker run -it -p 8888:8888 manimcommunity/manim jupyter lab --ip=0.0.0.0
+```
+and then follow the instructions in the terminal.
+
+#### Important notes
+
+When executing `manim` within a Docker container, several command line flags (in particular `-p` (preview file) and `-f` (show output file in the file browser)) are not supported.
 
 ## Help with Manim
 
