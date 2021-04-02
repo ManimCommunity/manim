@@ -54,7 +54,7 @@ class Mobject(Container):
     """
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
-        self.color = Color(color)
+        self.color: Color = Color(color)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -1610,6 +1610,7 @@ class Mobject(Container):
         return self
 
     def get_color(self):
+        """Returns the color of the :class:`~.Mobject`"""
         return self.color
 
     ##
@@ -1987,6 +1988,7 @@ class Mobject(Container):
         .. manim:: ArrangeSumobjectsExample
             :save_last_frame:
 
+            import numpy as np
             class ArrangeSumobjectsExample(Scene):
                 def construct(self):
                     s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(-10,10)])
