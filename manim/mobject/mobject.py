@@ -346,7 +346,7 @@ class Mobject(Container):
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
-        """Remove submobjects.
+        """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
 
@@ -595,12 +595,13 @@ class Mobject(Container):
         self.get_image(camera=camera).show()
 
     def save_image(self, name=None):
+        """Saves an image of only this :class:`Mobject` at its position to a png file."""
         self.get_image().save(
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
     def copy(self) -> "Mobject":
-        """Create and return an identical copy of the Mobject including all submobjects.
+        """Create and return an identical copy of the :class:`Mobject` including all :attr:`submobjects`.
 
         Returns
         -------
@@ -1978,12 +1979,45 @@ class Mobject(Container):
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args, **kwargs):
+        """Arrange the position of submobjects with a small buffer
+
+        Examples
+        --------
+
+        .. manim:: ArrangeSumobjectsExample
+            :save_last_frame:
+
+            class ArrangeSumobjectsExample(Scene):
+                def construct(self):
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(-10,10)])
+                    s.shift(UP).set_color(BLUE)
+                    s2= s.copy().set_color(RED)
+                    s2.arrange_submobjects()
+                    s2.shift(DOWN)
+                    self.add(s, s2)
+        """
         return self.arrange(*args, **kwargs)
 
     def sort_submobjects(self, *args, **kwargs):
         return self.sort(*args, **kwargs)
 
     def shuffle_submobjects(self, *args, **kwargs):
+        """Shuffles the order of submobjects
+
+        Examples
+        --------
+
+        .. manim:: SuffleSumobjectsExample
+            :save_last_frame:
+
+            class SuffleSumobjectsExample(Scene):
+                def construct(self):
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2= s.copy()
+                    s2.shuffle_submobjects()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
         return self.shuffle(*args, **kwargs)
 
     # Alignment
