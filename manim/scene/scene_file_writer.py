@@ -274,7 +274,7 @@ class SceneFileWriter(object):
         frame : np.array
             Pixel array of the frame.
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             renderer = frame_or_renderer
             self.writing_process.stdin.write(
                 renderer.get_raw_frame_buffer_object_data()
@@ -351,7 +351,9 @@ class SceneFileWriter(object):
         self.partial_movie_file_path = file_path
 
         fps = config["frame_rate"]
-        if config["use_opengl_renderer"]:
+        if fps == int(fps):  # fps is integer
+            fps = int(fps)
+        if config.renderer == "opengl":
             width, height = self.renderer.get_pixel_shape()
         else:
             height = config["pixel_height"]
@@ -376,7 +378,7 @@ class SceneFileWriter(object):
             "-metadata",
             f"comment=Rendered with Manim Community v{__version__}",
         ]
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             command += ["-vf", "vflip"]
         if config["transparent"]:
             command += ["-vcodec", "qtrle"]

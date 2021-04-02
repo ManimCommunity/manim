@@ -62,7 +62,7 @@ def norm_squared(v):
 
 
 def quaternion_mult(*quats):
-    if config["use_opengl_renderer"]:
+    if config.renderer == "opengl":
         if len(quats) == 0:
             return [1, 0, 0, 0]
         result = quats[0]
@@ -93,7 +93,7 @@ def quaternion_mult(*quats):
 
 
 def quaternion_from_angle_axis(angle, axis, axis_normalized=False):
-    if config["use_opengl_renderer"]:
+    if config.renderer == "opengl":
         if not axis_normalized:
             axis = normalize(axis)
         return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
@@ -218,7 +218,7 @@ def angle_of_vector(vector):
     """
     Returns polar coordinate theta when vector is project on xy plane
     """
-    if config["use_opengl_renderer"]:
+    if config.renderer == "opengl":
         return np.angle(complex(*vector[:2]))
     else:
         z = complex(*vector[:2])
@@ -270,7 +270,7 @@ def cross(v1, v2):
 
 
 def get_unit_normal(v1, v2, tol=1e-6):
-    if config["use_opengl_renderer"]:
+    if config.renderer == "opengl":
         v1 = normalize(v1)
         v2 = normalize(v2)
         cp = cross(v1, v2)
