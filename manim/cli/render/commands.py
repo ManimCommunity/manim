@@ -151,7 +151,10 @@ def render(
             console.print(f"Installed version: [red]v{__version__}[/red]")
             console.print(f"Latest version: [green]v{latest}[/green]")
             console.print(
-                f"[yellow]To disable this warning, go to [white]manim/_config/default.cfg[/white] and set [red]notify_outdated_version[/red] to [/yellow]False"
+                f"[yellow]To disable this warning, go to config and set [red]notify_outdated_version[/red] to [/yellow]False"
+            )
+            console.print(
+                f"https://docs.manim.community/en/latest/tutorials/configuration.html"
             )
         else:
             console.print(f"[green]You are using the latest version of manim[/green]")
