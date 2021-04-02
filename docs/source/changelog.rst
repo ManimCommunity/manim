@@ -2,11 +2,6 @@
 Changelog
 #########
 
-****************
-Upcoming release
-****************
-
-:Date: TBD
 
 .. toctree::
     :glob:
