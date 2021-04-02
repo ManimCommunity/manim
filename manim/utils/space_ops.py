@@ -62,7 +62,7 @@ def norm_squared(v):
 
 
 def quaternion_mult(*quats):
-    if config["use_opengl_renderer"]:
+    if config.renderer == "opengl":
         if len(quats) == 0:
             return [1, 0, 0, 0]
         result = quats[0]
@@ -93,7 +93,7 @@ def quaternion_mult(*quats):
 
 
 def quaternion_from_angle_axis(angle, axis, axis_normalized=False):
-    if config["use_opengl_renderer"]:
+    if config.renderer == "opengl":
         if not axis_normalized:
             axis = normalize(axis)
         return [math.cos(angle / 2), *(math.sin(angle / 2) * axis)]
@@ -218,7 +218,7 @@ def angle_of_vector(vector):
     """
     Returns polar coordinate theta when vector is project on xy plane
     """
-    if config["use_opengl_renderer"]:
+    if config.renderer == "opengl":
         return np.angle(complex(*vector[:2]))
     else:
         z = complex(*vector[:2])
@@ -270,7 +270,7 @@ def cross(v1, v2):
 
 
 def get_unit_normal(v1, v2, tol=1e-6):
-    if config["use_opengl_renderer"]:
+    if config.renderer == "opengl":
         v1 = normalize(v1)
         v2 = normalize(v2)
         cp = cross(v1, v2)
@@ -318,7 +318,7 @@ def midpoint(point1, point2):
 
 def line_intersection(line1, line2):
     """
-    return intersection point of two lines,
+    Returns intersection point of two lines,
     each defined with a pair of vectors determining
     the end points
     """
@@ -428,7 +428,7 @@ def earclip_triangulation(verts, ring_ends):
     rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends)]
     attached_rings = rings[:1]
     detached_rings = rings[1:]
-    loop_connections = dict()
+    loop_connections = {}
 
     while detached_rings:
         i_range, j_range = [
@@ -474,7 +474,7 @@ def earclip_triangulation(verts, ring_ends):
     # Find an ordering of indices walking around the polygon
     indices = []
     i = 0
-    for x in range(len(verts) + len(ring_ends) - 1):
+    for _ in range(len(verts) + len(ring_ends) - 1):
         # starting = False
         if i in loop_connections:
             j = loop_connections[i]

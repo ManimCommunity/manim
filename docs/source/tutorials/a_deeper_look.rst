@@ -14,7 +14,7 @@ At this point, you have just executed the following command.
 
 .. code-block:: bash
 
-   $ manim scene.py SquareToCircle -pql
+   $ manim -pql scene.py SquareToCircle
 
 Let's dissect what just happened step by step.  First, this command executes
 manim on the file ``scene.py``, which contains our animation code.  Further,
@@ -57,7 +57,7 @@ the following command,
 
 .. code-block:: bash
 
-   $ manim scene.py SquareToCircle -pqh
+   $ manim -pqh scene.py SquareToCircle
 
 The ``-ql`` flag (for low quality) has been replaced by the ``-qh`` flag, for
 high quality.  Manim will take considerably longer to render this file, and it
@@ -77,7 +77,7 @@ should look like this:
            square.flip(RIGHT)                   # flip horizontally
            square.rotate(-3 * TAU / 8)          # rotate a certain amount
 
-           self.play(ShowCreation(square))      # animate the creation of the square
+           self.play(Create(square))      # animate the creation of the square
            self.play(Transform(square, circle)) # interpolate the square into the circle
            self.play(FadeOut(square))           # fade out animation
 
@@ -144,7 +144,7 @@ When executing the command
 
 .. code-block:: bash
 
-   $ manim scene.py SquareToCircle -pql
+   $ manim -pql scene.py SquareToCircle
 
 it was necessary to specify which ``Scene`` class to render.  This is because a
 single file can contain more than one ``Scene`` class.  If your file contains

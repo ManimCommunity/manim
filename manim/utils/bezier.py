@@ -111,7 +111,7 @@ def interpolate(start: int, end: int, alpha: float) -> float:
 
 def integer_interpolate(start: float, end: float, alpha: float) -> int:
     """
-    alpha is a float between 0 and 1.  This returns
+    Alpha is a float between 0 and 1.  This returns
     an integer between start and end (inclusive) representing
     appropriate interpolation between them, along with a
     "residue" representing a new proportion between the

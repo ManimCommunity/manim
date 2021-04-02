@@ -60,7 +60,7 @@ class SomeClass:
 
     See Also
     --------
-    :class:`ShowCreation`, :class:`~.ShowPassingFlash`
+    :class:`Create`, :class:`~.ShowPassingFlash`
 
     References
     ----------

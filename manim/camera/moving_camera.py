@@ -44,7 +44,7 @@ class MovingCamera(Camera):
         **kwargs
     ):
         """
-        frame is a Mobject, (should almost certainly be a rectangle)
+        Frame is a Mobject, (should almost certainly be a rectangle)
         determining which region of space the camera displays
         """
         self.fixed_dimension = fixed_dimension

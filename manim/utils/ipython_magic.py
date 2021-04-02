@@ -7,8 +7,7 @@ import shutil
 from pathlib import Path
 
 from manim import config, tempconfig
-
-from .._config.main_utils import parse_args
+from manim.__main__ import main
 
 try:
     from IPython import get_ipython
@@ -27,7 +26,7 @@ else:
     class ManimMagic(Magics):
         def __init__(self, shell):
             super(ManimMagic, self).__init__(shell)
-            self.rendered_files = dict()
+            self.rendered_files = {}
 
         @needs_local_scope
         @line_cell_magic
@@ -65,19 +64,14 @@ else:
             if cell:
                 exec(cell, local_ns)
 
-            cli_args = ["manim", ""] + line.split()
-            if len(cli_args) == 2:
-                # empty line.split(): no commands have been passed, call with -h
-                cli_args.append("-h")
-
-            try:
-                args = parse_args(cli_args)
-            except SystemExit:
-                return  # probably manim -h was called, process ended preemptively
-
+            args = line.split()
+            if not len(args) or "-h" in args or "--help" in args or "--version" in args:
+                main(args, standalone_mode=False, prog_name="manim")
+                return
+            modified_args = ["--jupyter"] + args[:-1] + [""] + [args[-1]]
+            args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
-
                 exec(f"{config['scene_names'][0]}().render()", local_ns)
                 local_path = Path(config["output_file"]).relative_to(Path.cwd())
                 tmpfile = (
@@ -103,7 +97,7 @@ else:
                 display(
                     Video(
                         tmpfile,
-                        html_attributes='controls autoplay loop style="max-width: 100%;"',
+                        html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
                         embed=video_embed,
                     )
                 )

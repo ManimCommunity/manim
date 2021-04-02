@@ -1,0 +1,13 @@
+default_language_version:
+  python: python3.9
+default_stages: [commit, push]
+fail_fast: false
+repos:
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+  - repo: https://gitlab.com/PyCQA/flake8
+    rev: 3.9.0
+    hooks:
+    -   id: flake8

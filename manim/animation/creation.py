@@ -17,7 +17,7 @@ r"""Animate the display or removal of a mobject from a scene.
             VGroup(s5, s6, s7).set_x(0).arrange(buff=2.6).shift(2 * DOWN)
             t1 = Text("Write").scale(0.5).next_to(s1, UP)
             t2 = Text("AddTextLetterByLetter").scale(0.5).next_to(s2, UP)
-            t3 = Text("ShowCreation").scale(0.5).next_to(s3, UP)
+            t3 = Text("Create").scale(0.5).next_to(s3, UP)
             t4 = Text("Uncreate").scale(0.5).next_to(s4, UP)
             t5 = Text("DrawBorderThenFill").scale(0.5).next_to(s5, UP)
             t6 = Text("ShowIncreasingSubsets").scale(0.45).next_to(s6, UP)
@@ -43,7 +43,7 @@ r"""Animate the display or removal of a mobject from a scene.
                 Write(texts[0]),
                 AddTextLetterByLetter(texts[1]),
                 # mobject creation
-                ShowCreation(objs[0]),
+                Create(objs[0]),
                 Uncreate(objs[1]),
                 DrawBorderThenFill(objs[2]),
                 ShowIncreasingSubsets(objs[3]),
@@ -59,6 +59,7 @@ r"""Animate the display or removal of a mobject from a scene.
 __all__ = [
     "ShowPartial",
     "ShowCreation",
+    "Create",
     "Uncreate",
     "DrawBorderThenFill",
     "Write",
@@ -75,6 +76,8 @@ import typing
 
 import numpy as np
 from colour import Color
+from .. import logger
+
 
 if typing.TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
@@ -98,14 +101,12 @@ class ShowPartial(Animation):
 
     See Also
     --------
-    :class:`ShowCreation`, :class:`~.ShowPassingFlash`
+    :class:`Create`, :class:`~.ShowPassingFlash`
 
     """
 
-    def __init__(self, mobject: VMobject, **kwargs):
-        if not isinstance(mobject, VMobject) and not isinstance(
-            mobject, OpenGLVMobject
-        ):
+    def __init__(self, mobject: typing.Union[VMobject, OpenGLVMobject], **kwargs):
+        if not isinstance(mobject, (VMobject, OpenGLVMobject)):
             raise TypeError("This Animation only works on vectorized mobjects")
         super().__init__(mobject, **kwargs)
 
@@ -117,10 +118,10 @@ class ShowPartial(Animation):
         )
 
     def _get_bounds(self, alpha: float) -> None:
-        raise NotImplementedError("Please use ShowCreation or ShowPassingFlash")
+        raise NotImplementedError("Please use Create or ShowPassingFlash")
 
 
-class ShowCreation(ShowPartial):
+class Create(ShowPartial):
     """Incrementally show a VMobject.
 
     Parameters
@@ -135,11 +136,11 @@ class ShowCreation(ShowPartial):
 
     Examples
     --------
-    .. manim:: ShowCreationScene
+    .. manim:: CreateScene
 
-        class ShowCreationScene(Scene):
+        class CreateScene(Scene):
             def construct(self):
-                self.play(ShowCreation(Square()))
+                self.play(Create(Square()))
 
     See Also
     --------
@@ -147,15 +148,33 @@ class ShowCreation(ShowPartial):
 
     """
 
-    def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
+    def __init__(
+        self,
+        mobject: typing.Union[VMobject, OpenGLVMobject],
+        lag_ratio: float = 1.0,
+        **kwargs,
+    ) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
     def _get_bounds(self, alpha: float) -> typing.Tuple[int, float]:
         return (0, alpha)
 
 
-class Uncreate(ShowCreation):
-    """Like :class:`ShowCreation` but in reverse.
+class ShowCreation(Create):
+    """Deprecated. Use :class:`~.Create` instead."""
+
+    def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
+        logger.warning(
+            "ShowCreation has been deprecated in favor of Create. Please use Create instead!"
+        )
+        super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
+
+    def _get_bounds(self, alpha: float) -> typing.Tuple[int, float]:
+        return (0, alpha)
+
+
+class Uncreate(Create):
+    """Like :class:`Create` but in reverse.
 
     Examples
     --------
@@ -167,13 +186,13 @@ class Uncreate(ShowCreation):
 
     See Also
     --------
-    :class:`ShowCreation`
+    :class:`Create`
 
     """
 
     def __init__(
         self,
-        mobject: VMobject,
+        mobject: typing.Union[VMobject, OpenGLVMobject],
         rate_func: typing.Callable[[float, float], np.ndarray] = lambda t: smooth(
             1 - t
         ),
@@ -197,7 +216,7 @@ class DrawBorderThenFill(Animation):
 
     def __init__(
         self,
-        vmobject: VMobject,
+        vmobject: typing.Union[VMobject, OpenGLVMobject],
         run_time: float = 2,
         rate_func: typing.Callable[[float], np.ndarray] = double_smooth,
         stroke_width: float = 2,
@@ -214,9 +233,11 @@ class DrawBorderThenFill(Animation):
         self.fill_animation_config = fill_animation_config
         self.outline = None
 
-    def _typecheck_input(self, vmobject: VMobject) -> None:
-        if not isinstance(vmobject, VMobject):
-            raise TypeError("DrawBorderThenFill only works for VMobjects")
+    def _typecheck_input(
+        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
+    ) -> None:
+        if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
+            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
 
     def begin(self) -> None:
         self.outline = self.get_outline()
@@ -229,7 +250,9 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(self, vmobject: VMobject) -> Color:
+    def get_stroke_color(
+        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
+    ) -> Color:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
@@ -264,7 +287,7 @@ class Write(DrawBorderThenFill):
 
     def __init__(
         self,
-        vmobject: VMobject,
+        vmobject: typing.Union[VMobject, OpenGLVMobject],
         run_time: float = None,
         lag_ratio: float = None,
         rate_func: typing.Callable[[float], np.ndarray] = linear,
@@ -281,7 +304,9 @@ class Write(DrawBorderThenFill):
             **kwargs,
         )
 
-    def _set_default_config_from_length(self, vmobject: VMobject) -> None:
+    def _set_default_config_from_length(
+        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
+    ) -> None:
         length = len(vmobject.family_members_with_points())
         if self.run_time is None:
             if length < 15:
@@ -331,8 +356,6 @@ class Unwrite(Write):
         **kwargs,
     ) -> None:
 
-        backwards_rate_func = lambda t: -rate_func(t) + 1
-
         self.vmobject = vmobject
         self.run_time = run_time
         self.lag_ratio = lag_ratio
@@ -342,7 +365,7 @@ class Unwrite(Write):
             vmobject,
             run_time=run_time,
             lag_ratio=lag_ratio,
-            rate_func=backwards_rate_func,
+            rate_func=lambda t: -rate_func(t) + 1,
             **kwargs,
         )
 
@@ -385,6 +408,8 @@ class ShowIncreasingSubsets(Animation):
     ) -> None:
         self.all_submobs = list(group.submobjects)
         self.int_func = int_func
+        for mobj in self.all_submobs:
+            mobj.set_opacity(0)
         super().__init__(
             group, suspend_mobject_updating=suspend_mobject_updating, **kwargs
         )
@@ -395,7 +420,8 @@ class ShowIncreasingSubsets(Animation):
         self.update_submobject_list(index)
 
     def update_submobject_list(self, index: int) -> None:
-        self.mobject.submobjects = self.all_submobs[:index]
+        for mobj in self.all_submobs[:index]:
+            mobj.set_opacity(1)
 
 
 class AddTextLetterByLetter(ShowIncreasingSubsets):
@@ -451,10 +477,11 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
         super().__init__(new_group, int_func=int_func, **kwargs)
 
     def update_submobject_list(self, index: int) -> None:
-        if index == 0:
-            self.mobject.submobjects = []
-        else:
-            self.mobject.submobjects = self.all_submobs[index - 1]
+        current_submobjects = self.all_submobs[:index]
+        for mobj in current_submobjects[:-1]:
+            mobj.set_opacity(0)
+        if len(current_submobjects) > 0:
+            current_submobjects[-1].set_opacity(1)
 
 
 # TODO, this is broken...
