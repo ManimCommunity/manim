@@ -332,6 +332,7 @@ Transforming mobjects into other mobjects
 It is also possible to transform an mobject into another mobject like this:
 
 .. manim:: ExampleTransform
+
     class ExampleTransform(Scene):
         def construct(self):
             self.camera.background_color = WHITE
@@ -344,6 +345,7 @@ This might result in strange behaviour, e.g. when the dots of one mobject are ar
 Here it might help to use the `flip` function and reposition the points via the  `roll` function of numpy:
 
 .. manim:: ExampleRotation
+
     class ExampleRotation(Scene):
         def construct(self):
             self.camera.background_color = WHITE
