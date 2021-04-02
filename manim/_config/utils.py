@@ -256,6 +256,7 @@ class ManimConfig(MutableMapping):
         "max_files_cached",
         "media_dir",
         "movie_file_extension",
+        "notify_outdated_version",
         "partial_movie_dir",
         "pixel_height",
         "pixel_width",
@@ -488,6 +489,7 @@ class ManimConfig(MutableMapping):
 
         # boolean keys
         for key in [
+            "notify_outdated_version",
             "write_to_movie",
             "save_last_frame",
             "write_all",
@@ -611,6 +613,7 @@ class ManimConfig(MutableMapping):
         self.output_file = args.output_file
 
         for key in [
+            "notify_outdated_version",
             "preview",
             "show_in_file_browser",
             "write_to_movie",
@@ -783,6 +786,12 @@ class ManimConfig(MutableMapping):
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
             set_file_logger(self, self["verbosity"])
+
+    notify_outdated_version = property(
+        lambda self: self._d["notify_outdated_version"],
+        lambda self, val: self._set_boolean("notify_outdated_version", val),
+        doc="Whether to notify if there is a version update available.",
+    )
 
     write_to_movie = property(
         lambda self: self._d["write_to_movie"],

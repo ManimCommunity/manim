@@ -31,4 +31,9 @@ global_options = option_group(
         ),
         help="Verbosity of CLI output. Changes ffmpeg log level unless 5+.",
     ),
+    option(
+        "--notify_outdated_version",
+        is_flag=True,
+        help="Display warnings for outdated installation",
+    ),
 )

@@ -11,14 +11,17 @@ from textwrap import dedent
 
 import click
 import cloup
+import requests
 
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
 from .output_options import output_options
 from .render_options import render_options
-from ... import config, console, logger
+from ... import config, console, logger, __version__
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.module_ops import scene_classes_from_file
+
+nov = config.notify_outdated_version
 
 
 @cloup.command(
@@ -135,5 +138,22 @@ def render(
                 scene.render()
             except Exception:
                 console.print_exception()
+
+    if nov or args["notify_outdated_version"]:
+        manim = requests.get("https://pypi.org/pypi/manim/json")
+        releases = manim.json()["releases"].keys()
+        latest = max(releases)
+
+        if latest != __version__:
+            console.print(
+                f"[yellow]WARNING: You are running on an outdated version of manim[/yellow]"
+            )
+            console.print(f"Installed version: [red]v{__version__}[/red]")
+            console.print(f"Latest version: [green]v{latest}[/green]")
+            console.print(
+                f"[yellow]To disable this warning, go to [white]manim/_config/default.cfg[/white] and set [red]notify_outdated_version[/red] to [/yellow]False"
+            )
+        else:
+            console.print(f"[green]You are using the latest version of manim[/green]")
 
     return args
