@@ -150,7 +150,7 @@ choco ``manim-latex`` package for Windows.
 Install `TinyTex`_ and make sure to add ``bin`` folder created in your home
 directory to your ``PATH``.
 
-For extra packages, see "Files > tools\chocolateyinstall.ps1" `here_` and
+For extra packages, see "Files > tools\chocolateyinstall.ps1" `here`_ and
 find ``tlmgr install ...`` command. Run that in terminal and
 finally ``tlmgr path add`` to add all the symlinks correctly.
 
