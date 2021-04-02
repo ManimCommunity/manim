@@ -21,8 +21,6 @@ from ... import config, console, logger, __version__
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.module_ops import scene_classes_from_file
 
-nov = config.notify_outdated_version
-
 
 @cloup.command(
     context_settings=CONTEXT_SETTINGS,
@@ -105,6 +103,8 @@ def render(
     click_args = ClickArgs(args)
     if args["jupyter"]:
         return click_args
+
+    nov = config.notify_outdated_version
 
     config.digest_args(click_args)
     file = args["file"]
