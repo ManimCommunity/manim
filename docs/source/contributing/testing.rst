@@ -13,14 +13,15 @@ To start the testing process, go to the root directory of the project and run py
 Any errors that occur during testing will be displayed in the terminal.
 
 Some useful pytest flags: 
+
 - ``-x`` will make pytest stop at the first failure it encounters
   
 - ``-s`` will make pytest display all the print messages (including those during scene generation, like DEBUG messages)
   
 - ``--skip_slow`` will skip the (arbitrarily) slow tests
+
+- ``--show_diff`` will show a visual comparison in case an unit test is failing. 
   
-- ``--show_diff`` will show a visual comparison in case an unit test is
-failing. 
 
 How it Works
 ~~~~~~~~~~~~
@@ -257,9 +258,9 @@ To test videos generated, we use the decorator
         out, err, exit_code = capture(command)
         assert exit_code == 0, err
 
-.. Note:: ``assert exit*\ code == 0, err`` is used in case of the command fails
-to run. The decorator takes two arguments: json name and the path
-to where the video should be generated, starting from the ``medias/`` dir.
+.. Note:: ``assert exit*\ code == 0, err`` is used in case of the command fails 
+  to run. The decorator takes two arguments: json name and the path
+  to where the video should be generated, starting from the ``medias/`` dir.
 
 Note the fixtures here:
 
@@ -281,7 +282,7 @@ you're done. Then run:
 
 .. code:: python
 
-    save_control_data_from_video(<path-to-video>, "SquareToCircleWithlFlag.json"). 
+    save_control_data_from_video(<path-to-video>, "SquareToCircleWithlFlag.json")
 
 Running this will save
 ``control_data/videos_data/SquareToCircleWithlFlag.json``, which will
