@@ -5,7 +5,7 @@ on:
       - master
 
 jobs:
-  check-format:
+  black-check:
     runs-on: windows-latest
     steps:
       - name: Set up Python
@@ -68,7 +68,7 @@ jobs:
             echo "The Filed changed are `n`n $(git ls-files -m)"
             exit 1
           }
-  flake-checks:
+  flake-check:
     runs-on: windows-latest
     steps:
       - name: Set up Python
@@ -87,3 +87,22 @@ jobs:
       - name: Run Flake8
         run: |
           poetry run flake8 manim
+
+  isort-checks:
+    runs-on: windows-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          pip install isort
+
+      - name: Run Isort
+        run: |
+          isort -c .

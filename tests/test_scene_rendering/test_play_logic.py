@@ -1,10 +1,11 @@
+import sys
 from functools import wraps
 from pathlib import Path
 from unittest.mock import Mock
-from numpy.core.defchararray import asarray
-import sys
 
 import pytest
+from numpy.core.defchararray import asarray
+
 from manim import *
 from manim import config
 
