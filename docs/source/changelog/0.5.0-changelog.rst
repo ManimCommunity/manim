@@ -195,7 +195,7 @@ Documentation-related changes
 
 
 * `#1209 <https://github.com/ManimCommunity/manim/pull/1209>`__: Added :ref_methods: to the manim directive
-   This allows class methods to be linked in the documentation. Checkout the `example references<https://docs.manim.community/en/latest/examples.html#movingaround>`_ below the code to see how this is used!
+   This allows class methods to be linked in the documentation. Checkout the `example references <https://docs.manim.community/en/latest/examples.html#movingaround>`_ below the code to see how this is used!
 
 * `#1204 <https://github.com/ManimCommunity/manim/pull/1204>`__: Added rotation example to example gallery
 
@@ -243,28 +243,7 @@ Documentation-related changes
 
 
 * `#1101 <https://github.com/ManimCommunity/manim/pull/1101>`__: Added documentation to :class:`~.Mobject`
-   Methods for which documentation was added or improved:
-   - :meth:`~.reset_points`
-   - :meth:`~.init_colors`
-   - :meth:`~.generate_points`
-   - :meth:`~.add`
-   - :meth:`~.add_to_back`
-   - :meth:`~.remove`
-   - :meth:`~.copy`
-   - :meth:`~.update`
-   - :meth:`~.get_time_based_updaters`
-   - :meth:`~.has_time_based_updater`
-   - :meth:`~.get_updaters`
-   - :meth:`~.add_updater`
-   - :meth:`~.remove_updater`
-   - :meth:`~.clear_updaters`
-   - :meth:`~.match_updaters`
-   - :meth:`~.suspend_updating`
-   - :meth:`~.resume_updating`
-   - :meth:`~.apply_to_family`
-   - :meth:`~.shift`
-   - :meth:`~.scale`
-   - :meth:`~.add_background_rectangle`
+
 
 * `#1088 <https://github.com/ManimCommunity/manim/pull/1088>`__: Added new svg files to documentation and imports
    In particular, SVGPathMobject, VMobjectFromPathstring, and the style_utils functions to manim's namespace.
