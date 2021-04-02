@@ -24,9 +24,12 @@ Dependencies
 Examples
 --------
 
-From the bash command line with $GITHUB token::
+From a bash command line with $GITHUB environment variable as the GitHub token:
 
-    $ ./scripts/dev_changelog.py $GITHUB v0.3.0..HEAD -t v0.4.0 -o 0.4.0-changelog.rst
+    $ ./scripts/dev_changelog.py $GITHUB v0.3.0 v0.4.0
+
+This would generate 0.4.0-changelog.rst file and place it automatically under
+docs/source/changelog/.
 
 Note
 ----
@@ -36,11 +39,12 @@ This script was taken from Numpy under the terms of BSD-3-Clause license.
 
 import datetime
 import re
-import sys
+import click
+
+from manim.constants import EPILOG, CONTEXT_SETTINGS
 from collections import defaultdict
 from textwrap import dedent, indent
 from pathlib import Path
-import git
 from tqdm import tqdm
 from git import Repo
 from github import Github
@@ -64,13 +68,12 @@ PR_LABELS = {
 }
 
 
-def get_authors_and_reviewers(revision_range, github_repo, pr_nums):
+def get_authors_and_reviewers(lst, cur, github_repo, pr_nums):
     pat = r"^.*\t(.*)$"
-    lst_release, cur_release = [r.strip() for r in revision_range.split("..")]
 
     # authors, in current release and previous to current release.
-    cur = set(re.findall(pat, this_repo.git.shortlog("-s", revision_range), re.M))
-    pre = set(re.findall(pat, this_repo.git.shortlog("-s", lst_release), re.M))
+    cur = set(re.findall(pat, this_repo.git.shortlog("-s", f"{lst}..{cur}"), re.M))
+    pre = set(re.findall(pat, this_repo.git.shortlog("-s", lst), re.M))
 
     # Append '+' to new authors.
     authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
@@ -85,18 +88,18 @@ def get_authors_and_reviewers(revision_range, github_repo, pr_nums):
     return {"authors": authors, "reviewers": reviewers}
 
 
-def get_pr_nums(revision_range):
+def get_pr_nums(lst, cur):
     print("Getting PR Numbers:")
     prnums = []
 
     # From regular merges
-    merges = this_repo.git.log("--oneline", "--merges", revision_range)
+    merges = this_repo.git.log("--oneline", "--merges", f"{lst}..{cur}")
     issues = re.findall(r".*\(\#(\d+)\)", merges)
     prnums.extend(int(s) for s in issues)
 
     # From fast forward squash-merges
     commits = this_repo.git.log(
-        "--oneline", "--no-merges", "--first-parent", revision_range
+        "--oneline", "--no-merges", "--first-parent", f"{lst}..{cur}"
     )
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
     prnums.extend(int(s) for s in issues)
@@ -134,24 +137,46 @@ def get_summary(body):
         return has_changelog_pattern.group()[22:-21].strip()
 
 
-def main(token, revision_range, outfile=None, tag=None, additional=None):
-    if tag is None:
-        raise ValueError(
-            "The tag of the release this changelog is generated for "
-            "has to be passed via the -t flag."
-        )
+@click.command(
+    context_settings=CONTEXT_SETTINGS,
+    epilog=EPILOG,
+)
+@click.argument("token")
+@click.argument("prior")
+@click.argument("tag")
+@click.argument(
+    "additional",
+    nargs=-1,
+    required=False,
+)
+@click.option(
+    "-o", "--outfile", type=str, help="Path and file name of the changelog output."
+)
+def main(token, prior, tag, additional, outfile):
+    """Generate Changelog/List of contributors/PRs for release.
 
-    lst_release, cur_release = [r.strip() for r in revision_range.split("..")]
+    TOKEN is your GitHub Personal Access Token.
+
+    PRIOR is the tag/commit SHA of the previous release.
+
+    TAG is the tag of the new release.
+
+    ADDITIONAL includes additional PR(s) that have not been recognized automatically.
+    """
+
+    lst_release, cur_release = prior, tag
 
     github = Github(token)
     github_repo = github.get_repo("ManimCommunity/manim")
 
-    pr_nums = get_pr_nums(revision_range)
+    pr_nums = get_pr_nums(lst_release, cur_release)
     if additional:
         pr_nums = pr_nums.extend(additional)
 
     # document authors
-    contributors = get_authors_and_reviewers(revision_range, github_repo, pr_nums)
+    contributors = get_authors_and_reviewers(
+        lst_release, cur_release, github_repo, pr_nums
+    )
     authors = contributors["authors"]
     reviewers = contributors["reviewers"]
 
@@ -234,21 +259,4 @@ def main(token, revision_range, outfile=None, tag=None, additional=None):
 
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser, FileType
-
-    parser = ArgumentParser(description="Generate author/pr lists for release")
-    parser.add_argument("token", help="github access token")
-    parser.add_argument("revision_range", help="<revision>..<revision>")
-    parser.add_argument(
-        "-o", "--outfile", type=str, help="path and file name of the changelog output"
-    )
-    parser.add_argument("-t", "--tag", type=str, help="the tag of the new release")
-    parser.add_argument(
-        "-a",
-        "--additional",
-        type=int,
-        action="append",
-        help="include an additional PR in the changelog that has not been recognized automatically. flag can be added more than once.",
-    )
-    args = parser.parse_args()
-    main(args.token, args.revision_range, args.outfile, args.tag, args.additional)
+    main()
