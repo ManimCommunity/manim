@@ -15,17 +15,17 @@ def exit_early(ctx, param, value):
         sys.exit()
 
 
-latest = requests.get(
-    "https://api.github.com/repos/ManimCommunity/manim/releases/latest"
+manim = requests.get(
+    "https://pypi.org/pypi/manim/json"
 )
-latest_tag = latest.json()["tag_name"]
-curr_version = "v" + __version__
+releases = manim.json()["releases"].keys()
+latest = max(releases)
 
-if latest_tag == curr_version:
-    console.print(f"Manim Community [green]{curr_version}[/green] (latest)\n")
+if latest == __version__:
+    console.print(f"Manim Community [green]v{__version__}[/green] (latest)\n")
 else:
-    console.print(f"Manim Community [red]{curr_version}[/red] (outdated)")
-    console.print(f"Update available: [green]{latest_tag}[/green]\n")
+    console.print(f"Manim Community [red]v{__version__}[/red] (outdated)")
+    console.print(f"Update available: [green]v{latest}[/green]\n")
 
 
 @click.group(
