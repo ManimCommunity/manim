@@ -1988,14 +1988,15 @@ class Mobject(Container):
         .. manim:: ArrangeSumobjectsExample
             :save_last_frame:
 
-            import numpy as np
             class ArrangeSumobjectsExample(Scene):
                 def construct(self):
-                    s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(-10,10)])
+                    s= VGroup(*[Dot().shift(i*0.1*LEFT%3+UP*i*0.5%3) for i in range(-10,10)])
                     s.shift(UP).set_color(BLUE)
                     s2= s.copy().set_color(RED)
                     s2.arrange_submobjects()
                     s2.shift(DOWN)
+                    print(s2.get_color())
+                    print(type(s2.get_color()))
                     self.add(s, s2)
         """
         return self.arrange(*args, **kwargs)
