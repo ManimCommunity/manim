@@ -31,7 +31,7 @@ At the moment there are three type of tests:
 #. Unit Tests:
 
    Tests for most of the basic functionalities of manim. For example, there a test for
-   ``Mobject``, that checks if it can be added to a Scene, etc ..
+   ``Mobject``, that checks if it can be added to a Scene, etc.
 
 #. Graphical unit tests:
 
