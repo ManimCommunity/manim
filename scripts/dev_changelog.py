@@ -11,7 +11,7 @@ see it.
 
 Usage::
 
-    $ ./scripts/dev_changelog.py <token> <revision range> <output_file>
+    $ ./scripts/dev_changelog.py [OPTIONS] TOKEN PRIOR TAG [ADDITIONAL]...
 
 The output is utf8 rst.
 
@@ -24,12 +24,18 @@ Dependencies
 Examples
 --------
 
-From a bash command line with $GITHUB environment variable as the GitHub token:
+From a bash command line with $GITHUB environment variable as the GitHub token::
 
     $ ./scripts/dev_changelog.py $GITHUB v0.3.0 v0.4.0
 
 This would generate 0.4.0-changelog.rst file and place it automatically under
 docs/source/changelog/.
+
+As another example, you may also run include PRs that have been excluded by
+providing a space separated list of ticket numbers after TAG::
+
+    $ ./scripts/dev_changelog.py $GITHUB v0.3.0 v0.4.0 1911 1234 1492 ...
+
 
 Note
 ----
@@ -171,7 +177,8 @@ def main(token, prior, tag, additional, outfile):
 
     pr_nums = get_pr_nums(lst_release, cur_release)
     if additional:
-        pr_nums = pr_nums.extend(additional)
+        print(f"Adding {additional} to the mix!")
+        pr_nums = pr_nums + list(additional)
 
     # document authors
     contributors = get_authors_and_reviewers(
