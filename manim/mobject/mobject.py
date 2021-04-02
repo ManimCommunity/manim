@@ -1841,12 +1841,15 @@ class Mobject(Container):
         )
 
     def match_x(self, mobject: "Mobject", direction=ORIGIN):
+        """match x coord. to the x coord. of another :class:`~.Mobject`"""
         return self.match_coord(mobject, 0, direction)
 
     def match_y(self, mobject: "Mobject", direction=ORIGIN):
+        """match y coord. to the x coord. of another :class:`~.Mobject`"""
         return self.match_coord(mobject, 1, direction)
 
     def match_z(self, mobject: "Mobject", direction=ORIGIN):
+        """match z coord. to the x coord. of another :class:`~.Mobject`"""
         return self.match_coord(mobject, 2, direction)
 
     def align_to(
@@ -1916,7 +1919,7 @@ class Mobject(Container):
         center=True,
         **kwargs,
     ):
-        """Sorts mobjects next to each other on screen.
+        """Sorts :class:`~.Mobject` next to each other on screen.
 
         Examples
         --------
