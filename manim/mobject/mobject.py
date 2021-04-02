@@ -1726,7 +1726,7 @@ class Mobject(Container):
 
     def get_midpoint(self) -> np.ndarray:
         """Get coordinates of the middle of the line that forms the  :class:`~.Mobject`
-         Examples
+        Examples
         --------
 
         .. manim:: AngleMidPoint
