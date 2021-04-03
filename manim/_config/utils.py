@@ -115,13 +115,6 @@ def make_config_parser(custom_file: str = None) -> configparser.ConfigParser:
 
 
 def _determine_quality(args: argparse.Namespace) -> str:
-    old_qualities = {
-        "k": "fourk_quality",
-        "e": "high_quality",
-        "m": "medium_quality",
-        "l": "low_quality",
-    }
-
     for quality in constants.QUALITIES:
         if quality == constants.DEFAULT_QUALITY:
             # Skip so we prioritize anything that overwrites the default quality.
@@ -132,13 +125,6 @@ def _determine_quality(args: argparse.Namespace) -> str:
             and args.quality == constants.QUALITIES[quality]["flag"]
         ):
             return quality
-
-    for quality in old_qualities:
-        if getattr(args, quality, None):
-            logging.getLogger("manim").warning(
-                f"Option -{quality} is deprecated please use the --quality/-q flag."
-            )
-            return old_qualities[quality]
 
     return constants.DEFAULT_QUALITY
 
@@ -265,7 +251,6 @@ class ManimConfig(MutableMapping):
         "input_file",
         "media_width",
         "webgl_renderer_path",
-        "leave_progress_bars",
         "log_dir",
         "log_to_file",
         "max_files_cached",
@@ -283,14 +268,13 @@ class ManimConfig(MutableMapping):
         "save_pngs",
         "scene_names",
         "show_in_file_browser",
-        "sound",
         "tex_dir",
         "tex_template_file",
         "text_dir",
         "upto_animation_number",
+        "renderer",
         "use_opengl_renderer",
         "use_webgl_renderer",
-        "webgl_updater_fps",
         "verbosity",
         "video_dir",
         "write_all",
@@ -443,6 +427,12 @@ class ManimConfig(MutableMapping):
                 f"{key} must be a non-negative integer (use -1 for infinity)"
             )
 
+    def __repr__(self) -> str:
+        rep = ""
+        for k, v in sorted(self._d.items(), key=lambda x: x[0]):
+            rep += f"{k}: {v}, "
+        return rep
+
     # builders
     def digest_parser(self, parser: configparser.ConfigParser) -> "ManimConfig":
         """Process the config options present in a :class:`ConfigParser` object.
@@ -505,9 +495,6 @@ class ManimConfig(MutableMapping):
             "save_as_gif",
             "preview",
             "show_in_file_browser",
-            "progress_bar",
-            "sound",
-            "leave_progress_bars",
             "log_to_file",
             "disable_caching",
             "flush_cache",
@@ -521,12 +508,10 @@ class ManimConfig(MutableMapping):
         for key in [
             "from_animation_number",
             "upto_animation_number",
-            "frame_rate",
             "max_files_cached",
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
-            "webgl_updater_fps",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -546,6 +531,7 @@ class ManimConfig(MutableMapping):
             "png_mode",
             "movie_file_extension",
             "background_color",
+            "renderer",
             "webgl_renderer_path",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
@@ -553,6 +539,7 @@ class ManimConfig(MutableMapping):
         # float keys
         for key in [
             "background_opacity",
+            "frame_rate",
             # the next two are floats but have their own logic, applied later
             # "frame_width",
             # "frame_height",
@@ -572,6 +559,10 @@ class ManimConfig(MutableMapping):
         val = parser["CLI"].get("tex_template_file")
         if val:
             self.tex_template_file = val
+
+        val = parser["CLI"].get("progress_bar")
+        if val:
+            setattr(self, "progress_bar", val)
 
         val = parser["ffmpeg"].get("loglevel")
         if val:
@@ -622,9 +613,6 @@ class ManimConfig(MutableMapping):
         for key in [
             "preview",
             "show_in_file_browser",
-            "sound",
-            "leave_progress_bars",
-            "progress_bar",
             "write_to_movie",
             "save_last_frame",
             "save_pngs",
@@ -632,13 +620,14 @@ class ManimConfig(MutableMapping):
             "write_all",
             "disable_caching",
             "flush_cache",
+            "progress_bar",
             "transparent",
             "scene_names",
             "verbosity",
+            "renderer",
             "background_color",
             "use_opengl_renderer",
             "use_webgl_renderer",
-            "webgl_updater_fps",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -670,28 +659,27 @@ class ManimConfig(MutableMapping):
 
         # Handle the -n flag.
         nflag = args.from_animation_number
-        if nflag is not None:
-            if "," in nflag:
-                start, end = nflag.split(",")
-                self.from_animation_number = int(start)
-                self.upto_animation_number = int(end)
-            else:
-                self.from_animation_number = int(nflag)
+        if nflag:
+            self.from_animation_number = nflag[0]
+            try:
+                self.upto_animation_number = nflag[1]
+            except Exception:
+                logging.getLogger("manim").info(
+                    f"No end scene number specified in -n option. Rendering from {nflag[0]} onwards..."
+                )
 
         # Handle the quality flags
         self.quality = _determine_quality(args)
 
         # Handle the -r flag.
         rflag = args.resolution
-        if rflag is not None:
-            try:
-                h, w = rflag.split(",")
-                self.pixel_height = int(h)
-                self.pixel_width = int(w)
-            except ValueError:
-                raise ValueError(
-                    f'invalid argument {rflag} for -r flag (must have a comma ",")'
-                )
+        if rflag:
+            self.pixel_width = int(rflag[0])
+            self.pixel_height = int(rflag[1])
+
+        fps = args.frame_rate
+        if fps:
+            self.frame_rate = float(fps)
 
         # Handle --custom_folders
         if args.custom_folders:
@@ -705,7 +693,7 @@ class ManimConfig(MutableMapping):
                 "partial_movie_dir",
             ]:
                 self[opt] = self._parser["custom_folders"].get(opt, raw=True)
-            # --media_dir overrides the deaful.cfg file
+            # --media_dir overrides the default.cfg file
             if hasattr(args, "media_dir") and args.media_dir:
                 self.media_dir = args.media_dir
 
@@ -713,7 +701,7 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplateFromFile(tex_filename=args.tex_template)
 
-        if self.use_opengl_renderer:
+        if self.renderer == "opengl":
             if getattr(args, "write_to_movie") is None:
                 # --write_to_movie was not passed on the command line, so don't generate video.
                 self["write_to_movie"] = False
@@ -776,14 +764,10 @@ class ManimConfig(MutableMapping):
 
     progress_bar = property(
         lambda self: self._d["progress_bar"],
-        lambda self, val: self._set_boolean("progress_bar", val),
+        lambda self, val: self._set_from_list(
+            "progress_bar", val, ["none", "display", "leave"]
+        ),
         doc="Whether to show progress bars while rendering animations.",
-    )
-
-    leave_progress_bars = property(
-        lambda self: self._d["leave_progress_bars"],
-        lambda self, val: self._set_boolean("leave_progress_bars", val),
-        doc="Whether to leave the progress bar for each animation.",
     )
 
     @property
@@ -799,12 +783,6 @@ class ManimConfig(MutableMapping):
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
             set_file_logger(self, self["verbosity"])
-
-    sound = property(
-        lambda self: self._d["sound"],
-        lambda self, val: self._set_boolean("sound", val),
-        doc="Whether to play a sound to notify when a scene is rendered (no flag).",
-    )
 
     write_to_movie = property(
         lambda self: self._d["write_to_movie"],
@@ -935,7 +913,7 @@ class ManimConfig(MutableMapping):
     frame_rate = property(
         lambda self: self._d["frame_rate"],
         lambda self, val: self._d.__setitem__("frame_rate", val),
-        doc="Frame rate in frames per second (-q).",
+        doc="Frame rate in frames per second.",
     )
 
     background_color = property(
@@ -1066,6 +1044,20 @@ class ManimConfig(MutableMapping):
             )
 
     @property
+    def renderer(self):
+        """Renderer: "cairo", "opengl", "webgl"""
+        return self._d["renderer"]
+
+    @renderer.setter
+    def renderer(self, val: str) -> None:
+        """Renderer for animations."""
+        self._set_from_list(
+            "renderer",
+            val,
+            ["cairo", "opengl", "webgl"],
+        )
+
+    @property
     def use_opengl_renderer(self):
         """Whether or not to use the OpenGL renderer."""
         return self._d["use_opengl_renderer"]
@@ -1073,6 +1065,12 @@ class ManimConfig(MutableMapping):
     @use_opengl_renderer.setter
     def use_opengl_renderer(self, val: bool) -> None:
         self._d["use_opengl_renderer"] = val
+        if val:
+            self._set_from_list(
+                "renderer",
+                "opengl",
+                ["cairo", "opengl", "webgl"],
+            )
 
     @property
     def use_webgl_renderer(self):
@@ -1083,18 +1081,17 @@ class ManimConfig(MutableMapping):
     def use_webgl_renderer(self, val: bool) -> None:
         self._d["use_webgl_renderer"] = val
         if val:
+            self._set_from_list(
+                "renderer",
+                "webgl",
+                ["cairo", "opengl", "webgl"],
+            )
             self["disable_caching"] = True
 
     webgl_renderer_path = property(
         lambda self: self._d["webgl_renderer_path"],
         lambda self, val: self._d.__setitem__("webgl_renderer_path", val),
         doc="Path to WebGL renderer.",
-    )
-
-    webgl_updater_fps = property(
-        lambda self: self._d["webgl_updater_fps"],
-        lambda self, val: self._d.__setitem__("webgl_updater_fps", val),
-        doc="Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend.",
     )
 
     media_dir = property(
@@ -1177,7 +1174,7 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             KeyError: 'video_dir {media_dir}/videos/{module_name}/{quality} requires the following keyword arguments: module_name'
             >>> config.get_dir("video_dir", module_name="myfile").as_posix()
-            'my_media_dir/videos/myfile/1080p60'
+            'my_media_dir/videos/myfile/1080p60.0'
 
         Note the quality does not need to be passed as keyword argument since
         :class:`ManimConfig` does store information about quality.
@@ -1194,7 +1191,7 @@ class ManimConfig(MutableMapping):
             Traceback (most recent call last):
             KeyError: 'partial_movie_dir {video_dir}/partial_movie_files/{scene_name} requires the following keyword arguments: scene_name'
             >>> config.get_dir("partial_movie_dir", module_name="myfile", scene_name="myscene").as_posix()
-            'my_media_dir/videos/myfile/1080p60/partial_movie_files/myscene'
+            'my_media_dir/videos/myfile/1080p60.0/partial_movie_files/myscene'
 
         Standard f-string syntax is used.  Arbitrary names can be used when
         defining directories, as long as the corresponding values are passed to
@@ -1248,7 +1245,6 @@ class ManimConfig(MutableMapping):
                     + "keyword arguments: "
                     + " ".join(exc.args)
                 ) from exc
-
         return Path(path) if path else None
 
     def _set_dir(self, key: str, val: typing.Union[str, Path]):
