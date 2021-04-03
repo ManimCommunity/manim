@@ -7,9 +7,7 @@ group.
 """
 import click
 
-from ...constants import EPILOG
-from ...constants import CONTEXT_SETTINGS
-
+from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...plugins.plugins_flags import list_plugins
 
 

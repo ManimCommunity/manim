@@ -76,8 +76,8 @@ import typing
 
 import numpy as np
 from colour import Color
-from .. import logger
 
+from .. import logger
 
 if typing.TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
@@ -85,8 +85,8 @@ if typing.TYPE_CHECKING:
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear, smooth
 

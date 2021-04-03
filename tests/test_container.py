@@ -1,4 +1,5 @@
 import pytest
+
 from manim import Container, Mobject, Scene, tempconfig
 
 

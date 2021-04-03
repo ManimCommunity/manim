@@ -1,5 +1,6 @@
 import numpy as np
-from manim import Mobject, Circle, RIGHT
+
+from manim import RIGHT, Circle, Mobject
 
 
 def test_family():

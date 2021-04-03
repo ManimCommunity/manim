@@ -168,23 +168,22 @@ __all__ = [
 ]
 
 
-from functools import reduce
-import operator as op
 import itertools as it
+import operator as op
 import re
+from functools import reduce
 
-from .style_utils import parse_style
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
-from ...mobject.types.vectorized_mobject import VGroup
-from ...mobject.types.vectorized_mobject import VectorizedPoint
-from ...utils.strings import split_string_list_to_isolate_substrings
-from ...utils.tex_file_writing import tex_to_svg_file
+from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.color import BLACK
+from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex import TexTemplate
+from ...utils.tex_file_writing import tex_to_svg_file
+from .style_utils import parse_style
 
 TEX_MOB_SCALE_FACTOR = 0.05
 

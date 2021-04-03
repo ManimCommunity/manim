@@ -1,9 +1,10 @@
-import pytest
 import numpy as np
+import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class FunctionGraphTest(Scene):
