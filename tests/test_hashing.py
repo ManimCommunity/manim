@@ -1,6 +1,6 @@
-import manim.utils.hashing as hashing
-
 import json
+
+import manim.utils.hashing as hashing
 
 
 def test_JSON_basic():

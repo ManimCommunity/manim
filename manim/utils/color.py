@@ -89,11 +89,11 @@ __all__ = [
     "ORANGE",
 ]
 
-from enum import Enum
 import random
+from enum import Enum
 
-from colour import Color
 import numpy as np
+from colour import Color
 
 from ..utils.bezier import interpolate
 from ..utils.simple_functions import clip_in_place

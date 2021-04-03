@@ -5,8 +5,8 @@ __all__ = ["ValueTracker", "ExponentialValueTracker", "ComplexValueTracker"]
 
 import numpy as np
 
-from ..utils.paths import straight_path
 from ..mobject.mobject import Mobject
+from ..utils.paths import straight_path
 
 
 class ValueTracker(Mobject):

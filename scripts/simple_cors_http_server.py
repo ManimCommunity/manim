@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from http.server import HTTPServer, SimpleHTTPRequestHandler, test
 import sys
+from http.server import HTTPServer, SimpleHTTPRequestHandler, test
 
 
 class CORSRequestHandler(SimpleHTTPRequestHandler):
