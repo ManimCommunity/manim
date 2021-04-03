@@ -5,8 +5,8 @@ __all__ = ["Animation", "Wait"]
 
 
 import typing
-from typing import Union
 from copy import deepcopy
+from typing import Union
 
 import numpy as np
 
@@ -14,11 +14,10 @@ if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 
 from .. import logger
-from ..mobject import mobject
-from ..mobject import opengl_mobject
+from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
-from ..utils.rate_functions import smooth
 from ..mobject.opengl_mobject import OpenGLMobject
+from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0

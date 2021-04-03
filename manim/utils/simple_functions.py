@@ -12,10 +12,11 @@ __all__ = [
 ]
 
 
-from functools import reduce
 import inspect
-import numpy as np
 import operator as op
+from functools import reduce
+
+import numpy as np
 
 
 def sigmoid(x):

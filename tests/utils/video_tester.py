@@ -1,7 +1,7 @@
-import subprocess
 import json
-from functools import wraps
 import os
+import subprocess
+from functools import wraps
 
 from ..utils.commands import capture
 

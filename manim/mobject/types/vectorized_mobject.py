@@ -13,26 +13,24 @@ __all__ = [
 
 import itertools as it
 import sys
-import colour
 from typing import Iterable
 
+import colour
 
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
-from ...utils.bezier import bezier
-from ...utils.bezier import get_smooth_handle_points
-from ...utils.bezier import interpolate
-from ...utils.bezier import integer_interpolate
-from ...utils.bezier import partial_bezier_points
-from ...utils.color import color_to_rgba, BLACK, WHITE
-from ...utils.iterables import make_even
-from ...utils.iterables import stretch_array_to_length
-from ...utils.iterables import tuplify
+from ...utils.bezier import (
+    bezier,
+    get_smooth_handle_points,
+    integer_interpolate,
+    interpolate,
+    partial_bezier_points,
+)
+from ...utils.color import BLACK, WHITE, color_to_rgba
+from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
-from ...utils.space_ops import rotate_vector
-from ...utils.space_ops import get_norm
-from ...utils.space_ops import shoelace_direction
+from ...utils.space_ops import get_norm, rotate_vector, shoelace_direction
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
