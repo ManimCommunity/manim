@@ -105,7 +105,7 @@ class Colors(Enum):
 
     Examples
     --------
-    
+
     .. manim:: ColorExample
         :save_last_frame:
 
@@ -113,11 +113,11 @@ class Colors(Enum):
         class ColorExample(Scene):
             def construct(self):
                 cols= Colors._member_names_
-                s= VGroup(*[Line(DOWN, UP, stroke_width=15).set_color(Colors[cols[i]].value) for i in range(0,len(cols))])  
+                s= VGroup(*[Line(DOWN, UP, stroke_width=15).set_color(Colors[cols[i]].value) for i in range(0,len(cols))])
                 s.arrange_submobjects(buff=0.2)
                 self.add(s)
                 self.wait()
-    
+
     The preferred way of using these colors is
 
     .. code-block:: python
