@@ -5,7 +5,7 @@ on:
       - master
 
 jobs:
-  black-check:
+  check-format:
     runs-on: windows-latest
     steps:
       - name: Set up Python
@@ -68,7 +68,7 @@ jobs:
             echo "The Filed changed are `n`n $(git ls-files -m)"
             exit 1
           }
-  flake-check:
+  flake-checks:
     runs-on: windows-latest
     steps:
       - name: Set up Python
