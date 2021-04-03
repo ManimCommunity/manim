@@ -35,9 +35,7 @@ class Animation:
         # with lagged start times
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
-        rate_func: typing.Callable[
-            [Union[np.ndarray, float]], Union[np.ndarray, float]
-        ] = smooth,
+        rate_func: typing.Callable[[float], float] = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
@@ -144,12 +142,12 @@ class Animation:
         return deepcopy(self)
 
     # Methods for interpolation, the mean of an Animation
-    def interpolate(self, alpha: Union[np.ndarray, float]) -> None:
+    def interpolate(self, alpha: float) -> None:
         # alpha = np.clip(alpha, 0, 1)
         alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
 
-    def update(self, alpha: Union[np.ndarray, float]) -> None:
+    def update(self, alpha: float) -> None:
         """
         This method shouldn't exist, but it's here to
         keep many old scenes from breaking
@@ -160,7 +158,7 @@ class Animation:
         )
         self.interpolate(alpha)
 
-    def interpolate_mobject(self, alpha: Union[np.ndarray, float]) -> None:
+    def interpolate_mobject(self, alpha: float) -> None:
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))
@@ -170,14 +168,12 @@ class Animation:
         self,
         submobject: Mobject,
         starting_submobject: Mobject,
-        alpha: Union[np.ndarray, float],
+        alpha: float,
     ) -> None:
         # Typically implemented by subclass
         pass
 
-    def get_sub_alpha(
-        self, alpha: Union[np.ndarray, float], index: int, num_submobjects: int
-    ):
+    def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int):
         # TODO, make this more understandable, and/or combine
         # its functionality with AnimationGroup's method
         # build_animations_with_timings
@@ -197,16 +193,14 @@ class Animation:
 
     def set_rate_func(
         self,
-        rate_func: typing.Callable[
-            [Union[np.ndarray, float]], Union[np.ndarray, float]
-        ],
+        rate_func: typing.Callable[[float], float],
     ) -> "Animation":
         self.rate_func = rate_func
         return self
 
     def get_rate_func(
         self,
-    ) -> typing.Callable[[Union[np.ndarray, float]], Union[np.ndarray, float]]:
+    ) -> typing.Callable[[float], float]:
         return self.rate_func
 
     def set_name(self, name: str) -> "Animation":
@@ -283,5 +277,5 @@ class Wait(Animation):
     def update_mobjects(self, dt: float) -> None:
         pass
 
-    def interpolate(self, alpha: Union[np.ndarray, float]) -> None:
+    def interpolate(self, alpha: float) -> None:
         pass
