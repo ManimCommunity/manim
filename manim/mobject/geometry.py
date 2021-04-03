@@ -2270,6 +2270,23 @@ class Angle(Arc, Elbow):
                 self.add(
                     line_list
                 )
+    .. manim:: FilledAngle
+        :save_last_frame:
+
+        class Fill(Scene):
+            def construct(self):
+                l1 = Line(ORIGIN, 2*UP+RIGHT).set_color(GREEN)
+                l2 = Line(ORIGIN, 2*UP+RIGHT).set_color(GREEN).rotate(-20*DEGREES, about_point=ORIGIN)
+                norm=np.linalg.norm(l1.get_start() - l1.get_end())
+                a1=Angle(l1,l2, other_angle=True, radius= norm-0.5).set_color(GREEN)
+                a2=Angle(l1,l2, other_angle=True, radius= norm).set_color(GREEN)
+                q1=a1.get_points()
+                q2= a2.reverse_direction().get_points()
+                pnts= np.concatenate([q1,q2, q1[0].reshape(1,3)])
+                mfill = VMobject().set_color(ORANGE)
+                mfill.set_points_as_corners([q for q in pnts]).set_fill(GREEN, opacity=1)
+                self.add(l1,l2)
+                self.add(mfill)
 
     """
 
