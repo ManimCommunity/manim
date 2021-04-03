@@ -72,17 +72,16 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
-from docutils import nodes
-from docutils.parsers.rst import directives, Directive
-from docutils.statemachine import StringList
-
-import jinja2
 import os
+import shutil
 from os.path import relpath
 from pathlib import Path
 from typing import List
 
-import shutil
+import jinja2
+from docutils import nodes
+from docutils.parsers.rst import Directive, directives
+from docutils.statemachine import StringList
 
 from manim import QUALITIES
 

@@ -1,4 +1,6 @@
-import os, struct, wave
+import os
+import struct
+import wave
 
 from manim import Scene
 

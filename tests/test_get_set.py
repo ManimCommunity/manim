@@ -1,4 +1,5 @@
 import types
+
 import pytest
 
 from manim.mobject.mobject import Mobject

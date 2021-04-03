@@ -1,5 +1,6 @@
 from pathlib import Path
-from manim import Mobject, BraceLabel, config
+
+from manim import BraceLabel, Mobject, config
 
 
 def test_mobject_copy():
