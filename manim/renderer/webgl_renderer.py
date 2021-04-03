@@ -1,6 +1,8 @@
 import copy
-from ..utils.family import extract_mobject_family_members
+
 from manim import config
+
+from ..utils.family import extract_mobject_family_members
 
 
 class WebGLRenderer:

@@ -4,10 +4,9 @@ __all__ = ["get_full_raster_image_path", "drag_pixels", "invert_image"]
 
 
 import numpy as np
-
-from .. import config
 from PIL import Image
 
+from .. import config
 from ..utils.file_ops import seek_full_path_from_defaults
 
 
