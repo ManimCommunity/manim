@@ -12,29 +12,30 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
-
-      - name: Checkout the repository
-        shell: bash
+      - name: Get Fetch Depth
+        id: get-depth
+        shell: pwsh
         run: |
-          prnum=$(python -c "import json;print(json.load(open(r'${GITHUB_EVENT_PATH}'))['number'])")
-          git init
-          git remote add origin https://github.com/ManimCommunity/manim.git
-          git fetch origin pull/${prnum}/head:pr-${prnum}
-          git checkout pr-${prnum}
+          $payload = gc "$env:GITHUB_EVENT_PATH" | ConvertFrom-Json
+          $commitEndpoint=$($payload.pull_request._links.commits.href)
+          echo "$commitEndpoint"
+          $commits = Invoke-WebRequest -Uri "$commitEndpoint" | ConvertFrom-Json
+          echo "::set-output name=fetch-depth::$($commits.count)"
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+        with:
+         fetch-depth: ${{ steps.get-depth.outputs.fetch-depth }}
 
       - name: Install black
         run: pip install black
 
       - name: Get files
         id: files-changes-in-pr
+        env:
+          depth: ${{ steps.get-depth.outputs.fetch-depth }}
         shell: powershell
         run: |
-          #echo "$(gc "$env:GITHUB_EVENT_PATH")"
-          $payload = gc "$env:GITHUB_EVENT_PATH" | ConvertFrom-Json
-          $commitEndpoint=$($payload.pull_request._links.commits.href)
-          echo "$commitEndpoint"
-          $commits = Invoke-WebRequest -Uri "$commitEndpoint" | ConvertFrom-Json
-          bash -c "git diff --name-only HEAD~$($commits.count) HEAD>/d/changes.txt"
+          bash -c "git diff --name-only HEAD~$($depth) HEAD>/d/changes.txt"
 
       - name: Run Black on top of latest commit
         shell: bash
