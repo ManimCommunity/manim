@@ -49,23 +49,27 @@ __all__ = ["GraphScene"]
 import itertools as it
 
 from .. import config
-from ..animation.creation import Write, DrawBorderThenFill, Create
+from ..animation.creation import Create, DrawBorderThenFill, Write
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
-from ..mobject.geometry import RegularPolygon
+from ..mobject.geometry import Line, Rectangle, RegularPolygon
 from ..mobject.number_line import NumberLine
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VectorizedPoint
+from ..mobject.svg.tex_mobject import MathTex, Tex
+from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
 from ..utils.bezier import interpolate
-from ..utils.color import color_gradient, GREY, BLUE, GREEN, YELLOW, BLACK, WHITE
-from ..utils.color import invert_color
+from ..utils.color import (
+    BLACK,
+    BLUE,
+    GREEN,
+    GREY,
+    WHITE,
+    YELLOW,
+    color_gradient,
+    invert_color,
+)
 from ..utils.space_ops import angle_of_vector
 
 # TODO, this should probably reimplemented entirely, especially so as to

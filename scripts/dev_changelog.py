@@ -45,16 +45,16 @@ This script was taken from Numpy under the terms of BSD-3-Clause license.
 
 import datetime
 import re
-import click
-
-from manim.constants import EPILOG, CONTEXT_SETTINGS
 from collections import defaultdict
-from textwrap import dedent, indent
 from pathlib import Path
-from tqdm import tqdm
+from textwrap import dedent, indent
+
+import click
 from git import Repo
 from github import Github
+from tqdm import tqdm
 
+from manim.constants import CONTEXT_SETTINGS, EPILOG
 
 this_repo = Repo(str(Path(__file__).resolve().parent.parent))
 

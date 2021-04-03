@@ -12,8 +12,7 @@ import numpy as np
 
 from ..constants import OUT
 from ..utils.bezier import interpolate
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import rotation_matrix
+from ..utils.space_ops import get_norm, rotation_matrix
 
 STRAIGHT_PATH_THRESHOLD = 0.01
 

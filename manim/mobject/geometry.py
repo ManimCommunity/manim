@@ -59,27 +59,27 @@ __all__ = [
     "RightAngle",
 ]
 
-import warnings
-import numpy as np
 import math
+import warnings
 
+import numpy as np
+
+from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.types.vectorized_mobject import DashedVMobject
-from ..utils.iterables import adjacent_n_tuples
-from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import angle_between_vectors
-from ..utils.space_ops import compass_directions
-from ..utils.space_ops import line_intersection
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import normalize
-from ..utils.space_ops import rotate_vector
+from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
-from .. import logger
+from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
+from ..utils.simple_functions import fdiv
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    compass_directions,
+    get_norm,
+    line_intersection,
+    normalize,
+    rotate_vector,
+)
 
 
 class TipableVMobject(VMobject):

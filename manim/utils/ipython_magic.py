@@ -13,11 +13,11 @@ try:
     from IPython import get_ipython
     from IPython.core.magic import (
         Magics,
-        magics_class,
         line_cell_magic,
+        magics_class,
         needs_local_scope,
     )
-    from IPython.display import display, Image, Video
+    from IPython.display import Image, Video, display
 except ImportError:
     pass
 else:

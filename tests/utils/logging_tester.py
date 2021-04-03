@@ -1,7 +1,7 @@
-from functools import wraps
-import os
-import json
 import itertools
+import json
+import os
+from functools import wraps
 
 
 def _check_logs(reference_logfile, generated_logfile):
