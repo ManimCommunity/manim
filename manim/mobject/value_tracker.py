@@ -39,6 +39,7 @@ class ValueTracker(Mobject):
                 self.play(pointer_value.animate.set_value(5)),
                 self.wait()
                 self.play(pointer_value.animate.set_value(3))
+                self.play(pointer_value.animate.increment_value(-2))
 
     """
 
@@ -48,17 +49,24 @@ class ValueTracker(Mobject):
         self.set_value(value)
 
     def get_value(self):
+        """Get the current value of the ValueTracker. This value changes continuously when :attr:`animate` for the ValueTracker is called."""
         return self.points[0, 0]
 
     def set_value(self, value):
+        """Sets a new value (float, int) to the ValueTracker"""
         self.points[0, 0] = value
         return self
 
     def increment_value(self, d_value):
+        """Increments (adds) a value (float, int) to the ValueTracker"""
         self.set_value(self.get_value() + d_value)
 
     def __iadd__(self, d_value):
         self.increment_value(d_value)
+        return self
+
+    def __isub__(self, d_value):
+        self.increment_value(-d_value)
         return self
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
