@@ -5,7 +5,7 @@ __all__ = ["Animation", "Wait"]
 
 
 from copy import deepcopy
-from typing import Union, Optional, Tuple, Iterator, TYPE_CHECKING
+from typing import Union, Optional, Tuple, Iterator, Iterable, TYPE_CHECKING
 from collections.abc import Callable
 
 import numpy as np
@@ -111,7 +111,7 @@ class Animation:
         """
         return self.mobject, self.starting_mobject
 
-    def get_all_families_zipped(self) -> Iterator[Tuple]:
+    def get_all_families_zipped(self) -> Iterable[Tuple]:
         return zip(
             *[
                 mob.family_members_with_points()
@@ -167,8 +167,9 @@ class Animation:
         self,
         submobject: Mobject,
         starting_submobject: Mobject,
+        # target_copy: Mobject,
         alpha: float,
-    ) -> None:
+    ) -> "Animation":
         # Typically implemented by subclass
         pass
 
@@ -208,9 +209,6 @@ class Animation:
 
     def is_remover(self) -> bool:
         return self.remover
-
-    def is_dummy(self) -> bool:
-        return self.mobject is None
 
 
 def prepare_animation(

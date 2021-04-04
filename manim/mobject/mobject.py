@@ -1994,7 +1994,7 @@ class Mobject(Container):
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject):
+    def align_data(self, mobject: "Mobject"):
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
         self.align_points(mobject)
@@ -2184,6 +2184,9 @@ class Group(Mobject):
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)
+
+    def copy(self) -> "Group":
+        pass
 
 
 class _AnimationBuilder:
