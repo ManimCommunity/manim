@@ -170,11 +170,8 @@ class ManimDirective(Directive):
             + self.options.get("ref_methods", [])
         )
         if ref_content:
-            ref_block = f"""
-.. admonition:: Example References
-    :class: example-reference
+            ref_block = 'References: ' + ' '.join(ref_content)
 
-    {' '.join(ref_content)}"""
         else:
             ref_block = ""
 
@@ -290,30 +287,30 @@ TEMPLATE = r"""
 {% if not hide_source %}
 .. raw:: html
 
-    <div class="manim-example">
+    <div id="{{ clsname_lowercase }}" class="admonition admonition-manim-example">
+    <p class="admonition-title">Example: {{ clsname }} <a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></p>
 
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video id="{{ clsname_lowercase }}" class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+    <video class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+
 {% elif save_as_gif %}
 .. image:: /{{ filesrc_rel }}
     :align: center
-    :name: {{ clsname_lowercase }}
+
 {% elif save_last_frame %}
 .. image:: /{{ filesrc_rel }}
     :align: center
-    :name: {{ clsname_lowercase }}
+
 {% endif %}
 {% if not hide_source %}
-.. raw:: html
-
-    <h5 class="example-header">{{ clsname }}<a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></h5>
-
 {{ source_block }}
+
 {{ ref_block }}
+
 {% endif %}
 
 .. raw:: html

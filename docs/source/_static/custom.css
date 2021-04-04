@@ -1,116 +1,25 @@
-td {
-    padding: 0px 10px 0px 10px;
+@media (prefers-color-scheme: dark) {
+    span.nc {
+        text-decoration: none !important;
+    }
 }
 
-a {
-    color: #b0604b;
-}
-
-a:hover {
-    color: #ad9088;
-}
-
-p {
-    color: #353535;
-}
-
-dl.function {
-    border-bottom: 1px solid #ccc;
-}
-
-.sidebar-toc ul li a:hover {
-    background-color: #e07a5f;
-}
-
-.text-logo {
-    background-color: #525893;
-}
-
-h1 {
-    background-color: #d7d8e6;
-    border-bottom: 1px solid #525893;
-}
-
-.admonition.tip {
-    border-left-color: #87c2a5;
-}
-
-.admonition.tip .admonition-title {
-    color: #87c2a5;
-}
-
-.admonition.note {
-    border-left-color: #525893;
-}
-
-.admonition.note .admonition-title {
-    color: #525893;
-}
-
-.admonition.warning {
-    border-left-color: #e07a5f;
-}
-
-.admonition.warning .admonition-title {
-    color: #e07a5f;
-}
-
-img.align-center {
-    width: 100%;
-    margin-bottom: 20px;
-    margin-top: 20px;
-}
-
-img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-}
-
-div.highlight {
-    background-color: #fafafa;
-    margin: 8px 0;
-}
-
-div.highlight pre {
-    background-color: inherit;
-    border-color: #525893;
-}
-
-div.seealso {
-    background-color: #d9edf7;
-    border: 1px solid #525893;
-}
-
-.footer-relations a.btn.btn-default {
+.admonition-manim-example {
+    padding: 0;
     display: flex;
-    align-items: center;
-    background-image: none;
-    color: #b0604b;
-    border-color: #b0604b;
+    flex-direction: column;
 }
 
-.footer-relations .pull-left a.btn.btn-default::before {
-    font-family: 'Glyphicons Halflings';
-    content: "\e079";
-    margin-right: 4px;
-    margin-left: -2px;
+.admonition-manim-example p.admonition-title {
+    margin: 0;
 }
 
-.footer-relations .pull-right a.btn.btn-default::after {
-    font-family: 'Glyphicons Halflings';
-    content: "\e080";
-    margin-left: 4px;
-    margin-right: -2px;
+.admonition-manim-example .highlight-python {
+    margin: 0;
 }
 
-.footer-relations a.btn.btn-default:hover {
-    background-image: none;
-    background-color: #b0604b;
-    color: #fff;
-    border-color: #b0604b;
-    transition: all 0.3s ease;
-    text-shadow: none;
+.admonition-manim-example .highlight {
+    border-radius: 0;
 }
 
 .manim-video {
@@ -119,68 +28,25 @@ div.seealso {
     outline: 0;
 }
 
-.manim-example {
-    background-color: #525893;
-    margin-bottom: 50px;
-    box-shadow: 2px 2px 4px #ddd;
-}
-
-.manim-example .manim-video {
+.admonition-manim-example .manim-video {
     padding: 0;
 }
 
-.manim-example img {
+.admonition-manim-example img {
     margin-bottom: 0;
 }
 
-h5.example-header {
-    font-size: 18px;
-    font-weight: bold;
-    padding: 8px 16px;
-    color: white;
-    margin: 0;
-    font-family: inherit;
-}
-
-.manim-example .highlight {
-    background-color: #fafafa;
-    border: 2px solid #525893;
-    padding: 8px 8px 16px 8px;
-    margin: 0;
-}
-
-.manim-example .highlight pre {
-    background-color: inherit;
-    border-left: none;
-    margin: 0;
-    padding: 0 6px 0 6px;
-}
-
-.manim-example .admonition {
+.admonition-manim-example p:last-child {
     margin-top: 0;
-    padding: 12px 20px;
+    padding-left: 0.5rem;
+    padding-bottom: 0.15rem;
 }
 
-.manim-example .admonition-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: white;
-}
-
-.manim-example .example-reference {
-    border: none;
-    background-color: inherit;
-}
-
-.manim-example .example-reference p:not(:first-child) {
-    margin-bottom: 0;
-}
-
-.manim-example .copybtn {
+.admonition-manim-example .copybtn {
     margin-right: 6px;
     font-size: 18px;
 }
 
-.manim-example .copybtn:hover {
+.admonition-manim-example .copybtn:hover {
     cursor: pointer;
 }
