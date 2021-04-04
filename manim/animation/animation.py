@@ -4,13 +4,13 @@
 __all__ = ["Animation", "Wait"]
 
 
-import typing
 from copy import deepcopy
-from typing import Union, Optional, Tuple, Iterator
+from typing import Union, Optional, Tuple, Iterator, TYPE_CHECKING
+from collections.abc import Callable
 
 import numpy as np
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.scene.scene import Scene
 
 from .. import logger
@@ -34,7 +34,7 @@ class Animation:
         # with lagged start times
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
-        rate_func: typing.Callable[[float], float] = smooth,
+        rate_func: Callable[[float], float] = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
@@ -192,14 +192,14 @@ class Animation:
 
     def set_rate_func(
         self,
-        rate_func: typing.Callable[[float], float],
+        rate_func: Callable[[float], float],
     ) -> "Animation":
         self.rate_func = rate_func
         return self
 
     def get_rate_func(
         self,
-    ) -> typing.Callable[[float], float]:
+    ) -> Callable[[float], float]:
         return self.rate_func
 
     def set_name(self, name: str) -> "Animation":
