@@ -3,14 +3,13 @@
 __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlane"]
 
 
+import math
 import numpy as np
 import numbers
-import math
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, DashedLine
-from ..mobject.geometry import Line
+from ..mobject.geometry import Arrow, DashedLine, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup
@@ -38,33 +37,16 @@ class CoordinateSystem:
     ):
         self.dimension = dimension
 
-        self.x_range = (
-            np.array(
-                [
-                    -config["frame_x_radius"],
-                    config["frame_x_radius"],
-                    1.0,
-                ]
-            )
-            if x_range is None
-            else x_range
-        )
+        if x_range is None:
+            x_range = [-config["frame_x_radius"], config["frame_x_radius"], 1.0]
+        if y_range is None:
+            y_range = [-config["frame_y_radius"], config["frame_y_radius"], 1.0]
 
-        self.y_range = (
-            np.array(
-                [
-                    -config["frame_y_radius"],
-                    config["frame_y_radius"],
-                    1.0,
-                ]
-            )
-            if y_range is None
-            else y_range
-        )
-
-        self.num_sampled_graph_points_per_tick = 10
+        self.x_range = np.array(x_range)
+        self.y_range = np.array(y_range)
         self.x_length = x_length
         self.y_length = y_length
+        self.num_sampled_graph_points_per_tick = 10
 
     def coords_to_point(self, *coords):
         raise NotImplementedError()
@@ -190,8 +172,9 @@ class Axes(VGroup, CoordinateSystem):
         **kwargs,
     ):
         VGroup.__init__(self, **kwargs)
-        CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
-
+        print(f"{x_length}")
+        CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length, **kwargs)
+        print(f"{self.x_length}")
         self.axis_config = {"include_tip": True, "numbers_to_exclude": [0]}
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
@@ -203,7 +186,6 @@ class Axes(VGroup, CoordinateSystem):
         self.x_axis = self.create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self.create_axis(self.y_range, self.y_axis_config, self.y_length)
 
-        # self.y_axis.shift(UP)
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
@@ -252,7 +234,6 @@ class Axes(VGroup, CoordinateSystem):
             self.coordinate_labels.add(labels)
         return self.coordinate_labels
 
-    # get rid of add_cordinates ? only get_coordinate_labels
     def add_coordinates(self, x_values=None, y_values=None):
         self.add(self.get_coordinate_labels(x_values, y_values))
         return self
@@ -270,11 +251,10 @@ class ThreeDAxes(Axes):
         z_axis_config=None,
         z_normal=DOWN,
         num_axis_pieces=20,
+        light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
         # opengl stuff (?)
         depth=None,
         gloss=0.5,
-        # relic of old
-        light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
         **kwargs,
     ):
         x_range = np.array([-5.5, 5.5, 1]) if x_range is None else x_range
@@ -354,29 +334,21 @@ class NumberPlane(Axes):
     ):
 
         # use ceilings and floors to make the box bound the screen when None is passed.
-        y_range = (
-            np.array(
-                [
-                    math.ceil(-config["frame_y_radius"]),
-                    math.floor(config["frame_y_radius"]),
-                    1.0,
-                ]
-            )
-            if y_range is None
-            else y_range
-        )
+        if x_range is None:
+            x_range = [
+                math.ceil(-config["frame_x_radius"]),
+                math.floor(config["frame_x_radius"]),
+                1.0,
+            ]
+        if y_range is None:
+            y_range = [
+                math.ceil(-config["frame_y_radius"]),
+                math.floor(config["frame_y_radius"]),
+                1.0,
+            ]
 
-        x_range = (
-            np.array(
-                [
-                    math.ceil(-config["frame_x_radius"]),
-                    math.floor(config["frame_x_radius"]),
-                    1.0,
-                ]
-            )
-            if x_range is None
-            else x_range
-        )
+        y_range = np.array(y_range)
+        x_range = np.array(x_range)
 
         # configs
         self.axis_config = {
