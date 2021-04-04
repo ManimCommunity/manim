@@ -43,7 +43,7 @@ class Animation:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
-        self.name: str = name
+        self.name: Optional[str] = name
         self.remover: bool = remover
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio

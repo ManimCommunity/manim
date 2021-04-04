@@ -1,7 +1,9 @@
 """Tools for displaying multiple animations at once."""
-import typing
+
 
 import numpy as np
+from typing import Union, TYPE_CHECKING, Optional
+from collections.abc import Callable
 
 from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject
@@ -10,7 +12,7 @@ from ..utils.bezier import interpolate
 from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from ..mobject.types.vectorized_mobject import VGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
@@ -23,9 +25,9 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *animations: Animation,
-        group: typing.Union[Group, "VGroup"] = None,
-        run_time: float = None,
-        rate_func: typing.Callable[[float], float] = linear,
+        group: Union[Group, "VGroup", None] = None,
+        run_time: Optional[float] = None,
+        rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
         **kwargs
     ) -> None:
@@ -34,7 +36,11 @@ class AnimationGroup(Animation):
         if self.group is None:
             self.group = Group(
                 *remove_list_redundancies(
-                    [anim.mobject for anim in self.animations if not anim.is_dummy()]
+                    [
+                        anim.mobject
+                        for anim in self.animations
+                        if anim.mobject is not None
+                    ]
                 )
             )
         super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
@@ -79,14 +85,13 @@ class AnimationGroup(Animation):
         (anim, start_time, end_time)
         """
         self.anims_with_timings = []
-        curr_time = 0
+        curr_time: float = 0
         for anim in self.animations:
-            start_time = curr_time
-            end_time = start_time + anim.get_run_time()
+            start_time: float = curr_time
+            end_time: float = start_time + anim.get_run_time()
             self.anims_with_timings.append((anim, start_time, end_time))
-            # Start time of next animation is based on
-            # the lag_ratio
-            curr_time = interpolate(start_time, end_time, self.lag_ratio)
+            # Start time of next animation is based on the lag_ratio
+            curr_time = (1 - self.lag_ratio) * start_time + self.lag_ratio * end_time
 
     def interpolate(self, alpha: float) -> None:
         # Note, if the run_time of AnimationGroup has been
@@ -124,9 +129,9 @@ class Succession(AnimationGroup):
     def update_active_animation(self, index: int) -> None:
         self.active_index = index
         if index >= len(self.animations):
-            self.active_animation = None
-            self.active_start_time = None
-            self.active_end_time = None
+            self.active_animation: Optional[Animation] = None
+            self.active_start_time: Optional[float] = None
+            self.active_end_time: Optional[float] = None
         else:
             self.active_animation = self.animations[index]
             self.active_animation.begin()
@@ -134,14 +139,15 @@ class Succession(AnimationGroup):
             self.active_end_time = self.anims_with_timings[index][2]
 
     def next_animation(self) -> None:
-        self.active_animation.finish()
+        if self.active_animation is not None:
+            self.active_animation.finish()
         self.update_active_animation(self.active_index + 1)
 
     def interpolate(self, alpha: float) -> None:
-        current_time = interpolate(0, self.run_time, alpha)
+        current_time = alpha * self.run_time
         while self.active_end_time is not None and current_time >= self.active_end_time:
             self.next_animation()
-        if self.active_animation:
+        if self.active_animation is not None and self.active_start_time is not None:
             elapsed = current_time - self.active_start_time
             active_run_time = self.active_animation.get_run_time()
             subalpha = elapsed / active_run_time if active_run_time != 0.0 else 1.0
@@ -161,9 +167,9 @@ class LaggedStart(AnimationGroup):
 class LaggedStartMap(LaggedStart):
     def __init__(
         self,
-        AnimationClass: Animation,
+        AnimationClass: Callable[..., Animation],
         mobject: Mobject,
-        arg_creator: typing.Callable[[Mobject], str] = None,
+        arg_creator: Callable[[Mobject], str] = None,
         run_time: float = 2,
         **kwargs
     ) -> None:
