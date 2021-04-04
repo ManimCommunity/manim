@@ -37,9 +37,14 @@ class ValueTracker(Mobject):
                 )
                 self.add(number_line, pointer,label)
                 self.play(pointer_value.animate.set_value(5)),
-                self.wait()
+                self.wait(0.5)
                 self.play(pointer_value.animate.set_value(3))
                 self.play(pointer_value.animate.increment_value(-2))
+                self.wait(0.5)
+                pointer_value += 1.5
+                self.wait(1)
+                pointer_value -= 4
+                self.wait(0.5)
 
     """
 
@@ -62,10 +67,12 @@ class ValueTracker(Mobject):
         self.set_value(self.get_value() + d_value)
 
     def __iadd__(self, d_value):
+        """adds `+=` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
         return self
 
     def __isub__(self, d_value):
+        """adds `-=` syntax to decrement the value of the ValueTracker"""
         self.increment_value(-d_value)
         return self
 
