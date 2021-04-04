@@ -42,6 +42,7 @@ from ..utils.space_ops import (
 # TODO: Explain array_attrs
 
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
+T = TypeVar("T", bound="Mobject")
 
 
 class Mobject(Container):
@@ -606,7 +607,7 @@ class Mobject(Container):
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
-    def copy(self) -> "Mobject":
+    def copy(self: T) -> T:
         """Create and return an identical copy of the Mobject including all submobjects.
 
         Returns
@@ -2184,7 +2185,7 @@ class Group(Mobject):
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)
-    
+
 
 class _AnimationBuilder:
     def __init__(self, mobject):
