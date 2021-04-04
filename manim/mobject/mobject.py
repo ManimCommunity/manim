@@ -200,6 +200,13 @@ class Mobject(Container):
                         c.animate(rate_func=there_and_back).shift(RIGHT),
                     )
 
+        .. warning::
+
+            `s.animate(run_time=2).rotate(PI / 2)`` will only
+             interpolate between the current state of the mobject, and the state of the mobject after applying the commands after .animate to it.
+             That means:  .animate doesn't know that it should do a nice rotation, it only interpolates between the old positions and the new positions of the points.
+             If you want to have a nice rotation, use :class:`ValueTracker` instead.
+
         """
         return _AnimationBuilder(self)
 
