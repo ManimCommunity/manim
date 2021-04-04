@@ -26,7 +26,7 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 class Animation:
     def __init__(
         self,
-        mobject: Optional[Mobject],
+        mobject: Union[Mobject, None],
         # If lag_ratio is 0, the animation is applied to all submobjects
         # at the same time
         # If 1, it is applied to each successively.
@@ -42,13 +42,13 @@ class Animation:
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
-        self.rate_func = rate_func
-        self.name = name
-        self.remover = remover
-        self.suspend_mobject_updating = suspend_mobject_updating
-        self.lag_ratio = lag_ratio
+        self.rate_func: Callable[[float], float] = rate_func
+        self.name: str = name
+        self.remover: bool = remover
+        self.suspend_mobject_updating: bool = suspend_mobject_updating
+        self.lag_ratio: float = lag_ratio
         self.starting_mobject: Optional[Mobject] = None
-        self.mobject = mobject
+        self.mobject: Union[Mobject, None] = mobject
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -60,7 +60,7 @@ class Animation:
                 )
             )
 
-    def _typecheck_input(self, mobject: Optional[Mobject]) -> None:
+    def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
         if mobject is None:
             logger.debug("creating dummy animation")
         elif not isinstance(mobject, Mobject) and not isinstance(
@@ -258,10 +258,10 @@ class Wait(Animation):
     def __init__(
         self, duration: float = 1, stop_condition=None, **kwargs
     ):  # what is stop_condition?
-        self.duration = duration
-        self.mobject = None
+        self.duration: float = duration
+        self.mobject: Union[Mobject, None] = None
         self.stop_condition = stop_condition
-        self.is_static_wait = False
+        self.is_static_wait: bool = False
         super().__init__(None, **kwargs)
 
     def begin(self) -> None:
