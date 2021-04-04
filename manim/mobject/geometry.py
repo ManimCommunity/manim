@@ -2273,7 +2273,7 @@ class Angle(Arc, Elbow):
     .. manim:: FilledAngle
         :save_last_frame:
 
-        class Fill(Scene):
+        class FilledAngle(Scene):
             def construct(self):
                 l1 = Line(ORIGIN, 2*UP+RIGHT).set_color(GREEN)
                 l2 = Line(ORIGIN, 2*UP+RIGHT).set_color(GREEN).rotate(-20*DEGREES, about_point=ORIGIN)
