@@ -2184,10 +2184,7 @@ class Group(Mobject):
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)
         self.add(*mobjects)
-
-    def copy(self) -> "Group":
-        pass
-
+    
 
 class _AnimationBuilder:
     def __init__(self, mobject):
