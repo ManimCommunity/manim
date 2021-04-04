@@ -808,16 +808,7 @@ class Text(SVGMobject):
         chars = VGroup()
         submobjects_char_index = 0
         for char_index in range(self.text.__len__()):
-            if self.text[char_index] in (" ", "\t", "\n"):
-                space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
-                if char_index == 0:
-                    space.move_to(self.submobjects[submobjects_char_index].get_center())
-                else:
-                    space.move_to(
-                        self.submobjects[submobjects_char_index - 1].get_center()
-                    )
-                chars.add(space)
-            else:
+            if not self.text[char_index] in (" ", "\t", "\n"):
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars
