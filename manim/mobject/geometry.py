@@ -1820,7 +1820,7 @@ class Rectangle(Polygon):
     ):
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
-        Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
+        Polygon.__init__(self, UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
