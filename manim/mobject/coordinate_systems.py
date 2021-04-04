@@ -172,9 +172,7 @@ class Axes(VGroup, CoordinateSystem):
         **kwargs,
     ):
         VGroup.__init__(self, **kwargs)
-        print(f"{x_length}")
-        CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length, **kwargs)
-        print(f"{self.x_length}")
+        CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
         self.axis_config = {"include_tip": True, "numbers_to_exclude": [0]}
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
@@ -531,8 +529,8 @@ class ComplexPlane(NumberPlane):
         return self.point_to_number(point)
 
     def get_default_coordinate_values(self):
-        x_numbers = self.get_x_axis().get_tick_range()[1:]
-        y_numbers = self.get_y_axis().get_tick_range()[1:]
+        x_numbers = self.get_x_axis().get_tick_range()
+        y_numbers = self.get_y_axis().get_tick_range()
         y_numbers = [complex(0, y) for y in y_numbers if y != 0]
         return [*x_numbers, *y_numbers]
 
