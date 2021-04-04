@@ -773,6 +773,7 @@ class Text(SVGMobject):
         if self.disable_ligatures:
             self.submobjects = [*self.gen_chars()]
         self.chars = VGroup(*self.submobjects)
+        self.words = VGroup(*self.gen_words())
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         nppc = self.n_points_per_cubic_curve
         for each in self:
@@ -812,6 +813,22 @@ class Text(SVGMobject):
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars
+
+    def gen_words(self):
+        words = VGroup()
+        word = VGroup()
+        submobjects_char_index = 0
+        for char_index in range(self.text.__len__()):
+            if not self.text[char_index] in (" ", "\t", "\n"):
+                word.add(self.submobjects[submobjects_char_index])
+                submobjects_char_index += 1
+            else:
+                if not word.submobjects.__len__() == 0:
+                    words.add(word)
+                word = VGroup()
+        if not word.submobjects.__len__() == 0:
+            words.add(word)
+        return words
 
     def find_indexes(self, word: str, text: str):
         """Internally used function. Finds the indexes of ``text`` in ``word``."""
