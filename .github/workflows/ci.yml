@@ -62,8 +62,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/Library/Caches/Homebrew/*
-            ~/Library/Caches/Homebrew/downloads/*
+            ~/Library/Caches/Homebrew/ffmpeg--*
+            ~/Library/Caches/Homebrew/downloads/*--ffmpeg-*
           key: test-brew-${{ hashFiles('.github/brew-formulae.json') }}-${{ steps.brew-cache-time.outputs.date }}
 
       - name: Install system dependencies (MacOS)
