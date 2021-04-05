@@ -54,7 +54,6 @@ jobs:
           sudo tlmgr update --self
           brew install pkg-config libffi pango glib
           sudo tlmgr install --reinstall standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
-          sudo tlmgr install dvisvgm.x86_64-darwin
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
