@@ -3,7 +3,6 @@
 __all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweenPoints"]
 
 
-from manim.utils.color import BLACK
 import numpy as np
 
 from ...animation.composition import AnimationGroup
@@ -14,6 +13,7 @@ from ...mobject.geometry import Line
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
+from ...utils.color import BLACK
 from ...utils.space_ops import get_norm
 
 
