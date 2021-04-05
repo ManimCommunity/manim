@@ -59,16 +59,16 @@ jobs:
 
       - name: Get Poetry cache directory
         shell: bash
-        id: pip-cache-and-time
+        id: poetry-cache-time
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
           echo "::set-output name=dir::$(poetry config cache-dir)"
           echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
 
-      - name: pip cache
+      - name: Cache Poetry
         uses: actions/cache@v2
         with:
-          path: ${{ steps.pip-cache-and-time.outputs.dir }}
+          path: ${{ steps.poetry-cache-time.outputs.dir }}
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
 
       - name: Cache Windows
@@ -77,7 +77,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}\ManimCache
-          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
+          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.poetry-cache-time.outputs.date }}
 
       - name: Setup MSYS2
         if: runner.os == 'Windows'
