@@ -21,10 +21,15 @@ jobs:
           echo "$commitEndpoint"
           $commits = Invoke-WebRequest -Uri "$commitEndpoint" | ConvertFrom-Json
           echo "::set-output name=fetch-depth::$($commits.count)"
+          if ($commits.count -eq 1){
+               echo "::set-output name=fetch-depth-checkout::2"
+          } else {
+                echo "::set-output name=fetch-depth-checkout::$($commits.count)"
+          }
       - name: Checkout the repository
         uses: actions/checkout@v2
         with:
-         fetch-depth: ${{ steps.get-depth.outputs.fetch-depth }}
+         fetch-depth: ${{ steps.get-depth.outputs.fetch-depth-checkout }}
 
       - name: Install black
         run: pip install black
@@ -35,6 +40,7 @@ jobs:
           depth: ${{ steps.get-depth.outputs.fetch-depth }}
         shell: powershell
         run: |
+          $depth = $env:depth
           bash -c "git diff --name-only HEAD~$($depth) HEAD>/d/changes.txt"
 
       - name: Run Black on top of latest commit
