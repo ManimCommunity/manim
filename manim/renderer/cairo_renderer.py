@@ -266,6 +266,10 @@ class CairoRenderer:
                 raise EndSceneEarlyException()
 
     def scene_finished(self, scene):
+        # If no animations in scene, display the image instead
+        if self.num_plays == 0:
+            config["save_last_frame"] = True
+            config["write_to_movie"] = False
         self.file_writer.finish()
         if config["save_last_frame"]:
             self.update_frame(scene, ignore_skipping=False)
