@@ -5,7 +5,7 @@ __all__ = [
     "TexTemplateFromFile",
 ]
 
-
+import copy
 import re
 
 
@@ -225,6 +225,9 @@ class TexTemplate:
         """
         begin, end = self._texcode_for_environment(environment)
         return self.body.replace(self.placeholder_text, f"{begin}\n{expression}\n{end}")
+
+    def copy(self) -> "TexTemplate":
+        return copy.deepcopy(self)
 
 
 class TexTemplateFromFile(TexTemplate):
