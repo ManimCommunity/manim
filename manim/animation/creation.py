@@ -484,31 +484,28 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
             current_submobjects[-1].set_opacity(1)
 
 
-# TODO, this is broken...
 class AddTextWordByWord(ShowIncreasingSubsets):
-    """Show a :class:`~.Text` word by word on the scene. Note: currently broken."""
+    """Show a :class:`~.Text` word by word on the scene. Note: needs more documentation."""
 
     def __init__(
-            self,
-            text: "Text",
-            suspend_mobject_updating: bool = False,
-            int_func: typing.Callable[[np.ndarray], np.ndarray] = np.ceil,
-            rate_func: typing.Callable[[float], float] = linear,
-            time_per_word: float = 0.1,
-            run_time: typing.Optional[float] = None,
-            **kwargs,
+        self,
+        text: "Text",
+        suspend_mobject_updating: bool = False,
+        int_func: typing.Callable[[np.ndarray], np.ndarray] = np.ceil,
+        rate_func: typing.Callable[[float], float] = linear,
+        time_per_word: float = 0.1,
+        run_time: typing.Optional[float] = None,
+        **kwargs,
     ) -> None:
         # time_per_char must be above 0.06, or the animation won't finish
-        self.time_per_word = time_per_word
-        self.run_time = run_time
-        if self.run_time is None:
-            self.run_time = np.max((0.06, self.time_per_word)) * len(text.words)
+        if run_time is None:
+            run_time = max((0.06, time_per_word)) * len(text.words)
 
         super().__init__(
             text.words,
             suspend_mobject_updating=suspend_mobject_updating,
             int_func=int_func,
             rate_func=rate_func,
-            run_time=self.run_time,
+            run_time=run_time,
             **kwargs,
         )

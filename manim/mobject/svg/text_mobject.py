@@ -773,7 +773,7 @@ class Text(SVGMobject):
         if self.disable_ligatures:
             self.submobjects = [*self.gen_chars()]
         self.chars = VGroup(*self.submobjects)
-        self.words = VGroup(*self.gen_words())
+        self.words = self.gen_words()
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         nppc = self.n_points_per_cubic_curve
         for each in self:
