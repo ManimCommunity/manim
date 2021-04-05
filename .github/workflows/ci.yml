@@ -49,7 +49,7 @@ jobs:
         run: |
           brew update && brew upgrade && brew cleanup && brew cask cleanup
           brew install openssl readline ffmpeg pyenv pyenv-virtualenv
-          brew cask install basictex
+          brew install --cask basictex
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           brew install pkg-config
