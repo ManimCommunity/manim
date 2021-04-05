@@ -24,7 +24,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
@@ -57,7 +57,7 @@ jobs:
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
-      - name: Get Poetry Cache Dir
+      - name: Get Poetry cache directory
         shell: bash
         id: pip-cache-and-time
         run: |
@@ -89,7 +89,7 @@ jobs:
           install: >-
             mingw-w64-x86_64-mesa
 
-      - name: Download system dependencies (Windows)
+      - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
           $ffmpegUrl = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'])"
@@ -114,7 +114,7 @@ jobs:
           mkdir "$($PWD)\ManimCache\Pango"
           7z x "$($env:TMP)\Pango.zip" -o"$($PWD)\ManimCache\Pango"
 
-      - name: Add Windows dependecies to path
+      - name: Add Windows dependencies to path
         if: runner.os == 'Windows'
         run: |
           Remove-Item C:\msys64\mingw64\bin\python.exe -Force
