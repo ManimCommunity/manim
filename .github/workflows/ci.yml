@@ -60,7 +60,7 @@ jobs:
 
       - name: Update Brew (MacOS)
         if: runner.os == 'macOS'
-        run: brew update
+        run: brew update && brew upgrade basictex && brew cleanup
 
       - name: Cache Brew (MacOS)
         id: cache-brew
@@ -75,14 +75,13 @@ jobs:
       - name: Install brew dependencies (MacOS)
         if: runner.os == 'macOS' && steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew upgrade basictex && brew cleanup
           brew install openssl readline ffmpeg pyenv pyenv-virtualenv
-          brew install --cask basictex
           brew install pkg-config libffi pango glib
 
       - name: Install tlmgr dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
+          brew install --cask basictex
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
