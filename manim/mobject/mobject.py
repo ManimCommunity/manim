@@ -1024,8 +1024,8 @@ class Mobject(Container):
     def rotate(
         self,
         angle,
-        about_point: Union[np.ndarray, List, None] = None,
         axis=OUT,
+        about_point: Union[np.ndarray, List, None] = None
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
