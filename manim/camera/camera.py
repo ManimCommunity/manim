@@ -912,7 +912,7 @@ class Camera:
         pixel_width = max(int(pdist([ul_coords, ur_coords])), 1)
         pixel_height = max(int(pdist([ul_coords, dl_coords])), 1)
         sub_image = sub_image.resize(
-            (pixel_width, pixel_height), resample=image_mobject.interpolation_algorithm
+            (pixel_width, pixel_height), resample=image_mobject.resampling_algorithm
         )
 
         # Rotate
@@ -920,7 +920,7 @@ class Camera:
         adjusted_angle = -int(360 * angle / TAU)
         if adjusted_angle != 0:
             sub_image = sub_image.rotate(
-                adjusted_angle, resample=image_mobject.interpolation_algorithm, expand=1
+                adjusted_angle, resample=image_mobject.resampling_algorithm, expand=1
             )
 
         # TODO, there is no accounting for a shear...

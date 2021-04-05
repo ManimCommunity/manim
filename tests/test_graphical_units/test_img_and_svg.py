@@ -10,7 +10,6 @@ from ..helpers.path_utils import get_project_root
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
 
-
 def get_test_resource(filename):
     return str(
         get_project_root() / "tests/test_graphical_units/img_svg_resources" / filename
@@ -246,11 +245,11 @@ class ImageInterpolationTest(Scene):
         img4= img.copy()
         img5= img.copy()
 
-        img1.set_interpolation_algorithm("nearest")
-        img2.set_interpolation_algorithm("antialias")
-        img3.set_interpolation_algorithm("linear")
-        img4.set_interpolation_algorithm("cubic")
-        img5.set_interpolation_algorithm("box")
+        img1.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        img2.set_resampling_algorithm(RESAMPLING_ALGORITHMS["lanczos"])
+        img3.set_resampling_algorithm(RESAMPLING_ALGORITHMS["linear"])
+        img4.set_resampling_algorithm(RESAMPLING_ALGORITHMS["cubic"])
+        img5.set_resampling_algorithm(RESAMPLING_ALGORITHMS["box"])
 
         self.add(img1,img2,img3,img4,img5)
         [s.shift(4*LEFT+pos*2*RIGHT) for pos, s in enumerate(self.mobjects) ]

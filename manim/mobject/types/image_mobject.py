@@ -34,12 +34,12 @@ class AbstractImageMobject(Mobject):
         self,
         scale_to_resolution,
         pixel_array_dtype="uint8",
-        interpolation_algorithm=Image.BICUBIC,
+        resampling_algorithm=Image.BICUBIC,
         **kwargs,
     ):
         self.pixel_array_dtype = pixel_array_dtype
         self.scale_to_resolution = scale_to_resolution
-        self.set_interpolation_algorithm(interpolation_algorithm)
+        self.set_resampling_algorithm(resampling_algorithm)
         Mobject.__init__(self, **kwargs)
 
     def get_pixel_array(self):
@@ -49,14 +49,14 @@ class AbstractImageMobject(Mobject):
         # Likely to be implemented in subclasses, but no obligation
         pass
 
-    def set_interpolation_algorithm(self, interpolation_algorithm):
+    def set_resampling_algorithm(self, resampling_algorithm):
         """
         Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it.
         Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
 
         Parameters
         ----------
-        interpolation_algorithm : :class:`str` or :class:`str`. Either an integer constant described in the Pillow library, or
+        resampling_algorithm : :class:`str` or :class:`str`. Either an integer constant described in the Pillow library, or
          one of the following string constants:
          * "bicubic' or 'cubic'
          * 'nearest' or 'none'
@@ -66,41 +66,16 @@ class AbstractImageMobject(Mobject):
          * 'lanczos' or 'antialias'
         The string constants can be input either in lowercase or in UPPERCASE, like the corresponding constant name in the Pillow library.
         """
-        if isinstance(interpolation_algorithm, str):
-            if (
-                interpolation_algorithm.lower() == "bicubic"
-                or interpolation_algorithm.lower() == "cubic"
-            ):
-                interpolation_algorithm = Image.BICUBIC
-            elif (
-                interpolation_algorithm.lower() == "nearest"
-                or interpolation_algorithm.lower() == "none"
-            ):
-                interpolation_algorithm = Image.NEAREST
-            elif interpolation_algorithm.lower() == "box":
-                interpolation_algorithm = Image.BOX
-            elif (
-                interpolation_algorithm.lower() == "bilinear"
-                or interpolation_algorithm.lower() == "linear"
-            ):
-                interpolation_algorithm = Image.BILINEAR
-            elif interpolation_algorithm.lower() == "hamming":
-                interpolation_algorithm = Image.HAMMING
-            elif (
-                interpolation_algorithm.lower() == "lanczos"
-                or interpolation_algorithm.lower() == "antialias"
-            ):
-                interpolation_algorithm = Image.LANCZOS
-            else:
-                raise ValueError(
-                    f"interpolation_algorithm has a wrong value: '{interpolation_algorithm}'. It must be one of 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos' (case insensitive) or a Pillow resampling filter integer constant."
+        if isinstance(resampling_algorithm, str):
+            raise ValueError(
+                    f"resampling_algorithm cannot be string. RESAMPLING_ALGORITHMS[\"<algorithm>\"] or Pillow resampling filter constants. Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos'."
                 )
-            self.interpolation_algorithm = interpolation_algorithm
-        elif isinstance(interpolation_algorithm, int):
-            self.interpolation_algorithm = interpolation_algorithm
+            self.resampling_algorithm = resampling_algorithm
+        elif isinstance(resampling_algorithm, int):
+            self.resampling_algorithm = resampling_algorithm
         else:
             raise ValueError(
-                f"interpolation_algorithm property supports either string value, one of 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos' (case insensitive) or a Pillow resampling filter integer constant."
+                f"resampling_algorithm property supports either string value, one of 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos' (case insensitive) or a Pillow resampling filter integer constant."
             )
 
     def reset_points(self):
