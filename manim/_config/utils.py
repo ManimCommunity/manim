@@ -12,9 +12,9 @@ See :doc:`/tutorials/configuration` for an introduction to Manim's configuration
 import argparse
 import configparser
 import copy
+import errno
 import logging
 import os
-import errno
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping

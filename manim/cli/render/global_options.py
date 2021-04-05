@@ -1,7 +1,6 @@
 import click
 from cloup import option, option_group
 
-
 global_options = option_group(
     "Global options",
     option(

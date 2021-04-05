@@ -4,10 +4,11 @@
 __all__ = ["print_family", "index_labels", "get_submobject_index_labels"]
 
 
-from .color import BLACK
+import logging
+
 from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup
-import logging
+from .color import BLACK
 
 
 def print_family(mobject, n_tabs=0):

@@ -1896,7 +1896,7 @@ webgl_renderer = ["grpcio", "grpcio-tools", "watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "f032a55c53062c5217e88d0847698f7d3a9aad76872e6f1c70a9d2a3707de9dc"
+content-hash = "ee48c8ca5d2457050df258223cc4d997dedba1ee65ca9f6c66a4c0fb90ab5673"
 
 [metadata.files]
 alabaster = [

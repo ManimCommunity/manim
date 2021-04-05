@@ -7,7 +7,6 @@ __all__ = [
 
 from .tex import *
 
-
 # This file makes TexTemplateLibrary and TexFontTemplates available for use in manim Tex and MathTex objects.
 
 

@@ -4,33 +4,40 @@
 __all__ = ["Mobject", "Group", "override_animate"]
 
 
-from functools import reduce
 import copy
 import itertools as it
 import operator as op
 import random
 import sys
 import types
-from typing import Callable, List, Optional, Union
 import warnings
-
+from functools import reduce
 from pathlib import Path
-from colour import Color
+from typing import Callable, List, Optional, Union
+
 import numpy as np
+from colour import Color
 
 from .. import config
 from ..constants import *
 from ..container import Container
-from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C
-from ..utils.color import interpolate_color
-from ..utils.iterables import list_update
-from ..utils.iterables import remove_list_redundancies
+from ..utils.color import (
+    BLACK,
+    WHITE,
+    YELLOW_C,
+    Colors,
+    color_gradient,
+    interpolate_color,
+)
+from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import rotation_matrix
-from ..utils.space_ops import rotation_matrix_transpose
+from ..utils.space_ops import (
+    angle_of_vector,
+    get_norm,
+    rotation_matrix,
+    rotation_matrix_transpose,
+)
 
 # TODO: Explain array_attrs
 

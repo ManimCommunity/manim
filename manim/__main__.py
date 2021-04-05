@@ -1,12 +1,13 @@
 import sys
+
 import click
 from click_default_group import DefaultGroup
+
 from . import __version__, console
-from .constants import EPILOG
-from .constants import CONTEXT_SETTINGS
 from .cli.cfg.commands import cfg
 from .cli.plugins.commands import plugins
 from .cli.render.commands import render
+from .constants import CONTEXT_SETTINGS, EPILOG
 
 
 def exit_early(ctx, param, value):

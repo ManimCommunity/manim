@@ -13,13 +13,13 @@ import click
 import cloup
 import requests
 
+from ... import config, console, logger, __version__
+from ...constants import CONTEXT_SETTINGS, EPILOG
+from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
 from .output_options import output_options
 from .render_options import render_options
-from ... import config, console, logger, __version__
-from ...constants import CONTEXT_SETTINGS, EPILOG
-from ...utils.module_ops import scene_classes_from_file
 
 
 @cloup.command(

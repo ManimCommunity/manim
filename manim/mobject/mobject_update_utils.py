@@ -13,10 +13,10 @@ __all__ = [
 
 
 import inspect
+
 import numpy as np
 
-from ..constants import DEGREES
-from ..constants import RIGHT
+from ..constants import DEGREES, RIGHT
 from ..mobject.mobject import Mobject
 
 
