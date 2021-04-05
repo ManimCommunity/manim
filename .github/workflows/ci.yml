@@ -78,16 +78,16 @@ jobs:
           brew upgrade basictex && brew cleanup
           brew install openssl readline ffmpeg pyenv pyenv-virtualenv
           brew install --cask basictex
-          eval "$(/usr/libexec/path_helper -s)"
           brew install pkg-config libffi pango glib
-          echo "/Library/TeX/texbin" >> $GITHUB_PATH
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Install tlmgr dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
+          eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
+          echo "/Library/TeX/texbin" >> $GITHUB_PATH
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Cache Windows
         id: cache-windows
