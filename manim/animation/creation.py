@@ -487,7 +487,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 class AddTextWordByWord(ShowIncreasingSubsets):
     """Show a :class:`~.Text` word by word on the scene.
 
-        Parameters
+    Parameters
     ----------
     time_per_word : :class:`float`
         Frequency of appearance of the words.
