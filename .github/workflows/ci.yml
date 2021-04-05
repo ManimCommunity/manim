@@ -44,10 +44,23 @@ jobs:
           # start xvfb in the background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
+      - name: Update Brew (MacOS)
+        if: runner.os == 'macOS'
+        run: brew update
+
+      - name: Get Brew cache directory (MacOS)
+        shell: bash
+        if: runner.os == 'macOS'
+        id: brew-cache-time
+        run: |
+          export BREW="$HOME/usr/local/Cellar"
+          echo "::set-output name=dir::$BREW"
+          echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
+
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
-          brew update && brew upgrade basictex && brew cleanup
+          brew upgrade basictex && brew cleanup
           brew install openssl readline ffmpeg pyenv pyenv-virtualenv
           brew install --cask basictex
           eval "$(/usr/libexec/path_helper -s)"
