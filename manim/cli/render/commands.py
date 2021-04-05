@@ -104,8 +104,6 @@ def render(
     if args["jupyter"]:
         return click_args
 
-    nov = config.notify_outdated_version
-
     config.digest_args(click_args)
     file = args["file"]
     if config.renderer == "opengl":
@@ -139,7 +137,7 @@ def render(
             except Exception:
                 console.print_exception()
 
-    if nov or args["notify_outdated_version"]:
+    if config.notify_outdated_version or args["notify_outdated_version"]:
         manim = requests.get("https://pypi.org/pypi/manim/json")
         releases = manim.json()["releases"].keys()
         stable = max(releases)
