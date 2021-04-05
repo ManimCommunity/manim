@@ -1394,10 +1394,10 @@ class Polygon(VMobject):
             >>> sq = Square()
             >>> points = sq.get_vertices()
             >>> points
-            array([[-1.,  1.,  0.],
-                   [ 1.,  1.,  0.],
-                   [ 1., -1.,  0.],
-                   [-1., -1.,  0.]])
+            array([[ 1.,  1.,  0.],
+                   [-1.,  1.,  0.],
+                   [-1., -1.,  0.],
+                   [ 1., -1.,  0.]])
 
         Returns
         -------
