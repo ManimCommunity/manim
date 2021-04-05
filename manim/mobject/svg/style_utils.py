@@ -3,12 +3,12 @@
 
 __all__ = ["cascade_element_style", "parse_style", "parse_color_string"]
 
-from xml.dom.minidom import Element as MinidomElement
-from colour import web2hex
-from ...utils.color import rgb_to_hex
-
 from typing import Dict, List
+from xml.dom.minidom import Element as MinidomElement
 
+from colour import web2hex
+
+from ...utils.color import rgb_to_hex
 
 CASCADING_STYLING_ATTRIBUTES: List[str] = [
     "fill",

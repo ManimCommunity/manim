@@ -4,16 +4,16 @@
 __all__ = ["Scene"]
 
 
-import inspect
-import random
-import warnings
-import platform
 import copy
+import inspect
+import platform
+import random
 import string
 import types
+import warnings
 
-from tqdm import tqdm
 import numpy as np
+from tqdm import tqdm
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
@@ -23,12 +23,12 @@ from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLPoint
-from ..utils.iterables import list_update, list_difference_update
-from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
+from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
+from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
 
 
@@ -84,7 +84,7 @@ class Scene(Container):
         self.duration = None
         self.last_t = None
 
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             # Items associated with interaction
             self.mouse_point = OpenGLPoint()
             self.mouse_drag_point = OpenGLPoint()
@@ -322,7 +322,7 @@ class Scene(Container):
         list
             List of mobject family members.
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             family_members = []
             for mob in self.mobjects:
                 family_members.extend(mob.get_family())
@@ -348,7 +348,7 @@ class Scene(Container):
             The same scene after adding the Mobjects in.
 
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             new_mobjects = mobjects
             self.remove(*new_mobjects)
             self.mobjects += new_mobjects
@@ -385,7 +385,7 @@ class Scene(Container):
         *mobjects : Mobject
             The mobjects to remove.
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             mobjects_to_remove = mobjects
             self.mobjects = restructure_list_to_exclude_certain_family_members(
                 self.mobjects, mobjects_to_remove
@@ -768,9 +768,9 @@ class Scene(Container):
             times,
             desc=description,
             total=n_iterations,
-            leave=config["leave_progress_bars"],
+            leave=config["progress_bar"] == "leave",
             ascii=True if platform.system() == "Windows" else None,
-            disable=not config["progress_bar"],
+            disable=config["progress_bar"] == "none",
         )
         return time_progression
 
@@ -849,7 +849,7 @@ class Scene(Container):
         self.moving_mobjects = None
         self.static_mobjects = None
 
-        if not config["use_opengl_renderer"]:
+        if not config.renderer == "opengl":
             if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
                 self.update_mobjects(dt=0)  # Any problems with this?
                 if self.should_update_mobjects():
@@ -935,6 +935,7 @@ class Scene(Container):
             logger.warning("embed() is skipped while writing to a file.")
             return
 
+        self.renderer.animation_start_time = 0
         self.renderer.render(self, -1, self.moving_mobjects)
 
         # Configure IPython shell.

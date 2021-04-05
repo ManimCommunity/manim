@@ -1,12 +1,13 @@
 """Utilities for scene caching."""
 
+import copy
+import inspect
 import json
 import zlib
-import inspect
-import copy
-import numpy as np
-from types import ModuleType, MappingProxyType, FunctionType, MethodType
 from time import perf_counter
+from types import FunctionType, MappingProxyType, MethodType, ModuleType
+
+import numpy as np
 
 from .. import logger
 

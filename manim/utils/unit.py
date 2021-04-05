@@ -2,8 +2,7 @@
 
 import numpy as np
 
-from .. import constants, config
-
+from .. import config, constants
 
 __all__ = ["Pixels", "Degrees", "Munits", "Percent"]
 

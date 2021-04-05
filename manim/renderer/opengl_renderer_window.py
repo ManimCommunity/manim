@@ -1,7 +1,8 @@
-from .. import config, __version__
 import moderngl_window as mglw
 from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
+
+from .. import __version__, config
 
 
 class Window(PygletWindow):

@@ -7,18 +7,17 @@ import shutil
 from pathlib import Path
 
 from manim import config, tempconfig
-
-from .._config.main_utils import parse_args
+from manim.__main__ import main
 
 try:
     from IPython import get_ipython
     from IPython.core.magic import (
         Magics,
-        magics_class,
         line_cell_magic,
+        magics_class,
         needs_local_scope,
     )
-    from IPython.display import display, Image, Video
+    from IPython.display import Image, Video, display
 except ImportError:
     pass
 else:
@@ -65,19 +64,14 @@ else:
             if cell:
                 exec(cell, local_ns)
 
-            cli_args = ["manim", ""] + line.split()
-            if len(cli_args) == 2:
-                # empty line.split(): no commands have been passed, call with -h
-                cli_args.append("-h")
-
-            try:
-                args = parse_args(cli_args)
-            except SystemExit:
-                return  # probably manim -h was called, process ended preemptively
-
+            args = line.split()
+            if not len(args) or "-h" in args or "--help" in args or "--version" in args:
+                main(args, standalone_mode=False, prog_name="manim")
+                return
+            modified_args = ["--jupyter"] + args[:-1] + [""] + [args[-1]]
+            args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
-
                 exec(f"{config['scene_names'][0]}().render()", local_ns)
                 local_path = Path(config["output_file"]).relative_to(Path.cwd())
                 tmpfile = (
