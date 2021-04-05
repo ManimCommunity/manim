@@ -485,7 +485,18 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
 
 class AddTextWordByWord(ShowIncreasingSubsets):
-    """Show a :class:`~.Text` word by word on the scene. Note: needs more documentation."""
+    """Show a :class:`~.Text` word by word on the scene.
+
+        Parameters
+    ----------
+    time_per_word : :class:`float`
+        Frequency of appearance of the words.
+
+    .. tip::
+
+        This is currently only possible for class:`~.Text` and not for class:`~.MathTex`
+
+    """
 
     def __init__(
         self,
@@ -497,7 +508,7 @@ class AddTextWordByWord(ShowIncreasingSubsets):
         run_time: typing.Optional[float] = None,
         **kwargs,
     ) -> None:
-        # time_per_char must be above 0.06, or the animation won't finish
+        # time_per_word must be above 0.06, or the animation won't finish
         if run_time is None:
             run_time = max((0.06, time_per_word)) * len(text.words)
 
