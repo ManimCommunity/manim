@@ -64,7 +64,7 @@ Finally, run
 .. code-block:: bash
 
    sudo tlmgr install standalone preview doublestroke relsize fundus-calligra \
-   wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
+   wasysym physics dvisvgm rsfs wasy cm-super
 
 
 Certifying a clean install
