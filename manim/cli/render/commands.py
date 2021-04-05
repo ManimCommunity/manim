@@ -142,19 +142,14 @@ def render(
     if nov or args["notify_outdated_version"]:
         manim = requests.get("https://pypi.org/pypi/manim/json")
         releases = manim.json()["releases"].keys()
-        latest = max(releases)
+        stable = max(releases)
 
-        if latest != __version__:
+        if stable != __version__:
             console.print(
-                "[yellow]WARNING: You are running on an outdated version of manim[/yellow]"
-            )
-            console.print(f"Installed version: [red]v{__version__}[/red]")
-            console.print(f"Latest version: [green]v{latest}[/green]")
-            console.print(
-                "[yellow]To disable this warning, go to config and set [red]notify_outdated_version[/red] to [/yellow]False"
+                f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
             )
             console.print(
-                "https://docs.manim.community/en/latest/tutorials/configuration.html"
+                "You should consider upgrading via [yellow]pip installed -U manim[/yellow]"
             )
 
     return args
