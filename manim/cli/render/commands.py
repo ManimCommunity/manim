@@ -13,7 +13,7 @@ import click
 import cloup
 import requests
 
-from ... import config, console, logger, __version__
+from ... import __version__, config, console, logger
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
