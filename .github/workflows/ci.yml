@@ -67,9 +67,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/Library/Caches/Homebrew/ffmpeg/*
-            ~/Library/Caches/Homebrew/downloads/ffmpeg/*
-          key: test-brew-${{ matrix.python }}-${{ steps.poetry-cache-time.outputs.date }}
+            # ~/Library/Caches/Homebrew/downloads/*
+            ${{ github.workspace }}/usr/local/Cellar/*
+          key: test1-brew-${{ matrix.python }}-${{ steps.poetry-cache-time.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
