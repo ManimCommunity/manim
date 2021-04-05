@@ -72,18 +72,22 @@ jobs:
             /usr/local/Cellar/*
           key: test2-brew-${{ matrix.python }}-${{ steps.poetry-cache-time.outputs.date }}
 
-      - name: Install system dependencies (MacOS)
+      - name: Install brew dependencies (MacOS)
         if: runner.os == 'macOS' && steps.cache-brew.outputs.cache-hit != 'true'
         run: |
           brew upgrade basictex && brew cleanup
           brew install openssl readline ffmpeg pyenv pyenv-virtualenv
           brew install --cask basictex
           eval "$(/usr/libexec/path_helper -s)"
-          sudo tlmgr update --self
           brew install pkg-config libffi pango glib
-          sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Install tlmgr dependencies (MacOS)
+        if: runner.os == 'macOS'
+        run: |
+          sudo tlmgr update --self
+          sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
 
       - name: Cache Windows
         id: cache-windows
