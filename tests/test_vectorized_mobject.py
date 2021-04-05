@@ -1,6 +1,6 @@
 import pytest
 
-from manim import Mobject, VDict, VGroup, VMobject, Line
+from manim import Line, Mobject, VDict, VGroup, VMobject
 
 
 def test_vgroup_init():
