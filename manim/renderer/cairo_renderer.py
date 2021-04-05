@@ -267,7 +267,9 @@ class CairoRenderer:
 
     def scene_finished(self, scene):
         # If no animations in scene, display the image instead
-        if self.num_plays == 0:
+        if self.num_plays == 0 and (
+            config["preview"] or config["show_in_file_browser"]
+        ):
             config["save_last_frame"] = True
             config["write_to_movie"] = False
         self.file_writer.finish()
