@@ -67,8 +67,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/Library/Caches/Homebrew/ffmpeg--*
-            ~/Library/Caches/Homebrew/downloads/*--ffmpeg-*
+            ~/Library/Caches/Homebrew/ffmpeg/*
+            ~/Library/Caches/Homebrew/downloads/ffmpeg/*
           key: test-brew-${{ matrix.python }}-${{ steps.poetry-cache-time.outputs.date }}
 
       - name: Install system dependencies (MacOS)
