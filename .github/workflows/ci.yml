@@ -52,10 +52,7 @@ jobs:
           brew install --cask basictex
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
-          brew install pkg-config
-          brew install libffi
-          brew install pango
-          brew install glib
+          brew install pkg-config ibffi pango glib
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
