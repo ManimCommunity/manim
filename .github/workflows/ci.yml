@@ -48,15 +48,6 @@ jobs:
         if: runner.os == 'macOS'
         run: brew update
 
-      - name: Get Brew cache directory (MacOS)
-        shell: bash
-        if: runner.os == 'macOS'
-        id: brew-cache-time
-        run: |
-          export BREW="$HOME/usr/local/Cellar"
-          echo "::set-output name=dir::$BREW"
-          echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
-
       - name: Cache Brew (MacOS)
         if: runner.os == 'macOS'
         uses: actions/cache@v2
@@ -64,7 +55,7 @@ jobs:
           path: |
             ~/Library/Caches/Homebrew/ffmpeg--*
             ~/Library/Caches/Homebrew/downloads/*--ffmpeg-*
-          key: test-brew-${{ hashFiles('.github/brew-formulae.json') }}-${{ steps.brew-cache-time.outputs.date }}
+          key: test-brew-${{ hashFiles('.github/brew-formulae.json') }}-${{ steps.poetry-cache-time.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
