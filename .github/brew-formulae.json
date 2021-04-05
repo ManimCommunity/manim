@@ -1,0 +1,14 @@
+{
+    "brew": [
+        "basictex",
+        "openssl",
+        "readline",
+        "ffmpeg",
+        "pyenv",
+        "pyenv-virtualenv",
+        "pkg-config",
+        "libffi",
+        "pango",
+        "glib"
+    ]
+}

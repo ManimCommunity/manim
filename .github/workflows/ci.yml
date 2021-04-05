@@ -57,6 +57,15 @@ jobs:
           echo "::set-output name=dir::$BREW"
           echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
 
+      - name: Cache Brew (MacOS)
+        if: runner.os == 'macOS'
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/Library/Caches/Homebrew/*
+            ~/Library/Caches/Homebrew/downloads/*
+          key: test-brew-${{ hashFiles('.github/brew-formulae.json') }}-${{ steps.brew-cache-time.outputs.date }}
+
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
