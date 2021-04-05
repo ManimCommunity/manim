@@ -149,7 +149,7 @@ def render(
                 f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
             )
             console.print(
-                "You should consider upgrading via [yellow]pip installed -U manim[/yellow]"
+                "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
             )
 
     return args
