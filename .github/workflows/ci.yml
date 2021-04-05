@@ -65,19 +65,19 @@ jobs:
           echo "::set-output name=dir::$(poetry config cache-dir)"
           echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
 
-      - name: pip cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache-and-time.outputs.dir }}
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
+      # - name: pip cache
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ${{ steps.pip-cache-and-time.outputs.dir }}
+      #     key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
 
-      - name: Cache Windows
-        id: cache-windows
-        if: runner.os == 'Windows'
-        uses: actions/cache@v2
-        with:
-          path: ${{ github.workspace }}\ManimCache
-          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
+      # - name: Cache Windows
+      #   id: cache-windows
+      #   if: runner.os == 'Windows'
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ${{ github.workspace }}\ManimCache
+      #     key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
 
       - name: Setup MSYS2
         if: runner.os == 'Windows'
