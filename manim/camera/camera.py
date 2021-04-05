@@ -1,32 +1,31 @@
-"A camera converts the mobjects contained in a Scene into an array of pixels."
+"""A camera converts the mobjects contained in a Scene into an array of pixels."""
 
 
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
 
-from functools import reduce
+import copy
 import itertools as it
 import operator as op
 import time
-import copy
+from functools import reduce
 
-from PIL import Image
-from scipy.spatial.distance import pdist
 import cairo
 import numpy as np
+from PIL import Image
+from scipy.spatial.distance import pdist
 
-from .. import logger, config
+from .. import config, logger
 from ..constants import *
-from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.mobject import Mobject
+from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import color_to_int_rgba
+from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
 from ..utils.simple_functions import fdiv
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
-from ..utils.family import extract_mobject_family_members
+from ..utils.space_ops import angle_of_vector, get_norm
 
 
 class Camera:

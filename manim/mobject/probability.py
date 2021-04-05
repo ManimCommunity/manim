@@ -4,22 +4,20 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 from ..constants import *
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
+from ..mobject.geometry import Line, Rectangle
 from ..mobject.mobject import Mobject
 from ..mobject.svg.brace import Brace
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
+from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.color import (
-    color_gradient,
-    DARK_GREY,
-    LIGHT_GREY,
-    GREEN_E,
+    BLUE,
     BLUE_E,
+    DARK_GREY,
+    GREEN_E,
+    LIGHT_GREY,
     MAROON_B,
     YELLOW,
-    BLUE,
+    color_gradient,
 )
 from ..utils.iterables import tuplify
 
@@ -199,7 +197,7 @@ class BarChart(VGroup):
         ticks = VGroup()
         heights = np.linspace(0, height, self.n_ticks + 1)
         values = np.linspace(0, self.max_value, self.n_ticks + 1)
-        for y, value in zip(heights, values):
+        for y, _value in zip(heights, values):
             tick = Line(LEFT, RIGHT)
             tick.width = self.tick_width
             tick.move_to(y * UP)

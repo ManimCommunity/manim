@@ -4,16 +4,16 @@ __all__ = [
     "Graph",
 ]
 
-from ..utils.color import BLACK
-from .types.vectorized_mobject import VMobject
-from .geometry import Dot, Line, LabeledDot
-from .svg.tex_mobject import MathTex
-
-from typing import Hashable, Union, List, Tuple
-
 from copy import copy
+from typing import Hashable, List, Tuple, Union
+
 import networkx as nx
 import numpy as np
+
+from ..utils.color import BLACK
+from .geometry import Dot, LabeledDot, Line
+from .svg.tex_mobject import MathTex
+from .types.vectorized_mobject import VMobject
 
 
 def _determine_graph_layout(
@@ -48,7 +48,7 @@ def _determine_graph_layout(
         auto_layout = automatic_layouts[layout](
             nx_graph, scale=layout_scale, **layout_config
         )
-        return dict([(k, np.append(v, [0])) for k, v in auto_layout.items()])
+        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "tree":
         return _tree_layout(
             nx_graph,
@@ -76,14 +76,14 @@ def _determine_graph_layout(
         auto_layout = automatic_layouts["partite"](
             nx_graph, scale=layout_scale, **layout_config
         )
-        return dict([(k, np.append(v, [0])) for k, v in auto_layout.items()])
+        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     elif layout == "random":
         # the random layout places coordinates in [0, 1)
         # we need to rescale manually afterwards...
         auto_layout = automatic_layouts["random"](nx_graph, **layout_config)
         for k, v in auto_layout.items():
             auto_layout[k] = 2 * layout_scale * (v - np.array([0.5, 0.5]))
-        return dict([(k, np.append(v, [0])) for k, v in auto_layout.items()])
+        return {k: np.append(v, [0]) for k, v in auto_layout.items()}
     else:
         raise ValueError(
             f"The layout '{layout}' is neither a recognized automatic layout, "
@@ -143,12 +143,10 @@ def _tree_layout(
 
     height = max(map(lambda v: result[v][1], result))
 
-    return dict(
-        [
-            (v, np.array([pos[0], 1 - 2 * pos[1] / height, pos[2]]) * scale / 2)
-            for v, pos in result.items()
-        ]
-    )
+    return {
+        v: np.array([pos[0], 1 - 2 * pos[1] / height, pos[2]]) * scale / 2
+        for v, pos in result.items()
+    }
 
 
 class Graph(VMobject):
@@ -224,7 +222,7 @@ class Graph(VMobject):
                 vertices = [1, 2, 3, 4]
                 edges = [(1, 2), (2, 3), (3, 4), (1, 3), (1, 4)]
                 g = Graph(vertices, edges)
-                self.play(ShowCreation(g))
+                self.play(Create(g))
                 self.wait()
                 self.play(g[1].animate.move_to([1, 1, 0]),
                           g[2].animate.move_to([-1, 1, 0]),
@@ -311,7 +309,7 @@ class Graph(VMobject):
                 G.add_nodes_from([0, 1, 2, 3])
                 G.add_edges_from([(0, 2), (0,3), (1, 2)])
                 graph = Graph(list(G.nodes), list(G.edges), layout="partite", partitions=[[0, 1]])
-                self.play(ShowCreation(graph))
+                self.play(Create(graph))
 
     The custom tree layout can be used to show the graph
     by distance from the root vertex. You must pass the root vertex
@@ -337,7 +335,7 @@ class Graph(VMobject):
                     G.add_edge("Child_%i" % i, "Grandchild_%i" % i)
                     G.add_edge("Grandchild_%i" % i, "Greatgrandchild_%i" % i)
 
-                self.play(ShowCreation(
+                self.play(Create(
                     Graph(list(G.nodes), list(G.edges), layout="tree", root_vertex="ROOT")))
     """
 
@@ -377,11 +375,11 @@ class Graph(VMobject):
             self._labels = labels
         elif isinstance(labels, bool):
             if labels:
-                self._labels = dict(
-                    [(v, MathTex(v, fill_color=label_fill_color)) for v in vertices]
-                )
+                self._labels = {
+                    v: MathTex(v, fill_color=label_fill_color) for v in vertices
+                }
             else:
-                self._labels = dict()
+                self._labels = {}
 
         if self._labels and vertex_type is Dot:
             vertex_type = LabeledDot
@@ -391,18 +389,16 @@ class Graph(VMobject):
             vertex_config = {}
         default_vertex_config = {}
         if vertex_config:
-            default_vertex_config = dict(
-                [(k, v) for k, v in vertex_config.items() if k not in vertices]
-            )
-        self._vertex_config = dict(
-            [(v, vertex_config.get(v, copy(default_vertex_config))) for v in vertices]
-        )
+            default_vertex_config = {
+                k: v for k, v in vertex_config.items() if k not in vertices
+            }
+        self._vertex_config = {
+            v: vertex_config.get(v, copy(default_vertex_config)) for v in vertices
+        }
         for v, label in self._labels.items():
             self._vertex_config[v]["label"] = label
 
-        self.vertices = dict(
-            [(v, vertex_type(**self._vertex_config[v])) for v in vertices]
-        )
+        self.vertices = {v: vertex_type(**self._vertex_config[v]) for v in vertices}
         for v in self.vertices:
             self[v].move_to(self._layout[v])
 
@@ -411,11 +407,11 @@ class Graph(VMobject):
             edge_config = {}
         default_edge_config = {}
         if edge_config:
-            default_edge_config = dict(
-                (k, v)
+            default_edge_config = {
+                k: v
                 for k, v in edge_config.items()
                 if k not in edges and k[::-1] not in edges
-            )
+            }
         self._edge_config = {}
         for e in edges:
             if e in edge_config:
@@ -425,20 +421,15 @@ class Graph(VMobject):
             else:
                 self._edge_config[e] = copy(default_edge_config)
 
-        self.edges = dict(
-            [
-                (
-                    (u, v),
-                    edge_type(
-                        self[u].get_center(),
-                        self[v].get_center(),
-                        z_index=-1,
-                        **self._edge_config[(u, v)],
-                    ),
-                )
-                for (u, v) in edges
-            ]
-        )
+        self.edges = {
+            (u, v): edge_type(
+                self[u].get_center(),
+                self[v].get_center(),
+                z_index=-1,
+                **self._edge_config[(u, v)],
+            )
+            for (u, v) in edges
+        }
 
         self.add(*self.vertices.values())
         self.add(*self.edges.values())
@@ -479,7 +470,7 @@ class Graph(VMobject):
             class ImportNetworkxGraph(Scene):
                 def construct(self):
                     G = Graph.from_networkx(nxgraph, layout="spring", layout_scale=3.5)
-                    self.play(ShowCreation(G))
+                    self.play(Create(G))
                     self.play(*[G[v].animate.move_to(5*RIGHT*np.cos(ind/7 * PI) +
                                                      3*UP*np.sin(ind/7 * PI))
                                 for ind, v in enumerate(G.vertices)])
@@ -512,7 +503,7 @@ class Graph(VMobject):
                               layout={1: [-2, 0, 0], 2: [-1, 0, 0], 3: [0, 0, 0],
                                       4: [1, 0, 0], 5: [2, 0, 0]}
                               )
-                    self.play(ShowCreation(G))
+                    self.play(Create(G))
                     self.play(G.animate.change_layout("circular"))
                     self.wait()
         """

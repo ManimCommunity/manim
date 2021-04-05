@@ -1,11 +1,15 @@
-import pytest
 import sys
-import numpy as np
-from PIL import Image
 from pathlib import Path
 
-from ..utils.video_tester import *
+import numpy as np
+import pytest
+from click.testing import CliRunner
+from PIL import Image
+
+from manim.__main__ import main
 from manim.utils.file_ops import add_version_before_extension
+
+from ..utils.video_tester import *
 
 
 @pytest.mark.slow
@@ -19,10 +23,10 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -38,11 +42,11 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -59,11 +63,11 @@ def test_n_flag(tmp_path, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-n 3,6",
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -76,12 +80,12 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -100,12 +104,12 @@ def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -124,14 +128,14 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
         "-r",
-        "100, 200",
+        "200,100",
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -146,19 +150,47 @@ def test_r_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
+def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "-a",
+        infallible_scenes_path,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    one_is_not_empty = (
+        tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait1.mp4"
+    ).is_file()
+    assert one_is_not_empty, "running manim with -a flag did not render the first scene"
+
+    two_is_not_empty = (
+        tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait2.mp4"
+    ).is_file()
+    assert (
+        two_is_not_empty
+    ), "running manim with -a flag did not render the second scene"
+
+
+@pytest.mark.slow
 def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
         "--custom_folders",
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -172,20 +204,23 @@ def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
 
 @pytest.mark.slow
 def test_dash_as_filename(tmp_path):
-    code = "class Test(Scene):\n    def construct(self):\n        self.add(Circle())\n        self.wait(1)"
+    code = (
+        "class Test(Scene):\n"
+        "    def construct(self):\n"
+        "        self.add(Circle())\n"
+        "        self.wait()"
+    )
     command = [
-        sys.executable,
-        "-m",
-        "manim",
         "-ql",
         "-s",
         "--media_dir",
         str(tmp_path),
         "-",
     ]
-    out, err, exit_code = capture(command, command_input=code)
-    assert exit_code == 0, err
+    runner = CliRunner()
+    result = runner.invoke(main, command, input=code)
+    assert result.exit_code == 0
     exists = add_version_before_extension(
-        (tmp_path / "images" / "-" / "Test.png")
+        tmp_path / "images" / "-" / "Test.png"
     ).exists()
-    assert exists, out
+    assert exists, result.output

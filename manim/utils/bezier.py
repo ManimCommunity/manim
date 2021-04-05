@@ -22,8 +22,7 @@ import numpy as np
 from scipy import linalg
 
 from ..utils.simple_functions import choose
-from ..utils.space_ops import cross2d
-from ..utils.space_ops import find_intersection
+from ..utils.space_ops import cross2d, find_intersection
 
 CLOSED_THRESHOLD: float = 0.001
 
@@ -111,7 +110,7 @@ def interpolate(start: int, end: int, alpha: float) -> float:
 
 def integer_interpolate(start: float, end: float, alpha: float) -> int:
     """
-    alpha is a float between 0 and 1.  This returns
+    Alpha is a float between 0 and 1.  This returns
     an integer between start and end (inclusive) representing
     appropriate interpolation between them, along with a
     "residue" representing a new proportion between the

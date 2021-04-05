@@ -2,35 +2,29 @@ import copy
 import itertools as it
 import random
 import sys
-import moderngl
 from functools import wraps
-from ..utils.color import *
-from ..utils.iterables import listify
 
+import moderngl
 import numpy as np
 
+from .. import config
 from ..constants import *
-
-from ..utils.color import color_gradient
-
-# from ..utils.color import get_colormap_list
-from ..utils.color import rgb_to_hex
-from ..utils.color import color_to_rgb
+from ..utils.bezier import interpolate
+from ..utils.color import *
 
 # from ..utils.iterables import batch_by_property
-from ..utils.iterables import list_update
-from ..utils.iterables import resize_array
-from ..utils.iterables import resize_preserving_order
-from ..utils.iterables import resize_with_interpolation
-from ..utils.iterables import make_even
-from ..utils.iterables import listify
-from ..utils.iterables import batch_by_property
-from ..utils.bezier import interpolate
+from ..utils.iterables import (
+    batch_by_property,
+    list_update,
+    listify,
+    make_even,
+    resize_array,
+    resize_preserving_order,
+    resize_with_interpolation,
+)
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import rotation_matrix_transpose
+from ..utils.space_ops import angle_of_vector, get_norm, rotation_matrix_transpose
 
 
 class OpenGLMobject:
@@ -336,7 +330,7 @@ class OpenGLMobject:
         in the submobjects list.
         """
         mobject_attrs = [
-            x for x in list(self.__dict__.values()) if isinstance(x, Mobject)
+            x for x in list(self.__dict__.values()) if isinstance(x, OpenGLMobject)
         ]
         self.set_submobjects(list_update(self.submobjects, mobject_attrs))
         return self
@@ -694,7 +688,11 @@ class OpenGLMobject:
         Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
         """
-        target_point = np.sign(direction) * (FRAME_X_RADIUS, FRAME_Y_RADIUS, 0)
+        target_point = np.sign(direction) * (
+            config["frame_x_radius"],
+            config["frame_y_radius"],
+            0,
+        )
         point_to_align = self.get_bounding_box_point(direction)
         shift_val = target_point - point_to_align - buff * np.array(direction)
         shift_val = shift_val * abs(np.sign(direction))
@@ -717,7 +715,7 @@ class OpenGLMobject:
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
     ):
-        if isinstance(mobject_or_point, Mobject):
+        if isinstance(mobject_or_point, OpenGLMobject):
             mob = mobject_or_point
             if index_of_submobject_to_align is not None:
                 target_aligner = mob[index_of_submobject_to_align]
@@ -739,7 +737,7 @@ class OpenGLMobject:
         return self
 
     def shift_onto_screen(self, **kwargs):
-        space_lengths = [FRAME_X_RADIUS, FRAME_Y_RADIUS]
+        space_lengths = [config["frame_x_radius"], config["frame_y_radius"]]
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
             buff = kwargs.get("buff", DEFAULT_MOBJECT_TO_EDGE_BUFFER)
@@ -750,13 +748,13 @@ class OpenGLMobject:
         return self
 
     def is_off_screen(self):
-        if self.get_left()[0] > FRAME_X_RADIUS:
+        if self.get_left()[0] > config["frame_x_radius"]:
             return True
-        if self.get_right()[0] < -FRAME_X_RADIUS:
+        if self.get_right()[0] < -config["frame_x_radius"]:
             return True
-        if self.get_bottom()[1] > FRAME_Y_RADIUS:
+        if self.get_bottom()[1] > config["frame_y_radius"]:
             return True
-        if self.get_top()[1] < -FRAME_Y_RADIUS:
+        if self.get_top()[1] < -config["frame_y_radius"]:
             return True
         return False
 
@@ -1086,7 +1084,7 @@ class OpenGLMobject:
         template = self.copy()
         template.set_submobjects([])
         alphas = np.linspace(0, 1, n_pieces + 1)
-        return Group(
+        return OpenGLGroup(
             *[
                 template.copy().pointwise_become_partial(self, a1, a2)
                 for a1, a2 in zip(alphas[:-1], alphas[1:])
@@ -1141,7 +1139,7 @@ class OpenGLMobject:
         horizontally so that it's center is directly above/below
         the center of mob2
         """
-        if isinstance(mobject_or_point, Mobject):
+        if isinstance(mobject_or_point, OpenGLMobject):
             point = mobject_or_point.get_bounding_box_point(direction)
         else:
             point = mobject_or_point
@@ -1220,7 +1218,7 @@ class OpenGLMobject:
         new_submobs = []
         for submob, sf in zip(self.submobjects, split_factors):
             new_submobs.append(submob)
-            for k in range(1, sf):
+            for _ in range(1, sf):
                 new_submob = submob.copy()
                 # If the submobject is at all transparent, then
                 # make the copy completely transparent
@@ -1411,7 +1409,7 @@ class OpenGLMobject:
         batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
 
         result = []
-        for wrapper_group, sid in batches:
+        for wrapper_group, _ in batches:
             shader_wrapper = wrapper_group[0]
             if not shader_wrapper.is_valid():
                 continue

@@ -1,0 +1,5 @@
+<svg viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg">
+    <rect x="-3" y="-3" width="6" height="6" />
+
+    <rect x="-3" y="-3" width="6" height="6" fill="red" transform="skewY(30)" />
+</svg>

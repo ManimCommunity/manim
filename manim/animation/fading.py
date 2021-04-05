@@ -58,6 +58,7 @@ __all__ = [
     "FadeIn",
     "FadeInFrom",
     "FadeOutAndShift",
+    "FadeOutToPoint",
     "FadeInFromPoint",
     "FadeInFromLarge",
     "VFadeIn",
@@ -72,7 +73,9 @@ import numpy as np
 from .. import logger
 from ..animation.animation import Animation
 from ..animation.transform import Transform
-from ..constants import DOWN
+from ..constants import DOWN, ORIGIN
+from ..mobject.mobject import Group
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import interpolate
 from ..utils.rate_functions import there_and_back
@@ -89,7 +92,7 @@ class FadeOut(Transform):
 
     def __init__(
         self,
-        vmobject: VMobject,
+        vmobject: typing.Union[VMobject, OpenGLVMobject],
         remover: bool = True,
         lag_ratio: float = DEFAULT_FADE_LAG_RATIO,
         **kwargs
@@ -106,7 +109,10 @@ class FadeOut(Transform):
 
 class FadeIn(Transform):
     def __init__(
-        self, vmobject: VMobject, lag_ratio: float = DEFAULT_FADE_LAG_RATIO, **kwargs
+        self,
+        vmobject: typing.Union[VMobject, OpenGLVMobject],
+        lag_ratio: float = DEFAULT_FADE_LAG_RATIO,
+        **kwargs
     ) -> None:
         super().__init__(vmobject, lag_ratio=lag_ratio, **kwargs)
 
@@ -116,7 +122,7 @@ class FadeIn(Transform):
     def create_starting_mobject(self) -> "Mobject":
         start = super().create_starting_mobject()
         start.fade(1)
-        if isinstance(start, VMobject):
+        if isinstance(start, (VMobject, OpenGLVMobject)):
             start.set_stroke(opacity=0)
             start.set_fill(opacity=0)
         return start
@@ -148,6 +154,37 @@ class FadeOutAndShift(FadeOut):
     def create_target(self) -> "Mobject":
         target = super().create_target()
         target.shift(self.direction)
+        return target
+
+
+class FadeOutToPoint(FadeOut):
+    """Fades out a mobject while moving it to a specified point.
+
+    Parameters
+    ----------
+    mobject
+        The :class:`~.Mobject` to be animated.
+    point
+        Either a point or another :class:`~.Mobject` to whose center the
+        Mobject is moved in the animation. Defaults to ``ORIGIN``.
+    kwargs
+        Further keyword arguments are passed to the parent class.
+
+    """
+
+    def __init__(
+        self,
+        mobject: "Mobject",
+        point: typing.Union["Mobject", np.ndarray] = ORIGIN,
+        **kwargs
+    ) -> None:
+        self.point = point
+        super().__init__(mobject, **kwargs)
+
+    def create_target(self) -> "Mobject":
+        """Creates the target of the animation."""
+        target = super().create_target()
+        target.move_to(self.point)
         return target
 
 

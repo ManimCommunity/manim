@@ -6,11 +6,12 @@ Plugin Managing Utility.
 """
 
 import pathlib
+
 import pkg_resources
 
 from manim import console
 
-__all__ = ["list_plugins", "update"]
+__all__ = ["list_plugins"]
 
 
 def get_plugins():

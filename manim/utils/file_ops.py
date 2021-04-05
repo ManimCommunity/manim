@@ -11,11 +11,11 @@ __all__ = [
 
 import os
 import platform
-import time
 import subprocess as sp
+import time
 from pathlib import Path
 
-from manim import __version__
+from manim import __version__, config, logger
 
 
 def add_extension_if_not_present(file_name, extension):
@@ -77,3 +77,22 @@ def open_file(file_path, in_browser=False):
             raise OSError("Unable to identify your operating system...")
         commands.append(file_path)
         sp.Popen(commands)
+
+
+def open_media_file(file_writer):
+    file_paths = []
+
+    if config["save_last_frame"]:
+        file_paths.append(file_writer.image_file_path)
+    if config["write_to_movie"] and not config["save_as_gif"]:
+        file_paths.append(file_writer.movie_file_path)
+    if config["save_as_gif"]:
+        file_paths.append(file_writer.gif_file_path)
+
+    for file_path in file_paths:
+        if config["show_in_file_browser"]:
+            open_file(file_path, True)
+        if config["preview"]:
+            open_file(file_path, False)
+
+            logger.info(f"Previewed File at: {file_path}")

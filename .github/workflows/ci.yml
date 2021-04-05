@@ -12,6 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       POETRY_VIRTUALENVS_CREATE: false
+      DISPLAY: :0
+      PYTEST_ADDOPTS: "--color=yes" # colors in pytest
     strategy:
       fail-fast: false
       matrix:
@@ -32,41 +34,42 @@ jobs:
           pip install wheel
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
-      - name: Get pip cache dir
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install -y ffmpeg
+          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+          # start xvfb in the background
+          sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+
+      - name: Install system dependencies (MacOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update && brew upgrade basictex && brew cleanup
+          brew install openssl readline ffmpeg pyenv pyenv-virtualenv
+          brew install --cask basictex
+          eval "$(/usr/libexec/path_helper -s)"
+          sudo tlmgr update --self
+          brew install pkg-config libffi pango glib
+          sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
+          echo "/Library/TeX/texbin" >> $GITHUB_PATH
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Get Poetry Cache Dir
         shell: bash
         id: pip-cache-and-time
         run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+          export PATH="$HOME/.poetry/bin:$PATH"
+          echo "::set-output name=dir::$(poetry config cache-dir)"
           echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
 
       - name: pip cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.pip-cache-and-time.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.python }}-${{ steps.pip-cache-and-time.outputs.date }}
-
-      - name: Install system dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt update
-          sudo apt install -y ffmpeg
-          sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-
-      - name: Install system dependencies (MacOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install openssl readline ffmpeg pyenv pyenv-virtualenv
-          brew install --cask basictex
-          eval "$(/usr/libexec/path_helper -s)"
-          sudo tlmgr update --self
-          brew install pkg-config
-          brew install libffi
-          brew install pango
-          brew install glib
-          sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
-          echo "/Library/TeX/texbin" >> $GITHUB_PATH
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
 
       - name: Cache Windows
         id: cache-windows
@@ -75,6 +78,16 @@ jobs:
         with:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
+
+      - name: Setup MSYS2
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          release: false
+          msystem: MINGW64
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-mesa
 
       - name: Download system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
@@ -104,10 +117,13 @@ jobs:
       - name: Add Windows dependecies to path
         if: runner.os == 'Windows'
         run: |
+          Remove-Item C:\msys64\mingw64\bin\python.exe -Force
+          Remove-Item C:\msys64\mingw64\bin\python3.exe -Force
           $env:Path += ";" + "$($PWD)\ManimCache\FFmpeg\bin"
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path += ";" + "$($PWD)\ManimCache\Pango\pango"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
+          $env:PATH = "C:\msys64\mingw64\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install manim
@@ -118,7 +134,10 @@ jobs:
         run: poetry run pytest
 
       - name: Run module doctests
-        run: poetry run pytest --doctest-modules --ignore-glob="*opengl*" manim
+        run: poetry run pytest --cov-append --doctest-modules --ignore-glob="*opengl*" manim
 
       - name: Run doctests in rst files
         run: cd docs && pip install -r requirements.txt && poetry run make doctest O=-tskip-manim
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1

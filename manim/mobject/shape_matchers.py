@@ -4,11 +4,9 @@ __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
 
 from ..constants import *
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import Color, YELLOW, BLACK, RED
+from ..mobject.geometry import Line, Rectangle
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..utils.color import BLACK, RED, YELLOW, Color
 
 
 class SurroundingRectangle(Rectangle):

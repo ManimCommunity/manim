@@ -168,21 +168,22 @@ __all__ = [
 ]
 
 
-from functools import reduce
+import itertools as it
 import operator as op
+import re
+from functools import reduce
 
-from .style_utils import parse_style
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
-from ...mobject.types.vectorized_mobject import VGroup
-from ...mobject.types.vectorized_mobject import VectorizedPoint
-from ...utils.strings import split_string_list_to_isolate_substrings
-from ...utils.tex_file_writing import tex_to_svg_file
+from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.color import BLACK
+from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex import TexTemplate
+from ...utils.tex_file_writing import tex_to_svg_file
+from .style_utils import parse_style
 
 TEX_MOB_SCALE_FACTOR = 0.05
 
@@ -396,17 +397,24 @@ class MathTex(SingleStringMathTex):
             self.organize_submobjects_left_to_right()
 
     def break_up_tex_strings(self, tex_strings):
-        substrings_to_isolate = op.add(
-            self.substrings_to_isolate, list(self.tex_to_color_map.keys())
+        tex_strings = [str(t) for t in tex_strings]
+        # Separate out anything surrounded in double braces
+        patterns = ["{{", "}}"]
+        # Separate out any strings specified in the isolate
+        # or tex_to_color_map lists.
+        patterns.extend(
+            [
+                "({})".format(re.escape(ss))
+                for ss in it.chain(
+                    self.substrings_to_isolate, self.tex_to_color_map.keys()
+                )
+            ]
         )
-        split_list = split_string_list_to_isolate_substrings(
-            tex_strings, *substrings_to_isolate
-        )
-        if self.arg_separator == " ":
-            split_list = [str(x).strip() for x in split_list]
-        # split_list = list(map(str.strip, split_list))
-        split_list = [s for s in split_list if s != ""]
-        return split_list
+        pattern = "|".join(patterns)
+        pieces = []
+        for s in tex_strings:
+            pieces.extend(re.split(pattern, s))
+        return list(filter(lambda s: s, pieces))
 
     def break_up_by_substrings(self):
         """

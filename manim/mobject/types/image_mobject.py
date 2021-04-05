@@ -3,20 +3,20 @@
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
+
 import colour
-
 import numpy as np
-
 from PIL import Image
+
+from manim.constants import DEFAULT_QUALITY, QUALITIES
 
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...utils.bezier import interpolate
-from ...utils.color import color_to_int_rgb, WHITE
+from ...utils.color import WHITE, color_to_int_rgb
 from ...utils.images import get_full_raster_image_path
-from manim.constants import QUALITIES, DEFAULT_QUALITY
 
 
 class AbstractImageMobject(Mobject):
@@ -117,7 +117,7 @@ class AbstractImageMobject(Mobject):
         if self.scale_to_resolution:
             height = h / self.scale_to_resolution * config["frame_height"]
         else:
-            height = 3  ## this is the case for ImageMobjectFromCamera
+            height = 3  # this is the case for ImageMobjectFromCamera
         self.stretch_to_fit_height(height)
         self.stretch_to_fit_width(height * w / h)
 

@@ -1,8 +1,10 @@
-import os
 import logging
+import os
+
 import numpy as np
 
 from manim import config, tempconfig
+from manim.renderer.opengl_renderer import OpenGLRenderer
 
 
 class GraphicalUnitTester:
@@ -10,7 +12,7 @@ class GraphicalUnitTester:
 
     Parameters
     ----------
-    scene_object : :class:`~.Scene`
+    scene_class : :class:`~.Scene`
         The scene to be tested
     config_scene : :class:`dict`
         The configuration of the scene
@@ -27,12 +29,7 @@ class GraphicalUnitTester:
         The scene tested
     """
 
-    def __init__(
-        self,
-        scene_object,
-        module_tested,
-        tmpdir,
-    ):
+    def __init__(self, scene_class, module_tested, tmpdir, rgb_atol=0):
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
         tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -41,11 +38,12 @@ class GraphicalUnitTester:
             "test_graphical_units",
             "tests_cache",
             module_tested,
-            scene_object.__name__,
+            scene_class.__name__,
         )
         self.path_control_data = os.path.join(
             tests_directory, "control_data", "graphical_units_data", module_tested
         )
+        self.rgb_atol = rgb_atol
 
         # IMPORTANT NOTE : The graphical units tests don't use for now any
         # custom manim.cfg, since it is impossible to manually select a
@@ -64,7 +62,10 @@ class GraphicalUnitTester:
             os.makedirs(dir_temp)
 
         with tempconfig({"dry_run": True}):
-            self.scene = scene_object(skip_animations=True)
+            if config["use_opengl_renderer"]:
+                self.scene = scene_class(renderer=OpenGLRenderer())
+            else:
+                self.scene = scene_class(skip_animations=True)
             self.scene.render()
 
     def _load_data(self):
@@ -82,8 +83,8 @@ class GraphicalUnitTester:
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
         """Will visually display with matplotlib differences between frame generated and the one expected."""
-        import matplotlib.pyplot as plt
         import matplotlib.gridspec as gridspec
+        import matplotlib.pyplot as plt
 
         gs = gridspec.GridSpec(2, 2)
         fig = plt.figure()
@@ -126,15 +127,17 @@ class GraphicalUnitTester:
             + f"\nframe_data.shape = {frame_data.shape}"
         )
 
-        test_result = np.array_equal(frame_data, expected_frame_data)
-        if not test_result:
-            incorrect_indices = np.argwhere(frame_data != expected_frame_data)
+        mismatches = np.logical_not(
+            np.isclose(frame_data, expected_frame_data, atol=self.rgb_atol, rtol=0)
+        )
+        if mismatches.any():
+            incorrect_indices = np.argwhere(mismatches)
             first_incorrect_index = incorrect_indices[0][:2]
             first_incorrect_point = frame_data[tuple(first_incorrect_index)]
             expected_point = expected_frame_data[tuple(first_incorrect_index)]
             if show_diff:
                 self._show_diff_helper(frame_data, expected_frame_data)
-            assert test_result, (
+            assert not mismatches.any(), (
                 f"The frames don't match. {str(self.scene).replace('Test', '')} has been modified."
                 + "\nPlease ignore if it was intended."
                 + f"\nFirst unmatched index is at {first_incorrect_index}: {first_incorrect_point} != {expected_point}"

@@ -2,12 +2,13 @@ import sys
 from pathlib import Path
 
 import pytest
+
 from manim import *
-from ..helpers.path_utils import get_project_root
-from ..utils.testing_utils import get_scenes_to_test
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 from ..helpers.graphical_units import set_test_scene
+from ..helpers.path_utils import get_project_root
+from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 def get_test_resource(filename):
@@ -166,6 +167,55 @@ class VideoIconTest(Scene):
     def construct(self):
         video_icon = SVGMobject(get_test_resource("video_icon.svg"))
         self.add(video_icon)
+        self.wait()
+
+
+class MultipleTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("multiple_transforms.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class MatrixTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("matrix.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class ScaleTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("scale.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class TranslateTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("translate.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class SkewXTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("skewX.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class SkewYTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("skewY.svg"))
+        self.add(svg_obj)
+        self.wait()
+
+
+class RotateTransformTest(Scene):
+    def construct(self):
+        svg_obj = SVGMobject(get_test_resource("rotate.svg"))
+        self.add(svg_obj)
         self.wait()
 
 

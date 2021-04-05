@@ -6,13 +6,12 @@ __all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweenPoints"]
 import numpy as np
 
 from ...animation.composition import AnimationGroup
-from ...constants import *
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
-from ...mobject.svg.tex_mobject import MathTex
-from ...mobject.svg.tex_mobject import Tex
-from ...mobject.types.vectorized_mobject import VMobject
+from ...constants import *
 from ...mobject.geometry import Line
+from ...mobject.svg.tex_mobject import MathTex, Tex
+from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.space_ops import get_norm
 
 
@@ -41,8 +40,8 @@ class Brace(MathTex):
             def construct(self):
                 circle = Circle()
                 brace = Brace(circle, direction=RIGHT)
-                self.play(ShowCreation(circle))
-                self.play(ShowCreation(brace))
+                self.play(Create(circle))
+                self.play(Create(brace))
                 self.wait(2)
 
     """
@@ -201,8 +200,8 @@ class BraceBetweenPoints(Brace):
                     p1 = [0,0,0]
                     p2 = [1,2,0]
                     brace = BraceBetweenPoints(p1,p2)
-                    self.play(ShowCreation(NumberPlane()))
-                    self.play(ShowCreation(brace))
+                    self.play(Create(NumberPlane()))
+                    self.play(Create(brace))
                     self.wait(2)
     """
 

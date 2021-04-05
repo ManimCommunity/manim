@@ -49,23 +49,27 @@ __all__ = ["GraphScene"]
 import itertools as it
 
 from .. import config
-from ..animation.creation import Write, DrawBorderThenFill, ShowCreation
+from ..animation.creation import Create, DrawBorderThenFill, Write
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
-from ..mobject.geometry import RegularPolygon
+from ..mobject.geometry import Line, Rectangle, RegularPolygon
 from ..mobject.number_line import NumberLine
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VectorizedPoint
+from ..mobject.svg.tex_mobject import MathTex, Tex
+from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
 from ..utils.bezier import interpolate
-from ..utils.color import color_gradient, GREY, BLUE, GREEN, YELLOW, BLACK, WHITE
-from ..utils.color import invert_color
+from ..utils.color import (
+    BLACK,
+    BLUE,
+    GREEN,
+    GREY,
+    WHITE,
+    YELLOW,
+    color_gradient,
+    invert_color,
+)
 from ..utils.space_ops import angle_of_vector
 
 # TODO, this should probably reimplemented entirely, especially so as to
@@ -303,7 +307,8 @@ class GraphScene(Scene):
                         dot = Dot().move_to(self.coords_to_point(time, dat))
                         self.add(dot)
         """
-        assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
+        assert hasattr(self, "x_axis")
+        assert hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
         result += self.y_axis.number_to_point(y)[1] * UP
         return result
@@ -618,7 +623,7 @@ class GraphScene(Scene):
             else:
                 raise ValueError("Invalid input sample type")
             graph_point = self.input_to_graph_point(sample_input, graph)
-            if bounded_graph == None:
+            if bounded_graph is None:
                 y_point = 0
             else:
                 y_point = bounded_graph.underlying_function(x)
@@ -1007,7 +1012,7 @@ class GraphScene(Scene):
         if animated:
             self.play(
                 DrawBorderThenFill(triangle),
-                ShowCreation(v_line),
+                Create(v_line),
                 Write(T_label, run_time=1),
                 **kwargs,
             )

@@ -1,8 +1,8 @@
-from manim import *
-from manim.opengl import *
 import os
 from pathlib import Path
 
+from manim import *
+from manim.opengl import *
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.
@@ -15,7 +15,7 @@ class InteractiveDevelopment(Scene):
         circle.set_stroke(BLUE_E, width=4)
         square = OpenGLSquare()
 
-        self.play(ShowCreation(square))
+        self.play(Create(square))
         self.wait()
 
         # This opens an iPython termnial where you can keep writing
@@ -98,7 +98,7 @@ class SurfaceExample(Scene):
 
         self.play(
             FadeIn(surface),
-            ShowCreation(surface.mesh, lag_ratio=0.01, run_time=3),
+            Create(surface.mesh, lag_ratio=0.01, run_time=3),
         )
         for mob in surfaces:
             mob.add(mob.mesh)

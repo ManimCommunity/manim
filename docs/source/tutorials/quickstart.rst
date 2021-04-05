@@ -51,14 +51,14 @@ and copy the following code in it.
        def construct(self):
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(ShowCreation(circle))     # show the circle on screen
+           self.play(Create(circle))     # show the circle on screen
 
 Then open your command line, navigate to your project directory, and execute
 the following command:
 
 .. code-block:: bash
 
-   $ manim scene.py SquareToCircle -pql
+   $ manim -pql scene.py SquareToCircle 
 
 After showing some output, manim should render the scene into a .mp4 file,
 and open that file with the default movie player application.  You should see a
@@ -71,7 +71,7 @@ video playing the following animation.
        def construct(self):
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(ShowCreation(circle))     # show the circle on screen
+           self.play(Create(circle))     # show the circle on screen
 
 If you see the video and it looks correct, congrats! You just wrote your first
 manim scene from scratch.  If you get an error message instead, or if do not
@@ -96,7 +96,7 @@ The first line
 imports all of the contents of the library.  This is the recommended way of
 using manim, as usually in a single script you will be using quite a few names
 from the manim namespace.  In particular, this line includes all of the names
-used in the script: ``Scene``, ``Circle``, ``PINK`` and ``ShowCreation``.
+used in the script: ``Scene``, ``Circle``, ``PINK`` and ``Create``.
 
 Now let's look at the next two lines.
 
@@ -116,12 +116,12 @@ The next two lines create a circle and set its color and opacity.
            circle = Circle()                   # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
 
-Finally, the last line uses the animation :class:`.ShowCreation` to display the
+Finally, the last line uses the animation :class:`.Create` to display the
 circle on screen.
 
 .. code-block:: python
 
-           self.play(ShowCreation(circle))     # show the circle on screen
+           self.play(Create(circle))     # show the circle on screen
 
 .. tip:: Every animation must be contained within the :meth:`~.Scene.construct` method of a
          class that derives from :class:`.Scene`.  Other code, for example auxiliary
@@ -147,7 +147,7 @@ Our scene is a little basic, so let's add some bells and whistles.  Modify the
            square.flip(RIGHT)                   # flip horizontally
            square.rotate(-3 * TAU / 8)          # rotate a certain amount
 
-           self.play(ShowCreation(square))      # animate the creation of the square
+           self.play(Create(square))      # animate the creation of the square
            self.play(Transform(square, circle)) # interpolate the square into the circle
            self.play(FadeOut(square))           # fade out animation
 
@@ -155,7 +155,7 @@ And render it using the following command:
 
 .. code-block:: bash
 
-   $ manim scene.py SquareToCircle -pql
+   $ manim -pql scene.py SquareToCircle 
 
 The output should look as follows.
 
@@ -171,7 +171,7 @@ The output should look as follows.
            square.flip(RIGHT)                   # flip horizontally
            square.rotate(-3 * TAU / 8)          # rotate a certain amount
 
-           self.play(ShowCreation(square))      # animate the creation of the square
+           self.play(Create(square))      # animate the creation of the square
            self.play(Transform(square, circle)) # interpolate the square into the circle
            self.play(FadeOut(square))           # fade out animation
 

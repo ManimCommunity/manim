@@ -1,8 +1,9 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class CubeTest(ThreeDScene):
@@ -13,6 +14,11 @@ class CubeTest(ThreeDScene):
 class SphereTest(ThreeDScene):
     def construct(self):
         self.play(Animation(Sphere()))
+
+
+class Dot3DTest(ThreeDScene):
+    def construct(self):
+        self.play(Animation(Dot3D()))
 
 
 class ConeTest(ThreeDScene):
