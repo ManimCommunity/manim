@@ -183,36 +183,30 @@ class ImageMobjectTest(Scene):
 
 class ImageInterpolationTest(Scene):
     def construct(self):
-        image1 = ImageMobject(np.uint8([[63, 0, 0, 0],
+        img = ImageMobject(np.uint8([[63, 0, 0, 0],
                                         [0, 127, 0, 0],
                                         [0, 0, 191, 0],
                                         [0, 0, 0, 255]
-                                        ]), scale_to_resolution=7)
-        image2 = ImageMobject(np.uint8([[63, 0, 0, 0],
-                                        [0, 127, 0, 0],
-                                        [0, 0, 191, 0],
-                                        [0, 0, 0, 255]
-                                        ]), scale_to_resolution=7)
-        image1.height = 7
-        image2.height = 7
-        image1.set_interpolation_algorithm("nearest")
-        self.add(image1)
-        image2.set_interpolation_algorithm("antialias")
-        self.play(FadeIn(image2), run_time=0.2)
-        self.remove(image1)
-        image1.set_interpolation_algorithm("linear")
-        self.play(FadeIn(image1), run_time=0.2)
-        self.remove(image2)
-        image2.set_interpolation_algorithm("cubic")
-        self.play(FadeIn(image2), run_time=0.2)
-        self.remove(image1)
-        image1.set_interpolation_algorithm("box")
-        self.play(FadeIn(image1), run_time=0.2)
-        self.remove(image2)
+                                        ]))
+
+        img.height = 2
+        img1= img.copy()
+        img2= img.copy()
+        img3= img.copy()
+        img4= img.copy()
+        img5= img.copy()
+
+        img1.set_interpolation_algorithm("nearest")
+        img2.set_interpolation_algorithm("antialias")
+        img3.set_interpolation_algorithm("linear")
+        img4.set_interpolation_algorithm("cubic")
+        img5.set_interpolation_algorithm("box")
+
+        self.add(img1,img2,img3,img4,img5)
+        [s.shift(4*LEFT+pos*2*RIGHT) for pos, s in enumerate(self.mobjects) ]
         self.wait()
-
-#set_test_scene(ImageInterpolationTest, "img_and_svg")
-
+        
+        
 MODULE_NAME = "img_and_svg"
 
 
