@@ -81,8 +81,6 @@ jobs:
           unzip ~/macos/tmp/ffmpeg.zip -d ~/brew-cache
           echo "Completed ffmpeg"
           brew install pkg-config libffi pango glib
-          echo "/Library/TeX/texbin" >> $GITHUB_PATH
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
       - name: Move and update dependencies (MacOS)
         if: runner.os == 'macOS'
@@ -95,6 +93,8 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: |
+          echo "/Library/TeX/texbin" >> $GITHUB_PATH
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
           echo "/brew-cache/ffmpeg/bin" >> $GITHUB_PATH
 
       - name: Setup Windows cache
