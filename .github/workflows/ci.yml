@@ -58,10 +58,6 @@ jobs:
           # start xvfb in the background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
-      - name: Update Brew (MacOS)
-        if: runner.os == 'macOS'
-        run: brew update && brew upgrade && brew cleanup
-
       - name: Cache Brew (MacOS)
         id: cache-brew
         if: runner.os == 'macOS'
