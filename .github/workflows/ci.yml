@@ -77,8 +77,8 @@ jobs:
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
           echo "Installing ffmpeg..."
-          curl -SL "$ffmpegURL" --create-dirs -o ~/macos/tmp/ffmpeg.zip
-          unzip ~/macos/tmp/ffmpeg.zip -d ~/brew-cache
+          curl -JL "$ffmpegURL" --create-dirs -o ~/macos/tmp/ffmpeg.zip
+          unzip -q ~/macos/tmp/ffmpeg.zip -d ~/brew-cache
           echo "Completed ffmpeg"
           brew install pkg-config libffi pango glib
 
