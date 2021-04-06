@@ -36,17 +36,21 @@ jobs:
 
       - name: Get Poetry cache directory
         shell: bash
-        id: poetry-cache-time
+        id: poetry-cache
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
           echo "::set-output name=dir::$(poetry config cache-dir)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%d%Y")"
 
       - name: Setup Poetry cache
         uses: actions/cache@v2
         with:
-          path: ${{ steps.poetry-cache-time.outputs.dir }}
+          path: ${{ steps.poetry-cache.outputs.dir }}
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
+
+      - name: Setup cache date
+        id: cache-date
+        run: |
+          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
@@ -66,15 +70,15 @@ jobs:
           path: |
             # ~/Library/Caches/Homebrew/downloads/*
             /usr/*
-          key: test4-brew-${{ matrix.python }}-${{ steps.poetry-cache-time.outputs.date }}
+          key: test4-brew-${{ matrix.python }}-${{ steps.cache-date.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
           brew update && brew upgrade basictex && brew cleanup
           brew install openssl readline ffmpeg pyenv pyenv-virtualenv
-          eval "$(/usr/libexec/path_helper -s)"
           brew install --cask basictex
+          eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           brew install pkg-config libffi pango glib
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
@@ -87,7 +91,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}\ManimCache
-          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.poetry-cache-time.outputs.date }}
+          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-date.outputs.date }}
 
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
