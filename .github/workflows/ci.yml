@@ -86,6 +86,7 @@ jobs:
           unzip ~/macos/tmp/ffmpeg.zip -d ~/brew-cache/ffmpeg
           unzip ~/macos/tmp/ffprobe.zip -d ~/brew-cache/ffmpeg
           unzip ~/macos/tmp/ffserver.zip -d ~/brew-cache/ffmpeg
+          sudo chmod +x ~/brew-cache/ffmpeg/ff*
           echo "Completed ffmpeg"
           brew install pkg-config libffi pango glib
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
