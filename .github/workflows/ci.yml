@@ -66,7 +66,7 @@ jobs:
           path: |
             /usr/local/Cellar/*
             /usr/local/opt/*
-          key: test6-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+          key: test7-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
