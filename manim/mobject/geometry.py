@@ -67,7 +67,7 @@ import numpy as np
 from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
+from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject, MetaVMobject
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import fdiv
@@ -1346,7 +1346,7 @@ class CubicBezier(VMobject):
         self.set_points([start_anchor, start_handle, end_handle, end_anchor])
 
 
-class Polygon(VMobject):
+class Polygon(metaclass=MetaVMobject):
     """A shape created by defining its vertices.
 
     Parameters
@@ -1380,9 +1380,14 @@ class Polygon(VMobject):
     """
 
     def __init__(self, *vertices, color=BLUE, **kwargs):
-        VMobject.__init__(self, color=color, **kwargs)
-        # There are actually four corners, and the first one is repeated twice to form the four vertices.
-        self.set_points_as_corners([*vertices, vertices[0]])
+        self.vertices = vertices
+        super().__init__(color=color, **kwargs)
+
+    def init_points(self):
+        verts = self.vertices
+        self.set_points_as_corners([*verts, verts[0]])
+
+    generate_points = init_points
 
     def get_vertices(self):
         """Gets the vertices of the polygon.

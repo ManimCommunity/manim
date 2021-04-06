@@ -17,6 +17,7 @@ from typing import Iterable
 
 import colour
 
+from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
@@ -40,6 +41,19 @@ from ...utils.space_ops import get_norm, rotate_vector, shoelace_direction
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
 
+
+from .opengl_vectorized_mobject import OpenGLVMobject
+from abc import ABCMeta
+class MetaVMobject(ABCMeta):
+    def __call__(cls, *args, **kwargs):
+        if config.renderer == 'opengl':
+            new_cls = type(cls.__name__, (cls, OpenGLVMobject, ), {})
+            return super(MetaVMobject, new_cls).__call__(*args, **kwargs)
+        if config.renderer == 'cairo':
+            new_cls = type(cls.__name__, (cls, VMobject), {})
+            return super(MetaVMobject, new_cls).__call__(*args, **kwargs)
+
+        raise ValueError('Renderer not supported.')
 
 class VMobject(Mobject):
     def __init__(
