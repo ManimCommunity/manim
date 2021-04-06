@@ -78,8 +78,8 @@ jobs:
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
           echo "Installing ffmpeg..."
           curl -SL "$ffmpegURL" --create-dirs -o ~/macos/tmp/ffmpeg.zip
-          mkdir -p ~/brew-cache/ffmpeg
-          unzip ~/macos/tmp/ffmpeg.zip -d ~/brew-cache/ffmpeg
+          unzip ~/macos/tmp/ffmpeg.zip -d ~/brew-cache
+          mv -p ~/brew-cache/FFmpeg-* ~/brew-cache/ffmpeg
           cd ~/brew-cache/ffmpeg/fftools && make
           echo "Completed ffmpeg"
           brew install pkg-config libffi pango glib
@@ -90,7 +90,7 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: |
-          echo "/brew-cache/ffmpeg" >> $GITHUB_PATH
+          echo "/brew-cache/ffmpeg/bin" >> $GITHUB_PATH
 
       - name: Setup Windows cache
         id: cache-windows
