@@ -79,6 +79,7 @@ jobs:
           echo "Installing ffmpeg..."
           curl -SL "$ffmpegURL" --create-dirs -o ~/macos/tmp/ffmpeg.zip
           unzip ~/macos/tmp/ffmpeg.zip -d ~/brew-cache
+          mv ~/brew-cache/ffmpeg-* ~/brew-cache/FFmpeg
           echo "Completed ffmpeg"
           brew install pkg-config libffi pango glib
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
@@ -88,7 +89,7 @@ jobs:
         if: runner.os == 'macOS'
         shell: bash
         run: |
-          echo "/brew-cache/ffmpeg/bin" >> $GITHUB_PATH
+          echo "/brew-cache/FFmpeg/bin" >> $GITHUB_PATH
 
       - name: Setup Windows cache
         id: cache-windows
