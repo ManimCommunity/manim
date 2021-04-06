@@ -106,7 +106,7 @@ class ShowPartial(Animation):
 
     """
 
-    def __init__(self, mobject: Union[Optional[Mobject], OpenGLVMobject], **kwargs):
+    def __init__(self, mobject: Union[Mobject, OpenGLVMobject, None], **kwargs):
         if not isinstance(mobject, (VMobject, OpenGLVMobject)):
             raise TypeError("This Animation only works on vectorized mobjects")
         super().__init__(mobject, **kwargs)
@@ -217,7 +217,7 @@ class DrawBorderThenFill(Animation):
         self,
         vmobject: Union[VMobject, OpenGLVMobject],
         run_time: float = 2,
-        rate_func: Callable[[float], np.ndarray] = double_smooth,
+        rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
         draw_border_animation_config: Dict = {},  # what does this dict accept?
