@@ -835,7 +835,7 @@ class Text(SVGMobject):
                 if not word.submobjects.__len__() == 0:
                     words.add(word)
                 word = VGroup()
-        if not word.submobjects.__len__() == 0:
+        if word.submobjects.__len__() != 0:
             words.add(word)
         return words
 
