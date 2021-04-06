@@ -66,7 +66,6 @@ jobs:
           path: |
             /usr/local/Cellar/*
             /usr/local/opt/*
-            /usr/local/texlive/*
           key: test6-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
