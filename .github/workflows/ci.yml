@@ -70,6 +70,8 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           ffmpegURL="https://evermeet.cx/ffmpeg/ffmpeg-4.3.2.zip"
+          ffprobeURL="https://evermeet.cx/ffmpeg/ffplay-4.3.2.zip"
+          ffserverURL="https://evermeet.cx/ffmpeg/ffserver-3.4.2.zip"
           brew update && brew upgrade basictex && brew cleanup
           brew install openssl readline pyenv pyenv-virtualenv
           brew install --cask basictex
@@ -78,8 +80,12 @@ jobs:
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
           echo "Installing ffmpeg..."
           curl -SL "$ffmpegURL" --create-dirs -o ~/macos/tmp/ffmpeg.zip
+          curl -SL "$ffprobeURL" --create-dirs -o ~/macos/tmp/ffprobe.zip
+          curl -SL "$ffserverURL" --create-dirs -o ~/macos/tmp/ffserver.zip
           mkdir -p ~/brew-cache/ffmpeg
           unzip ~/macos/tmp/ffmpeg.zip -d ~/brew-cache/ffmpeg
+          unzip ~/macos/tmp/ffprobe.zip -d ~/brew-cache/ffmpeg
+          unzip ~/macos/tmp/ffserver.zip -d ~/brew-cache/ffmpeg
           echo "Completed ffmpeg"
           brew install pkg-config libffi pango glib
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
