@@ -72,13 +72,12 @@ __all__ = [
 
 
 import itertools as it
+from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from colour import Color
 
 from .. import logger
-
-from typing import Union, Optional, Tuple, Callable, Dict, List, Iterable, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text

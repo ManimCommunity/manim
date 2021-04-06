@@ -26,11 +26,10 @@ __all__ = [
 
 import inspect
 import types
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, TypeVar, Union
 
 import numpy as np
-from typing import TYPE_CHECKING, Optional, Union, Dict, List, Any, Iterable, TypeVar
-from collections.abc import Callable
-
 
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT

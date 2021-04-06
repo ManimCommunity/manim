@@ -1,9 +1,10 @@
 """Tools for displaying multiple animations at once."""
 
 
-import numpy as np
-from typing import Union, TYPE_CHECKING, Optional
 from collections.abc import Callable
+from typing import TYPE_CHECKING, Optional, Union
+
+import numpy as np
 
 from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject

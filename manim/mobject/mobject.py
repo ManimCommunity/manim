@@ -13,7 +13,7 @@ import types
 import warnings
 from functools import reduce
 from pathlib import Path
-from typing import Callable, List, Optional, Union, TypeVar
+from typing import Callable, List, Optional, TypeVar, Union
 
 import numpy as np
 from colour import Color

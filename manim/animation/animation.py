@@ -4,9 +4,9 @@
 __all__ = ["Animation", "Wait"]
 
 
-from copy import deepcopy
-from typing import Union, Optional, Tuple, Iterator, Iterable, TYPE_CHECKING
 from collections.abc import Callable
+from copy import deepcopy
+from typing import TYPE_CHECKING, Iterable, Iterator, Optional, Tuple, Union
 
 import numpy as np
 
