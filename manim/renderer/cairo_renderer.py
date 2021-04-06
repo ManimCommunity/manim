@@ -273,7 +273,7 @@ class CairoRenderer:
             config["save_last_frame"] = True
             config["write_to_movie"] = False
             logger.warning("No animations found in the scene. Showing an image instead")
-        elif not config["save_last_frame"]:
+        elif not (config["save_last_frame"] or config["save_pngs"]):
             logger.warning(
                 "No animations found in the scene. Use -s flag to produce an image"
             )

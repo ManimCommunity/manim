@@ -187,8 +187,12 @@ class Scene(Container):
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
-        # Show info only if animations rendered or to get image
-        if self.renderer.num_plays != 0 or config["save_last_frame"]:
+        # Show info only if animations are rendered or to get image
+        if (
+            self.renderer.num_plays != 0
+            or config["save_last_frame"]
+            or config["save_pngs"]
+        ):
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
             )
