@@ -10,7 +10,7 @@ A brief history of Manim
 ************************
 
 Manim was originally created by Grant Sanderson as a personal project and 
-for use in his YouTube channel, `3blue1brown <https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw>`_. As his channel gained popularity, 
+for use in his YouTube channel, `3Blue1Brown <https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw>`_. As his channel gained popularity, 
 many grew to like the style of his animations and wanted to use Manim for their own projects. 
 However, as Manim was only intended for personal use, 
 it was very difficult for other users to install and use it.
@@ -34,11 +34,11 @@ Which version to use
 ********************
 We recommend using the community edition for most purposes, as it has been developed to be more stable, 
 better tested, quicker to respond to community contributions, and easier for beginners to use. 
-It also has partial experimental OpenGL support, and should have full support shortly.
+It also has partial experimental OpenGL support, and should have full support shortly (as of April, 2021).
 
-If you would like to use a version with full OpenGL support or render recent 3blue1brown videos (2020 onwards), you should use ManimGL.
+If you would like to use a version with full OpenGL support or render recent 3Blue1Brown videos (2020 onwards), you should use ManimGL.
 
-If you would like to render old 3blue1brown projects (2019 and before), you should use ManimCairo.
+If you would like to render old 3Blue1Brown projects (2019 and before), you should use ManimCairo.
 
 Notes on installation, documentation and use
 ********************************************
