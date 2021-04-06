@@ -70,7 +70,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           ffmpegURL="https://evermeet.cx/ffmpeg/ffmpeg-4.3.2.zip"
-          ffprobeURL="https://evermeet.cx/ffmpeg/ffplay-4.3.2.zip"
+          ffprobeURL="https://evermeet.cx/ffmpeg/ffprobe-4.3.2.zip"
           ffserverURL="https://evermeet.cx/ffmpeg/ffserver-3.4.2.zip"
           brew update && brew upgrade basictex && brew cleanup
           brew install openssl readline pyenv pyenv-virtualenv
