@@ -5,27 +5,28 @@ from manim import *
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
 
+
 class BraceSharpnessTest(Scene):
     def construct(self):
-        line = Line(LEFT*3, RIGHT*3).shift(UP*4)
+        line = Line(LEFT * 3, RIGHT * 3).shift(UP * 4)
 
         for sharpness in [0, 0.25, 0.5, 0.75, 1, 2, 3, 5]:
             self.add(Brace(line, sharpness=sharpness))
             line.shift(DOWN)
             self.wait()
 
+
 class BraceTipTest(Scene):
     def construct(self):
-        line = Line().shift(LEFT*3).rotate(PI/2)
+        line = Line().shift(LEFT * 3).rotate(PI / 2)
         steps = 8
         for i in range(steps):
             brace = Brace(line, direction=line.copy().rotate(PI / 2).get_unit_vector())
             dot = Dot()
             brace.put_at_tip(dot)
-            line.rotate_about_origin(TAU/steps)
+            line.rotate_about_origin(TAU / steps)
             self.add(brace, dot)
             self.wait()
-
 
 
 MODULE_NAME = "brace"
