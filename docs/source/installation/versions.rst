@@ -27,8 +27,8 @@ The three versions of Manim
 There are currently three main versions of Manim. They are as follows:
 
 - **ManimCE**: The community edition of Manim. This is the version documented by this website, and is named `manim <https://pypi.org/project/manim/https://pypi.org/project/manim/>`_ on pip.
-- **`ManimGL<https://github.com/3b1b/manim>`**: The current version of Manim that is used by 3blue1brown. It supports OpenGL rendering and interactivity, and is named ``manimgl`` on pip.
-- **`ManimCairo<https://github.com/3b1b/manim/tree/cairo-backend>`**: The old version of Manim originally used by 3blue1brown. It is not available on pip.
+- `ManimGL <https://github.com/3b1b/manim>`_: The current version of Manim that is used by 3blue1brown. It supports OpenGL rendering and interactivity, and is named ``manimgl`` on pip.
+- `ManimCairo <https://github.com/3b1b/manim/tree/cairo-backend>`_: The old version of Manim originally used by 3blue1brown. It is not available on pip.
 
 Which version to use
 ********************
