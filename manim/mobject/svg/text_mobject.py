@@ -827,15 +827,15 @@ class Text(SVGMobject):
         words = VGroup()
         word = VGroup()
         submobjects_char_index = 0
-        for char_index in range(self.text.__len__()):
+        for char_index in range(len(self.text)):
             if not self.text[char_index] in (" ", "\t", "\n"):
                 word.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
             else:
-                if not word.submobjects.__len__() == 0:
+                if len(word.submobjects) != 0:
                     words.add(word)
                 word = VGroup()
-        if not word.submobjects.__len__() == 0:
+        if len(word.submobjects) != 0:
             words.add(word)
         return words
 
