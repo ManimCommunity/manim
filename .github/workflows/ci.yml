@@ -79,6 +79,7 @@ jobs:
           sudo tlmgr update --self
           brew install pkg-config libffi pango glib
           brew link pango
+          brew unlink cairo && brew install cairo
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
