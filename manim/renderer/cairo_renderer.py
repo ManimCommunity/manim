@@ -267,12 +267,16 @@ class CairoRenderer:
 
     def scene_finished(self, scene):
         # If no animations in scene, display the image instead
-        if self.num_plays == 0 and (
-            config["preview"] or config["show_in_file_browser"]
-        ):
+        if self.num_plays != 0:
+            self.file_writer.finish()
+        elif config["preview"] or config["show_in_file_browser"]:
             config["save_last_frame"] = True
             config["write_to_movie"] = False
-        self.file_writer.finish()
+            logger.warning("No animations found in the scene. Showing an image instead")
+        elif not config["save_last_frame"]:
+            logger.warning(
+                "No animations found in the scene. Use -s flag to produce an image"
+            )
         if config["save_last_frame"]:
             self.update_frame(scene, ignore_skipping=False)
             self.file_writer.save_final_image(self.camera.get_image())
