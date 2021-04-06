@@ -40,7 +40,7 @@ jobs:
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
           echo "::set-output name=dir::$(poetry config cache-dir)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
+          echo "::set-output name=date::$(/bin/date -u "+%m%d%Y")"
 
       - name: Cache Poetry
         uses: actions/cache@v2
