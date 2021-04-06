@@ -1,12 +1,13 @@
-from .. import constants, logger, console, config
 import importlib.util
 import inspect
 import os
-from pathlib import Path
+import re
 import sys
 import types
-import re
 import warnings
+from pathlib import Path
+
+from .. import config, console, constants, logger
 
 
 def get_module(file_name: Path):
@@ -17,7 +18,7 @@ def get_module(file_name: Path):
         )
         code = sys.stdin.read()
         if not code.startswith("from manim import"):
-            logger.warn(
+            logger.warning(
                 "Didn't find an import statement for Manim. Importing automatically..."
             )
             code = "from manim import *\n" + code

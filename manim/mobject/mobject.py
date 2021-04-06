@@ -4,33 +4,40 @@
 __all__ = ["Mobject", "Group", "override_animate"]
 
 
-from functools import reduce
 import copy
 import itertools as it
 import operator as op
 import random
 import sys
 import types
-from typing import Callable, List, Optional, Union
 import warnings
-
+from functools import reduce
 from pathlib import Path
-from colour import Color
+from typing import Callable, List, Optional, Union
+
 import numpy as np
+from colour import Color
 
 from .. import config
 from ..constants import *
 from ..container import Container
-from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C
-from ..utils.color import interpolate_color
-from ..utils.iterables import list_update
-from ..utils.iterables import remove_list_redundancies
+from ..utils.color import (
+    BLACK,
+    WHITE,
+    YELLOW_C,
+    Colors,
+    color_gradient,
+    interpolate_color,
+)
+from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import rotation_matrix
-from ..utils.space_ops import rotation_matrix_transpose
+from ..utils.space_ops import (
+    angle_of_vector,
+    get_norm,
+    rotation_matrix,
+    rotation_matrix_transpose,
+)
 
 # TODO: Explain array_attrs
 
@@ -296,7 +303,7 @@ class Mobject(Container):
             ValueError: Mobject cannot contain self
 
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             if self in mobjects:
                 raise Exception("Mobject cannot contain self")
             for mobject in mobjects:
@@ -962,7 +969,7 @@ class Mobject(Container):
         :meth:`move_to`
         """
 
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             self.apply_points_function(
                 lambda points: points + vectors[0],
                 about_edge=None,
@@ -1000,7 +1007,7 @@ class Mobject(Container):
         :meth:`move_to`
 
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             self.apply_points_function(
                 lambda points: scale_factor * points,
                 works_on_bounding_box=True,
@@ -1014,10 +1021,12 @@ class Mobject(Container):
             return self
 
     def rotate_about_origin(self, angle, axis=OUT, axes=[]):
+        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
     def rotate(self, angle, axis=OUT, **kwargs):
-        if config["use_opengl_renderer"]:
+        """Rotates the :class:`~.Mobject` about a certain point."""
+        if config.renderer == "opengl":
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
                 lambda points: np.dot(points, rot_matrix_T), **kwargs
@@ -1031,6 +1040,22 @@ class Mobject(Container):
             return self
 
     def flip(self, axis=UP, **kwargs):
+        """Flips/Mirrors an mobject about its center.
+
+        Examples
+        --------
+
+        .. manim:: FlipExample
+            :save_last_frame:
+
+            class FlipExample(Scene):
+                def construct(self):
+                    s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
+                    self.add(s)
+                    s2= s.copy().flip()
+                    self.add(s2)
+
+        """
         return self.rotate(TAU / 2, axis, **kwargs)
 
     def stretch(self, factor, dim, **kwargs):
@@ -1201,7 +1226,7 @@ class Mobject(Container):
         index_of_submobject_to_align=None,
         coor_mask=np.array([1, 1, 1]),
     ):
-        """Move this mobject next to another mobject or coordinate.
+        """Move this :class:`~.Mobject` next to another's :class:`~.Mobject` or coordinate.
 
         Examples
         --------
@@ -1280,7 +1305,7 @@ class Mobject(Container):
         return self
 
     def scale_to_fit_width(self, width, **kwargs):
-        """Scales the mobject to fit a width while keeping height/depth proportional.
+        """Scales the :class:`~.Mobject` to fit a width while keeping height/depth proportional.
 
         Returns
         -------
@@ -1306,7 +1331,7 @@ class Mobject(Container):
         return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
 
     def stretch_to_fit_width(self, width, **kwargs):
-        """Stretches the mobject to fit a width, not keeping height/depth proportional.
+        """Stretches the :class:`~.Mobject` to fit a width, not keeping height/depth proportional.
 
         Returns
         -------
@@ -1332,7 +1357,7 @@ class Mobject(Container):
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
     def scale_to_fit_height(self, height, **kwargs):
-        """Scales the mobject to fit a height while keeping width/depth proportional.
+        """Scales the :class:`~.Mobject` to fit a height while keeping width/depth proportional.
 
         Returns
         -------
@@ -1358,7 +1383,7 @@ class Mobject(Container):
         return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
 
     def stretch_to_fit_height(self, height, **kwargs):
-        """Stretches the mobject to fit a height, not keeping width/depth proportional.
+        """Stretches the :class:`~.Mobject` to fit a height, not keeping width/depth proportional.
 
         Returns
         -------
@@ -1384,12 +1409,12 @@ class Mobject(Container):
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
     def scale_to_fit_depth(self, depth, **kwargs):
-        """Scales the mobject to fit a depth while keeping width/height proportional."""
+        """Scales the :class:`~.Mobject` to fit a depth while keeping width/height proportional."""
 
         return self.rescale_to_fit(depth, 2, stretch=False, **kwargs)
 
     def stretch_to_fit_depth(self, depth, **kwargs):
-        """Stretches the mobject to fit a depth, not keeping width/height proportional."""
+        """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
 
         return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
@@ -1401,12 +1426,15 @@ class Mobject(Container):
         return self
 
     def set_x(self, x, direction=ORIGIN):
+        """Set x value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(x, 0, direction)
 
     def set_y(self, y, direction=ORIGIN):
+        """Set y value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(y, 1, direction)
 
     def set_z(self, z, direction=ORIGIN):
+        """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
     def space_out_submobjects(self, factor=1.5, **kwargs):
@@ -1418,6 +1446,7 @@ class Mobject(Container):
     def move_to(
         self, point_or_mobject, aligned_edge=ORIGIN, coor_mask=np.array([1, 1, 1])
     ):
+        """Move center of the :class:`~.Mobject` to certain coordinate."""
         if isinstance(point_or_mobject, Mobject):
             target = point_or_mobject.get_critical_point(aligned_edge)
         else:
@@ -1440,7 +1469,9 @@ class Mobject(Container):
         self.shift(mobject.get_center() - self.get_center())
         return self
 
-    def surround(self, mobject, dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF):
+    def surround(
+        self, mobject: "Mobject", dim_to_match=0, stretch=False, buff=MED_SMALL_BUFF
+    ):
         self.replace(mobject, dim_to_match, stretch)
         length = mobject.length_over_dim(dim_to_match)
         self.scale_in_place((length + buff) / length)
@@ -1593,6 +1624,7 @@ class Mobject(Container):
     ##
 
     def save_state(self):
+        """Save the current state (position, color & size). Can be restored with :meth:`~.Mobject.restore`."""
         if hasattr(self, "saved_state"):
             # Prevent exponential growth of data
             self.saved_state = None
@@ -1601,6 +1633,7 @@ class Mobject(Container):
         return self
 
     def restore(self):
+        """Restores the state that was previously saved with :meth:`~.Mobject.save_state`."""
         if not hasattr(self, "saved_state") or self.save_state is None:
             raise Exception("Trying to restore without having saved")
         self.become(self.saved_state)
@@ -1640,7 +1673,7 @@ class Mobject(Container):
         return self.get_all_points()
 
     def get_num_points(self):
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             return len(self.data["points"])
         else:
             return len(self.points)
@@ -1657,7 +1690,7 @@ class Mobject(Container):
             return np.max(values)
 
     def get_critical_point(self, direction):
-        """Picture a box bounding the mobject.  Such a box has
+        """Picture a box bounding the :class:`~.Mobject`.  Such a box has
         9 'critical points': 4 corners, 4 edge center, the
         center. This returns one of them, along the given direction.
 
@@ -1683,13 +1716,14 @@ class Mobject(Container):
 
     # Pseudonyms for more general get_critical_point method
 
-    def get_edge_center(self, direction):
+    def get_edge_center(self, direction) -> np.ndarray:
         return self.get_critical_point(direction)
 
-    def get_corner(self, direction):
+    def get_corner(self, direction) -> np.ndarray:
         return self.get_critical_point(direction)
 
-    def get_center(self):
+    def get_center(self) -> np.ndarray:
+        """Get center coordinates"""
         return self.get_critical_point(np.zeros(self.dim))
 
     def get_center_of_mass(self):
@@ -1700,16 +1734,20 @@ class Mobject(Container):
         index = np.argmax(np.dot(all_points, np.array(direction).T))
         return all_points[index]
 
-    def get_top(self):
+    def get_top(self) -> np.ndarray:
+        """Get top coordinates of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(UP)
 
-    def get_bottom(self):
+    def get_bottom(self) -> np.ndarray:
+        """Get bottom coordinates of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(DOWN)
 
-    def get_right(self):
+    def get_right(self) -> np.ndarray:
+        """Get right coordinates of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(RIGHT)
 
-    def get_left(self):
+    def get_left(self) -> np.ndarray:
+        """Get left coordinates of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(LEFT)
 
     def get_zenith(self):
@@ -1719,38 +1757,45 @@ class Mobject(Container):
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
+        """Measure the length of an :class:`~.Mobject` in a certain direction."""
         return self.reduce_across_dimension(
             np.max, np.max, dim
         ) - self.reduce_across_dimension(np.min, np.min, dim)
 
     def get_coord(self, dim, direction=ORIGIN):
-        """Meant to generalize get_x, get_y, get_z"""
+        """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
-    def get_x(self, direction=ORIGIN):
+    def get_x(self, direction=ORIGIN) -> np.float64:
+        """Returns x coordinate of the center of the :class:`~.Mobject` as ``float`` """
         return self.get_coord(0, direction)
 
-    def get_y(self, direction=ORIGIN):
+    def get_y(self, direction=ORIGIN) -> np.float64:
+        """Returns y coordinate of the center of the :class:`~.Mobject` as ``float`` """
         return self.get_coord(1, direction)
 
-    def get_z(self, direction=ORIGIN):
+    def get_z(self, direction=ORIGIN) -> np.float64:
+        """Returns z coordinate of the center of the :class:`~.Mobject` as ``float`` """
         return self.get_coord(2, direction)
 
     def get_start(self):
+        """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             return np.array(self.data["points"][0])
         else:
             return np.array(self.points[0])
 
     def get_end(self):
+        """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             return np.array(self.data["points"][-1])
         else:
             return np.array(self.points[-1])
 
     def get_start_and_end(self):
+        """Returns starting and ending point of a stroke as a ``tuple``. """
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
@@ -1773,6 +1818,7 @@ class Mobject(Container):
         return z_index_group.get_center()
 
     def has_points(self):
+        """Check if :class:`~.Mobject` contains points. """
         return len(self.points) > 0
 
     def has_no_points(self):
@@ -1780,38 +1826,43 @@ class Mobject(Container):
 
     # Match other mobject properties
 
-    def match_color(self, mobject):
+    def match_color(self, mobject: "Mobject"):
         return self.set_color(mobject.get_color())
 
-    def match_dim_size(self, mobject, dim, **kwargs):
+    def match_dim_size(self, mobject: "Mobject", dim, **kwargs):
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
-    def match_width(self, mobject, **kwargs):
+    def match_width(self, mobject: "Mobject", **kwargs):
         return self.match_dim_size(mobject, 0, **kwargs)
 
-    def match_height(self, mobject, **kwargs):
+    def match_height(self, mobject: "Mobject", **kwargs):
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(self, mobject, **kwargs):
+    def match_depth(self, mobject: "Mobject", **kwargs):
         return self.match_dim_size(mobject, 2, **kwargs)
 
-    def match_coord(self, mobject, dim, direction=ORIGIN):
+    def match_coord(self, mobject: "Mobject", dim, direction=ORIGIN):
         return self.set_coord(
             mobject.get_coord(dim, direction),
             dim=dim,
             direction=direction,
         )
 
-    def match_x(self, mobject, direction=ORIGIN):
+    def match_x(self, mobject: "Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 0, direction)
 
-    def match_y(self, mobject, direction=ORIGIN):
+    def match_y(self, mobject: "Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 1, direction)
 
-    def match_z(self, mobject, direction=ORIGIN):
+    def match_z(self, mobject: "Mobject", direction=ORIGIN):
         return self.match_coord(mobject, 2, direction)
 
-    def align_to(self, mobject_or_point, direction=ORIGIN, alignment_vect=UP):
+    def align_to(
+        self,
+        mobject_or_point: Union["Mobject", np.ndarray, List],
+        direction=ORIGIN,
+        alignment_vect=UP,
+    ):
         """Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
@@ -1853,7 +1904,7 @@ class Mobject(Container):
         return result + self.submobjects
 
     def get_family(self, recurse=True):
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             if recurse:
                 return self.family
             else:
@@ -1868,7 +1919,7 @@ class Mobject(Container):
 
     def arrange(
         self,
-        direction=RIGHT,
+        direction: Union[np.ndarray, List] = RIGHT,
         buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center=True,
         **kwargs,
@@ -1955,7 +2006,7 @@ class Mobject(Container):
             m1.align_data(m2)
 
     def get_point_mobject(self, center=None):
-        """The simplest mobject to be transformed to or from self.
+        """The simplest :class:`~.Mobject` to be transformed to or from self.
         Should by a point of the appropriate type
         """
         msg = f"get_point_mobject not implemented for {self.__class__.__name__}"
@@ -1983,7 +2034,7 @@ class Mobject(Container):
         return self
 
     def null_point_align(self, mobject: "Mobject") -> "Mobject":
-        """If a mobject with points is being aligned to
+        """If a :class:`~.Mobject` with points is being aligned to
         one without, treat both as groups, and push
         the one with points into its own submobjects
         list.
@@ -2027,7 +2078,7 @@ class Mobject(Container):
         return submob.copy()
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
-        """Turns this mobject into an interpolation between ``mobject1``
+        """Turns this :class:`~.Mobject` into an interpolation between ``mobject1``
         and ``mobject2``.
 
         Examples
@@ -2047,7 +2098,7 @@ class Mobject(Container):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             self.data["points"][:] = path_func(
                 mobject1.data["points"], mobject2.data["points"], alpha
             )
@@ -2064,7 +2115,7 @@ class Mobject(Container):
 
     def become(self, mobject: "Mobject", copy_submobjects: bool = True):
         """Edit points, colors and submobjects to be identical
-        to another mobject
+        to another :class:`~.Mobject`
 
         Examples
         --------
@@ -2087,7 +2138,7 @@ class Mobject(Container):
 
     # Errors
     def throw_error_if_no_points(self):
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             if len(self.data["points"]) == 0:
                 caller_name = sys._getframe(1).f_code.co_name
                 raise Exception(
@@ -2102,7 +2153,7 @@ class Mobject(Container):
 
     # About z-index
     def set_z_index(self, z_index_value: Union[int, float]):
-        """Sets the mobject's :attr:`z_index` to the value specified in `z_index_value`.
+        """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value specified in `z_index_value`.
 
         Parameters
         ----------
@@ -2118,7 +2169,7 @@ class Mobject(Container):
         return self
 
     def set_z_index_by_z_coordinate(self):
-        """Sets the mobject's z coordinate to the value of :attr:`z_index`.
+        """Sets the :class:`~.Mobject`'s z coordinate to the value of :attr:`z_index`.
 
         Returns
         -------
@@ -2131,7 +2182,7 @@ class Mobject(Container):
 
 
 class Group(Mobject):
-    """Groups together multiple Mobjects."""
+    """Groups together multiple :class:`~.Mobject`s."""
 
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)

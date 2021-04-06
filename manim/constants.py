@@ -181,5 +181,9 @@ QUALITIES: typing.Dict[str, typing.Dict[str, typing.Union[str, int, None]]] = {
 
 DEFAULT_QUALITY: str = "high_quality"
 DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
+
+EPILOG = "Made with <3 by Manim Community developers."
+HELP_OPTIONS = ["-h", "--help"]
+CONTEXT_SETTINGS = {"help_option_names": HELP_OPTIONS}
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507

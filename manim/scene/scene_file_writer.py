@@ -3,22 +3,27 @@
 __all__ = ["SceneFileWriter"]
 
 
-import numpy as np
-from pydub import AudioSegment
+import datetime
+import os
 import shutil
 import subprocess
-import os
-from time import sleep
-import datetime
-from PIL import Image
 from pathlib import Path
+from time import sleep
+
+import numpy as np
+from PIL import Image
+from pydub import AudioSegment
 
 from manim import __version__
+
 from .. import config, logger
 from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
-from ..utils.file_ops import guarantee_existence
-from ..utils.file_ops import add_extension_if_not_present, add_version_before_extension
-from ..utils.file_ops import modify_atime
+from ..utils.file_ops import (
+    add_extension_if_not_present,
+    add_version_before_extension,
+    guarantee_existence,
+    modify_atime,
+)
 from ..utils.sounds import get_full_sound_file_path
 
 
@@ -274,7 +279,7 @@ class SceneFileWriter(object):
         frame : np.array
             Pixel array of the frame.
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             renderer = frame_or_renderer
             self.writing_process.stdin.write(
                 renderer.get_raw_frame_buffer_object_data()
@@ -351,7 +356,9 @@ class SceneFileWriter(object):
         self.partial_movie_file_path = file_path
 
         fps = config["frame_rate"]
-        if config["use_opengl_renderer"]:
+        if fps == int(fps):  # fps is integer
+            fps = int(fps)
+        if config.renderer == "opengl":
             width, height = self.renderer.get_pixel_shape()
         else:
             height = config["pixel_height"]
@@ -376,7 +383,7 @@ class SceneFileWriter(object):
             "-metadata",
             f"comment=Rendered with Manim Community v{__version__}",
         ]
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             command += ["-vf", "vflip"]
         if config["transparent"]:
             command += ["-vcodec", "qtrle"]

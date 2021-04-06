@@ -20,7 +20,10 @@
 			"jknapltx",
 			"wasy",
 			"cm-super",
-			"babel-english"
+			"babel-english",
+			"gnu-freefont",
+			"mathastext",
+			"cbfonts-fd"
 		]
 	}
 }

@@ -1,15 +1,16 @@
-import typing
 import time
+import typing
+
 import numpy as np
 
 from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
 from ..camera.camera import Camera
+from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
-from ..mobject.mobject import Mobject
 
 
 def handle_play_like_call(func):
@@ -84,24 +85,23 @@ class CairoRenderer:
 
         scene.compile_animation_data(*args, **kwargs)
 
-        # If skip_animations is already True, we can skip all the caching process.
-        if not config["disable_caching"] and not self.skip_animations:
-            hash_current_animation = get_hash_from_play_call(
-                scene, self.camera, scene.animations, scene.mobjects
-            )
-            if self.file_writer.is_already_cached(hash_current_animation):
-                logger.info(
-                    f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
-                    {"hash_current_animation": hash_current_animation},
-                )
-                self.skip_animations = True
-        else:
-            hash_current_animation = f"uncached_{self.num_plays:05}"
-
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             hash_current_animation = None
-
+        else:
+            if config["disable_caching"]:
+                logger.info("Caching disabled.")
+                hash_current_animation = f"uncached_{self.num_plays:05}"
+            else:
+                hash_current_animation = get_hash_from_play_call(
+                    scene, self.camera, scene.animations, scene.mobjects
+                )
+                if self.file_writer.is_already_cached(hash_current_animation):
+                    logger.info(
+                        f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
+                        {"hash_current_animation": hash_current_animation},
+                    )
+                    self.skip_animations = True
         # adding None as a partial movie file will make file_writer ignore the latter.
         self.file_writer.add_partial_movie_file(hash_current_animation)
         self.animations_hashes.append(hash_current_animation)

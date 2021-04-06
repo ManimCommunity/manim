@@ -5,27 +5,23 @@ __all__ = ["SVGMobject", "string_to_numbers"]
 
 
 import itertools as it
-import re
 import os
+import re
 import string
 import warnings
-
-from xml.dom.minidom import Element as MinidomElement, parse as minidom_parse
-
 from typing import Dict, List
+from xml.dom.minidom import Element as MinidomElement
+from xml.dom.minidom import parse as minidom_parse
 
 from manim import logger
 
-from .style_utils import cascade_element_style, parse_style
-from .svg_path import SVGPathMobject, string_to_numbers
 from ... import config
 from ...constants import *
-from ...mobject.geometry import Circle
-from ...mobject.geometry import Rectangle
+from ...mobject.geometry import Circle, Rectangle, RoundedRectangle
+from ...mobject.types.vectorized_mobject import VGroup, VMobject
+from .style_utils import cascade_element_style, parse_style
+from .svg_path import SVGPathMobject, string_to_numbers
 from ...mobject.opengl_geometry import OpenGLRectangle
-from ...mobject.geometry import RoundedRectangle
-from ...mobject.types.vectorized_mobject import VGroup
-from ...mobject.types.vectorized_mobject import VMobject
 from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
 
 
