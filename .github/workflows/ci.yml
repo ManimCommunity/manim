@@ -66,7 +66,7 @@ jobs:
           path: |
             # ~/Library/Caches/Homebrew/downloads/*
             /usr/*
-          key: test3-brew-${{ matrix.python }}-${{ steps.poetry-cache-time.outputs.date }}
+          key: test4-brew-${{ matrix.python }}-${{ steps.poetry-cache-time.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
