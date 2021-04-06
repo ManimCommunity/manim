@@ -64,8 +64,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/Library/Caches/Homebrew/downloads/*
-            # /usr/local/Cellar/*
+            # ~/Library/Caches/Homebrew/downloads/*
+            /usr/*
           key: test3-brew-${{ matrix.python }}-${{ steps.poetry-cache-time.outputs.date }}
 
       - name: Install system dependencies (MacOS)
