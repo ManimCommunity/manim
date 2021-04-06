@@ -187,7 +187,7 @@ class _MethodAnimation(MoveToTarget):
 
 class ApplyMethod(Transform):
     def __init__(
-        self, method: types.MethodType, *args, **kwargs
+        self, method: Callable, *args, **kwargs
     ) -> None:  # method typing (we want to specify Mobject method)? for args?
         """
         Method is a method of Mobject, ``args`` are arguments for
@@ -202,7 +202,7 @@ class ApplyMethod(Transform):
         self.method_args = args
         super().__init__(method.__self__, **kwargs)
 
-    def check_validity_of_input(self, method: types.MethodType) -> None:
+    def check_validity_of_input(self, method: Callable) -> None:
         if not inspect.ismethod(method):
             raise ValueError(
                 "Whoops, looks like you accidentally invoked "

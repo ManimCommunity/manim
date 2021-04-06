@@ -255,6 +255,8 @@ class Wait(Animation):
         self.stop_condition = stop_condition
         self.is_static_wait: bool = False
         super().__init__(None, run_time=run_time, **kwargs)
+        # quick fix to work in opengl setting:
+        self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
         pass
