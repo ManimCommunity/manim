@@ -114,7 +114,7 @@ in this example where we set the color of the ``\bigstar`` using :func:`~.set_co
             self.add(tex)
 
 Note that :func:`~.set_color_by_tex`: colors the entire substring containing the Tex searched for,
-not just the specific symbol or Tex expression searched for. For example, consider the following example:
+not just the specific symbol or Tex expression searched for. Consider the following example:
 
 .. manim:: IncorrectLaTeXSubstringColoring
     :save_last_frame:
@@ -142,8 +142,7 @@ colors the entire equation yellow, contrary to what may be expected. To color on
             xs.set_color(YELLOW)
             self.add(equation)
 
-By setting `substring_to_isolate` to `x`, we split up the :class:`~.MathTex` into substrings automatically and in a way that isolates `x`
-into its own individual substrings. :func:`~.set_color_by_tex`: can then be used to achieve the desired result.
+By setting ``substring_to_isolate`` to ``x``, we split up the :class:`~.MathTex` into substrings automatically and isolate ``x`` components into individual substrings. :func:`~.set_color_by_tex`: can then be used to achieve the desired result.
 
 LaTeX Maths Fonts - The Template Library
 ++++++++++++++++++++++++++++++++++++++++
