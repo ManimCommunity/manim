@@ -34,18 +34,18 @@ jobs:
           pip install wheel
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
-      - name: Get Poetry cache directory
+      - name: Setup cache variables
         shell: bash
-        id: poetry-cache
+        id: cache-vars
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
-          echo "::set-output name=dir::$(poetry config cache-dir)"
+          echo "::set-output name=poetry-dir::$(poetry config cache-dir)"
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
       - name: Setup Poetry cache
         uses: actions/cache@v2
         with:
-          path: ${{ steps.poetry-cache.outputs.dir }}
+          path: ${{ steps.cache-vars.outputs.poetry-dir }}
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
 
       - name: Install system dependencies (Linux)
@@ -66,7 +66,7 @@ jobs:
           path: |
             # ~/Library/Caches/Homebrew/downloads/*
             /usr/*
-          key: test4-brew-${{ matrix.python }}-${{ steps.poetry-cache.outputs.date }}
+          key: test4-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
@@ -87,7 +87,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}\ManimCache
-          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.poetry-cache.outputs.date }}
+          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
@@ -121,7 +121,7 @@ jobs:
           7z x "$($env:TMP)\ffmpeg.zip" -o"$($PWD)\ManimCache"
           Move-Item "ManimCache\ffmpeg-*" "ManimCache\FFmpeg"
           Invoke-WebRequest "https://github.com/ManimCommunity/pango-windows-binaries/releases/download/$($pangoVersion)/pango-windows-binaires-x64.zip" -O "$($env:TMP)\Pango.zip"
-          mkdir "$($PWD)\ManimCache\Pango"
+          mkpoetry-dir "$($PWD)\ManimCache\Pango"
           7z x "$($env:TMP)\Pango.zip" -o"$($PWD)\ManimCache\Pango"
 
       - name: Add Windows dependencies to PATH
