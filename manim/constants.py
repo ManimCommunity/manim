@@ -46,18 +46,13 @@ ULTRAHEAVY: str = "ULTRAHEAVY"
 RESAMPLING_ALGORITHMS = {
     "nearest": Image.NEAREST,
     "none": Image.NEAREST,
-    
     "lanczos": Image.LANCZOS,
     "antialias": Image.LANCZOS,
-
     "bilinear": Image.BILINEAR,
     "linear": Image.BILINEAR,
-
     "bicubic": Image.BICUBIC,
     "cubic": Image.BICUBIC,
-
     "box": Image.BOX,
-
     "hamming": Image.HAMMING
 }
 

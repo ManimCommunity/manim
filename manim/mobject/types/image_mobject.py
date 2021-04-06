@@ -56,26 +56,19 @@ class AbstractImageMobject(Mobject):
 
         Parameters
         ----------
-        resampling_algorithm : :class:`str` or :class:`str`. Either an integer constant described in the Pillow library, or
-         one of the following string constants:
-         * "bicubic' or 'cubic'
+        resampling_algorithm : :class:`int`, an integer constant described in the Pillow library, or one from the RESAMPLING_ALGORITHMS global dictionary, under the following keys:
+         * 'bicubic' or 'cubic'
          * 'nearest' or 'none'
          * 'box'
          * 'bilinear' or 'linear'
          * 'hamming'
          * 'lanczos' or 'antialias'
-        The string constants can be input either in lowercase or in UPPERCASE, like the corresponding constant name in the Pillow library.
         """
-        if isinstance(resampling_algorithm, str):
-            raise ValueError(
-                    f"resampling_algorithm cannot be string. RESAMPLING_ALGORITHMS[\"<algorithm>\"] or Pillow resampling filter constants. Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos'."
-                )
-            self.resampling_algorithm = resampling_algorithm
-        elif isinstance(resampling_algorithm, int):
+        if isinstance(resampling_algorithm, int):
             self.resampling_algorithm = resampling_algorithm
         else:
             raise ValueError(
-                f"resampling_algorithm property supports either string value, one of 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos' (case insensitive) or a Pillow resampling filter integer constant."
+                f"resampling_algorithm has to be an int, one of the values defined in  RESAMPLING_ALGORITHMS[\"<algorithm>\"] or a Pillow resampling filter constant. Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos'."
             )
 
     def reset_points(self):
