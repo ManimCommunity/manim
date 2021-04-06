@@ -64,9 +64,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            # ~/Library/Caches/Homebrew/downloads/*
-            /usr/*
-          key: test5-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+            /usr/local/Cellar/*
+            /usr/local/opt/*
+            /usr/local/texlive/*
+          key: test6-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
