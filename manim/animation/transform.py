@@ -30,13 +30,13 @@ import typing
 
 import numpy as np
 
+from .. import config
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..utils.paths import path_along_arc, straight_path
 from ..utils.rate_functions import smooth, squish_rate_func
-from .. import config
 
 if typing.TYPE_CHECKING:
     from ..scene.scene import Scene

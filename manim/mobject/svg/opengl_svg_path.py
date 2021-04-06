@@ -1,4 +1,5 @@
 import numpy as np
+
 from ..types.opengl_vectorized_mobject import OpenGLVMobject
 from .svg_path import SVGPathMobject
 

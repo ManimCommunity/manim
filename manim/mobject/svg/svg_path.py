@@ -9,9 +9,9 @@ from typing import List
 
 from manim import logger
 
+from ... import config
 from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
-from ... import config
 
 
 def string_to_numbers(num_string: str) -> List[float]:

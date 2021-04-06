@@ -1,8 +1,8 @@
-from ..types.opengl_vectorized_mobject import OpenGLVMobject
-from ..svg.svg_mobject import SVGMobject
-from .style_utils import cascade_element_style, parse_style
-from .opengl_svg_path import OpenGLSVGPathMobject
 from ...constants import *
+from ..svg.svg_mobject import SVGMobject
+from ..types.opengl_vectorized_mobject import OpenGLVMobject
+from .opengl_svg_path import OpenGLSVGPathMobject
+from .style_utils import cascade_element_style, parse_style
 
 
 class OpenGLSVGMobject(OpenGLVMobject, SVGMobject):

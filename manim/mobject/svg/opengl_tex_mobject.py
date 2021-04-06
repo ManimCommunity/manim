@@ -168,20 +168,22 @@ __all__ = [
 ]
 
 
-from functools import reduce
 import operator as op
+from functools import reduce
 
-from .style_utils import parse_style
 from ... import config, logger
 from ...constants import *
 from ...mobject.opengl_geometry import OpenGLLine
 from ...mobject.svg.opengl_svg_mobject import OpenGLSVGMobject
 from ...mobject.svg.opengl_svg_path import OpenGLSVGPathMobject
-from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-from ...mobject.types.opengl_vectorized_mobject import OpenGLVectorizedPoint
+from ...mobject.types.opengl_vectorized_mobject import (
+    OpenGLVectorizedPoint,
+    OpenGLVGroup,
+)
+from ...utils.color import BLACK
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
-from ...utils.color import BLACK
+from .style_utils import parse_style
 
 # from ...utils.tex import TexTemplate
 

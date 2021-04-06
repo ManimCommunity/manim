@@ -22,9 +22,8 @@ from ...utils.color import *
 # from manimlib.utils.iterables import resize_array
 # from manimlib.utils.color import rgb_to_hex
 from ...utils.iterables import listify, make_even, resize_with_interpolation
-
-from ...utils.space_ops import angle_between_vectors
 from ...utils.space_ops import (
+    angle_between_vectors,
     cross2d,
     earclip_triangulation,
     get_norm,
