@@ -442,13 +442,16 @@ class OpenGLMathTex(OpenGLSingleStringMathTex):
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
                 sub_tex_mob.submobjects = [OpenGLVectorizedPoint()]
+                sub_tex_mob.assemble_family()
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:
                 sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
+                sub_tex_mob.assemble_family()
             new_submobjects.append(sub_tex_mob)
             curr_index = new_index
         self.submobjects = new_submobjects
+        self.assemble_family()
         return self
 
     def get_parts_by_tex(self, tex, substring=True, case_sensitive=True):
