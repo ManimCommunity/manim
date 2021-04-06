@@ -115,10 +115,10 @@ class ImageMobject(AbstractImageMobject):
 
     Changing interpolation style:
 
-    .. manim:: ImageFromArray
+    .. manim:: ImageInterpolationEx
         :save_last_frame:
 
-        class ImageInterpolationTest(Scene):
+        class ImageInterpolationEx(Scene):
             def construct(self):
                 img = ImageMobject(np.uint8([[63, 0, 0, 0],
                                                 [0, 127, 0, 0],
