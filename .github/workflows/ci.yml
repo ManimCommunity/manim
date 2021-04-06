@@ -60,7 +60,7 @@ jobs:
 
       - name: Update Brew (MacOS)
         if: runner.os == 'macOS'
-        run: brew update && brew upgrade basictex && brew cleanup
+        run: brew update && brew upgrade && brew cleanup
 
       - name: Cache Brew (MacOS)
         id: cache-brew
