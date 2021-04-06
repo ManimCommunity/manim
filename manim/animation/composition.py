@@ -35,25 +35,13 @@ class AnimationGroup(Animation):
         self.group = group
         if self.group is None:
             self.group = Group(
-                *remove_list_redundancies(
-                    [
-                        anim.mobject
-                        for anim in self.animations
-                        if anim.mobject is not None
-                    ]
-                )
+                *remove_list_redundancies([anim.mobject for anim in self.animations])
             )
         super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
-        self.run_time = run_time
-        self.init_run_time()
+        self.run_time: float = self.init_run_time(run_time)
 
     def get_all_mobjects(self) -> Group:
         return self.group
-
-    def get_run_time(self) -> float:
-        if super().get_run_time() is None:
-            self.init_run_time()
-        return super().get_run_time()
 
     def begin(self) -> None:
         for anim in self.animations:
@@ -71,13 +59,13 @@ class AnimationGroup(Animation):
         for anim in self.animations:
             anim.update_mobjects(dt)
 
-    def init_run_time(self) -> None:
+    def init_run_time(self, run_time) -> float:
         self.build_animations_with_timings()
         if self.anims_with_timings:
             self.max_end_time = np.max([awt[2] for awt in self.anims_with_timings])
         else:
             self.max_end_time = 0
-        self.run_time = self.max_end_time if self.run_time is None else self.run_time
+        return self.max_end_time if run_time is None else run_time
 
     def build_animations_with_timings(self) -> None:
         """
@@ -115,7 +103,6 @@ class Succession(AnimationGroup):
 
     def begin(self) -> None:
         assert len(self.animations) > 0
-        self.init_run_time()
         self.update_active_animation(0)
 
     def finish(self) -> None:

@@ -47,8 +47,8 @@ class Animation:
         self.remover: bool = remover
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        self.starting_mobject: Optional[Mobject] = None
-        self.mobject: Union[Mobject, None] = mobject
+        self.starting_mobject: Mobject = Mobject()
+        self.mobject: Mobject = mobject if mobject is not None else Mobject()
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -62,7 +62,7 @@ class Animation:
 
     def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
         if mobject is None:
-            logger.debug("creating dummy animation")
+            logger.debug("Animation with empty mobject")
         elif not isinstance(mobject, Mobject) and not isinstance(
             mobject, OpenGLMobject
         ):
@@ -82,7 +82,7 @@ class Animation:
         # especially any mobject copying, should live in
         # this method
         self.starting_mobject = self.create_starting_mobject()
-        if self.suspend_mobject_updating and self.mobject is not None:
+        if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
             # during the animation, either from this Animation
             # or from the surrounding scene, should do nothing.
@@ -101,11 +101,11 @@ class Animation:
         if self.is_remover():
             scene.remove(self.mobject)
 
-    def create_starting_mobject(self) -> Optional[Mobject]:
+    def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
-        return self.mobject.copy() if self.mobject is not None else None
+        return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Tuple[Optional[Mobject], Optional[Mobject]]:
+    def get_all_mobjects(self) -> Tuple[Mobject, Mobject]:
         """
         Ordering must match the ordering of arguments to interpolate_submobject
         """
@@ -113,11 +113,7 @@ class Animation:
 
     def get_all_families_zipped(self) -> Iterable[Tuple]:
         return zip(
-            *[
-                mob.family_members_with_points()
-                for mob in self.get_all_mobjects()
-                if mob is not None
-            ]
+            *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
         )
 
     def update_mobjects(self, dt: float) -> None:
@@ -142,7 +138,6 @@ class Animation:
 
     # Methods for interpolation, the mean of an Animation
     def interpolate(self, alpha: float) -> None:
-        # alpha = np.clip(alpha, 0, 1)
         alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
 
@@ -167,13 +162,13 @@ class Animation:
         self,
         submobject: Mobject,
         starting_submobject: Mobject,
-        # target_copy: Mobject,
+        # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differes in Transform().
         alpha: float,
     ) -> "Animation":
         # Typically implemented by subclass
         pass
 
-    def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int):
+    def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int) -> float:
         # TODO, make this more understandable, and/or combine
         # its functionality with AnimationGroup's method
         # build_animations_with_timings
@@ -181,7 +176,7 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        return np.clip((value - lower), 0, 1)
+        return min(max((value - lower), 0), 1)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> "Animation":
@@ -254,13 +249,12 @@ def prepare_animation(
 
 class Wait(Animation):
     def __init__(
-        self, duration: float = 1, stop_condition=None, **kwargs
+        self, run_time: float = 1, stop_condition=None, **kwargs
     ):  # what is stop_condition?
-        self.duration: float = duration
-        self.mobject: Union[Mobject, None] = None
+        self.duration: float = run_time
         self.stop_condition = stop_condition
         self.is_static_wait: bool = False
-        super().__init__(None, **kwargs)
+        super().__init__(None, run_time=run_time, **kwargs)
 
     def begin(self) -> None:
         pass

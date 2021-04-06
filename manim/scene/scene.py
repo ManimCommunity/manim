@@ -803,7 +803,7 @@ class Scene(Container):
         self.renderer.play(self, *args, **kwargs)
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-        self.play(Wait(duration=duration, stop_condition=stop_condition))
+        self.play(Wait(run_time=duration, stop_condition=stop_condition))
 
     def wait_until(self, stop_condition, max_time=60):
         """
