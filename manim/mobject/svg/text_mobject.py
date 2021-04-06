@@ -832,7 +832,7 @@ class Text(SVGMobject):
                 word.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
             else:
-                if not word.submobjects.__len__() == 0:
+                if word.submobjects.__len__() != 0:
                     words.add(word)
                 word = VGroup()
         if word.submobjects.__len__() != 0:
