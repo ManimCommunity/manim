@@ -121,12 +121,12 @@ not just the specific symbol or Tex expression searched for. For example, consid
 
     class IncorrectLaTeXSubstringColoring(Scene):
         def construct(self):
-        equation = MathTex(
-            "e^x = x^0 + x^1 + \\frac{1}{2} x^2 + \\frac{1}{6} x^3 + \\cdots + \\frac{1}{n!} x^n + \\cdots", isolate="x"
-            )
-        xs = equation.get_parts_by_tex("x")
-        xs.set_color(YELLOW)
-        self.add(equation)
+            equation = MathTex(
+                "e^x = x^0 + x^1 + \\frac{1}{2} x^2 + \\frac{1}{6} x^3 + \\cdots + \\frac{1}{n!} x^n + \\cdots", isolate="x"
+                )
+            xs = equation.get_parts_by_tex("x")
+            xs.set_color(YELLOW)
+            self.add(equation)
 
 colors the entire equation yellow, contrary to what may be expected. To color only `x` yellow, we have to do the following:
 
@@ -135,12 +135,12 @@ colors the entire equation yellow, contrary to what may be expected. To color on
 
     class CorrectLaTeXSubstringColoring(Scene):
         def construct(self):
-            real_equation = MathTex(
+            equation = MathTex(
                 "e^x = x^0 + x^1 + \\frac{1}{2} x^2 + \\frac{1}{6} x^3 + \\cdots + \\frac{1}{n!} x^n + \\cdots", substrings_to_isolate="x"
                 )
-            xs = real_equation.get_parts_by_tex("x")
+            xs = equation.get_parts_by_tex("x")
             xs.set_color(YELLOW)
-            self.add(real_equation)
+            self.add(equation)
 
 By setting `substring_to_isolate` to `x`, we split up the :class:`~.MathTex` into substrings automatically and in a way that isolates `x`
 into its own individual substrings. :func:`~.set_color_by_tex`: can then be used to achieve the desired result.
