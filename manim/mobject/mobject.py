@@ -204,7 +204,6 @@ class Mobject(Container):
 
             ``.animate``
              will interpolate the :class:`~.Mobject` between its points prior to ``.animate`` and its points after applying ``.animate`` to it. This may result in unexpected behavior when attempting to interpolate along paths, or rotations.
-             That means:  .animate doesn't know that it should do a nice rotation, it only interpolates between the old positions and the new positions of the points.
              If you want animations to consider the points between, consider using :class:`~.ValueTracker` with updaters instead.
 
         """
