@@ -42,7 +42,7 @@ jobs:
           echo "::set-output name=dir::$(poetry config cache-dir)"
           echo "::set-output name=date::$(/bin/date -u "+%m%d%Y")"
 
-      - name: Cache Poetry
+      - name: Setup Poetry cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.poetry-cache-time.outputs.dir }}
@@ -58,7 +58,7 @@ jobs:
           # start xvfb in the background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
-      - name: Cache Brew (MacOS)
+      - name: Setup Brew cache (MacOS)
         id: cache-brew
         if: runner.os == 'macOS'
         uses: actions/cache@v2
@@ -81,7 +81,7 @@ jobs:
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
 
-      - name: Cache Windows
+      - name: Setup Windows cache
         id: cache-windows
         if: runner.os == 'Windows'
         uses: actions/cache@v2
@@ -89,7 +89,7 @@ jobs:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.poetry-cache-time.outputs.date }}
 
-      - name: Setup MSYS2
+      - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
@@ -124,7 +124,7 @@ jobs:
           mkdir "$($PWD)\ManimCache\Pango"
           7z x "$($env:TMP)\Pango.zip" -o"$($PWD)\ManimCache\Pango"
 
-      - name: Add Windows dependencies to path
+      - name: Add Windows dependencies to PATH
         if: runner.os == 'Windows'
         run: |
           Remove-Item C:\msys64\mingw64\bin\python.exe -Force
