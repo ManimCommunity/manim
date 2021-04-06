@@ -114,7 +114,8 @@ class Brace(SVGPathMobject):
         return tex_mob
 
     def get_tip(self):
-        return self.points[7 * 4]
+        # Returns the position of the seventh point in the path, which is the tip.
+        return self.points[28] # = 7*4
 
     def get_direction(self):
         vect = self.get_tip() - self.get_center()
