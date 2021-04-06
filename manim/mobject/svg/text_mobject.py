@@ -824,18 +824,13 @@ class Text(SVGMobject):
         return chars
 
     def gen_words(self):
+        char_index = 0
         words = VGroup()
-        word = VGroup()
-        submobjects_char_index = 0
-        for char_index in range(len(self.text)):
-            if not self.text[char_index] in (" ", "\t", "\n"):
-                word.add(self.submobjects[submobjects_char_index])
-                submobjects_char_index += 1
-            else:
-                if len(word.submobjects) != 0:
-                    words.add(word)
-                word = VGroup()
-        if len(word.submobjects) != 0:
+        for text_word in self.text.split():  # Default splits by whitespace
+            word = VGroup()
+            for _ in text_word:
+                word.add(self.chars[char_index])
+                char_index += 1
             words.add(word)
         return words
 
