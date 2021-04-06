@@ -63,28 +63,32 @@ jobs:
         if: runner.os == 'macOS'
         uses: actions/cache@v2
         with:
-          path: |
-            /usr/local/Cellar/*
-            /usr/local/opt/*
-          key: test7-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+          path: ~/brew-cache
+          key: test8-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
+          ffmpegURL="https://evermeet.cx/ffmpeg/ffmpeg-4.3.2.zip"
           brew update
           brew upgrade basictex
           brew cleanup
-          brew install openssl readline ffmpeg pyenv pyenv-virtualenv
-          brew link ffmpeg pyenv pyenv-virtualenv
+          brew install openssl readline pyenv pyenv-virtualenv
+          curl -sSL $(ffmpegURL) -o ~/macos/tmp/ffmpeg.zip
+          unzip -q ~/macos/tmp/ffmpeg.zip -d ~/brew-cache
           brew install --cask basictex
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           brew install pkg-config libffi pango glib
-          brew link pango
-          brew reinstall cairo && brew link cairo
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Add macOS dependencies to PATH
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          echo "/brew-cache/ffmpeg/bin" >> $GITHUB_PATH
 
       - name: Setup Windows cache
         id: cache-windows
