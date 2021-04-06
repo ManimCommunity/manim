@@ -75,6 +75,7 @@ jobs:
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
+          brew update && brew upgrade basictex && brew cleanup
           brew install openssl readline ffmpeg pyenv pyenv-virtualenv
           eval "$(/usr/libexec/path_helper -s)"
           brew install --cask basictex
