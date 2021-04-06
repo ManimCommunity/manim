@@ -72,14 +72,15 @@ __all__ = [
 
 
 import itertools as it
-import typing
 
 import numpy as np
 from colour import Color
 
 from .. import logger
 
-if typing.TYPE_CHECKING:
+from typing import Union, Optional, Tuple, Callable, Dict, List, Iterable, TYPE_CHECKING
+
+if TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
 
 from ..animation.animation import Animation
@@ -105,7 +106,7 @@ class ShowPartial(Animation):
 
     """
 
-    def __init__(self, mobject: typing.Union[VMobject, OpenGLVMobject], **kwargs):
+    def __init__(self, mobject: Union[Optional[Mobject], OpenGLVMobject], **kwargs):
         if not isinstance(mobject, (VMobject, OpenGLVMobject)):
             raise TypeError("This Animation only works on vectorized mobjects")
         super().__init__(mobject, **kwargs)
@@ -150,13 +151,13 @@ class Create(ShowPartial):
 
     def __init__(
         self,
-        mobject: typing.Union[VMobject, OpenGLVMobject],
+        mobject: Union[VMobject, OpenGLVMobject],
         lag_ratio: float = 1.0,
         **kwargs,
     ) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> typing.Tuple[int, float]:
+    def _get_bounds(self, alpha: float) -> Tuple[int, float]:
         return (0, alpha)
 
 
@@ -169,7 +170,7 @@ class ShowCreation(Create):
         )
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> typing.Tuple[int, float]:
+    def _get_bounds(self, alpha: float) -> Tuple[int, float]:
         return (0, alpha)
 
 
@@ -192,10 +193,8 @@ class Uncreate(Create):
 
     def __init__(
         self,
-        mobject: typing.Union[VMobject, OpenGLVMobject],
-        rate_func: typing.Callable[[float, float], np.ndarray] = lambda t: smooth(
-            1 - t
-        ),
+        mobject: Union[VMobject, OpenGLVMobject],
+        rate_func: Callable[[float], float] = lambda t: smooth(1 - t),
         remover: bool = True,
         **kwargs,
     ) -> None:
@@ -216,13 +215,13 @@ class DrawBorderThenFill(Animation):
 
     def __init__(
         self,
-        vmobject: typing.Union[VMobject, OpenGLVMobject],
+        vmobject: Union[VMobject, OpenGLVMobject],
         run_time: float = 2,
-        rate_func: typing.Callable[[float], np.ndarray] = double_smooth,
+        rate_func: Callable[[float], np.ndarray] = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
-        draw_border_animation_config: typing.Dict = {},  # what does this dict accept?
-        fill_animation_config: typing.Dict = {},
+        draw_border_animation_config: Dict = {},  # what does this dict accept?
+        fill_animation_config: Dict = {},
         **kwargs,
     ) -> None:
         self._typecheck_input(vmobject)
@@ -231,17 +230,11 @@ class DrawBorderThenFill(Animation):
         self.stroke_color = stroke_color
         self.draw_border_animation_config = draw_border_animation_config
         self.fill_animation_config = fill_animation_config
-        self.outline = None
+        self.outline = self.get_outline()
 
-    def _typecheck_input(
-        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
-    ) -> None:
+    def _typecheck_input(self, vmobject: Union[VMobject, OpenGLVMobject]) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
             raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
-
-    def begin(self) -> None:
-        self.outline = self.get_outline()
-        super().begin()
 
     def get_outline(self) -> Mobject:
         outline = self.mobject.copy()
@@ -250,21 +243,21 @@ class DrawBorderThenFill(Animation):
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(
-        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
-    ) -> Color:
+    def get_stroke_color(self, vmobject: Union[VMobject, OpenGLVMobject]) -> Color:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
             return vmobject.get_stroke_color()
         return vmobject.get_color()
 
-    def get_all_mobjects(self) -> typing.List[typing.Union[Mobject, None]]:
+    def get_all_mobjects(self) -> List[Union[Mobject, None]]:
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
         self, submobject: Mobject, starting_submobject: Mobject, outline, alpha: float
     ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
+        index: int
+        subalpha: int
         index, subalpha = integer_interpolate(0, 2, alpha)
         if index == 0:
             submobject.pointwise_become_partial(outline, 0, subalpha)
@@ -287,34 +280,38 @@ class Write(DrawBorderThenFill):
 
     def __init__(
         self,
-        vmobject: typing.Union[VMobject, OpenGLVMobject],
-        run_time: float = None,
-        lag_ratio: float = None,
-        rate_func: typing.Callable[[float], np.ndarray] = linear,
+        vmobject: Union[VMobject, OpenGLVMobject],
+        rate_func: Callable[[float], float] = linear,
         **kwargs,
     ) -> None:
-        self.run_time = run_time
-        self.lag_ratio = lag_ratio
-        self._set_default_config_from_length(vmobject)
+        run_time: Optional[float] = kwargs.pop("run_time", None)
+        lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
+        run_time, lag_ratio = self._set_default_config_from_length(
+            vmobject, run_time, lag_ratio
+        )
         super().__init__(
             vmobject,
-            run_time=self.run_time,
-            lag_ratio=self.lag_ratio,
             rate_func=rate_func,
+            run_time=run_time,
+            lag_ratio=lag_ratio,
             **kwargs,
         )
 
     def _set_default_config_from_length(
-        self, vmobject: typing.Union[VMobject, OpenGLVMobject]
-    ) -> None:
+        self,
+        vmobject: Union[VMobject, OpenGLVMobject],
+        run_time: Optional[float],
+        lag_ratio: Optional[float],
+    ) -> Tuple[float, float]:
         length = len(vmobject.family_members_with_points())
-        if self.run_time is None:
+        if run_time is None:
             if length < 15:
-                self.run_time = 1
+                run_time = 1
             else:
-                self.run_time = 2
-        if self.lag_ratio is None:
-            self.lag_ratio = min(4.0 / length, 0.2)
+                run_time = 2
+        if lag_ratio is None:
+            lag_ratio = min(4.0 / length, 0.2)
+        return run_time, lag_ratio
 
 
 class Unwrite(Write):
@@ -349,18 +346,18 @@ class Unwrite(Write):
     def __init__(
         self,
         vmobject: VMobject,
-        run_time: float = None,
-        lag_ratio: float = None,
-        rate_func: typing.Callable[[float], np.ndarray] = linear,
+        rate_func: Callable[[float], np.ndarray] = linear,
         reverse: bool = False,
         **kwargs,
     ) -> None:
 
         self.vmobject = vmobject
-        self.run_time = run_time
-        self.lag_ratio = lag_ratio
         self.reverse = reverse
-        self._set_default_config_from_length(vmobject)
+        run_time: Optional[float] = kwargs.pop("run_time", None)
+        lag_ratio: Optional[float] = kwargs.pop("lag_ratio", None)
+        run_time, lag_ratio = self._set_default_config_from_length(
+            vmobject, run_time, lag_ratio
+        )
         super().__init__(
             vmobject,
             run_time=run_time,
@@ -403,7 +400,7 @@ class ShowIncreasingSubsets(Animation):
         self,
         group: Mobject,
         suspend_mobject_updating: bool = False,
-        int_func: typing.Callable[[np.ndarray], np.ndarray] = np.floor,
+        int_func: Callable[[np.ndarray], np.ndarray] = np.floor,
         **kwargs,
     ) -> None:
         self.all_submobs = list(group.submobjects)
@@ -442,24 +439,23 @@ class AddTextLetterByLetter(ShowIncreasingSubsets):
         self,
         text: "Text",
         suspend_mobject_updating: bool = False,
-        int_func: typing.Callable[[np.ndarray], np.ndarray] = np.ceil,
-        rate_func: typing.Callable[[float], float] = linear,
+        int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
+        rate_func: Callable[[float], float] = linear,
         time_per_char: float = 0.1,
-        run_time: typing.Optional[float] = None,
+        run_time: Optional[float] = None,
         **kwargs,
     ) -> None:
         # time_per_char must be above 0.06, or the animation won't finish
         self.time_per_char = time_per_char
-        self.run_time = run_time
-        if self.run_time is None:
-            self.run_time = np.max((0.06, self.time_per_char)) * len(text)
+        if run_time is None:
+            run_time = np.max((0.06, self.time_per_char)) * len(text)
 
         super().__init__(
             text,
             suspend_mobject_updating=suspend_mobject_updating,
             int_func=int_func,
             rate_func=rate_func,
-            run_time=self.run_time,
+            run_time=run_time,
             **kwargs,
         )
 
@@ -469,8 +465,8 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
     def __init__(
         self,
-        group: typing.Iterable[Mobject],
-        int_func: typing.Callable[[np.ndarray], np.ndarray] = np.ceil,
+        group: Iterable[Mobject],
+        int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
         **kwargs,
     ) -> None:
         new_group = Group(*group)

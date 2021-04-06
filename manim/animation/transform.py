@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 class Transform(Animation):
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: Optional[Mobject],
         target_mobject: Optional[Mobject] = None,
         path_func: Optional[Callable] = None,
         path_arc: float = 0,
@@ -60,7 +60,9 @@ class Transform(Animation):
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
-        self.target_mobject: Optional[Mobject] = target_mobject
+        self.target_mobject: Mobject = (
+            target_mobject if target_mobject is not None else Mobject()
+        )
         super().__init__(mobject, **kwargs)
         self._init_path_func()
 
@@ -80,25 +82,16 @@ class Transform(Animation):
         # call so that the actual target_mobject stays
         # preserved.
         self.target_mobject = self.create_target()
-        self.check_target_mobject_validity()
-        if self.target_mobject is not None:
-            self.target_copy = self.target_mobject.copy()
-            # Note, this potentially changes the structure
-            # of both mobject and target_mobject
-            if self.mobject is not None:
-                self.mobject.align_data(self.target_copy)
+        self.target_copy = self.target_mobject.copy()
+        # Note, this potentially changes the structure
+        # of both mobject and target_mobject
+        self.mobject.align_data(self.target_copy)
         super().begin()
 
-    def create_target(self) -> Union[Mobject, None]:
+    def create_target(self) -> Mobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
-
-    def check_target_mobject_validity(self) -> None:
-        if self.target_mobject is None:
-            raise NotImplementedError(
-                f"{self.__class__.__name__}.create_target not properly implemented"
-            )
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
         super().clean_up_from_scene(scene)
@@ -108,14 +101,10 @@ class Transform(Animation):
 
     def get_all_mobjects(self) -> List[Mobject]:
         return [
-            mob
-            for mob in [
-                self.mobject,
-                self.starting_mobject,
-                self.target_mobject,
-                self.target_copy,
-            ]
-            if mob is not None
+            self.mobject,
+            self.starting_mobject,
+            self.target_mobject,
+            self.target_copy,
         ]
 
     def get_all_families_zipped(self) -> Iterable[tuple]:  # more precise typing?
@@ -124,9 +113,7 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        return zip(
-            *[mob.family_members_with_points() for mob in mobs if mob is not None]
-        )
+        return zip(*[mob.family_members_with_points() for mob in mobs])
 
     def interpolate_submobject(
         self,
