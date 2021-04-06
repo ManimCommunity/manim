@@ -79,7 +79,8 @@ jobs:
           echo "Installing ffmpeg..."
           curl -SL "$ffmpegURL" --create-dirs -o ~/macos/tmp/ffmpeg.zip
           unzip ~/macos/tmp/ffmpeg.zip -d ~/brew-cache
-          mv -p ~/brew-cache/FFmpeg-* ~/brew-cache/ffmpeg
+          mkdir -p ~/brew-cache/ffmpeg
+          mv ~/brew-cache/FFmpeg-* ~/brew-cache/ffmpeg
           cd ~/brew-cache/ffmpeg/fftools && make
           echo "Completed ffmpeg"
           brew install pkg-config libffi pango glib
