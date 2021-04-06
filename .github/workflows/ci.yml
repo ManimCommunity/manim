@@ -40,17 +40,13 @@ jobs:
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
           echo "::set-output name=dir::$(poetry config cache-dir)"
+          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
       - name: Setup Poetry cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.poetry-cache.outputs.dir }}
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
-
-      - name: Setup cache date
-        id: cache-date
-        run: |
-          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
@@ -70,7 +66,7 @@ jobs:
           path: |
             # ~/Library/Caches/Homebrew/downloads/*
             /usr/*
-          key: test4-brew-${{ matrix.python }}-${{ steps.cache-date.outputs.date }}
+          key: test4-brew-${{ matrix.python }}-${{ steps.poetry-cache.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
@@ -91,7 +87,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}\ManimCache
-          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-date.outputs.date }}
+          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.poetry-cache.outputs.date }}
 
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
