@@ -11,7 +11,7 @@ manim itself.
    today that are generally incompatible with each other.
    This documentation **only** covers the installation of the *community edition*; 
    trying to use instructions intended for other versions of manim or vice versa will likely result in failure.
-   In particular, most video tutorials are outdated. For more information, please read `Differences between Manim Versions`_.
+   In particular, most video tutorials are outdated. For more information, please read :doc:`installation/Differences between Manim Versions`.
 
 Installing dependencies
 ***********************
