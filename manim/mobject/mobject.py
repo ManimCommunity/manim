@@ -1032,7 +1032,7 @@ class Mobject(Container):
         if config.renderer == "opengl":
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
-                lambda points: np.dot(points, rot_matrix_T), **kwargs
+                lambda points: np.dot(points, rot_matrix_T), about_point, **kwargs
             )
             return self
         else:
