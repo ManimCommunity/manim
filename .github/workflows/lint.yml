@@ -20,12 +20,8 @@ jobs:
           $commitEndpoint=$($payload.pull_request._links.commits.href)
           echo "$commitEndpoint"
           $commits = Invoke-WebRequest -Uri "$commitEndpoint" | ConvertFrom-Json
+          echo "::set-output name=fetch-depth-checkout::$($commits.count + 1)"
           echo "::set-output name=fetch-depth::$($commits.count)"
-          if ($commits.count -eq 1){
-               echo "::set-output name=fetch-depth-checkout::2"
-          } else {
-                echo "::set-output name=fetch-depth-checkout::$($commits.count)"
-          }
       - name: Checkout the repository
         uses: actions/checkout@v2
         with:
