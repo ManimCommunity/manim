@@ -4,11 +4,8 @@
 __all__ = ["Animation", "Wait"]
 
 
-from collections.abc import Callable
 from copy import deepcopy
-from typing import TYPE_CHECKING, Iterable, Iterator, Optional, Tuple, Union
-
-import numpy as np
+from typing import TYPE_CHECKING, Callable, Iterable, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
