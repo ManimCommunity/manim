@@ -1,6 +1,9 @@
 default_language_version:
   python: python3.9
 
+ci:
+    skip: [flake8]
+
 repos:
   - repo: https://github.com/psf/black
     rev: 20.8b1
