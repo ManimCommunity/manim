@@ -9,7 +9,7 @@ for your use case and avoid confusion arising from version mismatches.
 A brief history of Manim
 ************************
 
-manim was originally created by Grant Sanderson as a personal project and 
+Manim was originally created by Grant Sanderson as a personal project and 
 for use in his YouTube channel, `3Blue1Brown <https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw>`_. As his channel gained popularity, 
 many grew to like the style of his animations and wanted to use manim for their own projects. 
 However, as manim was only intended for personal use, 
