@@ -69,6 +69,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/brew-cache
+          # Will become ${{ runner.os }}-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+          # after cache implementation is complete
           key: test8-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
