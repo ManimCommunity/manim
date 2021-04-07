@@ -1,5 +1,7 @@
 default_language_version:
   python: python3.9
+default_stages: [commit, push]
+fail_fast: false
 
 ci:
     skip: [flake8]
