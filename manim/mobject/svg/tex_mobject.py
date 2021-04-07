@@ -113,7 +113,7 @@ in this example where we set the color of the ``\bigstar`` using :func:`~.set_co
             tex.set_color_by_tex('igsta', RED)
             self.add(tex)
 
-Note that :func:`~.set_color_by_tex`: colors the entire substring containing the Tex searched for,
+Note that :func:`~.set_color_by_tex` colors the entire substring containing the Tex searched for,
 not just the specific symbol or Tex expression searched for. Consider the following example:
 
 .. manim:: IncorrectLaTeXSubstringColoring
@@ -128,7 +128,7 @@ not just the specific symbol or Tex expression searched for. Consider the follow
             xs.set_color(YELLOW)
             self.add(equation)
 
-colors the entire equation yellow, contrary to what may be expected. To color only `x` yellow, we have to do the following:
+colors the entire equation yellow, contrary to what may be expected. To color only ``x`` yellow, we have to do the following:
 
 .. manim:: CorrectLaTeXSubstringColoring
     :save_last_frame:
