@@ -17,7 +17,7 @@ from manim import logger
 
 from ... import config
 from ...constants import *
-from ...mobject.geometry import Line, Circle, Rectangle, RoundedRectangle
+from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.types.vectorized_mobject import VGroup, VMobject
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
