@@ -20,9 +20,10 @@ class UpdaterTest(Scene):
 class ValueTrackerTest(Scene):
     def construct(self):
         theta = ValueTracker(PI / 2)
-        line_1 = Line(ORIGIN, RIGHT * 3, color=RED)
-        line_2 = Line(ORIGIN, RIGHT * 3, color=GREEN)
-        line_2.rotate(theta.get_value(), about_point=ORIGIN)
+        line = Line(ORIGIN, RIGHT)
+        line.rotate(theta.get_value(), about_point=ORIGIN)
+        self.add(line)
+        self.wait()
 
 
 class UpdateSceneDuringAnimationTest(Scene):
