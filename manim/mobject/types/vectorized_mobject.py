@@ -13,7 +13,7 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import colour
 
@@ -459,10 +459,10 @@ class VMobject(Mobject):
 
     def set_anchors_and_handles(
         self,
-        anchors1: Iterable[float],
-        handles1: Iterable[float],
-        handles2: Iterable[float],
-        anchors2: Iterable[float],
+        anchors1: Sequence[float],
+        handles1: Sequence[float],
+        handles2: Sequence[float],
+        anchors2: Sequence[float],
     ) -> "VMobject":
         """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
 
@@ -621,7 +621,7 @@ class VMobject(Mobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[float]) -> "VMobject":
+    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -829,8 +829,8 @@ class VMobject(Mobject):
             subpaths formed by the points.
         """
         nppcc = self.n_points_per_cubic_curve
-        split_indices = filter(filter_func, range(nppcc, len(points), nppcc))
-        split_indices = [0] + list(split_indices) + [len(points)]
+        filtered = filter(filter_func, range(nppcc, len(points), nppcc))
+        split_indices = [0] + list(filtered) + [len(points)]
         return (
             points[i1:i2]
             for i1, i2 in zip(split_indices, split_indices[1:])
