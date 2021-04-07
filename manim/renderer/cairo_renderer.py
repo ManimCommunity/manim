@@ -275,6 +275,6 @@ class CairoRenderer:
         else:
             self.update_frame(scene)
 
-        if config.save_last_frame:
+        if config["save_last_frame"]:
             self.update_frame(scene)
             self.file_writer.save_final_image(self.camera.get_image())
