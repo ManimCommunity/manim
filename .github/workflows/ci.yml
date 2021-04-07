@@ -95,7 +95,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}\ManimCache
-          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}
+          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
@@ -110,7 +110,6 @@ jobs:
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
-          $ffmpegUrl = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'])"
           $pangoVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['pango'])"
           $tinyTexPackages = $(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['windows']['tinytex']))") -Split ' '
           $OriPath = $env:PATH
@@ -125,9 +124,6 @@ jobs:
           }
           $env:PATH=$OriPath
           echo "Completed Latex"
-          Invoke-WebRequest "$ffmpegUrl" -O "$($env:TMP)\ffmpeg.zip"
-          7z x "$($env:TMP)\ffmpeg.zip" -o"$($PWD)\ManimCache"
-          Move-Item "ManimCache\ffmpeg-*" "ManimCache\FFmpeg"
           Invoke-WebRequest "https://github.com/ManimCommunity/pango-windows-binaries/releases/download/$($pangoVersion)/pango-windows-binaires-x64.zip" -O "$($env:TMP)\Pango.zip"
           mkdir "$($PWD)\ManimCache\Pango"
           7z x "$($env:TMP)\Pango.zip" -o"$($PWD)\ManimCache\Pango"
@@ -137,7 +133,6 @@ jobs:
         run: |
           Remove-Item C:\msys64\mingw64\bin\python.exe -Force
           Remove-Item C:\msys64\mingw64\bin\python3.exe -Force
-          $env:Path += ";" + "$($PWD)\ManimCache\FFmpeg\bin"
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
           $env:Path += ";" + "$($PWD)\ManimCache\Pango\pango"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
