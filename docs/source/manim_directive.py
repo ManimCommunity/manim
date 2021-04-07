@@ -170,7 +170,7 @@ class ManimDirective(Directive):
             + self.options.get("ref_methods", [])
         )
         if ref_content:
-            ref_block = 'References: ' + ' '.join(ref_content)
+            ref_block = "References: " + " ".join(ref_content)
 
         else:
             ref_block = ""
