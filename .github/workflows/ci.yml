@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.cache-vars.outputs.pip-dir }}
-          key: ${{ runner.os }}-pip-${{ matrix.python }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install and cache ffmpeg (all OS)
         uses: FedericoCarboni/setup-ffmpeg@v1
@@ -69,9 +69,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/brew-cache
-          # Will become ${{ runner.os }}-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+          # Will become ${{ runner.os }}-brew-${{ env.pythonLocation }}-${{ steps.cache-vars.outputs.date }}
           # after cache implementation is complete
-          key: test8-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+          key: test8-brew-${{ env.pythonLocation }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
