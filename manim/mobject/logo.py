@@ -2,10 +2,9 @@
 
 __all__ = ["ManimBanner"]
 
-from manim.utils.rate_functions import ease_out_sine, rush_from, rush_into
-from manim.animation.update import UpdateFromAlphaFunc
 import numpy as np
 
+from ..animation.update import UpdateFromAlphaFunc
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.fading import FadeIn
 from ..animation.transform import ApplyMethod
@@ -13,8 +12,7 @@ from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
 from ..mobject.geometry import Circle, Square, Triangle
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.value_tracker import ValueTracker
-from ..utils.space_ops import normalize
+from ..utils.rate_functions import ease_out_sine
 from ..utils.tex_templates import TexFontTemplates
 
 
@@ -93,7 +91,6 @@ class ManimBanner(VGroup):
         # Note: "anim" is only shown in the expanded state
         # and thus not yet added to the submobjects of self.
         self.anim = anim
-        self.anim.set_opacity(0)
 
     def scale(self, scale_factor: float, **kwargs) -> "ManimBanner":
         """Scale the banner by the specified scale factor.
@@ -114,7 +111,7 @@ class ManimBanner(VGroup):
             self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
-    def create(self, run_time:float = 2.1):
+    def create(self, run_time: float = 2.1):
         """The creation animation for Manim's logo.
 
         Parameters
@@ -139,7 +136,7 @@ class ManimBanner(VGroup):
             shape.move_to(shape.initial_position)
             shape.save_state()
 
-        def spiral_updater(shapes:VGroup, alpha):
+        def spiral_updater(shapes, alpha):
             for shape in shapes:
                 shape.restore()
                 shape.shift((shape.final_position - shape.initial_position) * alpha)
@@ -153,7 +150,7 @@ class ManimBanner(VGroup):
             lag_ratio=0.1
         )
 
-    def expand(self) -> Succession:
+    def expand(self, direction=RIGHT) -> Succession:
         """An animation that expands Manim's logo into its banner.
 
         The returned animation transforms the banner from its initial
@@ -177,26 +174,34 @@ class ManimBanner(VGroup):
         """
         m_shape_offset = 6.25 * self.scale_factor
         m_anim_buff = 0.06
-        self.add(self.anim)
-        self.anim.next_to(self.M, buff=m_anim_buff).shift(
-            m_shape_offset * LEFT
-        ).align_to(self.M, DOWN)
-        move_left = AnimationGroup(
-            ApplyMethod(self.triangle.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.square.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.circle.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.M.shift, m_shape_offset * LEFT),
+        self.anim.next_to(self.M, buff=m_anim_buff)\
+                 .align_to(self.M, DOWN)
+                #  .shift(m_shape_offset * LEFT)\
+
+        # move_left = self.animate.shift(m_shape_offset * LEFT)
+        
+        # AnimationGroup(
+        #     ApplyMethod(self.triangle.shift, m_shape_offset * LEFT),
+        #     ApplyMethod(self.square.shift, m_shape_offset * LEFT),
+        #     ApplyMethod(self.circle.shift, m_shape_offset * LEFT),
+        #     ApplyMethod(self.M.shift, m_shape_offset * LEFT),
+        # )
+
+        show_text = AnimationGroup(
+            *[FadeIn(letter) for letter in self.anim], lag_ratio=0.15
         )
-        move_right = AnimationGroup(
-            ApplyMethod(self.triangle.shift, m_shape_offset * RIGHT),
-            ApplyMethod(self.square.shift, m_shape_offset * RIGHT),
-            ApplyMethod(self.circle.shift, m_shape_offset * RIGHT),
-            ApplyMethod(self.M.shift, 0 * LEFT),
-            AnimationGroup(
-                *[ApplyMethod(obj.set_opacity, 1) for obj in self.anim], lag_ratio=0.15
-            ),
-            # It would be nice to have the last AnimationGroup replaced by
-            # FadeIn(self.anim, lag_ratio=1)
-            # Currently not working though.
+
+        # move_right = AnimationGroup(
+        #     ApplyMethod(self.triangle.shift, m_shape_offset * RIGHT),
+        #     ApplyMethod(self.square.shift, m_shape_offset * RIGHT),
+        #     ApplyMethod(self.circle.shift, m_shape_offset * RIGHT),
+        #     ApplyMethod(self.M.shift, 0 * LEFT),
+        #     AnimationGroup(
+        #         *[ApplyMethod(obj.set_opacity, 1) for obj in self.anim], lag_ratio=0.15
+        #     )
+        # )
+        return AnimationGroup(
+            self.shape.animate.shift(m_shape_offset * RIGHT),
+            self.M.animate.scale(1),
+            show_text
         )
-        return Succession(move_left, move_right)
