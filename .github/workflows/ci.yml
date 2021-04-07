@@ -84,10 +84,10 @@ jobs:
           echo "Completed ffmpeg"
           brew install pkg-config libffi pango glib
 
-      - name: Move and update dependencies (MacOS)
+      - name: Update dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
-          cd ~/brew-cache/ffmpeg/fftools && make
+          cd ~/brew-cache/ffmpeg && ./configure && make
 
       - name: Add macOS dependencies to PATH
         if: runner.os == 'macOS'
