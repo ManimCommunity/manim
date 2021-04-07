@@ -50,3 +50,8 @@
 .admonition-manim-example .copybtn:hover {
     cursor: pointer;
 }
+
+/* yikes-ish attempt at bugfix for navbar on some browsers */
+a.internal.reference {
+    display: table-cell;
+}
