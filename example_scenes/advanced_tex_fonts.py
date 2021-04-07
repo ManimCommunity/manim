@@ -126,7 +126,7 @@ class TexFontTemplateLibrary(Scene):
         for font in examples:
             try:
                 write_one_line(font)
-            except:
+            except Exception:
                 print("FAILURE on ", font.description, " - skipping.")
 
         self.play(
