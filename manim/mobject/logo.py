@@ -195,13 +195,30 @@ class ManimBanner(VGroup):
 
         def slide_and_uncover(mob, alpha):
             mob.shape.restore()
-            mob.shape.shift(alpha * (m_shape_offset + shape_sliding_overshoot) * RIGHT / 2)
             
             # Add a slight upwards curve to the motion.
             # This is needed to let the quare fully cover the "i"
             mob.shape.shift(((0.5-alpha)**2 - 0.25) * DOWN * 0.25)
 
-            VGroup(mob, self.anim, m_clone).shift(mob.fixed_position-mob.get_center())
+            side_shift = alpha * (m_shape_offset + shape_sliding_overshoot) * RIGHT
+            left_group = VGroup(self.M, self.anim, m_clone)
+
+            if direction == "right":
+                mob.shape.shift(side_shift)
+            elif direction == "center":
+                mob.shape.shift(side_shift/2)
+                left_group.align_to(m_start, LEFT)
+                left_group.shift(-side_shift/2)
+            elif direction == "left":
+                left_group.align_to(m_start, LEFT)
+                left_group.shift(-side_shift)
+                
+
+            # if direction == "center": 
+            #     VGroup(mob, self.anim, m_clone).shift(mob.fixed_position-mob.get_center()[0]*RIGHT)
+            # elif direction == "left":
+            #     VGroup(mob, self.anim, m_clone).shift(mob.fixed_position-mob.get_center()[0]*RIGHT*2)
+
 
             for letter in mob.anim:
                 if mob.square.get_center()[0] > letter.get_center()[0]:
@@ -216,7 +233,7 @@ class ManimBanner(VGroup):
 
         def slide_back(mob, alpha):
             m_clone.set_opacity(1)
-            m_clone.move_to(mob.anim[-1])            
+            m_clone.move_to(mob.anim[-1])         
             mob.shape.restore()
             mob.shape.shift(alpha * shape_sliding_overshoot * LEFT)
             mob.anim.set_opacity(1)
@@ -224,8 +241,8 @@ class ManimBanner(VGroup):
                 mob.remove(m_clone)
                 mob.add_to_back(mob.shape)
 
-        self.fixed_position = self.get_center()
-        
+        m_start = self.M.copy()
+            
 
         return Succession(
             UpdateFromAlphaFunc(self, slide_and_uncover, run_time=run_time * 2/3, rate_func=ease_in_out_cubic),
