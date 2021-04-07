@@ -8,7 +8,6 @@ import numpy as np
 from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
-from ..utils.bezier import interpolate
 from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
