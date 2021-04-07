@@ -3,6 +3,7 @@
 __all__ = ["ManimBanner"]
 
 from os import scandir
+from typing import Union
 from manim.utils.color import RED
 from manim.animation.animation import Animation
 import numpy as np
@@ -154,7 +155,7 @@ class ManimBanner(VGroup):
             lag_ratio=0.1
         )
 
-    def expand(self, run_time: float = 1.5) -> Succession:
+    def expand(self, run_time: float = 1.5, direction=None) -> Succession:
         """An animation that expands Manim's logo into its banner.
 
         The returned animation transforms the banner from its initial
@@ -188,34 +189,43 @@ class ManimBanner(VGroup):
                  .align_to(self.M, DOWN)\
                  .set_opacity(0)
         self.shape.save_state()
-        self.add_to_back(self.anim)
         m_clone = self.anim[-1].copy()
         self.add(m_clone)
+        m_clone.move_to(self.shape)
 
         def slide_and_uncover(mob, alpha):
             mob.shape.restore()
-            mob.shape.shift(alpha * (m_shape_offset + shape_sliding_overshoot) * RIGHT)
+            mob.shape.shift(alpha * (m_shape_offset + shape_sliding_overshoot) * RIGHT / 2)
             
             # Add a slight upwards curve to the motion.
             # This is needed to let the quare fully cover the "i"
             mob.shape.shift(((0.5-alpha)**2 - 0.25) * DOWN * 0.25)
 
+            VGroup(mob, self.anim, m_clone).shift(mob.fixed_position-mob.get_center())
+
             for letter in mob.anim:
                 if mob.square.get_center()[0] > letter.get_center()[0]:
                     letter.set_opacity(1)
+                    self.add_to_back(letter)
             if alpha == 1:
+                self.remove(*[self.anim])
+                self.add_to_back(self.anim)
                 mob.shape.set_z_index(0)
                 mob.shape.save_state()
             
 
         def slide_back(mob, alpha):
             m_clone.set_opacity(1)
+            m_clone.move_to(mob.anim[-1])            
             mob.shape.restore()
             mob.shape.shift(alpha * shape_sliding_overshoot * LEFT)
             mob.anim.set_opacity(1)
             if alpha == 1:
                 mob.remove(m_clone)
                 mob.add_to_back(mob.shape)
+
+        self.fixed_position = self.get_center()
+        
 
         return Succession(
             UpdateFromAlphaFunc(self, slide_and_uncover, run_time=run_time * 2/3, rate_func=ease_in_out_cubic),
