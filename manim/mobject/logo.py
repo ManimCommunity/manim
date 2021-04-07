@@ -114,8 +114,13 @@ class ManimBanner(VGroup):
             self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
-    def create(self, run_time = 2.1):
+    def create(self, run_time:float = 2.1):
         """The creation animation for Manim's logo.
+
+        Parameters
+        ----------
+        run_time
+            The run time of the animation.
 
         Returns
         -------
