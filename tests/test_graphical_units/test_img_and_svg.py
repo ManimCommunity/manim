@@ -10,6 +10,7 @@ from ..helpers.path_utils import get_project_root
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
 
+
 def get_test_resource(filename):
     return str(
         get_project_root() / "tests/test_graphical_units/img_svg_resources" / filename
@@ -230,20 +231,19 @@ class ImageMobjectTest(Scene):
         self.add(im1, im2, im3)
         self.wait(1)
 
+
 class ImageInterpolationTest(Scene):
     def construct(self):
-        img = ImageMobject(np.uint8([[63, 0, 0, 0],
-                                        [0, 127, 0, 0],
-                                        [0, 0, 191, 0],
-                                        [0, 0, 0, 255]
-                                        ]))
+        img = ImageMobject(
+            np.uint8([[63, 0, 0, 0], [0, 127, 0, 0], [0, 0, 191, 0], [0, 0, 0, 255]])
+        )
 
         img.height = 2
-        img1= img.copy()
-        img2= img.copy()
-        img3= img.copy()
-        img4= img.copy()
-        img5= img.copy()
+        img1 = img.copy()
+        img2 = img.copy()
+        img3 = img.copy()
+        img4 = img.copy()
+        img5 = img.copy()
 
         img1.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
         img2.set_resampling_algorithm(RESAMPLING_ALGORITHMS["lanczos"])
@@ -251,12 +251,13 @@ class ImageInterpolationTest(Scene):
         img4.set_resampling_algorithm(RESAMPLING_ALGORITHMS["cubic"])
         img5.set_resampling_algorithm(RESAMPLING_ALGORITHMS["box"])
 
-        self.add(img1,img2,img3,img4,img5)
-        [s.shift(4*LEFT+pos*2*RIGHT) for pos, s in enumerate(self.mobjects) ]
+        self.add(img1, img2, img3, img4, img5)
+        [s.shift(4 * LEFT + pos * 2 * RIGHT) for pos, s in enumerate(self.mobjects)]
         self.wait()
-        
-        
+
+
 MODULE_NAME = "img_and_svg"
+
 
 @pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
 def test_scene(scene_to_test, tmpdir, show_diff):

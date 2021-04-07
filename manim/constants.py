@@ -53,7 +53,7 @@ RESAMPLING_ALGORITHMS = {
     "bicubic": Image.BICUBIC,
     "cubic": Image.BICUBIC,
     "box": Image.BOX,
-    "hamming": Image.HAMMING
+    "hamming": Image.HAMMING,
 }
 
 # Geometry: directions
