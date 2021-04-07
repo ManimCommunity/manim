@@ -235,6 +235,10 @@ class DrawBorderThenFill(Animation):
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
             raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
 
+    def begin(self) -> None:
+        self.outline = self.get_outline()
+        super().begin()
+
     def get_outline(self) -> Mobject:
         outline = self.mobject.copy()
         outline.set_fill(opacity=0)
