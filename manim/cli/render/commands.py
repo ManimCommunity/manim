@@ -138,9 +138,35 @@ def render(
                 console.print_exception()
 
     if config.notify_outdated_version:
-        manim = requests.get("https://pypi.org/pypi/manim/json")
-        releases = manim.json()["releases"].keys()
-        stable = max(releases)
+        manim_info_url = "https://pypi.org/pypi/manim/json"
+        warn_prompt = "Cannot check if latest release of manim is installed"
+        req_info = {}
+        releases = {}
+        stable = ""
+
+        try:
+            req_info = requests.get(manim_info_url, timeout=3)
+            req_info.raise_for_status()
+        except requests.exceptions.HTTPError:
+            logger.warning("HTTP Error: %s", warn_prompt)
+            raise SystemExit
+        except requests.exceptions.ConnectionError:
+            logger.warning("Connection Error: %s", warn_prompt)
+            raise SystemExit
+        except requests.exceptions.Timeout:
+            logger.warning("Timeout Error: %s", warn_prompt)
+            raise SystemExit
+        except Exception:
+            logger.warning("Something else went wrong: %s".warn_prompt)
+            raise SystemExit
+
+        try:
+            releases = req_info.json()["releases"].keys()
+            stable = max(releases)
+        except Exception:
+            logger.warning(warn_prompt)
+            logger.warning("Error decoding JSON from %s", manim_info_url)
+            raise SystemExit
 
         if stable != __version__:
             console.print(
