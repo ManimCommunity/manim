@@ -115,7 +115,7 @@ class ManimBanner(VGroup):
             self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
-    def create(self, run_time: float = 2.1):
+    def create(self, run_time: float = 2):
         """The creation animation for Manim's logo.
 
         Parameters
@@ -154,7 +154,7 @@ class ManimBanner(VGroup):
             lag_ratio=0.1
         )
 
-    def expand(self) -> Succession:
+    def expand(self, run_time: float = 1.5) -> Succession:
         """An animation that expands Manim's logo into its banner.
 
         The returned animation transforms the banner from its initial
@@ -170,6 +170,11 @@ class ManimBanner(VGroup):
             it is added as a submobject so subsequent animations
             to the banner object apply to the text "anim" as well.
 
+        Parameters
+        ----------
+        run_time
+            The run time of the animation.
+
         Returns
         -------
         :class:`~.Succession`
@@ -177,7 +182,7 @@ class ManimBanner(VGroup):
 
         """
         m_shape_offset = 6.25 * self.scale_factor
-        shape_sliding_overshoot = self.scale_factor*0.8
+        shape_sliding_overshoot = self.scale_factor * 0.8
         m_anim_buff = 0.06
         self.anim.next_to(self.M, buff=m_anim_buff)\
                  .align_to(self.M, DOWN)\
@@ -193,7 +198,7 @@ class ManimBanner(VGroup):
             
             # Add a slight upwards curve to the motion.
             # This is needed to let the quare fully cover the "i"
-            mob.shape.shift(((0.5-alpha)**2-0.25)*DOWN*0.25)
+            mob.shape.shift(((0.5-alpha)**2 - 0.25) * DOWN * 0.25)
 
             for letter in mob.anim:
                 if mob.square.get_center()[0] > letter.get_center()[0]:
@@ -213,7 +218,7 @@ class ManimBanner(VGroup):
                 mob.add_to_back(mob.shape)
 
         return Succession(
-            UpdateFromAlphaFunc(self, slide_and_uncover, run_time=1, rate_func=ease_in_out_cubic),
-            UpdateFromAlphaFunc(self, slide_back, run_time=0.5, rate_func=smooth),
+            UpdateFromAlphaFunc(self, slide_and_uncover, run_time=run_time * 2/3, rate_func=ease_in_out_cubic),
+            UpdateFromAlphaFunc(self, slide_back, run_time=run_time * 1/3, rate_func=smooth),
         )
         
