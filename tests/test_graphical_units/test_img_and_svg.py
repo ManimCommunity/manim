@@ -22,6 +22,13 @@ def get_test_resource(filename):
 # First are the simple tests.
 
 
+class LineTest(Scene):
+    def construct(self):
+        line_demo = SVGMobject(get_test_resource("line.svg"))
+        self.add(line_demo)
+        self.wait()
+
+
 class CubicPathTest(Scene):
     def construct(self):
         cubic_demo = SVGMobject(get_test_resource("cubic_demo.svg"))
