@@ -28,8 +28,8 @@ import inspect
 import types
 from typing import (
     TYPE_CHECKING,
-    Callable,
     Any,
+    Callable,
     Dict,
     Iterable,
     List,
