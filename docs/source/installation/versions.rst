@@ -36,9 +36,9 @@ We recommend using the community edition for most purposes, as it has been devel
 better tested, quicker to respond to community contributions, and easier for beginners to use. 
 It also has partial experimental OpenGL support, and should have full support shortly (as of April, 2021).
 
-If you would like to use a version with full OpenGL support or render recent 3Blue1Brown videos (2020 onwards), you should use manimGL.
+If you would like to use a version with full OpenGL support or render recent 3Blue1Brown videos (2020 onwards), you should use ManimGL.
 
-If you would like to render old 3Blue1Brown projects (2019 and before), you should use manimCairo.
+If you would like to render old 3Blue1Brown projects (2019 and before), you should use ManimCairo.
 
 Notes on installation, documentation and use
 ********************************************
