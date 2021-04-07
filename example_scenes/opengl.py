@@ -8,6 +8,13 @@ from manim.opengl import *
 # Lines that do not yet work with the Community Version are commented.
 
 
+class Test(Scene):
+    def construct(self):
+        s = OpenGLSquare()
+        self.add(s)
+        self.embed_2()
+
+
 class InteractiveDevelopment(Scene):
     def construct(self):
         circle = OpenGLCircle()

@@ -11,6 +11,8 @@ import random
 import string
 import types
 import warnings
+import threading
+from queue import Queue
 
 import numpy as np
 from tqdm import tqdm
@@ -23,6 +25,7 @@ from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLPoint
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family import extract_mobject_family_members
@@ -83,6 +86,8 @@ class Scene(Container):
         self.time_progression = None
         self.duration = None
         self.last_t = None
+        self.queue = Queue()
+        self.saved_methods = {}
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -916,6 +921,52 @@ class Scene(Container):
         self.renderer.static_image = None
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
+
+    def embed_2(self):
+        def ipython(namespace):
+            from IPython.terminal.embed import InteractiveShellEmbed
+            import manim
+            import manim.opengl
+
+            def load_module_into_namespace(module, namespace):
+                for name in dir(module):
+                    namespace[name] = getattr(module, name)
+
+            load_module_into_namespace(manim, namespace)
+            load_module_into_namespace(manim.opengl, namespace)
+
+            shell = InteractiveShellEmbed()
+            shell(local_ns=namespace)
+
+        def get_embedded_method(method_name):
+            return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
+
+        local_namespace = inspect.currentframe().f_back.f_locals
+        for method in ("play", "wait", "add", "remove"):
+            self.saved_methods[method] = getattr(self, method)
+            embedded_method = get_embedded_method(method)
+            setattr(self, method, embedded_method)
+            # Allow for calling scene methods without prepending 'self.'.
+            local_namespace[method] = embedded_method
+
+        keyboard_thread = threading.Thread(target=ipython, args=(local_namespace,))
+        keyboard_thread.start()
+        self.interact_2()
+        keyboard_thread.join()
+
+    def interact_2(self):
+        self.quit_interaction = False
+        while not (self.renderer.window.is_closing or self.quit_interaction):
+            if not self.queue.empty():
+                method, args, kwargs = self.queue.get_nowait()
+                self.saved_methods[method](*args, **kwargs)
+            else:
+                self.renderer.animation_start_time = 0
+                dt = 1 / config["frame_rate"]
+                self.renderer.render(self, dt, self.moving_mobjects)
+                self.update_mobjects(dt)
+        if self.renderer.window.is_closing:
+            self.renderer.window.destroy()
 
     def interact(self):
         self.quit_interaction = False
