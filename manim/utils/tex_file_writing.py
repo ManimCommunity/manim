@@ -6,8 +6,8 @@
 
 """
 
-import os
 import hashlib
+import os
 from pathlib import Path
 
 from .. import config, logger

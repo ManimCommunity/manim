@@ -2,7 +2,7 @@ from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, Succession
 from manim.animation.fading import FadeIn, FadeInFrom, FadeOutAndShift
 from manim.constants import DOWN
-from manim.mobject.geometry import Line, Square, Circle
+from manim.mobject.geometry import Circle, Line, Square
 
 
 def test_succession_timing():

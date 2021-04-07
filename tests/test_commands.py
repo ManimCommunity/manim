@@ -1,9 +1,12 @@
 import sys
+from textwrap import dedent
+
+from click.testing import CliRunner
+
 from manim import __version__
 from manim.__main__ import main
-from click.testing import CliRunner
+
 from .utils.video_tester import *
-from textwrap import dedent
 
 
 def test_manim_version():
