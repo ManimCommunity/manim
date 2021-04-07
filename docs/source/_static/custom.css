@@ -22,6 +22,10 @@
     border-radius: 0;
 }
 
+.admonition-manim-example .highlight pre {
+    font-size: 15px;
+}
+
 .manim-video {
     width: 100%;
     padding: 8px 0;
