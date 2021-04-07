@@ -6,6 +6,13 @@ The following pages have instructions that are specific to your system. Once
 you are done installing the dependencies, come back to this page to install
 manim itself.
 
+.. NOTE::
+   Before installing manim, you should understand that there are a few main versions of manim 
+   today that are generally incompatible with each other.
+   This documentation **only** covers the installation of the *community edition*; 
+   trying to use instructions intended for other versions of manim or vice versa will likely result in failure.
+   In particular, most video tutorials are outdated. For more information, please read :doc:`Differences between Manim Versions <installation/versions>`.
+
 Installing dependencies
 ***********************
 
