@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ steps.cache-vars.outputs.poetry-dir }}
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
+          key: ${{ runner.os }}-poetry-${{ matrix.python }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install and cache ffmpeg (all OS)
         uses: FedericoCarboni/setup-ffmpeg@v1
