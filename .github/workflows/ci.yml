@@ -69,7 +69,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/brew-cache
-          key: test8-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+          key: test9-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+        run: |
+          mkdir brew-cache
+          if [ ! -f brew-cache.tar.gz ]; then
+            tar czf brew-cache/brew-cache.tar.gz --directory /usr/local/Cellar pango
+          fi
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
@@ -80,7 +85,16 @@ jobs:
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
-          brew install pkg-config libffi glib pango
+          curl -O ~/brew-cache/brew-cache.tar.gz
+          if [ -f brew-cache.tar.gz ]; then
+            if ! tar tf brew-cache.tar.gz &> /dev/null; then
+              rm brew-cache.tar.gz
+              exit 0
+            fi
+            tar zxf brew-cache.tar.gz --directory /usr/local/Cellar
+            brew link pango
+          fi
+          brew install pkg-config libffi glib
 
       # - name: Install pango (MacOS)
       #   if: runner.os == 'macOS'
