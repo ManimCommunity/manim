@@ -122,13 +122,13 @@ not just the specific symbol or Tex expression searched for. Consider the follow
     class IncorrectLaTeXSubstringColoring(Scene):
         def construct(self):
             equation = MathTex(
-                "e^x = x^0 + x^1 + \\frac{1}{2} x^2 + \\frac{1}{6} x^3 + \\cdots + \\frac{1}{n!} x^n + \\cdots", isolate="x"
+                "e^x = x^0 + x^1 + \\frac{1}{2} x^2 + \\frac{1}{6} x^3 + \\cdots + \\frac{1}{n!} x^n + \\cdots"
                 )
             xs = equation.get_parts_by_tex("x")
-            xs.set_color(YELLOW)
+            xs.set_color_by_tex(YELLOW)
             self.add(equation)
 
-colors the entire equation yellow, contrary to what may be expected. To color only ``x`` yellow, we have to do the following:
+As you can see, this colors the entire equation yellow, contrary to what may be expected. To color only ``x`` yellow, we have to do the following:
 
 .. manim:: CorrectLaTeXSubstringColoring
     :save_last_frame:
