@@ -49,6 +49,7 @@ tar_extract() {
 
 remove() {
     echo "Pango: removing $1"
+    rm -rf $1
 }
 
 create_darwin_archive() {
