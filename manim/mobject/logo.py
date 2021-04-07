@@ -2,6 +2,8 @@
 
 __all__ = ["ManimBanner"]
 
+from manim.utils.rate_functions import ease_out_sine, rush_from, rush_into
+from manim.animation.update import UpdateFromAlphaFunc
 import numpy as np
 
 from ..animation.composition import AnimationGroup, Succession
@@ -71,7 +73,8 @@ class ManimBanner(VGroup):
         self.circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
         self.square = Square(color=logo_blue, fill_opacity=1).shift(UP)
         self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
-        self.add(self.triangle, self.square, self.circle, self.M)
+        self.shape = VGroup(self.triangle, self.square, self.circle)
+        self.add(self.shape, self.M)
         self.move_to(ORIGIN)
 
         anim = VGroup()
@@ -111,7 +114,7 @@ class ManimBanner(VGroup):
             self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
-    def create(self):
+    def create(self, run_time = 2.1):
         """The creation animation for Manim's logo.
 
         Returns
@@ -119,43 +122,30 @@ class ManimBanner(VGroup):
         :class:`~.AnimationGroup`
             An animation to be used in a :meth:`.Scene.play` call.
         """
-        shape_center = VGroup(self.circle, self.square, self.triangle).get_center()
-
-        spiral_run_time = 2.1
+        shape_center = self.shape.get_center()
         expansion_factor = 8 * self.scale_factor
 
-        tracker = ValueTracker(0)
-
-        for mob in [self.circle, self.square, self.triangle]:
-            mob.final_position = mob.get_center()
-            mob.initial_position = (
-                mob.final_position
-                + (mob.final_position - shape_center) * expansion_factor
+        for shape in self.shape:
+            shape.final_position = shape.get_center()
+            shape.initial_position = (
+                shape.final_position
+                + (shape.final_position - shape_center) * expansion_factor
             )
-            mob.initial_to_final_distance = np.linalg.norm(
-                mob.final_position - mob.initial_position
-            )
-            mob.move_to(mob.initial_position)
-            mob.current_time = 0
-            mob.starting_mobject = mob.copy()
+            shape.move_to(shape.initial_position)
+            shape.save_state()
 
-            def updater(mob, dt):
-                mob.become(mob.starting_mobject)
-                direction = shape_center - mob.get_center()
-                mob.shift(
-                    normalize(direction, fall_back=direction)
-                    * mob.initial_to_final_distance
-                    * tracker.get_value()
-                )
-                mob.rotate(TAU * tracker.get_value(), about_point=shape_center)
-                mob.rotate(-TAU * tracker.get_value())
-
-            mob.add_updater(updater)
-
-        spin_animation = ApplyMethod(tracker.set_value, 1, run_time=spiral_run_time)
+        def spiral_updater(shapes:VGroup, alpha):
+            for shape in shapes:
+                shape.restore()
+                shape.shift((shape.final_position - shape.initial_position) * alpha)
+                shape.rotate(TAU * alpha, about_point=shape_center)
+                shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
+                shape.set_opacity(min(1, alpha*3))
 
         return AnimationGroup(
-            FadeIn(self, run_time=spiral_run_time / 2), spin_animation
+            UpdateFromAlphaFunc(self.shape, spiral_updater, run_time=run_time, rate_func=ease_out_sine),
+            FadeIn(self.M, run_time=run_time / 2),
+            lag_ratio=0.1
         )
 
     def expand(self) -> Succession:
