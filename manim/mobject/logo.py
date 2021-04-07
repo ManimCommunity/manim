@@ -155,7 +155,7 @@ class ManimBanner(VGroup):
             lag_ratio=0.1
         )
 
-    def expand(self, run_time: float = 1.5, direction=None) -> Succession:
+    def expand(self, run_time: float = 1.5, direction="center") -> Succession:
         """An animation that expands Manim's logo into its banner.
 
         The returned animation transforms the banner from its initial
@@ -182,6 +182,9 @@ class ManimBanner(VGroup):
             An animation to be used in a :meth:`.Scene.play` call.
 
         """
+        if direction not in ["left", "right", "center"]:
+            raise ValueError("direction must be 'left', 'right' or 'center'.")
+
         m_shape_offset = 6.25 * self.scale_factor
         shape_sliding_overshoot = self.scale_factor * 0.8
         m_anim_buff = 0.06
@@ -242,7 +245,7 @@ class ManimBanner(VGroup):
                 mob.add_to_back(mob.shape)
 
         m_start = self.M.copy()
-            
+        
 
         return Succession(
             UpdateFromAlphaFunc(self, slide_and_uncover, run_time=run_time * 2/3, rate_func=ease_in_out_cubic),
