@@ -52,6 +52,6 @@
 }
 
 /* yikes-ish attempt at bugfix for navbar on some browsers */
-a.internal.reference {
+.sidebar-tree a.internal.reference {
     display: table-cell;
 }
