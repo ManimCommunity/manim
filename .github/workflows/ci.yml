@@ -66,10 +66,10 @@ jobs:
       - name: Setup Brew cache (MacOS)
         id: cache-brew
         if: runner.os == 'macOS'
-        # uses: actions/cache@v2
-        # with:
-        #   path: ~/brew-cache
-        #   key: test9-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
+        uses: actions/cache@v2
+        with:
+          path: ~/brew-cache
+          key: test9-brew-${{ matrix.python }}-${{ steps.cache-vars.outputs.date }}
         run: |
           mkdir brew-cache
           if [ ! -f brew-cache.tar.gz ]; then
