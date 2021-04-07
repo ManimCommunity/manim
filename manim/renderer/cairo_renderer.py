@@ -269,10 +269,12 @@ class CairoRenderer:
         # If no animations in scene, render an image instead
         if self.num_plays:
             self.file_writer.finish()
-        else:
+        elif config.write_to_movie:
             config.save_last_frame = True
             config.write_to_movie = False
+        else:
+            self.update_frame(scene)
 
         if config.save_last_frame:
-            self.update_frame(scene, ignore_skipping=True)
+            self.update_frame(scene)
             self.file_writer.save_final_image(self.camera.get_image())

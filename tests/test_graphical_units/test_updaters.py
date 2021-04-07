@@ -22,7 +22,7 @@ class ValueTrackerTest(Scene):
         theta = ValueTracker(PI / 2)
         line = Line(ORIGIN, RIGHT)
         line.rotate(theta.get_value(), about_point=ORIGIN)
-        self.play(Animation(line))
+        self.add(line)
 
 
 class UpdateSceneDuringAnimationTest(Scene):
