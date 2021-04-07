@@ -57,7 +57,7 @@ For first-time contributors
 
       poetry run pre-commit install
    
-   This will ensure during development that each of your commit is properly
+   This will ensure during development that each of your commits are properly
    formatted against our linter and formatters, ``black``, ``flake8``, and
    ``isort``.
 
