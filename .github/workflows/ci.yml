@@ -82,11 +82,6 @@ jobs:
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
           brew install pkg-config libffi glib pango
 
-      # - name: Install pango (MacOS)
-      #   if: runner.os == 'macOS'
-      #   id: pango-macos
-      #   run: cd ${{ github.workspace }}/scripts/ci && sh ./install-pango-macos.sh
-
       - name: Add macOS dependencies to PATH
         if: runner.os == 'macOS'
         shell: bash
