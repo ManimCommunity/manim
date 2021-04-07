@@ -15,6 +15,8 @@ import sys
 from distutils.sysconfig import get_python_lib
 from pathlib import Path
 
+import guzzle_sphinx_theme
+
 sys.path.insert(0, os.path.abspath("."))
 
 
@@ -85,7 +87,6 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-import guzzle_sphinx_theme
 
 html_theme_path = guzzle_sphinx_theme.html_theme_path()
 html_theme = "guzzle_sphinx_theme"
@@ -106,6 +107,7 @@ html_static_path = ["_static"]
 
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
+
 
 # source links to github
 def linkcode_resolve(domain, info):
