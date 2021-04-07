@@ -110,7 +110,7 @@ def interpolate(start: int, end: int, alpha: float) -> float:
 
 def integer_interpolate(
     start: float, end: float, alpha: float
-) -> typing.Tuple(int, float):
+) -> typing.Tuple[int, float]:
     """
     Alpha is a float between 0 and 1.  This returns
     an integer between start and end (inclusive) representing
