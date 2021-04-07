@@ -77,7 +77,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update -q && brew upgrade basictex && brew cleanup
-          brew install openssl readline pyenv pyenv-virtualenv
+          brew install pyenv pyenv-virtualenv
           brew install --cask basictex
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
