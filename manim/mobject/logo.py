@@ -2,6 +2,7 @@
 
 __all__ = ["ManimBanner"]
 
+from os import scandir
 from manim.utils.color import RED
 from manim.animation.animation import Animation
 import numpy as np
@@ -14,7 +15,7 @@ from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
 from ..mobject.geometry import Circle, Square, Triangle
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.rate_functions import ease_out_sine
+from ..utils.rate_functions import ease_in_out_bounce, ease_in_out_circ, ease_in_out_cubic, ease_out_elastic, ease_out_sine, rush_from, smooth
 from ..utils.tex_templates import TexFontTemplates
 
 
@@ -62,7 +63,7 @@ class ManimBanner(VGroup):
         logo_green = "#81b29a"
         logo_blue = "#454866"
         logo_red = "#e07a5f"
-        m_height_over_anim_height = 0.53385
+        m_height_over_anim_height = 0.75748
 
         self.font_color = "#ece6e2" if dark_theme else "#343434"
         self.scale_factor = 1
@@ -78,7 +79,7 @@ class ManimBanner(VGroup):
         self.move_to(ORIGIN)
 
         anim = VGroup()
-        for i, ch in enumerate(["a","n","\\i","m"]):
+        for i, ch in enumerate("anim"):
             tex = Tex(
                 "\\textbf{" + ch + "}",
                 # ch,
@@ -89,7 +90,6 @@ class ManimBanner(VGroup):
             tex.align_to(self.M, DOWN)
             anim.add(tex)
         anim.set_color(self.font_color)
-        print(anim.height)
         anim.height = m_height_over_anim_height * self.M.height
 
         # Note: "anim" is only shown in the expanded state
@@ -154,7 +154,7 @@ class ManimBanner(VGroup):
             lag_ratio=0.1
         )
 
-    def expand(self, direction=RIGHT) -> Succession:
+    def expand(self) -> Succession:
         """An animation that expands Manim's logo into its banner.
 
         The returned animation transforms the banner from its initial
@@ -177,26 +177,43 @@ class ManimBanner(VGroup):
 
         """
         m_shape_offset = 6.25 * self.scale_factor
+        shape_sliding_overshoot = self.scale_factor*0.8
         m_anim_buff = 0.06
-        self.add(self.anim)
         self.anim.next_to(self.M, buff=m_anim_buff)\
                  .align_to(self.M, DOWN)\
-                #  .shift(m_shape_offset * LEFT)\
-        self.anim.set_opacity(0)
-        print(self.anim[2].get_subpaths())
-
-
-
-        def slide_and_uncover(shape, alpha):
-            shape.restore()
-            shape.shift(alpha * m_shape_offset * RIGHT)
-            for letter in self.anim:
-                if self.square.get_center()[0] > letter.get_center()[0]:
-                    letter.set_opacity(1)
-
+                 .set_opacity(0)
         self.shape.save_state()
-        return AnimationGroup(
-            Animation(self.anim, run_time=0),
-            UpdateFromAlphaFunc(self.shape, slide_and_uncover, run_time=2),
-            self.M.animate.scale(1),
+        self.add_to_back(self.anim)
+        m_clone = self.anim[-1].copy()
+        self.add(m_clone)
+
+        def slide_and_uncover(mob, alpha):
+            mob.shape.restore()
+            mob.shape.shift(alpha * (m_shape_offset + shape_sliding_overshoot) * RIGHT)
+            
+            # Add a slight upwards curve to the motion.
+            # This is needed to let the quare fully cover the "i"
+            mob.shape.shift(((0.5-alpha)**2-0.25)*DOWN*0.25)
+
+            for letter in mob.anim:
+                if mob.square.get_center()[0] > letter.get_center()[0]:
+                    letter.set_opacity(1)
+            if alpha == 1:
+                mob.shape.set_z_index(0)
+                mob.shape.save_state()
+            
+
+        def slide_back(mob, alpha):
+            m_clone.set_opacity(1)
+            mob.shape.restore()
+            mob.shape.shift(alpha * shape_sliding_overshoot * LEFT)
+            mob.anim.set_opacity(1)
+            if alpha == 1:
+                mob.remove(m_clone)
+                mob.add_to_back(mob.shape)
+
+        return Succession(
+            UpdateFromAlphaFunc(self, slide_and_uncover, run_time=1, rate_func=ease_in_out_cubic),
+            UpdateFromAlphaFunc(self, slide_back, run_time=0.5, rate_func=smooth),
         )
+        
