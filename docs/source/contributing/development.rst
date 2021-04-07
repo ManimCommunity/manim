@@ -51,14 +51,15 @@ For first-time contributors
    - See our :doc:`instructions for developers<installation/for_dev>` for
      details and continue here afterwards.
 
-#. Install Pre-Commit (recommended):
+#. Install Pre-Commit:
 
    .. code-block:: shell
 
       poetry run pre-commit install
    
-   This is optional and will ensure during development that each of your
-   commit is properly formatted against our formatter, ``black``.
+   This will ensure during development that each of your commit is properly
+   formatted against our linter and formatters, ``black``, ``flake8``, and
+   ``isort``.
 
 You are now ready to work on manim!
 
