@@ -2,6 +2,8 @@
 
 __all__ = ["ManimBanner"]
 
+from manim.utils.color import RED
+from manim.animation.animation import Animation
 import numpy as np
 
 from ..animation.update import UpdateFromAlphaFunc
@@ -60,7 +62,7 @@ class ManimBanner(VGroup):
         logo_green = "#81b29a"
         logo_blue = "#454866"
         logo_red = "#e07a5f"
-        m_height_over_anim_height = 0.75748
+        m_height_over_anim_height = 0.53385
 
         self.font_color = "#ece6e2" if dark_theme else "#343434"
         self.scale_factor = 1
@@ -76,9 +78,10 @@ class ManimBanner(VGroup):
         self.move_to(ORIGIN)
 
         anim = VGroup()
-        for i, ch in enumerate("anim"):
+        for i, ch in enumerate(["a","n","\\i","m"]):
             tex = Tex(
                 "\\textbf{" + ch + "}",
+                # ch,
                 tex_template=TexFontTemplates.gnu_freeserif_freesans,
             )
             if i != 0:
@@ -86,6 +89,7 @@ class ManimBanner(VGroup):
             tex.align_to(self.M, DOWN)
             anim.add(tex)
         anim.set_color(self.font_color)
+        print(anim.height)
         anim.height = m_height_over_anim_height * self.M.height
 
         # Note: "anim" is only shown in the expanded state
@@ -174,34 +178,25 @@ class ManimBanner(VGroup):
         """
         m_shape_offset = 6.25 * self.scale_factor
         m_anim_buff = 0.06
+        self.add(self.anim)
         self.anim.next_to(self.M, buff=m_anim_buff)\
-                 .align_to(self.M, DOWN)
+                 .align_to(self.M, DOWN)\
                 #  .shift(m_shape_offset * LEFT)\
+        self.anim.set_opacity(0)
+        print(self.anim[2].get_subpaths())
 
-        # move_left = self.animate.shift(m_shape_offset * LEFT)
-        
-        # AnimationGroup(
-        #     ApplyMethod(self.triangle.shift, m_shape_offset * LEFT),
-        #     ApplyMethod(self.square.shift, m_shape_offset * LEFT),
-        #     ApplyMethod(self.circle.shift, m_shape_offset * LEFT),
-        #     ApplyMethod(self.M.shift, m_shape_offset * LEFT),
-        # )
 
-        show_text = AnimationGroup(
-            *[FadeIn(letter) for letter in self.anim], lag_ratio=0.15
-        )
 
-        # move_right = AnimationGroup(
-        #     ApplyMethod(self.triangle.shift, m_shape_offset * RIGHT),
-        #     ApplyMethod(self.square.shift, m_shape_offset * RIGHT),
-        #     ApplyMethod(self.circle.shift, m_shape_offset * RIGHT),
-        #     ApplyMethod(self.M.shift, 0 * LEFT),
-        #     AnimationGroup(
-        #         *[ApplyMethod(obj.set_opacity, 1) for obj in self.anim], lag_ratio=0.15
-        #     )
-        # )
+        def slide_and_uncover(shape, alpha):
+            shape.restore()
+            shape.shift(alpha * m_shape_offset * RIGHT)
+            for letter in self.anim:
+                if self.square.get_center()[0] > letter.get_center()[0]:
+                    letter.set_opacity(1)
+
+        self.shape.save_state()
         return AnimationGroup(
-            self.shape.animate.shift(m_shape_offset * RIGHT),
+            Animation(self.anim, run_time=0),
+            UpdateFromAlphaFunc(self.shape, slide_and_uncover, run_time=2),
             self.M.animate.scale(1),
-            show_text
         )
