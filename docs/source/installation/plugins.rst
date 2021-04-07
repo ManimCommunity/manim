@@ -39,15 +39,15 @@ your available plugins, see the following help output:
 .. code-block:: bash
 
     manim plugins -h
-    usage: manim plugins -h -l
+    Usage: manim plugins [OPTIONS]
 
-    Utility command for managing plugins
+      Manages Manim plugins.
 
-    optional arguments:
-    -h, --help    show this help message and exit
-    -l, --list    Lists all available plugins
+    Options:
+    -l, --list  List available plugins
+    -h, --help  Show this message and exit.
 
-    Made with <3 by the ManimCommunity devs
+    Made with <3 by Manim Community developers.
 
 You can list plugins as such:
 

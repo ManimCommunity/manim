@@ -4,33 +4,40 @@
 __all__ = ["Mobject", "Group", "override_animate"]
 
 
-from functools import reduce
 import copy
 import itertools as it
 import operator as op
 import random
 import sys
 import types
-from typing import Callable, List, Optional, Union
 import warnings
-
+from functools import reduce
 from pathlib import Path
-from colour import Color
+from typing import Callable, List, Optional, Union
+
 import numpy as np
+from colour import Color
 
 from .. import config
 from ..constants import *
 from ..container import Container
-from ..utils.color import Colors, color_gradient, WHITE, BLACK, YELLOW_C
-from ..utils.color import interpolate_color
-from ..utils.iterables import list_update
-from ..utils.iterables import remove_list_redundancies
+from ..utils.color import (
+    BLACK,
+    WHITE,
+    YELLOW_C,
+    Colors,
+    color_gradient,
+    interpolate_color,
+)
+from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import rotation_matrix
-from ..utils.space_ops import rotation_matrix_transpose
+from ..utils.space_ops import (
+    angle_of_vector,
+    get_norm,
+    rotation_matrix,
+    rotation_matrix_transpose,
+)
 
 # TODO: Explain array_attrs
 
@@ -293,7 +300,7 @@ class Mobject(Container):
             ValueError: Mobject cannot contain self
 
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             if self in mobjects:
                 raise Exception("Mobject cannot contain self")
             for mobject in mobjects:
@@ -959,7 +966,7 @@ class Mobject(Container):
         :meth:`move_to`
         """
 
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             self.apply_points_function(
                 lambda points: points + vectors[0],
                 about_edge=None,
@@ -997,7 +1004,7 @@ class Mobject(Container):
         :meth:`move_to`
 
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             self.apply_points_function(
                 lambda points: scale_factor * points,
                 works_on_bounding_box=True,
@@ -1016,7 +1023,7 @@ class Mobject(Container):
 
     def rotate(self, angle, axis=OUT, **kwargs):
         """Rotates the :class:`~.Mobject` about a certain point."""
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
                 lambda points: np.dot(points, rot_matrix_T), **kwargs
@@ -1663,7 +1670,7 @@ class Mobject(Container):
         return self.get_all_points()
 
     def get_num_points(self):
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             return len(self.data["points"])
         else:
             return len(self.points)
@@ -1771,7 +1778,7 @@ class Mobject(Container):
     def get_start(self):
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             return np.array(self.data["points"][0])
         else:
             return np.array(self.points[0])
@@ -1779,7 +1786,7 @@ class Mobject(Container):
     def get_end(self):
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
         self.throw_error_if_no_points()
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             return np.array(self.data["points"][-1])
         else:
             return np.array(self.points[-1])
@@ -1894,7 +1901,7 @@ class Mobject(Container):
         return result + self.submobjects
 
     def get_family(self, recurse=True):
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             if recurse:
                 return self.family
             else:
@@ -2088,7 +2095,7 @@ class Mobject(Container):
 
                     self.add(dotL, dotR, dotMiddle)
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             self.data["points"][:] = path_func(
                 mobject1.data["points"], mobject2.data["points"], alpha
             )
@@ -2128,7 +2135,7 @@ class Mobject(Container):
 
     # Errors
     def throw_error_if_no_points(self):
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             if len(self.data["points"]) == 0:
                 caller_name = sys._getframe(1).f_code.co_name
                 raise Exception(

@@ -3,6 +3,8 @@
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
+import numpy as np
+
 from .. import config
 from ..animation.transform import ApplyMethod
 from ..camera.three_d_camera import ThreeDCamera
@@ -10,12 +12,10 @@ from ..constants import DEGREES
 from ..mobject.coordinate_systems import ThreeDAxes
 from ..mobject.geometry import Line
 from ..mobject.three_dimensions import Sphere
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VectorizedPoint
+from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..mobject.value_tracker import ValueTracker
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
-import numpy as np
 
 
 class ThreeDScene(Scene):

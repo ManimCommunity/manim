@@ -2,12 +2,13 @@ import sys
 from pathlib import Path
 
 import pytest
+
 from manim import *
-from ..helpers.path_utils import get_project_root
-from ..utils.testing_utils import get_scenes_to_test
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 from ..helpers.graphical_units import set_test_scene
+from ..helpers.path_utils import get_project_root
+from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 def get_test_resource(filename):

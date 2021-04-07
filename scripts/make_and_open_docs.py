@@ -1,7 +1,7 @@
-from pathlib import Path
 import os
 import sys
 import webbrowser
+from pathlib import Path
 
 path_makefile = Path(__file__).parents[1] / "docs"
 os.system(f"cd {path_makefile} && make html")
