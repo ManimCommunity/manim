@@ -1753,7 +1753,6 @@ class Mobject(Container):
         """
         return self.point_from_proportion(0.5)
 
-
     def get_top(self) -> np.ndarray:
         """Get top coordinates of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(UP)
