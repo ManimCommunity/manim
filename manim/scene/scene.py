@@ -188,11 +188,7 @@ class Scene(Container):
         self.renderer.scene_finished(self)
 
         # Show info only if animations are rendered or to get image
-        if (
-            self.renderer.num_plays != 0
-            or config["save_last_frame"]
-            or config["save_pngs"]
-        ):
+        if self.renderer.num_plays or config["save_last_frame"] or config["save_pngs"]:
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
             )
