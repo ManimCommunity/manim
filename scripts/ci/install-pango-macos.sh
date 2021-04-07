@@ -27,7 +27,7 @@ echo "Downloading Pango"
 pango_url='https://download.gnome.org/sources/pango/1.48/pango-1.48.4.tar.xz'
 darwin_name='pango-darwin'
 darwin_temp="/tmp/$darwin_name"
-darwin_archive="$darwin_name.tar.gz"
+darwin_archive="$darwin_name.tar.xz"
 
 download() {
     echo "Pango: downloading $1 to $2"
@@ -53,10 +53,10 @@ remove() {
 
 create_darwin_archive() {
     echo 'Pango: creating darwin archive'
-    download $pango_url "/tmp/$darwin_name.7z"
+    download $pango_url "/tmp/$darwin_name.xz"
     mkdir -p $darwin_temp
-    7z e "/tmp/$darwin_name.7z" "-o$darwin_temp" 'pango'
-    remove "/tmp/$darwin_name.7z"
+    7z x "/tmp/$darwin_name.xz" "-o$darwin_temp" 'pango'
+    remove "/tmp/$darwin_name.xz"
     create_archive $darwin_archive $darwin_temp
     remove $darwin_temp
     echo 'Pango: darwin archive created successfully'
