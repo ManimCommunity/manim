@@ -21,6 +21,6 @@ repos:
   - repo: https://gitlab.com/PyCQA/flake8
     rev: 3.9.0
     hooks:
-    -   id: flake8
+      - id: flake8
 
 
