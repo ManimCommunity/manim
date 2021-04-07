@@ -15,6 +15,8 @@ import sys
 from distutils.sysconfig import get_python_lib
 from pathlib import Path
 
+import guzzle_sphinx_theme
+
 sys.path.insert(0, os.path.abspath("."))
 
 
@@ -124,6 +126,7 @@ html_title = "Manim Community"
 
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
+
 
 # source links to github
 def linkcode_resolve(domain, info):
