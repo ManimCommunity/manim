@@ -39,14 +39,14 @@ jobs:
         id: cache-vars
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
-          echo "::set-output name=poetry-dir::$(poetry config cache-dir)"
+          echo "::set-output name=pip-dir::$(pip cache dir)"
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
-      - name: Setup Poetry cache
+      - name: Setup Pip cache
         uses: actions/cache@v2
         with:
-          path: ${{ steps.cache-vars.outputs.poetry-dir }}
-          key: ${{ runner.os }}-poetry-${{ matrix.python }}-${{ hashFiles('poetry.lock') }}
+          path: ${{ steps.cache-vars.outputs.pip-dir }}
+          key: ${{ runner.os }}-pip-${{ matrix.python }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install and cache ffmpeg (all OS)
         uses: FedericoCarboni/setup-ffmpeg@v1
