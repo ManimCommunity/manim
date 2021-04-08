@@ -9,9 +9,9 @@ import inspect
 import platform
 import random
 import string
+import threading
 import types
 import warnings
-import threading
 from queue import Queue
 
 import numpy as np
@@ -24,8 +24,7 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
 from ..mobject.mobject import Mobject, _AnimationBuilder
-from ..mobject.opengl_mobject import OpenGLPoint
-from ..mobject.opengl_mobject import OpenGLMobject
+from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.family import extract_mobject_family_members
@@ -925,6 +924,7 @@ class Scene(Container):
     def embed_2(self):
         def ipython(namespace):
             from IPython.terminal.embed import InteractiveShellEmbed
+
             import manim
             import manim.opengl
 
