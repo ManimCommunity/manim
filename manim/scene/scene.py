@@ -945,16 +945,15 @@ class Scene(Container):
         for method in ("play", "wait", "add", "remove"):
             self.saved_methods[method] = getattr(self, method)
             embedded_method = get_embedded_method(method)
-            setattr(self, method, embedded_method)
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
 
         keyboard_thread = threading.Thread(target=ipython, args=(local_namespace,))
         keyboard_thread.start()
-        self.interact_2()
+        self.interact()
         keyboard_thread.join()
 
-    def interact_2(self):
+    def interact(self):
         self.quit_interaction = False
         while not (self.renderer.window.is_closing or self.quit_interaction):
             if not self.queue.empty():
@@ -965,16 +964,6 @@ class Scene(Container):
                 dt = 1 / config["frame_rate"]
                 self.renderer.render(self, dt, self.moving_mobjects)
                 self.update_mobjects(dt)
-        if self.renderer.window.is_closing:
-            self.renderer.window.destroy()
-
-    def interact(self):
-        self.quit_interaction = False
-        while not (self.renderer.window.is_closing or self.quit_interaction):
-            self.renderer.animation_start_time = 0
-            dt = 1 / config["frame_rate"]
-            self.renderer.render(self, dt, self.moving_mobjects)
-            self.update_mobjects(dt)
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
 
