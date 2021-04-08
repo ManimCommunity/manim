@@ -149,13 +149,13 @@ When executing `manim` within a Docker container, several command line flags (in
 ## Help with Manim
 
 If you need help installing or using Manim, feel free to reach out to our [Discord
-Server](https://discord.gg/mMRrZQW) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit bug report or feature request, please open an issue.
+Server](https://discord.gg/mMRrZQW) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit a bug report or feature request, please open an issue.
 
 ## Contributing
 
 Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/stable/contributing.html).
 
-Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more `poetry` and how to use it at its [documentation](https://docs.manim.community/en/stable/installation/for_dev.html).
+Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more about `poetry` and how to use it at its [documentation](https://docs.manim.community/en/stable/installation/for_dev.html).
 
 ## Code of Conduct
 
