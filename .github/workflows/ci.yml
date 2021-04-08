@@ -117,7 +117,6 @@ jobs:
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
-          $pangoVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['pango'])"
           $tinyTexPackages = $(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['windows']['tinytex']))") -Split ' '
           $OriPath = $env:PATH
           echo "Install Tinytex"
