@@ -1,6 +1,6 @@
 import pytest
 
-from manim import Mobject, VDict, VGroup, VMobject
+from manim import Line, Mobject, VDict, VGroup, VMobject
 
 
 def test_vgroup_init():
@@ -84,6 +84,24 @@ def test_vgroup_remove_dunder():
     assert len(b.submobjects) == 0
     obj -= b
     assert len(obj.submobjects) == 0
+
+
+def test_vmob_add_to_back():
+    """Test the Mobject add_to_back method."""
+    a = VMobject()
+    b = Line()
+    c = "text"
+    with pytest.raises(ValueError):
+        # Mobject cannot contain self
+        a.add_to_back(a)
+    with pytest.raises(TypeError):
+        # All submobjects must be of type Mobject
+        a.add_to_back(c)
+
+    # No submobject gets added twice
+    a.add_to_back(b)
+    a.add_to_back(b, b)
+    assert len(a.submobjects) == 1
 
 
 def test_vdict_init():
