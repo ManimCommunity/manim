@@ -148,16 +148,16 @@ def render(
             req_info = requests.get(manim_info_url, timeout=3)
             req_info.raise_for_status()
         except requests.exceptions.HTTPError:
-            logger.warning("HTTP Error: %s", warn_prompt)
+            logger.warning(f"HTTP Error: {warn_prompt}")
             raise SystemExit
         except requests.exceptions.ConnectionError:
-            logger.warning("Connection Error: %s", warn_prompt)
+            logger.warning(f"Connection Error: {warn_prompt}")
             raise SystemExit
         except requests.exceptions.Timeout:
-            logger.warning("Timeout Error: %s", warn_prompt)
+            logger.warning(f"Timeout Error: {warn_prompt}")
             raise SystemExit
         except Exception:
-            logger.warning("Something else went wrong: %s", warn_prompt)
+            logger.warning(f"Something else went wrong: {warn_prompt}")
             raise SystemExit
 
         try:
@@ -165,7 +165,7 @@ def render(
             stable = max(releases)
         except Exception:
             logger.warning(warn_prompt)
-            logger.warning("Error decoding JSON from %s", manim_info_url)
+            logger.warning(f"Error decoding JSON from {manim_info_url}")
             raise SystemExit
 
         if stable != __version__:
