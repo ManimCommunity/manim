@@ -26,7 +26,7 @@ from ..container import Container
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
-from ..utils.exceptions import EndSceneEarlyException
+from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
@@ -182,25 +182,31 @@ class Scene(Container):
         preview : bool
             If true, opens scene in a file viewer.
         """
-        self.setup()
-        try:
-            self.construct()
-        except EndSceneEarlyException:
-            pass
-        self.tear_down()
-        # We have to reset these settings in case of multiple renders.
-        self.renderer.scene_finished(self)
+        rerun = True
+        while rerun == True:
+            rerun = False
+            self.setup()
+            try:
+                self.construct()
+            except EndSceneEarlyException:
+                pass
+            except RerunSceneException:
+                rerun = True
+                continue
+            self.tear_down()
+            # We have to reset these settings in case of multiple renders.
+            self.renderer.scene_finished(self)
 
-        logger.info(
-            f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
-        )
+            logger.info(
+                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
+            )
 
-        # If preview open up the render after rendering.
-        if preview:
-            config["preview"] = True
+            # If preview open up the render after rendering.
+            if preview:
+                config["preview"] = True
 
-        if config["preview"] or config["show_in_file_browser"]:
-            open_media_file(self.renderer.file_writer)
+            if config["preview"] or config["show_in_file_browser"]:
+                open_media_file(self.renderer.file_writer)
 
     def setup(self):
         """
@@ -940,6 +946,13 @@ class Scene(Container):
             load_module_into_namespace(manim.opengl, namespace)
 
             shell = InteractiveShellEmbed()
+
+            def embedded_rerun(*args, **kwargs):
+                self.queue.put(("rerun", args, kwargs))
+                shell.exiter()
+
+            namespace["rerun"] = embedded_rerun
+
             shell(local_ns=namespace)
 
         def get_embedded_method(method_name):
@@ -961,8 +974,13 @@ class Scene(Container):
         self.quit_interaction = False
         while not (self.renderer.window.is_closing or self.quit_interaction):
             if not self.queue.empty():
-                method, args, kwargs = self.queue.get_nowait()
-                self.saved_methods[method](*args, **kwargs)
+                tup = self.queue.get_nowait()
+                if tup[0] == "rerun":
+                    self.remove(*self.mobjects)
+                    raise RerunSceneException
+                else:
+                    method, args, kwargs = tup
+                    self.saved_methods[method](*args, **kwargs)
             else:
                 self.renderer.animation_start_time = 0
                 dt = 1 / config["frame_rate"]
