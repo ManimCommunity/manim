@@ -2022,7 +2022,6 @@ class Mobject(Container):
         --------
 
         .. manim:: InvertSumobjectsExample
-            :save_last_frame:
 
             class InvertSumobjectsExample(Scene):
                 def construct(self):
@@ -2054,6 +2053,7 @@ class Mobject(Container):
                     s2= s.copy().set_color(RED)
                     s2.arrange_submobjects()
                     s2.shift(DOWN)
+                    self.add(s,s2)
 
         """
         return self.arrange(*args, **kwargs)
@@ -2069,7 +2069,6 @@ class Mobject(Container):
         --------
 
         .. manim:: SuffleSumobjectsExample
-            :save_last_frame:
 
             class SuffleSumobjectsExample(Scene):
                 def construct(self):
