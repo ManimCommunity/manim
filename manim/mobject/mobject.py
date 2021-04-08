@@ -200,6 +200,12 @@ class Mobject(Container):
                         c.animate(rate_func=there_and_back).shift(RIGHT),
                     )
 
+        .. warning::
+
+            ``.animate``
+             will interpolate the :class:`~.Mobject` between its points prior to ``.animate`` and its points after applying ``.animate`` to it. This may result in unexpected behavior when attempting to interpolate along paths, or rotations.
+             If you want animations to consider the points between, consider using :class:`~.ValueTracker` with updaters instead.
+
         """
         return _AnimationBuilder(self)
 
@@ -347,9 +353,36 @@ class Mobject(Container):
             the head of :attr:`submobjects`. The head of this list is rendered
             first, which places the corresponding mobjects behind the
             subsequent list members.
+
+        Raises
+        ------
+        :class:`ValueError`
+            When a mobject tries to add itself.
+        :class:`TypeError`
+            When trying to add an object that is not an instance of :class:`Mobject`.
+
+        Notes
+        -----
+        A mobject cannot contain itself, and it cannot contain a submobject
+        more than once.  If the parent mobject is displayed, the newly-added
+        submobjects will also be displayed (i.e. they are automatically added
+        to the parent Scene).
+
+        See Also
+        --------
+        :meth:`remove`
+        :meth:`add`
+
         """
+        for mobject in mobjects:
+            if self in mobjects:
+                raise ValueError("Mobject cannot contain self")
+            if not isinstance(mobject, Mobject):
+                raise TypeError("All submobjects must be of type Mobject")
+
+        filtered = list_update(mobjects, self.submobjects)
         self.remove(*mobjects)
-        self.submobjects = list(mobjects) + self.submobjects
+        self.submobjects = list(filtered) + self.submobjects
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
