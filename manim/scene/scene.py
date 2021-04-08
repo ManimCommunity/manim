@@ -69,7 +69,7 @@ class Scene(Container):
         renderer=None,
         camera_class=Camera,
         always_update_mobjects=False,
-        random_seed=0,
+        random_seed=None,
         **kwargs,
     ):
         self.camera_class = camera_class
