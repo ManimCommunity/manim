@@ -221,6 +221,7 @@ class ManimDirective(Directive):
             f'config["pixel_width"] = {pixel_width}',
             f'config["save_last_frame"] = {save_last_frame}',
             f'config["save_as_gif"] = {save_as_gif}',
+            f'config["write_to_movie"] = {not save_last_frame}',
             f'config["output_file"] = r"{output_file}"',
         ]
 
