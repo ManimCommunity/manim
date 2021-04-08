@@ -1752,7 +1752,7 @@ class Mobject(Container):
                     line2 = Line(ORIGIN, 2*RIGHT).rotate_about_origin(80*DEGREES)
 
                     a = Angle(line1, line2, radius=1.5, other_angle=False)
-                    d=Dot(a.get_midpoint()).set_color(RED)
+                    d = Dot(a.get_midpoint()).set_color(RED)
 
                     self.add(line1, line2, a, d)
                     self.wait()
