@@ -25,6 +25,7 @@ from ..utils.space_ops import (
 )
 from .opengl_renderer_window import Window
 
+
 class OpenGLCamera(OpenGLMobject):
     def __init__(
         self,
