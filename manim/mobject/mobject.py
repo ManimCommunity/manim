@@ -1738,7 +1738,8 @@ class Mobject(Container):
         return all_points[index]
 
     def get_midpoint(self) -> np.ndarray:
-        """Get coordinates of the middle of the path that forms the  :class:`~.Mobject`
+        """Get coordinates of the middle of the path that forms the  :class:`~.Mobject`.
+
         Examples
         --------
 
