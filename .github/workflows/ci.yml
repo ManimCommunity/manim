@@ -69,16 +69,6 @@ jobs:
           # start xvfb in the background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
-      - name: Setup Brew cache (MacOS)
-        id: cache-brew
-        if: runner.os == 'macOS'
-        uses: actions/cache@v2
-        with:
-          path: ~/brew-cache
-          # Will become ${{ runner.os }}-brew-${{ env.pythonLocation }}-${{ steps.cache-vars.outputs.date }}
-          # after cache implementation is complete
-          key: test8-brew-${{ env.pythonLocation }}-${{ steps.cache-vars.outputs.date }}
-
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
