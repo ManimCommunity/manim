@@ -29,8 +29,9 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Setup Python ${{ matrix.python }} cache
+      - name: Setup Python ${{ matrix.python }} cache (Linux and MacOS)
         uses: actions/cache@v2
+        if: runner.os == 'Linux' || runner.os == 'macOS'
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
