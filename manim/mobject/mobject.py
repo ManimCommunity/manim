@@ -1885,7 +1885,7 @@ class Mobject(Container):
         return self.match_coord(mobject, 0, direction)
 
     def Match_y(self, mobject: "Mobject", direction=ORIGIN):
-        """match y coord. to the x coord. of another :class:`~.Mobject`."""
+        """Match y coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
     def match_z(self, mobject: "Mobject", direction=ORIGIN):
