@@ -13,26 +13,24 @@ __all__ = [
 
 import itertools as it
 import sys
-import colour
 from typing import Iterable
 
+import colour
 
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
-from ...utils.bezier import bezier
-from ...utils.bezier import get_smooth_handle_points
-from ...utils.bezier import interpolate
-from ...utils.bezier import integer_interpolate
-from ...utils.bezier import partial_bezier_points
-from ...utils.color import color_to_rgba, BLACK, WHITE
-from ...utils.iterables import make_even
-from ...utils.iterables import stretch_array_to_length
-from ...utils.iterables import tuplify
+from ...utils.bezier import (
+    bezier,
+    get_smooth_handle_points,
+    integer_interpolate,
+    interpolate,
+    partial_bezier_points,
+)
+from ...utils.color import BLACK, WHITE, color_to_rgba
+from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
-from ...utils.space_ops import rotate_vector
-from ...utils.space_ops import get_norm
-from ...utils.space_ops import shoelace_direction
+from ...utils.space_ops import get_norm, rotate_vector, shoelace_direction
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -897,6 +895,36 @@ class VMobject(Mobject):
         """
         return bezier(self.get_nth_curve_points(n))
 
+    def get_nth_curve_function_with_length(
+        self, n: int, n_sample_points: int = 10
+    ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
+        """Returns the expression of the nth curve along with its (approximate) length.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        n_sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        curve : typing.Callable[[float], np.ndarray]
+            The function for the nth curve.
+        length : :class:`float`
+            The length of the nth curve.
+        """
+
+        curve = self.get_nth_curve_function(n)
+
+        points = np.array([curve(a) for a in np.linspace(0, 1, n_sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(get_norm, 1, diffs)
+
+        length = np.sum(norms)
+
+        return curve, length
+
     def get_num_curves(self) -> int:
         """Returns the number of curves of the vmobject.
 
@@ -907,6 +935,38 @@ class VMobject(Mobject):
         """
         nppcc = self.n_points_per_cubic_curve
         return len(self.points) // nppcc
+
+    def get_curve_functions(
+        self,
+    ) -> typing.Iterable[typing.Callable[[float], np.ndarray]]:
+        """Gets the functions for the curves of the mobject.
+
+        Returns
+        -------
+        typing.Iterable[typing.Callable[[float], np.ndarray]]
+            The functions for the curves.
+        """
+
+        num_curves = self.get_num_curves()
+
+        for n in range(num_curves):
+            yield self.get_nth_curve_function(n)
+
+    def get_curve_functions_with_lengths(
+        self,
+    ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
+        """Gets the functions and lengths of the curves for the mobject.
+
+        Returns
+        -------
+        typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]
+            The functions and lengths of the curves.
+        """
+
+        num_curves = self.get_num_curves()
+
+        for n in range(num_curves):
+            yield self.get_nth_curve_function_with_length(n)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
         """Get the bezier curve evaluated at a position P,
@@ -922,10 +982,23 @@ class VMobject(Mobject):
         np.ndarray
             Point evaluated.
         """
-        num_cubics = self.get_num_curves()
-        n, residue = integer_interpolate(0, num_cubics, alpha)
-        curve = self.get_nth_curve_function(n)
-        return curve(residue)
+
+        curves_with_lengths = list(self.get_curve_functions_with_lengths())
+
+        total_length = np.sum(length for _, length in curves_with_lengths)
+        target_length = alpha * total_length
+        current_length = 0
+
+        for curve, length in curves_with_lengths:
+            if current_length + length >= target_length:
+                if length != 0:
+                    residue = (target_length - current_length) / length
+                else:
+                    residue = 0
+
+                return curve(residue)
+
+            current_length += length
 
     def get_anchors_and_handles(self) -> typing.Iterable[np.ndarray]:
         """Returns anchors1, handles1, handles2, anchors2,

@@ -6,6 +6,7 @@ Plugin Managing Utility.
 """
 
 import pathlib
+
 import pkg_resources
 
 from manim import console

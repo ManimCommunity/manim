@@ -18,6 +18,7 @@ __all__ = [
 
 
 import itertools as it
+
 import numpy as np
 
 

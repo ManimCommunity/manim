@@ -64,21 +64,24 @@ directive:
         rendered in a reference block after the source code.
 
     ref_functions
-        A list of functions and methods, separated by spaces,
+        A list of functions, separated by spaces,
+        that is rendered in a reference block after the source code.
+
+    ref_methods
+        A list of methods, separated by spaces,
         that is rendered in a reference block after the source code.
 
 """
-from docutils import nodes
-from docutils.parsers.rst import directives, Directive
-from docutils.statemachine import StringList
-
-import jinja2
 import os
+import shutil
 from os.path import relpath
 from pathlib import Path
 from typing import List
 
-import shutil
+import jinja2
+from docutils import nodes
+from docutils.parsers.rst import Directive, directives
+from docutils.statemachine import StringList
 
 from manim import QUALITIES
 
@@ -133,6 +136,7 @@ class ManimDirective(Directive):
         "ref_modules": lambda arg: process_name_list(arg, "mod"),
         "ref_classes": lambda arg: process_name_list(arg, "class"),
         "ref_functions": lambda arg: process_name_list(arg, "func"),
+        "ref_methods": lambda arg: process_name_list(arg, "meth"),
     }
     final_argument_whitespace = True
 
@@ -163,6 +167,7 @@ class ManimDirective(Directive):
             self.options.get("ref_modules", [])
             + self.options.get("ref_classes", [])
             + self.options.get("ref_functions", [])
+            + self.options.get("ref_methods", [])
         )
         if ref_content:
             ref_block = f"""
@@ -216,6 +221,7 @@ class ManimDirective(Directive):
             f'config["pixel_width"] = {pixel_width}',
             f'config["save_last_frame"] = {save_last_frame}',
             f'config["save_as_gif"] = {save_as_gif}',
+            f'config["write_to_movie"] = {not save_last_frame}',
             f'config["output_file"] = r"{output_file}"',
         ]
 

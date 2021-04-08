@@ -1,8 +1,9 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class PlotFunctions(GraphScene):
@@ -26,7 +27,7 @@ class PlotFunctions(GraphScene):
         self.setup_axes()
         f = self.get_graph(lambda x: x ** 2)
 
-        self.play(Animation(f))
+        self.add(f)
 
 
 MODULE_NAME = "plot"
