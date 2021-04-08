@@ -274,7 +274,6 @@ class OpenGLRenderer:
 
     def render_render_group(self, render_group):
         shader_wrapper = render_group["shader_wrapper"]
-        shader_program = render_group["prog"]
         self.set_shader_uniforms(render_group["prog"], render_group["shader_wrapper"])
         self.update_depth_test(self.context, shader_wrapper)
         render_group["vao"].render(int(shader_wrapper.render_primitive))
