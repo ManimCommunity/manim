@@ -228,7 +228,7 @@ def angle_between_vectors(v1, v2):
     Returns the angle between two 3D vectors.
     This angle will always be btw 0 and pi
     """
-    if config["use_opengl_renderer"]:
+    if config["renderer"] == "opengl":
         diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
         return min(diff, TAU - diff)
     else:

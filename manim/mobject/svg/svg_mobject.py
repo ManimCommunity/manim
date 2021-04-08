@@ -197,12 +197,12 @@ class SVGMobject(VMobject):
             pass  # TODO
 
         result = [m for m in result if m is not None]
-        if config["use_opengl_renderer"]:
+        if config["renderer"] == "opengl":
             self.handle_transforms(element, OpenGLVGroup(*result))
         else:
             self.handle_transforms(element, VGroup(*result))
         if len(result) > 1 and not self.unpack_groups:
-            if config["use_opengl_renderer"]:
+            if config["renderer"] == "opengl":
                 result = [OpenGLVGroup(*result)]
             else:
                 result = [VGroup(*result)]
@@ -403,7 +403,7 @@ class SVGMobject(VMobject):
         parsed_style["stroke_width"] = stroke_width
 
         if corner_radius == 0:
-            if config["use_opengl_renderer"]:
+            if config["renderer"] == "opengl":
                 mob = OpenGLRectangle(
                     width=self.attribute_to_float(rect_element.getAttribute("width")),
                     height=self.attribute_to_float(rect_element.getAttribute("height")),

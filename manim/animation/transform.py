@@ -81,7 +81,7 @@ class Transform(Animation):
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        if config["use_opengl_renderer"]:
+        if config["renderer"] == "opengl":
             self.mobject.align_data_and_family(self.target_copy)
         else:
             self.mobject.align_data(self.target_copy)

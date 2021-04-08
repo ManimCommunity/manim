@@ -473,12 +473,12 @@ class OpenGLText(OpenGLSVGMobject):
             self.submobjects = [*self.gen_chars()]
         self.chars = OpenGLVGroup(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
-        if config["use_opengl_renderer"]:
+        if config["renderer"] == "opengl":
             nppc = self.n_points_per_curve
         else:
             nppc = self.n_points_per_cubic_curve
         for each in self:
-            if config["use_opengl_renderer"]:
+            if config["renderer"] == "opengl":
                 points = each.data["points"]
             else:
                 nppc = each.points
@@ -968,12 +968,12 @@ class OpenGLMarkupText(OpenGLSVGMobject):
         self.chars = OpenGLVGroup(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
-        if config["use_opengl_renderer"]:
+        if config["renderer"] == "opengl":
             nppc = self.n_points_per_curve
         else:
             nppc = self.n_points_per_cubic_curve
         for each in self:
-            if config["use_opengl_renderer"]:
+            if config["renderer"] == "opengl":
                 points = each.data["points"]
             else:
                 points = each.points

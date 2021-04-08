@@ -89,7 +89,7 @@ class SVGPathMobject(VMobject):
         for command, coord_string in pairs:
             self.handle_command(command, coord_string, prev_command)
             prev_command = command
-        if config["use_opengl_renderer"]:
+        if config["renderer"] == "opengl":
             if self.should_subdivide_sharp_curves:
                 # For a healthy triangulation later
                 self.subdivide_sharp_curves()
@@ -106,7 +106,7 @@ class SVGPathMobject(VMobject):
         command = command.upper()
 
         # Keep track of the most recently completed point
-        if config["use_opengl_renderer"]:
+        if config["renderer"] == "opengl":
             points = self.data["points"]
         else:
             points = self.points
@@ -135,7 +135,7 @@ class SVGPathMobject(VMobject):
             return
 
         elif command == "S":  # Smooth cubic
-            if config["use_opengl_renderer"]:
+            if config["renderer"] == "opengl":
                 points = self.data["points"]
             else:
                 points = self.points
@@ -172,7 +172,7 @@ class SVGPathMobject(VMobject):
             raise NotImplementedError()
 
         elif command == "Z":  # closepath
-            if config["use_opengl_renderer"]:
+            if config["renderer"] == "opengl":
                 self.close_path()
             else:
                 self.add_line_to(self.current_path_start)

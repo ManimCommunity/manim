@@ -213,7 +213,7 @@ class Mobject(Container):
         return result
 
     def __repr__(self):
-        if config["use_opengl_renderer"]:
+        if config["renderer"] == "opengl":
             return super().__repr__()
         else:
             return str(self.name)
