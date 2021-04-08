@@ -113,6 +113,37 @@ in this example where we set the color of the ``\bigstar`` using :func:`~.set_co
             tex.set_color_by_tex('igsta', RED)
             self.add(tex)
 
+Note that :func:`~.set_color_by_tex` colors the entire substring containing the Tex searched for,
+not just the specific symbol or Tex expression searched for. Consider the following example:
+
+.. manim:: IncorrectLaTeXSubstringColoring
+    :save_last_frame:
+
+    class IncorrectLaTeXSubstringColoring(Scene):
+        def construct(self):
+            equation = MathTex(
+                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots"
+            )
+            equation.set_color_by_tex("x", YELLOW)
+            self.add(equation)
+
+As you can see, this colors the entire equation yellow, contrary to what may be expected. To color only ``x`` yellow, we have to do the following:
+
+.. manim:: CorrectLaTeXSubstringColoring
+    :save_last_frame:
+
+    class CorrectLaTeXSubstringColoring(Scene):
+        def construct(self):
+            equation = MathTex(
+                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots",
+                substrings_to_isolate="x"
+            )
+            equation.set_color_by_tex("x", YELLOW)
+            self.add(equation)
+
+By setting ``substring_to_isolate`` to ``x``, we split up the :class:`~.MathTex` into substrings
+automatically and isolate ``x`` components into individual substrings. Only then can :meth:`~.set_color_by_tex` be used to achieve the desired result.
+
 LaTeX Maths Fonts - The Template Library
 ++++++++++++++++++++++++++++++++++++++++
 Changing fonts in LaTeX when typesetting mathematical formulae is a little bit more tricky than
