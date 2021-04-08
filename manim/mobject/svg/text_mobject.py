@@ -53,6 +53,7 @@ import typing
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict
+
 import manimpango
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
