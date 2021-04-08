@@ -1,6 +1,5 @@
 {
 	"windows": {
-		"pango": "v0.1.0",
 		"tinytex": [
 			"standalone",
 			"preview",
