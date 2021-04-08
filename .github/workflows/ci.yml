@@ -29,6 +29,12 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      - name: Setup Python cache
+        uses: actions/cachc@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
+
       - name: Install Poetry
         run: |
           pip install wheel
@@ -45,9 +51,7 @@ jobs:
       - name: Setup Pip cache
         uses: actions/cache@v2
         with:
-          path: |
-            ${{ steps.cache-vars.outputs.pip-dir }}
-            ${{ env.pythonLocation }}
+          path: ${{ steps.cache-vars.outputs.pip-dir }}
           key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install and cache ffmpeg (all OS)
