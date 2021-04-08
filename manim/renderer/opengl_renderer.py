@@ -13,24 +13,17 @@ from manim.utils.exceptions import EndSceneEarlyException
 
 from .. import logger
 from ..constants import *
-from ..mobject import opengl_geometry
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from ..mobject.types.vectorized_mobject import VMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_of_vector,
-    cross2d,
-    earclip_triangulation,
     quaternion_from_angle_axis,
     quaternion_mult,
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
-    z_to_vector,
 )
 from .opengl_renderer_window import Window
-from .shader_wrapper import ShaderWrapper
-
 
 class OpenGLCamera(OpenGLMobject):
     def __init__(

@@ -2,10 +2,7 @@
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-
-import copy
 import uuid
-
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
