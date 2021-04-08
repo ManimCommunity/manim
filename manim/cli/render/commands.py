@@ -19,6 +19,7 @@ from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
 from .output_options import output_options
 from .render_options import render_options
+from ...utils.exceptions import RerunSceneException
 
 
 @cloup.command(
@@ -111,8 +112,13 @@ def render(
         for SceneClass in scene_classes_from_file(file):
             try:
                 renderer = OpenGLRenderer()
-                scene = SceneClass(renderer)
-                scene.render()
+                while True:
+                    scene_classes = scene_classes_from_file(file)
+                    SceneClass = scene_classes[0]
+                    scene = SceneClass(renderer)
+                    status = scene.render()
+                    if status == "rerun me please":
+                        continue
             except Exception:
                 console.print_exception()
     elif config.renderer == "webgl":

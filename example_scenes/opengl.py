@@ -10,8 +10,10 @@ from manim.opengl import *
 
 class Test(Scene):
     def construct(self):
-        s = OpenGLSquare()
+        s = OpenGLSquare(stroke_color=RED).shift(UL)
         self.play(ShowCreation(s))
+        # c = OpenGLCircle().shift(2 * RIGHT)
+        # self.play(ShowCreation(c))
         self.embed_2()
 
 

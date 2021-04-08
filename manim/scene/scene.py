@@ -182,31 +182,27 @@ class Scene(Container):
         preview : bool
             If true, opens scene in a file viewer.
         """
-        rerun = True
-        while rerun == True:
-            rerun = False
-            self.setup()
-            try:
-                self.construct()
-            except EndSceneEarlyException:
-                pass
-            except RerunSceneException:
-                rerun = True
-                continue
-            self.tear_down()
-            # We have to reset these settings in case of multiple renders.
-            self.renderer.scene_finished(self)
+        self.setup()
+        try:
+            self.construct()
+        except EndSceneEarlyException:
+            pass
+        except RerunSceneException:
+            return "rerun me please"
+        self.tear_down()
+        # We have to reset these settings in case of multiple renders.
+        self.renderer.scene_finished(self)
 
-            logger.info(
-                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
-            )
+        logger.info(
+            f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
+        )
 
-            # If preview open up the render after rendering.
-            if preview:
-                config["preview"] = True
+        # If preview open up the render after rendering.
+        if preview:
+            config["preview"] = True
 
-            if config["preview"] or config["show_in_file_browser"]:
-                open_media_file(self.renderer.file_writer)
+        if config["preview"] or config["show_in_file_browser"]:
+            open_media_file(self.renderer.file_writer)
 
     def setup(self):
         """

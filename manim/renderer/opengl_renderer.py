@@ -208,22 +208,23 @@ class OpenGLRenderer:
             scene.__class__.__name__,
         )
         self.scene = scene
-        if config["preview"]:
-            self.window = Window(self)
-            self.context = self.window.ctx
-            self.frame_buffer_object = self.context.detect_framebuffer()
-        else:
-            self.window = None
-            self.context = moderngl.create_standalone_context()
-            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-            self.frame_buffer_object.use()
-        self.context.enable(moderngl.BLEND)
-        self.context.blend_func = (
-            moderngl.SRC_ALPHA,
-            moderngl.ONE_MINUS_SRC_ALPHA,
-            moderngl.ONE,
-            moderngl.ONE,
-        )
+        if not hasattr(self, "window"):
+            if config["preview"]:
+                self.window = Window(self)
+                self.context = self.window.ctx
+                self.frame_buffer_object = self.context.detect_framebuffer()
+            else:
+                self.window = None
+                self.context = moderngl.create_standalone_context()
+                self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
+                self.frame_buffer_object.use()
+            self.context.enable(moderngl.BLEND)
+            self.context.blend_func = (
+                moderngl.SRC_ALPHA,
+                moderngl.ONE_MINUS_SRC_ALPHA,
+                moderngl.ONE,
+                moderngl.ONE,
+            )
 
         # Initialize shader map.
         self.id_to_shader_program = {}
