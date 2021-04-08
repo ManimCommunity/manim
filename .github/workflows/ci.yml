@@ -24,12 +24,12 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
 
-      - name: Setup Python
+      - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Setup Python cache
+      - name: Setup Python ${{ matrix.python }} cache
         uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
