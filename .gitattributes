@@ -1,1 +1,3 @@
 manim/grpc/gen/** linguist-generated=true
+*.md eol=lf
+*.yaml eol=lf
