@@ -66,17 +66,6 @@ class PMobject(Mobject):
         )
         return self
 
-        start_rgba, end_rgba = list(map(color_to_rgba, [start_color, end_color]))
-        for mob in self.family_members_with_points():
-            num_points = mob.get_num_points()
-            mob.rgbas = np.array(
-                [
-                    interpolate(start_rgba, end_rgba, alpha)
-                    for alpha in np.arange(num_points) / float(num_points)
-                ]
-            )
-        return self
-
     def set_colors_by_radial_gradient(
         self, center=None, radius=1, inner_color=WHITE, outer_color=BLACK
     ):
