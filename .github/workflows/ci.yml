@@ -45,7 +45,9 @@ jobs:
       - name: Setup Pip cache
         uses: actions/cache@v2
         with:
-          path: ${{ steps.cache-vars.outputs.pip-dir }}
+          path: |
+            ${{ steps.cache-vars.outputs.pip-dir }}
+            ${{ env.pythonLocation }}
           key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install and cache ffmpeg (all OS)
