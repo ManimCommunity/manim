@@ -30,7 +30,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Setup Python cache
-        uses: actions/cachc@v2
+        uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
