@@ -922,6 +922,10 @@ class Scene(Container):
         self.time_progression.close()
 
     def embed_2(self):
+        """
+        Like embed(), but allows for screen interaction.
+        """
+
         def ipython(namespace):
             from IPython.terminal.embed import InteractiveShellEmbed
 
