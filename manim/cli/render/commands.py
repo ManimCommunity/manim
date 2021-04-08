@@ -68,13 +68,11 @@ def render(
         logger.warning(
             "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!"
         )
-        renderer = "opengl"
 
     if args["use_webgl_renderer"]:
         logger.warning(
             "--use_webgl_renderer is deprecated, please use --renderer=webgl instead!"
         )
-        renderer = "webgl"
 
     if args["use_webgl_renderer"] and args["use_opengl_renderer"]:
         logger.warning("You may select only one renderer!")
