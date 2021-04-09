@@ -3,6 +3,11 @@ default_language_version:
 default_stages: [commit, push]
 fail_fast: false
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: mixed-line-ending
+        args: ['--fix=lf']
   - repo: https://github.com/psf/black
     rev: 20.8b1
     hooks:
