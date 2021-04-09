@@ -177,6 +177,56 @@ class CurveShader(Shader):
         vertex_array_object.release()
 
 
+time = 0
+
+
+class MyShader(Shader):
+    def __init__(self, context, name):
+        super().__init__(context, name)
+
+    def render(self):
+        global time
+        self.shader_program["u_model_view_matrix"] = opengl.view_matrix()
+        self.shader_program[
+            "u_projection_matrix"
+        ] = opengl.orthographic_projection_matrix()
+
+        attributes = np.zeros(
+            6,
+            dtype=[
+                ("in_vert", np.float32, (4,)),
+            ],
+        )
+        attributes["in_vert"] = np.array(
+            [
+                [-config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
+                [-config["frame_x_radius"], config["frame_y_radius"], 0, 1],
+                [config["frame_x_radius"], config["frame_y_radius"], 0, 1],
+                [-config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
+                [config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
+                [config["frame_x_radius"], config["frame_y_radius"], 0, 1],
+            ]
+        )
+        self.shader_program["u_resolution"] = (
+            config["pixel_width"],
+            config["pixel_height"],
+            0,
+        )
+        self.shader_program["u_time"] = float(time)
+        time += 1 / 60.0
+
+        vertex_buffer_object = self.context.buffer(attributes.tobytes())
+        vertex_array_object = self.context.simple_vertex_array(
+            self.shader_program,
+            vertex_buffer_object,
+            "in_vert",
+        )
+
+        vertex_array_object.render(moderngl.TRIANGLES)
+        vertex_buffer_object.release()
+        vertex_array_object.release()
+
+
 class ManimCoordsShader(Shader):
     def __init__(self, context):
         super().__init__(context, "manim_coords")

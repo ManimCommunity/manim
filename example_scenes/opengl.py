@@ -10,10 +10,10 @@ from manim.opengl import *
 
 class Test(Scene):
     def construct(self):
-        config["background_color"] = "#333333"
+        # config["background_color"] = "#333333"
 
-        s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
-        self.play(ShowCreation(s))
+        # s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
+        # self.play(ShowCreation(s))
 
         self.wait(100)
         # self.embed_2()
