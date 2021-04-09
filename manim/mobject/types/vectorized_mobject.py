@@ -13,6 +13,7 @@ __all__ = [
 
 import itertools as it
 import sys
+from abc import ABCMeta
 from typing import Iterable
 
 import colour
@@ -32,6 +33,7 @@ from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import get_norm, rotate_vector, shoelace_direction
+from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -42,18 +44,26 @@ from ...utils.space_ops import get_norm, rotate_vector, shoelace_direction
 #   That's kind of weird.
 
 
-from .opengl_vectorized_mobject import OpenGLVMobject
-from abc import ABCMeta
+
+
 class MetaVMobject(ABCMeta):
     def __call__(cls, *args, **kwargs):
-        if config.renderer == 'opengl':
-            new_cls = type(cls.__name__, (cls, OpenGLVMobject, ), {})
+        if config.renderer == "opengl":
+            new_cls = type(
+                cls.__name__,
+                (
+                    cls,
+                    OpenGLVMobject,
+                ),
+                {},
+            )
             return super(MetaVMobject, new_cls).__call__(*args, **kwargs)
-        if config.renderer == 'cairo':
+        if config.renderer == "cairo":
             new_cls = type(cls.__name__, (cls, VMobject), {})
             return super(MetaVMobject, new_cls).__call__(*args, **kwargs)
 
-        raise ValueError('Renderer not supported.')
+        raise ValueError("Renderer not supported.")
+
 
 class VMobject(Mobject):
     def __init__(

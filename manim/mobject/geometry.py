@@ -67,7 +67,12 @@ import numpy as np
 from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject, MetaVMobject
+from ..mobject.types.vectorized_mobject import (
+    DashedVMobject,
+    MetaVMobject,
+    VGroup,
+    VMobject,
+)
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import fdiv
