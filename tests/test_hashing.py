@@ -1,6 +1,17 @@
 import json
+from zlib import crc32
+
+import pytest
 
 import manim.utils.hashing as hashing
+from manim import Square
+
+ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
+
+
+@pytest.fixture(autouse=True, scope="function")
+def reset_already_processed():
+    hashing._Memoizer.reset_already_processed()
 
 
 def test_JSON_basic():
