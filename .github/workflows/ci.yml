@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     env:
-      POETRY_VIRTUALENVS_CREATE: false
+      POETRY_VIRTUALENVS_CREATE: true
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
     strategy:
@@ -29,13 +29,6 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Setup Python ${{ matrix.python }} cache (Linux and MacOS)
-        uses: actions/cache@v2
-        if: runner.os == 'Linux' || runner.os == 'macOS'
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
-
       - name: Install Poetry
         run: |
           pip install wheel
@@ -47,6 +40,7 @@ jobs:
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
           echo "::set-output name=pip-dir::$(pip cache dir)"
+          echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
       - name: Setup Pip cache
@@ -54,6 +48,12 @@ jobs:
         with:
           path: ${{ steps.cache-vars.outputs.pip-dir }}
           key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Setup Poetry cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
+          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install and cache ffmpeg (all OS)
         uses: FedericoCarboni/setup-ffmpeg@v1
