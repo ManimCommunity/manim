@@ -943,6 +943,8 @@ class Scene(Container):
     def embed_2(self):
         """
         Like embed(), but allows for screen interaction.
+        WARNING: This causes the 'q' key to restart the preview window and break the
+        IPython terminal!
         """
 
         def ipython(shell, namespace):
