@@ -14,6 +14,8 @@ import numpy as np
 
 from .. import logger
 
+KEYS_TO_FILTER_OUT = set(["original_id","background",
+                          "pixel_array", "pixel_array_to_cairo_context"])
 
 class _Memoizer:
     """Implements the memoization logic to optimize the hashing procedure and prevent the circular references within iterable processed.
@@ -216,6 +218,8 @@ class _CustomEncoder(json.JSONEncoder):
             processed_dict = {}
             for k, v in dct.items():
                 v = _Memoizer.check_already_processed(v)
+                if (k in KEYS_TO_FILTER_OUT): 
+                    continue
                 # We check if the k is of the right format (supporter by Json)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
                     k_new = _key_to_hash(k)
@@ -248,6 +252,7 @@ class _CustomEncoder(json.JSONEncoder):
         :class:`str`
            The object encoder with the standard json process.
         """
+        _Memoizer.mark_as_processed(obj)
         if isinstance(obj, (dict, list, tuple)):
             return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
@@ -266,8 +271,6 @@ def get_json(obj):
     :class:`str`
         The flattened object
     """
-    if not isinstance(obj, (list, tuple, dict)):
-        _Memoizer.mark_as_processed(obj)
     return json.dumps(obj, cls=_CustomEncoder)
 
 
