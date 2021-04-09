@@ -10,6 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import manim
 import os
 import sys
 from distutils.sysconfig import get_python_lib
@@ -120,7 +121,7 @@ html_theme_options = {
         "color-inline-code-background": "#383838",
     },
 }
-html_title = "Manim Community"
+html_title = f"Manim Community v{manim.__version__}"
 
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
