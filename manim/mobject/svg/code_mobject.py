@@ -8,19 +8,18 @@ __all__ = [
 
 import html
 import os
+import re
+
+from pygments import highlight
+from pygments.formatters.html import HtmlFormatter
+from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename
+from pygments.styles import get_all_styles
+
 from ...constants import *
 from ...mobject.geometry import Dot, RoundedRectangle
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...mobject.svg.text_mobject import Paragraph
 from ...mobject.types.vectorized_mobject import VGroup
-from pygments.lexers import guess_lexer_for_filename
-
-import re
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters.html import HtmlFormatter
-from pygments.styles import get_all_styles
-
 from ...utils.color import WHITE
 
 

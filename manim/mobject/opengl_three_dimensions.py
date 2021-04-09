@@ -2,11 +2,7 @@ import math
 
 from ..constants import *
 from ..mobject.types.opengl_surface import OpenGLSurface
-from ..mobject.types.opengl_surface import OpenGLSurfaceGroup
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import z_to_vector
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 
 
 class OpenGLSurfaceMesh(OpenGLVGroup):
@@ -32,7 +28,7 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
             **kwargs
         )
 
-    def generate_points(self):
+    def init_points(self):
         uv_surface = self.uv_surface
 
         full_nu, full_nv = uv_surface.resolution

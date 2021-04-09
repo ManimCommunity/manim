@@ -1,5 +1,6 @@
-from .camera import Camera
 import copy
+
+from .camera import Camera
 
 
 class WebGLCamera(Camera):

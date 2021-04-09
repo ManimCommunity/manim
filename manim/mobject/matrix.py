@@ -39,13 +39,10 @@ __all__ = [
 import numpy as np
 
 from ..constants import *
-from ..mobject.numbers import DecimalNumber
-from ..mobject.numbers import Integer
+from ..mobject.numbers import DecimalNumber, Integer
 from ..mobject.shape_matchers import BackgroundRectangle
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.svg.tex_mobject import MathTex, Tex
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import WHITE
 
 VECTOR_LABEL_SCALE_FACTOR = 0.8

@@ -1,8 +1,9 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class NumberPlaneTest(Scene):
@@ -16,7 +17,7 @@ class NumberPlaneTest(Scene):
             y_axis_config={"x_max": 5, "width": 6, "label_direction": UL},
             center_point=2 * DL,
         )
-        self.play(Animation(plane))
+        self.add(plane)
 
 
 MODULE_NAME = "coordinate_systems"

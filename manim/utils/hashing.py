@@ -1,6 +1,5 @@
 """Utilities for scene caching."""
 
-import collections
 import copy
 import inspect
 import json
@@ -8,7 +7,6 @@ import typing
 import zlib
 from time import perf_counter
 from types import FunctionType, MappingProxyType, MethodType, ModuleType
-from typing import Any
 
 import numpy as np
 

@@ -77,13 +77,13 @@ def test_plugin_warning(tmp_path, python_version):
         python_version,
         "-m",
         "manim",
-        simple_scenes_path(),
-        scene_name,
         "-ql",
         "--media_dir",
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
+        simple_scenes_path(),
+        scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
     assert exit_code == 0, err
@@ -137,13 +137,13 @@ def test_plugin_function_like(tmp_path, function_like_plugin, python_version):
         python_version,
         "-m",
         "manim",
-        simple_scenes_path(),
-        scene_name,
         "-ql",
         "--media_dir",
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
+        simple_scenes_path(),
+        scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
     print(out)
@@ -197,13 +197,13 @@ def test_plugin_no_all(tmp_path, module_no_all_plugin, python_version):
         python_version,
         "-m",
         "manim",
-        simple_scenes_path(),
-        scene_name,
         "-ql",
         "--media_dir",
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
+        simple_scenes_path(),
+        scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
     print(out)
@@ -259,13 +259,13 @@ def test_plugin_with_all(tmp_path, module_with_all_plugin, python_version):
         python_version,
         "-m",
         "manim",
-        simple_scenes_path(),
-        scene_name,
         "-ql",
         "--media_dir",
         str(cfg_file.parent),
         "--config_file",
         str(cfg_file),
+        simple_scenes_path(),
+        scene_name,
     ]
     out, err, exit_code = capture(command, cwd=str(cfg_file.parent))
     print(out)

@@ -6,8 +6,7 @@ import moderngl
 import numpy as np
 
 from ...constants import *
-from ...mobject.mobject import Mobject
-from ...mobject.opengl_mobject import OpenGLPoint
+from ...mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 # from manimlib.utils.bezier import get_smooth_quadratic_bezier_handle_points
 from ...utils.bezier import (
@@ -41,7 +40,7 @@ JOINT_TYPE_MAP = {
 }
 
 
-class OpenGLVMobject(Mobject):
+class OpenGLVMobject(OpenGLMobject):
     fill_dtype = [
         ("point", np.float32, (3,)),
         ("unit_normal", np.float32, (3,)),
@@ -115,6 +114,11 @@ class OpenGLVMobject(Mobject):
         self.triangulation = np.zeros(0, dtype="i4")
         super().__init__(**kwargs)
         self.refresh_unit_normal()
+
+        #
+        #     def get_group_class(self):
+        #         return VGroup
+        #
 
     def init_data(self):
         super().init_data()
@@ -545,14 +549,88 @@ class OpenGLVMobject(Mobject):
     def get_nth_curve_function(self, n):
         return bezier(self.get_nth_curve_points(n))
 
+    def get_nth_curve_function_with_length(
+        self, n: int, n_sample_points: int = 10
+    ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
+        """Returns the expression of the nth curve along with its (approximate) length.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        n_sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        curve : typing.Callable[[float], np.ndarray]
+            The function for the nth curve.
+        length : :class:`float`
+            The length of the nth curve.
+        """
+
+        curve = self.get_nth_curve_function(n)
+
+        points = np.array([curve(a) for a in np.linspace(0, 1, n_sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(get_norm, 1, diffs)
+
+        length = np.sum(norms)
+
+        return curve, length
+
     def get_num_curves(self):
         return self.get_num_points() // self.n_points_per_curve
 
-    def point_from_proportion(self, alpha):
+    def get_curve_functions(
+        self,
+    ) -> typing.Iterable[typing.Callable[[float], np.ndarray]]:
+        """Gets the functions for the curves of the mobject.
+
+        Returns
+        -------
+        typing.Iterable[typing.Callable[[float], np.ndarray]]
+            The functions for the curves.
+        """
+
         num_curves = self.get_num_curves()
-        n, residue = integer_interpolate(0, num_curves, alpha)
-        curve_func = self.get_nth_curve_function(n)
-        return curve_func(residue)
+
+        for n in range(num_curves):
+            yield self.get_nth_curve_function(n)
+
+    def get_curve_functions_with_lengths(
+        self,
+    ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
+        """Gets the functions and lengths of the curves for the mobject.
+
+        Returns
+        -------
+        typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]
+            The functions and lengths of the curves.
+        """
+
+        num_curves = self.get_num_curves()
+
+        for n in range(num_curves):
+            yield self.get_nth_curve_function_with_length(n)
+
+    def point_from_proportion(self, alpha):
+        curves_with_lengths = list(self.get_curve_functions_with_lengths())
+
+        total_length = np.sum(length for _, length in curves_with_lengths)
+        target_length = alpha * total_length
+        current_length = 0
+
+        for curve, length in curves_with_lengths:
+            if current_length + length >= target_length:
+                if length != 0:
+                    residue = (target_length - current_length) / length
+                else:
+                    residue = 0
+
+                return curve(residue)
+
+            current_length += length
 
     def get_anchors_and_handles(self):
         """
@@ -641,7 +719,7 @@ class OpenGLVMobject(Mobject):
         if not recompute:
             return self.data["unit_normal"][0]
 
-        if len(self.points) < 3:
+        if len(self.data["points"]) < 3:
             return OUT
 
         area_vect = self.get_area_vector()
@@ -1003,7 +1081,7 @@ class OpenGLVMobject(Mobject):
         }
 
     def get_stroke_shader_data(self):
-        points = self.points
+        points = self.data["points"]
         stroke_data = np.zeros(len(points), dtype=OpenGLVMobject.stroke_dtype)
 
         nppc = self.n_points_per_curve
@@ -1020,7 +1098,7 @@ class OpenGLVMobject(Mobject):
         return stroke_data
 
     def get_fill_shader_data(self):
-        points = self.points
+        points = self.data["points"]
         fill_data = np.zeros(len(points), dtype=OpenGLVMobject.fill_dtype)
         fill_data["vert_index"][:, 0] = range(len(points))
 

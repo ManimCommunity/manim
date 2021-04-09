@@ -1,7 +1,8 @@
-import pytest
-from manim import config, X_AXIS, Y_AXIS, Z_AXIS, PI
-from manim.utils.unit import Pixels, Degrees, Munits, Percent
 import numpy as np
+import pytest
+
+from manim import PI, X_AXIS, Y_AXIS, Z_AXIS, config
+from manim.utils.unit import Degrees, Munits, Percent, Pixels
 
 
 def test_units():

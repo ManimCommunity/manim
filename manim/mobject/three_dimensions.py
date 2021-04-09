@@ -15,13 +15,12 @@ __all__ = [
 ]
 
 from ..constants import *
-from ..mobject.geometry import Square, Circle, Line
+from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.iterables import tuplify
-from ..utils.space_ops import z_to_vector, normalize, get_norm
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
+from ..utils.iterables import tuplify
+from ..utils.space_ops import get_norm, normalize, z_to_vector
 
 
 class ThreeDVMobject(VMobject):

@@ -5,8 +5,8 @@ __all__ = ["Animation", "Wait"]
 
 
 import typing
-from typing import Union
 from copy import deepcopy
+from typing import Union
 
 import numpy as np
 
@@ -14,9 +14,9 @@ if typing.TYPE_CHECKING:
     from manim.scene.scene import Scene
 
 from .. import logger
-from ..mobject import mobject
-from ..mobject import opengl_mobject
+from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
@@ -63,7 +63,9 @@ class Animation:
     def _typecheck_input(self, mobject: Mobject) -> None:
         if mobject is None:
             logger.debug("creating dummy animation")
-        elif not isinstance(mobject, Mobject):
+        elif not isinstance(mobject, Mobject) and not isinstance(
+            mobject, OpenGLMobject
+        ):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -196,6 +198,9 @@ class Animation:
     def is_remover(self) -> bool:
         return self.remover
 
+    def is_dummy(self) -> bool:
+        return self.mobject is None
+
 
 def prepare_animation(
     anim: Union["Animation", "mobject._AnimationBuilder"]
@@ -227,6 +232,9 @@ def prepare_animation(
 
     """
     if isinstance(anim, mobject._AnimationBuilder):
+        return anim.build()
+
+    if isinstance(anim, opengl_mobject._AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):
