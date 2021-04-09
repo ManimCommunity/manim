@@ -3,6 +3,8 @@
 __all__ = ["ValueTracker", "ExponentialValueTracker", "ComplexValueTracker"]
 
 
+from typing import Union
+
 import numpy as np
 
 from ..mobject.mobject import Mobject
