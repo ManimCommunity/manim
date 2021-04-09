@@ -969,19 +969,30 @@ class VMobject(Mobject):
             yield self.get_nth_curve_function_with_length(n)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Get the bezier curve evaluated at a position P,
-        where P is the point corresponding to the proportion defined by the given alpha.
+        """Gets the point at a proportion along the mobject.
 
         Parameters
         ----------
-        alpha : float
-            Proportion.
+        alpha
+            The proportion along the mobject.
 
         Returns
         -------
         np.ndarray
-            Point evaluated.
+            The point on the mobject.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the mobject has no points.
         """
+
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+
+        self.throw_error_if_no_points()
 
         curves_with_lengths = list(self.get_curve_functions_with_lengths())
 

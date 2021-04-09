@@ -614,7 +614,32 @@ class OpenGLVMobject(OpenGLMobject):
         for n in range(num_curves):
             yield self.get_nth_curve_function_with_length(n)
 
-    def point_from_proportion(self, alpha):
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        """Gets the point at a proportion along the mobject.
+
+        Parameters
+        ----------
+        alpha
+            The proportion along the mobject.
+
+        Returns
+        -------
+        np.ndarray
+            The point on the mobject.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the mobject has no points.
+        """
+
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+
+        self.throw_error_if_no_points()
+
         curves_with_lengths = list(self.get_curve_functions_with_lengths())
 
         total_length = np.sum(length for _, length in curves_with_lengths)
