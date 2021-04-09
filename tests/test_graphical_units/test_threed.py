@@ -8,53 +8,53 @@ from ..utils.testing_utils import get_scenes_to_test
 
 class CubeTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(Cube()))
+        self.add(Cube())
 
 
 class SphereTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(Sphere()))
+        self.add(Sphere())
 
 
 class Dot3DTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(Dot3D()))
+        self.add(Dot3D())
 
 
 class ConeTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(Cone()))
+        self.add(Cone())
 
 
 class CylinderTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(Cylinder()))
+        self.add(Cylinder())
 
 
 class Line3DTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(Line3D()))
+        self.add(Line3D())
 
 
 class Arrow3DTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(Arrow3D()))
+        self.add(Arrow3D())
 
 
 class TorusTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(Torus()))
+        self.add(Torus())
 
 
 class AxesTest(ThreeDScene):
     def construct(self):
-        self.play(Animation(ThreeDAxes()))
+        self.add(ThreeDAxes())
 
 
 class CameraMoveTest(ThreeDScene):
     def construct(self):
         cube = Cube()
-        self.play(Animation(cube))
+        self.add(cube)
         self.move_camera(phi=PI / 4, theta=PI / 4, frame_center=[0, 0, -1])
 
 
@@ -62,7 +62,8 @@ class AmbientCameraMoveTest(ThreeDScene):
     def construct(self):
         cube = Cube()
         self.begin_ambient_camera_rotation(rate=0.5)
-        self.play(Animation(cube))
+        self.add(cube)
+        self.wait()
 
 
 class FixedInFrameMObjectTest(ThreeDScene):
@@ -73,7 +74,6 @@ class FixedInFrameMObjectTest(ThreeDScene):
         self.add_fixed_in_frame_mobjects(circ)
         circ.to_corner(UL)
         self.add(axes)
-        self.wait()
 
 
 MODULE_NAME = "threed"
