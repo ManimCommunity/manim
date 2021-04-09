@@ -12,8 +12,6 @@ from typing import Any
 
 import numpy as np
 
-from manim.utils.exceptions import EndSceneEarlyException
-
 from .. import logger
 
 
@@ -29,7 +27,7 @@ class _Memoizer:
     _already_processed = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
-    ALREADY_PROCESSED_PLACEHOLDER = None
+    ALREADY_PROCESSED_PLACEHOLDER = "ALREADY PROCESSED"
 
     @classmethod
     def reset_already_processed(cls):
@@ -201,33 +199,35 @@ class _CustomEncoder(json.JSONEncoder):
         def _key_to_hash(key):
             return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
 
-        @_Memoizer.check_already_processed_decorator(is_method=False)
         def _iter_check_list(lst):
             processed_list = [None] * len(lst)
             for i, el in enumerate(lst):
+                el = _Memoizer.check_already_processed(el)
                 if isinstance(el, (list, tuple)):
-                    processed_list[i] = _iter_check_list(el)
+                    new_value = _iter_check_list(el)
                 elif isinstance(el, dict):
-                    processed_list[i] = _iter_check_dict(el)
+                    new_value = _iter_check_dict(el)
                 else:
-                    processed_list[i] = _Memoizer.check_already_processed(el)
+                    new_value = el
+                processed_list[i] = new_value
             return processed_list
 
-        @_Memoizer.check_already_processed_decorator(is_method=False)
         def _iter_check_dict(dct):
             processed_dict = {}
             for k, v in dct.items():
+                v = _Memoizer.check_already_processed(v)
                 # We check if the k is of the right format (supporter by Json)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
                     k_new = _key_to_hash(k)
                 else:
                     k_new = k
                 if isinstance(v, dict):
-                    processed_dict[k_new] = _iter_check_dict(v)
+                    new_value = _iter_check_dict(v)
                 elif isinstance(v, (list, tuple)):
-                    processed_dict[k_new] = _iter_check_list(v)
+                    new_value = _iter_check_list(v)
                 else:
-                    processed_dict[k_new] = _Memoizer.check_already_processed(v)
+                    new_value = v
+                processed_dict[k_new] = new_value
             return processed_dict
 
         if isinstance(iterable, (list, tuple)):
@@ -266,6 +266,8 @@ def get_json(obj):
     :class:`str`
         The flattened object
     """
+    if not isinstance(obj, (list, tuple, dict)):
+        _Memoizer.mark_as_processed(obj)
     return json.dumps(obj, cls=_CustomEncoder)
 
 
