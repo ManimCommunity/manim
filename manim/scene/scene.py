@@ -12,6 +12,10 @@ import string
 import threading
 import types
 import warnings
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import sys
+import time
 from queue import Queue
 
 import numpy as np
@@ -32,6 +36,15 @@ from ..utils.family_ops import restructure_list_to_exclude_certain_family_member
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
+
+
+class MyHandler(FileSystemEventHandler):
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def on_modified(self, event):
+        self.queue.put(("rerun_file", [], {}))
 
 
 class Scene(Container):
@@ -928,9 +941,7 @@ class Scene(Container):
         Like embed(), but allows for screen interaction.
         """
 
-        def ipython(namespace):
-            from IPython.terminal.embed import InteractiveShellEmbed
-
+        def ipython(shell, namespace):
             import manim
             import manim.opengl
 
@@ -941,10 +952,8 @@ class Scene(Container):
             load_module_into_namespace(manim, namespace)
             load_module_into_namespace(manim.opengl, namespace)
 
-            shell = InteractiveShellEmbed()
-
             def embedded_rerun(*args, **kwargs):
-                self.queue.put(("rerun", args, kwargs))
+                self.queue.put(("rerun_keyboard", args, kwargs))
                 shell.exiter()
 
             namespace["rerun"] = embedded_rerun
@@ -961,17 +970,44 @@ class Scene(Container):
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
 
-        keyboard_thread = threading.Thread(target=ipython, args=(local_namespace,))
-        keyboard_thread.start()
-        self.interact()
-        keyboard_thread.join()
+        from IPython.terminal.embed import InteractiveShellEmbed
 
-    def interact(self):
+        from traitlets.config import Config
+
+        cfg = Config()
+        cfg.TerminalInteractiveShell.confirm_exit = False
+        shell = InteractiveShellEmbed(config=cfg)
+
+        keyboard_thread = threading.Thread(
+            target=ipython,
+            args=(
+                shell,
+                local_namespace,
+            ),
+        )
+        keyboard_thread.start()
+
+        self.interact(shell, keyboard_thread)
+
+    def interact(self, shell, keyboard_thread):
+        path = "./example_scenes/opengl.py"
+        event_handler = MyHandler(self.queue)
+        file_observer = Observer()
+        file_observer.schedule(event_handler, path, recursive=True)
+        file_observer.start()
+
         self.quit_interaction = False
         while not (self.renderer.window.is_closing or self.quit_interaction):
             if not self.queue.empty():
                 tup = self.queue.get_nowait()
-                if tup[0] == "rerun":
+                if tup[0].startswith("rerun"):
+                    file_observer.stop()
+
+                    if not tup[0].endswith("keyboard"):
+                        shell.pt_app.app.exit(exception=EOFError)
+                    keyboard_thread.join()
+                    # Intentionally skip calling join() on the file thread to save time.
+
                     self.remove(*self.mobjects)
                     raise RerunSceneException
                 else:

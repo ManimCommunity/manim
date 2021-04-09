@@ -10,10 +10,15 @@ from manim.opengl import *
 
 class Test(Scene):
     def construct(self):
-        s = OpenGLSquare(stroke_color=RED).shift(UL)
+        s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
         self.play(ShowCreation(s))
-        # c = OpenGLCircle().shift(2 * RIGHT)
-        # self.play(ShowCreation(c))
+
+        d = OpenGLCircle(stroke_color=GREEN, fill_opacity=0.5).shift(UL + DOWN)
+        self.play(Create(d))
+
+        c = OpenGLSquare(fill_color=BLUE, fill_opacity=0.5).shift(2 * RIGHT + 2 * DOWN)
+        self.play(ShowCreation(c))
+
         self.embed_2()
 
 
