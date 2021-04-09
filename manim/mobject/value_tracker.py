@@ -52,25 +52,25 @@ class ValueTracker(Mobject):
         self.points = np.zeros((1, 3))
         self.set_value(value)
 
-    def get_value(self):
+    def get_value(self) -> float:
         """Get the current value of the ValueTracker. This value changes continuously when :attr:`animate` for the ValueTracker is called."""
         return self.points[0, 0]
 
-    def set_value(self, value):
-        """Sets a new value (float, int) to the ValueTracker"""
+    def set_value(self, value: Union[float, int]):
+        """Sets a new scalar value to the ValueTracker"""
         self.points[0, 0] = value
         return self
 
-    def increment_value(self, d_value):
-        """Increments (adds) a value (float, int) to the ValueTracker"""
+    def increment_value(self, d_value: Union[float, int]):
+        """Increments (adds) a scalar value  to the ValueTracker"""
         self.set_value(self.get_value() + d_value)
 
-    def __iadd__(self, d_value):
+    def __iadd__(self, d_value: Union[float, int]):
         """adds ``+=`` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
         return self
 
-    def __isub__(self, d_value):
+    def __isub__(self, d_value: Union[float, int]):
         """adds ``-=`` syntax to decrement the value of the ValueTracker"""
         self.increment_value(-d_value)
         return self
