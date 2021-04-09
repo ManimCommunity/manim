@@ -1055,18 +1055,24 @@ class Mobject(Container):
         """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
-    def rotate(self, angle, axis=OUT, **kwargs):
+    def rotate(
+        self,
+        angle,
+        axis=OUT,
+        about_point: Union[np.ndarray, List, None] = None,
+        **kwargs,
+    ):
         """Rotates the :class:`~.Mobject` about a certain point."""
         if config.renderer == "opengl":
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
-                lambda points: np.dot(points, rot_matrix_T), **kwargs
+                lambda points: np.dot(points, rot_matrix_T), about_point, **kwargs
             )
             return self
         else:
             rot_matrix = rotation_matrix(angle, axis)
             self.apply_points_function_about_point(
-                lambda points: np.dot(points, rot_matrix.T), **kwargs
+                lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
             )
             return self
 
