@@ -48,6 +48,7 @@ class TexTemplate:
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{dsfont}
