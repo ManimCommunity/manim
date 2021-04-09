@@ -30,6 +30,7 @@ from ..utils.space_ops import (
 )
 from .opengl_renderer_window import Window
 from .shader_wrapper import ShaderWrapper
+from .shader import ManimCoordsShader
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -400,6 +401,9 @@ class OpenGLRenderer:
             self.refresh_perspective_uniforms(scene.camera)
             self.render_mobjects(scene.mobjects)
             self.animation_elapsed_time = time.time() - self.animation_start_time
+
+            test_shader = ManimCoordsShader(self.context)
+            test_shader.render()
 
         window_background_color = color_to_rgba(config["background_color"])
         update_frame()
