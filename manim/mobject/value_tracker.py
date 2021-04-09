@@ -36,16 +36,15 @@ class ValueTracker(Mobject):
                             )
                 )
                 self.add(number_line, pointer,label)
+                pointer_value += 1.5
+                self.wait(1)
+                pointer_value -= 4
+                self.wait(0.5)
                 self.play(pointer_value.animate.set_value(5)),
                 self.wait(0.5)
                 self.play(pointer_value.animate.set_value(3))
                 self.play(pointer_value.animate.increment_value(-2))
                 self.wait(0.5)
-                pointer_value += 1.5
-                self.wait(1)
-                pointer_value -= 4
-                self.wait(0.5)
-
     """
 
     def __init__(self, value=0, **kwargs):
