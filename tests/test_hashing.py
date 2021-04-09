@@ -136,9 +136,9 @@ def test_JSON_with_object_that_is_itself_circular_reference():
 
 
 def test_hash_consistency():
-    def assert_two_objects_produce_same_hash(obj1, obj2, debug = False):
+    def assert_two_objects_produce_same_hash(obj1, obj2, debug=False):
         """
-        When debug is True, if the hashes differ an assertion comparing (element-wise) the two objects will be raised, 
+        When debug is True, if the hashes differ an assertion comparing (element-wise) the two objects will be raised,
         and pytest will display a nice difference summary making it easier to debug.
         """
         json1 = hashing.get_json(obj1)
@@ -147,13 +147,12 @@ def test_hash_consistency():
         hashing._Memoizer.reset_already_processed()
         hash1 = crc32(repr(json1).encode())
         hash2 = crc32(repr(json2).encode())
-        if (hash1 != hash2 and debug):
+        if hash1 != hash2 and debug:
             dict1 = json.loads(json1)
             dict2 = json.loads(json2)
             assert dict1 == dict2
         assert hash1 == hash2, f"{obj1} and {obj2} have different hashes."
-        
-    
+
     assert_two_objects_produce_same_hash(Square(), Square())
     s = Square()
     assert_two_objects_produce_same_hash(s, s.copy())

@@ -14,17 +14,21 @@ import numpy as np
 
 from .. import logger
 
-KEYS_TO_FILTER_OUT = set(["original_id","background",
-                          "pixel_array", "pixel_array_to_cairo_context"])
+# Sometimes there are elements that are not suitable for hashing (too long or run-dependent)
+# This is used to filter them out.
+KEYS_TO_FILTER_OUT = set(
+    ["original_id", "background", "pixel_array", "pixel_array_to_cairo_context"]
+)
+
 
 class _Memoizer:
     """Implements the memoization logic to optimize the hashing procedure and prevent the circular references within iterable processed.
 
-    Keeps a record of all the processed objects, and handle the logic to return a place holder instead of the original object if the object has already been processed 
+    Keeps a record of all the processed objects, and handle the logic to return a place holder instead of the original object if the object has already been processed
     by the hashing logic (i.e, recusively checked, converted to JSON, etc..).
-    
+
     This class used two signatures functions to keep a track of processed objects : hash or id. Whenever possible, hash is used to ensure a broader object content-equality detection.
-    """    
+    """
 
     _already_processed = set()
 
@@ -83,7 +87,7 @@ class _Memoizer:
             The object to mark as processed.
         """
         cls._handle_already_processed(obj, lambda x: x)
-        return cls._return(obj, id, lambda x:x, memoizing=False)
+        return cls._return(obj, id, lambda x: x, memoizing=False)
 
     @classmethod
     def _handle_already_processed(
@@ -119,7 +123,7 @@ class _Memoizer:
         obj: typing.Any,
         obj_to_membership_sign: typing.Callable[[Any], int],
         default_func,
-        memoizing = True
+        memoizing=True,
     ) -> typing.Union[str, Any]:
 
         obj_membership_sign = obj_to_membership_sign(obj)
@@ -218,7 +222,7 @@ class _CustomEncoder(json.JSONEncoder):
             processed_dict = {}
             for k, v in dct.items():
                 v = _Memoizer.check_already_processed(v)
-                if (k in KEYS_TO_FILTER_OUT): 
+                if k in KEYS_TO_FILTER_OUT:
                     continue
                 # We check if the k is of the right format (supporter by Json)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
@@ -274,28 +278,6 @@ def get_json(obj):
     return json.dumps(obj, cls=_CustomEncoder)
 
 
-def get_camera_dict_for_hashing(camera_object):
-    """Remove some keys from `camera_object.__dict__` that are very heavy and useless for the caching functionality.
-
-    Parameters
-    ----------
-    camera_object : :class:`~.Camera`
-        The camera object used in the scene
-
-    Returns
-    -------
-    :class:`dict`
-        `Camera.__dict__` but cleaned.
-    """
-    camera_object_dict = copy.copy(camera_object.__dict__)
-    # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays. They
-    # are not essential to caching process. We also have to remove pixel_array_to_cairo_context as it contains used
-    # memory address (set randomly). See l.516 get_cached_cairo_context in camera.py
-    for to_clean in ["background", "pixel_array", "pixel_array_to_cairo_context"]:
-        camera_object_dict.pop(to_clean, None)
-    return camera_object_dict
-
-
 def get_hash_from_play_call(
     scene_object, camera_object, animations_list, current_mobjects_list
 ) -> str:
@@ -323,7 +305,7 @@ def get_hash_from_play_call(
     logger.debug("Hashing ...")
     t_start = perf_counter()
     _Memoizer.mark_as_processed(scene_object)
-    camera_json = get_json(get_camera_dict_for_hashing(camera_object))
+    camera_json = get_json(camera_object)
     animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
     current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
     hash_camera, hash_animations, hash_current_mobjects = [
