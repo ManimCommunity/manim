@@ -10,6 +10,8 @@ from manim.opengl import *
 
 class Test(Scene):
     def construct(self):
+        self.skip_animation_preview = True
+
         s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
         self.play(ShowCreation(s))
 
@@ -19,6 +21,9 @@ class Test(Scene):
         c = OpenGLSquare(fill_color=BLUE, fill_opacity=0.5).shift(2 * RIGHT + 2 * DOWN)
         self.play(ShowCreation(c))
 
+        self.skip_animation_preview = False
+
+        self.play(Uncreate(c), run_time=1)
         self.embed_2()
 
 

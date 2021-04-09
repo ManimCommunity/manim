@@ -389,6 +389,11 @@ class OpenGLRenderer:
             scene.begin_animations()
             scene.play_internal()
 
+    def clear_screen(self):
+        window_background_color = color_to_rgba(config["background_color"])
+        self.frame_buffer_object.clear(*window_background_color)
+        self.window.swap_buffers()
+
     def render(self, scene, frame_offset, moving_mobjects):
         def update_frame():
             self.frame_buffer_object.clear(*window_background_color)

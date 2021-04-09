@@ -100,6 +100,7 @@ class Scene(Container):
         self.last_t = None
         self.queue = Queue()
         self.saved_methods = {}
+        self.skip_animation_preview = False
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -201,6 +202,9 @@ class Scene(Container):
         except EndSceneEarlyException:
             pass
         except RerunSceneException:
+            self.remove(*self.mobjects)
+            self.renderer.clear_screen()
+            self.renderer.num_plays = 0
             return "rerun me please"
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
@@ -921,7 +925,7 @@ class Scene(Container):
         )
         for t in self.time_progression:
             self.update_to_time(t)
-            if not skip_rendering:
+            if not skip_rendering and not self.skip_animation_preview:
                 self.renderer.render(self, t, self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
@@ -1001,14 +1005,25 @@ class Scene(Container):
             if not self.queue.empty():
                 tup = self.queue.get_nowait()
                 if tup[0].startswith("rerun"):
+                    # Intentionally skip calling join() on the file thread to save time.
                     file_observer.stop()
 
                     if not tup[0].endswith("keyboard"):
                         shell.pt_app.app.exit(exception=EOFError)
                     keyboard_thread.join()
-                    # Intentionally skip calling join() on the file thread to save time.
 
-                    self.remove(*self.mobjects)
+                    kwargs = tup[2]
+                    if "from_animation_number" in kwargs:
+                        config["from_animation_number"] = kwargs[
+                            "from_animation_number"
+                        ]
+                    # # TODO: This option only makes sense if embed_2() is run at the
+                    # # end of a scene by default.
+                    # if "upto_animation_number" in kwargs:
+                    #     config["upto_animation_number"] = kwargs[
+                    #         "upto_animation_number"
+                    #     ]
+
                     raise RerunSceneException
                 else:
                     method, args, kwargs = tup
