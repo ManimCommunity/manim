@@ -119,6 +119,8 @@ def render(
                     status = scene.render()
                     if status == "rerun me please":
                         continue
+                    else:
+                        break
             except Exception:
                 console.print_exception()
     elif config.renderer == "webgl":
