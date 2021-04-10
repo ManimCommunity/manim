@@ -102,6 +102,7 @@ jobs:
         run: |
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+          echo "$HOME/macos-cache/TinyTeX/bin/universal-darwin" >> $GITHUB_PATH
 
       - name: Setup Windows cache
         id: cache-windows
