@@ -75,7 +75,7 @@ jobs:
         if: runner.os == 'macOS'
         uses: actions/cache@v2
         with:
-          path: ${{ github.workspace }}/macos-cache
+          path: $HOME/macos-cache
           key: ${{ runner.os }}-dependencies-test2-tinytex-${{ hashFiles('.github/macosdependency.json') }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
