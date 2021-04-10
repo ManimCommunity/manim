@@ -57,7 +57,6 @@ class NumberLine(Line):
         self.rotation = rotation
         self.tick_frequency = tick_frequency
         self.leftmost_tick = leftmost_tick
-        self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
         self.include_numbers = include_numbers
         self.numbers_to_show = numbers_to_show
         self.longer_tick_multiple = longer_tick_multiple
@@ -88,6 +87,11 @@ class NumberLine(Line):
             self.width = width
             self.unit_size = self.get_unit_size()
         self.shift(-self.number_to_point(self.number_at_center))
+
+        self.numbers_with_elongated_ticks = []
+        for number in numbers_with_elongated_ticks:
+            if number >= self.x_min and number <= self.x_max:
+                self.numbers_with_elongated_ticks.append(number)
 
         self.init_leftmost_tick()
         if self.include_tip:
