@@ -67,8 +67,8 @@ class ManimBanner(VGroup):
         self.circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
         self.square = Square(color=logo_blue, fill_opacity=1).shift(UP)
         self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
-        self.shape = VGroup(self.triangle, self.square, self.circle)
-        self.add(self.shape, self.M)
+        self.shapes = VGroup(self.triangle, self.square, self.circle)
+        self.add(self.shapes, self.M)
         self.move_to(ORIGIN)
 
         anim = VGroup()
@@ -121,10 +121,10 @@ class ManimBanner(VGroup):
         :class:`~.AnimationGroup`
             An animation to be used in a :meth:`.Scene.play` call.
         """
-        shape_center = self.shape.get_center()
+        shape_center = self.shapes.get_center()
         expansion_factor = 8 * self.scale_factor
 
-        for shape in self.shape:
+        for shape in self.shapes:
             shape.final_position = shape.get_center()
             shape.initial_position = (
                 shape.final_position
@@ -143,7 +143,7 @@ class ManimBanner(VGroup):
 
         return AnimationGroup(
             UpdateFromAlphaFunc(
-                self.shape, spiral_updater, run_time=run_time, rate_func=ease_out_sine
+                self.shapes, spiral_updater, run_time=run_time, rate_func=ease_out_sine
             ),
             FadeIn(self.M, run_time=run_time / 2),
             lag_ratio=0.1,
@@ -197,24 +197,23 @@ class ManimBanner(VGroup):
         m_shape_offset = 6.25 * self.scale_factor
         shape_sliding_overshoot = self.scale_factor * 0.8
         m_anim_buff = 0.06
-        self.anim.next_to(self.M, buff=m_anim_buff).align_to(self.M, DOWN).set_opacity(
-            0
-        )
-        self.shape.save_state()
+        self.anim.next_to(self.M, buff=m_anim_buff).align_to(self.M, DOWN)
+        self.anim.set_opacity(0)
+        self.shapes.save_state()
         m_clone = self.anim[-1].copy()
         self.add(m_clone)
-        m_clone.move_to(self.shape)
+        m_clone.move_to(self.shapes)
 
         self.M.save_state()
         left_group = VGroup(self.M, self.anim, m_clone)
 
         def shift(vector):
-            self.shape.restore()
+            self.shapes.restore()
             left_group.align_to(self.M.saved_state, LEFT)
             if direction == "right":
-                self.shape.shift(vector)
+                self.shapes.shift(vector)
             elif direction == "center":
-                self.shape.shift(vector / 2)
+                self.shapes.shift(vector / 2)
                 left_group.shift(-vector / 2)
             elif direction == "left":
                 left_group.shift(-vector)
