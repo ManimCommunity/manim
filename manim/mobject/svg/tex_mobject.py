@@ -427,11 +427,13 @@ class MathTex(SingleStringMathTex):
             self.organize_submobjects_left_to_right()
 
     def break_up_tex_strings(self, tex_strings):
-        tex_strings = [str(t) for t in tex_strings]
         # Separate out anything surrounded in double braces
-        patterns = ["{{", "}}"]
+        tex_strings = [re.split('{{(.*?)}}', str(t)) for t in tex_strings]
+        tex_strings = sum(tex_strings, [])
+
         # Separate out any strings specified in the isolate
         # or tex_to_color_map lists.
+        patterns = []
         patterns.extend(
             [
                 "({})".format(re.escape(ss))
@@ -441,10 +443,13 @@ class MathTex(SingleStringMathTex):
             ]
         )
         pattern = "|".join(patterns)
-        pieces = []
-        for s in tex_strings:
-            pieces.extend(re.split(pattern, s))
-        return list(filter(lambda s: s, pieces))
+        if pattern:
+            pieces = []
+            for s in tex_strings:
+                pieces.extend(re.split(pattern, s))
+        else:
+            pieces = tex_strings
+        return [p for p in pieces if p]
 
     def break_up_by_substrings(self):
         """
