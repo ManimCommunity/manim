@@ -771,6 +771,7 @@ class Annulus(Circle):
 
 class Line(TipableVMobject):
     def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=None, **kwargs):
+        self.dim = 3
         self.buff = buff
         self.path_arc = path_arc
         self.set_start_and_end_attrs(start, end)
@@ -783,6 +784,8 @@ class Line(TipableVMobject):
         else:
             self.set_points_as_corners([self.start, self.end])
         self.account_for_buff()
+
+    init_points = generate_points
 
     def set_path_arc(self, new_value):
         self.path_arc = new_value
