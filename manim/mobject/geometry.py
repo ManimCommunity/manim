@@ -87,7 +87,7 @@ from ..utils.space_ops import (
 )
 
 
-class TipableVMobject(VMobject):
+class TipableVMobject(metaclass=MetaVMobject):
     """
     Meant for shared functionality between Arc and Line.
     Functionality can be classified broadly into these groups:
@@ -117,7 +117,7 @@ class TipableVMobject(VMobject):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
         self.tip_style = tip_style
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     # Adding, Creating, Modifying tips
 
@@ -247,13 +247,13 @@ class TipableVMobject(VMobject):
         if self.has_tip():
             return self.tip.get_start()
         else:
-            return VMobject.get_end(self)
+            return super().get_end()
 
     def get_start(self):
         if self.has_start_tip():
             return self.start_tip.get_start()
         else:
-            return VMobject.get_start(self)
+            return super().get_start()
 
     def get_length(self):
         start, end = self.get_start_and_end()
@@ -282,7 +282,7 @@ class Arc(TipableVMobject):
         self.start_angle = start_angle
         self.angle = angle
         self._failed_to_get_center = False
-        TipableVMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def generate_points(self):
         self.set_pre_positioned_points()
@@ -774,7 +774,7 @@ class Line(TipableVMobject):
         self.buff = buff
         self.path_arc = path_arc
         self.set_start_and_end_attrs(start, end)
-        TipableVMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def generate_points(self):
         if self.path_arc:
@@ -1043,7 +1043,7 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-class Elbow(VMobject):
+class Elbow(metaclass=MetaVMobject):
     """Two lines that create a right angle about each other: L-shape.
 
     Parameters
@@ -1077,7 +1077,7 @@ class Elbow(VMobject):
 
     def __init__(self, width=0.2, angle=0, **kwargs):
         self.angle = angle
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
         self.scale_to_fit_width(width, about_point=ORIGIN)
         self.rotate(self.angle, about_point=ORIGIN)
@@ -1151,7 +1151,7 @@ class Arrow(Line):
             preserve_tip_size_when_scaling  # is this used anywhere
         )
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
-        Line.__init__(self, *args, buff=buff, stroke_width=stroke_width, **kwargs)
+        super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
@@ -1189,7 +1189,7 @@ class Arrow(Line):
             return self
 
         if scale_tips:
-            VMobject.scale(self, factor, **kwargs)
+            super().scale(factor, **kwargs)
             self.set_stroke_width_from_length()
             return self
 
@@ -1198,7 +1198,7 @@ class Arrow(Line):
         if has_tip or has_start_tip:
             old_tips = self.pop_tips()
 
-        VMobject.scale(self, factor, **kwargs)
+        super().scale(factor, **kwargs)
         self.set_stroke_width_from_length()
 
         if has_tip:
@@ -1281,7 +1281,7 @@ class Vector(Arrow):
         self.buff = buff
         if len(direction) == 2:
             direction = np.append(np.array(direction), 0)
-        Arrow.__init__(self, ORIGIN, direction, buff=buff, **kwargs)
+        super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
 
 class DoubleArrow(Arrow):
@@ -1319,11 +1319,11 @@ class DoubleArrow(Arrow):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
-        Arrow.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
-class CubicBezier(VMobject):
+class CubicBezier(metaclass=MetaVMobject):
     """
     Example
     -------
@@ -1347,7 +1347,7 @@ class CubicBezier(VMobject):
     """
 
     def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.set_points([start_anchor, start_handle, end_handle, end_anchor])
 
 
@@ -1519,10 +1519,10 @@ class RegularPolygon(Polygon):
                 self.start_angle = 90 * DEGREES
         start_vect = rotate_vector(RIGHT, self.start_angle)
         vertices = compass_directions(n, start_vect)
-        Polygon.__init__(self, *vertices, **kwargs)
+        super().__init__(*vertices, **kwargs)
 
 
-class ArcPolygon(VMobject):
+class ArcPolygon(metaclass=MetaVMobject):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version tries to stick close to the way :class:`Polygon` is used. Points
@@ -1632,7 +1632,7 @@ class ArcPolygon(VMobject):
         self.arcs = arcs
 
 
-class ArcPolygonFromArcs(VMobject):
+class ArcPolygonFromArcs(metaclass=MetaVMobject):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version takes in pre-defined arcs to generate the arcpolygon and introduces
@@ -1783,7 +1783,7 @@ class Triangle(RegularPolygon):
     """
 
     def __init__(self, **kwargs):
-        RegularPolygon.__init__(self, n=3, **kwargs)
+        super().__init__(n=3, **kwargs)
 
 
 class Rectangle(Polygon):
@@ -1830,7 +1830,7 @@ class Rectangle(Polygon):
     ):
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
-        Polygon.__init__(self, UR, UL, DL, DR, color=color, **kwargs)
+        super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
@@ -1861,7 +1861,7 @@ class Square(Rectangle):
 
     def __init__(self, side_length=2.0, **kwargs):
         self.side_length = side_length
-        Rectangle.__init__(self, height=side_length, width=side_length, **kwargs)
+        super().__init__(height=side_length, width=side_length, **kwargs)
 
 
 class RoundedRectangle(Rectangle):
@@ -1891,11 +1891,11 @@ class RoundedRectangle(Rectangle):
 
     def __init__(self, corner_radius=0.5, **kwargs):
         self.corner_radius = corner_radius
-        Rectangle.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.round_corners(self.corner_radius)
 
 
-class ArrowTip(VMobject):
+class ArrowTip(metaclass=MetaVMobject):
     r"""Base class for arrow tips.
 
     See Also
@@ -2076,8 +2076,8 @@ class ArrowTriangleFilledTip(ArrowTriangleTip):
     """
 
     def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
-        ArrowTriangleTip.__init__(
-            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        super().__init__(
+            fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
         )
 
 
@@ -2104,8 +2104,8 @@ class ArrowCircleFilledTip(ArrowCircleTip):
     r"""Circular arrow tip with filled tip."""
 
     def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
-        ArrowCircleTip.__init__(
-            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        super().__init__(
+            fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
         )
 
 
@@ -2136,12 +2136,12 @@ class ArrowSquareFilledTip(ArrowSquareTip):
     r"""Square arrow tip with filled tip."""
 
     def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
-        ArrowSquareTip.__init__(
-            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        super().__init__(
+            fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
         )
 
 
-class Cutout(VMobject):
+class Cutout(metaclass=MetaVMobject):
     """A shape with smaller cutouts.
 
     .. warning::
@@ -2177,7 +2177,7 @@ class Cutout(VMobject):
     """
 
     def __init__(self, main_shape, *mobjects, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.append_points(main_shape.get_points())
         if main_shape.get_direction() == "CW":
             sub_direction = "CCW"
@@ -2424,4 +2424,4 @@ class RightAngle(Angle):
     """
 
     def __init__(self, line1, line2, length=None, **kwargs):
-        Angle.__init__(self, line1, line2, radius=length, elbow=True, **kwargs)
+        super().__init__(line1, line2, radius=length, elbow=True, **kwargs)

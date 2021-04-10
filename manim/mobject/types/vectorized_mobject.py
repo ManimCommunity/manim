@@ -1911,13 +1911,13 @@ class CurvesAsSubmobjects(VGroup):
             self.add(part)
 
 
-class DashedVMobject(VMobject):
+class DashedVMobject(metaclass=MetaVMobject):
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):
         self.num_dashes = num_dashes
         self.positive_space_ratio = positive_space_ratio
-        VMobject.__init__(self, color=color, **kwargs)
+        super().__init__(color=color, **kwargs)
         ps_ratio = self.positive_space_ratio
         if num_dashes > 0:
             # End points of the unit interval for division
