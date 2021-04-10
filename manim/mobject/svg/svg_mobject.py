@@ -18,7 +18,7 @@ from manim import logger
 from ... import config
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
-from ...mobject.opengl_geometry import OpenGLRoundedRectangle, OpenGLRectangle
+from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
 from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
 from ...mobject.types.vectorized_mobject import VGroup, VMobject
 from .style_utils import cascade_element_style, parse_style
