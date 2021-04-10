@@ -81,11 +81,11 @@ jobs:
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
+          mkdir -p $HOME/{macos-temp,macos-cache}
           echo "Install TinyTeX"
-          mkdir -p $HOME/macos-cache
-          curl -L -o "$HOME/macos-cache/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
-          tar zxf "$HOME/macos-cache/TinyTeX.tgz" -C "$HOME/macos-cache/TinyTeX"
-          export PATH="$HOME/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
+          curl -L -o "$HOME/macos-temp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
+          tar zxf "$HOME/macos-temp/TinyTeX.tgz" -C "$HOME/macos-cache/TinyTeX"
+          echo "$HOME/macos-cache/TinyTeX/bin/universal-darwin" >> $GITHUB_PATH
           echo "Completed TinyTeX"
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
