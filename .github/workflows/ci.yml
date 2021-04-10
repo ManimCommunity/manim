@@ -79,8 +79,9 @@ jobs:
           key: ${{ runner.os }}-dependencies-test-tinytex-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && steps.cache-macos.outputs.cache-hit != 'true'
         run: |
+          tinyTexPackages=$(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['macos']['tinytex']))")
           mkdir -p $HOME/{macos-temp,macos-cache}
           echo "Install TinyTeX"
           curl -L -o "$HOME/macos-temp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
@@ -90,7 +91,10 @@ jobs:
           echo "Completed TinyTeX"
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
-          brew install cairo
+
+      - name: Install cairo (MacOS)
+        if: runner.os == 'macOS'
+        run: brew install cairo
 
       - name: Add macOS dependencies to PATH
         if: runner.os == 'macOS'
