@@ -90,11 +90,11 @@ jobs:
           tar zxf "$HOME/macos-temp/TinyTeX.tgz" -C "$HOME/macos-cache"
           ls $HOME/macos-cache/TinyTeX
           export PATH="$HOME/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
-          echo "Completed TinyTeX"
           sudo tlmgr update --self
           for i in "${ttp[@]}"; do
             tlmgr install "$i"
           done
+          echo "Completed TinyTeX"
 
       - name: Install cairo (MacOS)
         if: runner.os == 'macOS'
