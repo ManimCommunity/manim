@@ -75,7 +75,7 @@ jobs:
         if: runner.os == 'macOS'
         uses: actions/cache@v2
         with:
-          path: $HOME/macos-cache
+          path: ${{ github.workspace }}/macos-cache
           key: ${{ runner.os }}-dependencies-test2-tinytex-${{ hashFiles('.github/macosdependency.json') }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
@@ -84,12 +84,12 @@ jobs:
           tinyTexPackages=$(python -c "import json;print(' '.join(json.load(open('.github/macosdependency.json'))['macos']['tinytex']))")
           IFS=' '
           read -a ttp <<< "$tinyTexPackages"
-          mkdir -p $HOME/{macos-temp,macos-cache}
+          mkdir -p $PWD/{macos-temp,macos-cache}
           echo "Install TinyTeX"
-          curl -L -o "$HOME/macos-temp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
-          tar zxf "$HOME/macos-temp/TinyTeX.tgz" -C "$HOME/macos-cache"
-          ls $HOME/macos-cache/TinyTeX
-          export PATH="$HOME/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
+          curl -L -o "$PWD/macos-temp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
+          tar zxf "$PWD/macos-temp/TinyTeX.tgz" -C "$PWD/macos-cache"
+          ls $PWD/macos-cache/TinyTeX
+          export PATH="$PWD/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
           sudo tlmgr update --self
           for i in "${ttp[@]}"; do
             tlmgr install "$i"
@@ -106,7 +106,7 @@ jobs:
         run: |
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-          echo "$HOME/macos-cache/TinyTeX/bin/universal-darwin" >> $GITHUB_PATH
+          echo "$PWD/macos-cache/TinyTeX/bin/universal-darwin" >> $GITHUB_PATH
 
       - name: Setup Windows cache
         id: cache-windows
