@@ -1920,7 +1920,7 @@ class Mobject(Container):
         alignment_vect=UP,
     ):
         """Aligns mobject to another :class:`~.Mobject` in a certain direction.
-        
+
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
