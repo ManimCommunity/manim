@@ -21,13 +21,6 @@ class TexTest(Scene):
         self.wait()
 
 
-class TextTest(Scene):
-    def construct(self):
-        text = OpenGLText("some tex")
-        self.add(text)
-        self.wait()
-
-
 MODULE_NAME = "opengl"
 
 
