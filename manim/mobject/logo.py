@@ -28,7 +28,7 @@ class ManimBanner(VGroup):
     Examples
     --------
     .. manim:: DarkThemeBanner
-    
+
         class DarkThemeBanner(Scene):
             def construct(self):
                 banner = ManimBanner()
