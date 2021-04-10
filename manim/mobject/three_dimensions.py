@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 from ..constants import *
-from ..mobject.geometry import Circle, Line, Square
+from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *

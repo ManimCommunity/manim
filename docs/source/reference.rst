@@ -1,5 +1,5 @@
-Reference
-===============
+Reference Manual
+================
 
 This reference manual details modules, functions, and variables included in
 Manim, describing what they are and what they do.  For learning how to use
@@ -109,7 +109,6 @@ Configuration
 
    ~_config
    ~_config.utils
-   ~_config.main_utils
    ~_config.logger_utils
 
 
