@@ -17,7 +17,7 @@ from manim import logger
 
 from ... import config
 from ...constants import *
-from ...mobject.geometry import Circle, Rectangle, RoundedRectangle
+from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.types.vectorized_mobject import VGroup, VMobject
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
@@ -183,6 +183,8 @@ class SVGMobject(VMobject):
         elif element.tagName == "use":
             # note, style is calcuated in a different way for `use` elements.
             result += self.use_to_mobjects(element, style)
+        elif element.tagName in ["line"]:
+            result.append(self.line_to_mobject(element, style))
         elif element.tagName == "rect":
             result.append(self.rect_to_mobject(element, style))
         elif element.tagName == "circle":
@@ -227,6 +229,24 @@ class SVGMobject(VMobject):
         """
         return SVGPathMobject(path_string, **parse_style(style))
 
+    def attribute_to_float(self, attr):
+        """A helper method which converts the attribute to float.
+
+        Parameters
+        ----------
+        attr : str
+            An SVG path attribute.
+
+        Returns
+        -------
+        float
+            A float representing the attribute string value.
+        """
+        stripped_attr = "".join(
+            [char for char in attr if char in string.digits + "." + "-"]
+        )
+        return float(stripped_attr)
+
     def use_to_mobjects(
         self, use_element: MinidomElement, local_style: Dict
     ) -> List[VMobject]:
@@ -266,48 +286,78 @@ class SVGMobject(VMobject):
 
         return self.get_mobjects_from(def_element, style)
 
-    def attribute_to_float(self, attr):
-        """A helper method which converts the attribute to float.
+    def line_to_mobject(self, line_element: MinidomElement, style: dict):
+        """Creates a Line VMobject from an SVG <line> element.
 
         Parameters
         ----------
-        attr : str
-            An SVG path attribute.
-
-        Returns
-        -------
-        float
-            A float representing the attribute string value.
-        """
-        stripped_attr = "".join(
-            [char for char in attr if char in string.digits + "." + "-"]
-        )
-        return float(stripped_attr)
-
-    def polygon_to_mobject(self, polygon_element: MinidomElement, style: dict):
-        """Constructs a VMobject from a SVG <polygon> element.
-
-        Parameters
-        ----------
-        polygon_element : :class:`minidom.Element`
-            An SVG polygon element.
+        line_element : :class:`minidom.Element`
+            An SVG line element.
 
         style : :class:`dict`
             Style specification, using the SVG names for properties.
 
         Returns
         -------
-        VMobjectFromSVGPathstring
-            A VMobject representing the polygon.
+        Line
+            A Line VMobject
         """
-        # This seems hacky... yes it is.
-        path_string = polygon_element.getAttribute("points").lstrip()
-        for digit in string.digits:
-            path_string = path_string.replace(" " + digit, " L" + digit)
-        path_string = "M" + path_string
-        if polygon_element.tagName == "polygon":
-            path_string = path_string + "Z"
-        return self.path_string_to_mobject(path_string, style)
+        x1, y1, x2, y2 = [
+            self.attribute_to_float(line_element.getAttribute(key))
+            if line_element.hasAttribute(key)
+            else 0.0
+            for key in ("x1", "y1", "x2", "y2")
+        ]
+        return Line([x1, -y1, 0], [x2, -y2, 0], **parse_style(style))
+
+    def rect_to_mobject(self, rect_element: MinidomElement, style: dict):
+        """Converts a SVG <rect> command to a VMobject.
+
+        Parameters
+        ----------
+        rect_element : minidom.Element
+            A SVG rect path command.
+
+        style : dict
+            Style specification, using the SVG names for properties.
+
+        Returns
+        -------
+        Rectangle
+            Creates either a Rectangle, or RoundRectangle, VMobject from a
+            rect element.
+        """
+
+        stroke_width = rect_element.getAttribute("stroke-width")
+        corner_radius = rect_element.getAttribute("rx")
+
+        if stroke_width in ["", "none", "0"]:
+            stroke_width = 0
+
+        if corner_radius in ["", "0", "none"]:
+            corner_radius = 0
+
+        corner_radius = float(corner_radius)
+
+        parsed_style = parse_style(style)
+        parsed_style["stroke_width"] = stroke_width
+
+        if corner_radius == 0:
+            mob = Rectangle(
+                width=self.attribute_to_float(rect_element.getAttribute("width")),
+                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                **parsed_style,
+            )
+        else:
+            mob = RoundedRectangle(
+                width=self.attribute_to_float(rect_element.getAttribute("width")),
+                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                corner_radius=corner_radius,
+                **parsed_style,
+            )
+
+        mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
+        return mob
 
     def circle_to_mobject(self, circle_element: MinidomElement, style: dict):
         """Creates a Circle VMobject from a SVG <circle> command.
@@ -362,54 +412,30 @@ class SVGMobject(VMobject):
             .shift(x * RIGHT + y * DOWN)
         )
 
-    def rect_to_mobject(self, rect_element: MinidomElement, style: dict):
-        """Converts a SVG <rect> command to a VMobject.
+    def polygon_to_mobject(self, polygon_element: MinidomElement, style: dict):
+        """Constructs a VMobject from a SVG <polygon> element.
 
         Parameters
         ----------
-        rect_element : minidom.Element
-            A SVG rect path command.
+        polygon_element : :class:`minidom.Element`
+            An SVG polygon element.
 
-        style : dict
+        style : :class:`dict`
             Style specification, using the SVG names for properties.
 
         Returns
         -------
-        Rectangle
-            Creates either a Rectangle, or RoundRectangle, VMobject from a
-            rect element.
+        VMobjectFromSVGPathstring
+            A VMobject representing the polygon.
         """
-
-        stroke_width = rect_element.getAttribute("stroke-width")
-        corner_radius = rect_element.getAttribute("rx")
-
-        if stroke_width in ["", "none", "0"]:
-            stroke_width = 0
-
-        if corner_radius in ["", "0", "none"]:
-            corner_radius = 0
-
-        corner_radius = float(corner_radius)
-
-        parsed_style = parse_style(style)
-        parsed_style["stroke_width"] = stroke_width
-
-        if corner_radius == 0:
-            mob = Rectangle(
-                width=self.attribute_to_float(rect_element.getAttribute("width")),
-                height=self.attribute_to_float(rect_element.getAttribute("height")),
-                **parsed_style,
-            )
-        else:
-            mob = RoundedRectangle(
-                width=self.attribute_to_float(rect_element.getAttribute("width")),
-                height=self.attribute_to_float(rect_element.getAttribute("height")),
-                corner_radius=corner_radius,
-                **parsed_style,
-            )
-
-        mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
-        return mob
+        # This seems hacky... yes it is.
+        path_string = polygon_element.getAttribute("points").lstrip()
+        for digit in string.digits:
+            path_string = path_string.replace(" " + digit, " L" + digit)
+        path_string = "M" + path_string
+        if polygon_element.tagName == "polygon":
+            path_string = path_string + "Z"
+        return self.path_string_to_mobject(path_string, style)
 
     def handle_transforms(self, element, mobject):
         """Applies the SVG transform to the specified mobject. Transforms include:
