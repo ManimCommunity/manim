@@ -44,8 +44,6 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 #   That's kind of weird.
 
 
-
-
 class MetaVMobject(ABCMeta):
     def __call__(cls, *args, **kwargs):
         if config.renderer == "opengl":

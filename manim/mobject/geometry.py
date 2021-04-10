@@ -2079,9 +2079,7 @@ class ArrowTriangleFilledTip(ArrowTriangleTip):
     """
 
     def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
-        super().__init__(
-            fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
-        )
+        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
 class ArrowCircleTip(ArrowTip, Circle):
@@ -2107,9 +2105,7 @@ class ArrowCircleFilledTip(ArrowCircleTip):
     r"""Circular arrow tip with filled tip."""
 
     def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
-        super().__init__(
-            fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
-        )
+        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
 class ArrowSquareTip(ArrowTip, Square):
@@ -2139,9 +2135,7 @@ class ArrowSquareFilledTip(ArrowSquareTip):
     r"""Square arrow tip with filled tip."""
 
     def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
-        super().__init__(
-            fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
-        )
+        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
 class Cutout(metaclass=MetaVMobject):
@@ -2334,7 +2328,9 @@ class Angle(metaclass=MetaVMobject):
                 + quadrant[1] * radius * line2.get_unit_vector()
             )
             self.angle_mobject = Elbow(**kwargs)
-            self.angle_mobject.set_points_as_corners([anchor_angle_1, anchor_middle, anchor_angle_2])
+            self.angle_mobject.set_points_as_corners(
+                [anchor_angle_1, anchor_middle, anchor_angle_2]
+            )
             self.add(self.angle_mobject)
         else:
             angle_1 = angle_of_vector(anchor_angle_1 - inter)
