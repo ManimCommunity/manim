@@ -1799,7 +1799,7 @@ class Mobject(Container):
         return self.get_edge_center(OUT)
 
     def get_nadir(self) -> np.ndarray:
-        """Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.Mobject`"""
+        """Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.Mobject`."""
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
