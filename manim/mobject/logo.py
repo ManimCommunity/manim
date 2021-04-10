@@ -224,7 +224,7 @@ class ManimBanner(VGroup):
 
             # Add letters when they are covered
             for letter in mob.anim:
-                if mob.square.get_center()[0] > letter.get_center()[0]:
+                if mob.square.get_center()[0] > letter.get_center()[0] and letter not in self.submobjects:
                     letter.set_opacity(1)
                     self.add_to_back(letter)
 
