@@ -2190,7 +2190,7 @@ class Cutout(metaclass=MetaVMobject):
             self.append_points(mobject.force_direction(sub_direction).get_points())
 
 
-class Angle(Arc, Elbow):
+class Angle(metaclass=MetaVMobject):
     """A circular arc or elbow-type mobject representing an angle of two lines.
 
     Parameters
@@ -2300,6 +2300,7 @@ class Angle(Arc, Elbow):
         elbow=False,
         **kwargs
     ):
+        super().__init__(**kwargs)
         self.quadrant = quadrant
         self.dot_distance = dot_distance
         self.elbow = elbow
@@ -2332,8 +2333,9 @@ class Angle(Arc, Elbow):
                 + quadrant[0] * radius * line1.get_unit_vector()
                 + quadrant[1] * radius * line2.get_unit_vector()
             )
-            Elbow.__init__(self, **kwargs)
-            self.set_points_as_corners([anchor_angle_1, anchor_middle, anchor_angle_2])
+            self.angle_mobject = Elbow(**kwargs)
+            self.angle_mobject.set_points_as_corners([anchor_angle_1, anchor_middle, anchor_angle_2])
+            self.add(self.angle_mobject)
         else:
             angle_1 = angle_of_vector(anchor_angle_1 - inter)
             angle_2 = angle_of_vector(anchor_angle_2 - inter)
@@ -2351,14 +2353,14 @@ class Angle(Arc, Elbow):
                 else:
                     angle_fin = -2 * np.pi + (angle_2 - angle_1)
 
-            Arc.__init__(
-                self,
+            self.angle_mobject = Arc(
                 radius=radius,
                 angle=angle_fin,
                 start_angle=start_angle,
                 arc_center=inter,
                 **kwargs
             )
+            self.add(self.angle_mobject)
             if dot:
                 if dot_radius is None:
                     dot_radius = radius / 10
@@ -2374,12 +2376,6 @@ class Angle(Arc, Elbow):
                 )
                 right_dot.move_to(dot_anchor)
                 self.add(right_dot)
-
-    def generate_points(self):
-        if self.elbow:
-            Elbow.generate_points(self)
-        else:
-            Arc.generate_points(self)
 
 
 class RightAngle(Angle):
