@@ -85,9 +85,9 @@ jobs:
           echo "Install TinyTeX"
           curl -L -o "$HOME/macos-temp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
           tar zxf "$HOME/macos-temp/TinyTeX.tgz" -C "$HOME/macos-cache"
-          echo "$HOME/macos-cache/TinyTeX/bin/universal-darwin" >> $GITHUB_PATH
+          ls $HOME/macos-cache/TinyTeX
+          export PATH="$HOME/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
           echo "Completed TinyTeX"
-          eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
           brew install cairo
