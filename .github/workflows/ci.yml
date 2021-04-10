@@ -83,7 +83,7 @@ jobs:
         run: |
           echo "Install TinyTeX"
           mkdir -p $HOME/macos-cache
-          curl -sSL -o "$HOME/macos-cache/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
+          curl -L -o "$HOME/macos-cache/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
           tar zxvf "$HOME/macos-cache/TinyTeX.tgz"
           export PATH="$HOME/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
           echo "Completed TinyTeX"
