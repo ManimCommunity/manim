@@ -24,10 +24,6 @@ Enjoy this taste of Manim!
    *manimations*!
 
 
-.. contents:: Overview of thematic video categories
-   :backlinks: none
-   :local:
-
 
 Basic Concepts
 ==============
