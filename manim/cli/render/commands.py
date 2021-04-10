@@ -157,7 +157,7 @@ def render(
             logger.warning(f"Timed Out: {warn_prompt}")
             raise SystemExit
         except Exception:
-            logger.warning(f"Something else went wrong: {warn_prompt}")
+            logger.warning(f"Something went wrong: {warn_prompt}")
             raise SystemExit
 
         try:
