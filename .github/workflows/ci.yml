@@ -70,11 +70,23 @@ jobs:
           # start xvfb in the background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
+      - name: Setup macOS cache
+        id: cache-macos
+        if: runner.os == 'macOS'
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/macos-cache
+          key: ${{ runner.os }}-dependencies-test-tinytex-${{ steps.cache-vars.outputs.date }}
+
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS'
         run: |
-          brew update -q && brew upgrade basictex && brew cleanup
-          brew install --cask basictex
+          echo "Install TinyTeX"
+          mkdir -p $HOME/macos-cache
+          curl -L -o "$HOME/macos-cache/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
+          tar zxvf "$HOME/macos-cache/TinyTeX.tgz"
+          export PATH="$HOME/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
+          echo "Completed TinyTeX"
           eval "$(/usr/libexec/path_helper -s)"
           sudo tlmgr update --self
           sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
