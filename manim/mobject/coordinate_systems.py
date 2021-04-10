@@ -6,6 +6,7 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 import numbers
 
 import numpy as np
+import fractions as fr
 
 from .. import config
 from ..constants import *
