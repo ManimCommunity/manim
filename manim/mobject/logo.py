@@ -75,7 +75,6 @@ class ManimBanner(VGroup):
         for i, ch in enumerate("anim"):
             tex = Tex(
                 "\\textbf{" + ch + "}",
-                # ch,
                 tex_template=TexFontTemplates.gnu_freeserif_freesans,
             )
             if i != 0:
