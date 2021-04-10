@@ -36,6 +36,7 @@ from ..utils.family_ops import restructure_list_to_exclude_certain_family_member
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
+from ..renderer.shader import Mesh
 
 
 class MyHandler(FileSystemEventHandler):
@@ -101,6 +102,7 @@ class Scene(Container):
         self.queue = Queue()
         self.saved_methods = {}
         self.skip_animation_preview = False
+        self.meshes = []
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -372,9 +374,17 @@ class Scene(Container):
 
         """
         if config.renderer == "opengl":
-            new_mobjects = mobjects
+            new_mobjects = []
+            new_meshes = []
+            for mobject_or_mesh in mobjects:
+                if isinstance(mobject_or_mesh, Mesh):
+                    new_meshes.append(mobject_or_mesh)
+                else:
+                    new_mobjects.append(mobject_or_mesh)
             self.remove(*new_mobjects)
             self.mobjects += new_mobjects
+            self.remove(*new_meshes)
+            self.meshes += new_meshes
         else:
             mobjects = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
@@ -409,9 +419,18 @@ class Scene(Container):
             The mobjects to remove.
         """
         if config.renderer == "opengl":
-            mobjects_to_remove = mobjects
+            mobjects_to_remove = []
+            meshes_to_remove = set()
+            for mobject_or_mesh in mobjects:
+                if isinstance(mobject_or_mesh, Mesh):
+                    meshes_to_remove.add(mobject_or_mesh)
+                else:
+                    mobjects_to_remove.append(mobject_or_mesh)
             self.mobjects = restructure_list_to_exclude_certain_family_members(
                 self.mobjects, mobjects_to_remove
+            )
+            self.meshes = list(
+                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes)
             )
             return self
         else:

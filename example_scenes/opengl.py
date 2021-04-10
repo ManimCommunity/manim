@@ -3,6 +3,7 @@ from pathlib import Path
 
 from manim import *
 from manim.opengl import *
+from manim.utils.opengl import *
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.
@@ -10,13 +11,34 @@ from manim.opengl import *
 
 class Test(Scene):
     def construct(self):
-        # config["background_color"] = "#333333"
+        config["background_color"] = "#333333"
 
-        # s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
-        # self.play(ShowCreation(s))
+        s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
+        self.play(ShowCreation(s))
 
-        self.wait(100)
-        # self.embed_2()
+        d = OpenGLSquare(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
+        self.play(ShowCreation(d))
+
+        # shader = Shader(self.renderer.context)
+        # shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
+        # shader.set_uniform(
+        #     "u_projection_matrix", opengl.orthographic_projection_matrix()
+        # )
+        # shader.set_uniform("u_color", (1.0, 1.0, 1.0, 1.0))
+
+        # attributes = np.zeros(3, dtype=[("in_vert", np.float32, (4,))])
+        # attributes["in_vert"] = np.array(
+        #     [
+        #         [-1, -1, 0, 1],
+        #         [0, 0, 0, 1],
+        #         [1, -1, 0, 1],
+        #     ]
+        # )
+        # mesh = Mesh(shader, attributes)
+        # self.add(mesh)
+
+        # self.wait(100)
+        self.embed_2()
 
 
 class InteractiveDevelopment(Scene):

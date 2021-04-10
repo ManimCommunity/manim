@@ -2,29 +2,65 @@ from pathlib import Path
 import numpy as np
 import moderngl
 from ..utils import opengl
-from .. import config
+from .. import config, logger
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache = {}
 
 
-class Shader:
-    def __init__(self, context, name):
-        self.context = context
-        self.name = name
-        self.shader_program = self.get_shader_program()
+class Mesh:
+    def __init__(self, shader, attributes):
+        self.shader = shader
+        self.attributes = attributes
 
-    def get_shader_program(self):
-        if self.name in shader_program_cache:
-            self.shader_program = shader_program_cache[self.name]
-        else:
-            with open(SHADER_FOLDER / f"{self.name}.vert") as vertex_shader, open(
-                SHADER_FOLDER / f"{self.name}.frag"
-            ) as fragment_shader:
-                return self.context.program(
-                    vertex_shader=vertex_shader.read(),
-                    fragment_shader=fragment_shader.read(),
+    def render(self):
+        vertex_buffer_object = self.shader.context.buffer(self.attributes.tobytes())
+        vertex_array_object = self.shader.context.simple_vertex_array(
+            self.shader.shader_program,
+            vertex_buffer_object,
+            "in_vert",
+        )
+
+        vertex_array_object.render(moderngl.TRIANGLES)
+        vertex_buffer_object.release()
+        vertex_array_object.release()
+
+
+class Shader:
+    def __init__(
+        self, context, name="default", vertex_source=None, fragment_source=None
+    ):
+        self.name = name
+        self.context = context
+
+        if name is not None:
+            if vertex_source is not None or fragment_source is not None:
+                logger.warning(
+                    "Passed both name and inline source to Shader. Inline source will "
+                    "be ignored."
                 )
+            if self.name in shader_program_cache:
+                self.shader_program = shader_program_cache[self.name]
+            else:
+                with open(SHADER_FOLDER / f"{self.name}.vert") as vertex_shader, open(
+                    SHADER_FOLDER / f"{self.name}.frag"
+                ) as fragment_shader:
+                    self.shader_program = context.program(
+                        vertex_shader=vertex_shader.read(),
+                        fragment_shader=fragment_shader.read(),
+                    )
+                    shader_program_cache[self.name] = self.shader_program
+        elif vertex_source is not None and fragment_source is not None:
+            self.vertex_source = vertex_source
+            self.fragment_source = fragment_source
+            self.shader_program = context.program(
+                vertex_shader=self.vertex_source,
+                fragment_shader=self.fragment_source,
+            )
+        else:
+            logger.error(
+                "Shader requires either a shader name or vertex and fragment source."
+            )
 
     def set_uniform(self, name, value):
         self.shader_program[name] = value
@@ -177,7 +213,7 @@ class CurveShader(Shader):
         vertex_array_object.release()
 
 
-time = 0
+shader_time = 0
 
 
 class MyShader(Shader):
@@ -185,7 +221,7 @@ class MyShader(Shader):
         super().__init__(context, name)
 
     def render(self):
-        global time
+        global shader_time
         self.shader_program["u_model_view_matrix"] = opengl.view_matrix()
         self.shader_program[
             "u_projection_matrix"
@@ -212,8 +248,8 @@ class MyShader(Shader):
             config["pixel_height"],
             0,
         )
-        self.shader_program["u_time"] = float(time)
-        time += 1 / 60.0
+        self.shader_program["u_time"] = float(shader_time)
+        shader_time += 1 / 60.0
 
         vertex_buffer_object = self.context.buffer(attributes.tobytes())
         vertex_array_object = self.context.simple_vertex_array(
@@ -229,7 +265,7 @@ class MyShader(Shader):
 
 class ManimCoordsShader(Shader):
     def __init__(self, context):
-        super().__init__(context, "manim_coords")
+        super().__init__(context, name="default")
 
     def render(self):
         self.shader_program["u_model_view_matrix"] = opengl.view_matrix()
