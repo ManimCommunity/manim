@@ -32,6 +32,7 @@ class ManimBanner(VGroup):
     Examples
     --------
     .. manim:: DarkThemeBanner
+    
         class DarkThemeBanner(Scene):
             def construct(self):
                 banner = ManimBanner()
@@ -41,6 +42,7 @@ class ManimBanner(VGroup):
                 self.play(Unwrite(banner))
 
     .. manim:: LightThemeBanner
+
         class LightThemeBanner(Scene):
             def construct(self):
                 self.camera.background_color = "#ece6e2"
@@ -182,6 +184,7 @@ class ManimBanner(VGroup):
         Examples
         --------
         .. manim:: ExpandDirections
+
             class ExpandDirections(Scene):
                 def construct(self):
                     banners = [ManimBanner().scale(0.5).shift(UP*x) for x in [-2, 0, 2]]
