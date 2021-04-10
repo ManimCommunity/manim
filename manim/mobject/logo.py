@@ -2,18 +2,14 @@
 
 __all__ = ["ManimBanner"]
 
-from ..animation.update import UpdateFromAlphaFunc
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.fading import FadeIn
+from ..animation.update import UpdateFromAlphaFunc
 from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
 from ..mobject.geometry import Circle, Square, Triangle
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.rate_functions import (
-    ease_in_out_cubic,
-    ease_out_sine,
-    smooth,
-)
+from ..utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth
 from ..utils.tex_templates import TexFontTemplates
 
 
