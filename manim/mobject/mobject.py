@@ -200,6 +200,12 @@ class Mobject(Container):
                         c.animate(rate_func=there_and_back).shift(RIGHT),
                     )
 
+        .. warning::
+
+            ``.animate``
+             will interpolate the :class:`~.Mobject` between its points prior to ``.animate`` and its points after applying ``.animate`` to it. This may result in unexpected behavior when attempting to interpolate along paths, or rotations.
+             If you want animations to consider the points between, consider using :class:`~.ValueTracker` with updaters instead.
+
         """
         return _AnimationBuilder(self)
 
@@ -347,13 +353,40 @@ class Mobject(Container):
             the head of :attr:`submobjects`. The head of this list is rendered
             first, which places the corresponding mobjects behind the
             subsequent list members.
+
+        Raises
+        ------
+        :class:`ValueError`
+            When a mobject tries to add itself.
+        :class:`TypeError`
+            When trying to add an object that is not an instance of :class:`Mobject`.
+
+        Notes
+        -----
+        A mobject cannot contain itself, and it cannot contain a submobject
+        more than once.  If the parent mobject is displayed, the newly-added
+        submobjects will also be displayed (i.e. they are automatically added
+        to the parent Scene).
+
+        See Also
+        --------
+        :meth:`remove`
+        :meth:`add`
+
         """
+        for mobject in mobjects:
+            if self in mobjects:
+                raise ValueError("Mobject cannot contain self")
+            if not isinstance(mobject, Mobject):
+                raise TypeError("All submobjects must be of type Mobject")
+
+        filtered = list_update(mobjects, self.submobjects)
         self.remove(*mobjects)
-        self.submobjects = list(mobjects) + self.submobjects
+        self.submobjects = list(filtered) + self.submobjects
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
-        """Remove submobjects.
+        """Remove :attr:`submobjects`.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
 
@@ -602,12 +635,13 @@ class Mobject(Container):
         self.get_image(camera=camera).show()
 
     def save_image(self, name=None):
+        """Saves an image of only this :class:`Mobject` at its position to a png file."""
         self.get_image().save(
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
     def copy(self) -> "Mobject":
-        """Create and return an identical copy of the Mobject including all submobjects.
+        """Create and return an identical copy of the :class:`Mobject` including all :attr:`submobjects`.
 
         Returns
         -------
@@ -1021,18 +1055,24 @@ class Mobject(Container):
         """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
         return self.rotate(angle, axis, about_point=ORIGIN)
 
-    def rotate(self, angle, axis=OUT, **kwargs):
+    def rotate(
+        self,
+        angle,
+        axis=OUT,
+        about_point: Union[np.ndarray, List, None] = None,
+        **kwargs,
+    ):
         """Rotates the :class:`~.Mobject` about a certain point."""
         if config.renderer == "opengl":
             rot_matrix_T = rotation_matrix_transpose(angle, axis)
             self.apply_points_function(
-                lambda points: np.dot(points, rot_matrix_T), **kwargs
+                lambda points: np.dot(points, rot_matrix_T), about_point, **kwargs
             )
             return self
         else:
             rot_matrix = rotation_matrix(angle, axis)
             self.apply_points_function_about_point(
-                lambda points: np.dot(points, rot_matrix.T), **kwargs
+                lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
             )
             return self
 
@@ -1616,6 +1656,7 @@ class Mobject(Container):
         return self
 
     def get_color(self):
+        """Returns the color of the :class:`~.Mobject`"""
         return self.color
 
     ##
@@ -1846,12 +1887,15 @@ class Mobject(Container):
         )
 
     def match_x(self, mobject: "Mobject", direction=ORIGIN):
+        """Match x coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)
 
-    def match_y(self, mobject: "Mobject", direction=ORIGIN):
+    def Match_y(self, mobject: "Mobject", direction=ORIGIN):
+        """Match y coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
     def match_z(self, mobject: "Mobject", direction=ORIGIN):
+        """Match z coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 2, direction)
 
     def align_to(
@@ -1921,7 +1965,7 @@ class Mobject(Container):
         center=True,
         **kwargs,
     ):
-        """Sorts mobjects next to each other on screen.
+        """Sorts :class:`~.Mobject` next to each other on screen.
 
         Examples
         --------
@@ -1978,6 +2022,21 @@ class Mobject(Container):
         random.shuffle(self.submobjects)
 
     def invert(self, recursive=False):
+        """Inverts the list of :attr:`submobjects`.
+
+        Examples
+        --------
+
+        .. manim:: InvertSumobjectsExample
+
+            class InvertSumobjectsExample(Scene):
+                def construct(self):
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2= s.copy()
+                    s2.invert()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
         if recursive:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
@@ -1985,12 +2044,46 @@ class Mobject(Container):
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args, **kwargs):
+        """Arrange the position of :attr:`submobjects` with a small buffer.
+
+        Examples
+        --------
+
+        .. manim:: ArrangeSumobjectsExample
+            :save_last_frame:
+
+            class ArrangeSumobjectsExample(Scene):
+                def construct(self):
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(0,15)])
+                    s.shift(UP).set_color(BLUE)
+                    s2= s.copy().set_color(RED)
+                    s2.arrange_submobjects()
+                    s2.shift(DOWN)
+                    self.add(s,s2)
+
+        """
         return self.arrange(*args, **kwargs)
 
     def sort_submobjects(self, *args, **kwargs):
+        """Sort the :attr:`submobjects`"""
         return self.sort(*args, **kwargs)
 
     def shuffle_submobjects(self, *args, **kwargs):
+        """Shuffles the order of :attr:`submobjects`
+
+        Examples
+        --------
+
+        .. manim:: SuffleSumobjectsExample
+
+            class SuffleSumobjectsExample(Scene):
+                def construct(self):
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
+                    s2= s.copy()
+                    s2.shuffle_submobjects()
+                    s2.shift(DOWN)
+                    self.play(Write(s), Write(s2))
+        """
         return self.shuffle(*args, **kwargs)
 
     # Alignment

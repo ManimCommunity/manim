@@ -1,4 +1,4 @@
-﻿manim\_directive
+manim\_directive
 ================
 
 .. currentmodule:: manim_directive

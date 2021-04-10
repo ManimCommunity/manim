@@ -27,7 +27,7 @@ class PlotFunctions(GraphScene):
         self.setup_axes()
         f = self.get_graph(lambda x: x ** 2)
 
-        self.play(Animation(f))
+        self.add(f)
 
 
 MODULE_NAME = "plot"

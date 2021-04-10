@@ -9,7 +9,7 @@ from ..utils.testing_utils import get_scenes_to_test
 class PointCloudDotTest(ThreeDScene):
     def construct(self):
         p = PointCloudDot()
-        self.play(Animation(p))
+        self.add(p)
 
 
 MODULE_NAME = "mobjects"

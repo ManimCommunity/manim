@@ -3,6 +3,7 @@ import itertools as it
 import random
 import sys
 from functools import wraps
+from typing import List, Union
 
 import moderngl
 import numpy as np
@@ -56,7 +57,7 @@ class OpenGLMobject:
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events=False,
-        **kwargs
+        **kwargs,
     ):
 
         self.color = color
@@ -614,7 +615,13 @@ class OpenGLMobject:
     def rotate_about_origin(self, angle, axis=OUT):
         return self.rotate(angle, axis, about_point=ORIGIN)
 
-    def rotate(self, angle, axis=OUT, **kwargs):
+    def rotate(
+        self,
+        angle,
+        axis=OUT,
+        about_point: Union[np.ndarray, List, None] = None,
+        **kwargs,
+    ):
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function(
             lambda points: np.dot(points, rot_matrix_T), **kwargs
@@ -1404,7 +1411,7 @@ class OpenGLMobject:
     def get_shader_wrapper_list(self):
         shader_wrappers = it.chain(
             [self.get_shader_wrapper()],
-            *[sm.get_shader_wrapper_list() for sm in self.submobjects]
+            *[sm.get_shader_wrapper_list() for sm in self.submobjects],
         )
         batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
 
