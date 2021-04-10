@@ -2042,14 +2042,14 @@ class Mobject(Container):
         return self
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
-        """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``"""
+        """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
         if submob_func is None:
             submob_func = lambda m: point_to_num_func(m.get_center())
         self.submobjects.sort(key=submob_func)
         return self
 
     def shuffle(self, recursive=False):
-        """Shuffles the list of :attr:`submobjects`"""
+        """Shuffles the list of :attr:`submobjects`."""
         if recursive:
             for submob in self.submobjects:
                 submob.shuffle(recursive=True)
