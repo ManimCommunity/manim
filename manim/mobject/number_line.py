@@ -89,7 +89,9 @@ class NumberLine(Line):
         self.shift(-self.number_to_point(self.number_at_center))
 
         self.numbers_with_elongated_ticks = [
-            nbr for nbr in numbers_with_elongated_ticks if self.x_min <= nbr <= self.x_max
+            nbr
+            for nbr in numbers_with_elongated_ticks
+            if self.x_min <= nbr <= self.x_max
         ]
 
         self.init_leftmost_tick()
