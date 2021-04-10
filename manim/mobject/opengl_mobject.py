@@ -713,7 +713,6 @@ class OpenGLMobject:
         self,
         angle,
         axis=OUT,
-        about_point: Union[np.ndarray, List, None] = None,
         **kwargs,
     ):
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
