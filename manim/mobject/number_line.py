@@ -88,10 +88,9 @@ class NumberLine(Line):
             self.unit_size = self.get_unit_size()
         self.shift(-self.number_to_point(self.number_at_center))
 
-        self.numbers_with_elongated_ticks = []
-        for number in numbers_with_elongated_ticks:
-            if number >= self.x_min and number <= self.x_max:
-                self.numbers_with_elongated_ticks.append(number)
+        self.numbers_with_elongated_ticks = [
+            nbr for nbr in numbers_with_elongated_ticks if self.x_min <= nbr <= self.x_max
+        ]
 
         self.init_leftmost_tick()
         if self.include_tip:
