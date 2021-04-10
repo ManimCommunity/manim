@@ -14,13 +14,6 @@ class CircleTest(Scene):
         self.wait()
 
 
-class TexTest(Scene):
-    def construct(self):
-        tex = OpenGLTex("some tex", tex_to_color_map={"tex": RED})
-        self.add(tex)
-        self.wait()
-
-
 MODULE_NAME = "opengl"
 
 
