@@ -495,3 +495,115 @@ class ComplexPlane(NumberPlane):
     def add_coordinates(self, *numbers):
         self.add(self.get_coordinate_labels(*numbers))
         return self
+
+class PolarPlane(NumberPlane):
+    def __init__(self, color=BLUE, azimuth_line_frequency=None, radius_line_frequency=1, azimuth_units="PI radians",
+                 azimuth_offset=None, azimuth_direction=None,
+                 radius_max=None, **kwargs):
+        self.azimuth_units = azimuth_units
+        self.azimuth_frequency = {"PI radians": (1 / 20),
+                                  "TAU radians": (1 / 20),
+                                  "degrees": (1 / 36),
+                                  "gradians": (1 / 40),
+                                  None: 0}[self.azimuth_units] if azimuth_line_frequency is None \
+            else azimuth_line_frequency
+        self.azimuth_offset = {"PI radians": 0,
+                               "TAU radians": 0,
+                               "degrees": PI / 2,
+                               "gradians": PI / 2,
+                               None: 0}[self.azimuth_units] if azimuth_offset is None \
+            else azimuth_offset
+        self.azimuth_direction = {"PI radians": "CCW",
+                                  "TAU radians": "CCW",
+                                  "degrees": "CW",
+                                  "gradians": "CW",
+                                  None: "CCW"}[self.azimuth_units] if azimuth_direction is None \
+            else azimuth_direction
+        super().__init__(
+            color=color,
+            x_line_frequency=self.azimuth_frequency * TAU,
+            y_line_frequency=radius_line_frequency,
+            x_axis_config={"label_direction": DOWN + LEFT},
+            x_min=None if (radius_max is None) else -radius_max,
+            x_max=radius_max,
+            y_min=-config["frame_x_radius"] if (radius_max is None) else -radius_max,
+            y_max=config["frame_x_radius"] if (radius_max is None) else radius_max,
+            **kwargs,
+        )
+        self.prepare_for_nonlinear_transform()
+        self.background_lines.apply_function(lambda p: np.array([p[0] * np.sin(p[1]), p[0] * np.cos(p[1]), 0]))
+
+    def prepare_for_nonlinear_transform(self, num_inserted_curves=50):
+        for mob in self.background_lines.family_members_with_points():
+            num_curves = mob.get_num_curves()
+            if num_inserted_curves > num_curves:
+                mob.insert_n_curves(num_inserted_curves - num_curves)
+        return self
+
+    def polar_to_point(self, radius, azimuth):
+        return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
+
+    def pr2pt(self, radius, azimuth):
+        return self.polar_to_point(radius, azimuth)
+
+    def point_to_polar(self, point):
+        x, y = self.point_to_coords(point)
+        return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
+
+    def pt2pr(self, point):
+        return self.point_to_polar(point)
+
+    def get_coordinate_labels(self, r_vals, a_vals, **kwargs):
+        if r_vals is None:
+            r_vals = [r for r in self.get_x_axis().default_numbers_to_display() if r >= 0]
+        if a_vals is None:
+            a_vals = np.arange(0, 1, self.azimuth_frequency)
+        r_mobs = self.get_x_axis().get_number_mobjects(*r_vals)
+        if self.azimuth_direction == "CCW":
+            d = 1
+        elif self.azimuth_direction == "CW":
+            d = -1
+        else:
+            d = 0
+            ValueError()
+        a_points = [{"label": i, "point": np.array([self.get_right()[0] * np.cos(d * (i * TAU) + self.azimuth_offset),
+                                                    self.get_right()[0] * np.sin(d * (i * TAU) + self.azimuth_offset),
+                                                    0])}
+                    for i in a_vals]
+        if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
+            a_tex = [self.get_radian_label(i["label"]).scale(self.y_axis.number_scale_val)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=SMALL_BUFF)
+                     for i in a_points]
+        elif self.azimuth_units == "degrees":
+            a_tex = [MathTex(f'{360 * i["label"]:g}' + r"^{\circ}").scale(self.y_axis.number_scale_val)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=SMALL_BUFF)
+                     for i in a_points]
+        elif self.azimuth_units == "gradians":
+            a_tex = [MathTex(f'{400 * i["label"]:g}' + r"^{g}").scale(self.y_axis.number_scale_val)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=SMALL_BUFF)
+                     for i in a_points]
+        else:
+            a_tex = []
+            ValueError()
+        a_mobs = VGroup(*a_tex)
+        self.coordinate_labels = VGroup(r_mobs, a_mobs)
+        return self.coordinate_labels
+
+    def add_coordinates(self, r_vals=None, a_vals=None):
+        self.add(self.get_coordinate_labels(r_vals, a_vals))
+        return self
+
+    def get_radian_label(self, number):
+        constant_label = {"PI radians": r"\pi", "TAU radians": r"\tau"}[self.azimuth_units]
+        division = number * {"PI radians": 2, "TAU radians": 1}[self.azimuth_units]
+        frac = fr.Fraction(division).limit_denominator(max_denominator=100)
+        if frac.numerator == 0 & frac.denominator == 0:
+            return MathTex(r"0")
+        elif frac.numerator == 1 and frac.denominator == 1:
+            return MathTex(constant_label)
+        elif frac.numerator == 1:
+            return MathTex(r"\tfrac{" + constant_label + r"}{" + str(frac.denominator) + "}")
+        elif frac.denominator == 1:
+            return MathTex(str(frac.numerator) + constant_label)
+        else:
+            return MathTex(r"\tfrac{" + str(frac.numerator) + constant_label + r"}{" + str(frac.denominator) + r"}")
