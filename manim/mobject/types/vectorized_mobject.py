@@ -299,7 +299,7 @@ class VMobject(Mobject):
 
         return ret
 
-    def match_style(self, vmobject, family=True):
+    def match_style(self, vmobject, family=True, recurse=True):
         self.set_style(**vmobject.get_style(), family=False)
 
         if family:
