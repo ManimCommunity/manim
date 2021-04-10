@@ -81,7 +81,7 @@ jobs:
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS' && steps.cache-macos.outputs.cache-hit != 'true'
         run: |
-          tinyTexPackages=$(python -c "import json;print(json.load(open('.github/manimdependency.json'))['macos']['tinytex'])")
+          tinyTexPackages=$(python -c "import json;print(json.load(open('.github/macosdependency.json'))['macos']['tinytex'])")
           mkdir -p $HOME/{macos-temp,macos-cache}
           echo "Install TinyTeX"
           curl -L -o "$HOME/macos-temp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
