@@ -4,10 +4,117 @@ import hashlib
 import mimetypes
 import os
 import shutil
+import webbrowser
 from pathlib import Path
+
+import ipywidgets
+import PIL
+from ipywidgets import AppLayout, Button, GridspecLayout, Layout, widgets
 
 from manim import config, tempconfig
 from manim.__main__ import main
+
+
+def init_buttons():
+    b0 = Button(
+        description="",
+        icon="fa-picture-o",
+        button_style="",
+        layout=Layout(height="30px", width="40px"),
+    )
+    b1 = Button(
+        description="",
+        icon="fa-expand",
+        button_style="",
+        layout=Layout(height="30px", width="40px"),
+    )
+    b2 = Button(
+        description="",
+        icon="fa-download",
+        button_style="",
+        layout=Layout(height="30px", width="40px"),
+    )
+    return b0, b1, b2
+
+
+def image_viewer(image_path, small_width, large_width):
+    file = open(image_path, "rb")
+    image = file.read()
+    dis_img = widgets.Image(value=image, format="png")
+
+    button_list = GridspecLayout(3, 1, height="120px")
+    b0, b1, b2 = init_buttons()
+    button_list[0, 0] = b0
+    button_list[1, 0] = b1
+    button_list[2, 0] = b2
+    default_image_width = PIL.Image.open(image_path).size[0]
+    original1t1_width = f"{default_image_width}px"
+    dis_img.width = small_width  # # default width
+
+    def on_button_image1t1_clicked(b):
+        dis_img.width = original1t1_width
+
+    def on_button_expand_clicked(b):
+        if dis_img.width != small_width:
+            dis_img.width = small_width
+        else:
+            dis_img.width = large_width
+
+    def on_button_download_clicked(b):
+        url = f"file://{Path.cwd()/ image_path}"
+        webbrowser.open(url)
+
+    b0.on_click(on_button_image1t1_clicked)
+    b1.on_click(on_button_expand_clicked)
+    b2.on_click(on_button_download_clicked)
+    return AppLayout(
+        left_sidebar=button_list, center=dis_img, pane_widths=["50px", 1, 0]
+    )
+
+
+def video_viewer(video_path, small_width, large_width):
+
+    dis_video = ipywidgets.Video.from_file(video_path)
+    dis_video.controls = False
+
+    dis_but = widgets.ToggleButton(
+        value=False,
+        description="Fullscreen",
+        disabled=False,
+        button_style="",
+        tooltip="Description",
+    )
+
+    b0, b1, b2 = init_buttons()
+
+    button_list = GridspecLayout(3, 1, height="120px")
+    button_list[0, 0] = b0
+    button_list[1, 0] = b1
+    button_list[2, 0] = b2
+
+    original1t1_width = "500px"  # TODO: this must come from the video
+    dis_video.width = small_width  # default width
+
+    def on_button_image1t1_clicked(b):
+        dis_video.width = original1t1_width
+
+    def on_button_expand_clicked(b):
+        if dis_video.width != small_width:
+            dis_video.width = small_width
+        else:
+            dis_video.width = large_width
+
+    def on_button_download_clicked(b):
+        url = f"file://{Path.cwd()/ video_path}"
+        webbrowser.open(url)
+
+    b0.on_click(on_button_image1t1_clicked)
+    b1.on_click(on_button_expand_clicked)
+    b2.on_click(on_button_download_clicked)
+    return AppLayout(
+        left_sidebar=button_list, center=dis_video, pane_widths=["50px", 1, 0]
+    )
+
 
 try:
     from IPython import get_ipython
@@ -88,19 +195,9 @@ else:
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
                 if file_type.startswith("image"):
-                    display(Image(filename=config["output_file"]))
-                    return
-
-                # videos need to be embedded when running in google colab
-                video_embed = "google.colab" in str(get_ipython())
-
-                display(
-                    Video(
-                        tmpfile,
-                        html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
-                        embed=video_embed,
-                    )
-                )
+                    display(image_viewer(tmpfile, "350px", "900px"))
+                else:
+                    display(video_viewer(tmpfile, "350px", "900px"))
 
 
 def _video_hash(path):
