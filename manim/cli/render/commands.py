@@ -154,7 +154,7 @@ def render(
             logger.warning(f"Connection Error: {warn_prompt}")
             raise SystemExit
         except requests.exceptions.Timeout:
-            logger.warning(f"Timeout Error: {warn_prompt}")
+            logger.warning(f"Timed Out: {warn_prompt}")
             raise SystemExit
         except Exception:
             logger.warning(f"Something else went wrong: {warn_prompt}")
