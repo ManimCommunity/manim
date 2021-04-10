@@ -58,6 +58,10 @@ class Mobject(Container):
     points : :class:`numpy.ndarray`
         The points of the objects.
 
+        .. seealso::
+
+        :class:`VMobject`
+
     """
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
