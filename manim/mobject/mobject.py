@@ -60,7 +60,7 @@ class Mobject(Container):
 
         .. seealso::
 
-        :class:`VMobject`
+        :class:`~.VMobject`
 
     """
 
@@ -1759,11 +1759,11 @@ class Mobject(Container):
     # Pseudonyms for more general get_critical_point method
 
     def get_edge_center(self, direction) -> np.ndarray:
-        """Get edge coordinates for certain direction"""
+        """Get edge coordinates for certain direction."""
         return self.get_critical_point(direction)
 
     def get_corner(self, direction) -> np.ndarray:
-        """Get corner coordinates for certain direction"""
+        """Get corner coordinates for certain direction."""
         return self.get_critical_point(direction)
 
     def get_center(self) -> np.ndarray:
@@ -1795,7 +1795,7 @@ class Mobject(Container):
         return self.get_edge_center(LEFT)
 
     def get_zenith(self) -> np.ndarray:
-        """Get zenith coordinates of a box bounding a 3D :class:`~.Mobject`"""
+        """Get zenith coordinates of a box bounding a 3D :class:`~.Mobject`."""
         return self.get_edge_center(OUT)
 
     def get_nadir(self) -> np.ndarray:
@@ -1920,6 +1920,7 @@ class Mobject(Container):
         alignment_vect=UP,
     ):
         """Aligns mobject to another :class:`~.Mobject` in a certain direction.
+        
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
