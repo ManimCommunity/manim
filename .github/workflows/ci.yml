@@ -84,6 +84,7 @@ jobs:
           tinyTexPackages=$(python -c "import json;print(' '.join(json.load(open('.github/macosdependency.json'))['macos']['tinytex']))")
           IFS=' '
           read -a ttp <<< "$tinyTexPackages"
+          oriPath=$PATH
           mkdir -p $PWD/{macos-temp,macos-cache}
           echo "Install TinyTeX"
           curl -L -o "$PWD/macos-temp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
@@ -94,6 +95,7 @@ jobs:
           for i in "${ttp[@]}"; do
             tlmgr install "$i"
           done
+          export PATH="$oriPath"
           echo "Completed TinyTeX"
 
       - name: Install cairo (MacOS)
