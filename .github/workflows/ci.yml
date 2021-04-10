@@ -76,7 +76,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/macos-cache
-          key: ${{ runner.os }}-dependencies-test-tinytex-${{ steps.cache-vars.outputs.date }}
+          key: ${{ runner.os }}-dependencies-test-tinytex-${{ hashFiles('.github/macosdependency.json') }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS' && steps.cache-macos.outputs.cache-hit != 'true'
@@ -90,7 +90,9 @@ jobs:
           export PATH="$HOME/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
           echo "Completed TinyTeX"
           sudo tlmgr update --self
-          sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm rsfs wasy cm-super
+          for i in "${tinyTexPackages[@]}"; do
+            echo "$i"
+          done
 
       - name: Install cairo (MacOS)
         if: runner.os == 'macOS'
