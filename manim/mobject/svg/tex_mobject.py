@@ -391,6 +391,15 @@ class MathTex(SingleStringMathTex):
         >>> MathTex('a^2 + b^2 = c^2')
         MathTex('a^2 + b^2 = c^2')
 
+    Check that double brace group splitting works correctly::
+
+        >>> t1 = MathTex('{{ a }} + {{ b }} = {{ c }}')
+        >>> len(t1.submobjects)
+        5
+        >>> t2 = MathTex(r"\frac{1}{a+b\sqrt{2}}")
+        >>> len(t2.submobjects)
+        1
+
     """
 
     def __init__(
