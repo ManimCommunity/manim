@@ -437,7 +437,7 @@ class MathTex(SingleStringMathTex):
 
     def break_up_tex_strings(self, tex_strings):
         # Separate out anything surrounded in double braces
-        tex_strings = [re.split('{{(.*?)}}', str(t)) for t in tex_strings]
+        tex_strings = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
         tex_strings = sum(tex_strings, [])
 
         # Separate out any strings specified in the isolate
