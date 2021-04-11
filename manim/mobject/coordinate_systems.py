@@ -511,88 +511,94 @@ class PolarPlane(NumberPlane):
     Parameters
     ----------
     azimuth_line_frequency : :class:`float`, optional
-        The frequency of faded lines in the azimuth, expressed in units of revolution
-        (so `1/n` would result in `n` lines). If `None` is specified then it will use the default
-        specified by `azimuth_units`:
-            - `"PI radians"` or `"TAU radians"`: `1 / 20`
-            - `"degrees"`: `1 / 360`
-            - `"gradians"`: `1 / 400`
-            - `None`: `1`
+    The frequency of faded lines in the azimuth, expressed in units of revolution
+    (so `1/n` would result in `n` lines). If `None` is specified then it will use the default
+    specified by `azimuth_units`:
+        - `"PI radians"` or `"TAU radians"`: `1 / 20`
+        - `"degrees"`: `1 / 360`
+        - `"gradians"`: `1 / 400`
+        - `None`: `1`
     radius_line_frequency : :class:`float`, optional
-         The frequency of faded lines in the radius.
+    The frequency of faded lines in the radius.
     azimuth_units : Optional[:class:`str`]
-        Specifies a default labelling system for the azimuth. Choices are:
-            - `"PI radians"` (default): fractional labels in the interval `[0, 2π]` with `π` as a constant.
-                .. manim:: PIradians
-                    :ref_classes: PolarPlane
-                    :save_last_frame:
+    Specifies a default labelling system for the azimuth. Choices are:
+        - `"PI radians"` (default): fractional labels in the interval `[0, 2π]` with `π` as a constant.
+            .. manim:: PIradians
+                :ref_classes: PolarPlane
+                :save_last_frame:
 
-                    polarplot = PolarPlot(azimuth_units="PI radians")
+                polarplot = PolarPlane(azimuth_units="PI radians").scale(0.4)
+                polarplot.add_coordinates()
 
-                    class PIradians(Scene):
-                        def construct(self):
-                            self.add(polarplot)
+                class PIradians(Scene):
+                    def construct(self):
+                        self.add(polarplot)
 
-            - `"TAU radians"`: fractional labels in the interval `[0, τ]` (where `τ = 2π`) with `τ` as a constant.
-                .. manim:: TAUradians
-                    :ref_classes: PolarPlane
-                    :save_last_frame:
+        - `"TAU radians"`: fractional labels in the interval `[0, τ]` (where `τ = 2π`) with `τ` as a constant.
+            .. manim:: TAUradians
+                :ref_classes: PolarPlane
+                :save_last_frame:
 
-                    polarplot = PolarPlot(azimuth_units="TAU radians")
+                polarplot = PolarPlane(azimuth_units="TAU radians").scale(0.4)
+                polarplot.add_coordinates()
 
-                    class PIradians(Scene):
-                        def construct(self):
-                            self.add(polarplot)
+                class TAUradians(Scene):
+                    def construct(self):
+                        self.add(polarplot)
 
-            - `"degrees"`: decimal labels in the interval `[0, 360]` with a degree symbol.
-                .. manim:: degrees
-                    :ref_classes: PolarPlane
-                    :save_last_frame:
+        - `"degrees"`: decimal labels in the interval `[0, 360]` with a degree symbol.
+            .. manim:: degrees
+                :ref_classes: PolarPlane
+                :save_last_frame:
 
-                    polarplot = PolarPlot(azimuth_units="degrees")
+                polarplot = PolarPlane(azimuth_units="degrees").scale(0.4)
+                polarplot.add_coordinates()
 
-                    class degrees(Scene):
-                        def construct(self):
-                            self.add(polarplot)
+                class degrees(Scene):
+                    def construct(self):
+                        self.add(polarplot)
 
-            - `"gradians"`: decimal lables in the interval `[0, 400]` with a superscript "g".
-                .. manim:: gradians
-                    :ref_classes: PolarPlane
-                    :save_last_frame:
+        - `"gradians"`: decimal lables in the interval `[0, 400]` with a superscript "g".
+            .. manim:: gradians
+                :ref_classes: PolarPlane
+                :save_last_frame:
 
-                    polarplot = PolarPlot(azimuth_units="gradians")
+                polarplot = PolarPlane(azimuth_units="gradians").scale(0.4)
+                polarplot.add_coordinates()
 
-                    class gradians(Scene):
-                        def construct(self):
-                            self.add(polarplot)
+                class gradians(Scene):
+                    def construct(self):
+                        self.add(polarplot)
 
     azimuth_offset : Optional[:class:`float`].
-        The angle offset of the azimuth labels, expressed in radians. If `None` is specified then it will
-        use the default specified by `azimuth_units`:
-            - `"PI radians"` or `"TAU radians"` or `None`: `0`
-            - `"degrees"` or `"gradians"`: `π / 2`
+    The angle offset of the azimuth labels, expressed in radians. If `None` is specified then it will
+    use the default specified by `azimuth_units`:
+        - `"PI radians"` or `"TAU radians"` or `None`: `0`
+        - `"degrees"` or `"gradians"`: `π / 2`
     azimuth_direction : Optional[:class:`str`]
-        The direction of the azimuth labels:
-            - `"CW"`: Clockwise.
-            - `"CCW"` Anti-clockwise.
-        If `None` is specified then it will use the default specified by `azimuth_units`:
-            - `"PI radians"` or `"TAU radians"` or `None`: `CW`
-            - `"degrees"` or `"gradians"`: `CCW`
+    The direction of the azimuth labels:
+        - `"CW"`: Clockwise.
+        - `"CCW"` Anti-clockwise.
+    If `None` is specified then it will use the default specified by `azimuth_units`:
+        - `"PI radians"` or `"TAU radians"` or `None`: `CW`
+        - `"degrees"` or `"gradians"`: `CCW`
     azimuth_buff : :class:`int`, optional
-        The buffer for the azimuth labels.
+    The buffer for the azimuth labels.
+    radius_config: :class:`dict`
+    The axis config for the radius.
     radius_max : :class:`float`
-        The maximum value of the radius.
+    The maximum value of the radius.
 
     Attributes
     ----------
     azimuth_units : :attr:`str`
-        The azimuth units.
+    The azimuth units.
     azimuth_frequency : :attr:`float`
-        The frequency of faded lines in the azimuth, expressed in units of revolution.
+    The frequency of faded lines in the azimuth, expressed in units of revolution.
     azimuth_offset : :attr:`float`
-        The angle offset of the azimuth labels, expressed in radians.
+    The angle offset of the azimuth labels, expressed in radians.
     azimuth_direction : :attr:`str`
-        The direction of the azimuth labels.
+    The direction of the azimuth labels.
     """
 
     def __init__(
@@ -604,7 +610,7 @@ class PolarPlane(NumberPlane):
         azimuth_offset=None,
         azimuth_direction=None,
         azimuth_buff=SMALL_BUFF,
-        x_axis_config={"label_direction": DOWN + LEFT},
+        radius_config={"label_direction": DOWN + LEFT},
         radius_max=None,
         **kwargs,
     ):
@@ -646,7 +652,7 @@ class PolarPlane(NumberPlane):
             color=color,
             x_line_frequency=self.azimuth_frequency * TAU,
             y_line_frequency=radius_line_frequency,
-            x_axis_config=x_axis_config,
+            x_axis_config=radius_config,
             x_min=None if (radius_max is None) else -radius_max,
             x_max=radius_max,
             y_min=-config["frame_x_radius"] if (radius_max is None) else -radius_max,
