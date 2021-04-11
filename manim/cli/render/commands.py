@@ -144,7 +144,7 @@ def render(
         req_info = {}
 
         try:
-            req_info = requests.get(manim_info_url, timeout=3)
+            req_info = requests.get(manim_info_url)
             req_info.raise_for_status()
         except requests.exceptions.HTTPError:
             logger.warning(f"HTTP Error: {warn_prompt}")
