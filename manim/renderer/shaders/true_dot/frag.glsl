@@ -12,7 +12,7 @@ in vec2 point;
 
 out vec4 frag_color;
 
-#INSERT finalize_color.glsl
+#include ../include/finalize_color.glsl
 
 void main() {
     vec2 diff = point - center;

@@ -49,10 +49,10 @@ const float MITER_JOINT = 3;
 const float PI = 3.141592653;
 
 
-#INSERT quadratic_bezier_geometry_functions.glsl
-#INSERT get_gl_Position.glsl
-#INSERT get_unit_normal.glsl
-#INSERT finalize_color.glsl
+#include ../include/quadratic_bezier_geometry_functions.glsl
+#include ../include/get_gl_Position.glsl
+#include ../include/get_unit_normal.glsl
+#include ../include/finalize_color.glsl
 
 
 void flatten_points(in vec3[3] points, out vec2[3] flat_points){

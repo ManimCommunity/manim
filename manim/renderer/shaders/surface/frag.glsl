@@ -10,7 +10,7 @@ in vec4 v_color;
 
 out vec4 frag_color;
 
-#INSERT finalize_color.glsl
+#include ../include/finalize_color.glsl
 
 void main() {
     frag_color = finalize_color(
