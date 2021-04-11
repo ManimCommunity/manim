@@ -346,7 +346,7 @@ A list of all config options
    'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
    'from_animation_number', 'images_dir', 'input_file', 'left_side',
    'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
-   'movie_file_extension', 'output_file', 'partial_movie_dir',
+   'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
    'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',
    'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
    'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
