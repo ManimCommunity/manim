@@ -5,6 +5,7 @@ Manim's render subcommand is accessed in the command-line interface via
 can specify options, and arguments for the render command.
 
 """
+import json
 import sys
 from pathlib import Path
 from textwrap import dedent
@@ -163,12 +164,12 @@ def render(
 
             if max(releases) != __version__:
                 console.print(
-                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
+                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{max(releases)}[/green] is available."
                 )
                 console.print(
                     "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
                 )
-        except Exception:
+        except json.JSONDecodeError:
             logger.warning(warn_prompt)
             logger.warning(f"Error decoding JSON from {manim_info_url}")
             raise SystemExit
