@@ -49,7 +49,7 @@ setting ``frame_y_radius`` will affect ``frame_height``:
     >>> config.frame_height
     10.0
 
-The global ``config`` object is mean to be the single source of truth for all
+The global ``config`` object is meant to be the single source of truth for all
 config options.  All of the other ways of setting config options ultimately
 change the values of the global ``config`` object.
 
