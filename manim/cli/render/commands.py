@@ -141,8 +141,6 @@ def render(
         manim_info_url = "https://pypi.org/pypi/manim/json"
         warn_prompt = "Cannot check if latest release of manim is installed"
         req_info = {}
-        releases = {}
-        stable = ""
 
         try:
             req_info = requests.get(manim_info_url, timeout=3)
@@ -162,18 +160,17 @@ def render(
 
         try:
             releases = req_info.json()["releases"].keys()
-            stable = max(releases)
+
+            if max(releases) != __version__:
+                console.print(
+                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
+                )
+                console.print(
+                    "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
+                )
         except Exception:
             logger.warning(warn_prompt)
             logger.warning(f"Error decoding JSON from {manim_info_url}")
             raise SystemExit
-
-        if stable != __version__:
-            console.print(
-                f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
-            )
-            console.print(
-                "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
-            )
 
     return args
