@@ -223,7 +223,10 @@ class Mobject(Container):
         return result
 
     def __repr__(self):
-        return str(self.name)
+        if config["renderer"] == "opengl":
+            return super().__repr__()
+        else:
+            return str(self.name)
 
     def reset_points(self):
         """Sets :attr:`points` to be an empty array."""
