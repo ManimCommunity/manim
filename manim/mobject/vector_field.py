@@ -209,7 +209,6 @@ class StreamLines(VGroup):
     def __init__(
         self,
         func,
-        start_points_generator_config={},
         # Config for choosing start points
         x_min=-8,
         x_max=8,
@@ -243,7 +242,6 @@ class StreamLines(VGroup):
             self, stroke_color=stroke_color, stroke_width=stroke_width, **kwargs
         )
         self.func = func
-        self.start_points_generator_config = start_points_generator_config
         self.x_min = x_min
         self.x_max = x_max
         self.y_min = y_min
@@ -264,7 +262,7 @@ class StreamLines(VGroup):
         self.colors = colors
         self.cutoff_norm = cutoff_norm
 
-        start_points = self.get_start_points(**self.start_points_generator_config)
+        start_points = self.get_start_points()
         for point in start_points:
             points = [point]
             for _ in np.arange(0, self.virtual_time, dt):
