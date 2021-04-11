@@ -3,6 +3,7 @@ import itertools as it
 import random
 import sys
 from functools import wraps
+from typing import List, Union
 
 import moderngl
 import numpy as np
@@ -56,7 +57,7 @@ class OpenGLMobject:
         # Must match in attributes of vert shader
         # Event listener
         listen_to_events=False,
-        **kwargs
+        **kwargs,
     ):
 
         self.color = color
@@ -134,7 +135,101 @@ class OpenGLMobject:
         # Borrowed from https://github.com/ManimCommunity/manim/
         return _AnimationBuilder(self)
 
+    @property
+    def width(self):
+        """The width of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: WidthExample
+
+            class WidthExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.width))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(width=7))
+                    self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        """
+
+        # Get the length across the X dimension
+        return self.length_over_dim(0)
+
     # Only these methods should directly affect points
+    @width.setter
+    def width(self, value):
+        self.rescale_to_fit(value, 0, stretch=False)
+
+    @property
+    def height(self):
+        """The height of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: HeightExample
+
+            class HeightExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.height))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(height=5))
+                    self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        """
+
+        # Get the length across the Y dimension
+        return self.length_over_dim(1)
+
+    @height.setter
+    def height(self, value):
+        self.rescale_to_fit(value, 1, stretch=False)
+
+    @property
+    def depth(self):
+        """The depth of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        """
+
+        # Get the length across the Z dimension
+        return self.length_over_dim(2)
+
+    @depth.setter
+    def depth(self, value):
+        self.rescale_to_fit(value, 2, stretch=False)
 
     def resize_points(self, new_length, resize_func=resize_array):
         if new_length != len(self.data["points"]):
@@ -614,7 +709,12 @@ class OpenGLMobject:
     def rotate_about_origin(self, angle, axis=OUT):
         return self.rotate(angle, axis, about_point=ORIGIN)
 
-    def rotate(self, angle, axis=OUT, **kwargs):
+    def rotate(
+        self,
+        angle,
+        axis=OUT,
+        **kwargs,
+    ):
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function(
             lambda points: np.dot(points, rot_matrix_T), **kwargs
@@ -1404,7 +1504,7 @@ class OpenGLMobject:
     def get_shader_wrapper_list(self):
         shader_wrappers = it.chain(
             [self.get_shader_wrapper()],
-            *[sm.get_shader_wrapper_list() for sm in self.submobjects]
+            *[sm.get_shader_wrapper_list() for sm in self.submobjects],
         )
         batches = batch_by_property(shader_wrappers, lambda sw: sw.get_id())
 

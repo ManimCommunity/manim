@@ -30,6 +30,7 @@ import typing
 
 import numpy as np
 
+from .. import config
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
@@ -80,7 +81,10 @@ class Transform(Animation):
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        self.mobject.align_data(self.target_copy)
+        if config["renderer"] == "opengl":
+            self.mobject.align_data_and_family(self.target_copy)
+        else:
+            self.mobject.align_data(self.target_copy)
         super().begin()
 
     def create_target(self) -> typing.Union[Mobject, None]:

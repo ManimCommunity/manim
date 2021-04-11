@@ -17,7 +17,7 @@ class NumberPlaneTest(Scene):
             y_axis_config={"x_max": 5, "width": 6, "label_direction": UL},
             center_point=2 * DL,
         )
-        self.play(Animation(plane))
+        self.add(plane)
 
 
 MODULE_NAME = "coordinate_systems"
