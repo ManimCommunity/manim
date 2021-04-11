@@ -4,7 +4,7 @@ A deeper look
 This document will focus on understanding manim's output files and some of the
 main command line flags available.
 
-.. note:: This tutorial picks up where :doc:`quickstart` left of, so please
+.. note:: This tutorial picks up where :doc:`quickstart` left off, so please
           read that document before starting this one.
 
 Manim output folders
