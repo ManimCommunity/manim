@@ -38,6 +38,8 @@ def init_buttons():
 
 
 def image_viewer(image_path, small_width, large_width):
+
+    original1t1_width = f"{config.frame_size[0]}px"
     file = open(image_path, "rb")
     image = file.read()
     dis_img = widgets.Image(value=image, format="png")
@@ -47,8 +49,6 @@ def image_viewer(image_path, small_width, large_width):
     button_list[0, 0] = b0
     button_list[1, 0] = b1
     button_list[2, 0] = b2
-    default_image_width = PIL.Image.open(image_path).size[0]
-    original1t1_width = f"{default_image_width}px"
     dis_img.width = small_width  # # default width
 
     def on_button_image1t1_clicked(b):
@@ -74,6 +74,8 @@ def image_viewer(image_path, small_width, large_width):
 
 def video_viewer(video_path, small_width, large_width):
 
+    original1t1_width = f"{config.frame_size[0]}px"
+
     dis_video = ipywidgets.Video.from_file(video_path)
     dis_video.controls = False
 
@@ -92,7 +94,6 @@ def video_viewer(video_path, small_width, large_width):
     button_list[1, 0] = b1
     button_list[2, 0] = b2
 
-    original1t1_width = "500px"  # TODO: this must come from the video
     dis_video.width = small_width  # default width
 
     def on_button_image1t1_clicked(b):
@@ -194,6 +195,7 @@ else:
                 shutil.copy(local_path, tmpfile)
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
+
                 if file_type.startswith("image"):
                     display(image_viewer(tmpfile, "350px", "900px"))
                 else:
