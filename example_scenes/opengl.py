@@ -9,9 +9,16 @@ from manim.utils.opengl import *
 # Lines that do not yet work with the Community Version are commented.
 
 
+time = 0
+
+
 class ShaderExample(Scene):
     def construct(self):
+        global time
         config["background_color"] = "#333333"
+
+        c = OpenGLCircle().shift(UL)
+        self.add(c)
 
         shader = Shader(
             self.renderer.context,
@@ -44,7 +51,9 @@ class ShaderExample(Scene):
             """,
             ),
         )
-        shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
+        # shader.set_uniform(
+        #     "u_model_view_matrix", opengl.view_matrix(translation=camera_translation)
+        # )
         shader.set_uniform(
             "u_projection_matrix", opengl.orthographic_projection_matrix()
         )
@@ -79,7 +88,8 @@ class ShaderExample(Scene):
         mesh = Mesh(shader, attributes)
         self.add(mesh)
 
-        self.embed_2()
+        self.wait(5)
+        # self.embed_2()
 
 
 class InteractiveDevelopment(Scene):

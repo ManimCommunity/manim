@@ -23,21 +23,85 @@ def orthographic_projection_matrix(width=None, height=None, near=1, far=depth + 
     )
 
 
-def view_matrix(camera_position=None):
-    if camera_position is None:
-        camera_position = np.array([0, 0, depth / 2 + 1])
-    return tuple(
-        linalg.inv(
-            np.array(
-                [
-                    [1, 0, 0, camera_position[0]],
-                    [0, 1, 0, camera_position[1]],
-                    [0, 0, 1, camera_position[2]],
-                    [0, 0, 0, 1],
-                ]
-            )
-        ).T.ravel()
+def translation_matrix(x, y, z):
+    return np.array(
+        [
+            [1, 0, 0, x],
+            [0, 1, 0, y],
+            [0, 0, 1, z],
+            [0, 0, 0, 1],
+        ]
     )
+
+
+def x_rotation_matrix(x=0):
+    return np.array(
+        [
+            [1, 0, 0, 0],
+            [0, np.cos(x), -np.sin(x), 0],
+            [0, np.sin(x), np.cos(x), 0],
+            [0, 0, 0, 1],
+        ]
+    )
+
+
+def y_rotation_matrix(y=0):
+    return np.array(
+        [
+            [np.cos(y), 0, -np.sin(y), 0],
+            [0, 1, 0, 0],
+            [np.sin(y), 0, np.cos(y), 0],
+            [0, 0, 0, 1],
+        ]
+    )
+
+
+def z_rotation_matrix(z=0):
+    return np.array(
+        [
+            [np.cos(z), -np.sin(z), 0, 0],
+            [np.sin(z), np.cos(z), 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1],
+        ]
+    )
+
+
+def rotation_matrix(x=0, y=0, z=0):
+    return np.matmul(
+        np.matmul(x_rotation_matrix(x), y_rotation_matrix(y)), z_rotation_matrix(z)
+    )
+
+
+def scale_matrix(scale_factor=None):
+    return np.array(
+        [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1],
+        ]
+    )
+
+
+def view_matrix(
+    camera_position=None,
+    translation=None,
+    x_rotation=0,
+    y_rotation=0,
+    z_rotation=0,
+    scale=0,
+):
+    if translation is None:
+        translation = np.array([0, 0, depth / 2 + 1])
+    model_matrix = np.matmul(
+        np.matmul(
+            translation_matrix(*translation),
+            rotation_matrix(x=x_rotation, y=y_rotation, z=z_rotation),
+        ),
+        scale_matrix(),
+    )
+    return tuple(linalg.inv(model_matrix).T.ravel())
 
 
 def triangulate(vertices, holes=[]):

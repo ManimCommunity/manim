@@ -32,6 +32,8 @@ from .opengl_renderer_window import Window
 from .shader_wrapper import ShaderWrapper
 from .shader import *
 
+shader_time = 0
+
 
 class OpenGLCamera(OpenGLMobject):
     def __init__(
@@ -396,13 +398,23 @@ class OpenGLRenderer:
         self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
+        global shader_time
+
         def update_frame():
+            global shader_time
             self.frame_buffer_object.clear(*window_background_color)
             self.refresh_perspective_uniforms(scene.camera)
             self.render_mobjects(scene.mobjects)
             self.animation_elapsed_time = time.time() - self.animation_start_time
 
             for mesh in scene.meshes:
+                camera_translation = np.array([0, 0, 11 - shader_time])
+                camera_rotation = shader_time
+                mesh.shader.set_uniform(
+                    "u_model_view_matrix",
+                    opengl.view_matrix(y_rotation=camera_rotation),
+                )
+                shader_time += 1 / 120.0
                 mesh.render()
             # test_shader = ManimCoordsShader(self.context)
             # test_shader.render()
