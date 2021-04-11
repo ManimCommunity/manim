@@ -18,49 +18,75 @@ class Mesh:
         vertex_array_object = self.shader.context.simple_vertex_array(
             self.shader.shader_program,
             vertex_buffer_object,
-            "in_vert",
+            *self.attributes.dtype.names,
         )
-
         vertex_array_object.render(moderngl.TRIANGLES)
         vertex_buffer_object.release()
         vertex_array_object.release()
 
 
+class FullScreenQuad(Mesh):
+    def __init__(self, context, fragment_shader_source, attributes):
+        self.attributes = attributes
+        shader = Shader(
+            context,
+            source=dict(
+                vertex_shader="""
+            #version 330
+
+            in vec4 in_vert;
+            in vec4 in_color;
+            out vec4 v_color;
+            uniform mat4 u_model_view_matrix;
+            uniform mat4 u_projection_matrix;
+
+            void main() {
+                v_color = in_color;
+                vec4 camera_space_vertex = u_model_view_matrix * in_vert;
+                vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
+                gl_Position = clip_space_vertex;
+            }
+            """,
+                fragment_shader=fragment_shader_source,
+            ),
+        )
+        super().__init__(shader, attributes)
+
+    def render(self):
+        # TODO: Edit in_vert attribute to be fullscreen.
+        super().render()
+
+
 class Shader:
     def __init__(
-        self, context, name="default", vertex_source=None, fragment_source=None
+        self,
+        context,
+        name=None,
+        source=None,
     ):
-        self.name = name
         self.context = context
+        self.name = name
 
-        if name is not None:
-            if vertex_source is not None or fragment_source is not None:
-                logger.warning(
-                    "Passed both name and inline source to Shader. Inline source will "
-                    "be ignored."
-                )
-            if self.name in shader_program_cache:
-                self.shader_program = shader_program_cache[self.name]
-            else:
-                with open(SHADER_FOLDER / f"{self.name}.vert") as vertex_shader, open(
-                    SHADER_FOLDER / f"{self.name}.frag"
-                ) as fragment_shader:
-                    self.shader_program = context.program(
-                        vertex_shader=vertex_shader.read(),
-                        fragment_shader=fragment_shader.read(),
-                    )
-                    shader_program_cache[self.name] = self.shader_program
-        elif vertex_source is not None and fragment_source is not None:
-            self.vertex_source = vertex_source
-            self.fragment_source = fragment_source
-            self.shader_program = context.program(
-                vertex_shader=self.vertex_source,
-                fragment_shader=self.fragment_source,
-            )
+        # See if the program is cached.
+        if self.name in shader_program_cache:
+            self.shader_program = shader_program_cache[self.name]
+
+        # Generate the shader from inline code if it was passed.
+        if source is not None:
+            self.shader_program = context.program(**source)
         else:
-            logger.error(
-                "Shader requires either a shader name or vertex and fragment source."
-            )
+            # Search for a file containing the shader.
+            with open(SHADER_FOLDER / f"{self.name}.vert") as vertex_shader, open(
+                SHADER_FOLDER / f"{self.name}.frag"
+            ) as fragment_shader:
+                self.shader_program = context.program(
+                    vertex_shader=vertex_shader.read(),
+                    fragment_shader=fragment_shader.read(),
+                )
+
+        # Cache the shader.
+        if name is not None:
+            shader_program_cache[self.name] = self.shader_program
 
     def set_uniform(self, name, value):
         self.shader_program[name] = value

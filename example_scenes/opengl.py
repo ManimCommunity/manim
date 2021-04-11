@@ -9,35 +9,76 @@ from manim.utils.opengl import *
 # Lines that do not yet work with the Community Version are commented.
 
 
-class Test(Scene):
+class ShaderExample(Scene):
     def construct(self):
         config["background_color"] = "#333333"
 
-        s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
-        self.play(ShowCreation(s))
+        shader = Shader(
+            self.renderer.context,
+            source=dict(
+                vertex_shader="""
+                #version 330
 
-        d = OpenGLSquare(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
-        self.play(ShowCreation(d))
+                in vec4 in_vert;
+                in vec4 in_color;
+                out vec4 v_color;
+                uniform mat4 u_model_view_matrix;
+                uniform mat4 u_projection_matrix;
 
-        # shader = Shader(self.renderer.context)
-        # shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
-        # shader.set_uniform(
-        #     "u_projection_matrix", opengl.orthographic_projection_matrix()
-        # )
-        # shader.set_uniform("u_color", (1.0, 1.0, 1.0, 1.0))
+                void main() {
+                    v_color = in_color;
+                    vec4 camera_space_vertex = u_model_view_matrix * in_vert;
+                    vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
+                    gl_Position = clip_space_vertex;
+                }
+            """,
+                fragment_shader="""
+            #version 330
 
-        # attributes = np.zeros(3, dtype=[("in_vert", np.float32, (4,))])
-        # attributes["in_vert"] = np.array(
-        #     [
-        #         [-1, -1, 0, 1],
-        #         [0, 0, 0, 1],
-        #         [1, -1, 0, 1],
-        #     ]
-        # )
-        # mesh = Mesh(shader, attributes)
-        # self.add(mesh)
+            in vec4 v_color;
+            out vec4 frag_color;
 
-        # self.wait(100)
+            void main() {
+              frag_color = v_color;
+            }
+            """,
+            ),
+        )
+        shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
+        shader.set_uniform(
+            "u_projection_matrix", opengl.orthographic_projection_matrix()
+        )
+
+        attributes = np.zeros(
+            6,
+            dtype=[
+                ("in_vert", np.float32, (4,)),
+                ("in_color", np.float32, (4,)),
+            ],
+        )
+        attributes["in_vert"] = np.array(
+            [
+                [-1, -1, 0, 1],
+                [-1, 1, 0, 1],
+                [1, 1, 0, 1],
+                [-1, -1, 0, 1],
+                [1, -1, 0, 1],
+                [1, 1, 0, 1],
+            ]
+        )
+        attributes["in_color"] = np.array(
+            [
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+            ]
+        )
+        mesh = Mesh(shader, attributes)
+        self.add(mesh)
+
         self.embed_2()
 
 

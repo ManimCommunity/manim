@@ -984,6 +984,7 @@ class Scene(Container):
             namespace["rerun"] = embedded_rerun
 
             shell(local_ns=namespace)
+            self.queue.put(("exit_keyboard", [], {}))
 
         def get_embedded_method(method_name):
             return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
@@ -1046,6 +1047,11 @@ class Scene(Container):
                     #     ]
 
                     raise RerunSceneException
+                elif tup[0].startswith("exit"):
+                    keyboard_thread.join()
+                    # Intentionally skip calling join() on the file thread to save time.
+                    file_observer.stop()
+                    break
                 else:
                     method, args, kwargs = tup
                     self.saved_methods[method](*args, **kwargs)
