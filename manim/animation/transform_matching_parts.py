@@ -7,9 +7,12 @@ from typing import List, Optional
 
 import numpy as np
 
+from .._config import config
 from ..mobject.mobject import Group, Mobject
+from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from .composition import AnimationGroup
 from .fading import FadeInFromPoint, FadeOutToPoint
 from .transform import FadeTransformPieces, Transform
@@ -70,7 +73,11 @@ class TransformMatchingAbstractBase(AnimationGroup):
     ):
         assert type(mobject) is type(target_mobject)
 
-        if isinstance(mobject, VMobject):
+        if isinstance(mobject, OpenGLVMobject):
+            group_type = OpenGLVGroup
+        elif isinstance(mobject, OpenGLMobject):
+            group_type = OpenGLGroup
+        elif isinstance(mobject, VMobject):
             group_type = VGroup
         else:
             group_type = Group
@@ -135,7 +142,10 @@ class TransformMatchingAbstractBase(AnimationGroup):
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
-                shape_map[key] = VGroup()
+                if config["renderer"] == "opengl":
+                    shape_map[key] = OpenGLVGroup()
+                else:
+                    shape_map[key] = VGroup()
             shape_map[key].add(sm)
         return shape_map
 
