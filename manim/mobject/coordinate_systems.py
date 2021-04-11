@@ -1,6 +1,13 @@
 """Mobjects that represent coordinate systems."""
 
-__all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlane"]
+__all__ = [
+    "CoordinateSystem",
+    "Axes",
+    "ThreeDAxes",
+    "NumberPlane",
+    "ComplexPlane",
+    "PolarPlane",
+]
 
 
 import numbers
@@ -499,6 +506,84 @@ class ComplexPlane(NumberPlane):
 
 
 class PolarPlane(NumberPlane):
+    """A version of `NumberPlane` for polar coordinates.
+
+    Parameters
+    ----------
+    azimuth_line_frequency : :class:`float`, optional
+        The frequency of faded lines in the azimuth, expressed in units of revolution
+        (so `1/n` would result in `n` lines). If `None` is specified then it will use the default
+        specified by `azimuth_units`:
+            - `"PI radians"` or `"TAU radians"`: `1 / 20`
+            - `"degrees"`: `1 / 360`
+            - `"gradians"`: `1 / 400`
+            - `None`: `1`
+    radius_line_frequency : :class:`float`, optional
+         The frequency of faded lines in the radius.
+    azimuth_units : Optional[:class:`str`]
+        Specifies a default labelling system for the azimuth. Choices are:
+            - `"PI radians"` (default): fractional labels in the interval `[0, 2π]` with `π` as a constant.
+                .. manim:: PIradians
+                    :ref_classes: PolarPlane
+                    :save_last_frame:
+
+                    polarplot = PolarPlot(azimuth_units="PI radians")
+
+                    class PIradians(Scene):
+                        def construct(self):
+                            self.add(polarplot)
+
+            - `"TAU radians"`: fractional labels in the interval `[0, τ]` (where `τ = 2π`) with `τ` as a constant.
+                .. manim:: TAUradians
+                    :ref_classes: PolarPlane
+                    :save_last_frame:
+
+                    polarplot = PolarPlot(azimuth_units="TAU radians")
+
+                    class PIradians(Scene):
+                        def construct(self):
+                            self.add(polarplot)
+
+            - `"degrees"`: decimal labels in the interval `[0, 360]` with a degree symbol.
+                .. manim:: degrees
+                    :ref_classes: PolarPlane
+                    :save_last_frame:
+
+                    polarplot = PolarPlot(azimuth_units="degrees")
+
+                    class degrees(Scene):
+                        def construct(self):
+                            self.add(polarplot)
+
+            - `"gradians"`: decimal lables in the interval `[0, 400]` with a superscript "g".
+                .. manim:: gradians
+                    :ref_classes: PolarPlane
+                    :save_last_frame:
+
+                    polarplot = PolarPlot(azimuth_units="gradians")
+
+                    class gradians(Scene):
+                        def construct(self):
+                            self.add(polarplot)
+
+    azimuth_offset : Optional[:class:`float`].
+        The angle offset of the azimuth labels, expressed in radians. If `None` is specified then it will
+        use the default specified by `azimuth_units`:
+            - `"PI radians"` or `"TAU radians"` or `None`: `0`
+            - `"degrees"` or `"gradians"`: `π / 2`
+    azimuth_direction : Optional[:class:`str`]
+        The direction of the azimuth labels:
+            - `"CW"`: Clockwise.
+            - `"CCW"` Anti-clockwise.
+        If `None` is specified then it will use the default specified by `azimuth_units`:
+            - `"PI radians"` or `"TAU radians"` or `None`: `CW`
+            - `"degrees"` or `"gradians"`: `CCW`
+    azimuth_buff : :class:`int`, optional
+        The buffer for the azimuth labels.
+    radius_max : :class:`float`
+        The maximum value of the radius.
+    """
+
     def __init__(
         self,
         color=BLUE,
@@ -519,7 +604,7 @@ class PolarPlane(NumberPlane):
                 "TAU radians": (1 / 20),
                 "degrees": (1 / 36),
                 "gradians": (1 / 40),
-                None: 0,
+                None: 1,
             }[self.azimuth_units]
             if azimuth_line_frequency is None
             else azimuth_line_frequency

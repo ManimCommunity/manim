@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from manim import LEFT, ORIGIN, Axes, ComplexPlane
+from manim import LEFT, ORIGIN, Axes, ComplexPlane, PolarPlane
 from manim import CoordinateSystem as CS
 from manim import NumberPlane, ThreeDAxes, config, tempconfig
 
@@ -31,6 +31,7 @@ def test_dimension():
     assert Axes().dimension == 2
     assert NumberPlane().dimension == 2
     assert ComplexPlane().dimension == 2
+    assert PolarPlane().dimension == 2
     assert ThreeDAxes().dimension == 3
 
 
