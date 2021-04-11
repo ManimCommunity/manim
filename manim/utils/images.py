@@ -14,7 +14,7 @@ def get_full_raster_image_path(image_file_name):
     return seek_full_path_from_defaults(
         image_file_name,
         default_dir=config.get_dir("assets_dir"),
-        extensions=[".jpg", ".png", ".gif", ".jpeg", ".ico"],
+        extensions=[".jpg", ".jpeg", ".png", ".gif", ".ico"],
     )
 
 
