@@ -577,11 +577,11 @@ class PolarPlane(NumberPlane):
                      for i in a_points]
         elif self.azimuth_units == "degrees":
             a_tex = [MathTex(f'{360 * i["label"]:g}' + r"^{\circ}").scale(self.y_axis.number_scale_val)
-                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=SMALL_BUFF)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.y_axis.buff)
                      for i in a_points]
         elif self.azimuth_units == "gradians":
             a_tex = [MathTex(f'{400 * i["label"]:g}' + r"^{g}").scale(self.y_axis.number_scale_val)
-                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=SMALL_BUFF)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.y_axis.buff)
                      for i in a_points]
         else:
             a_tex = []
