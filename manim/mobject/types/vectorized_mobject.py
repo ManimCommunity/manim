@@ -1060,7 +1060,7 @@ class VMobject(Mobject):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
         return np.array(list(it.chain(*[sm.get_anchors() for sm in self.get_family()])))
 
-    def get_arc_length(self, sample_points_per_curve:Optional[float]=None) -> float:
+    def get_arc_length(self, sample_points_per_curve: Optional[float] = None) -> float:
         """Return the approximated length of the whole curve.
 
         Parameters
@@ -1076,7 +1076,12 @@ class VMobject(Mobject):
         kwargs = {}
         if sample_points_per_curve is not None:
             kwargs["sample_points"] = sample_points_per_curve
-        return np.sum([length for curve, length in self.get_curve_functions_with_lengths(**kwargs)])
+        return np.sum(
+            [
+                length
+                for curve, length in self.get_curve_functions_with_lengths(**kwargs)
+            ]
+        )
 
     # Alignment
     def align_points(self, vmobject):
