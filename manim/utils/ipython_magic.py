@@ -49,7 +49,7 @@ def image_viewer(image_path, small_width, large_width):
     button_list[0, 0] = b0
     button_list[1, 0] = b1
     button_list[2, 0] = b2
-    dis_img.width = small_width  # # default width
+    dis_img.width = large_width  # # default width
 
     def on_button_image1t1_clicked(b):
         dis_img.width = original1t1_width
@@ -77,7 +77,7 @@ def video_viewer(video_path, small_width, large_width):
     original1t1_width = f"{config.frame_size[0]}px"
 
     dis_video = ipywidgets.Video.from_file(video_path)
-    dis_video.controls = False
+    dis_video.controls = True
 
     dis_but = widgets.ToggleButton(
         value=False,
@@ -94,7 +94,7 @@ def video_viewer(video_path, small_width, large_width):
     button_list[1, 0] = b1
     button_list[2, 0] = b2
 
-    dis_video.width = small_width  # default width
+    dis_video.width = large_width  # default width
 
     def on_button_image1t1_clicked(b):
         dis_video.width = original1t1_width
