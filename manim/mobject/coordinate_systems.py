@@ -573,7 +573,7 @@ class PolarPlane(NumberPlane):
                     for i in a_vals]
         if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
             a_tex = [self.get_radian_label(i["label"]).scale(self.y_axis.number_scale_val)
-                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=SMALL_BUFF)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.y_axis.buff)
                      for i in a_points]
         elif self.azimuth_units == "degrees":
             a_tex = [MathTex(f'{360 * i["label"]:g}' + r"^{\circ}").scale(self.y_axis.number_scale_val)
