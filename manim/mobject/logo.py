@@ -230,8 +230,8 @@ class ManimBanner(VGroup):
             if alpha == 1:
                 self.remove(*[self.anim])
                 self.add_to_back(self.anim)
-                mob.shape.set_z_index(0)
-                mob.shape.save_state()
+                mob.shapes.set_z_index(0)
+                mob.shapes.save_state()
                 mob.M.save_state()
 
         def slide_back(mob, alpha):
@@ -244,7 +244,7 @@ class ManimBanner(VGroup):
 
             if alpha == 1:
                 mob.remove(m_clone)
-                mob.add_to_back(mob.shape)
+                mob.add_to_back(mob.shapes)
 
         return Succession(
             UpdateFromAlphaFunc(
