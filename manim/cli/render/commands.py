@@ -147,31 +147,26 @@ def render(
             req_info = requests.get(manim_info_url)
             req_info.raise_for_status()
         except requests.exceptions.HTTPError:
-            logger.warning(f"HTTP Error: {warn_prompt}")
-            raise SystemExit
+            logger.debug(f"HTTP Error: {warn_prompt}")
         except requests.exceptions.ConnectionError:
-            logger.warning(f"Connection Error: {warn_prompt}")
-            raise SystemExit
+            logger.debug(f"Connection Error: {warn_prompt}")
         except requests.exceptions.Timeout:
-            logger.warning(f"Timed Out: {warn_prompt}")
-            raise SystemExit
+            logger.debug(f"Timed Out: {warn_prompt}")
         except Exception:
-            logger.warning(f"Something went wrong: {warn_prompt}")
-            raise SystemExit
+            logger.debug(f"Something went wrong: {warn_prompt}")
 
         try:
-            releases = req_info.json()["info"]["version"]
+            stable = req_info.json()["info"]["version"]
 
-            if releases != __version__:
+            if stable != __version__:
                 console.print(
-                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{max(releases)}[/green] is available."
+                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
                 )
                 console.print(
                     "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
                 )
         except json.JSONDecodeError:
-            logger.warning(warn_prompt)
-            logger.warning(f"Error decoding JSON from {manim_info_url}")
-            raise SystemExit
+            logger.debug(warn_prompt)
+            logger.debug(f"Error decoding JSON from {manim_info_url}")
 
     return args
