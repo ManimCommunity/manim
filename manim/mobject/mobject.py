@@ -58,6 +58,10 @@ class Mobject(Container):
     points : :class:`numpy.ndarray`
         The points of the objects.
 
+        .. seealso::
+
+        :class:`~.VMobject`
+
     """
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
@@ -219,7 +223,10 @@ class Mobject(Container):
         return result
 
     def __repr__(self):
-        return str(self.name)
+        if config["renderer"] == "opengl":
+            return super().__repr__()
+        else:
+            return str(self.name)
 
     def reset_points(self):
         """Sets :attr:`points` to be an empty array."""
@@ -1755,9 +1762,11 @@ class Mobject(Container):
     # Pseudonyms for more general get_critical_point method
 
     def get_edge_center(self, direction) -> np.ndarray:
+        """Get edge coordinates for certain direction."""
         return self.get_critical_point(direction)
 
     def get_corner(self, direction) -> np.ndarray:
+        """Get corner coordinates for certain direction."""
         return self.get_critical_point(direction)
 
     def get_center(self) -> np.ndarray:
@@ -1788,10 +1797,12 @@ class Mobject(Container):
         """Get left coordinates of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(LEFT)
 
-    def get_zenith(self):
+    def get_zenith(self) -> np.ndarray:
+        """Get zenith coordinates of a box bounding a 3D :class:`~.Mobject`."""
         return self.get_edge_center(OUT)
 
-    def get_nadir(self):
+    def get_nadir(self) -> np.ndarray:
+        """Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.Mobject`."""
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
@@ -1855,31 +1866,38 @@ class Mobject(Container):
         z_index_group = getattr(self, "z_index_group", self)
         return z_index_group.get_center()
 
-    def has_points(self):
+    def has_points(self) -> bool:
         """Check if :class:`~.Mobject` contains points. """
         return len(self.points) > 0
 
-    def has_no_points(self):
+    def has_no_points(self) -> bool:
+        """Check if :class:`~.Mobject` *does not* contains points."""
         return not self.has_points()
 
     # Match other mobject properties
 
     def match_color(self, mobject: "Mobject"):
+        """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
     def match_dim_size(self, mobject: "Mobject", dim, **kwargs):
+        """Match the specified dimension with the dimension of another :class:`~.Mobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
     def match_width(self, mobject: "Mobject", **kwargs):
+        """Match the width with the width of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 0, **kwargs)
 
     def match_height(self, mobject: "Mobject", **kwargs):
+        """Match the height with the height of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
     def match_depth(self, mobject: "Mobject", **kwargs):
+        """Match the depth with the depth of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
     def match_coord(self, mobject: "Mobject", dim, direction=ORIGIN):
+        """Match the coordinates with the coordinates of another :class:`~.Mobject`."""
         return self.set_coord(
             mobject.get_coord(dim, direction),
             dim=dim,
@@ -1890,7 +1908,7 @@ class Mobject(Container):
         """Match x coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)
 
-    def Match_y(self, mobject: "Mobject", direction=ORIGIN):
+    def match_y(self, mobject: "Mobject", direction=ORIGIN):
         """Match y coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
@@ -1904,7 +1922,9 @@ class Mobject(Container):
         direction=ORIGIN,
         alignment_vect=UP,
     ):
-        """Examples:
+        """Aligns mobject to another :class:`~.Mobject` in a certain direction.
+
+        Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that its
         top edge lines ups with mob2's top edge.
 
@@ -1989,6 +2009,21 @@ class Mobject(Container):
         return self
 
     def arrange_in_grid(self, n_rows=None, n_cols=None, **kwargs):
+        """Sorts :class:`~.Mobject` next to each other on screen using a grid.
+
+        Examples
+        --------
+
+        .. manim:: ArrangeExample
+            :save_last_frame:
+
+            class ArrangeExample(Scene):
+                def construct(self):
+                    self.add(*[Square(color= random_bright_color()) for i in range(0,5)])
+                    x = VGroup(*self.mobjects).arrange_in_grid(buff=0.2)
+                    self.add(x)
+        """
+
         submobs = self.submobjects
         if n_rows is None and n_cols is None:
             n_cols = int(np.sqrt(len(submobs)))
@@ -2010,12 +2045,14 @@ class Mobject(Container):
         return self
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
+        """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
         if submob_func is None:
             submob_func = lambda m: point_to_num_func(m.get_center())
         self.submobjects.sort(key=submob_func)
         return self
 
     def shuffle(self, recursive=False):
+        """Shuffles the list of :attr:`submobjects`."""
         if recursive:
             for submob in self.submobjects:
                 submob.shuffle(recursive=True)
