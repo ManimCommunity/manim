@@ -13,7 +13,7 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import Iterable
+from typing import Iterable, Optional
 
 import colour
 
@@ -904,7 +904,7 @@ class VMobject(Mobject):
         ----------
         n
             The index of the desired curve.
-        kwargs
+        sample_points
             The number of points to sample to find the length.
 
         Returns
@@ -1060,7 +1060,19 @@ class VMobject(Mobject):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
         return np.array(list(it.chain(*[sm.get_anchors() for sm in self.get_family()])))
 
-    def get_arc_length(self, sample_points_per_curve=None):
+    def get_arc_length(self, sample_points_per_curve:Optional[float]=None) -> float:
+        """Return the approximated length of the whole curve.
+
+        Parameters
+        ----------
+        sample_points_per_curve
+            Number of sample points per curve used to approximate the length. More points result in a better approximation.
+
+        Returns
+        -------
+        float
+            The length of the curve
+        """
         kwargs = {}
         if sample_points_per_curve is not None:
             kwargs["sample_points"] = sample_points_per_curve
