@@ -15,6 +15,7 @@ from ..utils.rate_functions import linear
 if typing.TYPE_CHECKING:
     from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
     from ..mobject.types.vectorized_mobject import VGroup
+    from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
