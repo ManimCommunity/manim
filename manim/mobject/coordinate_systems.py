@@ -499,7 +499,7 @@ class ComplexPlane(NumberPlane):
 
 class PolarPlane(NumberPlane):
     def __init__(self, color=BLUE, azimuth_line_frequency=None, radius_line_frequency=1, azimuth_units="PI radians",
-                 azimuth_offset=None, azimuth_direction=None,
+                 azimuth_offset=None, azimuth_direction=None, azimuth_buff=SMALL_BUFF, x_axis_config={"label_direction": DOWN + LEFT},
                  radius_max=None, **kwargs):
         self.azimuth_units = azimuth_units
         self.azimuth_frequency = {"PI radians": (1 / 20),
@@ -524,13 +524,14 @@ class PolarPlane(NumberPlane):
             color=color,
             x_line_frequency=self.azimuth_frequency * TAU,
             y_line_frequency=radius_line_frequency,
-            x_axis_config={"label_direction": DOWN + LEFT},
+            x_axis_config=x_axis_config,
             x_min=None if (radius_max is None) else -radius_max,
             x_max=radius_max,
             y_min=-config["frame_x_radius"] if (radius_max is None) else -radius_max,
             y_max=config["frame_x_radius"] if (radius_max is None) else radius_max,
             **kwargs,
         )
+        self.azimuth_buff = azimuth_buff
         self.prepare_for_nonlinear_transform()
         self.background_lines.apply_function(lambda p: np.array([p[0] * np.sin(p[1]), p[0] * np.cos(p[1]), 0]))
 
@@ -573,15 +574,15 @@ class PolarPlane(NumberPlane):
                     for i in a_vals]
         if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
             a_tex = [self.get_radian_label(i["label"]).scale(self.y_axis.number_scale_val)
-                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.y_axis.buff)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.azimuth_buff)
                      for i in a_points]
         elif self.azimuth_units == "degrees":
             a_tex = [MathTex(f'{360 * i["label"]:g}' + r"^{\circ}").scale(self.y_axis.number_scale_val)
-                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.y_axis.buff)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.azimuth_buff)
                      for i in a_points]
         elif self.azimuth_units == "gradians":
             a_tex = [MathTex(f'{400 * i["label"]:g}' + r"^{g}").scale(self.y_axis.number_scale_val)
-                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.y_axis.buff)
+                         .next_to(i["point"], direction=i["point"], aligned_edge=i["point"], buff=self.azimuth_buff)
                      for i in a_points]
         else:
             a_tex = []
