@@ -582,6 +582,17 @@ class PolarPlane(NumberPlane):
         The buffer for the azimuth labels.
     radius_max : :class:`float`
         The maximum value of the radius.
+
+    Attributes
+    ----------
+    azimuth_units : :class:`str`
+        The azimuth units.
+    azimuth_frequency : :class:`float`
+        The frequency of faded lines in the azimuth, expressed in units of revolution.
+    azimuth_offset : :class:`float`
+        The angle offset of the azimuth labels, expressed in radians.
+    azimuth_direction : :class:`str`
+        The direction of the azimuth labels.
     """
 
     def __init__(
