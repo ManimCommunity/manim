@@ -160,9 +160,9 @@ def render(
             raise SystemExit
 
         try:
-            releases = req_info.json()["releases"].keys()
+            releases = req_info.json()["info"]["version"]
 
-            if max(releases) != __version__:
+            if releases != __version__:
                 console.print(
                     f"You are using manim version [red]v{__version__}[/red], but version [green]v{max(releases)}[/green] is available."
                 )
