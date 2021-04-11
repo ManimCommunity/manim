@@ -585,13 +585,13 @@ class PolarPlane(NumberPlane):
 
     Attributes
     ----------
-    azimuth_units : :class:`str`
+    azimuth_units : :attr:`str`
         The azimuth units.
-    azimuth_frequency : :class:`float`
+    azimuth_frequency : :attr:`float`
         The frequency of faded lines in the azimuth, expressed in units of revolution.
-    azimuth_offset : :class:`float`
+    azimuth_offset : :attr:`float`
         The angle offset of the azimuth labels, expressed in radians.
-    azimuth_direction : :class:`str`
+    azimuth_direction : :attr:`str`
         The direction of the azimuth labels.
     """
 
