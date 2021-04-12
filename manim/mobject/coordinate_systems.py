@@ -716,7 +716,7 @@ class PolarPlane(NumberPlane):
         return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
 
     def pt2pr(self, point):
-        """Abbeviation for `point_to_polar`"""
+        """Abbreviation for `point_to_polar`"""
         return self.point_to_polar(point)
 
     def get_coordinate_labels(self, r_vals, a_vals, **kwargs):
