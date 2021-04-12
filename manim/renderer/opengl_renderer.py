@@ -267,14 +267,36 @@ class OpenGLRenderer:
     def render_mobjects(self, mobs):
         for mob in mobs:
             shader_wrapper_list = mob.get_shader_wrapper_list()
-            render_group_list = map(
-                lambda shader_wrapper: self.get_render_group(
-                    self.context, shader_wrapper
-                ),
-                shader_wrapper_list,
-            )
-            for render_group in render_group_list:
-                self.render_render_group(render_group)
+
+            # Convert ShaderWrappers to Meshes.
+            for shader_wrapper in shader_wrapper_list:
+                shader = Shader(self.context, shader_wrapper.shader_folder)
+                for name, value in it.chain(
+                    shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
+                ):
+                    try:
+                        shader.set_uniform(name, value)
+                    except KeyError:
+                        pass
+                if shader_wrapper.depth_test:
+                    self.context.enable(moderngl.DEPTH_TEST)
+                else:
+                    self.context.disable(moderngl.DEPTH_TEST)
+                mesh = Mesh(
+                    shader,
+                    shader_wrapper.vert_data,
+                    indices=shader_wrapper.vert_indices,
+                )
+                mesh.render()
+
+            # render_group_list = map(
+            #     lambda shader_wrapper: self.get_render_group(
+            #         self.context, shader_wrapper
+            #     ),
+            #     shader_wrapper_list,
+            # )
+            # for render_group in render_group_list:
+            #     self.render_render_group(render_group)
 
     def render_render_group(self, render_group):
         shader_wrapper = render_group["shader_wrapper"]
@@ -408,16 +430,7 @@ class OpenGLRenderer:
             self.animation_elapsed_time = time.time() - self.animation_start_time
 
             for mesh in scene.meshes:
-                camera_translation = np.array([0, 0, 11 - shader_time])
-                camera_rotation = shader_time
-                mesh.shader.set_uniform(
-                    "u_model_view_matrix",
-                    opengl.view_matrix(y_rotation=camera_rotation),
-                )
-                shader_time += 1 / 120.0
                 mesh.render()
-            # test_shader = ManimCoordsShader(self.context)
-            # test_shader.render()
 
         window_background_color = color_to_rgba(config["background_color"])
         update_frame()

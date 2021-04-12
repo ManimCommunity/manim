@@ -3,22 +3,35 @@ import numpy as np
 import moderngl
 from ..utils import opengl
 from .. import config, logger
+import re
+import os
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache = {}
+file_path_to_code_map = {}
 
 
 class Mesh:
-    def __init__(self, shader, attributes):
+    def __init__(self, shader, attributes, indices=None):
         self.shader = shader
         self.attributes = attributes
+        self.indices = indices
 
     def render(self):
         vertex_buffer_object = self.shader.context.buffer(self.attributes.tobytes())
+        if self.indices is None:
+            index_buffer_object = None
+        else:
+            vert_index_data = self.indices.astype("i4").tobytes()
+            if vert_index_data:
+                index_buffer_object = self.shader.context.buffer(vert_index_data)
+            else:
+                index_buffer_object = None
         vertex_array_object = self.shader.context.simple_vertex_array(
             self.shader.shader_program,
             vertex_buffer_object,
             *self.attributes.dtype.names,
+            index_buffer=index_buffer_object
         )
         vertex_array_object.render(moderngl.TRIANGLES)
         vertex_buffer_object.release()
@@ -76,13 +89,18 @@ class Shader:
             self.shader_program = context.program(**source)
         else:
             # Search for a file containing the shader.
-            with open(SHADER_FOLDER / f"{self.name}.vert") as vertex_shader, open(
-                SHADER_FOLDER / f"{self.name}.frag"
-            ) as fragment_shader:
-                self.shader_program = context.program(
-                    vertex_shader=vertex_shader.read(),
-                    fragment_shader=fragment_shader.read(),
-                )
+            source_dict = {}
+            source_dict_key = {
+                "vert": "vertex_shader",
+                "frag": "fragment_shader",
+                "geom": "geometry_shader",
+            }
+            shader_folder = SHADER_FOLDER / name
+            for shader_file in os.listdir(shader_folder):
+                shader_file_path = shader_folder / shader_file
+                shader_source = self.get_shader_code_from_file(shader_file_path)
+                source_dict[source_dict_key[shader_file_path.stem]] = shader_source
+            self.shader_program = context.program(**source_dict)
 
         # Cache the shader.
         if name is not None:
@@ -90,6 +108,23 @@ class Shader:
 
     def set_uniform(self, name, value):
         self.shader_program[name] = value
+
+    def get_shader_code_from_file(self, file_path):
+        if file_path in file_path_to_code_map:
+            return file_path_to_code_map[file_path]
+        with open(file_path, "r") as f:
+            source = f.read()
+            include_lines = re.findall(
+                r"^#include .*\.glsl$", source, flags=re.MULTILINE
+            )
+            for line in include_lines:
+                include_path = line.split()[1]
+                included_code = self.get_shader_code_from_file(
+                    os.path.join(file_path.parent / include_path)
+                )
+                source = source.replace(line, included_code)
+            file_path_to_code_map[file_path] = source
+            return source
 
 
 # Return projection of a onto b.

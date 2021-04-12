@@ -12,12 +12,22 @@ from manim.utils.opengl import *
 time = 0
 
 
+class Test(Scene):
+    def construct(self):
+        # c = OpenGLCircle()
+        # self.play(Create(c))
+
+        c = OpenGLSphere()
+        self.add(c)
+        self.embed_2()
+
+
 class ShaderExample(Scene):
     def construct(self):
         global time
         config["background_color"] = "#333333"
 
-        c = OpenGLCircle().shift(UL)
+        c = OpenGLCircle(fill_opacity=0.7).shift(UL)
         self.add(c)
 
         shader = Shader(
@@ -51,9 +61,7 @@ class ShaderExample(Scene):
             """,
             ),
         )
-        # shader.set_uniform(
-        #     "u_model_view_matrix", opengl.view_matrix(translation=camera_translation)
-        # )
+        shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
         shader.set_uniform(
             "u_projection_matrix", opengl.orthographic_projection_matrix()
         )
