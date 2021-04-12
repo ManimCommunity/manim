@@ -991,10 +991,14 @@ class VMobject(Mobject):
         if alpha == 1:
             return self.points[-1]
 
-        target_length = alpha * self.get_arc_length()
+        curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
+
+        target_length = alpha * np.sum(
+            [length for _, length in curves_and_lengths]
+        )
         current_length = 0
 
-        for curve, length in self.get_curve_functions_with_lengths():
+        for curve, length in curves_and_lengths:
             if current_length + length >= target_length:
                 if length != 0:
                     residue = (target_length - current_length) / length
