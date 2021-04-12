@@ -1071,7 +1071,7 @@ class VMobject(Mobject):
         Returns
         -------
         float
-            The length of the curve
+            The length of the :class:`VMobject`.
         """
         kwargs = {}
         if sample_points_per_curve is not None:
