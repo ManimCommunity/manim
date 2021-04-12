@@ -957,6 +957,11 @@ class VMobject(Mobject):
     ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
+        Parameters
+        ----------
+        kwarks
+            The keyword arguments passed to :meth:`get_nth_curve_function_with_length`
+
         Returns
         -------
         typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]
@@ -983,7 +988,7 @@ class VMobject(Mobject):
             Point evaluated.
         """
 
-        if alpha >= 1:
+        if alpha == 1:
             return self.points[-1]
 
         target_length = alpha * self.get_arc_length()
@@ -1077,10 +1082,7 @@ class VMobject(Mobject):
         if sample_points_per_curve is not None:
             kwargs["sample_points"] = sample_points_per_curve
         return np.sum(
-            [
-                length
-                for curve, length in self.get_curve_functions_with_lengths(**kwargs)
-            ]
+            [length for _, length in self.get_curve_functions_with_lengths(**kwargs)]
         )
 
     # Alignment
