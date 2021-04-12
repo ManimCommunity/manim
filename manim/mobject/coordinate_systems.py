@@ -10,10 +10,10 @@ __all__ = [
 ]
 
 
+import fractions as fr
 import numbers
 
 import numpy as np
-import fractions as fr
 
 from .. import config
 from ..constants import *
