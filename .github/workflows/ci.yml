@@ -87,7 +87,7 @@ jobs:
           oriPath=$PATH
           mkdir -p $PWD/{macos-temp,macos-cache}
           echo "Install TinyTeX"
-          curl -L -o "$PWD/macos-temp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/v2021.04/TinyTeX-v2021.04.tgz"
+          curl -L -o "$PWD/macos-temp/TinyTeX.tgz" "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.tgz?job=image:%20macOS"
           tar zxf "$PWD/macos-temp/TinyTeX.tgz" -C "$PWD/macos-cache"
           ls $PWD/macos-cache/TinyTeX
           export PATH="$PWD/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
