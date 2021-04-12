@@ -27,7 +27,7 @@ class _Memoizer:
     Keeps a record of all the processed objects, and handle the logic to return a place holder instead of the original object if the object has already been processed
     by the hashing logic (i.e, recusively checked, converted to JSON, etc..).
 
-    This class used two signatures functions to keep a track of processed objects : hash or id. Whenever possible, hash is used to ensure a broader object content-equality detection.
+    This class uses two signatures functions to keep a track of processed objects : hash or id. Whenever possible, hash is used to ensure a broader object content-equality detection.
     """
 
     _already_processed = set()
