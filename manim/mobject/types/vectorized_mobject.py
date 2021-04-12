@@ -1084,7 +1084,7 @@ class VMobject(Mobject):
         if sample_points_per_curve is not None:
             kwargs["sample_points"] = sample_points_per_curve
         return np.sum(
-            [length for _, length in self.get_curve_functions_with_lengths(**kwargs)]
+            length for _, length in self.get_curve_functions_with_lengths(**kwargs)
         )
 
     # Alignment
