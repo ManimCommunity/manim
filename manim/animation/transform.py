@@ -34,7 +34,7 @@ from .. import config
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl_mobject import OpenGLMobject
+from ..mobject.opengl_mobject import OpenGLMobject, OpenGLGroup
 from ..utils.paths import path_along_arc, straight_path
 from ..utils.rate_functions import smooth, squish_rate_func
 
@@ -458,7 +458,11 @@ class FadeTransform(Transform):
         self.stretch = stretch
         self.dim_to_match = dim_to_match
         mobject.save_state()
-        super().__init__(Group(mobject, target_mobject.copy()), **kwargs)
+        if config["renderer"] == "opengl":
+            group = OpenGLGroup(mobject, target_mobject.copy())
+        else:
+            group = Group(mobject, target_mobject.copy())
+        super().__init__(group, **kwargs)
 
     def begin(self):
         """Initial setup for the animation.
