@@ -959,7 +959,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        kwarks
+        **kwargs
             The keyword arguments passed to :meth:`get_nth_curve_function_with_length`
 
         Returns
