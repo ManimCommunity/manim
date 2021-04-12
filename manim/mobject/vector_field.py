@@ -378,4 +378,4 @@ class AnimatedStreamLines(VGroup):
         for line in stream_lines:
             line.time += dt
             adjusted_time = max(line.time, 0) % line.anim.run_time
-            line.anim.update(adjusted_time / line.anim.run_time)
+            line.anim.interpolate(adjusted_time / line.anim.run_time)
