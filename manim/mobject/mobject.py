@@ -2377,7 +2377,7 @@ class _AnimationBuilder:
         def update_target(*method_args, **method_kwargs):
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
-                    self.mobject, *method_args, **method_kwargs
+                    self.mobject, *method_args, anim_args=self.anim_args, **method_kwargs
                 )
             else:
                 method(*method_args, **method_kwargs)
