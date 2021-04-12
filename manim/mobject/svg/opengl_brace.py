@@ -120,7 +120,7 @@ class OpenGLBrace(OpenGLSVGPathMobject):
 
     def get_tip(self):
         # Returns the position of the seventh point in the path, which is the tip.
-        return self.get_points()[32]
+        return self.get_points()[34]
 
     def get_direction(self):
         vect = self.get_tip() - self.get_center()
