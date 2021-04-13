@@ -113,8 +113,15 @@ def render(
         for SceneClass in scene_classes_from_file(file):
             try:
                 renderer = OpenGLRenderer()
-                scene = SceneClass(renderer)
-                scene.render()
+                while True:
+                    scene_classes = scene_classes_from_file(file)
+                    SceneClass = scene_classes[0]
+                    scene = SceneClass(renderer)
+                    status = scene.render()
+                    if status:
+                        continue
+                    else:
+                        break
             except Exception:
                 console.print_exception()
     elif config.renderer == "webgl":
