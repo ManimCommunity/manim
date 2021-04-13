@@ -32,8 +32,6 @@ from .opengl_renderer_window import Window
 from .shader_wrapper import ShaderWrapper
 from .shader import *
 
-shader_time = 0
-
 
 class OpenGLCamera(OpenGLMobject):
     def __init__(
@@ -198,9 +196,6 @@ class OpenGLRenderer:
         self.camera = OpenGLCamera()
         self.pressed_keys = set()
 
-        # Initialize shader map.
-        self.id_to_shader_program = {}
-
         # Initialize texture map.
         self.path_to_texture_id = {}
 
@@ -229,18 +224,6 @@ class OpenGLRenderer:
                 moderngl.ONE,
             )
 
-        # Initialize shader map.
-        self.id_to_shader_program = {}
-
-        # Initialize texture map.
-        self.path_to_texture_id = {}
-
-    def update_depth_test(self, context, shader_wrapper):
-        if shader_wrapper.depth_test:
-            self.context.enable(moderngl.DEPTH_TEST)
-        else:
-            self.context.disable(moderngl.DEPTH_TEST)
-
     def get_pixel_shape(self):
         return self.frame_buffer_object.viewport[2:4]
 
@@ -264,96 +247,40 @@ class OpenGLRenderer:
             "focal_distance": camera.get_focal_distance(),
         }
 
-    def render_mobjects(self, mobs):
-        for mob in mobs:
-            shader_wrapper_list = mob.get_shader_wrapper_list()
+    def render_mobject(self, mobject):
+        shader_wrapper_list = mobject.get_shader_wrapper_list()
 
-            # Convert ShaderWrappers to Meshes.
-            for shader_wrapper in shader_wrapper_list:
-                shader = Shader(self.context, shader_wrapper.shader_folder)
-                for name, value in it.chain(
-                    shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
-                ):
-                    try:
-                        shader.set_uniform(name, value)
-                    except KeyError:
-                        pass
-                if shader_wrapper.depth_test:
-                    self.context.enable(moderngl.DEPTH_TEST)
-                else:
-                    self.context.disable(moderngl.DEPTH_TEST)
-                mesh = Mesh(
-                    shader,
-                    shader_wrapper.vert_data,
-                    indices=shader_wrapper.vert_indices,
-                )
-                mesh.render()
+        # Convert ShaderWrappers to Meshes.
+        for shader_wrapper in shader_wrapper_list:
+            shader = Shader(self.context, shader_wrapper.shader_folder)
 
-            # render_group_list = map(
-            #     lambda shader_wrapper: self.get_render_group(
-            #         self.context, shader_wrapper
-            #     ),
-            #     shader_wrapper_list,
-            # )
-            # for render_group in render_group_list:
-            #     self.render_render_group(render_group)
+            # Set textures.
+            for name, path in shader_wrapper.texture_paths.items():
+                tid = self.get_texture_id(path)
+                shader.shader_program[name].value = tid
 
-    def render_render_group(self, render_group):
-        shader_wrapper = render_group["shader_wrapper"]
-        shader_program = render_group["prog"]
-        self.set_shader_uniforms(render_group["prog"], render_group["shader_wrapper"])
-        self.update_depth_test(self.context, shader_wrapper)
-        render_group["vao"].render(int(shader_wrapper.render_primitive))
+            # Set uniforms.
+            for name, value in it.chain(
+                shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
+            ):
+                try:
+                    shader.set_uniform(name, value)
+                except KeyError:
+                    pass
 
-        if render_group["single_use"]:
-            for key in ["vbo", "ibo", "vao"]:
-                if render_group[key] is not None:
-                    render_group[key].release()
-
-    def get_render_group(self, context, shader_wrapper, single_use=True):
-        # Data buffers
-        vertex_buffer_object = self.context.buffer(shader_wrapper.vert_data.tobytes())
-        if shader_wrapper.vert_indices is None:
-            index_buffer_object = None
-        else:
-            vert_index_data = shader_wrapper.vert_indices.astype("i4").tobytes()
-            if vert_index_data:
-                index_buffer_object = self.context.buffer(vert_index_data)
+            # Set depth test.
+            if shader_wrapper.depth_test:
+                self.context.enable(moderngl.DEPTH_TEST)
             else:
-                index_buffer_object = None
+                self.context.disable(moderngl.DEPTH_TEST)
 
-        # Program and vertex array
-        shader_program, vert_format = self.get_shader_program(
-            self.context, shader_wrapper
-        )
-        vertex_array_object = self.context.vertex_array(
-            program=shader_program,
-            content=[
-                (vertex_buffer_object, vert_format, *shader_wrapper.vert_attributes)
-            ],
-            index_buffer=index_buffer_object,
-        )
-        return {
-            "vbo": vertex_buffer_object,
-            "ibo": index_buffer_object,
-            "vao": vertex_array_object,
-            "prog": shader_program,
-            "shader_wrapper": shader_wrapper,
-            "single_use": single_use,
-        }
-
-    def get_shader_program(self, context, shader_wrapper):
-        sid = shader_wrapper.get_program_id()
-        if sid not in self.id_to_shader_program:
-            # Create shader program for the first time, then cache
-            # in self.id_to_shader_program.
-            program_code = shader_wrapper.get_program_code()
-            program = self.context.program(**program_code)
-            vert_format = moderngl.detect_format(
-                program, shader_wrapper.vert_attributes
+            # Render.
+            mesh = Mesh(
+                shader,
+                shader_wrapper.vert_data,
+                indices=shader_wrapper.vert_indices,
             )
-            self.id_to_shader_program[sid] = (program, vert_format)
-        return self.id_to_shader_program[sid]
+            mesh.render()
 
     def get_texture_id(self, path):
         if path not in self.path_to_texture_id:
@@ -368,27 +295,6 @@ class OpenGLRenderer:
             texture.use(location=tid)
             self.path_to_texture_id[path] = tid
         return self.path_to_texture_id[path]
-
-    def set_shader_uniforms(self, shader, shader_wrapper):
-        # perspective_uniforms = {
-        #     "frame_shape": (14.222222222222221, 8.0),
-        #     "anti_alias_width": 0.016666666666666666,
-        #     "camera_center": (0.0, 0.0, 0.0),
-        #     "camera_rotation": (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0),
-        #     "light_source_position": (-10.0, 10.0, 10.0),
-        #     "focal_distance": 16.0,
-        # }
-
-        for name, path in shader_wrapper.texture_paths.items():
-            tid = self.get_texture_id(path)
-            shader[name].value = tid
-        for name, value in it.chain(
-            shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
-        ):
-            try:
-                shader[name].value = value
-            except KeyError:
-                pass
 
     def update_skipping_status(self):
         """
@@ -420,17 +326,20 @@ class OpenGLRenderer:
         self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
-        global shader_time
-
         def update_frame():
-            global shader_time
             self.frame_buffer_object.clear(*window_background_color)
             self.refresh_perspective_uniforms(scene.camera)
-            self.render_mobjects(scene.mobjects)
-            self.animation_elapsed_time = time.time() - self.animation_start_time
+
+            for mobject in scene.mobjects:
+                self.render_mobject(mobject)
 
             for mesh in scene.meshes:
                 mesh.render()
+
+            # shader = MyShader(self.context, name="design_3")
+            # shader.render()
+
+            self.animation_elapsed_time = time.time() - self.animation_start_time
 
         window_background_color = color_to_rgba(config["background_color"])
         update_frame()

@@ -5,6 +5,8 @@ from ..utils import opengl
 from .. import config, logger
 import re
 import os
+from ..utils.simple_functions import get_parameters
+import itertools as it
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache = {}
@@ -16,6 +18,80 @@ class Mesh:
         self.shader = shader
         self.attributes = attributes
         self.indices = indices
+        self.init_updaters()
+
+    def init_updaters(self):
+        self.time_based_updaters = []
+        self.non_time_updaters = []
+        self.has_updaters = False
+        self.updating_suspended = False
+
+    def update(self, dt=0):
+        if not self.has_updaters or self.updating_suspended:
+            return self
+        for updater in self.time_based_updaters:
+            updater(self, dt)
+        for updater in self.non_time_updaters:
+            updater(self)
+        return self
+
+    def get_time_based_updaters(self):
+        return self.time_based_updaters
+
+    def has_time_based_updater(self):
+        return len(self.time_based_updaters) > 0
+
+    def get_updaters(self):
+        return self.time_based_updaters + self.non_time_updaters
+
+    def add_updater(self, update_function, index=None, call_updater=True):
+        if "dt" in get_parameters(update_function):
+            updater_list = self.time_based_updaters
+        else:
+            updater_list = self.non_time_updaters
+
+        if index is None:
+            updater_list.append(update_function)
+        else:
+            updater_list.insert(index, update_function)
+
+        self.refresh_has_updater_status()
+        if call_updater:
+            self.update()
+        return self
+
+    def remove_updater(self, update_function):
+        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
+            while update_function in updater_list:
+                updater_list.remove(update_function)
+        self.refresh_has_updater_status()
+        return self
+
+    def clear_updaters(self):
+        self.time_based_updaters = []
+        self.non_time_updaters = []
+        self.refresh_has_updater_status()
+        return self
+
+    def match_updaters(self, mobject):
+        self.clear_updaters()
+        for updater in mobject.get_updaters():
+            self.add_updater(updater)
+        return self
+
+    def suspend_updating(self):
+        self.updating_suspended = True
+        return self
+
+    def resume_updating(self, call_updater=True):
+        self.updating_suspended = False
+        if call_updater:
+            self.update(dt=0)
+        return self
+
+    def refresh_has_updater_status(self):
+        self.has_updaters = len(self.get_updaters()) > 0
+        return self
 
     def render(self):
         vertex_buffer_object = self.shader.context.buffer(self.attributes.tobytes())
@@ -31,42 +107,98 @@ class Mesh:
             self.shader.shader_program,
             vertex_buffer_object,
             *self.attributes.dtype.names,
-            index_buffer=index_buffer_object
+            index_buffer=index_buffer_object,
         )
         vertex_array_object.render(moderngl.TRIANGLES)
         vertex_buffer_object.release()
         vertex_array_object.release()
+        if index_buffer_object is not None:
+            index_buffer_object.release()
 
 
 class FullScreenQuad(Mesh):
-    def __init__(self, context, fragment_shader_source, attributes):
-        self.attributes = attributes
+    def __init__(
+        self,
+        context,
+        fragment_shader_source,
+        output_color_variable="frag_color",
+    ):
+        # Define frag_color.
+        fragment_shader_lines = fragment_shader_source.split("\n")
+        first_non_whitespace_line_index = 0
+        while re.match(
+            r"^\s*$",
+            fragment_shader_lines[first_non_whitespace_line_index],
+        ):
+            first_non_whitespace_line_index += 1
+        match = re.match(
+            r"^(\s*)([^\s].*)$",
+            fragment_shader_lines[first_non_whitespace_line_index],
+        )
+        if match.groups()[1].startswith("#version"):
+            fragment_shader_lines.insert(
+                first_non_whitespace_line_index + 1,
+                f"{match.groups()[0]}out vec4 {output_color_variable};",
+            )
+        else:
+            fragment_shader_lines.insert(
+                first_non_whitespace_line_index,
+                f"{match.groups()[0]}out vec4 {output_color_variable};",
+            )
+        fragment_shader_source = "\n".join(fragment_shader_lines)
+
+        attribute_variables = re.findall(
+            r"^\s*in (\w+) (\w+);$", fragment_shader_source, flags=re.MULTILINE
+        )
+        input_source = "\n".join(
+            [f"in {tup[0]} {tup[1].replace('v','in')};" for tup in attribute_variables]
+        )
+        output_source = "\n".join(
+            [f"out {tup[0]} {tup[1]};" for tup in attribute_variables]
+        )
+        assignment_source = "\n".join(
+            [f"{tup[1]} = {tup[1].replace('v', 'in')};" for tup in attribute_variables]
+        )
         shader = Shader(
             context,
             source=dict(
-                vertex_shader="""
-            #version 330
+                vertex_shader=f"""
+                #version 330
 
-            in vec4 in_vert;
-            in vec4 in_color;
-            out vec4 v_color;
-            uniform mat4 u_model_view_matrix;
-            uniform mat4 u_projection_matrix;
+                in vec4 in_vert;
+                {input_source}
+                {output_source}
+                uniform mat4 u_model_view_matrix;
+                uniform mat4 u_projection_matrix;
 
-            void main() {
-                v_color = in_color;
-                vec4 camera_space_vertex = u_model_view_matrix * in_vert;
-                vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
-                gl_Position = clip_space_vertex;
-            }
-            """,
+                void main() {{
+                    {assignment_source}
+                    vec4 camera_space_vertex = u_model_view_matrix * in_vert;
+                    vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
+                    gl_Position = clip_space_vertex;
+                }}
+                """,
                 fragment_shader=fragment_shader_source,
             ),
         )
-        super().__init__(shader, attributes)
+        shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
+        shader.set_uniform(
+            "u_projection_matrix", opengl.orthographic_projection_matrix()
+        )
+        super().__init__(shader, None)
 
     def render(self):
-        # TODO: Edit in_vert attribute to be fullscreen.
+        self.attributes = np.zeros(6, dtype=[("in_vert", np.float32, (4,))])
+        self.attributes["in_vert"] = np.array(
+            [
+                [-config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
+                [-config["frame_x_radius"], config["frame_y_radius"], 0, 1],
+                [config["frame_x_radius"], config["frame_y_radius"], 0, 1],
+                [-config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
+                [config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
+                [config["frame_x_radius"], config["frame_y_radius"], 0, 1],
+            ],
+        )
         super().render()
 
 

@@ -9,22 +9,129 @@ from manim.utils.opengl import *
 # Lines that do not yet work with the Community Version are commented.
 
 
-time = 0
-
-
 class Test(Scene):
     def construct(self):
-        # c = OpenGLCircle()
-        # self.play(Create(c))
+        attributes = np.zeros(6, dtype=[])
+        surface = FullScreenQuad(
+            self.renderer.context,
+            """
+            #version 330
 
-        c = OpenGLSphere()
-        self.add(c)
+            uniform vec2 u_resolution;
+            uniform vec2 u_mouse;
+            uniform float u_time;
+
+            // Plot a line on Y using a value between 0.0-1.0
+            float plot(vec2 st) {
+                return smoothstep(0.02, 0.0, abs(st.y - st.x));
+            }
+
+            void main() {
+                    vec2 st = gl_FragCoord.xy/u_resolution;
+
+                float y = st.x;
+
+                vec3 color = vec3(y);
+
+                // Plot a line
+                float pct = plot(st);
+                color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
+
+                    gl_FragColor = vec4(color,1.0);
+            }
+
+            """,
+            output_color_variable="gl_FragColor",
+        )
+        surface.shader.set_uniform("u_resolution", (854.0, 480.0))
+        # surface.shader.set_uniform("u_time", 0)
+        self.add(surface)
         self.embed_2()
+
+
+class Test2(Scene):
+    def construct(self):
+        attributes = np.zeros(
+            6,
+            dtype=[
+                ("in_red", np.float32, (1,)),
+                ("in_green", np.float32, (1,)),
+                ("in_blue", np.float32, (1,)),
+            ],
+        )
+        attributes["in_red"] = np.array(
+            [
+                [0],
+                [0],
+                [0],
+                [0],
+                [0],
+                [0],
+            ]
+        )
+        attributes["in_green"] = np.array(
+            [
+                [0],
+                [0],
+                [0],
+                [0],
+                [0],
+                [0],
+            ]
+        )
+        attributes["in_blue"] = np.array(
+            [
+                [0],
+                [0],
+                [0],
+                [0],
+                [0],
+                [0],
+            ]
+        )
+
+        surface = FullScreenQuad(
+            self.renderer.context,
+            """
+            #version 330
+
+            in float v_red;
+            in float v_green;
+            in float v_blue;
+            out vec4 frag_color;
+
+            void main() {
+              frag_color = vec4(v_red, v_green, v_blue, 1);
+            }
+            """,
+            attributes,
+        )
+
+        increase = True
+
+        def update_surface(mesh, dt):
+            nonlocal increase
+            if increase:
+                mesh.attributes["in_red"][:, 0] += dt
+                mesh.attributes["in_green"][:, 0] += dt
+                mesh.attributes["in_blue"][:, 0] += dt
+            else:
+                mesh.attributes["in_red"][:, 0] -= dt
+                mesh.attributes["in_green"][:, 0] -= dt
+                mesh.attributes["in_blue"][:, 0] -= dt
+            if mesh.attributes["in_red"][0][0] >= 1:
+                increase = False
+            elif mesh.attributes["in_red"][0][0] <= 0:
+                increase = True
+
+        surface.add_updater(update_surface)
+
+        self.add(surface)
+        self.wait(5)
 
 
 class ShaderExample(Scene):
     def construct(self):
-        global time
         config["background_color"] = "#333333"
 
         c = OpenGLCircle(fill_opacity=0.7).shift(UL)

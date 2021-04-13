@@ -303,6 +303,10 @@ class Scene(Container):
         for mobject in self.mobjects:
             mobject.update(dt)
 
+    def update_meshes(self, dt):
+        for mesh in self.meshes:
+            mesh.update(dt)
+
     def should_update_mobjects(self):
         """
         Returns True if any mobject in Scene is being updated
@@ -1113,6 +1117,7 @@ class Scene(Container):
             alpha = t / animation.run_time
             animation.interpolate(alpha)
         self.update_mobjects(dt)
+        self.update_meshes(dt)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
