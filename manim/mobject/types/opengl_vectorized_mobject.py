@@ -706,7 +706,7 @@ class OpenGLVMobject(OpenGLMobject):
         return np.sum(
             length
             for _, length in self.get_curve_functions_with_lengths(
-                sample_point=sample_points_per_curve
+                sample_points=sample_points_per_curve
             )
         )
 
