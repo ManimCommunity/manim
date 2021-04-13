@@ -50,7 +50,7 @@ class _Memoizer:
         """
 
         def layer(func):
-            # NOTE : There is probably a better to separate both case when func is a method or a function.
+            # NOTE : There is probably a better way to separate both case when func is a method or a function.
             if is_method:
                 return lambda self, obj: cls._handle_already_processed(
                     obj, default_function=lambda obj: func(self, obj)
@@ -61,7 +61,7 @@ class _Memoizer:
 
     @classmethod
     def check_already_processed(cls, obj: Any) -> Any:
-        """Checks if obj has been already processed, returns itself if it hasn't been or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has not.
+        """Checks if obj has been already processed. Returns itself if it has not been, or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has.
         Marks the object as processed in the second case.
 
         Parameters
@@ -74,7 +74,7 @@ class _Memoizer:
         Any
             Either the object itself or the placeholder.
         """
-        # When the object is not memorized, we return the object itself.
+        # When the object is not memoized, we return the object itself.
         return cls._handle_already_processed(obj, lambda x: x)
 
     @classmethod
@@ -113,7 +113,7 @@ class _Memoizer:
                 return cls._return(obj, hash, default_function)
             except TypeError:
                 # In case of an error with the hash (eg an object is marked as hashable but contains a non hashable within it)
-                # Fallback to use id instead.
+                # Fallback to use the built-in function id instead.
                 pass
         return cls._return(obj, id, default_function)
 
