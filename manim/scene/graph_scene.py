@@ -118,7 +118,7 @@ class GraphScene(Scene):
         **kwargs,
     ):
         logger.warning(
-            "GraphScene has been deprecated and will be removed in a future release."
+            "GraphScene has been deprecated and will be removed in a future release. "
             "Use Axes instead."
         )
         self.x_min = x_min

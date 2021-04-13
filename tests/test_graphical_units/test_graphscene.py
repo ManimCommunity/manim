@@ -1,28 +1,33 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
-class PlotFunctions(Scene):
-    def construct(self):
-        graph = Axes(
-            x_range=[-10, 10.3],
-            y_range=[-1.5, 1.5],
-            x_length=9,
-            y_length=6,
-            axis_config={"color": GREEN, "include_tip": False, "stroke_width": 4},
-            x_axis_config={
-                "numbers_to_exclude": [x for x in range(-9, 11, 2)] + [0],
-                "include_numbers": True,
-                "numbers_with_elongated_ticks": range(-10, 12, 2),
-            },
+class PlotFunctions(GraphScene):
+    def __init__(self, **kwargs):
+        GraphScene.__init__(
+            self,
+            graph_origin=ORIGIN,
+            function_color=RED,
+            axes_color=GREEN,
+            x_labeled_nums=range(-10, 12, 2),
+            **kwargs
         )
-        labels = graph.get_axis_labels()
+
+    def construct(self):
+        self.x_min = -10
+        self.x_max = 10.3
+        self.y_min = -1.5
+        self.y_max = 1.5
+
         constants.TEX_TEMPLATE = TexTemplate()
-        f = graph.get_graph(lambda x: x ** 2, color=BLUE)
-        self.play(Animation(graph), Animation(labels), Animation(f))
+        self.setup_axes()
+        f = self.get_graph(lambda x: x ** 2)
+
+        self.add(f)
 
 
 MODULE_NAME = "plot"
