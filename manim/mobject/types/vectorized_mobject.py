@@ -1083,7 +1083,7 @@ class VMobject(Mobject):
         float
             The length of the :class:`VMobject`.
         """
-        
+
         return np.sum(
             length for _, length in self.get_curve_functions_with_lengths(**kwargs)
         )
