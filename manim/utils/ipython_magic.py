@@ -86,8 +86,13 @@ else:
                         self.play(banner_large.create())
                         self.play(banner_large.expand())
 
-            Evaluating this cell will render and display the ``BannerExample`` scene
-            defined in the body of the cell.
+            Evaluating this cell will render and display the ``BannerExample`` scene defined in the body of the cell.
+            
+            .. note::
+
+                In case you want to hide the red box containing the output progress bar, the ``progress_bar`` config
+                option should be set to ``None``. This can also be done by passing ``--progress_bar None`` as a
+                CLI flag.
 
             """
             if cell:
