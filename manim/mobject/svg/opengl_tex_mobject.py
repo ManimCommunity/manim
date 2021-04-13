@@ -113,37 +113,6 @@ in this example where we set the color of the ``\bigstar`` using :func:`~.set_co
             tex.set_color_by_tex('igsta', RED)
             self.add(tex)
 
-Note that :func:`~.set_color_by_tex` colors the entire substring containing the Tex searched for,
-not just the specific symbol or Tex expression searched for. Consider the following example:
-
-.. manim:: IncorrectLaTeXSubstringColoring
-    :save_last_frame:
-
-    class IncorrectLaTeXSubstringColoring(Scene):
-        def construct(self):
-            equation = MathTex(
-                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots"
-            )
-            equation.set_color_by_tex("x", YELLOW)
-            self.add(equation)
-
-As you can see, this colors the entire equation yellow, contrary to what may be expected. To color only ``x`` yellow, we have to do the following:
-
-.. manim:: CorrectLaTeXSubstringColoring
-    :save_last_frame:
-
-    class CorrectLaTeXSubstringColoring(Scene):
-        def construct(self):
-            equation = MathTex(
-                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots",
-                substrings_to_isolate="x"
-            )
-            equation.set_color_by_tex("x", YELLOW)
-            self.add(equation)
-
-By setting ``substring_to_isolate`` to ``x``, we split up the :class:`~.MathTex` into substrings
-automatically and isolate ``x`` components into individual substrings. Only then can :meth:`~.set_color_by_tex` be used to achieve the desired result.
-
 LaTeX Maths Fonts - The Template Library
 ++++++++++++++++++++++++++++++++++++++++
 Changing fonts in LaTeX when typesetting mathematical formulae is a little bit more tricky than
@@ -188,43 +157,46 @@ character when typesetting multiline formulae:
 """
 
 __all__ = [
-    "TexSymbol",
-    "SingleStringMathTex",
-    "MathTex",
-    "Tex",
-    "BulletedList",
-    "Title",
-    "TexMobject",
-    "TextMobject",
+    "OpenGLTexSymbol",
+    "OpenGLSingleStringMathTex",
+    "OpenGLMathTex",
+    "OpenGLTex",
+    "OpenGLBulletedList",
+    "OpenGLTitle",
+    "OpenGLTexMobject",
+    "OpenGLTextMobject",
 ]
 
 
-import itertools as it
 import operator as op
-import re
 from functools import reduce
 
 from ... import config, logger
 from ...constants import *
-from ...mobject.geometry import Line
-from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.svg.svg_path import SVGPathMobject
-from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
+from ...mobject.opengl_geometry import OpenGLLine
+from ...mobject.svg.opengl_svg_mobject import OpenGLSVGMobject
+from ...mobject.svg.opengl_svg_path import OpenGLSVGPathMobject
+from ...mobject.types.opengl_vectorized_mobject import (
+    OpenGLVectorizedPoint,
+    OpenGLVGroup,
+)
 from ...utils.color import BLACK
-from ...utils.tex import TexTemplate
+from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
+
+# from ...utils.tex import TexTemplate
 
 TEX_MOB_SCALE_FACTOR = 0.05
 
 
-class TexSymbol(SVGPathMobject):
+class OpenGLTexSymbol(OpenGLSVGPathMobject):
     """Purely a renaming of SVGPathMobject."""
 
     pass
 
 
-class SingleStringMathTex(SVGMobject):
+class OpenGLSingleStringMathTex(OpenGLSVGMobject):
     """Elementary building block for rendering text with LaTeX.
 
     Tests
@@ -262,7 +234,7 @@ class SingleStringMathTex(SVGMobject):
             environment=self.tex_environment,
             tex_template=self.tex_template,
         )
-        SVGMobject.__init__(
+        OpenGLSVGMobject.__init__(
             self,
             file_name=file_name,
             should_center=should_center,
@@ -271,6 +243,8 @@ class SingleStringMathTex(SVGMobject):
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
+            should_subdivide_sharp_curves=True,
+            should_remove_null_curves=True,
             **kwargs,
         )
         if height is None:
@@ -361,17 +335,27 @@ class SingleStringMathTex(SVGMobject):
     def path_string_to_mobject(self, path_string, style):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string, z_index=self.z_index, **parse_style(style))
+        return OpenGLTexSymbol(
+            path_string, **self.path_string_config, **parse_style(style)
+        )
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
         return self
 
     def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+        OpenGLSVGMobject.set_style(
+            self,
+            fill_color=self.fill_color or self.color,
+            fill_opacity=self.fill_opacity,
+            stroke_color=self.stroke_color or self.color,
+            stroke_width=self.stroke_width,
+            stroke_opacity=self.stroke_opacity,
+            recurse=propagate_colors,
+        )
 
 
-class MathTex(SingleStringMathTex):
+class OpenGLMathTex(OpenGLSingleStringMathTex):
     r"""A string compiled with LaTeX in math mode.
 
     Examples
@@ -413,7 +397,7 @@ class MathTex(SingleStringMathTex):
         self.tex_environment = tex_environment
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
-        SingleStringMathTex.__init__(
+        OpenGLSingleStringMathTex.__init__(
             self,
             self.arg_separator.join(tex_strings),
             tex_environment=self.tex_environment,
@@ -427,24 +411,17 @@ class MathTex(SingleStringMathTex):
             self.organize_submobjects_left_to_right()
 
     def break_up_tex_strings(self, tex_strings):
-        tex_strings = [str(t) for t in tex_strings]
-        # Separate out anything surrounded in double braces
-        patterns = ["{{", "}}"]
-        # Separate out any strings specified in the isolate
-        # or tex_to_color_map lists.
-        patterns.extend(
-            [
-                "({})".format(re.escape(ss))
-                for ss in it.chain(
-                    self.substrings_to_isolate, self.tex_to_color_map.keys()
-                )
-            ]
+        substrings_to_isolate = op.add(
+            self.substrings_to_isolate, list(self.tex_to_color_map.keys())
         )
-        pattern = "|".join(patterns)
-        pieces = []
-        for s in tex_strings:
-            pieces.extend(re.split(pattern, s))
-        return list(filter(lambda s: s, pieces))
+        split_list = split_string_list_to_isolate_substrings(
+            tex_strings, *substrings_to_isolate
+        )
+        if self.arg_separator == " ":
+            split_list = [str(x).strip() for x in split_list]
+        # split_list = list(map(str.strip, split_list))
+        split_list = [s for s in split_list if s != ""]
+        return split_list
 
     def break_up_by_substrings(self):
         """
@@ -455,11 +432,10 @@ class MathTex(SingleStringMathTex):
         new_submobjects = []
         curr_index = 0
         for tex_string in self.tex_strings:
-            sub_tex_mob = SingleStringMathTex(
+            sub_tex_mob = OpenGLSingleStringMathTex(
                 tex_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
-                z_index=self.z_index,
             )
             num_submobs = len(sub_tex_mob.submobjects)
             new_index = curr_index + num_submobs
@@ -467,14 +443,17 @@ class MathTex(SingleStringMathTex):
                 # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
-                sub_tex_mob.submobjects = [VectorizedPoint()]
+                sub_tex_mob.submobjects = [OpenGLVectorizedPoint()]
+                sub_tex_mob.assemble_family()
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:
                 sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
+                sub_tex_mob.assemble_family()
             new_submobjects.append(sub_tex_mob)
             curr_index = new_index
         self.submobjects = new_submobjects
+        self.assemble_family()
         return self
 
     def get_parts_by_tex(self, tex, substring=True, case_sensitive=True):
@@ -487,7 +466,9 @@ class MathTex(SingleStringMathTex):
             else:
                 return tex1 == tex2
 
-        return VGroup(*[m for m in self.submobjects if test(tex, m.get_tex_string())])
+        return OpenGLVGroup(
+            *[m for m in self.submobjects if test(tex, m.get_tex_string())]
+        )
 
     def get_part_by_tex(self, tex, **kwargs):
         all_parts = self.get_parts_by_tex(tex, **kwargs)
@@ -525,7 +506,7 @@ class MathTex(SingleStringMathTex):
         self.submobjects.sort(key=lambda m: m.get_tex_string())
 
 
-class Tex(MathTex):
+class OpenGLTex(OpenGLMathTex):
     r"""A string compiled with LaTeX in normal mode.
 
     Tests
@@ -541,7 +522,7 @@ class Tex(MathTex):
     def __init__(
         self, *tex_strings, arg_separator="", tex_environment="center", **kwargs
     ):
-        MathTex.__init__(
+        OpenGLMathTex.__init__(
             self,
             *tex_strings,
             arg_separator=arg_separator,
@@ -550,7 +531,7 @@ class Tex(MathTex):
         )
 
 
-class BulletedList(Tex):
+class OpenGLBulletedList(OpenGLTex):
     def __init__(
         self,
         *items,
@@ -587,7 +568,7 @@ class BulletedList(Tex):
                 other_part.set_fill(opacity=opacity)
 
 
-class Title(Tex):
+class OpenGLTitle(OpenGLTex):
     def __init__(
         self,
         *text_parts,
@@ -606,7 +587,7 @@ class Title(Tex):
         self.to_edge(UP)
         if self.include_underline:
             underline_width = config["frame_width"] - 2
-            underline = Line(LEFT, RIGHT)
+            underline = OpenGLLine(LEFT, RIGHT)
             underline.next_to(self, DOWN, buff=self.underline_buff)
             if self.match_underline_width_to_text:
                 underline.match_width(self)
@@ -616,7 +597,7 @@ class Title(Tex):
             self.underline = underline
 
 
-class TexMobject(MathTex):
+class OpenGLTexMobject(OpenGLMathTex):
     def __init__(self, *tex_strings, **kwargs):
         logger.warning(
             "TexMobject has been deprecated (due to its confusing name) "
@@ -625,7 +606,7 @@ class TexMobject(MathTex):
         MathTex.__init__(self, *tex_strings, **kwargs)
 
 
-class TextMobject(Tex):
+class OpenGLTextMobject(OpenGLTex):
     def __init__(self, *text_parts, **kwargs):
         logger.warning(
             "TextMobject has been deprecated (due to its confusing name) "

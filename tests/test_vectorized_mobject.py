@@ -1,6 +1,24 @@
+import numpy as np
 import pytest
 
 from manim import Line, Mobject, VDict, VGroup, VMobject
+
+
+def test_vmobject_point_from_propotion():
+    obj = VMobject()
+
+    # One long line, one short line
+    obj.set_points_as_corners(
+        [
+            np.array([0, 0, 0]),
+            np.array([4, 0, 0]),
+            np.array([4, 2, 0]),
+        ]
+    )
+
+    # Total length of 6, so halfway along the object
+    # would be at length 3, which lands in the first, long line.
+    assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
 
 
 def test_vgroup_init():

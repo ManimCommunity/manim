@@ -13,13 +13,13 @@ import threading
 import types
 import warnings
 from queue import Queue
+import types
 
 import numpy as np
 from tqdm import tqdm
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.transform import MoveToTarget, _MethodAnimation
 from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
@@ -191,9 +191,11 @@ class Scene(Container):
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
-        logger.info(
-            f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
-        )
+        # Show info only if animations are rendered or to get image
+        if self.renderer.num_plays or config["save_last_frame"] or config["save_pngs"]:
+            logger.info(
+                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
+            )
 
         # If preview open up the render after rendering.
         if preview:

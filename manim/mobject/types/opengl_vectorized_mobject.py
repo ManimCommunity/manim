@@ -22,9 +22,8 @@ from ...utils.color import *
 # from manimlib.utils.iterables import resize_array
 # from manimlib.utils.color import rgb_to_hex
 from ...utils.iterables import listify, make_even, resize_with_interpolation
-
-# from manimlib.utils.space_ops import angle_between_vectors
 from ...utils.space_ops import (
+    angle_between_vectors,
     cross2d,
     earclip_triangulation,
     get_norm,
@@ -77,6 +76,8 @@ class OpenGLVMobject(OpenGLMobject):
         tolerance_for_point_equality=1e-8,
         n_points_per_curve=3,
         long_lines=False,
+        should_subdivide_sharp_curves=False,
+        should_remove_null_curves=False,
         # Could also be "bevel", "miter", "round"
         joint_type="auto",
         flat_stroke=True,
@@ -103,6 +104,8 @@ class OpenGLVMobject(OpenGLMobject):
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_curve = n_points_per_curve
         self.long_lines = long_lines
+        self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
+        self.should_remove_null_curves = should_remove_null_curves
         # Could also be "bevel", "miter", "round"
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
@@ -115,10 +118,8 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
-        #
-        #     def get_group_class(self):
-        #         return VGroup
-        #
+    def get_group_class(self):
+        return OpenGLVGroup
 
     def init_data(self):
         super().init_data()
@@ -549,14 +550,88 @@ class OpenGLVMobject(OpenGLMobject):
     def get_nth_curve_function(self, n):
         return bezier(self.get_nth_curve_points(n))
 
+    def get_nth_curve_function_with_length(
+        self, n: int, n_sample_points: int = 10
+    ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
+        """Returns the expression of the nth curve along with its (approximate) length.
+
+        Parameters
+        ----------
+        n
+            The index of the desired curve.
+        n_sample_points
+            The number of points to sample to find the length.
+
+        Returns
+        -------
+        curve : typing.Callable[[float], np.ndarray]
+            The function for the nth curve.
+        length : :class:`float`
+            The length of the nth curve.
+        """
+
+        curve = self.get_nth_curve_function(n)
+
+        points = np.array([curve(a) for a in np.linspace(0, 1, n_sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(get_norm, 1, diffs)
+
+        length = np.sum(norms)
+
+        return curve, length
+
     def get_num_curves(self):
         return self.get_num_points() // self.n_points_per_curve
 
-    def point_from_proportion(self, alpha):
+    def get_curve_functions(
+        self,
+    ) -> typing.Iterable[typing.Callable[[float], np.ndarray]]:
+        """Gets the functions for the curves of the mobject.
+
+        Returns
+        -------
+        typing.Iterable[typing.Callable[[float], np.ndarray]]
+            The functions for the curves.
+        """
+
         num_curves = self.get_num_curves()
-        n, residue = integer_interpolate(0, num_curves, alpha)
-        curve_func = self.get_nth_curve_function(n)
-        return curve_func(residue)
+
+        for n in range(num_curves):
+            yield self.get_nth_curve_function(n)
+
+    def get_curve_functions_with_lengths(
+        self,
+    ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
+        """Gets the functions and lengths of the curves for the mobject.
+
+        Returns
+        -------
+        typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]
+            The functions and lengths of the curves.
+        """
+
+        num_curves = self.get_num_curves()
+
+        for n in range(num_curves):
+            yield self.get_nth_curve_function_with_length(n)
+
+    def point_from_proportion(self, alpha):
+        curves_with_lengths = list(self.get_curve_functions_with_lengths())
+
+        total_length = np.sum(length for _, length in curves_with_lengths)
+        target_length = alpha * total_length
+        current_length = 0
+
+        for curve, length in curves_with_lengths:
+            if current_length + length >= target_length:
+                if length != 0:
+                    residue = (target_length - current_length) / length
+                else:
+                    residue = 0
+
+                return curve(residue)
+
+            current_length += length
 
     def get_anchors_and_handles(self):
         """

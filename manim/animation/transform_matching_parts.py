@@ -12,7 +12,7 @@ from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeInFromPoint, FadeOutToPoint
-from .transform import FadeTransformPieces, ReplacementTransform, Transform
+from .transform import FadeTransformPieces, Transform
 
 
 class TransformMatchingAbstractBase(AnimationGroup):
