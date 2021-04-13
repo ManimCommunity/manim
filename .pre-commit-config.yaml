@@ -25,7 +25,7 @@ repos:
       - id: isort
         name: isort (pyi)
         types: [pyi]
-  - repo: https://gitlab.com/PyCQA/flake8
+  - repo: https://github.com/PyCQA/flake8
     rev: 3.9.0
     hooks:
       - id: flake8
