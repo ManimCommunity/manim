@@ -34,7 +34,7 @@ else:
             r"""Render Manim scenes contained in IPython cells.
             Works as a line or cell magic.
 
-            .. note::
+            .. hint::
 
                 This line and cell magic works best when used in a JupyterLab
                 environment: while all of the functionality is available for
@@ -49,17 +49,46 @@ else:
 
             Usage in line mode::
 
-                %manim MyAwesomeScene [CLI options]
+                %manim [CLI options] MyAwesomeScene
 
             Usage in cell mode::
 
-                %%manim MyAwesomeScene [CLI options]
+                %%manim [CLI options] MyAwesomeScene
 
                 class MyAweseomeScene(Scene):
                     def construct(self):
                         ...
 
-            Run ``%manim -h`` for possible command line interface options.
+            Run ``%manim -h`` and ``%manim render -h`` for possible command line interface options.
+
+            .. note::
+
+                The maximal width of the rendered videos that are displayed in the notebook can be
+                configured via the ``media_width`` configuration option. The default is set to ``25vw``,
+                which is 25% of your current viewport width. To allow the output to become as large
+                as possible, set ``config.media_width = "100%"``.
+
+            Examples
+            --------
+
+            First make sure to put ``import manim``, or even ``from manim import *``
+            in a cell and evaluate it. Then, a typical Jupyter notebook cell for Manim
+            could look as follows::
+
+                %%manim -v WARNING --disable_caching -qm BannerExample
+
+                config.media_width = "75%"
+
+                class BannerExample(Scene):
+                    def construct(self):
+                        self.camera.background_color = "#ece6e2"
+                        banner_large = ManimBanner(dark_theme=False).scale(0.7)
+                        self.play(banner_large.create())
+                        self.play(banner_large.expand())
+
+            Evaluating this cell will render and display the ``BannerExample`` scene
+            defined in the body of the cell.
+
             """
             if cell:
                 exec(cell, local_ns)
