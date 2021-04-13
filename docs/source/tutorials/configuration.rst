@@ -17,11 +17,11 @@ which is an instance of :class:`.ManimConfig`.  Each property of this class is
 a config option that can be accessed either with standard attribute syntax, or
 with dict-like syntax:
 
-.. code-block:: python
+.. code-block:: pycon
 
    >>> from manim import *
    >>> config.background_color = WHITE
-   >>> config['background_color'] = WHITE
+   >>> config["background_color"] = WHITE
 
 The former is preferred; the latter is provided mostly for backwards
 compatibility.
@@ -30,7 +30,7 @@ Most classes, including :class:`.Camera`, :class:`.Mobject`, and
 :class:`.Animation`, read some of their default configuration from the global
 ``config``.
 
-.. code-block:: python
+.. code-block:: pycon
 
    >>> Camera({}).background_color
    <Color white>
@@ -41,7 +41,7 @@ Most classes, including :class:`.Camera`, :class:`.Mobject`, and
 :class:`.ManimConfig` is designed to keep internal consistency.  For example,
 setting ``frame_y_radius`` will affect ``frame_height``:
 
-.. code-block:: python
+.. code-block:: pycon
 
     >>> config.frame_height
     8.0

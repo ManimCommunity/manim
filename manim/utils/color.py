@@ -119,7 +119,7 @@ class Colors(Enum):
 
     The preferred way of using these colors is
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> import manim.utils.color as C
         >>> C.WHITE
@@ -131,7 +131,7 @@ class Colors(Enum):
     directly, through the use of :code:`color.value`.  Note this way uses the
     name of the colors in lowercase.
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from manim.utils.color import Colors
         >>> Colors.white.value
