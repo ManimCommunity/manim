@@ -55,7 +55,7 @@ from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.functions import ParametricFunction
 from ..mobject.geometry import Line, Rectangle, RegularPolygon
-from ..mobject.number_line import NumberLine
+from ..mobject.number_line import NumberLine, OldNumberLine
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
@@ -194,7 +194,7 @@ class GraphScene(Scene):
             **self.x_axis_config,
         )
 
-        x_axis = NumberLine(**self.x_axis_config)
+        x_axis = OldNumberLine(**self.x_axis_config)
         x_shift = x_axis.number_to_point(
             0 if self.x_min <= 0 <= self.x_max else self.x_min
         )
@@ -237,7 +237,7 @@ class GraphScene(Scene):
             **self.y_axis_config,
         )
 
-        y_axis = NumberLine(**self.y_axis_config)
+        y_axis = OldNumberLine(**self.y_axis_config)
         y_shift = y_axis.number_to_point(
             0 if self.y_min <= 0 <= self.y_max else self.y_min
         )
