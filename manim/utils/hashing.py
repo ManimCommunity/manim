@@ -46,7 +46,7 @@ class _Memoizer:
         Parameters
         ----------
         is_method : bool, optional
-            Whether the function passed is a method, by default Falsep
+            Whether the function passed is a method, by default False.
         """
 
         def layer(func):
