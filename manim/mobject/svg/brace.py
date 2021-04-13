@@ -37,14 +37,16 @@ class Brace(SVGPathMobject):
     Examples
     --------
     .. manim:: BraceExample
-
+        :save_last_frame:
+        
         class BraceExample(Scene):
             def construct(self):
-                circle = Circle()
-                brace = Brace(circle, direction=RIGHT)
-                self.play(Create(circle))
-                self.play(Create(brace))
-                self.wait(2)
+                s= Square()
+                self.add(s)
+                for i in np.linspace(0.1,1.0,10):
+                    br = Brace(s, sharpness=i)
+                    self.add(br)
+                VGroup(*self.mobjects).arrange(DOWN, buff=0.1)
 
     """
 
