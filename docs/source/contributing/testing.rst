@@ -218,7 +218,8 @@ It will look something like this:
             circle = Circle()
             self.play(Animation(circle))
 
-    set_test_scene(CircleTest, "geometry") 
+
+    set_test_scene(CircleTest, "geometry")
 
 ``set_test_scene`` takes two parameters: the scene to test, and the
 module name. You can generate the test data by running the file (it suffices to type the name of the file in terminal; you do not have to run
@@ -282,7 +283,7 @@ you're done. Then run:
 
 .. code:: python
 
-    save_control_data_from_video(<path-to-video>, "SquareToCircleWithlFlag.json")
+    save_control_data_from_video("<path-to-video>", "SquareToCircleWithlFlag.json")
 
 Running this will save
 ``control_data/videos_data/SquareToCircleWithlFlag.json``, which will
