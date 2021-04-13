@@ -626,7 +626,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def point_from_proportion(self, alpha):
         if alpha == 1:
-            return self.points[-1]
+            return self.get_points()[-1]
 
         curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
 
