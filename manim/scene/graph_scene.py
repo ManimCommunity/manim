@@ -55,7 +55,7 @@ from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.functions import ParametricFunction
 from ..mobject.geometry import Line, Rectangle, RegularPolygon
-from ..mobject.number_line import NumberLine, OldNumberLine
+from ..mobject.number_line import OldNumberLine
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
