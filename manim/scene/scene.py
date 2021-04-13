@@ -13,7 +13,6 @@ import threading
 import types
 import warnings
 from queue import Queue
-import types
 
 import numpy as np
 from tqdm import tqdm
