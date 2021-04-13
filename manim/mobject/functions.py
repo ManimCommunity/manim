@@ -3,12 +3,12 @@
 __all__ = ["ParametricFunction", "FunctionGraph"]
 
 
+import math
+
 from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
-
-import math
 
 
 class ParametricFunction(VMobject):

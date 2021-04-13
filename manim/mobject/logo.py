@@ -2,17 +2,14 @@
 
 __all__ = ["ManimBanner"]
 
-import numpy as np
-
-from ..constants import LEFT, UP, RIGHT, DOWN, ORIGIN, TAU
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.fading import FadeIn
-from ..animation.transform import ApplyMethod
+from ..animation.update import UpdateFromAlphaFunc
+from ..constants import DOWN, LEFT, ORIGIN, RIGHT, TAU, UP
 from ..mobject.geometry import Circle, Square, Triangle
-from ..mobject.value_tracker import ValueTracker
-from ..mobject.svg.tex_mobject import Tex, MathTex
+from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.space_ops import normalize
+from ..utils.rate_functions import ease_in_out_cubic, ease_out_sine, smooth
 from ..utils.tex_templates import TexFontTemplates
 
 
@@ -30,27 +27,26 @@ class ManimBanner(VGroup):
 
     Examples
     --------
+    .. manim:: DarkThemeBanner
 
-    .. manim:: BannerDarkBackground
-
-        class BannerDarkBackground(Scene):
+        class DarkThemeBanner(Scene):
             def construct(self):
-                banner = ManimBanner().scale(0.5).to_corner(DR)
-                self.play(FadeIn(banner))
+                banner = ManimBanner()
+                self.play(banner.create())
                 self.play(banner.expand())
-                self.play(FadeOut(banner))
+                self.wait()
+                self.play(Unwrite(banner))
 
-    .. manim:: BannerLightBackground
+    .. manim:: LightThemeBanner
 
-        class BannerLightBackground(Scene):
+        class LightThemeBanner(Scene):
             def construct(self):
                 self.camera.background_color = "#ece6e2"
-                banner_large = ManimBanner(dark_theme=False).scale(0.7)
-                banner_small = ManimBanner(dark_theme=False).scale(0.35)
-                banner_small.next_to(banner_large, DOWN)
-                self.play(banner_large.create(), banner_small.create())
-                self.play(banner_large.expand(), banner_small.expand())
-                self.play(FadeOut(banner_large), FadeOut(banner_small))
+                banner = ManimBanner(dark_theme=False)
+                self.play(banner.create())
+                self.play(banner.expand())
+                self.wait()
+                self.play(Unwrite(banner))
 
     """
 
@@ -71,7 +67,8 @@ class ManimBanner(VGroup):
         self.circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
         self.square = Square(color=logo_blue, fill_opacity=1).shift(UP)
         self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
-        self.add(self.triangle, self.square, self.circle, self.M)
+        self.shapes = VGroup(self.triangle, self.square, self.circle)
+        self.add(self.shapes, self.M)
         self.move_to(ORIGIN)
 
         anim = VGroup()
@@ -90,7 +87,6 @@ class ManimBanner(VGroup):
         # Note: "anim" is only shown in the expanded state
         # and thus not yet added to the submobjects of self.
         self.anim = anim
-        self.anim.set_opacity(0)
 
     def scale(self, scale_factor: float, **kwargs) -> "ManimBanner":
         """Scale the banner by the specified scale factor.
@@ -111,54 +107,48 @@ class ManimBanner(VGroup):
             self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
-    def create(self):
+    def create(self, run_time: float = 2) -> AnimationGroup:
         """The creation animation for Manim's logo.
+
+        Parameters
+        ----------
+        run_time
+            The run time of the animation.
 
         Returns
         -------
         :class:`~.AnimationGroup`
             An animation to be used in a :meth:`.Scene.play` call.
         """
-        shape_center = VGroup(self.circle, self.square, self.triangle).get_center()
-
-        spiral_run_time = 2.1
+        shape_center = self.shapes.get_center()
         expansion_factor = 8 * self.scale_factor
 
-        tracker = ValueTracker(0)
-
-        for mob in [self.circle, self.square, self.triangle]:
-            mob.final_position = mob.get_center()
-            mob.initial_position = (
-                mob.final_position
-                + (mob.final_position - shape_center) * expansion_factor
+        for shape in self.shapes:
+            shape.final_position = shape.get_center()
+            shape.initial_position = (
+                shape.final_position
+                + (shape.final_position - shape_center) * expansion_factor
             )
-            mob.initial_to_final_distance = np.linalg.norm(
-                mob.final_position - mob.initial_position
-            )
-            mob.move_to(mob.initial_position)
-            mob.current_time = 0
-            mob.starting_mobject = mob.copy()
+            shape.move_to(shape.initial_position)
+            shape.save_state()
 
-            def updater(mob, dt):
-                mob.become(mob.starting_mobject)
-                direction = shape_center - mob.get_center()
-                mob.shift(
-                    normalize(direction, fall_back=direction)
-                    * mob.initial_to_final_distance
-                    * tracker.get_value()
-                )
-                mob.rotate(TAU * tracker.get_value(), about_point=shape_center)
-                mob.rotate(-TAU * tracker.get_value())
-
-            mob.add_updater(updater)
-
-        spin_animation = ApplyMethod(tracker.set_value, 1, run_time=spiral_run_time)
+        def spiral_updater(shapes, alpha):
+            for shape in shapes:
+                shape.restore()
+                shape.shift((shape.final_position - shape.initial_position) * alpha)
+                shape.rotate(TAU * alpha, about_point=shape_center)
+                shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
+                shape.set_opacity(min(1, alpha * 3))
 
         return AnimationGroup(
-            FadeIn(self, run_time=spiral_run_time / 2), spin_animation
+            UpdateFromAlphaFunc(
+                self.shapes, spiral_updater, run_time=run_time, rate_func=ease_out_sine
+            ),
+            FadeIn(self.M, run_time=run_time / 2),
+            lag_ratio=0.1,
         )
 
-    def expand(self) -> Succession:
+    def expand(self, run_time: float = 1.5, direction="center") -> Succession:
         """An animation that expands Manim's logo into its banner.
 
         The returned animation transforms the banner from its initial
@@ -174,34 +164,96 @@ class ManimBanner(VGroup):
             it is added as a submobject so subsequent animations
             to the banner object apply to the text "anim" as well.
 
+        Parameters
+        ----------
+        run_time
+            The run time of the animation.
+        direction
+            The direction in which the logo is expanded.
+
         Returns
         -------
         :class:`~.Succession`
             An animation to be used in a :meth:`.Scene.play` call.
 
+        Examples
+        --------
+        .. manim:: ExpandDirections
+
+            class ExpandDirections(Scene):
+                def construct(self):
+                    banners = [ManimBanner().scale(0.5).shift(UP*x) for x in [-2, 0, 2]]
+                    self.play(
+                        banners[0].expand(direction="right"),
+                        banners[1].expand(direction="center"),
+                        banners[2].expand(direction="left"),
+                    )
+
         """
+        if direction not in ["left", "right", "center"]:
+            raise ValueError("direction must be 'left', 'right' or 'center'.")
+
         m_shape_offset = 6.25 * self.scale_factor
+        shape_sliding_overshoot = self.scale_factor * 0.8
         m_anim_buff = 0.06
-        self.add(self.anim)
-        self.anim.next_to(self.M, buff=m_anim_buff).shift(
-            m_shape_offset * LEFT
-        ).align_to(self.M, DOWN)
-        move_left = AnimationGroup(
-            ApplyMethod(self.triangle.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.square.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.circle.shift, m_shape_offset * LEFT),
-            ApplyMethod(self.M.shift, m_shape_offset * LEFT),
-        )
-        move_right = AnimationGroup(
-            ApplyMethod(self.triangle.shift, m_shape_offset * RIGHT),
-            ApplyMethod(self.square.shift, m_shape_offset * RIGHT),
-            ApplyMethod(self.circle.shift, m_shape_offset * RIGHT),
-            ApplyMethod(self.M.shift, 0 * LEFT),
-            AnimationGroup(
-                *[ApplyMethod(obj.set_opacity, 1) for obj in self.anim], lag_ratio=0.15
+        self.anim.next_to(self.M, buff=m_anim_buff).align_to(self.M, DOWN)
+        self.anim.set_opacity(0)
+        self.shapes.save_state()
+        m_clone = self.anim[-1].copy()
+        self.add(m_clone)
+        m_clone.move_to(self.shapes)
+
+        self.M.save_state()
+        left_group = VGroup(self.M, self.anim, m_clone)
+
+        def shift(vector):
+            self.shapes.restore()
+            left_group.align_to(self.M.saved_state, LEFT)
+            if direction == "right":
+                self.shapes.shift(vector)
+            elif direction == "center":
+                self.shapes.shift(vector / 2)
+                left_group.shift(-vector / 2)
+            elif direction == "left":
+                left_group.shift(-vector)
+
+        def slide_and_uncover(mob, alpha):
+            shift(alpha * (m_shape_offset + shape_sliding_overshoot) * RIGHT)
+
+            # Add letters when they are covered
+            for letter in mob.anim:
+                if mob.square.get_center()[0] > letter.get_center()[0]:
+                    letter.set_opacity(1)
+                    self.add(letter)
+
+            # Finish animation
+            if alpha == 1:
+                self.remove(*[self.anim])
+                self.add_to_back(self.anim)
+                mob.shapes.set_z_index(0)
+                mob.shapes.save_state()
+                mob.M.save_state()
+
+        def slide_back(mob, alpha):
+            if alpha == 0:
+                m_clone.set_opacity(1)
+                m_clone.move_to(mob.anim[-1])
+                mob.anim.set_opacity(1)
+
+            shift(alpha * shape_sliding_overshoot * LEFT)
+
+            if alpha == 1:
+                mob.remove(m_clone)
+                mob.add_to_back(mob.shapes)
+
+        return Succession(
+            UpdateFromAlphaFunc(
+                self,
+                slide_and_uncover,
+                run_time=run_time * 2 / 3,
+                rate_func=ease_in_out_cubic,
             ),
-            # It would be nice to have the last AnimationGroup replaced by
-            # FadeIn(self.anim, lag_ratio=1)
-            # Currently not working though.
+            UpdateFromAlphaFunc(
+                self, slide_back, run_time=run_time * 1 / 3, rate_func=smooth
+            ),
         )
-        return Succession(move_left, move_right)

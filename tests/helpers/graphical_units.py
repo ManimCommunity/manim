@@ -3,6 +3,7 @@
 
 import os
 import tempfile
+
 import numpy as np
 
 from manim import config, logger

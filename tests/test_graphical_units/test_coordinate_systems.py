@@ -16,8 +16,9 @@ class NumberPlaneTest(Scene):
             y_length=6,
             y_axis_config={"label_direction": UL},
         )
-        plane.shift(1.5 * DL)
-        self.play(Animation(plane))
+
+        self.add(plane)
+
 
 
 MODULE_NAME = "coordinate_systems"

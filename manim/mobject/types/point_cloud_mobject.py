@@ -6,9 +6,15 @@ __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Poi
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
-from ...utils.color import color_gradient, YELLOW_C, WHITE, BLACK, YELLOW
-from ...utils.color import color_to_rgba
-from ...utils.color import rgba_to_color
+from ...utils.color import (
+    BLACK,
+    WHITE,
+    YELLOW,
+    YELLOW_C,
+    color_gradient,
+    color_to_rgba,
+    rgba_to_color,
+)
 from ...utils.iterables import stretch_array_to_length
 from ...utils.space_ops import get_norm
 
@@ -28,7 +34,7 @@ class PMobject(Mobject):
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
         """
-        points must be a Nx3 numpy array, as must rgbas if it is not None
+        Points must be a Nx3 numpy array, as must rgbas if it is not None
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -64,17 +70,6 @@ class PMobject(Mobject):
         self.rgbas = np.array(
             list(map(color_to_rgba, color_gradient(colors, len(self.points))))
         )
-        return self
-
-        start_rgba, end_rgba = list(map(color_to_rgba, [start_color, end_color]))
-        for mob in self.family_members_with_points():
-            num_points = mob.get_num_points()
-            mob.rgbas = np.array(
-                [
-                    interpolate(start_rgba, end_rgba, alpha)
-                    for alpha in np.arange(num_points) / float(num_points)
-                ]
-            )
         return self
 
     def set_colors_by_radial_gradient(
@@ -115,7 +110,7 @@ class PMobject(Mobject):
 
     def sort_points(self, function=lambda p: p[0]):
         """
-        function is any map from R^3 to R
+        Function is any map from R^3 to R
         """
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))

@@ -5,7 +5,7 @@ __all__ = [
     "TexTemplateFromFile",
 ]
 
-
+import copy
 import re
 
 
@@ -48,6 +48,7 @@ class TexTemplate:
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{dsfont}
@@ -225,6 +226,9 @@ class TexTemplate:
         """
         begin, end = self._texcode_for_environment(environment)
         return self.body.replace(self.placeholder_text, f"{begin}\n{expression}\n{end}")
+
+    def copy(self) -> "TexTemplate":
+        return copy.deepcopy(self)
 
 
 class TexTemplateFromFile(TexTemplate):

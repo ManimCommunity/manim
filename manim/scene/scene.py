@@ -4,31 +4,27 @@
 __all__ = ["Scene"]
 
 
-import inspect
-import random
-import warnings
-import platform
 import copy
-import string
+import inspect
+import platform
+import random
 import types
 
-from tqdm import tqdm
 import numpy as np
+from tqdm import tqdm
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.transform import MoveToTarget, _MethodAnimation
 from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
-from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLPoint
-from ..utils.iterables import list_update, list_difference_update
-from ..utils.family import extract_mobject_family_members
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
+from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
+from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
 
 
@@ -69,7 +65,7 @@ class Scene(Container):
         renderer=None,
         camera_class=Camera,
         always_update_mobjects=False,
-        random_seed=0,
+        random_seed=None,
         **kwargs,
     ):
         self.camera_class = camera_class
@@ -84,7 +80,7 @@ class Scene(Container):
         self.duration = None
         self.last_t = None
 
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             # Items associated with interaction
             self.mouse_point = OpenGLPoint()
             self.mouse_drag_point = OpenGLPoint()
@@ -135,7 +131,7 @@ class Scene(Container):
                 free_variable_map = inspect.getclosurevars(updater).nonlocals
                 cloned_co_freevars = []
                 cloned_closure = []
-                for i, free_variable_name in enumerate(updater.__code__.co_freevars):
+                for free_variable_name in updater.__code__.co_freevars:
                     free_variable_value = free_variable_map[free_variable_name]
 
                     # If the referenced variable has not been cloned, raise.
@@ -187,9 +183,11 @@ class Scene(Container):
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
-        logger.info(
-            f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
-        )
+        # Show info only if animations are rendered or to get image
+        if self.renderer.num_plays or config["save_last_frame"] or config["save_pngs"]:
+            logger.info(
+                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
+            )
 
         # If preview open up the render after rendering.
         if preview:
@@ -322,7 +320,7 @@ class Scene(Container):
         list
             List of mobject family members.
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             family_members = []
             for mob in self.mobjects:
                 family_members.extend(mob.get_family())
@@ -348,7 +346,7 @@ class Scene(Container):
             The same scene after adding the Mobjects in.
 
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             new_mobjects = mobjects
             self.remove(*new_mobjects)
             self.mobjects += new_mobjects
@@ -385,7 +383,7 @@ class Scene(Container):
         *mobjects : Mobject
             The mobjects to remove.
         """
-        if config["use_opengl_renderer"]:
+        if config.renderer == "opengl":
             mobjects_to_remove = mobjects
             self.mobjects = restructure_list_to_exclude_certain_family_members(
                 self.mobjects, mobjects_to_remove
@@ -768,9 +766,9 @@ class Scene(Container):
             times,
             desc=description,
             total=n_iterations,
-            leave=config["leave_progress_bars"],
+            leave=config["progress_bar"] == "leave",
             ascii=True if platform.system() == "Windows" else None,
-            disable=not config["progress_bar"],
+            disable=config["progress_bar"] == "none",
         )
         return time_progression
 
@@ -849,7 +847,7 @@ class Scene(Container):
         self.moving_mobjects = None
         self.static_mobjects = None
 
-        if not config["use_opengl_renderer"]:
+        if not config.renderer == "opengl":
             if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
                 self.update_mobjects(dt=0)  # Any problems with this?
                 if self.should_update_mobjects():
@@ -935,6 +933,7 @@ class Scene(Container):
             logger.warning("embed() is skipped while writing to a file.")
             return
 
+        self.renderer.animation_start_time = 0
         self.renderer.render(self, -1, self.moving_mobjects)
 
         # Configure IPython shell.
@@ -983,15 +982,34 @@ class Scene(Container):
 
         Parameters
         ----------
+
         sound_file : str
             The path to the sound file.
-
         time_offset : int,float, optional
             The offset in the sound file after which
             the sound can be played.
+        gain : float
+            Amplification of the sound.
 
-        gain :
+        Examples
+        --------
+        .. manim:: SoundExample
 
+            class SoundExample(Scene):
+                # Source of sound under Creative Commons 0 License. https://freesound.org/people/Druminfected/sounds/250551/
+                def construct(self):
+                    dot = Dot().set_color(GREEN)
+                    self.add_sound("click.wav")
+                    self.add(dot)
+                    self.wait()
+                    self.add_sound("click.wav")
+                    dot.set_color(BLUE)
+                    self.wait()
+                    self.add_sound("click.wav")
+                    dot.set_color(RED)
+                    self.wait()
+
+        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>`_ .
         """
         if self.renderer.skip_animations:
             return

@@ -19,6 +19,7 @@ from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 
 
+
 # TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene
 
 

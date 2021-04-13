@@ -8,14 +8,15 @@ Examples
 
     class UsefulAnnotations(Scene):
         def construct(self):
-            m0 = SmallDot()
+            m0 = Dot()
             m1 = AnnotationDot()
             m2 = LabeledDot("ii")
             m3 = LabeledDot(MathTex(r"\alpha").set_color(ORANGE))
-            m4 = CurvedArrow(ORIGIN, 2*LEFT)
-            m5 = CurvedDoubleArrow(ORIGIN, 2*RIGHT)
+            m4 = CurvedArrow(2*LEFT, 2*RIGHT, radius= -5)
+            m5 = CurvedArrow(2*LEFT, 2*RIGHT, radius= 8)
+            m6 = CurvedDoubleArrow(ORIGIN, 2*RIGHT)
 
-            self.add(m0, m1, m2, m3, m4, m5)
+            self.add(m0, m1, m2, m3, m4, m5, m6)
             for i, mobj in enumerate(self.mobjects):
                 mobj.shift(DOWN * (i-3))
 
@@ -58,32 +59,27 @@ __all__ = [
     "RightAngle",
 ]
 
-import warnings
-import numpy as np
 import math
+import warnings
 
+import numpy as np
+
+from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.types.vectorized_mobject import DashedVMobject
-from ..utils.iterables import adjacent_n_tuples
-from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import angle_between_vectors
-from ..utils.space_ops import compass_directions
-from ..utils.space_ops import line_intersection
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import normalize
-from ..utils.space_ops import rotate_vector
+from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
-from .. import logger
-
-DEFAULT_DOT_RADIUS = 0.08
-DEFAULT_SMALL_DOT_RADIUS = 0.04
-DEFAULT_DASH_LENGTH = 0.05
-DEFAULT_ARROW_TIP_LENGTH = 0.35
+from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
+from ..utils.simple_functions import fdiv
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    compass_directions,
+    get_norm,
+    line_intersection,
+    normalize,
+    rotate_vector,
+)
 
 
 class TipableVMobject(VMobject):
@@ -657,6 +653,31 @@ class LabeledDot(Dot):
 
 
 class Ellipse(Circle):
+    """A circular shape; oval, circle.
+
+    Parameters
+    ----------
+    width : :class:`float`, optional
+       The horizontal width of the ellipse.
+    height : :class:`float`, optional
+       The vertical height of the ellipse.
+    kwargs : Any
+       Additional arguments to be passed to :class:`Circle`
+
+    Examples
+    --------
+
+    .. manim:: EllipseExample
+        :save_last_frame:
+
+        class EllipseExample(Scene):
+            def construct(self):
+                ellipse_1 = Ellipse(width=2.0, height=4.0, color=BLUE_B)
+                ellipse_2 = Ellipse(width=4.0, height=1.0, color=BLUE_D)
+                ellipse_group = Group(ellipse_1,ellipse_2).arrange(buff=1)
+                self.add(ellipse_group)
+    """
+
     def __init__(self, width=2, height=1, **kwargs):
         Circle.__init__(self, **kwargs)
         self.stretch_to_fit_width(width)
@@ -845,7 +866,20 @@ class Line(TipableVMobject):
 
 
 class DashedLine(Line):
-    """A dashed Line.
+    """A dashed :class:`Line`.
+
+    Parameters
+    ----------
+    args : Any
+        Arguments to be passed to :class:`Line`
+    dash_length : :class:`float`, optional
+        The length of each individual dash of the line.
+    dash_spacing : Optional[:class:`float`]
+        No purpose.
+    positive_space_ratio : :class:`float`, optional
+        The ratio of empty space to dash space. Range of 0-1.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Line`
 
     Examples
     --------
@@ -854,9 +888,17 @@ class DashedLine(Line):
 
         class DashedLineExample(Scene):
             def construct(self):
-                dashed_line = DashedLine(config.frame_width/2*LEFT, 4*RIGHT)
-                self.add(dashed_line)
+                # dash_length increased
+                dashed_1 = DashedLine(config.left_side, config.right_side, dash_length=2.0).shift(UP*2)
+                # normal
+                dashed_2 = DashedLine(config.left_side, config.right_side)
+                # positive_space_ratio decreased
+                dashed_3 = DashedLine(config.left_side, config.right_side, positive_space_ratio=0.1).shift(DOWN*2)
+                self.add(dashed_1, dashed_2, dashed_3)
 
+    See Also
+    --------
+    :class:`~.DashedVMobject`
     """
 
     def __init__(
@@ -873,15 +915,25 @@ class DashedLine(Line):
         Line.__init__(self, *args, **kwargs)
         dashes = DashedVMobject(
             self,
-            num_dashes=self.calculate_num_dashes(positive_space_ratio),
+            num_dashes=self.calculate_num_dashes(),
             positive_space_ratio=positive_space_ratio,
         )
         self.clear_points()
         self.add(*dashes)
 
-    def calculate_num_dashes(self, positive_space_ratio):
+    def calculate_num_dashes(self) -> int:
+        """Returns the number of dashes in the dashed line.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().calculate_num_dashes()
+            20
+        """
+
         try:
-            full_length = self.dash_length / positive_space_ratio
+            full_length = self.dash_length / self.positive_space_ratio
             return int(np.ceil(self.get_length() / full_length))
         except ZeroDivisionError:
             return 1
@@ -889,26 +941,99 @@ class DashedLine(Line):
     def calculate_positive_space_ratio(self):
         return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
-    def get_start(self):
+    def get_start(self) -> np.ndarray:
+        """Returns the start point of the line.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().get_start()
+            array([-1.,  0.,  0.])
+        """
+
         if len(self.submobjects) > 0:
             return self.submobjects[0].get_start()
         else:
             return Line.get_start(self)
 
-    def get_end(self):
+    def get_end(self) -> np.ndarray:
+        """Returns the end point of the line.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().get_end()
+            array([0.99871795, 0.        , 0.        ])
+        """
+
         if len(self.submobjects) > 0:
             return self.submobjects[-1].get_end()
         else:
             return Line.get_end(self)
 
-    def get_first_handle(self):
+    def get_first_handle(self) -> np.ndarray:
+        """Returns the point of the first handle.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().get_first_handle()
+            array([-0.98333333,  0.        ,  0.        ])
+        """
+
         return self.submobjects[0].points[1]
 
-    def get_last_handle(self):
+    def get_last_handle(self) -> np.ndarray:
+        """Returns the point of the last handle.
+
+        Examples
+        --------
+        ::
+
+            >>> DashedLine().get_last_handle()
+            array([0.98205128, 0.        , 0.        ])
+        """
+
         return self.submobjects[-1].points[-2]
 
 
 class TangentLine(Line):
+    """Constructs a line tangent to a :class:`~.VMobject` at a specific point.
+
+    Parameters
+    ----------
+    vmob : :class:`~.VMobject`
+        The VMobject on which the tangent line is drawn.
+    alpha : :class:`float`
+        How far along the shape that the line will be constructed. range: 0-1.
+    length : :class:`float`, optional
+        Length of the tangent line.
+    d_alpha: :class:`float`, optional
+        The ``dx`` value
+    kwargs : Any
+        Additional arguments to be passed to :class:`Line`
+
+    Examples
+    --------
+
+    .. manim:: TangentLineExample
+        :save_last_frame:
+
+        class TangentLineExample(Scene):
+            def construct(self):
+                circle = Circle(radius=2)
+                line_1 = TangentLine(circle, alpha=0.0, length=4, color=BLUE_D) # right
+                line_2 = TangentLine(circle, alpha=0.4, length=4, color=GREEN) # top left
+                self.add(circle, line_1, line_2)
+
+    See Also
+    --------
+    :meth:`~.VMobject.point_from_proportion`
+    """
+
     def __init__(self, vmob, alpha, length=1, d_alpha=1e-6, **kwargs):
         self.length = length
         self.d_alpha = d_alpha
@@ -922,6 +1047,37 @@ class TangentLine(Line):
 
 
 class Elbow(VMobject):
+    """Two lines that create a right angle about each other: L-shape.
+
+    Parameters
+    ----------
+    width : :class:`float`, optional
+        The length of the elbow's sides.
+    angle : :class:`float`, optional
+        The rotation of the elbow.
+    kwargs : Any
+        Additional arguments to be passed to :class:`~.VMobject`
+
+    Examples
+    --------
+
+    .. manim:: ElbowExample
+        :save_last_frame:
+
+        class ElbowExample(Scene):
+            def construct(self):
+                elbow_1 = Elbow()
+                elbow_2 = Elbow(width=2.0)
+                elbow_3 = Elbow(width=2.0, angle=5*PI/4)
+
+                elbow_group = Group(elbow_1, elbow_2, elbow_3).arrange(buff=1)
+                self.add(elbow_group)
+
+    See Also
+    --------
+    :class:`RightAngle`
+    """
+
     def __init__(self, width=0.2, angle=0, **kwargs):
         self.angle = angle
         VMobject.__init__(self, **kwargs)
@@ -931,6 +1087,57 @@ class Elbow(VMobject):
 
 
 class Arrow(Line):
+    """An arrow.
+
+    Parameters
+    ----------
+    args : Any
+        Arguments to be passed to :class:`Line`.
+    stroke_width : :class:`float`, optional
+        The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`.
+    buff : :class:`float`, optional
+        The distance of the arrow from its start and end points.
+    max_tip_length_to_length_ratio : :class:`float`, optional
+        :attr:`tip_length` scales with the length of the arrow. Increasing this ratio raises the max value of :attr:`tip_length`.
+    max_stroke_width_to_length_ratio : :class:`float`, optional
+        :attr:`stroke_width` scales with the length of the arrow. Increasing this ratio ratios the max value of :attr:`stroke_width`.
+    preserve_tip_size_when_scaling : :class:`bool`, optional
+        No purpose.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Line`.
+
+    Examples
+    --------
+
+    .. manim:: ArrowExample
+        :save_last_frame:
+
+        from manim.mobject.geometry import ArrowSquareTip
+        class ArrowExample(Scene):
+            def construct(self):
+                arrow_1 = Arrow(start=RIGHT, end=LEFT, color=GOLD)
+                arrow_2 = Arrow(start=RIGHT, end=LEFT, color=GOLD, tip_shape=ArrowSquareTip).shift(DOWN)
+                g1 = Group(arrow_1, arrow_2)
+
+                # the effect of buff
+                square = Square(color=MAROON_A)
+                arrow_3 = Arrow(start=LEFT, end=RIGHT)
+                arrow_4 = Arrow(start=LEFT, end=RIGHT, buff=0).next_to(arrow_1, UP)
+                g2 = Group(arrow_3, arrow_4, square)
+
+                # a shorter arrow has a shorter tip and smaller stroke width
+                arrow_5 = Arrow(start=ORIGIN, end=config.top).shift(LEFT * 4)
+                arrow_6 = Arrow(start=config.top + DOWN, end=config.top).shift(LEFT * 3)
+                g3 = Group(arrow_5, arrow_6)
+
+                self.add(Group(g1, g2, g3).arrange(buff=2))
+
+    See Also
+    --------
+    :class:`ArrowTip`
+    :class:`CurvedArrow`
+    """
+
     def __init__(
         self,
         *args,
@@ -941,12 +1148,8 @@ class Arrow(Line):
         preserve_tip_size_when_scaling=True,
         **kwargs
     ):
-        self.max_tip_length_to_length_ratio = (
-            max_tip_length_to_length_ratio  # is this used anywhere
-        )
-        self.max_stroke_width_to_length_ratio = (
-            max_stroke_width_to_length_ratio  # is this used anywhere
-        )
+        self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
+        self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         self.preserve_tip_size_when_scaling = (
             preserve_tip_size_when_scaling  # is this used anywhere
         )
@@ -1007,19 +1210,42 @@ class Arrow(Line):
             self.add_tip(tip=old_tips[1], at_start=True)
         return self
 
-    def get_normal_vector(self):
+    def get_normal_vector(self) -> np.ndarray:
+        """Returns the normal of a vector.
+
+        Examples
+        --------
+        ::
+
+            >>> Arrow().get_normal_vector() + 0. # add 0. to avoid negative 0 in output
+            array([ 0.,  0., -1.])
+        """
+
         p0, p1, p2 = self.tip.get_start_anchors()[:3]
         return normalize(np.cross(p2 - p1, p1 - p0))
 
     def reset_normal_vector(self):
+        """Resets the normal of a vector"""
         self.normal_vector = self.get_normal_vector()
         return self
 
-    def get_default_tip_length(self):
+    def get_default_tip_length(self) -> float:
+        """Returns the default tip_length of the arrow.
+
+        Examples
+        --------
+
+        ::
+
+            >>> Arrow().get_default_tip_length()
+            0.35
+        """
+
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
     def set_stroke_width_from_length(self):
+        """Used internally. Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         self.set_stroke(
             width=min(self.initial_stroke_width, max_ratio * self.get_length()),
@@ -1029,6 +1255,31 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
+    """A vector specialized for use in graphs.
+
+    Parameters
+    ----------
+    direction : Union[:class:`list`, :class:`numpy.ndarray`]
+        The direction of the arrow.
+    buff : :class:`float`
+         The distance of the vector from its endpoints.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Arrow`
+
+    Examples
+    --------
+
+    .. manim:: VectorExample
+        :save_last_frame:
+
+        class VectorExample(Scene):
+            def construct(self):
+                plane = NumberPlane()
+                vector_1 = Vector([1,2])
+                vector_2 = Vector([-5,-2])
+                self.add(plane, vector_1, vector_2)
+    """
+
     def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
@@ -1037,6 +1288,36 @@ class Vector(Arrow):
 
 
 class DoubleArrow(Arrow):
+    """An arrow with tips on both ends.
+
+    Parameters
+    ----------
+    args : Any
+        Arguments to be passed to :class:`Arrow`
+    kwargs : Any
+        Additional arguments to be passed to :class:`Arrow`
+
+    Examples
+    --------
+
+    .. manim:: DoubleArrowExample
+        :save_last_frame:
+
+        from manim.mobject.geometry import ArrowCircleFilledTip
+        class DoubleArrowExample(Scene):
+            def construct(self):
+                circle = Circle(radius=2.0)
+                d_arrow = DoubleArrow(start=circle.get_left(), end=circle.get_right())
+                d_arrow_2 = DoubleArrow(tip_shape_end=ArrowCircleFilledTip, tip_shape_start=ArrowCircleFilledTip)
+                group = Group(Group(circle, d_arrow), d_arrow_2).arrange(UP, buff=1)
+                self.add(group)
+
+    See Also
+    --------
+    :class:`ArrowTip`
+    :class:`CurvedDoubleArrow`
+    """
+
     def __init__(self, *args, **kwargs):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
@@ -1074,15 +1355,97 @@ class CubicBezier(VMobject):
 
 
 class Polygon(VMobject):
+    """A shape created by defining its vertices.
+
+    Parameters
+    ----------
+    vertices : :class:`list`
+        The vertices of the mobject. The first one is repeated to close the shape. Must define 3-dimensions: ``[x,y,z]``
+    color : :class:`~.Colors`, optional
+        The color of the polygon.
+    kwargs : Any
+        Additional arguments to be passed to :class:`.~VMobject`
+
+    Examples
+    --------
+
+    .. manim:: PolygonExample
+        :save_last_frame:
+
+        class PolygonExample(Scene):
+            def construct(self):
+                isosceles = Polygon([-5, 1.5, 0], [-2, 1.5, 0], [-3.5, -2, 0])
+                position_list = [
+                    [4, 1, 0],  # middle right
+                    [4, -2.5, 0],  # bottom right
+                    [0, -2.5, 0],  # bottom left
+                    [0, 3, 0],  # top left
+                    [2, 1, 0],  # middle
+                    [4, 3, 0],  # top right
+                ]
+                square_and_triangles = Polygon(*position_list, color=PURPLE_B)
+                self.add(isosceles, square_and_triangles)
+    """
+
     def __init__(self, *vertices, color=BLUE, **kwargs):
         VMobject.__init__(self, color=color, **kwargs)
         # There are actually four corners, and the first one is repeated twice to form the four vertices.
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
+        """Gets the vertices of the polygon.
+
+        Examples
+        --------
+        ::
+
+            >>> sq = Square()
+            >>> points = sq.get_vertices()
+            >>> points
+            array([[ 1.,  1.,  0.],
+                   [-1.,  1.,  0.],
+                   [-1., -1.,  0.],
+                   [ 1., -1.,  0.]])
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            Returns a list of the coordinates of polygon's vertices.
+        """
+
         return self.get_start_anchors()
 
     def round_corners(self, radius=0.5):
+        """Rounds off the corners of the polygon.
+
+        Parameters
+        ----------
+        radius : :class:`float`, optional
+            The curvature of the corners of the polygon.
+
+        Examples
+        --------
+
+        .. manim:: PolygonRoundCorners
+            :save_as_gif:
+
+            class PolygonRoundCorners(Scene):
+                def construct(self):
+                    points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
+                    parallelogram = Polygon(*points, stroke_color=LIGHT_PINK)
+                    rounded_1 = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
+                    rounded_2 = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
+
+                    self.play(Transform(parallelogram, rounded_1))
+                    self.wait(0.5)
+                    self.play(Transform(parallelogram, rounded_2))
+                    self.wait(0.5)
+
+        See Also
+        --------
+        :class:`RoundedRectangle`
+        """
+
         vertices = self.get_vertices()
         arcs = []
         for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
@@ -1118,6 +1481,33 @@ class Polygon(VMobject):
 
 
 class RegularPolygon(Polygon):
+    """An n-sided regular polygon.
+
+    Parameters
+    ----------
+    n : :class:`int`
+        The number of sides of the polygon.
+    start_angle : Optional[:class:`float`]
+        The angle at which the polygon is rotated.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Polygon`
+
+    Examples
+    --------
+
+    .. manim:: RegularPolygonExample
+        :save_last_frame:
+
+        class RegularPolygonExample(Scene):
+            def construct(self):
+                poly_1 = RegularPolygon(n=6)
+                poly_2 = RegularPolygon(n=6, start_angle=30*DEGREES, color=GREEN)
+                poly_3 = RegularPolygon(n=10, color=RED)
+
+                poly_group = Group(poly_1, poly_2, poly_3).scale(1.5).arrange(buff=1)
+                self.add(poly_group)
+    """
+
     def __init__(self, n=6, start_angle=None, **kwargs):
         self.start_angle = start_angle
         if self.start_angle is None:
@@ -1369,6 +1759,27 @@ class ArcPolygonFromArcs(VMobject):
 
 
 class Triangle(RegularPolygon):
+    """An equilateral triangle.
+
+    Parameters
+    ----------
+    kwargs : Any
+        Additonal arguments to be passed to :class:`RegularPolygon`
+
+    Examples
+    --------
+
+    .. manim:: TriangleExample
+        :save_last_frame:
+
+        class TriangleExample(Scene):
+            def construct(self):
+                triangle_1 = Triangle()
+                triangle_2 = Triangle().scale(2).rotate(60*DEGREES)
+                tri_group = Group(triangle_1, triangle_2).arrange(buff=1)
+                self.add(tri_group)
+    """
+
     def __init__(self, **kwargs):
         RegularPolygon.__init__(self, n=3, **kwargs)
 
@@ -1417,7 +1828,7 @@ class Rectangle(Polygon):
     ):
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
-        Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
+        Polygon.__init__(self, UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
@@ -1452,6 +1863,30 @@ class Square(Rectangle):
 
 
 class RoundedRectangle(Rectangle):
+    """A rectangle with rounded corners.
+
+    Parameters
+    ----------
+    corner_radius : :class:`float`, optional
+        The curvature of the corners of the rectangle.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Rectangle`
+
+    Examples
+    --------
+
+    .. manim:: RoundedRectangleExample
+        :save_last_frame:
+
+        class RoundedRectangleExample(Scene):
+            def construct(self):
+                rect_1 = RoundedRectangle(corner_radius=0.5)
+                rect_2 = RoundedRectangle(corner_radius=1.5, height=4.0, width=4.0)
+
+                rect_group = Group(rect_1, rect_2).arrange(buff=1)
+                self.add(rect_group)
+    """
+
     def __init__(self, corner_radius=0.5, **kwargs):
         self.corner_radius = corner_radius
         Rectangle.__init__(self, **kwargs)

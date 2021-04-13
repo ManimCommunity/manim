@@ -1,33 +1,29 @@
-from manim.utils.exceptions import EndSceneEarlyException
-from manim.utils.caching import handle_caching_play
-from manim.renderer.cairo_renderer import handle_play_like_call
-from manim.utils.color import color_to_rgba
-import moderngl
-from .opengl_renderer_window import Window
-from .shader_wrapper import ShaderWrapper
-import numpy as np
-from ..mobject.types.vectorized_mobject import VMobject
 import itertools as it
 import time
+
+import moderngl
+import numpy as np
+from PIL import Image
+
+from manim import config
+from manim.renderer.cairo_renderer import handle_play_like_call
+from manim.utils.caching import handle_caching_play
+from manim.utils.color import color_to_rgba
+from manim.utils.exceptions import EndSceneEarlyException
+
 from .. import logger
 from ..constants import *
-from ..utils.space_ops import (
-    cross2d,
-    earclip_triangulation,
-    z_to_vector,
-    quaternion_mult,
-    quaternion_from_angle_axis,
-    rotation_matrix_transpose_from_quaternion,
-    rotation_matrix_transpose,
-    angle_of_vector,
-)
-from ..utils.simple_functions import clip
-
-from ..mobject import opengl_geometry
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from PIL import Image
-from manim import config
 from ..scene.scene_file_writer import SceneFileWriter
+from ..utils.simple_functions import clip
+from ..utils.space_ops import (
+    angle_of_vector,
+    quaternion_from_angle_axis,
+    quaternion_mult,
+    rotation_matrix_transpose,
+    rotation_matrix_transpose_from_quaternion,
+)
+from .opengl_renderer_window import Window
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -272,7 +268,6 @@ class OpenGLRenderer:
 
     def render_render_group(self, render_group):
         shader_wrapper = render_group["shader_wrapper"]
-        shader_program = render_group["prog"]
         self.set_shader_uniforms(render_group["prog"], render_group["shader_wrapper"])
         self.update_depth_test(self.context, shader_wrapper)
         render_group["vao"].render(int(shader_wrapper.render_primitive))
@@ -444,6 +439,13 @@ class OpenGLRenderer:
             dtype=dtype,
         )
         return ret
+
+    def get_frame(self):
+        # get current pixel values as numpy data in order to test output
+        raw = self.get_raw_frame_buffer_object_data(dtype="f1")
+        result_dimensions = (config["pixel_height"], config["pixel_width"], 4)
+        np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
+        return np_buf
 
     # Returns offset from the bottom left corner in pixels.
     def pixel_coords_to_space_coords(self, px, py, relative=False):

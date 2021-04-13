@@ -1,8 +1,9 @@
 import tempfile
 from pathlib import Path
+
 import numpy as np
 
-from manim import config, tempconfig, Scene, Square, WHITE
+from manim import WHITE, Scene, Square, config, tempconfig
 
 
 def test_tempconfig():

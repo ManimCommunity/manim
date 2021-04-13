@@ -2,14 +2,13 @@
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-
-import copy
 import uuid
-from ..utils.family import extract_mobject_family_members
+
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
+from ..utils.family import extract_mobject_family_members
 
 
 class DecimalNumber(VMobject):
@@ -133,16 +132,14 @@ class DecimalNumber(VMobject):
         - num_decimal_places
         - field_name (e.g. 0 or 0.real)
         """
-        config = dict(
-            [
-                (attr, getattr(self, attr))
-                for attr in [
-                    "include_sign",
-                    "group_with_commas",
-                    "num_decimal_places",
-                ]
+        config = {
+            attr: getattr(self, attr)
+            for attr in [
+                "include_sign",
+                "group_with_commas",
+                "num_decimal_places",
             ]
-        )
+        }
         config.update(kwargs)
         return "".join(
             [
@@ -168,7 +165,7 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number, **config):
-        full_config = dict()
+        full_config = {}
         full_config.update(self.initial_config)
         full_config.update(config)
         new_decimal = DecimalNumber(number, **full_config)

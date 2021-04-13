@@ -11,6 +11,8 @@ __all__ = [
     "ApplyPointwiseFunction",
     "ApplyPointwiseFunctionToCenter",
     "FadeToColor",
+    "FadeTransform",
+    "FadeTransformPieces",
     "ScaleInPlace",
     "ShrinkToCenter",
     "Restore",
@@ -28,6 +30,7 @@ import typing
 
 import numpy as np
 
+from .. import config
 from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
@@ -78,7 +81,10 @@ class Transform(Animation):
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        self.mobject.align_data(self.target_copy)
+        if config["renderer"] == "opengl":
+            self.mobject.align_data_and_family(self.target_copy)
+        else:
+            self.mobject.align_data(self.target_copy)
         super().begin()
 
     def create_target(self) -> typing.Union[Mobject, None]:
@@ -200,7 +206,7 @@ class ApplyMethod(Transform):
         self, method: types.MethodType, *args, **kwargs
     ) -> None:  # method typing? for args?
         """
-        method is a method of Mobject, ``args`` are arguments for
+        Method is a method of Mobject, ``args`` are arguments for
         that method.  Key word arguments should be passed in
         as the last arg, as a dict, since ``kwargs`` is for
         configuration of the transform itself
@@ -401,3 +407,135 @@ class TransformAnimations(Transform):
         self.start_anim.interpolate(alpha)
         self.end_anim.interpolate(alpha)
         Transform.interpolate(self, alpha)
+
+
+class FadeTransform(Transform):
+    """Fades one mobject into another.
+
+    Parameters
+    ----------
+    mobject
+        The starting :class:`~.Mobject`.
+    target_mobject
+        The target :class:`~.Mobject`.
+    stretch
+        Controls whether the target :class:`~.Mobject` is stretched during
+        the animation. Default: ``True``.
+    dim_to_match
+        If the target mobject is not stretched automatically, this allows
+        to adjust the initial scale of the target :class:`~.Mobject` while
+        it is shifted in. Setting this to 0, 1, and 2, respectively,
+        matches the length of the target with the length of the starting
+        :class:`~.Mobject` in x, y, and z direction, respectively.
+    kwargs
+        Further keyword arguments are passed to the parent class.
+
+    Examples
+    --------
+
+    .. manim:: DifferentFadeTransforms
+
+        class DifferentFadeTransforms(Scene):
+            def construct(self):
+                starts = [Rectangle(width=4, height=1) for _ in range(3)]
+                VGroup(*starts).arrange(DOWN, buff=1).shift(3*LEFT)
+                targets = [Circle(fill_opacity=1).scale(0.25) for _ in range(3)]
+                VGroup(*targets).arrange(DOWN, buff=1).shift(3*RIGHT)
+
+                self.play(*[FadeIn(s) for s in starts])
+                self.play(
+                    FadeTransform(starts[0], targets[0], stretch=True),
+                    FadeTransform(starts[1], targets[1], stretch=False, dim_to_match=0),
+                    FadeTransform(starts[2], targets[2], stretch=False, dim_to_match=1)
+                )
+
+                self.play(*[FadeOut(mobj) for mobj in self.mobjects])
+
+    """
+
+    def __init__(self, mobject, target_mobject, stretch=True, dim_to_match=1, **kwargs):
+        self.to_add_on_completion = target_mobject
+        self.stretch = stretch
+        self.dim_to_match = dim_to_match
+        mobject.save_state()
+        super().__init__(Group(mobject, target_mobject.copy()), **kwargs)
+
+    def begin(self):
+        """Initial setup for the animation.
+
+        The mobject to which this animation is bound is a group consisting of
+        both the starting and the ending mobject. At the start, the ending
+        mobject replaces the starting mobject (and is completely faded). In the
+        end, it is set to be the other way around.
+        """
+        self.ending_mobject = self.mobject.copy()
+        Animation.begin(self)
+        # Both 'start' and 'end' consists of the source and target mobjects.
+        # At the start, the target should be faded replacing the source,
+        # and at the end it should be the other way around.
+        start, end = self.starting_mobject, self.ending_mobject
+        for m0, m1 in ((start[1], start[0]), (end[0], end[1])):
+            self.ghost_to(m0, m1)
+
+    def ghost_to(self, source, target):
+        """Replaces the source by the target and sets the opacity to 0."""
+        source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
+        source.set_opacity(0)
+
+    def get_all_mobjects(self):
+        return [
+            self.mobject,
+            self.starting_mobject,
+            self.ending_mobject,
+        ]
+
+    def get_all_families_zipped(self):
+        return Animation.get_all_families_zipped(self)
+
+    def clean_up_from_scene(self, scene):
+        Animation.clean_up_from_scene(self, scene)
+        scene.remove(self.mobject)
+        self.mobject[0].restore()
+        scene.add(self.to_add_on_completion)
+
+
+class FadeTransformPieces(FadeTransform):
+    """Fades submobjects of one mobject into submobjects of another one.
+
+    See also
+    --------
+    :class:`~.FadeTransform`
+
+    Examples
+    --------
+    .. manim:: FadeTransformSubmobjects
+
+        class FadeTransformSubmobjects(Scene):
+            def construct(self):
+                src = VGroup(Square(), Circle().shift(LEFT + UP))
+                src.shift(3*LEFT + 2*UP)
+                src_copy = src.copy().shift(4*DOWN)
+
+                target = VGroup(Circle(), Triangle().shift(RIGHT + DOWN))
+                target.shift(3*RIGHT + 2*UP)
+                target_copy = target.copy().shift(4*DOWN)
+
+                self.play(FadeIn(src), FadeIn(src_copy))
+                self.play(
+                    FadeTransform(src, target),
+                    FadeTransformPieces(src_copy, target_copy)
+                )
+                self.play(*[FadeOut(mobj) for mobj in self.mobjects])
+
+    """
+
+    def begin(self):
+        self.mobject[0].align_submobjects(self.mobject[1])
+        super().begin()
+
+    def ghost_to(self, source, target):
+        """Replaces the source submobjects by the target submobjects and sets
+        the opacity to 0.
+        """
+        for sm0, sm1 in zip(source.get_family(), target.get_family()):
+            super().ghost_to(sm0, sm1)

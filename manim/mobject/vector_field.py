@@ -13,29 +13,35 @@ __all__ = [
     "move_points_along_vector_field",
 ]
 
+import itertools as it
+import os
+import random
 from typing import Callable
 
 import numpy as np
-import os
-import itertools as it
 from PIL import Image
-import random
 
 from .. import config, logger
-from ..constants import *
 from ..animation.composition import AnimationGroup
 from ..animation.indication import ShowPassingFlash
+from ..constants import *
 from ..mobject.geometry import Vector
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.bezier import inverse_interpolate
-from ..utils.bezier import interpolate
-from ..utils.color import color_to_rgb, BLUE_E, GREEN, YELLOW, RED, BLUE, WHITE
-from ..utils.color import rgb_to_color
+from ..mobject.mobject import Mobject
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..utils.bezier import interpolate, inverse_interpolate
+from ..utils.color import (
+    BLUE,
+    BLUE_E,
+    GREEN,
+    RED,
+    WHITE,
+    YELLOW,
+    color_to_rgb,
+    rgb_to_color,
+)
 from ..utils.rate_functions import linear
 from ..utils.simple_functions import sigmoid
 from ..utils.space_ops import get_norm
-from ..mobject.mobject import Mobject
 
 # from ..utils.space_ops import normalize
 
@@ -261,7 +267,7 @@ class StreamLines(VGroup):
         start_points = self.get_start_points(**self.start_points_generator_config)
         for point in start_points:
             points = [point]
-            for t in np.arange(0, self.virtual_time, dt):
+            for _ in np.arange(0, self.virtual_time, dt):
                 last_point = points[-1]
                 points.append(last_point + dt * func(last_point))
                 if get_norm(last_point) > self.cutoff_norm:

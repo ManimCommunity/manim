@@ -88,7 +88,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
         Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
-        config = dict()
+        config = {}
         config.update(self.tip_config)
         config.update(kwargs)
         return OpenGLArrowTip(**config)

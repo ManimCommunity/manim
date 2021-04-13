@@ -5,11 +5,11 @@ __all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
 
 
 import re
-
 from typing import List
 
 from manim import logger
 
+from ... import config
 from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
 
@@ -89,6 +89,13 @@ class SVGPathMobject(VMobject):
         for command, coord_string in pairs:
             self.handle_command(command, coord_string, prev_command)
             prev_command = command
+        if config["renderer"] == "opengl":
+            if self.should_subdivide_sharp_curves:
+                # For a healthy triangulation later
+                self.subdivide_sharp_curves()
+            if self.should_remove_null_curves:
+                # Get rid of any null curves
+                self.set_points(self.get_points_without_null_curves())
         # people treat y-coordinate differently
         self.rotate(np.pi, RIGHT, about_point=ORIGIN)
 
@@ -99,9 +106,11 @@ class SVGPathMobject(VMobject):
         command = command.upper()
 
         # Keep track of the most recently completed point
-        start_point = (
-            self.points[-1] if self.points.shape[0] else np.zeros((1, self.dim))
-        )
+        if config["renderer"] == "opengl":
+            points = self.data["points"]
+        else:
+            points = self.points
+        start_point = points[-1] if points.shape[0] else np.zeros((1, self.dim))
 
         # Produce the (absolute) coordinates of the controls and handles
         new_points = self.string_to_points(
@@ -126,9 +135,13 @@ class SVGPathMobject(VMobject):
             return
 
         elif command == "S":  # Smooth cubic
+            if config["renderer"] == "opengl":
+                points = self.data["points"]
+            else:
+                points = self.points
             prev_handle = start_point
             if prev_command.upper() in ["C", "S"]:
-                prev_handle = self.points[-2]
+                prev_handle = points[-2]
             for i in range(0, len(new_points), 2):
                 new_handle = 2 * start_point - prev_handle
                 self.add_cubic_bezier_curve_to(
@@ -148,7 +161,7 @@ class SVGPathMobject(VMobject):
             if prev_command.upper() in ["Q", "T"]:
                 # because of the conversion from quadratic to cubic,
                 # our actual previous handle was 3/2 in the direction of p[-2] from p[-1]
-                prev_quad_handle = 1.5 * self.points[-2] - 0.5 * self.points[-1]
+                prev_quad_handle = 1.5 * points[-2] - 0.5 * points[-1]
             for p in new_points:
                 new_quad_handle = 2 * start_point - prev_quad_handle
                 self.add_quadratic_bezier_curve_to(new_quad_handle, p)
@@ -159,7 +172,10 @@ class SVGPathMobject(VMobject):
             raise NotImplementedError()
 
         elif command == "Z":  # closepath
-            self.add_line_to(self.current_path_start)
+            if config["renderer"] == "opengl":
+                self.close_path()
+            else:
+                self.add_line_to(self.current_path_start)
             return
 
     def string_to_points(self, command, is_relative, coord_string, start_point):

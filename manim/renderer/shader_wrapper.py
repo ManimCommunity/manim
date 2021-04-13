@@ -1,10 +1,12 @@
+import copy
 import os
 import re
+from pathlib import Path
+
 import moderngl
 import numpy as np
-import copy
+
 from .. import logger
-from pathlib import Path
 
 # from manimlib.utils.directories import get_shader_dir
 # from manimlib.utils.file_ops import find_file
@@ -48,8 +50,8 @@ class ShaderWrapper(object):
         self.vert_indices = vert_indices
         self.vert_attributes = vert_data.dtype.names
         self.shader_folder = shader_folder
-        self.uniforms = uniforms or dict()
-        self.texture_paths = texture_paths or dict()
+        self.uniforms = uniforms or {}
+        self.texture_paths = texture_paths or {}
         self.depth_test = depth_test
         self.render_primitive = str(render_primitive)
         self.init_program_code()

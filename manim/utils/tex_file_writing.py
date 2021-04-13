@@ -6,8 +6,8 @@
 
 """
 
-import os
 import hashlib
+import os
 from pathlib import Path
 
 from .. import config, logger
@@ -236,7 +236,7 @@ def convert_to_svg(dvi_file, extension, page=1):
             f"Your installation does not support converting {extension} files to SVG."
             f" Consider updating dvisvgm to at least version 2.4."
             f" If this does not solve the problem, please refer to our troubleshooting guide at:"
-            f" https://docs.manim.community/en/latest/installation/troubleshooting.html"
+            f" https://docs.manim.community/en/stable/installation/troubleshooting.html"
         )
 
     return result

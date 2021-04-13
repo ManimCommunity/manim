@@ -1,8 +1,9 @@
-import pytest
 import numpy as np
+import pytest
+
+from manim import LEFT, ORIGIN, Axes, ComplexPlane
 from manim import CoordinateSystem as CS
-from manim import Axes, ThreeDAxes, NumberPlane, ComplexPlane
-from manim import config, tempconfig, ORIGIN, LEFT
+from manim import NumberPlane, ThreeDAxes, config, tempconfig
 
 
 def test_initial_config():

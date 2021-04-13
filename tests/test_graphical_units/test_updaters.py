@@ -1,8 +1,9 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class UpdaterTest(Scene):
@@ -19,9 +20,9 @@ class UpdaterTest(Scene):
 class ValueTrackerTest(Scene):
     def construct(self):
         theta = ValueTracker(PI / 2)
-        line_1 = Line(ORIGIN, RIGHT * 3, color=RED)
-        line_2 = Line(ORIGIN, RIGHT * 3, color=GREEN)
-        line_2.rotate(theta.get_value(), about_point=ORIGIN)
+        line = Line(ORIGIN, RIGHT)
+        line.rotate(theta.get_value(), about_point=ORIGIN)
+        self.add(line)
 
 
 class UpdateSceneDuringAnimationTest(Scene):
