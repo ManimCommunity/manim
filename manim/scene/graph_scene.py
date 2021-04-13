@@ -48,7 +48,7 @@ __all__ = ["GraphScene"]
 
 import itertools as it
 
-from .. import config
+from .. import config, logger
 from ..animation.creation import Create, DrawBorderThenFill, Write
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
@@ -71,7 +71,6 @@ from ..utils.color import (
     invert_color,
 )
 from ..utils.space_ops import angle_of_vector
-from .. import logger
 
 # TODO, this should probably reimplemented entirely, especially so as to
 # better reuse code from mobject/coordinate_systems.

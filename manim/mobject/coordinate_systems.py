@@ -4,8 +4,10 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 
 
 import math
-import numpy as np
 import numbers
+
+import numpy as np
+
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
@@ -13,12 +15,10 @@ from ..mobject.geometry import Arrow, DashedLine, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.color import LIGHT_GREY, WHITE, BLUE_D, BLUE
+from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
-
-
 
 # TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene
 

@@ -4,8 +4,9 @@
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-import numpy as np
 import operator as op
+
+import numpy as np
 
 from .. import config
 from ..constants import *

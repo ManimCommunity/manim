@@ -20,7 +20,6 @@ class NumberPlaneTest(Scene):
         self.add(plane)
 
 
-
 MODULE_NAME = "coordinate_systems"
 
 
