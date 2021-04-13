@@ -700,7 +700,7 @@ class OpenGLVMobject(OpenGLMobject):
         Returns
         -------
         float
-            The length of the :class:`VMobject`.
+            The length of the :class:`OpenGLVMobject`.
         """
 
         return np.sum(
