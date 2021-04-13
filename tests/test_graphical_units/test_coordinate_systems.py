@@ -5,6 +5,7 @@ from manim import *
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
 
+
 class NumberPlaneTest(Scene):
     def construct(self):
         plane = NumberPlane(
