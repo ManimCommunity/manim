@@ -1,6 +1,7 @@
 import itertools as it
 import operator as op
 from functools import reduce, wraps
+from typing import Optional
 
 import moderngl
 import numpy as np
@@ -551,7 +552,7 @@ class OpenGLVMobject(OpenGLMobject):
         return bezier(self.get_nth_curve_points(n))
 
     def get_nth_curve_function_with_length(
-        self, n: int, n_sample_points: int = 10
+        self, n: int, sample_points: Optional[int] = None
     ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
@@ -559,7 +560,7 @@ class OpenGLVMobject(OpenGLMobject):
         ----------
         n
             The index of the desired curve.
-        n_sample_points
+        sample_points
             The number of points to sample to find the length.
 
         Returns
@@ -570,9 +571,12 @@ class OpenGLVMobject(OpenGLMobject):
             The length of the nth curve.
         """
 
+        if sample_points is None:
+            sample_points = 10
+
         curve = self.get_nth_curve_function(n)
 
-        points = np.array([curve(a) for a in np.linspace(0, 1, n_sample_points)])
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
         norms = np.apply_along_axis(get_norm, 1, diffs)
 
@@ -600,9 +604,14 @@ class OpenGLVMobject(OpenGLMobject):
             yield self.get_nth_curve_function(n)
 
     def get_curve_functions_with_lengths(
-        self,
+        self, **kwargs
     ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
+
+        Parameters
+        ----------
+        **kwargs
+            The keyword arguments passed to :meth:`get_nth_curve_function_with_length`
 
         Returns
         -------
@@ -613,16 +622,18 @@ class OpenGLVMobject(OpenGLMobject):
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
-            yield self.get_nth_curve_function_with_length(n)
+            yield self.get_nth_curve_function_with_length(n, **kwargs)
 
     def point_from_proportion(self, alpha):
-        curves_with_lengths = list(self.get_curve_functions_with_lengths())
+        if alpha == 1:
+            return self.get_points()[-1]
 
-        total_length = np.sum(length for _, length in curves_with_lengths)
-        target_length = alpha * total_length
+        curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
+
+        target_length = alpha * np.sum(length for _, length in curves_and_lengths)
         current_length = 0
 
-        for curve, length in curves_with_lengths:
+        for curve, length in curves_and_lengths:
             if current_length + length >= target_length:
                 if length != 0:
                     residue = (target_length - current_length) / length
@@ -678,15 +689,26 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return points[distinct_curves.repeat(nppc)]
 
-    def get_arc_length(self, n_sample_points=None):
-        if n_sample_points is None:
-            n_sample_points = 4 * self.get_num_curves() + 1
-        points = np.array(
-            [self.point_from_proportion(a) for a in np.linspace(0, 1, n_sample_points)]
+    def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
+        """Return the approximated length of the whole curve.
+
+        Parameters
+        ----------
+        sample_points_per_curve
+            Number of sample points per curve used to approximate the length. More points result in a better approximation.
+
+        Returns
+        -------
+        float
+            The length of the :class:`OpenGLVMobject`.
+        """
+
+        return np.sum(
+            length
+            for _, length in self.get_curve_functions_with_lengths(
+                sample_points=sample_points_per_curve
+            )
         )
-        diffs = points[1:] - points[:-1]
-        norms = np.array([get_norm(d) for d in diffs])
-        return norms.sum()
 
     def get_area_vector(self):
         # Returns a vector whose length is the area bound by
