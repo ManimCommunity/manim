@@ -10,7 +10,9 @@ Examples
         def __init__(self, **kwargs):
             GraphScene.__init__(
                 self,
-                y_range = [0, 100, 10],
+                y_min=0,
+                y_max=100,
+                y_axis_config={"tick_frequency": 10},
                 y_labeled_nums=np.arange(0, 100, 10),
                 **kwargs
             )
@@ -43,28 +45,33 @@ Examples
 
 __all__ = ["GraphScene"]
 
+
 import itertools as it
 
 from .. import config
-from ..animation.creation import Write, DrawBorderThenFill, Create
+from ..animation.creation import Create, DrawBorderThenFill, Write
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
-from ..mobject.geometry import RegularPolygon
+from ..mobject.geometry import Line, Rectangle, RegularPolygon
 from ..mobject.number_line import NumberLine
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VectorizedPoint
+from ..mobject.svg.tex_mobject import MathTex, Tex
+from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
 from ..utils.bezier import interpolate
-from ..utils.color import color_gradient, GREY, BLUE, GREEN, YELLOW, BLACK, WHITE
-from ..utils.color import invert_color
+from ..utils.color import (
+    BLACK,
+    BLUE,
+    GREEN,
+    GREY,
+    WHITE,
+    YELLOW,
+    color_gradient,
+    invert_color,
+)
 from ..utils.space_ops import angle_of_vector
-
+from .. import logger
 
 # TODO, this should probably reimplemented entirely, especially so as to
 # better reuse code from mobject/coordinate_systems.
@@ -73,15 +80,21 @@ from ..utils.space_ops import angle_of_vector
 
 
 class GraphScene(Scene):
+    """
+    Deprecated - GraphScene
+    """
+
     def __init__(
         self,
-        x_range=None,
-        x_length=9,
+        x_min=-1,
+        x_max=10,
+        x_axis_width=9,
         x_leftmost_tick=None,  # Change if different from x_min
         x_labeled_nums=None,
         x_axis_label="$x$",
-        y_range=None,
-        y_length=6,
+        y_min=-1,
+        y_max=10,
+        y_axis_height=6,
         y_bottom_tick=None,  # Change if different from y_min
         y_labeled_nums=None,
         y_axis_label="$y$",
@@ -104,22 +117,19 @@ class GraphScene(Scene):
         y_axis_config=None,
         **kwargs,
     ):
-        x_range = np.array([-1, 10, 1]) if x_range is None else x_range
-        y_range = np.array([-1, 10, 1]) if y_range is None else y_range
-
-        if len(x_range) == 2:
-            x_range = [*x_range, 1]
-        if len(y_range) == 2:
-            y_range = [*y_range, 1]
-
-        self.x_min, self.x_max, self.x_step = x_range
-        self.y_min, self.y_max, self.y_step = y_range
-
-        self.x_length = x_length
+        logger.warning(
+            "GraphScene has been deprecated and will be removed in a future release."
+            "Use Axes instead."
+        )
+        self.x_min = x_min
+        self.x_max = x_max
+        self.x_axis_width = x_axis_width
         self.x_leftmost_tick = x_leftmost_tick
         self.x_labeled_nums = x_labeled_nums
         self.x_axis_label = x_axis_label
-        self.y_length = y_length
+        self.y_min = y_min
+        self.y_max = y_max
+        self.y_axis_height = y_axis_height
         self.y_bottom_tick = y_bottom_tick
         self.y_labeled_nums = y_labeled_nums
         self.y_axis_label = y_axis_label
@@ -140,10 +150,6 @@ class GraphScene(Scene):
         self.y_label_position = y_label_position
         self.x_axis_config = {} if x_axis_config is None else x_axis_config
         self.y_axis_config = {} if y_axis_config is None else y_axis_config
-
-        self.x_range = x_range
-        self.y_range = y_range
-
         super().__init__(**kwargs)
 
     def setup(self):
@@ -167,7 +173,7 @@ class GraphScene(Scene):
         """
         # TODO, once eoc is done, refactor this to be less redundant.
         x_num_range = float(self.x_max - self.x_min)
-        self.space_unit_to_x = self.x_length / x_num_range
+        self.space_unit_to_x = self.x_axis_width / x_num_range
         if self.x_labeled_nums is None:
             self.x_labeled_nums = []
         if self.x_leftmost_tick is None:
@@ -177,8 +183,8 @@ class GraphScene(Scene):
         # that can be overridden through x_axis_config
         self.x_axis_config = dict(
             {
-                "x_range": self.x_range,
-                "length": self.x_length,
+                "x_min": self.x_min,
+                "x_max": self.x_max,
                 "unit_size": self.space_unit_to_x,
                 "leftmost_tick": self.x_leftmost_tick,
                 "numbers_with_elongated_ticks": self.x_labeled_nums,
@@ -196,7 +202,7 @@ class GraphScene(Scene):
         if len(self.x_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.x_labeled_nums = [x for x in self.x_labeled_nums if x != 0]
-            x_axis.add_numbers(self.x_labeled_nums)
+            x_axis.add_numbers(*self.x_labeled_nums)
         if self.x_axis_label:
             x_label = Tex(self.x_axis_label)
             x_label.next_to(
@@ -208,7 +214,7 @@ class GraphScene(Scene):
             self.x_axis_label_mob = x_label
 
         y_num_range = float(self.y_max - self.y_min)
-        self.space_unit_to_y = self.y_length / y_num_range
+        self.space_unit_to_y = self.y_axis_height / y_num_range
 
         if self.y_labeled_nums is None:
             self.y_labeled_nums = []
@@ -219,8 +225,8 @@ class GraphScene(Scene):
         # that can be overridden through y_axis_config
         self.y_axis_config = dict(
             {
-                "x_range": self.y_range,
-                "length": self.y_length,
+                "x_min": self.y_min,
+                "x_max": self.y_max,
                 "unit_size": self.space_unit_to_y,
                 "leftmost_tick": self.y_bottom_tick,
                 "numbers_with_elongated_ticks": self.y_labeled_nums,
@@ -241,7 +247,7 @@ class GraphScene(Scene):
         if len(self.y_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.y_labeled_nums = [y for y in self.y_labeled_nums if y != 0]
-            y_axis.add_numbers(self.y_labeled_nums)
+            y_axis.add_numbers(*self.y_labeled_nums)
         if self.y_axis_label:
             y_label = Tex(self.y_axis_label)
             y_label.next_to(
@@ -310,7 +316,8 @@ class GraphScene(Scene):
                         dot = Dot().move_to(self.coords_to_point(time, dat))
                         self.add(dot)
         """
-        assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
+        assert hasattr(self, "x_axis")
+        assert hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
         result += self.y_axis.number_to_point(y)[1] * UP
         return result
@@ -625,7 +632,7 @@ class GraphScene(Scene):
             else:
                 raise ValueError("Invalid input sample type")
             graph_point = self.input_to_graph_point(sample_input, graph)
-            if bounded_graph == None:
+            if bounded_graph is None:
                 y_point = 0
             else:
                 y_point = bounded_graph.underlying_function(x)
