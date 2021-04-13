@@ -13,10 +13,10 @@ from ..mobject.geometry import Arrow, DashedLine, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VGroup
+from ..utils.color import LIGHT_GREY, WHITE, BLUE_D, BLUE
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
-from ..utils.color import LIGHT_GREY, WHITE, BLUE_D, BLUE, GREY_A
 
 
 # TODO: There should be much more code reuse between Axes, NumberPlane and GraphScene

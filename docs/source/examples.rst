@@ -301,9 +301,11 @@ Plotting with Manim
         def __init__(self, **kwargs):
             GraphScene.__init__(
                 self,
-                x_range = [-10, 10.3],
-                y_range = [-1.5, 1.5],
+                x_min=-10,
+                x_max=10.3,
                 num_graph_anchor_points=100,
+                y_min=-1.5,
+                y_max=1.5,
                 graph_origin=ORIGIN,
                 axes_color=GREEN,
                 x_labeled_nums=range(-10, 12, 2),
@@ -333,9 +335,11 @@ Plotting with Manim
         def __init__(self, **kwargs):
             GraphScene.__init__(
                 self,
-                x_range = [0, 5],
-                y_range = [0, 6],
-                x_labeled_nums=[0, 2, 3],
+                x_min=0,
+                x_max=5,
+                y_min=0,
+                y_max=6,
+                x_labeled_nums=[0,2,3],
                 **kwargs)
 
         def construct(self):
@@ -359,8 +363,10 @@ Plotting with Manim
                 self,
                 y_axis_label=r"T[$^\circ C$]",
                 x_axis_label=r"$\Delta Q$",
-                y_range = [-8, 30],
-                x_range = [0, 40],
+                y_min=-8,
+                y_max=30,
+                x_min=0,
+                x_max=40,
                 y_labeled_nums=np.arange(-5, 34, 5),
                 x_labeled_nums=np.arange(0, 40, 5),
                 **kwargs)
