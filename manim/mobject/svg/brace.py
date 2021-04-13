@@ -38,7 +38,7 @@ class Brace(SVGPathMobject):
     --------
     .. manim:: BraceExample
         :save_last_frame:
-        
+
         class BraceExample(Scene):
             def construct(self):
                 s= Square()
