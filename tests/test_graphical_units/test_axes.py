@@ -16,7 +16,7 @@ class AxesTest(Scene):
             color=WHITE,
         )
         labels = graph.get_axis_labels()
-        self.play(Create(graph), Create(labels))
+        self.add(graph, labels)
 
 
 MODULE_NAME = "plot"
