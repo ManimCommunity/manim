@@ -294,12 +294,12 @@ Use the :code:`run_time` argument to control the duration.
 	   self.play(ApplyMethod(square.shift, UP), run_time=3)
 	   self.wait(1)
 
-Using coordinates of an mobject
-===============================
+Using coordinates of a mobject
+==============================
 
 Mobjects contain points that define their boundaries.
-These points can be used to add other mobjects respectively to each other, e.g. by methods like ``m.get_center()`` , ``m.get_top()``
-and ``m.get_start()``. Here is an example of some important coordinates:
+These points can be used to add other mobjects respectively to each other, e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
+and :meth`~.Mobject.get_start`. Here is an example of some important coordinates:
 
 .. manim:: MobjectExample
     :save_last_frame:
@@ -329,7 +329,7 @@ and ``m.get_start()``. Here is an example of some important coordinates:
 
 Transforming mobjects into other mobjects
 =========================================
-It is also possible to transform an mobject into another mobject like this:
+It is also possible to transform a mobject into another mobject like this:
 
 .. manim:: ExampleTransform
 
