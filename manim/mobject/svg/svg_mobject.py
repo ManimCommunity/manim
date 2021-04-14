@@ -18,6 +18,8 @@ from manim import logger
 from ... import config
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
+from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
+from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
 from ...mobject.types.vectorized_mobject import VGroup, VMobject
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
@@ -38,9 +40,7 @@ class SVGMobject(VMobject):
 
         class Sample(Scene):
             def construct(self):
-                self.play(
-                    FadeIn(SVGMobject("manim-logo-sidebar.svg"))
-                )
+                self.play(FadeIn(SVGMobject("manim-logo-sidebar.svg")))
     Parameters
     --------
     file_name : :class:`str`
@@ -197,9 +197,15 @@ class SVGMobject(VMobject):
             pass  # TODO
 
         result = [m for m in result if m is not None]
-        self.handle_transforms(element, VGroup(*result))
+        if config["renderer"] == "opengl":
+            self.handle_transforms(element, OpenGLVGroup(*result))
+        else:
+            self.handle_transforms(element, VGroup(*result))
         if len(result) > 1 and not self.unpack_groups:
-            result = [VGroup(*result)]
+            if config["renderer"] == "opengl":
+                result = [OpenGLVGroup(*result)]
+            else:
+                result = [VGroup(*result)]
 
         if within_defs and element.hasAttribute("id"):
             # it seems wasteful to throw away the actual element,
@@ -343,18 +349,33 @@ class SVGMobject(VMobject):
         parsed_style["stroke_width"] = stroke_width
 
         if corner_radius == 0:
-            mob = Rectangle(
-                width=self.attribute_to_float(rect_element.getAttribute("width")),
-                height=self.attribute_to_float(rect_element.getAttribute("height")),
-                **parsed_style,
-            )
+            if config["renderer"] == "opengl":
+                mob = OpenGLRectangle(
+                    width=self.attribute_to_float(rect_element.getAttribute("width")),
+                    height=self.attribute_to_float(rect_element.getAttribute("height")),
+                    **parsed_style,
+                )
+            else:
+                mob = Rectangle(
+                    width=self.attribute_to_float(rect_element.getAttribute("width")),
+                    height=self.attribute_to_float(rect_element.getAttribute("height")),
+                    **parsed_style,
+                )
         else:
-            mob = RoundedRectangle(
-                width=self.attribute_to_float(rect_element.getAttribute("width")),
-                height=self.attribute_to_float(rect_element.getAttribute("height")),
-                corner_radius=corner_radius,
-                **parsed_style,
-            )
+            if config["renderer"] == "opengl":
+                mob = OpenGLRoundedRectangle(
+                    width=self.attribute_to_float(rect_element.getAttribute("width")),
+                    height=self.attribute_to_float(rect_element.getAttribute("height")),
+                    corner_radius=corner_radius,
+                    **parsed_style,
+                )
+            else:
+                mob = RoundedRectangle(
+                    width=self.attribute_to_float(rect_element.getAttribute("width")),
+                    height=self.attribute_to_float(rect_element.getAttribute("height")),
+                    corner_radius=corner_radius,
+                    **parsed_style,
+                )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
         return mob
@@ -487,7 +508,10 @@ class SVGMobject(VMobject):
                 matrix[:, 1] *= -1
 
                 for mob in mobject.family_members_with_points():
-                    mob.points = np.dot(mob.points, matrix)
+                    if config["renderer"] == "opengl":
+                        mob.data["points"] = np.dot(mob.data["points"], matrix)
+                    else:
+                        mob.points = np.dot(mob.points, matrix)
                 mobject.shift(x * RIGHT + y * UP)
 
             elif op_name == "scale":
