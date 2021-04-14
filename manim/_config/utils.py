@@ -157,11 +157,11 @@ class ManimConfig(MutableMapping):
     Each config option allows for dict syntax and attribute syntax.  For
     example, the following two lines are equivalent,
 
-    .. code-block:: python
+    .. code-block:: pycon
 
-       >>> from manim import config, WHITE
-       >>> config.background_color = WHITE
-       >>> config['background_color'] = WHITE
+        >>> from manim import config, WHITE
+        >>> config.background_color = WHITE
+        >>> config["background_color"] = WHITE
 
     The former is preferred; the latter is provided mostly for backwards
     compatibility.
@@ -169,7 +169,7 @@ class ManimConfig(MutableMapping):
     The config options are designed to keep internal consistency.  For example,
     setting ``frame_y_radius`` will affect ``frame_height``:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> config.frame_height
         8.0
@@ -224,9 +224,12 @@ class ManimConfig(MutableMapping):
     .. code-block:: python
 
         from manim import *
+
         config.background_color = RED
+
+
         class MyScene(Scene):
-            # ...
+            ...
 
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
@@ -1151,7 +1154,7 @@ class ManimConfig(MutableMapping):
         i.e. it is a subfolder of wherever ``config.media_dir`` is located.  In
         order to get the *actual* directory, use :meth:`~ManimConfig.get_dir`.
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from manim import config
             >>> config.tex_dir
@@ -1164,9 +1167,9 @@ class ManimConfig(MutableMapping):
         Resolving directories is done in a lazy way, at the last possible
         moment, to reflect any changes in other config options:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
-            >>> config.media_dir = 'my_media_dir'
+            >>> config.media_dir = "my_media_dir"
             >>> config.get_dir("tex_dir").as_posix()
             'my_media_dir/Tex'
 
@@ -1175,7 +1178,7 @@ class ManimConfig(MutableMapping):
         includes the name of the input file and the video quality
         (e.g. 480p15). This informamtion has to be supplied via ``kwargs``:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.video_dir
             '{media_dir}/videos/{module_name}/{quality}'
@@ -1192,27 +1195,29 @@ class ManimConfig(MutableMapping):
         ``partial_movie_dir`` depends on ``video_dir``, which in turn depends
         on ``media_dir``:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.partial_movie_dir
             '{video_dir}/partial_movie_files/{scene_name}'
             >>> config.get_dir("partial_movie_dir")
             Traceback (most recent call last):
             KeyError: 'partial_movie_dir {video_dir}/partial_movie_files/{scene_name} requires the following keyword arguments: scene_name'
-            >>> config.get_dir("partial_movie_dir", module_name="myfile", scene_name="myscene").as_posix()
+            >>> config.get_dir(
+            ...     "partial_movie_dir", module_name="myfile", scene_name="myscene"
+            ... ).as_posix()
             'my_media_dir/videos/myfile/1080p60.0/partial_movie_files/myscene'
 
         Standard f-string syntax is used.  Arbitrary names can be used when
         defining directories, as long as the corresponding values are passed to
         :meth:`ManimConfig.get_dir` via ``kwargs``.
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.media_dir = "{dir1}/{dir2}"
             >>> config.get_dir("media_dir")
             Traceback (most recent call last):
             KeyError: 'media_dir {dir1}/{dir2} requires the following keyword arguments: dir1'
-            >>> config.get_dir("media_dir", dir1='foo', dir2='bar').as_posix()
+            >>> config.get_dir("media_dir", dir1="foo", dir2="bar").as_posix()
             'foo/bar'
             >>> config.media_dir = "./media"
             >>> config.get_dir("media_dir").as_posix()
