@@ -43,10 +43,10 @@ class Brace(SVGPathMobject):
             def construct(self):
                 s= Square()
                 self.add(s)
-                for i in np.linspace(0.1,1.0,10):
+                for i in np.linspace(0.1,1.0,4):
                     br = Brace(s, sharpness=i)
                     self.add(br)
-                VGroup(*self.mobjects).arrange(DOWN, buff=0.1)
+                VGroup(*self.mobjects).arrange(DOWN, buff=0.2)
 
     """
 
