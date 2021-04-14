@@ -962,7 +962,6 @@ class Scene(Container):
             embedded_method = get_embedded_method(method)
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
-            setattr(self, method, embedded_method)
 
         from IPython.terminal.embed import InteractiveShellEmbed
         from traitlets.config import Config
