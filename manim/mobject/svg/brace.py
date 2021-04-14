@@ -45,6 +45,8 @@ class Brace(SVGPathMobject):
                 self.add(s)
                 for i in np.linspace(0.1,1.0,4):
                     br = Brace(s, sharpness=i)
+                    t =Text(f"sharpness= {i}").next_to(br, RIGHT)
+                    self.add(t)
                     self.add(br)
                 VGroup(*self.mobjects).arrange(DOWN, buff=0.2)
 
