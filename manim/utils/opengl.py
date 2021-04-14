@@ -6,6 +6,10 @@ from .. import config
 depth = 20
 
 
+def matrix_to_shader_input(matrix):
+    return tuple(matrix.T.ravel())
+
+
 def orthographic_projection_matrix(width=None, height=None, near=1, far=depth + 1):
     if width is None:
         width = config["frame_width"]
@@ -23,7 +27,7 @@ def orthographic_projection_matrix(width=None, height=None, near=1, far=depth + 
     )
 
 
-def translation_matrix(x, y, z):
+def translation_matrix(x=0, y=0, z=0):
     return np.array(
         [
             [1, 0, 0, x],
@@ -48,9 +52,9 @@ def x_rotation_matrix(x=0):
 def y_rotation_matrix(y=0):
     return np.array(
         [
-            [np.cos(y), 0, -np.sin(y), 0],
+            [np.cos(y), 0, np.sin(y), 0],
             [0, 1, 0, 0],
-            [np.sin(y), 0, np.cos(y), 0],
+            [-np.sin(y), 0, np.cos(y), 0],
             [0, 0, 0, 1],
         ]
     )
@@ -64,6 +68,17 @@ def z_rotation_matrix(z=0):
             [0, 0, 1, 0],
             [0, 0, 0, 1],
         ]
+    )
+
+
+# TODO: When rotating around the x axis, rotation eventually stops.
+def rotate_in_place_matrix(initial_position, x=0, y=0, z=0):
+    return np.matmul(
+        translation_matrix(*-initial_position),
+        np.matmul(
+            rotation_matrix(x, y, z),
+            translation_matrix(*initial_position),
+        ),
     )
 
 

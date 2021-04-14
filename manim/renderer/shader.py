@@ -14,11 +14,58 @@ file_path_to_code_map = {}
 
 
 class Mesh:
-    def __init__(self, shader, attributes, indices=None):
+    def __init__(self, shader, attributes, indices=None, use_depth_test=True):
         self.shader = shader
         self.attributes = attributes
         self.indices = indices
+        self.use_depth_test = use_depth_test
         self.init_updaters()
+
+        self.translation = np.zeros(3)
+        self.rotation = np.zeros(3)
+        self.scale = np.zeros(3)
+        self.model_matrix = np.eye(4)
+        self.model_matrix_needs_update = False
+
+    def render(self):
+        # Set matrix uniforms.
+        if self.model_matrix_needs_update:
+            pass
+        self.shader.set_uniform(
+            "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
+        )
+        # self.shader.set_uniform("u_view_matrix", opengl.view_matrix())
+        # default_view_matrix = opengl.matrix_to_shader_input(
+        #     np.linalg.inv(opengl.translation_matrix(0, 0, 11))
+        # )
+        # self.shader.set_uniform("u_view_matrix", default_view_matrix)
+        self.shader.set_uniform(
+            "u_projection_matrix", opengl.orthographic_projection_matrix()
+        )
+
+        if self.use_depth_test:
+            self.shader.context.enable(moderngl.DEPTH_TEST)
+
+        vertex_buffer_object = self.shader.context.buffer(self.attributes.tobytes())
+        if self.indices is None:
+            index_buffer_object = None
+        else:
+            vert_index_data = self.indices.astype("i4").tobytes()
+            if vert_index_data:
+                index_buffer_object = self.shader.context.buffer(vert_index_data)
+            else:
+                index_buffer_object = None
+        vertex_array_object = self.shader.context.simple_vertex_array(
+            self.shader.shader_program,
+            vertex_buffer_object,
+            *self.attributes.dtype.names,
+            index_buffer=index_buffer_object,
+        )
+        vertex_array_object.render(moderngl.TRIANGLES)
+        vertex_buffer_object.release()
+        vertex_array_object.release()
+        if index_buffer_object is not None:
+            index_buffer_object.release()
 
     def init_updaters(self):
         self.time_based_updaters = []
@@ -92,28 +139,6 @@ class Mesh:
     def refresh_has_updater_status(self):
         self.has_updaters = len(self.get_updaters()) > 0
         return self
-
-    def render(self):
-        vertex_buffer_object = self.shader.context.buffer(self.attributes.tobytes())
-        if self.indices is None:
-            index_buffer_object = None
-        else:
-            vert_index_data = self.indices.astype("i4").tobytes()
-            if vert_index_data:
-                index_buffer_object = self.shader.context.buffer(vert_index_data)
-            else:
-                index_buffer_object = None
-        vertex_array_object = self.shader.context.simple_vertex_array(
-            self.shader.shader_program,
-            vertex_buffer_object,
-            *self.attributes.dtype.names,
-            index_buffer=index_buffer_object,
-        )
-        vertex_array_object.render(moderngl.TRIANGLES)
-        vertex_buffer_object.release()
-        vertex_array_object.release()
-        if index_buffer_object is not None:
-            index_buffer_object.release()
 
 
 class FullScreenQuad(Mesh):

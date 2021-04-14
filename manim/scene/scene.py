@@ -302,6 +302,7 @@ class Scene(Container):
         """
         for mobject in self.mobjects:
             mobject.update(dt)
+        self.camera.update(dt)
 
     def update_meshes(self, dt):
         for mesh in self.meshes:
@@ -1064,6 +1065,7 @@ class Scene(Container):
                 dt = 1 / config["frame_rate"]
                 self.renderer.render(self, dt, self.moving_mobjects)
                 self.update_mobjects(dt)
+                self.update_meshes(dt)
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
 

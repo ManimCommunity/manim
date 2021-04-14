@@ -4,48 +4,231 @@ from pathlib import Path
 from manim import *
 from manim.opengl import *
 from manim.utils.opengl import *
+import manim.utils.space_ops as space_ops
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.
 
 
-class Test(Scene):
+class CubeTest(Scene):
     def construct(self):
-        attributes = np.zeros(6, dtype=[])
+        config["background_color"] = "#333333"
+
+        shader = Shader(self.renderer.context, name="vertex_colors")
+
+        # shader.set_uniform("u_color", (1.0, 0.0, 0.0, 1.0))
+        attributes = np.zeros(
+            18,
+            dtype=[
+                ("in_vert", np.float32, (4,)),
+                ("in_color", np.float32, (4,)),
+            ],
+        )
+        attributes["in_vert"] = np.array(
+            [
+                # xy plane
+                [-1, -1, 0, 1],
+                [-1, 1, 0, 1],
+                [1, 1, 0, 1],
+                [-1, -1, 0, 1],
+                [1, -1, 0, 1],
+                [1, 1, 0, 1],
+                # yz plane
+                [0, -1, -1, 1],
+                [0, -1, 1, 1],
+                [0, 1, 1, 1],
+                [0, -1, -1, 1],
+                [0, 1, -1, 1],
+                [0, 1, 1, 1],
+                # xz plane
+                [-1, 0, -1, 1],
+                [-1, 0, 1, 1],
+                [1, 0, 1, 1],
+                [-1, 0, -1, 1],
+                [1, 0, -1, 1],
+                [1, 0, 1, 1],
+            ]
+        )
+        attributes["in_color"] = np.array(
+            [
+                # xy plane
+                [1, 0, 0, 1],
+                [1, 0, 0, 1],
+                [1, 0, 0, 1],
+                [1, 0, 0, 1],
+                [1, 0, 0, 1],
+                [1, 0, 0, 1],
+                # yz plane
+                [0, 1, 0, 1],
+                [0, 1, 0, 1],
+                [0, 1, 0, 1],
+                [0, 1, 0, 1],
+                [0, 1, 0, 1],
+                [0, 1, 0, 1],
+                # xz plane
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+            ]
+        )
+        mesh = Mesh(shader, attributes)
+        self.add(mesh)
+
+        # def update_mesh(mesh, dt):
+        #     mesh.model_matrix = np.matmul(
+        #         opengl.rotation_matrix(y=dt), mesh.model_matrix
+        #     )
+
+        # mesh.add_updater(update_mesh)
+
+        total_time = 0
+
+        def update_camera(camera, dt):
+            nonlocal total_time
+            # Rotate the camera in place.
+            # camera_translation = camera.get_position()
+            # camera.model_matrix = np.matmul(
+            #     translation_matrix(*-camera_translation), camera.model_matrix
+            # )
+            # camera.model_matrix = np.matmul(
+            #     rotation_matrix(x=dt / (TAU / 8)), camera.model_matrix
+            # )
+            # camera.model_matrix = np.matmul(
+            #     translation_matrix(*camera_translation), camera.model_matrix
+            # )
+
+            # if total_time <= 2.5:
+            #     # Rotate the camera around the z axis.
+            #     self.camera.model_matrix = np.matmul(
+            #         rotation_matrix(z=dt / 8),
+            #         self.camera.model_matrix,
+            #     )
+            # else:
+            #     # Increase the angle off the z axis.
+            #     origin_to_camera = self.camera.get_position()
+            #     axis_of_rotation = np.cross(OUT, origin_to_camera)
+            #     rot_matrix = space_ops.rotation_matrix(dt / 4, axis_of_rotation)
+            #     print(axis_of_rotation)
+
+            #     # Convert to homogeneous coordinates.
+            #     rot_matrix = np.hstack((rot_matrix, np.array([[0], [0], [0]])))
+            #     rot_matrix = np.vstack((rot_matrix, np.array([0, 0, 0, 1])))
+
+            #     self.camera.model_matrix = np.matmul(
+            #         rot_matrix,
+            #         self.camera.model_matrix,
+            #     )
+
+            total_time += dt
+
+        def on_mouse_drag(point, d_point, buttons, modifiers):
+            # Rotation around the z axis.
+            angle_around_z_axis = -d_point[0]
+            self.camera.model_matrix = np.matmul(
+                rotation_matrix(z=angle_around_z_axis),
+                self.camera.model_matrix,
+            )
+
+            # Rotation off of the z axis.
+            angle_off_z_axis = d_point[1]
+            origin_to_camera = self.camera.get_position()
+            axis_of_rotation = np.cross(OUT, origin_to_camera)
+            axis_of_rotation = space_ops.normalize(axis_of_rotation)
+
+            rot_matrix = space_ops.rotation_matrix(angle_off_z_axis, axis_of_rotation)
+
+            # Convert to homogeneous coordinates.
+            rot_matrix = np.hstack((rot_matrix, np.array([[0], [0], [0]])))
+            rot_matrix = np.vstack((rot_matrix, np.array([0, 0, 0, 1])))
+
+            self.camera.model_matrix = np.matmul(
+                rot_matrix,
+                self.camera.model_matrix,
+            )
+            # print(self.camera.get_position())
+
+        setattr(self, "on_mouse_drag", on_mouse_drag)
+
+        self.camera.add_updater(update_camera)
+
+        # Rotate the camera TAU / 8 around the x axis.
+        # 1
+        self.camera.model_matrix = np.matmul(
+            rotation_matrix(x=TAU / 8),
+            self.camera.model_matrix,
+        )
+        # 2
+        self.camera.model_matrix = np.matmul(
+            rotation_matrix(z=TAU / 8),
+            self.camera.model_matrix,
+        )
+        # # 3
+        # self.camera.model_matrix = np.matmul(
+        #     rotation_matrix(y=TAU / 4),
+        #     self.camera.model_matrix,
+        # )
+
+        # self.wait(1)
+        self.embed_2()
+
+
+class FullscreenQuadTest(Scene):
+    def construct(self):
         surface = FullScreenQuad(
             self.renderer.context,
             """
             #version 330
 
+
+            #define TWO_PI 6.28318530718
+
             uniform vec2 u_resolution;
-            uniform vec2 u_mouse;
             uniform float u_time;
 
-            // Plot a line on Y using a value between 0.0-1.0
-            float plot(vec2 st) {
-                return smoothstep(0.02, 0.0, abs(st.y - st.x));
+            //  Function from Iñigo Quiles
+            //  https://www.shadertoy.com/view/MsS3Wc
+            vec3 hsb2rgb( in vec3 c ){
+                vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                                         6.0)-3.0)-1.0,
+                                 0.0,
+                                 1.0 );
+                rgb = rgb*rgb*(3.0-2.0*rgb);
+                return c.z * mix( vec3(1.0), rgb, c.y);
             }
 
-            void main() {
-                    vec2 st = gl_FragCoord.xy/u_resolution;
+            void main(){
+                vec2 st = gl_FragCoord.xy/u_resolution;
+                vec3 color = vec3(0.0);
 
-                float y = st.x;
+                // Use polar coordinates instead of cartesian
+                vec2 toCenter = vec2(0.5)-st;
+                float angle = atan(toCenter.y,toCenter.x);
+                angle += u_time;
+                float radius = length(toCenter)*2.0;
 
-                vec3 color = vec3(y);
+                // Map the angle (-PI to PI) to the Hue (from 0 to 1)
+                // and the Saturation to the radius
+                color = hsb2rgb(vec3((angle/TWO_PI)+0.5,radius,1.0));
 
-                // Plot a line
-                float pct = plot(st);
-                color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
-
-                    gl_FragColor = vec4(color,1.0);
+                gl_FragColor = vec4(color,1.0);
             }
-
             """,
             output_color_variable="gl_FragColor",
         )
         surface.shader.set_uniform("u_resolution", (854.0, 480.0))
-        # surface.shader.set_uniform("u_time", 0)
+        shader_time = 0
+
+        def update_surface(surface):
+            nonlocal shader_time
+            surface.shader.set_uniform("u_time", shader_time)
+            shader_time += 1 / 60.0
+
+        surface.add_updater(update_surface)
         self.add(surface)
+        # self.wait(5)
         self.embed_2()
 
 

@@ -70,7 +70,16 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
+        # self.model_matrix = np.eye(4)
+        self.model_matrix = opengl.translation_matrix(0, 0, 11)
+
         super().__init__(**kwargs)
+
+    def get_position(self):
+        return self.model_matrix[:, 3][:3]
+
+    def get_view_matrix(self):
+        return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
 
     def init_data(self):
         super().init_data()
@@ -333,7 +342,9 @@ class OpenGLRenderer:
             for mobject in scene.mobjects:
                 self.render_mobject(mobject)
 
+            view_matrix = scene.camera.get_view_matrix()
             for mesh in scene.meshes:
+                mesh.shader.set_uniform("u_view_matrix", view_matrix)
                 mesh.render()
 
             # shader = MyShader(self.context, name="design_3")
