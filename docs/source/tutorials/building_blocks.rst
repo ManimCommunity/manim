@@ -355,18 +355,12 @@ Here it might help to use the `flip` function and reposition the points via the 
             m2b= Circle().set_color(BLUE).shift(RIGHT)
             m3a= Square().set_color(GREEN).shift(3*RIGHT)
             m3b= Circle().set_color(GREEN).shift(3*RIGHT)
-
+            
             points = m2a.points
-            points = np.flip(points, axis=0)
             points = np.roll(points, int(len(points)/4), axis=0)
             m2a.points = points
-
-            points = m3a.points
-            points = np.flip(points, axis=0)
-            points = np.roll(points, int(len(points)/4)*2, axis=0)
-            m3a.points = points
-
-            self.play(Transform(m1a,m1b),Transform(m2a,m2b),Transform(m3a,m3b), run_time=1)
+            
+            self.play(Transform(m1a,m1b),Transform(m2a,m2b), run_time=1)
 
 ******
 Scenes
