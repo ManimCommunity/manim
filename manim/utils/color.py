@@ -89,11 +89,11 @@ __all__ = [
     "ORANGE",
 ]
 
-from enum import Enum
 import random
+from enum import Enum
 
-from colour import Color
 import numpy as np
+from colour import Color
 
 from ..utils.bezier import interpolate
 from ..utils.simple_functions import clip_in_place
@@ -105,9 +105,21 @@ class Colors(Enum):
 
     Examples
     --------
+
+    .. manim:: ColorExample
+        :save_last_frame:
+
+        from manim.utils.color import Colors
+        class ColorExample(Scene):
+            def construct(self):
+                cols = Colors._member_names_
+                s = VGroup(*[Line(DOWN, UP, stroke_width=15).set_color(Colors[cols[i]].value) for i in range(0, len(cols))])
+                s.arrange_submobjects(buff=0.2)
+                self.add(s)
+
     The preferred way of using these colors is
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> import manim.utils.color as C
         >>> C.WHITE
@@ -119,7 +131,7 @@ class Colors(Enum):
     directly, through the use of :code:`color.value`.  Note this way uses the
     name of the colors in lowercase.
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from manim.utils.color import Colors
         >>> Colors.white.value

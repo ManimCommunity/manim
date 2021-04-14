@@ -5,6 +5,7 @@ Constant definitions.
 import typing
 
 import numpy as np
+from PIL import Image
 
 # Messages
 NOT_SETTING_FONT_MSG: str = """
@@ -42,6 +43,18 @@ ULTRABOLD: str = "ULTRABOLD"
 HEAVY: str = "HEAVY"
 ULTRAHEAVY: str = "ULTRAHEAVY"
 
+RESAMPLING_ALGORITHMS = {
+    "nearest": Image.NEAREST,
+    "none": Image.NEAREST,
+    "lanczos": Image.LANCZOS,
+    "antialias": Image.LANCZOS,
+    "bilinear": Image.BILINEAR,
+    "linear": Image.BILINEAR,
+    "bicubic": Image.BICUBIC,
+    "cubic": Image.BICUBIC,
+    "box": Image.BOX,
+    "hamming": Image.HAMMING,
+}
 
 # Geometry: directions
 ORIGIN: np.ndarray = np.array((0.0, 0.0, 0.0))
@@ -181,5 +194,9 @@ QUALITIES: typing.Dict[str, typing.Dict[str, typing.Union[str, int, None]]] = {
 
 DEFAULT_QUALITY: str = "high_quality"
 DEFAULT_QUALITY_SHORT = QUALITIES[DEFAULT_QUALITY]["flag"]
+
+EPILOG = "Made with <3 by Manim Community developers."
+HELP_OPTIONS = ["-h", "--help"]
+CONTEXT_SETTINGS = {"help_option_names": HELP_OPTIONS}
 SHIFT_VALUE = 65505
 CTRL_VALUE = 65507

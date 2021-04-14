@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 import numpy as np
 
 from manim import config, tempconfig
@@ -61,7 +62,7 @@ class GraphicalUnitTester:
             os.makedirs(dir_temp)
 
         with tempconfig({"dry_run": True}):
-            if config["use_opengl_renderer"]:
+            if config["renderer"] == "opengl":
                 self.scene = scene_class(renderer=OpenGLRenderer())
             else:
                 self.scene = scene_class(skip_animations=True)
@@ -82,8 +83,8 @@ class GraphicalUnitTester:
 
     def _show_diff_helper(self, frame_data, expected_frame_data):
         """Will visually display with matplotlib differences between frame generated and the one expected."""
-        import matplotlib.pyplot as plt
         import matplotlib.gridspec as gridspec
+        import matplotlib.pyplot as plt
 
         gs = gridspec.GridSpec(2, 2)
         fig = plt.figure()
@@ -101,16 +102,16 @@ class GraphicalUnitTester:
         diff_im = expected_frame_data.copy()
         diff_im = np.where(
             frame_data != np.array([0, 0, 0, 255]),
-            np.array([255, 0, 0, 255], dtype="uint8"),
+            np.array([0, 255, 0, 255], dtype="uint8"),
             np.array([0, 0, 0, 255], dtype="uint8"),
-        )  # Set the points of the frame generated to red.
+        )  # Set any non-black pixels to green
         np.putmask(
             diff_im,
-            expected_frame_data != np.array([0, 0, 0, 255], dtype="uint8"),
-            np.array([0, 255, 0, 255], dtype="uint8"),
-        )  # Set the points of the frame generated to green.
+            expected_frame_data != frame_data,
+            np.array([255, 0, 0, 255], dtype="uint8"),
+        )  # Set any different pixels to red
         ax.imshow(diff_im, interpolation="nearest")
-        ax.set_title("Differences summary : (red = got, green = expected)")
+        ax.set_title("Differences summary : (green = same, red = different)")
 
         plt.show()
         plt.savefig(f"{self.scene}.png")

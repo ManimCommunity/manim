@@ -1,7 +1,8 @@
 import os
-import pytest
 import subprocess
 import sys
+
+import pytest
 
 from ..utils.commands import capture
 from ..utils.video_tester import *
@@ -19,13 +20,13 @@ def test_wait_skip(tmp_path, manim_cfg_file, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
-        "-l",
+        "-ql",
         "--media_dir",
         str(tmp_path),
         "-n",
         "3",
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
@@ -43,13 +44,13 @@ def test_play_skip(tmp_path, manim_cfg_file, simple_scenes_path):
         sys.executable,
         "-m",
         "manim",
-        simple_scenes_path,
-        scene_name,
-        "-l",
+        "-ql",
         "--media_dir",
         str(tmp_path),
         "-n",
         "3",
+        simple_scenes_path,
+        scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err

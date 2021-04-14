@@ -3,16 +3,16 @@
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
 
-import numpy as np
 from typing import List, Optional
 
+import numpy as np
+
+from ..mobject.mobject import Group, Mobject
+from ..mobject.svg.tex_mobject import MathTex
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeInFromPoint, FadeOutToPoint
-from .transform import Transform, ReplacementTransform, FadeTransformPieces
-
-from ..mobject.mobject import Mobject, Group
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..mobject.svg.tex_mobject import MathTex
+from .transform import FadeTransformPieces, Transform
 
 
 class TransformMatchingAbstractBase(AnimationGroup):

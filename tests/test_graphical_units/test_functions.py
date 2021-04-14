@@ -1,9 +1,10 @@
-import pytest
 import numpy as np
+import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class FunctionGraphTest(Scene):
@@ -12,7 +13,6 @@ class FunctionGraphTest(Scene):
             lambda x: 2 * np.cos(0.5 * x), x_min=-PI, x_max=PI, color=BLUE
         )
         self.add(graph)
-        self.wait()
 
 
 MODULE_NAME = "functions"

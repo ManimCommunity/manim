@@ -1,9 +1,7 @@
-from manim import config
-import pytest
-import numpy as np
 import os
 import sys
-import logging
+
+import pytest
 
 
 def pytest_addoption(parser):

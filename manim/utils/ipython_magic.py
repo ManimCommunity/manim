@@ -7,18 +7,17 @@ import shutil
 from pathlib import Path
 
 from manim import config, tempconfig
-
-from .._config.main_utils import parse_args
+from manim.__main__ import main
 
 try:
     from IPython import get_ipython
     from IPython.core.magic import (
         Magics,
-        magics_class,
         line_cell_magic,
+        magics_class,
         needs_local_scope,
     )
-    from IPython.display import display, Image, Video
+    from IPython.display import Image, Video, display
 except ImportError:
     pass
 else:
@@ -35,7 +34,7 @@ else:
             r"""Render Manim scenes contained in IPython cells.
             Works as a line or cell magic.
 
-            .. note::
+            .. hint::
 
                 This line and cell magic works best when used in a JupyterLab
                 environment: while all of the functionality is available for
@@ -50,34 +49,63 @@ else:
 
             Usage in line mode::
 
-                %manim MyAwesomeScene [CLI options]
+                %manim [CLI options] MyAwesomeScene
 
             Usage in cell mode::
 
-                %%manim MyAwesomeScene [CLI options]
+                %%manim [CLI options] MyAwesomeScene
 
                 class MyAweseomeScene(Scene):
                     def construct(self):
                         ...
 
-            Run ``%manim -h`` for possible command line interface options.
+            Run ``%manim -h`` and ``%manim render -h`` for possible command line interface options.
+
+            .. note::
+
+                The maximal width of the rendered videos that are displayed in the notebook can be
+                configured via the ``media_width`` configuration option. The default is set to ``25vw``,
+                which is 25% of your current viewport width. To allow the output to become as large
+                as possible, set ``config.media_width = "100%"``.
+
+            Examples
+            --------
+
+            First make sure to put ``import manim``, or even ``from manim import *``
+            in a cell and evaluate it. Then, a typical Jupyter notebook cell for Manim
+            could look as follows::
+
+                %%manim -v WARNING --disable_caching -qm BannerExample
+
+                config.media_width = "75%"
+
+                class BannerExample(Scene):
+                    def construct(self):
+                        self.camera.background_color = "#ece6e2"
+                        banner_large = ManimBanner(dark_theme=False).scale(0.7)
+                        self.play(banner_large.create())
+                        self.play(banner_large.expand())
+
+            Evaluating this cell will render and display the ``BannerExample`` scene defined in the body of the cell.
+
+            .. note::
+
+                In case you want to hide the red box containing the output progress bar, the ``progress_bar`` config
+                option should be set to ``None``. This can also be done by passing ``--progress_bar None`` as a
+                CLI flag.
+
             """
             if cell:
                 exec(cell, local_ns)
 
-            cli_args = ["manim", ""] + line.split()
-            if len(cli_args) == 2:
-                # empty line.split(): no commands have been passed, call with -h
-                cli_args.append("-h")
-
-            try:
-                args = parse_args(cli_args)
-            except SystemExit:
-                return  # probably manim -h was called, process ended preemptively
-
+            args = line.split()
+            if not len(args) or "-h" in args or "--help" in args or "--version" in args:
+                main(args, standalone_mode=False, prog_name="manim")
+                return
+            modified_args = ["--jupyter"] + args[:-1] + [""] + [args[-1]]
+            args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
-
                 exec(f"{config['scene_names'][0]}().render()", local_ns)
                 local_path = Path(config["output_file"]).relative_to(Path.cwd())
                 tmpfile = (
