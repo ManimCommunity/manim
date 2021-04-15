@@ -50,6 +50,7 @@ moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "*"
+ipywidgets = "^7.6.3"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
