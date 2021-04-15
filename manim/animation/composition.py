@@ -13,6 +13,7 @@ from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
 if typing.TYPE_CHECKING:
+    from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
     from ..mobject.types.vectorized_mobject import VGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
