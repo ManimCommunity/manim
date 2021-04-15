@@ -61,7 +61,7 @@ def image_viewer(image_path, small_width, large_width):
             dis_img.width = large_width
 
     def on_button_download_clicked(b):
-        url = f"file://{Path.cwd()/ image_path}"
+        url = (Path.cwd() / image_path).as_uri()
         webbrowser.open(url)
 
     b0.on_click(on_button_image1t1_clicked)
@@ -106,7 +106,7 @@ def video_viewer(video_path, small_width, large_width):
             dis_video.width = large_width
 
     def on_button_download_clicked(b):
-        url = f"file://{Path.cwd()/ video_path}"
+        url = (Path.cwd() / video_path).as_uri()
         webbrowser.open(url)
 
     b0.on_click(on_button_image1t1_clicked)
