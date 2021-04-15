@@ -233,7 +233,7 @@ Example: ``:class:`~.Animation`​``, ``:meth:`~.VMobject.set_color`​``,
 Example: ``:class:`numpy.ndarray`​`` for a numpy ndarray.
 
 Reference Type specifications
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **The following instructions refer to types of attributes, parameters
 and return values.** When specifying a type mid-text, it does not
