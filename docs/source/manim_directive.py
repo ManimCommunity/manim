@@ -202,8 +202,7 @@ class ManimDirective(Directive):
         source_block = [
             ".. code-block:: python",
             "",
-            "from manim import *",
-            "",
+            "    from manim import *\n",
             *["    " + line for line in self.content],
         ]
         source_block = "\n".join(source_block)
