@@ -5,13 +5,16 @@ from typing import TYPE_CHECKING, Callable, Optional, Union
 
 import numpy as np
 
+from .._config import config
 from ..animation.animation import Animation, prepare_animation
 from ..mobject.mobject import Group, Mobject
+from ..mobject.opengl_mobject import OpenGLGroup
 from ..scene.scene import Scene
 from ..utils.iterables import remove_list_redundancies
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
+    from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
     from ..mobject.types.vectorized_mobject import VGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
@@ -24,7 +27,7 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *animations: Animation,
-        group: Union[Group, "VGroup", None] = None,
+        group: Union[Group, "VGroup", OpenGLGroup, "OpenGLVGroup"] = None,
         run_time: Optional[float] = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
@@ -33,9 +36,11 @@ class AnimationGroup(Animation):
         self.animations = [prepare_animation(anim) for anim in animations]
         self.group = group
         if self.group is None:
-            self.group = Group(
-                *remove_list_redundancies([anim.mobject for anim in self.animations])
-            )
+            mobjects = remove_list_redundancies([anim.mobject for anim in self.animations])
+            if config["renderer"] == "opengl":
+                self.group = OpenGLGroup(*mobjects)
+            else:
+                self.group = Group(*mobjects)
         super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
         self.run_time: float = self.init_run_time(run_time)
 
