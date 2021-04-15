@@ -36,7 +36,9 @@ class AnimationGroup(Animation):
         self.animations = [prepare_animation(anim) for anim in animations]
         self.group = group
         if self.group is None:
-            mobjects = remove_list_redundancies([anim.mobject for anim in self.animations])
+            mobjects = remove_list_redundancies(
+                [anim.mobject for anim in self.animations]
+            )
             if config["renderer"] == "opengl":
                 self.group = OpenGLGroup(*mobjects)
             else:
