@@ -13,7 +13,7 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import Iterable, Sequence, Optional
+from typing import Iterable, Optional, Sequence
 
 import colour
 
