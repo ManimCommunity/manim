@@ -1,5 +1,3 @@
-default_language_version:
-  python: python3.9
 default_stages: [commit, push]
 fail_fast: false
 repos:
@@ -7,11 +5,15 @@ repos:
     rev: v3.4.0
     hooks:
       - id: mixed-line-ending
-        args: ['--fix=lf']
   - repo: https://github.com/psf/black
     rev: 20.8b1
     hooks:
       - id: black
+  - repo: https://github.com/asottile/blacken-docs
+    rev: v1.10.0
+    hooks:
+    -   id: blacken-docs
+        additional_dependencies: [black==20.8b1]
   - repo: https://github.com/pycqa/isort
     rev: 5.8.0
     hooks:
@@ -23,7 +25,7 @@ repos:
       - id: isort
         name: isort (pyi)
         types: [pyi]
-  - repo: https://gitlab.com/PyCQA/flake8
+  - repo: https://github.com/PyCQA/flake8
     rev: 3.9.0
     hooks:
       - id: flake8
