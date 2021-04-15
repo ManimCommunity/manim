@@ -41,7 +41,7 @@ class Brace(SVGPathMobject):
 
         class BraceExample(Scene):
             def construct(self):
-                s= Square()
+                s = Square()
                 self.add(s)
                 for i in np.linspace(0.1,1.0,4):
                     br = Brace(s, sharpness=i)
