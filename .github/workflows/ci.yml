@@ -88,7 +88,6 @@ jobs:
           echo "Install TinyTeX"
           curl -L -o "$PWD/macos-temp/TinyTeX.tgz" "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.tgz?job=image:%20macOS"
           tar zxf "$PWD/macos-temp/TinyTeX.tgz" -C "$PWD/macos-cache"
-          ls $PWD/macos-cache/TinyTeX
           export PATH="$PWD/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
           sudo tlmgr update --self
           for i in "${ttp[@]}"; do
