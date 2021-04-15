@@ -11,7 +11,6 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     env:
-      POETRY_VIRTUALENVS_CREATE: true
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
     strategy:
