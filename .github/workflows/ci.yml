@@ -84,10 +84,10 @@ jobs:
           IFS=' '
           read -a ttp <<< "$tinyTexPackages"
           oriPath=$PATH
-          mkdir -p $PWD/{macos-temp,macos-cache}
+          mkdir -p $PWD/macos-cache
           echo "Install TinyTeX"
-          curl -L -o "$PWD/macos-temp/TinyTeX.tgz" "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.tgz?job=image:%20macOS"
-          tar zxf "$PWD/macos-temp/TinyTeX.tgz" -C "$PWD/macos-cache"
+          curl -L -o "$TEMP/TinyTeX.tgz" "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.tgz?job=image:%20macOS"
+          tar zxf "$TEMP/TinyTeX.tgz" -C "$PWD/macos-cache"
           export PATH="$PWD/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
           sudo tlmgr update --self
           for i in "${ttp[@]}"; do
