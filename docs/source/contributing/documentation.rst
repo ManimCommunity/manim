@@ -184,8 +184,8 @@ Example:
 
 .. _types:
 
-Types
------
+Reference to types in documentaion
+----------------------------------
 
 Always specify types with the correct **role** (see
 https://www.sphinx-doc.org/en/1.7/domains.html#python-roles) for the
@@ -232,7 +232,7 @@ Example: ``:class:`~.Animation`​``, ``:meth:`~.VMobject.set_color`​``,
 
 Example: ``:class:`numpy.ndarray`​`` for a numpy ndarray.
 
-Type specifications
+Reference Type specifications
 ~~~~~~~~~~~~~~~~~~~
 
 **The following instructions refer to types of attributes, parameters
@@ -317,3 +317,38 @@ elements that are either a ``str`` or ``None``;
 ``Tuple[:class:`str`, :class:`int`]`` for a tuple of type
 ``(str, int)``; ``Tuple[:class:`int`, ...]`` for a tuple of variable
 length with only integers.
+
+
+Adding type hints to functions and parameters
+---------------------------------------------
+
+When you've never used type hints before, here is a good place to get startd:
+https://realpython.com/python-type-checking/#hello-types
+By adding type hints to manim, there are some guidlines that should be followed:
+* Coordinates have the typehint `Sequence[float]`, e.g.
+
+.. code:: py
+
+    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
+        """Given an array of points, set them as corner of the Vmobject."""
+
+* `**kwargs` has no typehint
+
+* Mobjects have the typehint "Mobject", e.g.
+
+.. code:: py
+
+    def match_color(self, mobject: "Mobject"):
+        """Match the color with the color of another :class:`~.Mobject`."""
+        return self.set_color(mobject.get_color())
+
+* Colors have the typhint "Color", e.g.
+
+.. code:: py
+
+    def set_color(self, color: Color = YELLOW_C, family: bool = True):
+        """Condition is function which takes in one arguments, (x, y, z)."""
+
+* As `float` and `Union[int,float]` are the same, use only `float`
+
+* For numpy arrays use the typehint `np.ndarray`
