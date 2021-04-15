@@ -38,15 +38,8 @@ jobs:
         id: cache-vars
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
-          echo "::set-output name=pip-dir::$(pip cache dir)"
           echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
-
-      - name: Setup Pip cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-vars.outputs.pip-dir }}
-          key: ${{ runner.os }}-pip-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
 
       - name: Setup Poetry cache
         uses: actions/cache@v2
