@@ -75,12 +75,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/macos-cache
-          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/macosdependency.json') }}-${{ steps.cache-vars.outputs.date }}
+          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'macOS' && steps.cache-macos.outputs.cache-hit != 'true'
         run: |
-          tinyTexPackages=$(python -c "import json;print(' '.join(json.load(open('.github/macosdependency.json'))['macos']['tinytex']))")
+          tinyTexPackages=$(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['macos']['tinytex']))")
           IFS=' '
           read -a ttp <<< "$tinyTexPackages"
           oriPath=$PATH
