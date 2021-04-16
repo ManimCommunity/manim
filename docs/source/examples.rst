@@ -181,7 +181,7 @@ Animations
 
 .. manim:: MovingDots
 
-    class MovingDot(Scene):
+    class MovingDots(Scene):
         def construct(self):
             d1,d2=Dot(color=BLUE),Dot(color=GREEN)
             dg=VGroup(d1,d2).arrange(RIGHT,buff=1)
