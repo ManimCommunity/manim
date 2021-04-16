@@ -491,8 +491,7 @@ Special Camera Settings
 
 .. note::
 
-   These ThreeD examples are videos, however, only the last frame of these examples
-    because they slow down the build of the documentation.
+   These ThreeD examples are videos, however, only the last frame of these examples because they slow down the build of the documentation.
 
 
 .. manim:: ThreeDCameraRotation
