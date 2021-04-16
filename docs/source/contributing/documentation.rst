@@ -358,12 +358,24 @@ When adding type hints to manim, there are some guidelines that should be follow
 * Functions that does not return a value should get the type hint ``None``. (This annotations help catch the kinds of subtle bugs where you are trying to use a meaningless return value. )
 
 .. code:: py
+
     def height(self, value) -> None:
         self.scale_to_fit_height(value)
 
-Missing Sections
-################
+* When a paramter is None by default, it can get the type hint ``Optional`` 
 
+.. code:: py
+
+  def rotate(
+        self,
+        angle,
+        axis=OUT,
+        about_point: Optional[Sequence[float]] = None,
+        **kwargs,
+    ):
+
+Missing Sections
+----------------
 * Tools for typehinting
 * Link to MyPy
 * Where to find the alias
