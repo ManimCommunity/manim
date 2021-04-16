@@ -1,7 +1,7 @@
 """Mobjects used to represent mathematical graphs (think graph theory, not plotting)."""
 
 __all__ = [
-    "Graph",
+    "Graph", "Polyhedra"
 ]
 
 from copy import copy
@@ -11,9 +11,10 @@ import networkx as nx
 import numpy as np
 
 from ..utils.color import BLACK
-from .geometry import Dot, LabeledDot, Line
+from .geometry import Dot, LabeledDot, Line, Polygon
+from .three_dimensions import Dot3D
 from .svg.tex_mobject import MathTex
-from .types.vectorized_mobject import VMobject
+from .types.vectorized_mobject import VMobject, VGroup
 
 
 def _determine_graph_layout(
@@ -518,3 +519,31 @@ class Graph(VMobject):
         for v in self.vertices:
             self[v].move_to(self._layout[v])
         return self
+
+class Polyhedra(VGroup):
+    def __init__(
+        self,
+        vertices: List[np.ndarray],
+        faces: List[List[Hashable]],
+        graph_config = {}
+    ):
+        VGroup.__init__(self)
+        self.vertices = vertices
+        self.vertex_indices = list(range(len(self.vertices)))
+        self.layout = dict(enumerate(self.vertices))
+        self.faces = faces
+        self.edges = self.get_edges(self.faces)
+        self.add(self.create_faces(self.faces))
+        self.add(Graph(self.vertex_indices, self.edges, layout=self.layout, vertex_type=Dot3D))
+
+    def get_edges(self, faces):
+        edges = []
+        for face in faces:
+            edges += zip(face, face[1:] + face[:1])
+        return edges
+
+    def create_faces(self, faces):
+        face_group = VGroup()
+        for face in faces:
+            face_group.add(Polygon(*face))
+        return face_group
