@@ -786,7 +786,7 @@ class OpenGLMobject:
 
     def set_width(self, width, stretch=False, **kwargs):
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
-    
+
     scale_to_fit_width = set_width
 
     def set_height(self, height, stretch=False, **kwargs):

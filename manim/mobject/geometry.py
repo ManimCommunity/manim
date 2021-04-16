@@ -731,9 +731,7 @@ class AnnularSector(Arc):
 
 class Sector(AnnularSector):
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
-        super().__init__(
-            inner_radius=inner_radius, outer_radius=outer_radius, **kwargs
-        )
+        super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
 
 class Annulus(Circle):
@@ -751,10 +749,7 @@ class Annulus(Circle):
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         super().__init__(
-            fill_opacity=fill_opacity,
-            stroke_width=stroke_width,
-            color=color,
-            **kwargs
+            fill_opacity=fill_opacity, stroke_width=stroke_width, color=color, **kwargs
         )
 
     def generate_points(self):
@@ -776,7 +771,9 @@ class Line(TipableVMobject):
         super().__init__(**kwargs)
 
     def generate_points(self):
-        self.set_points_by_ends(start=self.start, end=self.end, buff=self.buff, path_arc=self.path_arc)
+        self.set_points_by_ends(
+            start=self.start, end=self.end, buff=self.buff, path_arc=self.path_arc
+        )
 
     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
         if path_arc:
@@ -851,8 +848,8 @@ class Line(TipableVMobject):
         """Return the projection of a point onto the line."""
         unit_vect = self.get_unit_vector()
         start = self.get_start()
-        return start + np.dot(point - start, unit_vect) * unit_vect    
-        
+        return start + np.dot(point - start, unit_vect) * unit_vect
+
     def get_slope(self):
         return np.tan(self.get_angle())
 
@@ -860,7 +857,7 @@ class Line(TipableVMobject):
         if about_point is None:
             about_point = self.get_start()
         self.rotate(
-            angle - self.get_angle(), 
+            angle - self.get_angle(),
             about_point=about_point,
         )
         return self
