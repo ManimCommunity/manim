@@ -1,4 +1,5 @@
 from inspect import getmembers, ismethod
+
 import manim as mn
 
 custom_method_order = {
