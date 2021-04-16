@@ -382,9 +382,11 @@ When adding type hints to manim, there are some guidelines that should be follow
 
     rate_func: Callable[float] = lambda t: smooth(1 - t)
     
-
+*  numpy arrays can get type hints with `np.ndarray`
+    
 Missing Sections
 ----------------
 * Tools for typehinting
 * Link to MyPy
+* Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
 * Where to find the alias
