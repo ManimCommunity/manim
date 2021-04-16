@@ -34,13 +34,11 @@ class Mesh:
         self.shader.set_uniform(
             "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
         )
-        # self.shader.set_uniform("u_view_matrix", opengl.view_matrix())
-        # default_view_matrix = opengl.matrix_to_shader_input(
-        #     np.linalg.inv(opengl.translation_matrix(0, 0, 11))
+        # self.shader.set_uniform(
+        #     "u_projection_matrix", opengl.orthographic_projection_matrix()
         # )
-        # self.shader.set_uniform("u_view_matrix", default_view_matrix)
         self.shader.set_uniform(
-            "u_projection_matrix", opengl.orthographic_projection_matrix()
+            "u_projection_matrix", opengl.perspective_projection_matrix_2()
         )
 
         if self.use_depth_test:
