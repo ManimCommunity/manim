@@ -47,11 +47,13 @@ and copy the following code in it.
 .. code-block:: python
 
    from manim import *
+
+
    class SquareToCircle(Scene):
        def construct(self):
-           circle = Circle()                   # create a circle
+           circle = Circle()  # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(Create(circle))     # show the circle on screen
+           self.play(Create(circle))  # show the circle on screen
 
 Then open your command line, navigate to your project directory, and execute
 the following command:
@@ -104,6 +106,7 @@ Now let's look at the next two lines.
 
    class SquareToCircle(Scene):
        def construct(self):
+           ...
 
 Most of the time, the code for scripting an animation with manim will go inside
 the :meth:`~.Scene.construct` method of a class that derives from :class:`.Scene`.  Inside this
@@ -113,7 +116,7 @@ The next two lines create a circle and set its color and opacity.
 
 .. code-block:: python
 
-           circle = Circle()                   # create a circle
+           circle = Circle()  # create a circle
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
 
 Finally, the last line uses the animation :class:`.Create` to display the
@@ -121,7 +124,7 @@ circle on screen.
 
 .. code-block:: python
 
-           self.play(Create(circle))     # show the circle on screen
+           self.play(Create(circle))  # show the circle on screen
 
 .. tip:: Every animation must be contained within the :meth:`~.Scene.construct` method of a
          class that derives from :class:`.Scene`.  Other code, for example auxiliary
@@ -138,18 +141,19 @@ Our scene is a little basic, so let's add some bells and whistles.  Modify the
 
    from manim import *
 
+
    class SquareToCircle(Scene):
        def construct(self):
-           circle = Circle()                    # create a circle
-           circle.set_fill(PINK, opacity=0.5)   # set color and transparency
+           circle = Circle()  # create a circle
+           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
 
-           square = Square()                    # create a square
-           square.flip(RIGHT)                   # flip horizontally
-           square.rotate(-3 * TAU / 8)          # rotate a certain amount
+           square = Square()  # create a square
+           square.flip(RIGHT)  # flip horizontally
+           square.rotate(-3 * TAU / 8)  # rotate a certain amount
 
-           self.play(Create(square))      # animate the creation of the square
-           self.play(Transform(square, circle)) # interpolate the square into the circle
-           self.play(FadeOut(square))           # fade out animation
+           self.play(Create(square))  # animate the creation of the square
+           self.play(Transform(square, circle))  # interpolate the square into the circle
+           self.play(FadeOut(square))  # fade out animation
 
 And render it using the following command:
 

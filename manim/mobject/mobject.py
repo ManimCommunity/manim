@@ -13,7 +13,7 @@ import types
 import warnings
 from functools import reduce
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, TypeVar, Union
 
 import numpy as np
 from colour import Color
@@ -42,6 +42,7 @@ from ..utils.space_ops import (
 # TODO: Explain array_attrs
 
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
+T = TypeVar("T", bound="Mobject")
 
 
 class Mobject(Container):
@@ -647,7 +648,7 @@ class Mobject(Container):
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
-    def copy(self) -> "Mobject":
+    def copy(self: T) -> T:
         """Create and return an identical copy of the :class:`Mobject` including all :attr:`submobjects`.
 
         Returns
@@ -1781,6 +1782,29 @@ class Mobject(Container):
         index = np.argmax(np.dot(all_points, np.array(direction).T))
         return all_points[index]
 
+    def get_midpoint(self) -> np.ndarray:
+        """Get coordinates of the middle of the path that forms the  :class:`~.Mobject`.
+
+        Examples
+        --------
+
+        .. manim:: AngleMidPoint
+            :save_last_frame:
+
+            class AngleMidPoint(Scene):
+                def construct(self):
+                    line1 = Line(ORIGIN, 2*RIGHT)
+                    line2 = Line(ORIGIN, 2*RIGHT).rotate_about_origin(80*DEGREES)
+
+                    a = Angle(line1, line2, radius=1.5, other_angle=False)
+                    d = Dot(a.get_midpoint()).set_color(RED)
+
+                    self.add(line1, line2, a, d)
+                    self.wait()
+
+        """
+        return self.point_from_proportion(0.5)
+
     def get_top(self) -> np.ndarray:
         """Get top coordinates of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(UP)
@@ -2124,7 +2148,7 @@ class Mobject(Container):
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject):
+    def align_data(self, mobject: "Mobject"):
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
         self.align_points(mobject)
