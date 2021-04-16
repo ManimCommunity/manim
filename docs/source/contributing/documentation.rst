@@ -322,9 +322,9 @@ length with only integers.
 Adding type hints to functions and parameters
 ---------------------------------------------
 
-When you've never used type hints before, here is a good place to get startd:
+If you've never used type hints before, this is a good place to get started:
 https://realpython.com/python-type-checking/#hello-types
-By adding type hints to manim, there are some guidlines that should be followed:
+When adding type hints to manim, there are some guidelines that should be followed:
 * Coordinates have the typehint `Sequence[float]`, e.g.
 
 .. code:: py
@@ -342,13 +342,13 @@ By adding type hints to manim, there are some guidlines that should be followed:
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-* Colors have the typhint "Color", e.g.
+* Colors have the typehint "Color", e.g.
 
 .. code:: py
 
     def set_color(self, color: Color = YELLOW_C, family: bool = True):
         """Condition is function which takes in one arguments, (x, y, z)."""
 
-* As `float` and `Union[int,float]` are the same, use only `float`
+* As `float` and `Union[int, float]` are the same, use only `float`
 
 * For numpy arrays use the typehint `np.ndarray`
