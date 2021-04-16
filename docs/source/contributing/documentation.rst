@@ -358,7 +358,7 @@ When adding type hints to manim, there are some guidelines that should be follow
 
     def height(self, value) -> None:
         self.scale_to_fit_height(value)
-* When a paramter is None by default, it can get the type hint ``Optional`` 
+* When a parameter is None by default, it can get the type hint ``Optional``
 
 .. code:: py
 
@@ -369,17 +369,18 @@ When adding type hints to manim, there are some guidelines that should be follow
         about_point: Optional[Sequence[float]] = None,
         **kwargs,
     ):
+        pass
 
 
 * the .__init__() method always should have None as its return type.
 
-* functions and lambda functions should get the typehint `Callable`
+* functions and lambda functions should get the typehint ``Callable``
 
 .. code:: py
 
     rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
-    
-*  numpy arrays can get type hints with `np.ndarray`
+
+*  numpy arrays can get type hints with ``np.ndarray``
 
 Missing Sections
 ----------------
