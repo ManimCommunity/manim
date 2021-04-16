@@ -369,15 +369,15 @@ When adding type hints to manim, there are some guidelines that should be follow
         about_point: Optional[Sequence[float]] = None,
         **kwargs,
     ):
-    j = 42
-    
+
+
 * the .__init__() method always should have None as its return type.
 
 * functions and lambda functions should get the typehint `Callable`
 
 .. code:: py
 
-    rate_func: Callable[float] = lambda t: smooth(1 - t)
+    rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
     
 *  numpy arrays can get type hints with `np.ndarray`
 
