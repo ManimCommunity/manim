@@ -323,8 +323,9 @@ Adding type hints to functions and parameters
 ---------------------------------------------
 
 If you've never used type hints before, this is a good place to get started:
-https://realpython.com/python-type-checking/#hello-types
+https://realpython.com/python-type-checking/#hello-types.
 When adding type hints to manim, there are some guidelines that should be followed:
+
 * Coordinates have the typehint `Sequence[float]`, e.g.
 
 .. code:: py
