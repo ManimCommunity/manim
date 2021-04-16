@@ -70,7 +70,6 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
-        # self.model_matrix = np.eye(4)
         self.model_matrix = opengl.translation_matrix(0, 0, 11)
 
         super().__init__(**kwargs)

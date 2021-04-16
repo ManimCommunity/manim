@@ -3,7 +3,7 @@ from pathlib import Path
 
 from manim import *
 from manim.opengl import *
-from manim.utils.opengl import *
+import manim.utils.opengl as opengl
 import manim.utils.space_ops as space_ops
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
@@ -124,54 +124,115 @@ class CubeTest(Scene):
 
             total_time += dt
 
+        camera_target = ORIGIN
+
         def on_mouse_drag(point, d_point, buttons, modifiers):
-            # Rotation around the z axis.
-            angle_around_z_axis = -d_point[0]
-            self.camera.model_matrix = np.matmul(
-                rotation_matrix(z=angle_around_z_axis),
-                self.camera.model_matrix,
+            nonlocal camera_target
+            # Left click drag.
+            if buttons == 1:
+                # Translate to target the origin.
+                self.camera.model_matrix = (
+                    opengl.translation_matrix(*-camera_target)
+                    @ self.camera.model_matrix
+                )
+
+                # Rotation around the z axis.
+                self.camera.model_matrix = (
+                    opengl.rotation_matrix(z=-d_point[0]) @ self.camera.model_matrix
+                )
+
+                # Rotation off of the z axis.
+                camera_position = self.camera.get_position()
+                camera_y_axis = self.camera.model_matrix[:3, 1]
+                axis_of_rotation = space_ops.normalize(
+                    np.cross(camera_y_axis, camera_position)
+                )
+                inhomogeneous_rotation_matrix = space_ops.rotation_matrix(
+                    d_point[1], axis_of_rotation
+                )
+
+                # Convert to homogeneous coordinates.
+                rotation_matrix = np.eye(4)
+                rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
+
+                maximum_polar_angle = PI / 2
+                minimum_polar_angle = 0
+
+                potential_camera_model_matrix = (
+                    rotation_matrix @ self.camera.model_matrix
+                )
+                potential_camera_location = potential_camera_model_matrix[:3, 3]
+                potential_camera_y_axis = potential_camera_model_matrix[:3, 1]
+                sign = (
+                    np.sign(potential_camera_y_axis[2])
+                    if potential_camera_y_axis[2] != 0
+                    else 1
+                )
+                potential_polar_angle = sign * np.arccos(
+                    potential_camera_location[2]
+                    / np.linalg.norm(potential_camera_location)
+                )
+                if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
+                    self.camera.model_matrix = potential_camera_model_matrix
+                else:
+                    sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
+                    current_polar_angle = sign * np.arccos(
+                        camera_position[2] / np.linalg.norm(camera_position)
+                    )
+                    if potential_polar_angle > maximum_polar_angle:
+                        polar_angle_delta = maximum_polar_angle - current_polar_angle
+                    else:
+                        polar_angle_delta = minimum_polar_angle - current_polar_angle
+                    inhomogeneous_rotation_matrix = space_ops.rotation_matrix(
+                        polar_angle_delta, axis_of_rotation
+                    )
+                    # Convert to homogeneous coordinates.
+                    rotation_matrix = np.eye(4)
+                    rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
+                    self.camera.model_matrix = (
+                        rotation_matrix @ self.camera.model_matrix
+                    )
+
+                # Translate to target the original target.
+                self.camera.model_matrix = (
+                    opengl.translation_matrix(*camera_target) @ self.camera.model_matrix
+                )
+            # Right click drag.
+            elif buttons == 4:
+                # TODO: Check performance of Rodrigues formula.
+                camera_x_axis = self.camera.model_matrix[:3, 0]
+                horizontal_shift_vector = -d_point[0] * camera_x_axis
+                vertical_shift_vector = -np.cross(OUT, camera_x_axis) * d_point[1]
+                total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+
+                self.camera.model_matrix = (
+                    opengl.translation_matrix(*total_shift_vector)
+                    @ self.camera.model_matrix
+                )
+                camera_target += horizontal_shift_vector + vertical_shift_vector
+
+        def on_mouse_scroll(point, offset):
+            nonlocal camera_target
+            camera_to_target = camera_target - self.camera.get_position()
+            camera_to_target *= np.sign(offset[1])
+            shift_vector = 0.01 * camera_to_target
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
             )
-
-            # Rotation off of the z axis.
-            angle_off_z_axis = d_point[1]
-            origin_to_camera = self.camera.get_position()
-            axis_of_rotation = np.cross(OUT, origin_to_camera)
-            axis_of_rotation = space_ops.normalize(axis_of_rotation)
-
-            rot_matrix = space_ops.rotation_matrix(angle_off_z_axis, axis_of_rotation)
-
-            # Convert to homogeneous coordinates.
-            rot_matrix = np.hstack((rot_matrix, np.array([[0], [0], [0]])))
-            rot_matrix = np.vstack((rot_matrix, np.array([0, 0, 0, 1])))
-
-            self.camera.model_matrix = np.matmul(
-                rot_matrix,
-                self.camera.model_matrix,
-            )
-            # print(self.camera.get_position())
+            camera_target += shift_vector
 
         setattr(self, "on_mouse_drag", on_mouse_drag)
+        setattr(self, "on_mouse_scroll", on_mouse_scroll)
 
         self.camera.add_updater(update_camera)
 
-        # Rotate the camera TAU / 8 around the x axis.
-        # 1
-        self.camera.model_matrix = np.matmul(
-            rotation_matrix(x=TAU / 8),
-            self.camera.model_matrix,
-        )
-        # 2
-        self.camera.model_matrix = np.matmul(
-            rotation_matrix(z=TAU / 8),
-            self.camera.model_matrix,
-        )
-        # # 3
-        # self.camera.model_matrix = np.matmul(
-        #     rotation_matrix(y=TAU / 4),
-        #     self.camera.model_matrix,
+        # self.camera.model_matrix = (
+        #     opengl.rotation_matrix(x=TAU / 8) @ self.camera.model_matrix
+        # )
+        # self.camera.model_matrix = (
+        #     opengl.rotation_matrix(z=TAU / 8) @ self.camera.model_matrix
         # )
 
-        # self.wait(1)
         self.embed_2()
 
 
