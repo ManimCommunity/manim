@@ -8,7 +8,7 @@ from .graph import Graph
 from .three_dimensions import Dot3D
 from .types.vectorized_mobject import VMobject, VGroup
 
-__all__ = ["Polyhedra", "Tetrahedron", "Octahedron"]
+__all__ = ["Polyhedra", "Tetrahedron", "Octahedron", "Icosahedron"]
 
 class Polyhedra(VGroup):
     """An abstract polyhedra class.
@@ -92,5 +92,53 @@ class Octahedron(Polyhedra):
                 [1, 5, 3],
                 [2, 5, 1],
                 [0, 5, 2]
+            ]
+        )
+
+class Icosahedron(Polyhedra):
+    """An icosahedron."""
+    def __init__(
+        self,
+        side_length
+    ):
+        unit_a = side_length * ((1 + np.sqrt(5))/4)
+        unit_b = side_length * (1/2)
+        Polyhedra.__init__(
+            self,
+            vertices = [
+                np.array([0, unit_b, unit_a]),
+                np.array([0, -unit_b, unit_a]),
+                np.array([0, unit_b, -unit_a]),
+                np.array([0, -unit_b, -unit_a]),
+                np.array([unit_b, unit_a, 0]),
+                np.array([unit_b, -unit_a, 0]),
+                np.array([-unit_b, unit_a, 0]),
+                np.array([-unit_b, -unit_a, 0]),
+                np.array([unit_a, 0, unit_b]),
+                np.array([unit_a, 0, -unit_b]),
+                np.array([-unit_a, 0, unit_b]),
+                np.array([-unit_a, 0, -unit_b]),
+            ],
+            faces = [
+                [1, 8, 0],
+                [1, 5, 7],
+                [8, 5, 1],
+                [7, 3, 5],
+                [5, 9, 3],
+                [8, 9, 5],
+                [3, 2, 9],
+                [9, 4, 2],
+                [8, 4, 9],
+                [0, 4, 8],
+                [6, 4, 0],
+                [6, 2, 4],
+                [11, 2, 6],
+                [3, 11, 2],
+                [0, 6, 10],
+                [10, 1, 0],
+                [10, 7, 1],
+                [11, 7, 3],
+                [10, 11, 7],
+                [10, 11, 6]
             ]
         )

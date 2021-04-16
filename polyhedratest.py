@@ -37,3 +37,9 @@ class OctahedronTest(ThreeDScene):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         a = Octahedron(side_length=3)
         self.add(a)
+
+class IcosahedronTest(ThreeDScene):
+    def construct(self):
+        self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+        a = Icosahedron(side_length=3)
+        self.add(a)
