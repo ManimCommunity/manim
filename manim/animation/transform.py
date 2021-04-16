@@ -26,7 +26,17 @@ __all__ = [
 
 import inspect
 import types
-import typing
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 
@@ -38,26 +48,30 @@ from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
 from ..utils.paths import path_along_arc, straight_path
 from ..utils.rate_functions import smooth, squish_rate_func
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from ..scene.scene import Scene
 
 
 class Transform(Animation):
     def __init__(
         self,
-        mobject: Mobject,
-        target_mobject: typing.Optional[Mobject] = None,
-        path_func: typing.Optional[typing.Callable] = None,
+        mobject: Optional[Mobject],
+        target_mobject: Optional[Mobject] = None,
+        path_func: Optional[Callable] = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
-        self.path_arc = path_arc
-        self.path_func = path_func
-        self.path_arc_axis = path_arc_axis
-        self.replace_mobject_with_target_in_scene = replace_mobject_with_target_in_scene
-        self.target_mobject = target_mobject
+        self.path_arc: float = path_arc
+        self.path_func: Optional[Callable] = path_func
+        self.path_arc_axis: np.ndarray = path_arc_axis
+        self.replace_mobject_with_target_in_scene: bool = (
+            replace_mobject_with_target_in_scene
+        )
+        self.target_mobject: Mobject = (
+            target_mobject if target_mobject is not None else Mobject()
+        )
         super().__init__(mobject, **kwargs)
         self._init_path_func()
 
@@ -77,7 +91,6 @@ class Transform(Animation):
         # call so that the actual target_mobject stays
         # preserved.
         self.target_mobject = self.create_target()
-        self.check_target_mobject_validity()
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
@@ -87,16 +100,10 @@ class Transform(Animation):
             self.mobject.align_data(self.target_copy)
         super().begin()
 
-    def create_target(self) -> typing.Union[Mobject, None]:
+    def create_target(self) -> Mobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
-
-    def check_target_mobject_validity(self) -> None:
-        if self.target_mobject is None:
-            raise NotImplementedError(
-                f"{self.__class__.__name__}.create_target not properly implemented"
-            )
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
         super().clean_up_from_scene(scene)
@@ -104,14 +111,7 @@ class Transform(Animation):
             scene.remove(self.mobject)
             scene.add(self.target_mobject)
 
-    def update_config(self, **kwargs: typing.Dict[str, typing.Any]) -> None:
-        Animation.update_config(self, **kwargs)
-        if "path_arc" in kwargs:
-            self.path_func = path_along_arc(
-                kwargs["path_arc"], kwargs.get("path_arc_axis", OUT)
-            )
-
-    def get_all_mobjects(self) -> typing.List[Mobject]:
+    def get_all_mobjects(self) -> List[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,
@@ -119,17 +119,13 @@ class Transform(Animation):
             self.target_copy,
         ]
 
-    def get_all_families_zipped(self) -> typing.Iterable[tuple]:  # more precise typing?
-        return zip(
-            *[
-                mob.family_members_with_points()
-                for mob in [
-                    self.mobject,
-                    self.starting_mobject,
-                    self.target_copy,
-                ]
-            ]
-        )
+    def get_all_families_zipped(self) -> Iterable[tuple]:  # more precise typing?
+        mobs = [
+            self.mobject,
+            self.starting_mobject,
+            self.target_copy,
+        ]
+        return zip(*[mob.family_members_with_points() for mob in mobs])
 
     def interpolate_submobject(
         self,
@@ -137,7 +133,7 @@ class Transform(Animation):
         starting_submobject: Mobject,
         target_copy: Mobject,
         alpha: float,
-    ) -> "Transform":  # doesn't match the parent class?
+    ) -> "Transform":
         submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 
@@ -203,8 +199,8 @@ class _MethodAnimation(MoveToTarget):
 
 class ApplyMethod(Transform):
     def __init__(
-        self, method: types.MethodType, *args, **kwargs
-    ) -> None:  # method typing? for args?
+        self, method: Callable, *args, **kwargs
+    ) -> None:  # method typing (we want to specify Mobject method)? for args?
         """
         Method is a method of Mobject, ``args`` are arguments for
         that method.  Key word arguments should be passed in
@@ -218,7 +214,7 @@ class ApplyMethod(Transform):
         self.method_args = args
         super().__init__(method.__self__, **kwargs)
 
-    def check_validity_of_input(self, method: types.MethodType) -> None:
+    def check_validity_of_input(self, method: Callable) -> None:
         if not inspect.ismethod(method):
             raise ValueError(
                 "Whoops, looks like you accidentally invoked "
@@ -306,7 +302,8 @@ class ApplyFunction(Transform):
         self.function = function
         super().__init__(mobject, **kwargs)
 
-    def create_target(self) -> typing.Any:
+    def create_target(self) -> Any:
+        assert isinstance(self.mobject, Mobject)
         target = self.function(self.mobject.copy())
         if not isinstance(target, Mobject):
             raise TypeError(
@@ -375,7 +372,7 @@ class TransformAnimations(Transform):
         self,
         start_anim: Animation,
         end_anim: Animation,
-        rate_func: typing.Callable = squish_rate_func(smooth),
+        rate_func: Callable = squish_rate_func(smooth),
         **kwargs,
     ) -> None:
         self.start_anim = start_anim
@@ -386,14 +383,15 @@ class TransformAnimations(Transform):
             self.run_time = max(start_anim.run_time, end_anim.run_time)
         for anim in start_anim, end_anim:
             anim.set_run_time(self.run_time)
-
         if (
-            start_anim.starting_mobject.get_num_points()
+            start_anim.starting_mobject is not None
+            and end_anim.starting_mobject is not None
+            and start_anim.starting_mobject.get_num_points()
             != end_anim.starting_mobject.get_num_points()
         ):
             start_anim.starting_mobject.align_data(end_anim.starting_mobject)
             for anim in start_anim, end_anim:
-                if hasattr(anim, "target_mobject"):
+                if isinstance(anim, Transform) and anim.starting_mobject is not None:
                     anim.starting_mobject.align_data(anim.target_mobject)
 
         super().__init__(
