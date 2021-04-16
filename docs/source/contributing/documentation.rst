@@ -390,3 +390,4 @@ Missing Sections
 * Link to MyPy
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
 * Where to find the alias
+* How to use "VMobject" , "Mobject" typehints?
