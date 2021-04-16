@@ -420,16 +420,28 @@ class MathTex(SingleStringMathTex):
         if self.tex_to_color_map is None:
             self.tex_to_color_map = {}
         self.tex_environment = tex_environment
+        self.brace_notation_split_occurred = False
         tex_strings = self.break_up_tex_strings(tex_strings)
         self.tex_strings = tex_strings
-        SingleStringMathTex.__init__(
-            self,
-            self.arg_separator.join(tex_strings),
-            tex_environment=self.tex_environment,
-            tex_template=self.tex_template,
-            **kwargs,
-        )
-        self.break_up_by_substrings()
+        try:
+            SingleStringMathTex.__init__(
+                self,
+                self.arg_separator.join(tex_strings),
+                tex_environment=self.tex_environment,
+                tex_template=self.tex_template,
+                **kwargs,
+            )
+            self.break_up_by_substrings()
+        except ValueError as compilation_error:
+            if self.brace_notation_split_occurred:
+                logger.error(
+                    "A group of double braces, {{ ... }}, was detected in your string. "
+                    " Manim splits TeX strings at the double braces, which might have "
+                    "caused the current compilation error. If you didn't use the "
+                    "double brace split intentionally, add spaces between the "
+                    "braces to avoid the automatic splitting: {{ ... }} --> { { ... } }."
+                )
+            raise compilation_error
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
         if self.organize_left_to_right:
@@ -437,8 +449,11 @@ class MathTex(SingleStringMathTex):
 
     def break_up_tex_strings(self, tex_strings):
         # Separate out anything surrounded in double braces
+        pre_split_length = len(tex_strings)
         tex_strings = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
         tex_strings = sum(tex_strings, [])
+        if len(tex_strings) > pre_split_length:
+            self.brace_notation_split_occurred = True
 
         # Separate out any strings specified in the isolate
         # or tex_to_color_map lists.
