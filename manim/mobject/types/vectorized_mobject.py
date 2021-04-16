@@ -13,7 +13,6 @@ __all__ = [
 
 import itertools as it
 import sys
-
 from abc import ABCMeta
 from typing import Iterable, Optional, Sequence
 
