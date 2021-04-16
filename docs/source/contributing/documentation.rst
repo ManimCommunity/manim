@@ -326,14 +326,14 @@ If you've never used type hints before, this is a good place to get started:
 https://realpython.com/python-type-checking/#hello-types.
 When adding type hints to manim, there are some guidelines that should be followed:
 
-* Coordinates have the typehint `Sequence[float]`, e.g.
+* Coordinates have the typehint ``Sequence[float]``, e.g.
 
 .. code:: py
 
     def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
         """Given an array of points, set them as corner of the Vmobject."""
 
-* `**kwargs` has no typehint
+* ``**kwargs`` has no typehint
 
 * Mobjects have the typehint "Mobject", e.g.
 
@@ -343,13 +343,13 @@ When adding type hints to manim, there are some guidelines that should be follow
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-* Colors have the typehint "Color", e.g.
+* Colors have the typehint ``Color``, e.g.
 
 .. code:: py
 
     def set_color(self, color: Color = YELLOW_C, family: bool = True):
         """Condition is function which takes in one arguments, (x, y, z)."""
 
-* As `float` and `Union[int, float]` are the same, use only `float`
+* As ``float`` and ``Union[int, float]`` are the same, use only ``float``
 
-* For numpy arrays use the typehint `np.ndarray`
+* For numpy arrays use the typehint ``np.ndarray``
