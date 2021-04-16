@@ -7,6 +7,7 @@ from ..utils.testing_utils import get_scenes_to_test
 
 EPSILON = 1e-5
 
+
 class PlotFunctions(GraphScene):
     def __init__(self, **kwargs):
         GraphScene.__init__(
@@ -30,6 +31,7 @@ class PlotFunctions(GraphScene):
 
         self.add(f)
 
+
 class PlotFunctionWithDiscontinuitiesTest(GraphScene):
     def construct(self):
         self.x_axis_label, self.y_axis_label = None, None
@@ -41,9 +43,10 @@ class PlotFunctionWithDiscontinuitiesTest(GraphScene):
             discontinuities=range(-2, 2),
         )
         self.play(Animation(func_graph))
-        
+
 
 MODULE_NAME = "plot"
+
 
 @pytest.mark.slow
 @pytest.mark.parametrize("scene_to_test", get_scenes_to_test(__name__), indirect=False)
