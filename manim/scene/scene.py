@@ -85,7 +85,6 @@ class Scene(Container):
         self.duration = None
         self.last_t = None
         self.queue = Queue()
-        self.saved_methods = {}
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -957,7 +956,6 @@ class Scene(Container):
 
         local_namespace = inspect.currentframe().f_back.f_locals
         for method in ("play", "wait", "add", "remove"):
-            self.saved_methods[method] = getattr(self, method)
             embedded_method = get_embedded_method(method)
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
@@ -988,7 +986,7 @@ class Scene(Container):
                         config["from_animation_number"] = kwargs[
                             "from_animation_number"
                         ]
-                    # # TODO: This option only makes sense if embed_2() is run at the
+                    # # TODO: This option only makes sense if interactive_embed() is run at the
                     # # end of a scene by default.
                     # if "upto_animation_number" in kwargs:
                     #     config["upto_animation_number"] = kwargs[
@@ -1003,17 +1001,12 @@ class Scene(Container):
                     break
                 else:
                     method, args, kwargs = tup
-                    self.saved_methods[method](*args, **kwargs)
+                    getattr(self, method)(*args, **kwargs)
             else:
                 self.renderer.animation_start_time = 0
                 dt = 1 / config["frame_rate"]
                 self.renderer.render(self, dt, self.moving_mobjects)
                 self.update_mobjects(dt)
-
-        # Restore overridden methods.
-        for name, method in self.saved_methods.items():
-            setattr(self, name, method)
-        self.saved_methods = {}
 
         # Join the keyboard thread if necessary.
         if shell is not None and keyboard_thread_needs_join:
