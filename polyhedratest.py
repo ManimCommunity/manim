@@ -24,3 +24,16 @@ class Test(ThreeDScene):
         ]
         a = Polyhedra(vertices, faces)
         self.add(a)
+        self.remove(a.faces)
+
+class TetrahedronTest(ThreeDScene):
+    def construct(self):
+        self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+        a = Tetrahedron()
+        self.add(a)
+
+class OctahedronTest(ThreeDScene):
+    def construct(self):
+        self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+        a = Octahedron(side_length=3)
+        self.add(a)
