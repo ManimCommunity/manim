@@ -43,6 +43,7 @@ class IcosahedronTest(ThreeDScene):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         a = Icosahedron(side_length=3)
         self.add(a)
+        self.play(a.graph[0].animate.move_to(ORIGIN))
 
 class DodecahedronTest(ThreeDScene):
     def construct(self):

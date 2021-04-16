@@ -15,25 +15,26 @@ class Polyhedron(VGroup):
     """
     def __init__(
         self,
-        vertices: List[np.ndarray],
-        faces: List[List[Hashable]],
+        vertex_coords: List[np.ndarray],
+        faces_list: List[List[Hashable]],
         faces_config = {},
         graph_config = {}
     ):
         VGroup.__init__(self)
-        self.vertices = vertices
-        self.vertex_indices = list(range(len(self.vertices)))
-        self.layout = dict(enumerate(self.vertices))
-        self.faces = faces
-        self.face_coords = [[self.layout[j] for j in i] for i in faces]
-        self.edges = self.get_edges(self.faces)
-        self.add(self.create_faces(self.face_coords))
-        self.add(Graph(self.vertex_indices, self.edges, layout=self.layout, vertex_type=Dot3D))
+        self.vertex_coords = vertex_coords
+        self.vertex_indices = list(range(len(self.vertex_coords)))
+        self.layout = dict(enumerate(self.vertex_coords))
+        self.faces_list = faces_list
+        self.face_coords = [[self.layout[j] for j in i] for i in faces_list]
+        self.edges = self.get_edges(self.faces_list)
+        self.faces = self.create_faces(self.face_coords)
+        self.graph = Graph(self.vertex_indices, self.edges, layout=self.layout, vertex_type=Dot3D)
+        self.add(self.faces, self.graph)
 
-    def get_edges(self, faces):
+    def get_edges(self, faces_list):
         """Creates list of cyclic pairwise tuples."""
         edges = []
-        for face in faces:
+        for face in faces_list:
             edges += zip(face, face[1:] + face[:1])
         return edges
 
@@ -52,13 +53,13 @@ class Tetrahedron(Polyhedron):
         unit = side_length*np.sqrt(2)/4
         Polyhedron.__init__(
             self,
-            vertices = [
+            vertex_coords = [
                 np.array([unit, unit, unit]),
                 np.array([unit, -unit, -unit]),
                 np.array([-unit, unit, -unit]),
                 np.array([-unit, -unit, unit])
             ],
-            faces = [
+            faces_list = [
                 [0, 1, 2],
                 [3, 0, 2],
                 [0, 1, 3],
@@ -75,7 +76,7 @@ class Octahedron(Polyhedron):
         unit = side_length * np.sqrt(2) / 2
         Polyhedron.__init__(
             self,
-            vertices = [
+            vertex_coords = [
                 np.array([unit, 0, 0]),
                 np.array([-unit, 0, 0]),
                 np.array([0, unit, 0]),
@@ -83,7 +84,7 @@ class Octahedron(Polyhedron):
                 np.array([0, 0, unit]),
                 np.array([0, 0, -unit])
             ],
-            faces = [
+            faces_list = [
                 [2, 4, 1],
                 [0, 4, 2],
                 [4, 3, 0],
@@ -105,7 +106,7 @@ class Icosahedron(Polyhedron):
         unit_b = side_length * (1/2)
         Polyhedron.__init__(
             self,
-            vertices = [
+            vertex_coords = [
                 np.array([0, unit_b, unit_a]),
                 np.array([0, -unit_b, unit_a]),
                 np.array([0, unit_b, -unit_a]),
@@ -119,7 +120,7 @@ class Icosahedron(Polyhedron):
                 np.array([-unit_a, 0, unit_b]),
                 np.array([-unit_a, 0, -unit_b]),
             ],
-            faces = [
+            faces_list = [
                 [1, 8, 0],
                 [1, 5, 7],
                 [8, 5, 1],
@@ -154,7 +155,7 @@ class Dodecahedron(Polyhedron):
         unit_c = side_length * (1/2)
         Polyhedron.__init__(
             self,
-            vertices = [
+            vertex_coords = [
                 np.array([unit_a, unit_a, unit_a]),
                 np.array([unit_a, unit_a, -unit_a]),
                 np.array([unit_a, -unit_a, unit_a]),
@@ -176,7 +177,7 @@ class Dodecahedron(Polyhedron):
                 np.array([unit_b, 0, -unit_c]),
                 np.array([-unit_b, 0, -unit_c]),                                              
             ],
-            faces = [
+            faces_list = [
                 [18, 16, 0, 12, 1],
                 [3, 18, 16, 2, 14],
                 [3, 10, 9, 1, 18],
