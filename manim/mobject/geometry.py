@@ -238,10 +238,10 @@ class TipableVMobject(metaclass=MetaVMobject):
         return self.tip_length
 
     def get_first_handle(self):
-        return self.points[1]
+        return self.get_points()[1]
 
     def get_last_handle(self):
-        return self.points[-2]
+        return self.get_points()[-2]
 
     def get_end(self):
         if self.has_tip():
