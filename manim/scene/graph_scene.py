@@ -47,6 +47,7 @@ __all__ = ["GraphScene"]
 
 
 import itertools as it
+import typing
 
 from .. import config
 from ..animation.creation import Create, DrawBorderThenFill, Write
@@ -59,10 +60,11 @@ from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
-from ..utils.bezier import interpolate
+from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLACK,
     BLUE,
+    Colors,
     GREEN,
     GREY,
     WHITE,
@@ -335,7 +337,15 @@ class GraphScene(Scene):
         """
         return (self.x_axis.point_to_number(point), self.y_axis.point_to_number(point))
 
-    def get_graph(self, func, color=None, x_min=None, x_max=None, **kwargs):
+    def get_graph(
+        self,
+        func: typing.Callable[[float], float],
+        color: Colors = None,
+        x_min: float = None,
+        x_max: float = None,
+        discontinuities: typing.Iterable[float] = None,
+        **kwargs,
+    ):
         """This method gets a curve to plot on the graph.
 
         Parameters
@@ -352,6 +362,9 @@ class GraphScene(Scene):
 
         x_max : Optional[:class:`float`]
             The higher x_value until which to plot the curve.
+
+        discontinuities : Iterable[float]
+            The eventual discontinuities of the function.
 
         **kwargs :
             Any valid keyword arguments of :class:`~.ParametricFunction`.
@@ -376,7 +389,16 @@ class GraphScene(Scene):
                 y = self.y_max
             return self.coords_to_point(x, y)
 
-        graph = ParametricFunction(parameterized_function, color=color, **kwargs)
+        graph = ParametricFunction(
+            parameterized_function,
+            color=color,
+            discontinuities=[
+                inverse_interpolate(x_min, x_max, k) for k in discontinuities
+            ]
+            if discontinuities is not None
+            else None,
+            **kwargs,
+        )
         graph.underlying_function = func
         return graph
 
