@@ -164,14 +164,20 @@ def rotation_matrix_transpose(angle, axis):
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle, axis):
+def rotation_matrix(angle, axis, homogeneous=False):
     """
     Rotation in R^3 about a specified axis of rotation.
     """
     about_z = rotation_about_z(angle)
     z_to_axis = z_to_vector(axis)
     axis_to_z = np.linalg.inv(z_to_axis)
-    return reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    inhomogeneous_matrix = reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    if not homogeneous:
+        return inhomogeneous_rotation_matrix
+    else:
+        rotation_matrix = np.eye(4)
+        rotation_matrix[:3, :3] = inhomogeneous_matrix
+        return rotation_matrix
 
 
 def rotation_about_z(angle):

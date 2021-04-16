@@ -27,28 +27,11 @@ def orthographic_projection_matrix(width=None, height=None, near=1, far=depth + 
     )
 
 
-def perspective_projection_matrix(fov=None, near=1, far=depth + 1):
-    if fov is None:
-        fov = 65
-    scale = 1 / np.tan((fov / 2) * (np.pi / 180))
-
-    return tuple(
-        np.array(
-            [
-                [scale, 0, 0, 0],
-                [0, scale, 0, 0],
-                [0, 0, -far / (far - near), -1],
-                [0, 0, -(far * near) / (far - near), 1],
-            ]
-        ).T.ravel()
-    )
-
-
-def perspective_projection_matrix_2(width=None, height=None, near=7, far=depth + 1):
+def perspective_projection_matrix(width=None, height=None, near=4, far=18):
     if width is None:
-        width = config["frame_width"]
+        width = config["frame_width"] / 3
     if height is None:
-        height = config["frame_height"]
+        height = config["frame_height"] / 3
 
     return tuple(
         np.array(

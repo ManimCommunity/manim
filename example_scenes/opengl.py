@@ -130,15 +130,11 @@ class CubeTest(Scene):
             nonlocal camera_target
             # Left click drag.
             if buttons == 1:
-                # Translate to target the origin.
+                # Translate to target the origin and rotate around the z axis.
                 self.camera.model_matrix = (
-                    opengl.translation_matrix(*-camera_target)
+                    opengl.rotation_matrix(z=-d_point[0])
+                    @ opengl.translation_matrix(*-camera_target)
                     @ self.camera.model_matrix
-                )
-
-                # Rotation around the z axis.
-                self.camera.model_matrix = (
-                    opengl.rotation_matrix(z=-d_point[0]) @ self.camera.model_matrix
                 )
 
                 # Rotation off of the z axis.
@@ -147,13 +143,9 @@ class CubeTest(Scene):
                 axis_of_rotation = space_ops.normalize(
                     np.cross(camera_y_axis, camera_position)
                 )
-                inhomogeneous_rotation_matrix = space_ops.rotation_matrix(
-                    d_point[1], axis_of_rotation
+                rotation_matrix = space_ops.rotation_matrix(
+                    d_point[1], axis_of_rotation, homogeneous=True
                 )
-
-                # Convert to homogeneous coordinates.
-                rotation_matrix = np.eye(4)
-                rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
 
                 maximum_polar_angle = PI / 2
                 minimum_polar_angle = 0
@@ -183,12 +175,9 @@ class CubeTest(Scene):
                         polar_angle_delta = maximum_polar_angle - current_polar_angle
                     else:
                         polar_angle_delta = minimum_polar_angle - current_polar_angle
-                    inhomogeneous_rotation_matrix = space_ops.rotation_matrix(
-                        polar_angle_delta, axis_of_rotation
+                    rotation_matrix = space_ops.rotation_matrix(
+                        polar_angle_delta, axis_of_rotation, homogeneous=True
                     )
-                    # Convert to homogeneous coordinates.
-                    rotation_matrix = np.eye(4)
-                    rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
                     self.camera.model_matrix = (
                         rotation_matrix @ self.camera.model_matrix
                     )
@@ -199,17 +188,16 @@ class CubeTest(Scene):
                 )
             # Right click drag.
             elif buttons == 4:
-                # TODO: Check performance of Rodrigues formula.
                 camera_x_axis = self.camera.model_matrix[:3, 0]
                 horizontal_shift_vector = -d_point[0] * camera_x_axis
-                vertical_shift_vector = -np.cross(OUT, camera_x_axis) * d_point[1]
+                vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
                 total_shift_vector = horizontal_shift_vector + vertical_shift_vector
 
                 self.camera.model_matrix = (
                     opengl.translation_matrix(*total_shift_vector)
                     @ self.camera.model_matrix
                 )
-                camera_target += horizontal_shift_vector + vertical_shift_vector
+                camera_target += total_shift_vector
 
         def on_mouse_scroll(point, offset):
             nonlocal camera_target
@@ -219,7 +207,6 @@ class CubeTest(Scene):
             self.camera.model_matrix = (
                 opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
             )
-            camera_target += shift_vector
 
         setattr(self, "on_mouse_drag", on_mouse_drag)
         setattr(self, "on_mouse_scroll", on_mouse_scroll)
