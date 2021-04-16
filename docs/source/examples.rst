@@ -489,7 +489,14 @@ Special Camera Settings
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
+.. note::
+
+   These ThreeD examples are videos, however, only the last frame of these examples
+    because they slow down the build of the documentation.
+
+
 .. manim:: ThreeDCameraRotation
+    :save_last_frame:
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
 
@@ -506,6 +513,7 @@ Special Camera Settings
             self.wait()
 
 .. manim:: ThreeDCameraIllusionRotation
+    :save_last_frame:
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
 
@@ -520,6 +528,7 @@ Special Camera Settings
             self.stop_3dillusion_camera_rotation()
 
 .. manim:: ThreeDFunctionPlot
+    :save_last_frame:
     :ref_classes: ThreeDScene ParametricSurface
 
     class ThreeDFunctionPlot(ThreeDScene):
@@ -577,6 +586,7 @@ Advanced Projects
 =================
 
 .. manim:: OpeningManim
+    :save_last_frame:
     :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane Create
     :ref_methods: NumberPlane.prepare_for_nonlinear_transform
 
