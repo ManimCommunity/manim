@@ -8,9 +8,9 @@ from .graph import Graph
 from .three_dimensions import Dot3D
 from .types.vectorized_mobject import VMobject, VGroup
 
-__all__ = ["Polyhedra", "Tetrahedron", "Octahedron", "Icosahedron"]
+__all__ = ["Polyhedron", "Tetrahedron", "Octahedron", "Icosahedron", "Dodecahedron"]
 
-class Polyhedra(VGroup):
+class Polyhedron(VGroup):
     """An abstract polyhedra class.
     """
     def __init__(
@@ -43,14 +43,14 @@ class Polyhedra(VGroup):
             face_group.add(Polygon(*face, fill_opacity=0.5, shade_in_3d=True))
         return face_group
 
-class Tetrahedron(Polyhedra):
+class Tetrahedron(Polyhedron):
     """A tetrahedron."""
     def __init__(
         self,
         side_length=1
     ):
         unit = side_length*np.sqrt(2)/4
-        Polyhedra.__init__(
+        Polyhedron.__init__(
             self,
             vertices = [
                 np.array([unit, unit, unit]),
@@ -66,14 +66,14 @@ class Tetrahedron(Polyhedra):
             ]
         )
 
-class Octahedron(Polyhedra):
+class Octahedron(Polyhedron):
     """An octahedron."""
     def __init__(
         self,
         side_length=1
     ):
         unit = side_length * np.sqrt(2) / 2
-        Polyhedra.__init__(
+        Polyhedron.__init__(
             self,
             vertices = [
                 np.array([unit, 0, 0]),
@@ -95,7 +95,7 @@ class Octahedron(Polyhedra):
             ]
         )
 
-class Icosahedron(Polyhedra):
+class Icosahedron(Polyhedron):
     """An icosahedron."""
     def __init__(
         self,
@@ -103,7 +103,7 @@ class Icosahedron(Polyhedra):
     ):
         unit_a = side_length * ((1 + np.sqrt(5))/4)
         unit_b = side_length * (1/2)
-        Polyhedra.__init__(
+        Polyhedron.__init__(
             self,
             vertices = [
                 np.array([0, unit_b, unit_a]),
@@ -140,5 +140,54 @@ class Icosahedron(Polyhedra):
                 [11, 7, 3],
                 [10, 11, 7],
                 [10, 11, 6]
+            ]
+        )
+
+class Dodecahedron(Polyhedron):
+    """A dodecahedron."""
+    def __init__(
+        self,
+        side_length=1
+    ):
+        unit_a = side_length * ((1 + np.sqrt(5))/4)
+        unit_b = side_length * ((3 + np.sqrt(5))/4)
+        unit_c = side_length * (1/2)
+        Polyhedron.__init__(
+            self,
+            vertices = [
+                np.array([unit_a, unit_a, unit_a]),
+                np.array([unit_a, unit_a, -unit_a]),
+                np.array([unit_a, -unit_a, unit_a]),
+                np.array([unit_a, -unit_a, -unit_a]),
+                np.array([-unit_a, unit_a, unit_a]),
+                np.array([-unit_a, unit_a, -unit_a]),
+                np.array([-unit_a, -unit_a, unit_a]),
+                np.array([-unit_a, -unit_a, -unit_a]),
+                np.array([0, unit_c, unit_b]),
+                np.array([0, unit_c, -unit_b]),
+                np.array([0, -unit_c, -unit_b]),
+                np.array([0, -unit_c, unit_b]),
+                np.array([unit_c, unit_b, 0]),
+                np.array([-unit_c, unit_b, 0]),
+                np.array([unit_c, -unit_b, 0]),
+                np.array([-unit_c, -unit_b, 0]),
+                np.array([unit_b, 0, unit_c]),
+                np.array([-unit_b, 0, unit_c]),
+                np.array([unit_b, 0, -unit_c]),
+                np.array([-unit_b, 0, -unit_c]),                                              
+            ],
+            faces = [
+                [18, 16, 0, 12, 1],
+                [3, 18, 16, 2, 14],
+                [3, 10, 9, 1, 18],
+                [1, 9, 5, 13, 12],
+                [0, 8, 4, 13, 12],
+                [2, 16, 0, 8, 11],
+                [4, 17, 6, 11, 8],
+                [17, 19, 5, 13, 4],
+                [19, 7, 15, 6, 17],
+                [6, 15, 14, 2, 11],
+                [19, 5, 9, 10, 7],
+                [7, 10, 3, 14, 15]
             ]
         )
