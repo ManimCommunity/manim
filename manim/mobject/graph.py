@@ -1,7 +1,7 @@
 """Mobjects used to represent mathematical graphs (think graph theory, not plotting)."""
 
 __all__ = [
-    "Graph"
+    "Graph",
 ]
 
 from copy import copy
@@ -11,9 +11,9 @@ import networkx as nx
 import numpy as np
 
 from ..utils.color import BLACK
-from .geometry import Dot, LabeledDot, Line, Polygon
+from .geometry import Dot, LabeledDot, Line
 from .svg.tex_mobject import MathTex
-from .types.vectorized_mobject import VMobject, VGroup
+from .types.vectorized_mobject import VMobject
 
 
 def _determine_graph_layout(

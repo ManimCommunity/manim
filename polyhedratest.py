@@ -50,3 +50,14 @@ class DodecahedronTest(ThreeDScene):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         a = Dodecahedron(side_length=3)
         self.add(a)
+
+class UpdatersTest(ThreeDScene):
+    def construct(self):
+        self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+        vertices = [[1, 1, 1], [1, -1, -1], [-1, 1, 0], [-1, -1, 0]]
+        faces = [[0, 1, 2, 3]]
+        a = Polyhedron(vertices, faces)
+        self.add(a)
+        self.remove(a.faces)
+        self.play(a.graph[0].animate.move_to(ORIGIN))
+        self.wait()
