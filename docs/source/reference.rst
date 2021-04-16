@@ -125,6 +125,7 @@ Utilities
    ~utils.hashing
    ~utils.ipython_magic
    ~utils.images
+   ~utils.inspection
    ~utils.iterables
    ~utils.paths
    ~utils.rate_functions

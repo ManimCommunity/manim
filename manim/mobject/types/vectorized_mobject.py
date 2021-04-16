@@ -41,7 +41,7 @@ from ...utils.space_ops import get_norm, rotate_vector, shoelace_direction
 #   That's kind of weird.
 
 
-class VMobject(Mobject):
+class VMobject(Mobject, mobject_type=True):
     def __init__(
         self,
         fill_color=None,

@@ -29,6 +29,7 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
+from ..utils.inspection import new_methods_in_child_class
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
@@ -61,8 +62,118 @@ class Mobject(Container):
         .. seealso::
 
         :class:`~.VMobject`
+    mobject_type : Type[:class:`Mobject`]
+        What type of mobject the mobject is.
+
+        .. seealso::
+
+            :meth:`mark_as_mobject_type`
+    types : List[Type[:class:`Mobject`]]
+        A list of all mobject types.
 
     """
+
+    types = []
+
+    @classmethod
+    def get_group_class(cls):
+        """Gets the group class.
+
+        Primarily for backwards compatibility,
+        but also for parity with :meth:`set_group_class`.
+
+        Returns
+        -------
+        Type[:class:`Mobject`]
+            The group class.
+        """
+
+        return cls.Group
+
+    @classmethod
+    def set_group_class(cls, group_cls: type):
+        """Sets the group class of the class.
+
+        Sets the appropriate attributes to make ``group_cls``
+        appear as if defined under the class.
+
+        Parameters
+        ----------
+        group_cls
+            The class to set as the group class.
+        """
+
+        group_cls.__name__ = "Group"
+        group_cls.__qualname__ = f"{cls.__qualname__}.{group_cls.__name__}"
+        group_cls.__module__ = cls.__module__
+
+        for method in new_methods_in_child_class(group_cls, parent=cls):
+            method.__qualname__ = f"{group_cls.__qualname__}.{method.__name__}"
+
+        cls.Group = group_cls
+
+    @classmethod
+    def mark_as_mobject_type(cls):
+        """Marks a class as a mobject type.
+
+        A mobject type is a subclass of :class:`Mobject` that
+        defines how shapes are formed. For instance, :class:`~.VMobject`
+        defines how shapes are formed: through bezier curves. A
+        :class:`~.VMobject` will always be a :class:`~.VMobject`, unlike
+        a :class:`~.Square` object which can be transformed from the shape
+        of a square to the shape of a circle. Whatever shape the
+        :class:`~.Square` object is, square or not, it will always define its
+        shape in the framework laid out by :class:`~.VMobject`.
+
+        When defining a subclass of :class:`Mobject`, you can also do::
+
+            class MyMobjectType(Mobject, mobject_type=True):
+                ...
+
+        Doing so will mark ``MyMobjectType`` as a mobject type.
+        """
+
+        # The default group class
+        class Group(cls):
+            def __init__(self, *mobjects, typecheck=True, **kwargs):
+                super().__init__(**kwargs)
+                self.add(*mobjects, typecheck=typecheck)
+
+            def __repr__(self):
+                name = f"{self.mobject_type.__name__}.{type(self).__name__}"
+
+                return name + "(" + ", ".join(str(m) for m in self.submobjects) + ")"
+
+            def __str__(self):
+                name = f"{self.mobject_type.__name__}.{type(self).__name__}"
+
+                return f"{name} of {len(self.submobjects)} submobject{'s' if len(self.submobjects) != 1 else ''}"
+
+            def __add__(self, mobject):
+                # All submobjects have already been typechecked
+                return type(self)(*self.submobjects, typecheck=False).add(mobject)
+
+            def __iadd__(self, mobject):
+                self.add(mobject)
+
+            def __sub__(self, mobject):
+                # All submobjects have already been typechecked
+                return type(self)(*self.submobjects, typecheck=False).remove(mobject)
+
+            def __isub__(self, mobject):
+                self.remove(mobject)
+
+        cls.set_group_class(Group)
+
+        cls.mobject_type = cls
+        Mobject.types.append(cls)
+
+    @classmethod
+    def __init_subclass__(cls, mobject_type=False, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        if mobject_type:
+            cls.mark_as_mobject_type()
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
         self.color = Color(color)
@@ -254,7 +365,7 @@ class Mobject(Container):
                 parent.refresh_bounding_box()
         return self
 
-    def add(self, *mobjects: "Mobject") -> "Mobject":
+    def add(self, *mobjects: "Mobject", typecheck: bool = True) -> "Mobject":
         """Add mobjects as submobjects.
 
         The mobjects are added to :attr:`submobjects`.
@@ -263,8 +374,13 @@ class Mobject(Container):
 
         Parameters
         ----------
-        mobjects
+        *mobjects
             The mobjects to add.
+        typecheck
+            Whether to typecheck the mobjects.
+
+            If ``True`` then the mobjects must all be instances of
+            :attr:`mobject_type`.
 
         Returns
         -------
@@ -273,10 +389,11 @@ class Mobject(Container):
 
         Raises
         ------
-        :class:`ValueError`
+        :exc:`ValueError`
             When a mobject tries to add itself.
-        :class:`TypeError`
-            When trying to add an object that is not an instance of :class:`Mobject`.
+        :exc:`TypeError`
+            When ``typecheck`` is ``True`` and a mobject is passed that
+            does not have the same mobject type as ``self``.
 
 
         Notes
@@ -317,6 +434,11 @@ class Mobject(Container):
             if self in mobjects:
                 raise Exception("Mobject cannot contain self")
             for mobject in mobjects:
+                if typecheck and not isinstance(mobject, self.mobject_type):
+                    raise TypeError(
+                        f"The mobject type of {mobject} is not {self.mobject_type.__name__}"
+                    )
+
                 if mobject not in self.submobjects:
                     self.submobjects.append(mobject)
                 if self not in mobject.parents:
@@ -325,8 +447,10 @@ class Mobject(Container):
             return self
         else:
             for m in mobjects:
-                if not isinstance(m, Mobject):
-                    raise TypeError("All submobjects must be of type Mobject")
+                if typecheck and not isinstance(m, self.mobject_type):
+                    raise TypeError(
+                        f"The mobject type of {m} is not {self.mobject_type.__name__}"
+                    )
                 if m is self:
                     raise ValueError("Mobject cannot contain self")
             self.submobjects = list_update(self.submobjects, mobjects)
@@ -338,15 +462,20 @@ class Mobject(Container):
     def __iadd__(self, mobject):
         raise NotImplementedError
 
-    def add_to_back(self, *mobjects: "Mobject") -> "Mobject":
+    def add_to_back(self, *mobjects: "Mobject", typecheck: bool = True) -> "Mobject":
         """Add all passed mobjects to the back of the submobjects.
 
         If :attr:`submobjects` already contains the given mobjects, they just get moved to the back instead.
 
         Parameters
         ----------
-        mobjects
+        *mobjects
             The mobjects to add.
+        typecheck
+            Whether to typecheck the mobjects.
+
+            If ``True`` then the mobjects must all be instances of
+            :attr:`mobject_type`.
 
         Returns
         -------
@@ -363,10 +492,11 @@ class Mobject(Container):
 
         Raises
         ------
-        :class:`ValueError`
+        :exc:`ValueError`
             When a mobject tries to add itself.
-        :class:`TypeError`
-            When trying to add an object that is not an instance of :class:`Mobject`.
+        :exc:`TypeError`
+            When ``typecheck`` is ``True`` and a mobject is passed that
+            does not have the same mobject type as ``self``.
 
         Notes
         -----
@@ -384,8 +514,10 @@ class Mobject(Container):
         for mobject in mobjects:
             if self in mobjects:
                 raise ValueError("Mobject cannot contain self")
-            if not isinstance(mobject, Mobject):
-                raise TypeError("All submobjects must be of type Mobject")
+            if typecheck and not isinstance(mobject, self.mobject_type):
+                raise TypeError(
+                    f"The mobject type of {mobject} is not {self.mobject_type.__name__}"
+                )
 
         filtered = list_update(mobjects, self.submobjects)
         self.remove(*mobjects)
@@ -1969,19 +2101,18 @@ class Mobject(Container):
 
     def __getitem__(self, value):
         self_list = self.split()
+
         if isinstance(value, slice):
-            GroupClass = self.get_group_class()
-            return GroupClass(*self_list.__getitem__(value))
-        return self_list.__getitem__(value)
+            # All submobjects have already been typechecked.
+            return self.Group(*self_list[value], typecheck=False)
+
+        return self_list[value]
 
     def __iter__(self):
         return iter(self.split())
 
     def __len__(self):
         return len(self.split())
-
-    def get_group_class(self):
-        return Group
 
     def split(self):
         result = [self] if len(self.points) > 0 else []
@@ -2331,12 +2462,60 @@ class Mobject(Container):
         return self
 
 
-class Group(Mobject):
-    """Groups together multiple :class:`~.Mobject`s."""
+Mobject.mark_as_mobject_type()
 
-    def __init__(self, *mobjects, **kwargs):
-        Mobject.__init__(self, **kwargs)
-        self.add(*mobjects)
+
+def Group(*mobjects, **kwargs):
+    """Groups mobjects together into their appropriate group class.
+
+    Parameters
+    ----------
+    *mobjects : :class:`Mobject`
+        The mobjects to group together.
+    **kwargs
+        The keyword arguments to forward to the constructor of the group class.
+
+    Returns
+    -------
+    :class:`Mobject`
+        An instance of the appropriate group class.
+
+        If no mobjects are passed, then a :class:`Mobject.Group` is returned.
+
+    Raises
+    ------
+    :exc:`TypeError`
+        If an object that is not an instance of :class:`Mobject` is passed.
+
+    Examples
+    --------
+    TODO
+    """
+
+    if len(mobjects) == 0:
+        return Mobject.Group(**kwargs)
+
+    for mob in mobjects:
+        if not isinstance(mob, Mobject):
+            raise TypeError(
+                f"Object {mob} of type {type(mob).__name__} is not an instance of Mobject"
+            )
+
+    current_type = Mobject
+    for mobject_type in Mobject.types:
+        if mobject_type is Mobject:
+            continue
+
+        # The new mobject type must be a more specific
+        # class than the current one and all passed
+        # mobjects must be instances of it.
+        if issubclass(mobject_type, current_type) and all(
+            isinstance(m, mobject_type) for m in mobjects
+        ):
+            current_type = mobject_type
+
+    # We've already typechecked the mobjects.
+    return current_type.Group(*mobjects, typecheck=False, **kwargs)
 
 
 class _AnimationBuilder:

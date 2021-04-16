@@ -76,6 +76,7 @@ from .utils.config_ops import *
 from .utils.debug import *
 from .utils.file_ops import *
 from .utils.images import *
+from .utils.inspection import *
 from .utils.iterables import *
 from .utils.paths import *
 from .utils.rate_functions import *
