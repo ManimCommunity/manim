@@ -382,7 +382,7 @@ class ArcBetweenPoints(Arc):
 
 class CurvedArrow(ArcBetweenPoints):
     def __init__(self, start_point, end_point, **kwargs):
-        ArcBetweenPoints.__init__(self, start_point, end_point, **kwargs)
+        super().__init__(start_point, end_point, **kwargs)
         self.add_tip(tip_shape=kwargs.pop("tip_shape", ArrowTriangleFilledTip))
 
 
@@ -391,7 +391,7 @@ class CurvedDoubleArrow(CurvedArrow):
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
-        CurvedArrow.__init__(self, start_point, end_point, **kwargs)
+        super().__init__(start_point, end_point, **kwargs)
         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
@@ -561,8 +561,7 @@ class Dot(Circle):
         color=WHITE,
         **kwargs
     ):
-        Circle.__init__(
-            self,
+        super().__init__(
             arc_center=point,
             radius=radius,
             stroke_width=stroke_width,
@@ -580,7 +579,7 @@ class SmallDot(Dot):
             "SmallDot has been deprecated and will be removed in a future release. "
             "Use Dot instead."
         )
-        Dot.__init__(self, radius=radius, **kwargs)
+        super().__init__(radius=radius, **kwargs)
 
 
 class AnnotationDot(Dot):
@@ -596,8 +595,7 @@ class AnnotationDot(Dot):
         fill_color=BLUE,
         **kwargs
     ):
-        Dot.__init__(
-            self,
+        super().__init__(
             radius=radius,
             stroke_width=stroke_width,
             stroke_color=stroke_color,
@@ -684,7 +682,7 @@ class Ellipse(Circle):
     """
 
     def __init__(self, width=2, height=1, **kwargs):
-        Circle.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
@@ -703,8 +701,7 @@ class AnnularSector(Arc):
     ):
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
-        Arc.__init__(
-            self,
+        super().__init__(
             start_angle=start_angle,
             angle=angle,
             fill_opacity=fill_opacity,
@@ -724,16 +721,18 @@ class AnnularSector(Arc):
             for radius in (self.inner_radius, self.outer_radius)
         ]
         outer_arc.reverse_points()
-        self.append_points(inner_arc.points)
-        self.add_line_to(outer_arc.points[0])
-        self.append_points(outer_arc.points)
-        self.add_line_to(inner_arc.points[0])
+        self.append_points(inner_arc.get_points())
+        self.add_line_to(outer_arc.get_points()[0])
+        self.append_points(outer_arc.get_points())
+        self.add_line_to(inner_arc.get_points()[0])
+
+    init_points = generate_points
 
 
 class Sector(AnnularSector):
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
-        AnnularSector.__init__(
-            self, inner_radius=inner_radius, outer_radius=outer_radius, **kwargs
+        super().__init__(
+            inner_radius=inner_radius, outer_radius=outer_radius, **kwargs
         )
 
 
@@ -751,8 +750,7 @@ class Annulus(Circle):
         self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
-        Circle.__init__(
-            self,
+        super().__init__(
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             color=color,
@@ -764,8 +762,8 @@ class Annulus(Circle):
         outer_circle = Circle(radius=self.outer_radius)
         inner_circle = Circle(radius=self.inner_radius)
         inner_circle.reverse_points()
-        self.append_points(outer_circle.points)
-        self.append_points(inner_circle.points)
+        self.append_points(outer_circle.get_points())
+        self.append_points(inner_circle.get_points())
         self.shift(self.arc_center)
 
 
@@ -778,21 +776,24 @@ class Line(TipableVMobject):
         super().__init__(**kwargs)
 
     def generate_points(self):
-        if self.path_arc:
+        self.set_points_by_ends(start=self.start, end=self.end, buff=self.buff, path_arc=self.path_arc)
+
+    def set_points_by_ends(self, start, end, buff=0, path_arc=0):
+        if path_arc:
             arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
-            self.set_points(arc.points)
+            self.set_points(arc.get_points())
         else:
-            self.set_points_as_corners([self.start, self.end])
-        self.account_for_buff()
+            self.set_points_as_corners([start, end])
+        self.account_for_buff(buff)
 
     init_points = generate_points
 
     def set_path_arc(self, new_value):
         self.path_arc = new_value
-        self.generate_points()
+        self.init_points()
 
-    def account_for_buff(self):
-        if self.buff == 0:
+    def account_for_buff(self, buff):
+        if buff == 0:
             return
         #
         if self.path_arc == 0:
@@ -800,9 +801,9 @@ class Line(TipableVMobject):
         else:
             length = self.get_arc_length()
         #
-        if length < 2 * self.buff:
+        if length < 2 * buff:
             return
-        buff_proportion = self.buff / length
+        buff_proportion = buff / length
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
@@ -813,7 +814,7 @@ class Line(TipableVMobject):
         rough_end = self.pointify(end)
         vect = normalize(rough_end - rough_start)
         # Now that we know the direction between them,
-        # we can the appropriate boundary point from
+        # we can find the appropriate boundary point from
         # start and end, if they're mobjects
         self.start = self.pointify(start, vect)
         self.end = self.pointify(end, -vect)
@@ -846,11 +847,23 @@ class Line(TipableVMobject):
     def get_angle(self):
         return angle_of_vector(self.get_vector())
 
+    def get_projection(self, point):
+        """Return the projection of a point onto the line."""
+        unit_vect = self.get_unit_vector()
+        start = self.get_start()
+        return start + np.dot(point - start, unit_vect) * unit_vect    
+        
     def get_slope(self):
         return np.tan(self.get_angle())
 
-    def set_angle(self, angle):
-        return self.rotate(angle - self.get_angle(), about_point=self.get_start())
+    def set_angle(self, angle, about_point=None):
+        if about_point is None:
+            about_point = self.get_start()
+        self.rotate(
+            angle - self.get_angle(), 
+            about_point=about_point,
+        )
+        return self
 
     def set_length(self, length):
         return self.scale(length / self.get_length())
@@ -912,7 +925,7 @@ class DashedLine(Line):
         self.dash_length = dash_length
         self.dash_spacing = (dash_spacing,)
         self.positive_space_ratio = positive_space_ratio
-        Line.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         dashes = DashedVMobject(
             self,
             num_dashes=self.calculate_num_dashes(),
@@ -971,7 +984,7 @@ class DashedLine(Line):
         if len(self.submobjects) > 0:
             return self.submobjects[-1].get_end()
         else:
-            return Line.get_end(self)
+            return super().get_end()
 
     def get_first_handle(self) -> np.ndarray:
         """Returns the point of the first handle.
@@ -984,7 +997,7 @@ class DashedLine(Line):
             array([-0.98333333,  0.        ,  0.        ])
         """
 
-        return self.submobjects[0].points[1]
+        return self.submobjects[0].get_points()[1]
 
     def get_last_handle(self) -> np.ndarray:
         """Returns the point of the last handle.
@@ -997,7 +1010,7 @@ class DashedLine(Line):
             array([0.98205128, 0.        , 0.        ])
         """
 
-        return self.submobjects[-1].points[-2]
+        return self.submobjects[-1].get_points()[-2]
 
 
 class TangentLine(Line):
@@ -1283,7 +1296,7 @@ class Vector(Arrow):
     def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
-            direction = np.append(np.array(direction), 0)
+            direction = np.hstack([direction, 0])
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
 
@@ -1476,7 +1489,7 @@ class Polygon(metaclass=MetaVMobject):
         # To ensure that we loop through starting with last
         arcs = [arcs[-1], *arcs[:-1]]
         for arc1, arc2 in adjacent_pairs(arcs):
-            self.append_points(arc1.points)
+            self.append_points(arc1.get_points())
             line = Line(arc1.get_end(), arc2.get_start())
             # Make sure anchors are evenly distributed
             len_ratio = line.get_length() / arc1.get_arc_length()
