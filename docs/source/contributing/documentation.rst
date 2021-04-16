@@ -354,3 +354,16 @@ When adding type hints to manim, there are some guidelines that should be follow
 * As ``float`` and ``Union[int, float]`` are the same, use only ``float``
 
 * For numpy arrays use the typehint ``np.ndarray``
+
+* Functions that does not return a value should get the type hint ``None``. (This annotations help catch the kinds of subtle bugs where you are trying to use a meaningless return value. )
+
+.. code:: py
+    def height(self, value) -> None:
+        self.scale_to_fit_height(value)
+
+Missing Sections
+################
+
+* Tools for typehinting
+* Link to MyPy
+* Where to find the alias
