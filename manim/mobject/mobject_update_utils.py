@@ -83,7 +83,6 @@ def turn_animation_into_updater(animation, cycle=False, **kwargs):
     the updater will be popped upon completion
     """
     mobject = animation.mobject
-    animation.update_config(**kwargs)
     animation.suspend_mobject_updating = False
     animation.begin()
     animation.total_time = 0
