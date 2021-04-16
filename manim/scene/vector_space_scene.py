@@ -6,36 +6,22 @@ __all__ = ["VectorScene", "LinearTransformationScene"]
 import numpy as np
 
 from .. import config
-from ..constants import *
 from ..animation.animation import Animation
-from ..animation.creation import ShowCreation
-from ..animation.creation import Write
+from ..animation.creation import Create, Write
 from ..animation.fading import FadeOut
 from ..animation.growing import GrowArrow
-from ..animation.transform import ApplyFunction
-from ..animation.transform import ApplyPointwiseFunction
-from ..animation.transform import Transform
-from ..mobject.coordinate_systems import Axes
-from ..mobject.coordinate_systems import NumberPlane
-from ..mobject.geometry import Arrow
-from ..mobject.geometry import Dot
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
-from ..mobject.geometry import Vector
-from ..mobject.matrix import Matrix
-from ..mobject.matrix import VECTOR_LABEL_SCALE_FACTOR
-from ..mobject.matrix import vector_coordinate_label
+from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
+from ..constants import *
+from ..mobject.coordinate_systems import Axes, NumberPlane
+from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
+from ..mobject.matrix import VECTOR_LABEL_SCALE_FACTOR, Matrix, vector_coordinate_label
 from ..mobject.mobject import Mobject
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.svg.tex_mobject import MathTex, Tex
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
-from ..utils.color import GREEN_C, RED_C, BLUE_D, WHITE, YELLOW, GREY, LIGHT_GREY
-from ..utils.rate_functions import rush_from
-from ..utils.rate_functions import rush_into
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
+from ..utils.color import BLUE_D, GREEN_C, GREY, LIGHT_GREY, RED_C, WHITE, YELLOW
+from ..utils.rate_functions import rush_from, rush_into
+from ..utils.space_ops import angle_of_vector, get_norm
 
 X_COLOR = GREEN_C
 Y_COLOR = RED_C
@@ -49,7 +35,9 @@ Z_COLOR = BLUE_D
 # Also, methods I would have thought of as getters, like coords_to_vector, are
 # actually doing a lot of animating.
 class VectorScene(Scene):
-    CONFIG = {"basis_vector_stroke_width": 6}
+    def __init__(self, basis_vector_stroke_width=6, **kwargs):
+        Scene.__init__(self, **kwargs)
+        self.basis_vector_stroke_width = basis_vector_stroke_width
 
     def add_plane(self, animate=False, **kwargs):
         """
@@ -58,7 +46,7 @@ class VectorScene(Scene):
         Parameters
         ----------
         animate : bool, optional
-            Whether or not to animate the addition of the plane via ShowCreation.
+            Whether or not to animate the addition of the plane via Create.
         **kwargs
             Any valid keyword arguments accepted by NumberPlane.
 
@@ -69,7 +57,7 @@ class VectorScene(Scene):
         """
         plane = NumberPlane(**kwargs)
         if animate:
-            self.play(ShowCreation(plane, lag_ratio=0.5))
+            self.play(Create(plane, lag_ratio=0.5))
         self.add(plane)
         return plane
 
@@ -80,13 +68,13 @@ class VectorScene(Scene):
         Parameters
         ----------
         animate : bool, optional
-            Whether or not to animate the addition of the axes through ShowCreation.
+            Whether or not to animate the addition of the axes through Create.
         color : bool, optional
             The color of the axes. Defaults to WHITE.
         """
         axes = Axes(color=color, tick_frequency=1)
         if animate:
-            self.play(ShowCreation(axes))
+            self.play(Create(axes))
         self.add(axes)
         return axes
 
@@ -400,7 +388,7 @@ class VectorScene(Scene):
                 lambda x: self.position_x_coordinate(x, x_line, vector), x_coord
             )
         )
-        self.play(ShowCreation(x_line))
+        self.play(Create(x_line))
         animations = [
             ApplyFunction(
                 lambda y: self.position_y_coordinate(y, y_line, vector), y_coord
@@ -409,8 +397,8 @@ class VectorScene(Scene):
         ]
         self.play(*animations)
         y_coord, _ = [anim.mobject for anim in animations]
-        self.play(ShowCreation(y_line))
-        self.play(ShowCreation(arrow))
+        self.play(Create(y_line))
+        self.play(Create(arrow))
         self.wait()
         if clean_up:
             self.clear()
@@ -456,9 +444,9 @@ class VectorScene(Scene):
         brackets = array.get_brackets()
 
         if show_creation:
-            self.play(ShowCreation(arrow))
-        self.play(ShowCreation(x_line), Write(x_coord_start), run_time=1)
-        self.play(ShowCreation(y_line), Write(y_coord_start), run_time=1)
+            self.play(Create(arrow))
+        self.play(Create(x_line), Write(x_coord_start), run_time=1)
+        self.play(Create(y_line), Write(y_coord_start), run_time=1)
         self.wait()
         self.play(
             Transform(x_coord_start, x_coord, lag_ratio=0),
@@ -514,14 +502,12 @@ class LinearTransformationScene(VectorScene):
     especially suitable for showing Linear Transformations.
     """
 
-    CONFIG = {
-        "include_background_plane": True,
-        "include_foreground_plane": True,
-        "background_plane_kwargs": {
+    def __init__(
+        self,
+        include_background_plane=True,
+        include_foreground_plane=True,
+        background_plane_kwargs={
             "color": GREY,
-            "axis_config": {
-                "stroke_color": LIGHT_GREY,
-            },
             "axis_config": {
                 "color": GREY,
             },
@@ -530,23 +516,34 @@ class LinearTransformationScene(VectorScene):
                 "stroke_width": 1,
             },
         },
-        "show_coordinates": False,
-        "show_basis_vectors": True,
-        "basis_vector_stroke_width": 6,
-        "i_hat_color": X_COLOR,
-        "j_hat_color": Y_COLOR,
-        "leave_ghost_vectors": False,
-        "t_matrix": [[3, 0], [1, 2]],
-    }
-
-    def __init__(self, **kwargs):
+        show_coordinates=False,
+        show_basis_vectors=True,
+        basis_vector_stroke_width=6,
+        i_hat_color=X_COLOR,
+        j_hat_color=Y_COLOR,
+        leave_ghost_vectors=False,
+        t_matrix=[[3, 0], [1, 2]],
+        **kwargs
+    ):
         VectorScene.__init__(self, **kwargs)
+
+        self.include_background_plane = include_background_plane
+        self.include_foreground_plane = include_foreground_plane
+        self.background_plane_kwargs = background_plane_kwargs
+        self.show_coordinates = show_coordinates
+        self.show_basis_vectors = show_basis_vectors
+        self.basis_vector_stroke_width = basis_vector_stroke_width
+        self.i_hat_color = i_hat_color
+        self.j_hat_color = j_hat_color
+        self.leave_ghost_vectors = leave_ghost_vectors
+        self.t_matrix = t_matrix
+
         self.foreground_plane_kwargs = {
             "x_max": config["frame_width"] / 2,
             "x_min": -config["frame_width"] / 2,
             "y_max": config["frame_width"] / 2,
             "y_min": -config["frame_width"] / 2,
-            "faded_line_ratio": 0,
+            "faded_line_ratio": 1,
         }
 
     def setup(self):
@@ -958,8 +955,10 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        for l in self.transformable_labels:
-            l.target = self.get_vector_label(l.vector.target, l.target_text, **l.kwargs)
+        for label in self.transformable_labels:
+            label.target = self.get_vector_label(
+                label.vector.target, label.target_text, **label.kwargs
+            )
         return self.get_piece_movement(self.transformable_labels)
 
     def apply_matrix(self, matrix, **kwargs):
@@ -1059,7 +1058,7 @@ class LinearTransformationScene(VectorScene):
 
         added_anims : list, optional
             Any other animations that need to be played
-            simulataneously with this.
+            simultaneously with this.
 
         **kwargs
             Any valid keyword argument of a self.play() call.

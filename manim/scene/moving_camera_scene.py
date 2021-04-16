@@ -14,10 +14,10 @@ Examples
         def construct(self):
             text = Text("Hello World").set_color(BLUE)
             self.add(text)
-            self.camera_frame.save_state()
-            self.play(self.camera_frame.set_width, text.get_width() * 1.2)
+            self.camera.frame.save_state()
+            self.play(self.camera.frame.animate.set(width=text.width * 1.2))
             self.wait(0.3)
-            self.play(Restore(self.camera_frame))
+            self.play(Restore(self.camera.frame))
 
 
 .. manim:: MovingCameraCenter
@@ -28,9 +28,9 @@ Examples
             t = Triangle(color=GREEN, fill_opacity=0.5).move_to(2 * RIGHT)
             self.wait(0.3)
             self.add(s, t)
-            self.play(self.camera_frame.move_to, s)
+            self.play(self.camera.frame.animate.move_to(s))
             self.wait(0.3)
-            self.play(self.camera_frame.move_to, t)
+            self.play(self.camera.frame.animate.move_to(t))
 
 
 .. manim:: MovingAndZoomingCamera
@@ -40,23 +40,20 @@ Examples
             s = Square(color=BLUE, fill_opacity=0.5).move_to(2 * LEFT)
             t = Triangle(color=YELLOW, fill_opacity=0.5).move_to(2 * RIGHT)
             self.add(s, t)
-            self.play(self.camera_frame.move_to, s,
-                      self.camera_frame.set_width,s.get_width()*2)
+            self.play(self.camera.frame.animate.move_to(s).set(width=s.width*2))
             self.wait(0.3)
-            self.play(self.camera_frame.move_to, t,
-                      self.camera_frame.set_width,t.get_width()*2)
+            self.play(self.camera.frame.animate.move_to(t).set(width=t.width*2))
 
-            self.play(self.camera_frame.move_to, ORIGIN,
-                      self.camera_frame.set_width,14)
+            self.play(self.camera.frame.animate.move_to(ORIGIN).set(width=14))
 
 .. manim:: MovingCameraOnGraph
 
     class MovingCameraOnGraph(GraphScene, MovingCameraScene):
         def setup(self):
             GraphScene.setup(self)
-            MovingCameraScene.setup(self)
+
         def construct(self):
-            self.camera_frame.save_state()
+            self.camera.frame.save_state()
             self.setup_axes(animate=False)
             graph = self.get_graph(lambda x: np.sin(x),
                                    color=WHITE,
@@ -64,11 +61,11 @@ Examples
                                    x_max=3 * PI
                                    )
             dot_at_start_graph = Dot().move_to(graph.points[0])
-            dot_at_end_grap = Dot().move_to(graph.points[-1])
-            self.add(graph, dot_at_end_grap, dot_at_start_graph)
-            self.play(self.camera_frame.scale, 0.5, self.camera_frame.move_to, dot_at_start_graph)
-            self.play(self.camera_frame.move_to, dot_at_end_grap)
-            self.play(Restore(self.camera_frame))
+            dot_at_end_graph = Dot().move_to(graph.points[-1])
+            self.add(graph, dot_at_end_graph, dot_at_start_graph)
+            self.play(self.camera.frame.animate.scale(0.5).move_to(dot_at_start_graph))
+            self.play(self.camera.frame.animate.move_to(dot_at_end_graph))
+            self.play(Restore(self.camera.frame))
             self.wait()
 
 """
@@ -77,8 +74,8 @@ __all__ = ["MovingCameraScene"]
 
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
-from ..utils.iterables import list_update
 from ..utils.family import extract_mobject_family_members
+from ..utils.iterables import list_update
 
 
 class MovingCameraScene(Scene):
@@ -91,19 +88,8 @@ class MovingCameraScene(Scene):
         :class:`.MovingCamera`
     """
 
-    CONFIG = {"camera_class": MovingCamera}
-
-    def setup(self):
-        """
-        This method is used internally by Manim
-        to set up the scene for proper use.
-        """
-        Scene.setup(self)
-        assert isinstance(self.renderer.camera, MovingCamera)
-        self.camera_frame = self.renderer.camera.frame
-        # Hmm, this currently relies on the fact that MovingCamera
-        # willd default to a full-sized frame.  Is that okay?
-        return self
+    def __init__(self, camera_class=MovingCamera, **kwargs):
+        Scene.__init__(self, camera_class=camera_class, **kwargs)
 
     def get_moving_mobjects(self, *animations):
         """

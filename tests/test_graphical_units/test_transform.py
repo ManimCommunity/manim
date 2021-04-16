@@ -1,8 +1,9 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class TransformTest(Scene):
@@ -75,7 +76,7 @@ class RestoreTest(Scene):
         circle = Circle()
         self.play(Transform(square, circle))
         square.save_state()
-        self.play(square.shift, UP)
+        self.play(square.animate.shift(UP))
         self.play(Restore(square))
 
 
@@ -129,6 +130,11 @@ class FadeInAndOutTest(Scene):
         annotation.become(Square(color=RED).rotate(PI / 4))
         self.add(annotation)
         self.play(FadeOut(square))
+
+
+class AnimationBuilderTest(Scene):
+    def construct(self):
+        self.play(Square().animate.shift(RIGHT).rotate(PI / 4))
 
 
 MODULE_NAME = "transform"

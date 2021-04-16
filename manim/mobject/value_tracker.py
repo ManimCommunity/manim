@@ -3,10 +3,12 @@
 __all__ = ["ValueTracker", "ExponentialValueTracker", "ComplexValueTracker"]
 
 
+from typing import Union
+
 import numpy as np
 
-from ..utils.paths import straight_path
 from ..mobject.mobject import Mobject
+from ..utils.paths import straight_path
 
 
 class ValueTracker(Mobject):
@@ -36,10 +38,15 @@ class ValueTracker(Mobject):
                             )
                 )
                 self.add(number_line, pointer,label)
-                self.play(pointer_value.set_value, 5)
-                self.wait()
-                self.play(pointer_value.set_value, 3)
-
+                pointer_value += 1.5
+                self.wait(1)
+                pointer_value -= 4
+                self.wait(0.5)
+                self.play(pointer_value.animate.set_value(5)),
+                self.wait(0.5)
+                self.play(pointer_value.animate.set_value(3))
+                self.play(pointer_value.animate.increment_value(-2))
+                self.wait(0.5)
     """
 
     def __init__(self, value=0, **kwargs):
@@ -47,18 +54,27 @@ class ValueTracker(Mobject):
         self.points = np.zeros((1, 3))
         self.set_value(value)
 
-    def get_value(self):
+    def get_value(self) -> float:
+        """Get the current value of the ValueTracker. This value changes continuously when :attr:`animate` for the ValueTracker is called."""
         return self.points[0, 0]
 
-    def set_value(self, value):
+    def set_value(self, value: Union[float, int]):
+        """Sets a new scalar value to the ValueTracker"""
         self.points[0, 0] = value
         return self
 
-    def increment_value(self, d_value):
+    def increment_value(self, d_value: Union[float, int]):
+        """Increments (adds) a scalar value  to the ValueTracker"""
         self.set_value(self.get_value() + d_value)
 
-    def __iadd__(self, d_value):
+    def __iadd__(self, d_value: Union[float, int]):
+        """adds ``+=`` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
+        return self
+
+    def __isub__(self, d_value: Union[float, int]):
+        """adds ``-=`` syntax to decrement the value of the ValueTracker"""
+        self.increment_value(-d_value)
         return self
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):

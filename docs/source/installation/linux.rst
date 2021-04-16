@@ -26,6 +26,12 @@ To install cairo:
 
    sudo apt install libcairo2-dev
 
+To install Pango:
+
+.. code-block:: bash
+
+   sudo apt install libpango1.0-dev
+
 To install ffmpeg:
 
 .. code-block:: bash
@@ -33,6 +39,7 @@ To install ffmpeg:
    sudo apt install ffmpeg
 
 To install LaTeX:
+(For minimal LaTeX installation, see `TinyTex Installation`_)
 
 .. code-block:: bash
 
@@ -58,6 +65,12 @@ To install cairo:
 
   sudo dnf install cairo-devel
 
+To install Pango:
+
+.. code-block:: bash
+
+   sudo dnf install pango-devel
+
 To install ffmpeg, you have to add RPMfusion repository (If it's not already added). Please follow the instructions for your specific distribution in the following URL:
 
 https://rpmfusion.org/Configuration/
@@ -75,6 +88,7 @@ Install python development headers in order to successfully build pycairo wheel:
    sudo dnf install python3-devel
 
 To install LaTeX:
+(For minimal LaTeX installation, see `TinyTex Installation`_)
 
 .. code-block:: bash
 
@@ -96,6 +110,11 @@ To install cairo:
 
    sudo pacman -S cairo
 
+To install pango:
+
+.. code-block:: bash
+
+   sudo pacman -S pango
 
 To install ffmpeg:
 
@@ -104,6 +123,7 @@ To install ffmpeg:
    sudo pacman -S ffmpeg
 
 To install LaTeX:
+(For minimal LaTeX installation, see `TinyTex Installation`_)
 
 .. code-block:: bash
 
@@ -119,6 +139,23 @@ If you don't have python-pip installed, install it:
 .. note:: These instructions are also valid for other Arch-based
           distributions or distributions that use the ``pacman`` package
           manager.
+
+TinyTex Installation
+********************
+
+If you do not want to install full LaTeX (~2GB), you can install TinyTex (~500MB)
+and some extra packages for a minimal LaTeX installation. This is what done for
+choco ``manim-latex`` package for Windows.
+
+Install `TinyTex`_ and make sure to add ``bin`` folder created in your home
+directory to your ``PATH``.
+
+For extra packages, see "Files > tools\chocolateyinstall.ps1" `here`_ and
+find ``tlmgr install ...`` command. Run that in terminal and
+finally ``tlmgr path add`` to add all the symlinks correctly.
+
+.. _TinyTex: https://yihui.org/tinytex/#for-other-users
+.. _here: https://community.chocolatey.org/packages/manim-latex#files
 
 
 Certifying a clean install

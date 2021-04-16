@@ -28,7 +28,7 @@ render scenes that are defined within doctests, for example::
         <Color #fc6255>
         >>> class DirectiveDoctestExample(Scene):
         ...     def construct(self):
-        ...         self.play(ShowCreation(dot))
+        ...         self.play(Create(dot))
 
 
 Options
@@ -64,23 +64,40 @@ directive:
         rendered in a reference block after the source code.
 
     ref_functions
-        A list of functions and methods, separated by spaces,
+        A list of functions, separated by spaces,
+        that is rendered in a reference block after the source code.
+
+    ref_methods
+        A list of methods, separated by spaces,
         that is rendered in a reference block after the source code.
 
 """
-from docutils.parsers.rst import directives, Directive
-
-import jinja2
 import os
+import shutil
 from os.path import relpath
 from pathlib import Path
 from typing import List
 
-import shutil
+import jinja2
+from docutils import nodes
+from docutils.parsers.rst import Directive, directives
+from docutils.statemachine import StringList
 
 from manim import QUALITIES
 
 classnamedict = {}
+
+
+class skip_manim_node(nodes.Admonition, nodes.Element):
+    pass
+
+
+def visit(self, node, name=""):
+    self.visit_admonition(node, name)
+
+
+def depart(self, node):
+    self.depart_admonition(node)
 
 
 def process_name_list(option_input: str, reference_type: str) -> List[str]:
@@ -119,10 +136,18 @@ class ManimDirective(Directive):
         "ref_modules": lambda arg: process_name_list(arg, "mod"),
         "ref_classes": lambda arg: process_name_list(arg, "class"),
         "ref_functions": lambda arg: process_name_list(arg, "func"),
+        "ref_methods": lambda arg: process_name_list(arg, "meth"),
     }
     final_argument_whitespace = True
 
     def run(self):
+        if "skip-manim" in self.state.document.settings.env.app.builder.tags.tags:
+            node = skip_manim_node()
+            self.state.nested_parse(
+                StringList(self.content[0]), self.content_offset, node
+            )
+            return [node]
+
         from manim import config
 
         global classnamedict
@@ -142,13 +167,11 @@ class ManimDirective(Directive):
             self.options.get("ref_modules", [])
             + self.options.get("ref_classes", [])
             + self.options.get("ref_functions", [])
+            + self.options.get("ref_methods", [])
         )
         if ref_content:
-            ref_block = f"""
-.. admonition:: Example References
-    :class: example-reference
+            ref_block = "References: " + " ".join(ref_content)
 
-    {' '.join(ref_content)}"""
         else:
             ref_block = ""
 
@@ -179,6 +202,7 @@ class ManimDirective(Directive):
         source_block = [
             ".. code-block:: python",
             "",
+            "    from manim import *\n",
             *["    " + line for line in self.content],
         ]
         source_block = "\n".join(source_block)
@@ -195,6 +219,7 @@ class ManimDirective(Directive):
             f'config["pixel_width"] = {pixel_width}',
             f'config["save_last_frame"] = {save_last_frame}',
             f'config["save_as_gif"] = {save_as_gif}',
+            f'config["write_to_movie"] = {not save_last_frame}',
             f'config["output_file"] = r"{output_file}"',
         ]
 
@@ -248,9 +273,12 @@ class ManimDirective(Directive):
 def setup(app):
     import manim
 
+    app.add_node(skip_manim_node, html=(visit, depart))
+
     setup.app = app
     setup.config = app.config
     setup.confdir = app.confdir
+
     app.add_directive("manim", ManimDirective)
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
@@ -261,30 +289,30 @@ TEMPLATE = r"""
 {% if not hide_source %}
 .. raw:: html
 
-    <div class="manim-example">
+    <div id="{{ clsname_lowercase }}" class="admonition admonition-manim-example">
+    <p class="admonition-title">Example: {{ clsname }} <a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></p>
 
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video id="{{ clsname_lowercase }}" class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+    <video class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+
 {% elif save_as_gif %}
 .. image:: /{{ filesrc_rel }}
     :align: center
-    :name: {{ clsname_lowercase }}
+
 {% elif save_last_frame %}
 .. image:: /{{ filesrc_rel }}
     :align: center
-    :name: {{ clsname_lowercase }}
+
 {% endif %}
 {% if not hide_source %}
-.. raw:: html
-
-    <h5 class="example-header">{{ clsname }}<a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></h5>
-
 {{ source_block }}
+
 {{ ref_block }}
+
 {% endif %}
 
 .. raw:: html

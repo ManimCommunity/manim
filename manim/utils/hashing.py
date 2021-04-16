@@ -1,12 +1,13 @@
 """Utilities for scene caching."""
 
+import copy
+import inspect
 import json
 import zlib
-import inspect
-import copy
-import numpy as np
-from types import ModuleType, MappingProxyType, FunctionType, MethodType
 from time import perf_counter
+from types import FunctionType, MappingProxyType, MethodType, ModuleType
+
+import numpy as np
 
 from .. import logger
 
@@ -60,8 +61,8 @@ class CustomEncoder(json.JSONEncoder):
             return repr(obj)
         elif hasattr(obj, "__dict__"):
             temp = getattr(obj, "__dict__")
-            # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instancied
-            # Indeed, there is certainly no case where scene-caching will recieve only a non instancied object, as this is never used in the library or encouraged to be used user-side.
+            # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
+            # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):
                 return "MappingProxy"
             return self._check_iterable(temp)
@@ -204,9 +205,9 @@ def get_camera_dict_for_hashing(camera_object):
         `Camera.__dict__` but cleaned.
     """
     camera_object_dict = copy.copy(camera_object.__dict__)
-    # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays.
-    # They are not essential to caching process.
-    # We also have to remove pixel_array_to_cairo_context as it contains used memory adress (set randomly). See l.516 get_cached_cairo_context in camera.py
+    # We have to clean a little bit of camera_dict, as pixel_array and background are two very big numpy arrays. They
+    # are not essential to caching process. We also have to remove pixel_array_to_cairo_context as it contains used
+    # memory address (set randomly). See l.516 get_cached_cairo_context in camera.py
     for to_clean in ["background", "pixel_array", "pixel_array_to_cairo_context"]:
         camera_object_dict.pop(to_clean, None)
     return camera_object_dict
@@ -243,9 +244,7 @@ def get_hash_from_play_call(
     t_start = perf_counter()
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
     animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
-    current_mobjects_list_json = [
-        get_json(x) for x in sorted(current_mobjects_list, key=str)
-    ]
+    current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
     hash_camera, hash_animations, hash_current_mobjects = [
         zlib.crc32(repr(json_val).encode())
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
@@ -253,7 +252,7 @@ def get_hash_from_play_call(
     t_end = perf_counter()
     logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})
     hash_complete = f"{hash_camera}_{hash_animations}_{hash_current_mobjects}"
-    # This will reset ALREADY_PROCESSED_ID as all the hashing processus is finished.
+    # This will reset ALREADY_PROCESSED_ID as all the hashing process is finished.
     ALREADY_PROCESSED_ID = {}
     logger.debug("Hash generated :  %(h)s", {"h": hash_complete})
     return hash_complete
@@ -290,14 +289,12 @@ def get_hash_from_wait_call(
     # We add the scene object within the ALREADY_PROCESSED_ID, as we don't want to process because pretty much all of its attributes will be soon or later processed (in one of the three hashes).
     ALREADY_PROCESSED_ID = {id(scene_object): scene_object}
     camera_json = get_json(get_camera_dict_for_hashing(camera_object))
-    current_mobjects_list_json = [
-        get_json(x) for x in sorted(current_mobjects_list, key=str)
-    ]
+    current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
     hash_current_mobjects = zlib.crc32(repr(current_mobjects_list_json).encode())
     hash_camera = zlib.crc32(repr(camera_json).encode())
     if stop_condition_function is not None:
         hash_function = zlib.crc32(get_json(stop_condition_function).encode())
-        # This will reset ALREADY_PROCESSED_ID as all the hashing processus is finished.
+        # This will reset ALREADY_PROCESSED_ID as all the hashing process is finished.
         ALREADY_PROCESSED_ID = {}
         t_end = perf_counter()
         logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})

@@ -6,18 +6,23 @@ __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Poi
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
-from ...utils.color import color_gradient, YELLOW_C, WHITE, BLACK, YELLOW
-from ...utils.color import color_to_rgba
-from ...utils.color import rgba_to_color
-from ...utils.config_ops import digest_config
+from ...utils.color import (
+    BLACK,
+    WHITE,
+    YELLOW,
+    YELLOW_C,
+    color_gradient,
+    color_to_rgba,
+    rgba_to_color,
+)
 from ...utils.iterables import stretch_array_to_length
 from ...utils.space_ops import get_norm
 
 
 class PMobject(Mobject):
-    CONFIG = {
-        "stroke_width": DEFAULT_STROKE_WIDTH,
-    }
+    def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, **kwargs):
+        self.stroke_width = stroke_width
+        super().__init__(**kwargs)
 
     def reset_points(self):
         self.rgbas = np.zeros((0, 4))
@@ -29,7 +34,7 @@ class PMobject(Mobject):
 
     def add_points(self, points, rgbas=None, color=None, alpha=1):
         """
-        points must be a Nx3 numpy array, as must rgbas if it is not None
+        Points must be a Nx3 numpy array, as must rgbas if it is not None
         """
         if not isinstance(points, np.ndarray):
             points = np.array(points)
@@ -65,17 +70,6 @@ class PMobject(Mobject):
         self.rgbas = np.array(
             list(map(color_to_rgba, color_gradient(colors, len(self.points))))
         )
-        return self
-
-        start_rgba, end_rgba = list(map(color_to_rgba, [start_color, end_color]))
-        for mob in self.family_members_with_points():
-            num_points = mob.get_num_points()
-            mob.rgbas = np.array(
-                [
-                    interpolate(start_rgba, end_rgba, alpha)
-                    for alpha in np.arange(num_points) / float(num_points)
-                ]
-            )
         return self
 
     def set_colors_by_radial_gradient(
@@ -116,7 +110,7 @@ class PMobject(Mobject):
 
     def sort_points(self, function=lambda p: p[0]):
         """
-        function is any map from R^3 to R
+        Function is any map from R^3 to R
         """
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
@@ -180,14 +174,10 @@ class PMobject(Mobject):
 
 # TODO, Make the two implementations bellow non-redundant
 class Mobject1D(PMobject):
-    CONFIG = {
-        "density": DEFAULT_POINT_DENSITY_1D,
-    }
-
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, density=DEFAULT_POINT_DENSITY_1D, **kwargs):
+        self.density = density
         self.epsilon = 1.0 / self.density
-        Mobject.__init__(self, **kwargs)
+        PMobject.__init__(self, **kwargs)
 
     def add_line(self, start, end, color=None):
         start, end = list(map(np.array, [start, end]))
@@ -201,14 +191,10 @@ class Mobject1D(PMobject):
 
 
 class Mobject2D(PMobject):
-    CONFIG = {
-        "density": DEFAULT_POINT_DENSITY_2D,
-    }
-
-    def __init__(self, **kwargs):
-        digest_config(self, kwargs)
+    def __init__(self, density=DEFAULT_POINT_DENSITY_2D, **kwargs):
+        self.density = density
         self.epsilon = 1.0 / self.density
-        Mobject.__init__(self, **kwargs)
+        PMobject.__init__(self, **kwargs)
 
 
 class PGroup(PMobject):
@@ -220,32 +206,40 @@ class PGroup(PMobject):
 
 
 class PointCloudDot(Mobject1D):
-    CONFIG = {
-        "radius": 0.075,
-        "stroke_width": 2,
-        "density": DEFAULT_POINT_DENSITY_1D,
-        "color": YELLOW,
-    }
-
-    def __init__(self, center=ORIGIN, **kwargs):
-        Mobject1D.__init__(self, **kwargs)
+    def __init__(
+        self,
+        center=ORIGIN,
+        radius=2.0,
+        stroke_width=2,
+        density=DEFAULT_POINT_DENSITY_1D,
+        color=YELLOW,
+        **kwargs
+    ):
+        self.radius = radius
+        Mobject1D.__init__(
+            self,
+            radius=radius,
+            stroke_width=stroke_width,
+            density=density,
+            color=color,
+            **kwargs
+        )
         self.shift(center)
 
     def generate_points(self):
         self.add_points(
             [
                 r * (np.cos(theta) * RIGHT + np.sin(theta) * UP)
-                for r in np.arange(0, self.radius, self.epsilon)
-                for theta in np.arange(0, 2 * np.pi, self.epsilon / r)
+                for r in np.arange(self.epsilon, self.radius, self.epsilon)
+                # Num is equal to int(stop - start)/ (step + 1) reformulated.
+                for theta in np.linspace(
+                    0, 2 * np.pi, num=int(2 * np.pi * (r + self.epsilon) / self.epsilon)
+                )
             ]
         )
 
 
 class Point(PMobject):
-    CONFIG = {
-        "color": BLACK,
-    }
-
-    def __init__(self, location=ORIGIN, **kwargs):
-        PMobject.__init__(self, **kwargs)
+    def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
+        PMobject.__init__(self, color=color, **kwargs)
         self.add_points([location])

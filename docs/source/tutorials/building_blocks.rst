@@ -35,8 +35,8 @@ skeleton of a thing that *could* be displayed.  Therefore, you will rarely need
 to use plain instances of :class:`.Mobject`; instead you will most likely
 create instances of its derived classes.  One of these derived classes is
 :class:`.VMobject`.  The ``V`` stands for Vectorized Mobject.  In essence, a
-vmobject is a mobject that uses vector `vector graphics
-<https://en.wikipedia.org/wiki/Vector_graphics/>`_ to be displayed.  Most of
+vmobject is a mobject that uses `vector graphics
+<https://en.wikipedia.org/wiki/Vector_graphics>`_ to be displayed.  Most of
 the time, you will be dealing with vmobjects, though we will continue to use
 the term "mobject" to refer to the class of shapes that can be displayed on
 screen, as it is more general.
@@ -294,6 +294,73 @@ Use the :code:`run_time` argument to control the duration.
 	   self.play(ApplyMethod(square.shift, UP), run_time=3)
 	   self.wait(1)
 
+Using coordinates of a mobject
+==============================
+
+Mobjects contain points that define their boundaries.
+These points can be used to add other mobjects respectively to each other, e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
+and :meth`~.Mobject.get_start`. Here is an example of some important coordinates:
+
+.. manim:: MobjectExample
+    :save_last_frame:
+
+    class MobjectExample(Scene):
+        def construct(self):
+            p1= [-1,-1,0]
+            p2= [1,-1,0]
+            p3= [1,1,0]
+            p4= [-1,1,0]
+            a = Line(p1,p2).append_points(Line(p2,p3).get_points()).append_points(Line(p3,p4).get_points())
+            point_start= a.get_start()
+            point_end  = a.get_end()
+            point_center = a.get_center()
+            self.add(Text(f"a.get_start() = {np.round(point_start,2).tolist()}").scale(0.5).to_edge(UR).set_color(YELLOW))
+            self.add(Text(f"a.get_end() = {np.round(point_end,2).tolist()}").scale(0.5).next_to(self.mobjects[-1],DOWN).set_color(RED))
+            self.add(Text(f"a.get_center() = {np.round(point_center,2).tolist()}").scale(0.5).next_to(self.mobjects[-1],DOWN).set_color(BLUE))
+
+            self.add(Dot(a.get_start()).set_color(YELLOW).scale(2))
+            self.add(Dot(a.get_end()).set_color(RED).scale(2))
+            self.add(Dot(a.get_top()).set_color(GREEN_A).scale(2))
+            self.add(Dot(a.get_bottom()).set_color(GREEN_D).scale(2))
+            self.add(Dot(a.get_center()).set_color(BLUE).scale(2))
+            self.add(Dot(a.point_from_proportion(0.5)).set_color(ORANGE).scale(2))
+            self.add(*[Dot(x) for x in a.get_points()])
+            self.add(a)
+
+Transforming mobjects into other mobjects
+=========================================
+It is also possible to transform a mobject into another mobject like this:
+
+.. manim:: ExampleTransform
+
+    class ExampleTransform(Scene):
+        def construct(self):
+            self.camera.background_color = WHITE
+            m1 = Square().set_color(RED)
+            m2 = Rectangle().set_color(RED).rotate(0.2)
+            self.play(Transform(m1,m2))
+
+The Transform function maps points of the previous mobject to the points of the next mobject.
+This might result in strange behaviour, e.g. when the dots of one mobject are arranged clockwise and the other points are arranged counterclockwise.
+Here it might help to use the `flip` function and reposition the points via the  `roll` function of numpy:
+
+.. manim:: ExampleRotation
+
+    class ExampleRotation(Scene):
+        def construct(self):
+            self.camera.background_color = WHITE
+            m1a = Square().set_color(RED).shift(LEFT)
+            m1b = Circle().set_color(RED).shift(LEFT)
+            m2a= Square().set_color(BLUE).shift(RIGHT)
+            m2b= Circle().set_color(BLUE).shift(RIGHT)
+            m3a= Square().set_color(GREEN).shift(3*RIGHT)
+            m3b= Circle().set_color(GREEN).shift(3*RIGHT)
+            
+            points = m2a.points
+            points = np.roll(points, int(len(points)/4), axis=0)
+            m2a.points = points
+            
+            self.play(Transform(m1a,m1b),Transform(m2a,m2b), run_time=1)
 
 ******
 Scenes

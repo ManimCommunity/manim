@@ -4,66 +4,87 @@
 __all__ = ["Scene"]
 
 
-import inspect
-import random
-import warnings
-import platform
 import copy
+import inspect
+import platform
+import random
+import types
 
-from tqdm import tqdm as ProgressDisplay
 import numpy as np
+from tqdm import tqdm
 
 from .. import config, logger
-from ..animation.animation import Animation, Wait
-from ..animation.transform import MoveToTarget, ApplyMethod
+from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
-from ..mobject.mobject import Mobject
-from ..scene.scene_file_writer import SceneFileWriter
-from ..utils.iterables import list_update, list_difference_update
-from ..utils.hashing import get_hash_from_play_call, get_hash_from_wait_call
-from ..utils.family import extract_mobject_family_members
+from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..utils.exceptions import EndSceneEarlyException
+from ..utils.family import extract_mobject_family_members
+from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
+from ..utils.file_ops import open_media_file
+from ..utils.iterables import list_difference_update, list_update
+from ..utils.space_ops import rotate_vector
 
 
 class Scene(Container):
     """A Scene is the canvas of your animation.
 
-    All of your own named Scenes will be subclasses of Scene, or other named
-    scenes.
+    The primary role of :class:`Scene` is to provide the user with tools to manage
+    mobjects and animations.  Generally speaking, a manim script consists of a class
+    that derives from :class:`Scene` whose :meth:`Scene.construct` method is overridden
+    by the user's code.
+
+    Mobjects are displayed on screen by calling :meth:`Scene.add` and removed from
+    screen by calling :meth:`Scene.remove`.  All mobjects currently on screen are kept
+    in :attr:`Scene.mobjects`.  Animations are played by calling :meth:`Scene.play`.
+
+    A :class:`Scene` is rendered internally by calling :meth:`Scene.render`.  This in
+    turn calls :meth:`Scene.setup`, :meth:`Scene.construct`, and
+    :meth:`Scene.tear_down`, in that order.
+
+    It is not recommended to override the ``__init__`` method in user Scenes.  For code
+    that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
+
 
     Examples
     --------
-    Override the construct() method to tell Manim what should go on in the
-    Scene.
+    Override the :meth:`Scene.construct` method with your code.
 
     .. code-block:: python
 
         class MyScene(Scene):
             def construct(self):
-                self.play(
-                    Write(Text("Hello World!"))
-                )
-
-    Some important variables to note are:
-        camera: The camera object to be used for the scene.
-        file_writer : The object that writes the animations in the scene to a video file.
-        mobjects : The list of mobjects present in the scene.
-        foreground_mobjects : List of mobjects explicitly in the foreground.
-        random_seed: The seed with which all random operations are done.
+                self.play(Write(Text("Hello World!")))
 
     """
 
-    CONFIG = {
-        "camera_class": Camera,
-        "always_update_mobjects": False,
-        "random_seed": 0,
-    }
+    def __init__(
+        self,
+        renderer=None,
+        camera_class=Camera,
+        always_update_mobjects=False,
+        random_seed=None,
+        **kwargs,
+    ):
+        self.camera_class = camera_class
+        self.always_update_mobjects = always_update_mobjects
+        self.random_seed = random_seed
 
-    def __init__(self, renderer=None, **kwargs):
-        Container.__init__(self, **kwargs)
+        self.animations = None
+        self.stop_condition = None
+        self.moving_mobjects = None
+        self.static_mobjects = None
+        self.time_progression = None
+        self.duration = None
+        self.last_t = None
+
+        if config.renderer == "opengl":
+            # Items associated with interaction
+            self.mouse_point = OpenGLPoint()
+            self.mouse_drag_point = OpenGLPoint()
+
         if renderer is None:
             self.renderer = CairoRenderer(
                 camera_class=self.camera_class,
@@ -71,7 +92,7 @@ class Scene(Container):
             )
         else:
             self.renderer = renderer
-        self.renderer.init(self)
+        self.renderer.init_scene(self)
 
         self.mobjects = []
         # TODO, remove need for foreground mobjects
@@ -80,13 +101,78 @@ class Scene(Container):
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
 
+        Container.__init__(self, **kwargs)
+
     @property
     def camera(self):
         return self.renderer.camera
 
-    def render(self):
+    def __deepcopy__(self, clone_from_id):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        clone_from_id[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k in ["renderer", "time_progression"]:
+                continue
+            if k == "camera_class":
+                setattr(result, k, v)
+            setattr(result, k, copy.deepcopy(v, clone_from_id))
+        result.mobject_updater_lists = []
+
+        # Update updaters
+        for mobject in self.mobjects:
+            cloned_updaters = []
+            for updater in mobject.updaters:
+                # Make the cloned updater use the cloned Mobjects as free variables
+                # rather than the original ones. Analyzing function bytecode with the
+                # dis module will help in understanding this.
+                # https://docs.python.org/3/library/dis.html
+                # TODO: Do the same for function calls recursively.
+                free_variable_map = inspect.getclosurevars(updater).nonlocals
+                cloned_co_freevars = []
+                cloned_closure = []
+                for free_variable_name in updater.__code__.co_freevars:
+                    free_variable_value = free_variable_map[free_variable_name]
+
+                    # If the referenced variable has not been cloned, raise.
+                    if id(free_variable_value) not in clone_from_id:
+                        raise Exception(
+                            f"{free_variable_name} is referenced from an updater "
+                            "but is not an attribute of the Scene, which isn't "
+                            "allowed."
+                        )
+
+                    # Add the cloned object's name to the free variable list.
+                    cloned_co_freevars.append(free_variable_name)
+
+                    # Add a cell containing the cloned object's reference to the
+                    # closure list.
+                    cloned_closure.append(
+                        types.CellType(clone_from_id[id(free_variable_value)])
+                    )
+
+                cloned_updater = types.FunctionType(
+                    updater.__code__.replace(co_freevars=tuple(cloned_co_freevars)),
+                    updater.__globals__,
+                    updater.__name__,
+                    updater.__defaults__,
+                    tuple(cloned_closure),
+                )
+                cloned_updaters.append(cloned_updater)
+            mobject_clone = clone_from_id[id(mobject)]
+            mobject_clone.updaters = cloned_updaters
+            if len(cloned_updaters) > 0:
+                result.mobject_updater_lists.append((mobject_clone, cloned_updaters))
+        return result
+
+    def render(self, preview=False):
         """
-        Render this Scene.
+        Renders this Scene.
+
+        Parameters
+        ---------
+        preview : bool
+            If true, opens scene in a file viewer.
         """
         self.setup()
         try:
@@ -94,15 +180,26 @@ class Scene(Container):
         except EndSceneEarlyException:
             pass
         self.tear_down()
-        self.renderer.finish(self)
-        logger.info(
-            f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
-        )
+        # We have to reset these settings in case of multiple renders.
+        self.renderer.scene_finished(self)
+
+        # Show info only if animations are rendered or to get image
+        if self.renderer.num_plays or config["save_last_frame"] or config["save_pngs"]:
+            logger.info(
+                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
+            )
+
+        # If preview open up the render after rendering.
+        if preview:
+            config["preview"] = True
+
+        if config["preview"] or config["show_in_file_browser"]:
+            open_media_file(self.renderer.file_writer)
 
     def setup(self):
         """
         This is meant to be implemented by any scenes which
-        are comonly subclassed, and have some common setup
+        are commonly subclassed, and have some common setup
         involved before the construct method is called.
         """
         pass
@@ -110,15 +207,41 @@ class Scene(Container):
     def tear_down(self):
         """
         This is meant to be implemented by any scenes which
-        are comonly subclassed, and have some common method
+        are commonly subclassed, and have some common method
         to be invoked before the scene ends.
         """
         pass
 
     def construct(self):
-        """
-        The primary method for constructing (i.e adding content to)
-        the Scene.
+        """Add content to the Scene.
+
+        From within :meth:`Scene.construct`, display mobjects on screen by calling
+        :meth:`Scene.add` and remove them from screen by calling :meth:`Scene.remove`.
+        All mobjects currently on screen are kept in :attr:`Scene.mobjects`.  Play
+        animations by calling :meth:`Scene.play`.
+
+        Notes
+        -----
+        Initialization code should go in :meth:`Scene.setup`.  Termination code should
+        go in :meth:`Scene.tear_down`.
+
+        Examples
+        --------
+        A typical manim script includes a class derived from :class:`Scene` with an
+        overridden :meth:`Scene.contruct` method:
+
+        .. code-block:: python
+
+            class MyScene(Scene):
+                def construct(self):
+                    self.play(Write(Text("Hello World!")))
+
+        See Also
+        --------
+        :meth:`Scene.setup`
+        :meth:`Scene.render`
+        :meth:`Scene.tear_down`
+
         """
         pass  # To be implemented in subclasses
 
@@ -177,14 +300,13 @@ class Scene(Container):
         """
         # Return only those which are not in the family
         # of another mobject from the scene
-        mobjects = self.get_mobjects()
-        families = [m.get_family() for m in mobjects]
+        families = [m.get_family() for m in self.mobjects]
 
         def is_top_level(mobject):
             num_families = sum([(mobject in family) for family in families])
             return num_families == 1
 
-        return list(filter(is_top_level, mobjects))
+        return list(filter(is_top_level, self.mobjects))
 
     def get_mobject_family_members(self):
         """
@@ -198,9 +320,15 @@ class Scene(Container):
         list
             List of mobject family members.
         """
-        return extract_mobject_family_members(
-            self.mobjects, use_z_index=self.renderer.camera.use_z_index
-        )
+        if config.renderer == "opengl":
+            family_members = []
+            for mob in self.mobjects:
+                family_members.extend(mob.get_family())
+            return family_members
+        else:
+            return extract_mobject_family_members(
+                self.mobjects, use_z_index=self.renderer.camera.use_z_index
+            )
 
     def add(self, *mobjects):
         """
@@ -218,19 +346,20 @@ class Scene(Container):
             The same scene after adding the Mobjects in.
 
         """
-        mobjects = [*mobjects, *self.foreground_mobjects]
-        self.restructure_mobjects(to_remove=mobjects)
-        self.mobjects += mobjects
-        return self
-
-    def add_mobjects_among(self, values):
-        """
-        This is meant mostly for quick prototyping,
-        e.g. to add all mobjects defined up to a point,
-        call self.add_mobjects_among(locals().values())
-        """
-        self.add(*filter(lambda m: isinstance(m, Mobject), values))
-        return self
+        if config.renderer == "opengl":
+            new_mobjects = mobjects
+            self.remove(*new_mobjects)
+            self.mobjects += new_mobjects
+        else:
+            mobjects = [*mobjects, *self.foreground_mobjects]
+            self.restructure_mobjects(to_remove=mobjects)
+            self.mobjects += mobjects
+            if self.moving_mobjects:
+                self.restructure_mobjects(
+                    to_remove=mobjects, mobject_list_name="moving_mobjects"
+                )
+                self.moving_mobjects += mobjects
+            return self
 
     def add_mobjects_from_animations(self, animations):
 
@@ -254,9 +383,16 @@ class Scene(Container):
         *mobjects : Mobject
             The mobjects to remove.
         """
-        for list_name in "mobjects", "foreground_mobjects":
-            self.restructure_mobjects(mobjects, list_name, False)
-        return self
+        if config.renderer == "opengl":
+            mobjects_to_remove = mobjects
+            self.mobjects = restructure_list_to_exclude_certain_family_members(
+                self.mobjects, mobjects_to_remove
+            )
+            return self
+        else:
+            for list_name in "mobjects", "foreground_mobjects":
+                self.restructure_mobjects(mobjects, list_name, False)
+            return self
 
     def restructure_mobjects(
         self, to_remove, mobject_list_name="mobjects", extract_families=True
@@ -459,30 +595,6 @@ class Scene(Container):
         self.foreground_mobjects = []
         return self
 
-    def get_mobjects(self):
-        """
-        Returns all the mobjects in self.mobjects
-
-        Returns
-        ------
-        list
-            The list of self.mobjects .
-        """
-        return list(self.mobjects)
-
-    def get_mobject_copies(self):
-        """
-        Returns a copy of all mobjects present in
-        self.mobjects .
-
-        Returns
-        ------
-        list
-            A list of the copies of all the mobjects
-            in self.mobjects
-        """
-        return [m.copy() for m in self.mobjects]
-
     def get_moving_mobjects(self, *animations):
         """
         Gets all moving mobjects in the passed animation(s).
@@ -514,8 +626,7 @@ class Scene(Container):
                 return mobjects[i:]
         return []
 
-    def get_moving_and_stationary_mobjects(self, animations):
-        moving_mobjects = self.get_moving_mobjects(*animations)
+    def get_moving_and_static_mobjects(self, animations):
         all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
         all_mobject_families = extract_mobject_family_members(
             all_mobjects,
@@ -527,92 +638,98 @@ class Scene(Container):
             moving_mobjects,
             use_z_index=self.renderer.camera.use_z_index,
         )
-        stationary_mobjects = list_difference_update(
+        static_mobjects = list_difference_update(
             all_mobject_families, all_moving_mobject_families
         )
-        return all_moving_mobject_families, stationary_mobjects
+        return all_moving_mobject_families, static_mobjects
 
-    def compile_play_args_to_animation_list(self, *args, **kwargs):
+    def compile_animations(self, *args, **kwargs):
         """
-        Each arg can either be an animation, or a mobject method
-        followed by that methods arguments (and potentially follow
-        by a dict of kwargs for that method).
-        This animation list is built by going through the args list,
-        and each animation is simply added, but when a mobject method
-        is hit, a MoveToTarget animation is built using the args that
-        follow up until either another animation is hit, another method
-        is hit, or the args list runs out.
-
+        Creates _MethodAnimations from any _AnimationBuilders and updates animation
+        kwargs with kwargs passed to play().
         Parameters
         ----------
-        *args : Animation or method of a mobject, which is followed by that method's arguments
-
-        **kwargs : any named arguments like run_time or lag_ratio.
-
+        *args : Tuple[:class:`Animation`]
+            Animations to be played.
+        **kwargs
+            Configuration for the call to play().
         Returns
         -------
-        list : list of animations with the parameters applied to them.
+        Tuple[:class:`Animation`]
+            Animations to be played.
         """
         animations = []
-        state = {
-            "curr_method": None,
-            "last_method": None,
-            "method_args": [],
-        }
-
-        def compile_method(state):
-            if state["curr_method"] is None:
-                return
-            mobject = state["curr_method"].__self__
-            if state["last_method"] and state["last_method"].__self__ is mobject:
-                animations.pop()
-                # method should already have target then.
-            else:
-                mobject.generate_target()
-            #
-            if len(state["method_args"]) > 0 and isinstance(
-                state["method_args"][-1], dict
-            ):
-                method_kwargs = state["method_args"].pop()
-            else:
-                method_kwargs = {}
-            state["curr_method"].__func__(
-                mobject.target, *state["method_args"], **method_kwargs
-            )
-            animations.append(MoveToTarget(mobject))
-            state["last_method"] = state["curr_method"]
-            state["curr_method"] = None
-            state["method_args"] = []
-
         for arg in args:
-            if isinstance(arg, Animation):
-                compile_method(state)
-                animations.append(arg)
-            elif inspect.ismethod(arg):
-                compile_method(state)
-                state["curr_method"] = arg
-            elif state["curr_method"] is not None:
-                state["method_args"].append(arg)
-            elif isinstance(arg, Mobject):
-                raise ValueError(
-                    """
-                    I think you may have invoked a method
-                    you meant to pass in as a Scene.play argument
-                    """
-                )
-            else:
-                raise ValueError("Invalid play arguments")
-        compile_method(state)
+            try:
+                animations.append(prepare_animation(arg))
+            except TypeError:
+                if inspect.ismethod(arg):
+                    raise TypeError(
+                        "Passing Mobject methods to Scene.play is no longer"
+                        " supported. Use Mobject.animate instead."
+                    )
+                else:
+                    raise TypeError(
+                        f"Unexpected argument {arg} passed to Scene.play()."
+                    )
 
         for animation in animations:
-            # This is where kwargs to play like run_time and rate_func
-            # get applied to all animations
-            animation.update_config(**kwargs)
+            for k, v in kwargs.items():
+                setattr(animation, k, v)
 
         return animations
 
+    def _get_animation_time_progression(self, animations, duration):
+        """
+        You will hardly use this when making your own animations.
+        This method is for Manim's internal use.
+
+        Uses :func:`~.get_time_progression` to obtain a
+        CommandLine ProgressBar whose ``fill_time`` is
+        dependent on the qualities of the passed Animation,
+
+        Parameters
+        ----------
+        animations : List[:class:`~.Animation`, ...]
+            The list of animations to get
+            the time progression for.
+
+        duration : int or float
+            duration of wait time
+
+        Returns
+        -------
+        time_progression
+            The CommandLine Progress Bar.
+        """
+        if len(animations) == 1 and isinstance(animations[0], Wait):
+            stop_condition = animations[0].stop_condition
+            if stop_condition is not None:
+                time_progression = self.get_time_progression(
+                    duration,
+                    f"Waiting for {stop_condition.__name__}",
+                    n_iterations=-1,  # So it doesn't show % progress
+                    override_skip_animations=True,
+                )
+            else:
+                time_progression = self.get_time_progression(
+                    duration, f"Waiting {self.renderer.num_plays}"
+                )
+        else:
+            time_progression = self.get_time_progression(
+                duration,
+                "".join(
+                    [
+                        f"Animation {self.renderer.num_plays}: ",
+                        str(animations[0]),
+                        (", etc." if len(animations) > 1 else ""),
+                    ]
+                ),
+            )
+        return time_progression
+
     def get_time_progression(
-        self, run_time, n_iterations=None, override_skip_animations=False
+        self, run_time, description, n_iterations=None, override_skip_animations=False
     ):
         """
         You will hardly use this when making your own animations.
@@ -637,89 +754,22 @@ class Scene(Container):
 
         Returns
         -------
-        ProgressDisplay
+        time_progression
             The CommandLine Progress Bar.
         """
         if self.renderer.skip_animations and not override_skip_animations:
             times = [run_time]
         else:
-            step = 1 / self.renderer.camera.frame_rate
+            step = 1 / config["frame_rate"]
             times = np.arange(0, run_time, step)
-        time_progression = ProgressDisplay(
+        time_progression = tqdm(
             times,
+            desc=description,
             total=n_iterations,
-            leave=config["leave_progress_bars"],
+            leave=config["progress_bar"] == "leave",
             ascii=True if platform.system() == "Windows" else None,
-            disable=not config["progress_bar"],
+            disable=config["progress_bar"] == "none",
         )
-        return time_progression
-
-    def get_animation_time_progression(self, animations):
-        """
-        You will hardly use this when making your own animations.
-        This method is for Manim's internal use.
-
-        Uses :func:`~.get_time_progression` to obtain a
-        CommandLine ProgressBar whose ``fill_time`` is
-        dependent on the qualities of the passed Animation,
-
-        Parameters
-        ----------
-        animations : List[:class:`~.Animation`, ...]
-            The list of animations to get
-            the time progression for.
-
-        Returns
-        -------
-        ProgressDisplay
-            The CommandLine Progress Bar.
-        """
-        run_time = self.get_run_time(animations)
-        time_progression = self.get_time_progression(run_time)
-        time_progression.set_description(
-            "".join(
-                [
-                    "Animation {}: ".format(self.renderer.num_plays),
-                    str(animations[0]),
-                    (", etc." if len(animations) > 1 else ""),
-                ]
-            )
-        )
-        return time_progression
-
-    def get_wait_time_progression(self, duration, stop_condition):
-        """
-        This method is used internally to obtain the CommandLine
-        Progressbar for when self.wait() is called in a scene.
-
-        Parameters
-        ----------
-        duration : int or float
-            duration of wait time
-
-        stop_condition : function
-            The function which determines whether to continue waiting.
-
-        Returns
-        -------
-        ProgressBar
-            The CommandLine ProgressBar of the wait time
-
-        """
-        if stop_condition is not None:
-            time_progression = self.get_time_progression(
-                duration,
-                n_iterations=-1,  # So it doesn't show % progress
-                override_skip_animations=True,
-            )
-            time_progression.set_description(
-                "Waiting for {}".format(stop_condition.__name__)
-            )
-        else:
-            time_progression = self.get_time_progression(duration)
-            time_progression.set_description(
-                "Waiting {}".format(self.renderer.num_plays)
-            )
         return time_progression
 
     def get_run_time(self, animations):
@@ -738,7 +788,14 @@ class Scene(Container):
             The total ``run_time`` of all of the animations in the list.
         """
 
-        return np.max([animation.run_time for animation in animations])
+        if len(animations) == 1 and isinstance(animations[0], Wait):
+            if animations[0].stop_condition is not None:
+                return 0
+            else:
+                return animations[0].duration
+
+        else:
+            return np.max([animation.run_time for animation in animations])
 
     def play(self, *args, **kwargs):
         self.renderer.play(self, *args, **kwargs)
@@ -762,7 +819,68 @@ class Scene(Container):
         """
         self.wait(max_time, stop_condition=stop_condition)
 
-    def play_internal(self, *args, **kwargs):
+    def compile_animation_data(self, *animations: Animation, **play_kwargs):
+        """Given a list of animations, compile statics and moving mobjects, duration from them.
+
+        This also begin the animations.
+
+        Parameters
+        ----------
+        skip_rendering : bool, optional
+            Whether the rendering should be skipped, by default False
+
+        Returns
+        -------
+        self, None
+            None if there is nothing to play, or self otherwise.
+        """
+        # NOTE TODO : returns statement of this method are wrong. It should return nothing, as it makes a little sense to get any information from this method.
+        # The return are kept to keep webgl renderer from breaking.
+        if len(animations) == 0:
+            raise ValueError("Called Scene.play with no animations")
+
+        self.animations = self.compile_animations(*animations, **play_kwargs)
+        self.add_mobjects_from_animations(self.animations)
+
+        self.last_t = 0
+        self.stop_condition = None
+        self.moving_mobjects = None
+        self.static_mobjects = None
+
+        if not config.renderer == "opengl":
+            if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
+                self.update_mobjects(dt=0)  # Any problems with this?
+                if self.should_update_mobjects():
+                    self.stop_condition = self.animations[0].stop_condition
+                else:
+                    self.duration = self.animations[0].duration
+                    # Static image logic when the wait is static is done by the renderer, not here.
+                    self.animations[0].is_static_wait = True
+                    return None
+            else:
+                # Paint all non-moving objects onto the screen, so they don't
+                # have to be rendered every frame
+                (
+                    self.moving_mobjects,
+                    self.static_mobjects,
+                ) = self.get_moving_and_static_mobjects(self.animations)
+        self.duration = self.get_run_time(self.animations)
+        return self
+
+    def begin_animations(self) -> None:
+        """Start the animations of the scene."""
+        for animation in self.animations:
+            animation.begin()
+
+    def is_current_animation_frozen_frame(self) -> bool:
+        """Returns wether the current animation produces a static frame (generally a Wait)."""
+        return (
+            isinstance(self.animations[0], Wait)
+            and len(self.animations) == 1
+            and self.animations[0].is_static_wait
+        )
+
+    def play_internal(self, skip_rendering=False):
         """
         This method is used to prep the animations for rendering,
         apply the arguments and parameters required to them,
@@ -776,71 +894,87 @@ class Scene(Container):
             named parameters affecting what was passed in ``args``,
             e.g. ``run_time``, ``lag_ratio`` and so on.
         """
-        if len(args) == 0:
-            warnings.warn("Called Scene.play with no animations")
-            return
-
-        animations = self.compile_play_args_to_animation_list(*args, **kwargs)
-        if (
-            len(animations) == 1
-            and isinstance(animations[0], Wait)
-            and not self.should_update_mobjects()
-        ):
-            self.add_static_frames(animations[0].duration)
-            return
-
-        for animation in animations:
-            animation.begin()
-
-        moving_mobjects = None
-        static_mobjects = None
-        duration = None
-        stop_condition = None
-        time_progression = None
-        if len(animations) == 1 and isinstance(animations[0], Wait):
-            # TODO, be smart about setting a static image
-            # the same way Scene.play does
-            duration = animations[0].duration
-            stop_condition = animations[0].stop_condition
-            self.static_image = None
-            time_progression = self.get_wait_time_progression(duration, stop_condition)
-        else:
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
-            (
-                moving_mobjects,
-                stationary_mobjects,
-            ) = self.get_moving_and_stationary_mobjects(animations)
-            self.renderer.update_frame(self, mobjects=stationary_mobjects)
-            self.static_image = self.renderer.get_frame()
-            time_progression = self.get_animation_time_progression(animations)
-
-        last_t = 0
-        for t in time_progression:
-            dt = t - last_t
-            last_t = t
-            for animation in animations:
-                animation.update_mobjects(dt)
-                alpha = t / animation.run_time
-                animation.interpolate(alpha)
-            self.update_mobjects(dt)
-            self.renderer.update_frame(self, moving_mobjects, self.static_image)
-            self.renderer.add_frame(self.renderer.get_frame())
-            if stop_condition is not None and stop_condition():
-                time_progression.close()
+        self.duration = self.get_run_time(self.animations)
+        self.time_progression = self._get_animation_time_progression(
+            self.animations, self.duration
+        )
+        for t in self.time_progression:
+            self.update_to_time(t)
+            if not skip_rendering:
+                self.renderer.render(self, t, self.moving_mobjects)
+            if self.stop_condition is not None and self.stop_condition():
+                self.time_progression.close()
                 break
 
-        for animation in animations:
+        for animation in self.animations:
             animation.finish()
             animation.clean_up_from_scene(self)
+        if not self.renderer.skip_animations:
+            self.update_mobjects(0)
+        self.renderer.static_image = None
+        # Closing the progress bar at the end of the play.
+        self.time_progression.close()
 
-    def add_static_frames(self, duration):
-        self.renderer.update_frame(self)
-        dt = 1 / self.renderer.camera.frame_rate
-        self.renderer.add_frame(
-            self.renderer.get_frame(),
-            num_frames=int(duration / dt),
+    def interact(self):
+        self.quit_interaction = False
+        while not (self.renderer.window.is_closing or self.quit_interaction):
+            self.renderer.animation_start_time = 0
+            dt = 1 / config["frame_rate"]
+            self.renderer.render(self, dt, self.moving_mobjects)
+            self.update_mobjects(dt)
+        if self.renderer.window.is_closing:
+            self.renderer.window.destroy()
+
+    def embed(self):
+        if not config["preview"]:
+            logger.warning("Called embed() while no preview window is available.")
+            return
+        if config["write_to_movie"]:
+            logger.warning("embed() is skipped while writing to a file.")
+            return
+
+        self.renderer.animation_start_time = 0
+        self.renderer.render(self, -1, self.moving_mobjects)
+
+        # Configure IPython shell.
+        from IPython.terminal.embed import InteractiveShellEmbed
+
+        shell = InteractiveShellEmbed()
+
+        # Have the frame update after each command
+        shell.events.register(
+            "post_run_cell",
+            lambda *a, **kw: self.renderer.render(self, -1, self.moving_mobjects),
         )
+
+        # Use the locals of the caller as the local namespace
+        # once embeded, and add a few custom shortcuts.
+        local_ns = inspect.currentframe().f_back.f_locals
+        # local_ns["touch"] = self.interact
+        for method in (
+            "play",
+            "wait",
+            "add",
+            "remove",
+            "interact",
+            # "clear",
+            # "save_state",
+            # "restore",
+        ):
+            local_ns[method] = getattr(self, method)
+        shell(local_ns=local_ns, stack_depth=2)
+
+        # End scene when exiting an embed.
+        raise Exception("Exiting scene.")
+
+    def update_to_time(self, t):
+        dt = t - self.last_t
+        self.last_t = t
+        for animation in self.animations:
+            animation.update_mobjects(dt)
+            alpha = t / animation.run_time
+            animation.interpolate(alpha)
+        self.update_mobjects(dt)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
@@ -848,17 +982,78 @@ class Scene(Container):
 
         Parameters
         ----------
+
         sound_file : str
             The path to the sound file.
-
         time_offset : int,float, optional
             The offset in the sound file after which
             the sound can be played.
+        gain : float
+            Amplification of the sound.
 
-        gain :
+        Examples
+        --------
+        .. manim:: SoundExample
 
+            class SoundExample(Scene):
+                # Source of sound under Creative Commons 0 License. https://freesound.org/people/Druminfected/sounds/250551/
+                def construct(self):
+                    dot = Dot().set_color(GREEN)
+                    self.add_sound("click.wav")
+                    self.add(dot)
+                    self.wait()
+                    self.add_sound("click.wav")
+                    dot.set_color(BLUE)
+                    self.wait()
+                    self.add_sound("click.wav")
+                    dot.set_color(RED)
+                    self.wait()
+
+        Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/master/docs/source/_static/click.wav>`_ .
         """
         if self.renderer.skip_animations:
             return
-        time = self.time + time_offset
+        time = self.renderer.time + time_offset
         self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
+
+    def on_mouse_motion(self, point, d_point):
+        self.mouse_point.move_to(point)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            shift = -d_point
+            shift[0] *= self.camera.get_width() / 2
+            shift[1] *= self.camera.get_height() / 2
+            transform = self.camera.inverse_rotation_matrix
+            shift = np.dot(np.transpose(transform), shift)
+            self.camera.shift(shift)
+
+    def on_mouse_scroll(self, point, offset):
+        if CTRL_VALUE in self.renderer.pressed_keys:
+            factor = 1 + np.arctan(-20 * offset[1])
+            self.camera.scale(factor, about_point=point)
+
+        transform = self.camera.inverse_rotation_matrix
+        shift = np.dot(np.transpose(transform), offset)
+        if SHIFT_VALUE in self.renderer.pressed_keys:
+            self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
+        else:
+            self.camera.shift(20.0 * shift)
+
+    def on_key_press(self, symbol, modifiers):
+        try:
+            char = chr(symbol)
+        except OverflowError:
+            logger.warning("The value of the pressed key is too large.")
+            return
+
+        if char == "r":
+            self.camera.to_default_state()
+        elif char == "q":
+            self.quit_interaction = True
+
+    def on_key_release(self, symbol, modifiers):
+        pass
+
+    def on_mouse_drag(self, point, d_point, buttons, modifiers):
+        self.mouse_drag_point.move_to(point)
+        self.camera.increment_theta(-d_point[0])
+        self.camera.increment_phi(d_point[1])

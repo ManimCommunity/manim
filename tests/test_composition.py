@@ -1,8 +1,8 @@
-import pytest
-from manim.animation.composition import Succession
-from manim.animation.fading import FadeInFrom, FadeOutAndShift
+from manim.animation.animation import Animation, Wait
+from manim.animation.composition import AnimationGroup, Succession
+from manim.animation.fading import FadeIn, FadeInFrom, FadeOutAndShift
 from manim.constants import DOWN
-from manim.mobject.geometry import Line
+from manim.mobject.geometry import Circle, Line, Square
 
 
 def test_succession_timing():
@@ -76,3 +76,24 @@ def test_succession_in_succession_timing():
     assert succession.active_animation is None
     assert nested_succession.active_index == 2
     assert nested_succession.active_animation is None
+
+
+def test_animationbuilder_in_group():
+    sqr = Square()
+    circ = Circle()
+    animation_group = AnimationGroup(sqr.animate.shift(DOWN).scale(2), FadeIn(circ))
+    assert all(isinstance(anim, Animation) for anim in animation_group.animations)
+    succession = Succession(sqr.animate.shift(DOWN).scale(2), FadeIn(circ))
+    assert all(isinstance(anim, Animation) for anim in succession.animations)
+
+
+def test_animationgroup_with_wait():
+    sqr = Square()
+    sqr_anim = FadeIn(sqr)
+    wait = Wait()
+    animation_group = AnimationGroup(wait, sqr_anim, lag_ratio=1)
+
+    animation_group.begin()
+    timings = animation_group.anims_with_timings
+
+    assert timings == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]

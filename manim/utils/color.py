@@ -77,6 +77,11 @@ __all__ = [
     "DARK_GRAY",
     "DARKER_GREY",
     "DARKER_GRAY",
+    "GREY_E",
+    "GREY_D",
+    "GREY_C",
+    "GREY_B",
+    "GREY_A",
     "GREY_BROWN",
     "PINK",
     "LIGHT_PINK",
@@ -84,11 +89,11 @@ __all__ = [
     "ORANGE",
 ]
 
-from enum import Enum
 import random
+from enum import Enum
 
-from colour import Color
 import numpy as np
+from colour import Color
 
 from ..utils.bezier import interpolate
 from ..utils.simple_functions import clip_in_place
@@ -100,9 +105,21 @@ class Colors(Enum):
 
     Examples
     --------
+
+    .. manim:: ColorExample
+        :save_last_frame:
+
+        from manim.utils.color import Colors
+        class ColorExample(Scene):
+            def construct(self):
+                cols = Colors._member_names_
+                s = VGroup(*[Line(DOWN, UP, stroke_width=15).set_color(Colors[cols[i]].value) for i in range(0, len(cols))])
+                s.arrange_submobjects(buff=0.2)
+                self.add(s)
+
     The preferred way of using these colors is
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> import manim.utils.color as C
         >>> C.WHITE
@@ -114,7 +131,7 @@ class Colors(Enum):
     directly, through the use of :code:`color.value`.  Note this way uses the
     name of the colors in lowercase.
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> from manim.utils.color import Colors
         >>> Colors.white.value
@@ -183,6 +200,11 @@ class Colors(Enum):
     dark_gray = "#444444"
     darker_grey = "#222222"
     darker_gray = "#222222"
+    grey_e = "#222222"
+    grey_d = "#444444"
+    grey_c = "#888888"
+    grey_b = "#BBBBBB"
+    grey_a = "#DDDDDD"
     grey_brown = "#736357"
     pink = "#D147BD"
     light_pink = "#DC75CD"
@@ -252,6 +274,11 @@ DARK_GRAY = Colors.dark_gray.value
 DARKER_GREY = Colors.darker_gray.value
 DARKER_GRAY = Colors.darker_gray.value
 GREY_BROWN = Colors.grey_brown.value
+GREY_E = Colors.grey_e.value
+GREY_D = Colors.grey_d.value
+GREY_C = Colors.grey_c.value
+GREY_B = Colors.grey_b.value
+GREY_A = Colors.grey_a.value
 PINK = Colors.pink.value
 LIGHT_PINK = Colors.light_pink.value
 GREEN_SCREEN = Colors.green_screen.value
@@ -274,7 +301,7 @@ def color_to_rgba(color, alpha=1):
 def rgb_to_color(rgb):
     try:
         return Color(rgb=rgb)
-    except:
+    except Exception:
         return Color(WHITE)
 
 
@@ -289,7 +316,7 @@ def rgb_to_hex(rgb):
 def hex_to_rgb(hex_code):
     hex_part = hex_code[1:]
     if len(hex_part) == 3:
-        "".join([2 * c for c in hex_part])
+        hex_part = "".join([2 * c for c in hex_part])
     return np.array([int(hex_part[i : i + 2], 16) / 255 for i in range(0, 6, 2)])
 
 

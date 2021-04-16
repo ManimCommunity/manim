@@ -10,14 +10,13 @@ from ..utils.iterables import list_difference_update
 class MultiCamera(MovingCamera):
     """Camera Object that allows for multiple perspectives."""
 
-    CONFIG = {
-        "allow_cameras_to_capture_their_own_display": False,
-    }
-
     def __init__(
-        self, video_quality_config, image_mobjects_from_cameras=None, **kwargs
+        self,
+        image_mobjects_from_cameras=None,
+        allow_cameras_to_capture_their_own_display=False,
+        **kwargs
     ):
-        """Initalises the MultiCamera
+        """Initialises the MultiCamera
 
         Parameters
         ----------
@@ -30,7 +29,10 @@ class MultiCamera(MovingCamera):
         if image_mobjects_from_cameras is not None:
             for imfc in image_mobjects_from_cameras:
                 self.add_image_mobject_from_camera(imfc)
-        MovingCamera.__init__(self, video_quality_config, **kwargs)
+        self.allow_cameras_to_capture_their_own_display = (
+            allow_cameras_to_capture_their_own_display
+        )
+        MovingCamera.__init__(self, **kwargs)
 
     def add_image_mobject_from_camera(self, image_mobject_from_camera):
         """Adds an ImageMobject that's been obtained from the camera
@@ -52,12 +54,12 @@ class MultiCamera(MovingCamera):
         for imfc in self.image_mobjects_from_cameras:
             pixel_height, pixel_width = self.pixel_array.shape[:2]
             imfc.camera.frame_shape = (
-                imfc.camera.frame.get_height(),
-                imfc.camera.frame.get_width(),
+                imfc.camera.frame.height,
+                imfc.camera.frame.width,
             )
             imfc.camera.reset_pixel_shape(
-                int(pixel_height * imfc.get_height() / self.frame_height),
-                int(pixel_width * imfc.get_width() / self.frame_width),
+                int(pixel_height * imfc.height / self.frame_height),
+                int(pixel_width * imfc.width / self.frame_width),
             )
 
     def reset(self):
@@ -83,7 +85,7 @@ class MultiCamera(MovingCamera):
         MovingCamera.capture_mobjects(self, mobjects, **kwargs)
 
     def get_mobjects_indicating_movement(self):
-        """Returns all mobjets whose movement implies that the camera
+        """Returns all mobjects whose movement implies that the camera
         should think of all other mobjects on the screen as moving
 
         Returns

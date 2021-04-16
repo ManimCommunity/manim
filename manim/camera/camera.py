@@ -1,43 +1,40 @@
-"A camera converts the mobjects contained in a Scene into an array of pixels."
+"""A camera converts the mobjects contained in a Scene into an array of pixels."""
 
 
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
 
-from functools import reduce
+import copy
 import itertools as it
 import operator as op
 import time
-import copy
+from functools import reduce
 
-from PIL import Image
-from scipy.spatial.distance import pdist
 import cairo
 import numpy as np
+from PIL import Image
+from scipy.spatial.distance import pdist
 
-from .. import logger, config
+from .. import config, logger
 from ..constants import *
-from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.mobject import Mobject
+from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import color_to_int_rgba, BLACK
-from ..utils.config_ops import digest_config
+from ..utils.color import color_to_int_rgba
+from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
-from ..utils.iterables import remove_list_redundancies
 from ..utils.simple_functions import fdiv
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
-from ..utils.family import extract_mobject_family_members
+from ..utils.space_ops import angle_of_vector, get_norm
 
 
-class Camera(object):
+class Camera:
     """Base camera class.
 
     This is the object which takes care of what exactly is displayed
     on screen at any given moment.
 
-    Some important CONFIG values and local variables to note are:
+    Some important configuration values and local variables to note are:
 
     background_image : :class:`str`, optional
         The path to an image that should be the background image.
@@ -48,24 +45,24 @@ class Camera(object):
 
     """
 
-    CONFIG = {
-        "background_image": None,
-        # Note: frame height and width will be resized to match
-        # the pixel aspect ratio
-        "frame_center": ORIGIN,
-        # Points in vectorized mobjects with norm greater
-        # than this value will be rescaled.
-        "image_mode": "RGBA",
-        "n_channels": 4,
-        "pixel_array_dtype": "uint8",
-        # z_buff_func is only used if the flag above is set to True.
-        # round z coordinate to nearest hundredth when comparring
-        "z_buff_func": lambda m: np.round(m.get_center()[2], 2),
-        "cairo_line_width_multiple": 0.01,
-        "use_z_index": True,
-    }
-
-    def __init__(self, video_quality_config, background=None, **kwargs):
+    def __init__(
+        self,
+        background_image=None,
+        frame_center=ORIGIN,
+        image_mode="RGBA",
+        n_channels=4,
+        pixel_array_dtype="uint8",
+        z_buff_func=lambda m: np.round(m.get_center()[2], 2),
+        cairo_line_width_multiple=0.01,
+        use_z_index=True,
+        background=None,
+        pixel_height=None,
+        pixel_width=None,
+        frame_height=None,
+        frame_width=None,
+        frame_rate=None,
+        **kwargs,
+    ):
         """Initialises the Camera.
 
         Parameters
@@ -75,22 +72,35 @@ class Camera(object):
         **kwargs
             Any local variables to be set.
         """
-        digest_config(self, kwargs, locals())
+        self.background_image = background_image
+        self.frame_center = frame_center
+        self.image_mode = image_mode
+        self.n_channels = n_channels
+        self.pixel_array_dtype = pixel_array_dtype
+        self.z_buff_func = z_buff_func
+        self.cairo_line_width_multiple = cairo_line_width_multiple
+        self.use_z_index = use_z_index
+        self.background = background
 
-        # All of the following are set to EITHER the value passed via kwargs,
-        # OR the value stored in the global config dict at the time of
-        # _instance construction_.  Before, they were in the CONFIG dict, which
-        # is a class attribute and is defined at the time of _class
-        # definition_.  This did not allow for creating two Cameras with
-        # different configurations in the same session.
-        for attr in [
-            "pixel_height",
-            "pixel_width",
-            "frame_height",
-            "frame_width",
-            "frame_rate",
-        ]:
-            setattr(self, attr, kwargs.get(attr, config[attr]))
+        if pixel_height is None:
+            pixel_height = config["pixel_height"]
+        self.pixel_height = pixel_height
+
+        if pixel_width is None:
+            pixel_width = config["pixel_width"]
+        self.pixel_width = pixel_width
+
+        if frame_height is None:
+            frame_height = config["frame_height"]
+        self.frame_height = frame_height
+
+        if frame_width is None:
+            frame_width = config["frame_width"]
+        self.frame_width = frame_width
+
+        if frame_rate is None:
+            frame_rate = config["frame_rate"]
+        self.frame_rate = frame_rate
 
         for attr in ["background_color", "background_opacity"]:
             setattr(self, f"_{attr}", kwargs.get(attr, config[attr]))
@@ -180,7 +190,7 @@ class Camera(object):
 
     def reset_pixel_shape(self, new_height, new_width):
         """This method resets the height and width
-        of a single pixel to the passed new_heigh and new_width.
+        of a single pixel to the passed new_height and new_width.
 
         Parameters
         ----------
@@ -331,7 +341,7 @@ class Camera(object):
         Parameters
         ----------
         coords_to_colors_func : function
-            The function whose input is an (x,y) pair of coordinats and
+            The function whose input is an (x,y) pair of coordinates and
             whose return values must be the colors for that point
         Returns
         -------
@@ -361,7 +371,7 @@ class Camera(object):
         Parameters
         ----------
         coords_to_colors_func : function
-            The function whose input is an (x,y) pair of coordinats and
+            The function whose input is an (x,y) pair of coordinates and
             whose return values must be the colors for that point
         """
         self.set_background(self.make_background_from_func(coords_to_colors_func))
@@ -868,7 +878,7 @@ class Camera(object):
         pixel_array[:, :] = new_pa.reshape((ph, pw, rgba_len))
 
     def display_multiple_image_mobjects(self, image_mobjects, pixel_array):
-        """Displays multiple image mobjects by modifiying the passed pixel_array.
+        """Displays multiple image mobjects by modifying the passed pixel_array.
 
         Parameters
         ----------
@@ -880,7 +890,7 @@ class Camera(object):
         for image_mobject in image_mobjects:
             self.display_image_mobject(image_mobject, pixel_array)
 
-    def display_image_mobject(self, image_mobject, pixel_array):
+    def display_image_mobject(self, image_mobject: AbstractImageMobject, pixel_array):
         """Displays an ImageMobject by changing the pixel_array suitably.
 
         Parameters
@@ -902,7 +912,7 @@ class Camera(object):
         pixel_width = max(int(pdist([ul_coords, ur_coords])), 1)
         pixel_height = max(int(pdist([ul_coords, dl_coords])), 1)
         sub_image = sub_image.resize(
-            (pixel_width, pixel_height), resample=Image.BICUBIC
+            (pixel_width, pixel_height), resample=image_mobject.resampling_algorithm
         )
 
         # Rotate
@@ -910,12 +920,12 @@ class Camera(object):
         adjusted_angle = -int(360 * angle / TAU)
         if adjusted_angle != 0:
             sub_image = sub_image.rotate(
-                adjusted_angle, resample=Image.BICUBIC, expand=1
+                adjusted_angle, resample=image_mobject.resampling_algorithm, expand=1
             )
 
         # TODO, there is no accounting for a shear...
 
-        # Paste into an image as large as the camear's pixel array
+        # Paste into an image as large as the camera's pixel array
         full_image = Image.fromarray(
             np.zeros((self.pixel_height, self.pixel_width)), mode="RGBA"
         )
@@ -992,7 +1002,7 @@ class Camera(object):
         # NOTE: There seems to be an unused argument `mobject`.
 
         # Subclasses (like ThreeDCamera) may want to
-        # adjust points futher before they're shown
+        # adjust points further before they're shown
         if not np.all(np.isfinite(points)):
             # TODO, print some kind of warning about
             # mobject having invalid points?
@@ -1137,7 +1147,7 @@ class Camera(object):
 
 # NOTE: The methods of the following class have not been mentioned outside of their definitons.
 # Their DocStrings are not as detailed as preferred.
-class BackgroundColoredVMobjectDisplayer(object):
+class BackgroundColoredVMobjectDisplayer:
     def __init__(self, camera):
         """
         Parameters
@@ -1156,7 +1166,7 @@ class BackgroundColoredVMobjectDisplayer(object):
     def resize_background_array(
         self, background_array, new_width, new_height, mode="RGBA"
     ):
-        """Resizes the pixel array represinting the background.
+        """Resizes the pixel array representing the background.
 
         Parameters
         ----------

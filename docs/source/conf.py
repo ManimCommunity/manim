@@ -11,10 +11,11 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 import os
-import subprocess
 import sys
 from distutils.sysconfig import get_python_lib
 from pathlib import Path
+
+import manim
 
 sys.path.insert(0, os.path.abspath("."))
 
@@ -53,7 +54,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.extlinks",
-    "sphinx.ext.linkcode",
+    "sphinx.ext.viewcode",
     "sphinxext.opengraph",
     "manim_directive",
 ]
@@ -86,39 +87,45 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-import guzzle_sphinx_theme
 
-html_theme_path = guzzle_sphinx_theme.html_theme_path()
-html_theme = "guzzle_sphinx_theme"
+html_theme = "furo"
 html_favicon = str(Path("_static/favicon.ico"))
-
-# There's a standing issue with Sphinx's new-style sidebars.  This is a
-# workaround.  Taken from
-# https://github.com/guzzle/guzzle_sphinx_theme/issues/33#issuecomment-637081826
-html_sidebars = {"**": ["logo-text.html", "globaltoc.html", "searchbox.html"]}
-
-# Register the theme as an extension to generate a sitemap.xml
-extensions.append("guzzle_sphinx_theme")
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+html_theme_options = {
+    "light_logo": "manim-logo-sidebar.svg",
+    "dark_logo": "manim-logo-sidebar-dark.svg",
+    "light_css_variables": {
+        "color-content-foreground": "#413c3c",
+        "color-background-primary": "#f1ece9",
+        "color-background-border": "#ded6d4",
+        "color-sidebar-background": "#ece6e2",
+        "color-brand-content": "#2196f3",
+        "color-brand-primary": "#525893",
+        "color-link": "#e07a5f",
+        "color-link--hover": "#a05744",
+        "color-inline-code-background": "#f9f9f9",
+    },
+    "dark_css_variables": {
+        "color-content-foreground": "#ffffffd9",
+        "color-background-primary": "#131416",
+        "color-background-border": "#303335",
+        "color-sidebar-background": "#1a1c1e",
+        "color-brand-content": "#2196f3",
+        "color-brand-primary": "#87c2a5",
+        "color-link": "#e07a5f",
+        "color-link--hover": "#ffb7a4",
+        "color-inline-code-background": "#383838",
+    },
+}
+html_title = f"Manim Community v{manim.__version__}"
+
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
-
-# source links to github
-def linkcode_resolve(domain, info):
-    if domain != "py":
-        return None
-    if not info["module"]:
-        return None
-    filename = info["module"].replace(".", "/")
-    version = os.getenv("READTHEDOCS_VERSION", "master")
-    if version == "latest":
-        version = "master"
-    return f"https://github.com/ManimCommunity/manim/blob/{version}/{filename}.py"
 
 
 # external links

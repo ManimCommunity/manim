@@ -2,11 +2,13 @@
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
+import uuid
 
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
+from ..utils.family import extract_mobject_family_members
 
 
 class DecimalNumber(VMobject):
@@ -31,8 +33,7 @@ class DecimalNumber(VMobject):
                 decimal.add_updater(lambda d: d.set_value(square.get_center()[1]))
                 self.add(square, decimal)
                 self.play(
-                    square.to_edge,
-                    DOWN,
+                    square.animate.to_edge(DOWN),
                     rate_func=there_and_back,
                     run_time=5,
                 )
@@ -40,21 +41,43 @@ class DecimalNumber(VMobject):
 
     """
 
-    CONFIG = {
-        "num_decimal_places": 2,
-        "include_sign": False,
-        "group_with_commas": True,
-        "digit_to_digit_buff": 0.05,
-        "show_ellipsis": False,
-        "unit": None,  # Aligned to bottom unless it starts with "^"
-        "include_background_rectangle": False,
-        "edge_to_fix": LEFT,
-    }
-
-    def __init__(self, number=0, **kwargs):
+    def __init__(
+        self,
+        number=0,
+        num_decimal_places=2,
+        include_sign=False,
+        group_with_commas=True,
+        digit_to_digit_buff=0.05,
+        show_ellipsis=False,
+        unit=None,  # Aligned to bottom unless it starts with "^"
+        include_background_rectangle=False,
+        edge_to_fix=LEFT,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.number = number
-        self.initial_config = kwargs
+        self.num_decimal_places = num_decimal_places
+        self.include_sign = include_sign
+        self.group_with_commas = group_with_commas
+        self.digit_to_digit_buff = digit_to_digit_buff
+        self.show_ellipsis = show_ellipsis
+        self.unit = unit
+        self.include_background_rectangle = include_background_rectangle
+        self.edge_to_fix = edge_to_fix
+
+        self.initial_config = kwargs.copy()
+        self.initial_config.update(
+            {
+                "num_decimal_places": num_decimal_places,
+                "include_sign": include_sign,
+                "group_with_commas": group_with_commas,
+                "digit_to_digit_buff": digit_to_digit_buff,
+                "show_ellipsis": show_ellipsis,
+                "unit": unit,
+                "include_background_rectangle": include_background_rectangle,
+                "edge_to_fix": edge_to_fix,
+            }
+        )
 
         if isinstance(number, complex):
             formatter = self.get_complex_formatter()
@@ -90,9 +113,9 @@ class DecimalNumber(VMobject):
         for i, c in enumerate(num_string):
             if c == "-" and len(num_string) > i + 1:
                 self[i].align_to(self[i + 1], UP)
-                self[i].shift(self[i + 1].get_height() * DOWN / 2)
+                self[i].shift(self[i + 1].height * DOWN / 2)
             elif c == ",":
-                self[i].shift(self[i].get_height() * DOWN / 2)
+                self[i].shift(self[i].height * DOWN / 2)
         if self.unit and self.unit.startswith("^"):
             self.unit_sign.align_to(self, UP)
         #
@@ -109,16 +132,14 @@ class DecimalNumber(VMobject):
         - num_decimal_places
         - field_name (e.g. 0 or 0.real)
         """
-        config = dict(
-            [
-                (attr, getattr(self, attr))
-                for attr in [
-                    "include_sign",
-                    "group_with_commas",
-                    "num_decimal_places",
-                ]
+        config = {
+            attr: getattr(self, attr)
+            for attr in [
+                "include_sign",
+                "group_with_commas",
+                "num_decimal_places",
             ]
-        )
+        }
         config.update(kwargs)
         return "".join(
             [
@@ -144,12 +165,26 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number, **config):
-        full_config = dict(self.CONFIG)
+        full_config = {}
         full_config.update(self.initial_config)
         full_config.update(config)
         new_decimal = DecimalNumber(number, **full_config)
+
+        if hasattr(self, "original_id"):
+            if not hasattr(self, "generated_original_ids"):
+                self.generated_original_ids = []
+            new_submobjects = extract_mobject_family_members(
+                new_decimal, only_those_with_points=True
+            )
+            while len(self.generated_original_ids) < len(new_submobjects):
+                self.generated_original_ids.append(str(uuid.uuid4()))
+            for new_submobject, generated_id in zip(
+                new_submobjects, self.generated_original_ids
+            ):
+                new_submobject.original_id = generated_id
+
         # Make sure last digit has constant height
-        new_decimal.scale(self[-1].get_height() / new_decimal[-1].get_height())
+        new_decimal.scale(self[-1].height / new_decimal[-1].height)
         new_decimal.move_to(self, self.edge_to_fix)
         new_decimal.match_style(self)
 
@@ -170,9 +205,10 @@ class DecimalNumber(VMobject):
 
 
 class Integer(DecimalNumber):
-    CONFIG = {
-        "num_decimal_places": 0,
-    }
+    def __init__(self, number=0, num_decimal_places=0, **kwargs):
+        DecimalNumber.__init__(
+            self, number=number, num_decimal_places=num_decimal_places, **kwargs
+        )
 
     def get_value(self):
         return int(np.round(super().get_value()))
@@ -187,7 +223,7 @@ class Variable(VMobject):
     ----------
     var : Union[:class:`int`, :class:`float`]
         The python variable you need to keep track of and display.
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`, :class:`~.MathTexFromPresetString`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
         The label for your variable, for example ``x = ...``. To use math mode, for e.g.
         subscripts, superscripts, etc. simply pass in a raw string.
     var_type : Union[:class:`DecimalNumber`, :class:`Integer`], optional
@@ -200,7 +236,7 @@ class Variable(VMobject):
 
     Attributes
     ----------
-    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`, :class:`~.MathTexFromPresetString`]
+    label : Union[:class:`str`, :class:`~.Tex`, :class:`~.MathTex`, :class:`~.Text`, :class:`~.TexSymbol`, :class:`~.SingleStringMathTex`]
         The label for your variable, for example ``x = ...``.
     tracker : :class:`~.ValueTracker`
         Useful in updating the value of your variable on-screen.
@@ -238,7 +274,7 @@ class Variable(VMobject):
                 self.wait()
                 var_tracker = on_screen_var.tracker
                 var = 10.5
-                self.play(var_tracker.set_value, var)
+                self.play(var_tracker.animate.set_value(var))
                 self.wait()
 
                 int_var = 0
@@ -252,7 +288,7 @@ class Variable(VMobject):
                 self.wait()
                 var_tracker = on_screen_int_var.tracker
                 var = 10.5
-                self.play(var_tracker.set_value, var)
+                self.play(var_tracker.animate.set_value(var))
                 self.wait()
 
                 # If you wish to have a somewhat more complicated label for your

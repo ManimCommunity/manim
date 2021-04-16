@@ -1,14 +1,16 @@
-from .. import constants, logger, console, config
 import importlib.util
 import inspect
 import os
-from pathlib import Path
+import re
 import sys
 import types
-import re
+import warnings
+from pathlib import Path
+
+from .. import config, console, constants, logger
 
 
-def get_module(file_name):
+def get_module(file_name: Path):
     if str(file_name) == "-":
         module = types.ModuleType("input_scenes")
         logger.info(
@@ -16,7 +18,7 @@ def get_module(file_name):
         )
         code = sys.stdin.read()
         if not code.startswith("from manim import"):
-            logger.warn(
+            logger.warning(
                 "Didn't find an import statement for Manim. Importing automatically..."
             )
             code = "from manim import *\n" + code
@@ -33,9 +35,15 @@ def get_module(file_name):
             if ext != ".py":
                 raise ValueError(f"{file_name} is not a valid Manim python script.")
             module_name = ext.replace(os.sep, ".").split(".")[-1]
+
+            warnings.filterwarnings(
+                "default", category=DeprecationWarning, module=module_name
+            )
+
             spec = importlib.util.spec_from_file_location(module_name, file_name)
             module = importlib.util.module_from_spec(spec)
             sys.modules[module_name] = module
+            sys.path.insert(0, str(file_name.parent.absolute()))
             spec.loader.exec_module(module)
             return module
         else:
@@ -104,3 +112,13 @@ def prompt_user_for_choice(scene_classes):
         sys.exit(2)
     except EOFError:
         sys.exit(1)
+
+
+def scene_classes_from_file(file_path, require_single_scene=False):
+    module = get_module(file_path)
+    all_scene_classes = get_scene_classes_from_module(module)
+    scene_classes_to_render = get_scenes_to_render(all_scene_classes)
+    if require_single_scene:
+        assert len(scene_classes_to_render) == 1
+        return scene_classes_to_render[0]
+    return scene_classes_to_render

@@ -4,7 +4,7 @@ Configuration
 Manim provides an extensive configuration system that allows it to adapt to
 many different use cases.  There are many configuration options that can be
 configured at different times during the scene rendering process.  Each option
-can be configured programatically via `the ManimConfig class`_, or at the time
+can be configured programmatically via `the ManimConfig class`_, or at the time
 of command invocation via `command line arguments`_, or at the time the library
 is first imported via `the config files`_.
 
@@ -17,11 +17,11 @@ which is an instance of :class:`.ManimConfig`.  Each property of this class is
 a config option that can be accessed either with standard attribute syntax, or
 with dict-like syntax:
 
-.. code-block:: python
+.. code-block:: pycon
 
    >>> from manim import *
    >>> config.background_color = WHITE
-   >>> config['background_color'] = WHITE
+   >>> config["background_color"] = WHITE
 
 The former is preferred; the latter is provided mostly for backwards
 compatibility.
@@ -30,7 +30,7 @@ Most classes, including :class:`.Camera`, :class:`.Mobject`, and
 :class:`.Animation`, read some of their default configuration from the global
 ``config``.
 
-.. code-block:: python
+.. code-block:: pycon
 
    >>> Camera({}).background_color
    <Color white>
@@ -41,7 +41,7 @@ Most classes, including :class:`.Camera`, :class:`.Mobject`, and
 :class:`.ManimConfig` is designed to keep internal consistency.  For example,
 setting ``frame_y_radius`` will affect ``frame_height``:
 
-.. code-block:: python
+.. code-block:: pycon
 
     >>> config.frame_height
     8.0
@@ -49,7 +49,7 @@ setting ``frame_y_radius`` will affect ``frame_height``:
     >>> config.frame_height
     10.0
 
-The global ``config`` object is mean to be the single source of truth for all
+The global ``config`` object is meant to be the single source of truth for all
 config options.  All of the other ways of setting config options ultimately
 change the values of the global ``config`` object.
 
@@ -90,7 +90,7 @@ high, and 4k quality, respectively.
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName -ql
+   $ manim -ql <file.py> SceneName 
 
 These flags set the values of the config options ``config.pixel_width``,
 ``config.pixel_height``, ``config.frame_rate``, and ``config.quality``.
@@ -110,7 +110,7 @@ instead of the whole video, you can execute
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName -sqh
+   $ manim -sqh <file.py> SceneName 
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
@@ -120,7 +120,7 @@ open the file after it is rendered.
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName -o myscene -i -n 0,10 -c WHITE
+   $ manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
 
 .. tip:: There are many more command line flags that manim accepts.  All the
 	 possible flags are shown by executing ``manim -h``.  A complete list
@@ -162,7 +162,7 @@ Now, executing the following command
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName -o myscene -i -c WHITE
+   $ manim -o myscene -i -c WHITE <file.py> SceneName 
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
@@ -187,7 +187,7 @@ file being rendered, and **not** in the directory of execution.  For example,
 
 .. code-block:: bash
 
-   $ manim <path/to/file.py> SceneName -o myscene -i -c WHITE
+   $ manim -o myscene -i -c WHITE <path/to/file.py> SceneName
 
 will use the config file found in ``path/to/file.py``, if any.  It will **not**
 use the config file found in the current working directory, even if it exists.
@@ -260,15 +260,16 @@ using any config files and executing
 
 .. code-block:: bash
 
-   manim <file.py> SceneName -o myscene -c WHITE
+   manim -o myscene -c WHITE <file.py> SceneName
 
 Any command line flags have precedence over any config file.  For example,
-using the previous two config files and executing :code:`manim <file.py>
-SceneName -c RED` is equivalent to not using any config files and executing
+using the previous two config files and executing :code:`manim -c RED
+<file.py> SceneName` is equivalent to not using any config files and
+executing
 
 .. code-block:: bash
 
-   manim <file.py> SceneName -o myscene -c RED
+   manim -o myscene -c RED <file.py> SceneName
 
 There is also a **library-wide** config file that determines manim's default
 behavior, and applies to every user of the library.  It has the least
@@ -283,6 +284,13 @@ config file system.
 
 Order of operations
 *******************
+
+.. raw:: html
+
+    <div class="mxgraph" style="max-width:100%;border:1px solid transparent;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;nav&quot;:true,&quot;resize&quot;:true,&quot;toolbar&quot;:&quot;zoom layers lightbox&quot;,&quot;edit&quot;:&quot;_blank&quot;,&quot;url&quot;:&quot;https://drive.google.com/uc?id=1WYVKKoRbXrumHEcyQKQ9s1yCnBvfU2Ui&amp;export=download&quot;}"></div>
+    <script type="text/javascript" src="https://viewer.diagrams.net/embed2.js?&fetch=https%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1WYVKKoRbXrumHEcyQKQ9s1yCnBvfU2Ui%26export%3Ddownload"></script>
+
+
 
 With so many different ways of configuring manim, it can be difficult to know
 when each config option is being set.  In fact, this will depend on how manim
@@ -330,112 +338,50 @@ highest precedence, is:
 A list of all config options
 ****************************
 
-.. testcode::
-   :hide:
+.. code::
 
-   from manim._config import ManimConfig
-   from inspect import getmembers
-   sorted([n for n, _ in getmembers(ManimConfig, lambda v: isinstance(v, property))])
-
-.. testoutput::
-   :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
-
-   ['aspect_ratio', 'background_color', 'background_opacity', 'bottom',
-   'custom_folders', 'disable_caching', 'dry_run', 'ffmpeg_loglevel',
-   'flush_cache', 'frame_height', 'frame_rate', 'frame_size', 'frame_width',
-   'frame_x_radius', 'frame_y_radius', 'from_animation_number', 'images_dir',
-   'input_file', 'js_renderer_path', 'leave_progress_bars', 'left_side',
-   'log_dir', 'log_to_file', 'max_files_cached', 'media_dir',
-   'movie_file_extension', 'output_file', 'partial_movie_dir', 'pixel_height',
-   'pixel_width', 'png_mode', 'preview', 'progress_bar', 'quality',
-   'right_side', 'save_as_gif', 'save_last_frame', 'save_pngs', 'scene_names',
-   'show_in_file_browser', 'skip_animations', 'sound', 'tex_dir',
+   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity',
+   'bottom', 'custom_folders', 'disable_caching', 'dry_run',
+   'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate',
+   'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
+   'from_animation_number', 'images_dir', 'input_file', 'left_side',
+   'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
+   'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
+   'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',
+   'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
+   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
-   'upto_animation_number', 'use_js_renderer', 'verbosity', 'video_dir',
-   'write_all', 'write_to_movie']
+   'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
+   'verbosity', 'video_dir', 'webgl_renderer_path', 'write_all',
+   'write_to_movie']
 
 
 A list of all CLI flags
 ***********************
 
-.. testcode::
-   :hide:
+.. code::
 
-   import subprocess
-   result = subprocess.run(['manim', '-h'], stdout=subprocess.PIPE)
-   print(result.stdout.decode('utf-8'))
+   manim -h
 
-.. testoutput::
-   :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
+   Usage: manim [OPTIONS] COMMAND [ARGS]...
 
-   usage: manim [-h] [-o OUTPUT_FILE] [-p] [-f] [--leave_progress_bars] [-a] [-w] [-s] [-g] [-i] [--disable_caching] [--flush_cache] [--log_to_file] [-c BACKGROUND_COLOR]
-                [--background_opacity BACKGROUND_OPACITY] [--media_dir MEDIA_DIR] [--log_dir LOG_DIR] [--tex_template TEX_TEMPLATE] [--dry_run] [-t] [-q {k,p,h,m,l}]
-                [--low_quality] [--medium_quality] [--high_quality] [--production_quality] [--fourk_quality] [-l] [-m] [-e] [-k] [-r RESOLUTION] [-n FROM_ANIMATION_NUMBER]
-                [--use_js_renderer] [--js_renderer_path JS_RENDERER_PATH] [--config_file CONFIG_FILE] [--custom_folders] [-v {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
-                [--progress_bar True/False]
-                {cfg} ... file [scene_names [scene_names ...]]
+     Animation engine for explanatory math videos
 
-   Animation engine for explanatory math videos
+   Options:
+     --version   Show the version and exit.
+     -h, --help  Show this message and exit.
 
-   positional arguments:
-     {cfg}
-     file                  path to file holding the python code for the scene
-     scene_names           Name of the Scene class you want to see
+   Commands:
+     render*  Render SCENE(S) from the input FILE.
+     cfg      Manages Manim configuration files.
+     plugins  Manages Manim plugins.
 
-   optional arguments:
-     -h, --help            show this help message and exit
-     -o OUTPUT_FILE, --output_file OUTPUT_FILE
-                           Specify the name of the output file, if it should be different from the scene class name
-     -p, --preview         Automatically open the saved file once its done
-     -f, --show_in_file_browser
-                           Show the output file in the File Browser
-     --leave_progress_bars
-                           Leave progress bars displayed in terminal
-     -a, --write_all       Write all the scenes from a file
-     -w, --write_to_movie  Render the scene as a movie file (this is on by default)
-     -s, --save_last_frame
-                           Save the last frame only (no movie file is generated)
-     -g, --save_pngs       Save each frame as a png
-     -i, --save_as_gif     Save the video as gif
-     --disable_caching     Disable caching (will generate partial-movie-files anyway)
-     --flush_cache         Remove all cached partial-movie-files
-     --log_to_file         Log terminal output to file
-     -c BACKGROUND_COLOR, --background_color BACKGROUND_COLOR
-                           Specify background color
-     --background_opacity BACKGROUND_OPACITY
-                           Specify background opacity
-     --media_dir MEDIA_DIR
-                           Directory to store media (including video files)
-     --log_dir LOG_DIR     Directory to store log files
-     --tex_template TEX_TEMPLATE
-                           Specify a custom TeX template file
-     --dry_run             Do a dry run (render scenes but generate no output files)
-     -t, --transparent     Render a scene with an alpha channel
-     -q {k,p,h,m,l}, --quality {k,p,h,m,l}
-                           Render at specific quality, short form of the --*_quality flags
-     --low_quality         Render at low quality
-     --medium_quality      Render at medium quality
-     --high_quality        Render at high quality
-     --production_quality  Render at default production quality
-     --fourk_quality       Render at 4K quality
-     -l                    DEPRECATED: USE -ql or --quality l
-     -m                    DEPRECATED: USE -qm or --quality m
-     -e                    DEPRECATED: USE -qh or --quality h
-     -k                    DEPRECATED: USE -qk or --quality k
-     -r RESOLUTION, --resolution RESOLUTION
-                           Resolution, passed as "height,width". Overrides any quality flags, if present
-     -n FROM_ANIMATION_NUMBER, --from_animation_number FROM_ANIMATION_NUMBER
-                           Start rendering at the specified animation index, instead of the first animation. If you pass in two comma separated values, e.g. '3,6', it will end
-                           the rendering at the second value
-     --use_js_renderer     Render animations using the javascript frontend
-     --js_renderer_path JS_RENDERER_PATH
-                           Path to the javascript frontend
-     --config_file CONFIG_FILE
-                           Specify the configuration file
-     --custom_folders      Use the folders defined in the [custom_folders] section of the config file to define the output folder structure
-     -v {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --verbosity {DEBUG,INFO,WARNING,ERROR,CRITICAL}
-                           Verbosity level. Also changes the ffmpeg log level unless the latter is specified in the config
-     --progress_bar True/False
-                           Display the progress bar
+     Made with <3 by Manim Community developers.
+     
+Each of the subcommands has their own help page which can be 
 
-   Made with <3 by the manim community devs
+.. code::
+
+   manim render -h
+   manim cfg -h
+   manim plugins -h

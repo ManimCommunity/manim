@@ -3,16 +3,19 @@
 Examples
 --------
 
-.. manim:: FunctionPlotWithLabbeledYAxis
+.. manim:: FunctionPlotWithLabelledYAxis
     :save_last_frame:
 
-    class FunctionPlotWithLabbeledYAxis(GraphScene):
-        CONFIG = {
-            "y_min": 0,
-            "y_max": 100,
-            "y_axis_config": {"tick_frequency": 10},
-            "y_labeled_nums": np.arange(0, 100, 10)
-        }
+    class FunctionPlotWithLabelledYAxis(GraphScene):
+        def __init__(self, **kwargs):
+            GraphScene.__init__(
+                self,
+                y_min=0,
+                y_max=100,
+                y_axis_config={"tick_frequency": 10},
+                y_labeled_nums=np.arange(0, 100, 10),
+                **kwargs
+            )
 
         def construct(self):
             self.setup_axes()
@@ -46,23 +49,27 @@ __all__ = ["GraphScene"]
 import itertools as it
 
 from .. import config
-from ..animation.creation import Write, DrawBorderThenFill, ShowCreation
+from ..animation.creation import Create, DrawBorderThenFill, Write
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
-from ..mobject.geometry import RegularPolygon
+from ..mobject.geometry import Line, Rectangle, RegularPolygon
 from ..mobject.number_line import NumberLine
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VectorizedPoint
+from ..mobject.svg.tex_mobject import MathTex, Tex
+from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
 from ..utils.bezier import interpolate
-from ..utils.color import color_gradient, GREY, BLUE, GREEN, YELLOW, BLACK, WHITE
-from ..utils.color import invert_color
+from ..utils.color import (
+    BLACK,
+    BLUE,
+    GREEN,
+    GREY,
+    WHITE,
+    YELLOW,
+    color_gradient,
+    invert_color,
+)
 from ..utils.space_ops import angle_of_vector
 
 # TODO, this should probably reimplemented entirely, especially so as to
@@ -72,41 +79,72 @@ from ..utils.space_ops import angle_of_vector
 
 
 class GraphScene(Scene):
-    CONFIG = {
-        "x_min": -1,
-        "x_max": 10,
-        "x_axis_width": 9,
-        "x_leftmost_tick": None,  # Change if different from x_min
-        "x_labeled_nums": None,
-        "x_axis_label": "$x$",
-        "y_min": -1,
-        "y_max": 10,
-        "y_axis_height": 6,
-        "y_bottom_tick": None,  # Change if different from y_min
-        "y_labeled_nums": None,
-        "y_axis_label": "$y$",
-        "axes_color": GREY,
-        "graph_origin": 2.5 * DOWN + 4 * LEFT,
-        "exclude_zero_label": True,
-        "default_graph_colors": [BLUE, GREEN, YELLOW],
-        "default_derivative_color": GREEN,
-        "default_input_color": YELLOW,
-        "default_riemann_start_color": BLUE,
-        "default_riemann_end_color": GREEN,
-        "area_opacity": 0.8,
-        "num_rects": 50,
-        "include_tip": False,  # add tip at the end of the axes
-        "x_axis_visibility": True,  # show or hide the x axis
-        "y_axis_visibility": True,  # show or hide the y axis
-        "x_label_position": UP + RIGHT,  # where to place the label of the x axis
-        "y_label_position": UP + RIGHT,  # where to place the label of the y axis
-        "x_axis_config": {},
-        "y_axis_config": {},
-    }
+    def __init__(
+        self,
+        x_min=-1,
+        x_max=10,
+        x_axis_width=9,
+        x_leftmost_tick=None,  # Change if different from x_min
+        x_labeled_nums=None,
+        x_axis_label="$x$",
+        y_min=-1,
+        y_max=10,
+        y_axis_height=6,
+        y_bottom_tick=None,  # Change if different from y_min
+        y_labeled_nums=None,
+        y_axis_label="$y$",
+        axes_color=GREY,
+        graph_origin=2.5 * DOWN + 4 * LEFT,
+        exclude_zero_label=True,
+        default_graph_colors=[BLUE, GREEN, YELLOW],
+        default_derivative_color=GREEN,
+        default_input_color=YELLOW,
+        default_riemann_start_color=BLUE,
+        default_riemann_end_color=GREEN,
+        area_opacity=0.8,
+        num_rects=50,
+        include_tip=False,  # add tip at the end of the axes
+        x_axis_visibility=True,  # show or hide the x axis
+        y_axis_visibility=True,  # show or hide the y axis
+        x_label_position=UP + RIGHT,  # where to place the label of the x axis
+        y_label_position=UP + RIGHT,  # where to place the label of the y axis
+        x_axis_config=None,
+        y_axis_config=None,
+        **kwargs,
+    ):
+        self.x_min = x_min
+        self.x_max = x_max
+        self.x_axis_width = x_axis_width
+        self.x_leftmost_tick = x_leftmost_tick
+        self.x_labeled_nums = x_labeled_nums
+        self.x_axis_label = x_axis_label
+        self.y_min = y_min
+        self.y_max = y_max
+        self.y_axis_height = y_axis_height
+        self.y_bottom_tick = y_bottom_tick
+        self.y_labeled_nums = y_labeled_nums
+        self.y_axis_label = y_axis_label
+        self.axes_color = axes_color
+        self.graph_origin = graph_origin
+        self.exclude_zero_label = exclude_zero_label
+        self.default_graph_colors = default_graph_colors
+        self.default_derivative_color = default_derivative_color
+        self.default_input_color = default_input_color
+        self.default_riemann_start_color = default_riemann_start_color
+        self.default_riemann_end_color = default_riemann_end_color
+        self.area_opacity = area_opacity
+        self.num_rects = num_rects
+        self.include_tip = include_tip
+        self.x_axis_visibility = x_axis_visibility
+        self.y_axis_visibility = y_axis_visibility
+        self.x_label_position = x_label_position
+        self.y_label_position = y_label_position
+        self.x_axis_config = {} if x_axis_config is None else x_axis_config
+        self.y_axis_config = {} if y_axis_config is None else y_axis_config
+        super().__init__(**kwargs)
 
     def setup(self):
-        """
-        This method is used internally by Manim
+        """This method is used internally by Manim
         to set up the scene for proper use.
         """
         self.default_graph_colors_cycle = it.cycle(self.default_graph_colors)
@@ -117,12 +155,11 @@ class GraphScene(Scene):
         self.right_v_line = VGroup()
 
     def setup_axes(self, animate=False):
-        """
-        This method sets up the axes of the graph.
+        """This method sets up the axes of the graph.
 
         Parameters
         ----------
-        animate : bool, optional
+        animate : Optional[:class:`bool`]
             Whether or not to animate the setting up of the Axes.
         """
         # TODO, once eoc is done, refactor this to be less redundant.
@@ -185,7 +222,6 @@ class GraphScene(Scene):
                 "leftmost_tick": self.y_bottom_tick,
                 "numbers_with_elongated_ticks": self.y_labeled_nums,
                 "color": self.axes_color,
-                "line_to_number_vect": LEFT,
                 "label_direction": LEFT,
                 "include_tip": self.include_tip,
             },
@@ -198,6 +234,7 @@ class GraphScene(Scene):
         )
         y_axis.shift(self.graph_origin - y_shift)
         y_axis.rotate(np.pi / 2, about_point=self.graph_origin)
+
         if len(self.y_labeled_nums) > 0:
             if self.exclude_zero_label:
                 self.y_labeled_nums = [y for y in self.y_labeled_nums if y != 0]
@@ -226,25 +263,27 @@ class GraphScene(Scene):
         self.default_graph_colors = it.cycle(self.default_graph_colors)
 
     def coords_to_point(self, x, y):
-        """
-        The graph is smaller than the scene.
-        Because of this, coordinates in the scene don't map
-        to coordinates on the graph.
-        This method returns a scaled coordinate for the graph,
-        given cartesian coordinates that correspond to the scene..
+        """Maps a pair of coordinates (with respect to the axes)
+        to a point in the scene.
+
+        The graph is smaller than the scene. Because of this, coordinates
+        in the graph don't map to coordinates on the scene.
+
+        This method returns a scaled coordinate for the scene,
+        given coordinates that correspond to the graph.
 
         Parameters
         ----------
-        x : int, float
-            The x value
+        x : :class:`float`
+            The x coordinate with respect to the graph.
 
-        y : int, float
-            The y value
+        y : :class:`float`
+            The y coordinate with respect to the graph.
 
         Returns
         -------
-        np.ndarray
-            The array of the coordinates.
+        :class:`numpy.ndarray`
+            Coordinates of a point in the scene.
 
         Examples
         --------
@@ -253,10 +292,13 @@ class GraphScene(Scene):
             :save_last_frame:
 
             class SequencePlot(GraphScene):
-                CONFIG = {
-                    "y_axis_label": r"Concentration [\%]",
-                    "x_axis_label": "Time [s]",
-                    }
+                def __init__(self, **kwargs):
+                    GraphScene.__init__(
+                        self,
+                        y_axis_label=r"Concentration [\%]",
+                        x_axis_label="Time [s]",
+                        **kwargs
+                    )
 
                 def construct(self):
                     data = [1, 2, 2, 4, 4, 1, 3]
@@ -264,60 +306,59 @@ class GraphScene(Scene):
                     for time, dat in enumerate(data):
                         dot = Dot().move_to(self.coords_to_point(time, dat))
                         self.add(dot)
-
         """
-        assert hasattr(self, "x_axis") and hasattr(self, "y_axis")
+        assert hasattr(self, "x_axis")
+        assert hasattr(self, "y_axis")
         result = self.x_axis.number_to_point(x)[0] * RIGHT
         result += self.y_axis.number_to_point(y)[1] * UP
         return result
 
     def point_to_coords(self, point):
-        """
-        The scene is smaller than the graph.
+        """Maps a point in the scene to a pair of coordinates (with
+        respect to the axes)
 
-        Because of this, coordinates in the graph don't map
-        to coordinates on the scene.
+        The scene is smaller than the graph. Because of this, coordinates
+        in the graph don't map to coordinates on the scene.
 
-        This method returns a scaled coordinate for the scene,
-        given coordinates that correspond to the graph.
+        This method returns a scaled coordinate for the graph,
+        given coordinates that correspond to the scene.
 
         Parameters
         ----------
-        point : np.ndarray
-            The point on the graph.
+        point : :class:`numpy.ndarray`
+            Coordinates of a point in the scene.
 
         Returns
         -------
-        tuple
-            The coordinates on the scene.
+        Tuple[:class:`float`]
+            The coordinates with respect to the graph.
         """
         return (self.x_axis.point_to_number(point), self.y_axis.point_to_number(point))
 
     def get_graph(self, func, color=None, x_min=None, x_max=None, **kwargs):
-        """
-        This method gets a curve to plot on the graph.
+        """This method gets a curve to plot on the graph.
 
         Parameters
         ----------
-        func : function
+        func : :class:`function`
             The function to plot. It's return value should be
             the y-coordinate for a given x-coordinate
 
-        color : str, optional
+        color : Optional[:class:`str`]
             The string of the RGB color of the curve. in Hexadecimal representation.
 
-        x_min : int, float, optional
+        x_min : Optional[:class:`float`]
             The lower x_value from which to plot the curve.
 
-        x_max : int, float, optional
+        x_max : Optional[:class:`float`]
             The higher x_value until which to plot the curve.
 
         **kwargs :
-            Any valid keyword arguments of ParametricFunction.
+            Any valid keyword arguments of :class:`~.ParametricFunction`.
 
         Return
         ------
-        ParametricFunction
+        :class:`~.ParametricFunction`
             The Parametric Curve for the function passed.
 
         """
@@ -340,47 +381,45 @@ class GraphScene(Scene):
         return graph
 
     def input_to_graph_point(self, x, graph):
-        """
-        This method returns a coordinate on the curve
-        given an x_value and a the graoh-curve for which
+        """This method returns a coordinate on the curve
+        given an x_value and a the graph-curve for which
         the corresponding y value should be found.
 
         Parameters
         ----------
-        x : int, float
+        x : Optional[:class:`float`]
             The x value for which to find the y value.
 
-        graph : ParametricFunction
-            The ParametricFunction object on which
+        graph : :class:`~.ParametricFunction`
+            The :class:`~.ParametricFunction` object on which
             the x and y value lie.
 
         Returns
         -------
-        numpy.nparray
+        :class:`numpy.ndarray`
             The array of the coordinates on the graph.
         """
         return self.coords_to_point(x, graph.underlying_function(x))
 
     def angle_of_tangent(self, x, graph, dx=0.01):
-        """
-        Returns the angle to the x axis of the tangent
+        """Returns the angle to the x axis of the tangent
         to the plotted curve at a particular x-value.
 
         Parameters
         ----------
-        x : int, float
+        x : Optional[:class:`float`]
             The x value at which the tangent must touch the curve.
 
-        graph : ParametricFunction
-            The ParametricFunction for which to calculate the tangent.
+        graph : :class:`~.ParametricFunction`
+            The :class:`~.ParametricFunction` for which to calculate the tangent.
 
-        dx : int, float, optional
+        dx : Optional[:class:`float`]
             The small change in x with which a small change in y
             will be compared in order to obtain the tangent.
 
         Returns
         -------
-        float
+        :class:`float`
             The angle of the tangent with the x axis.
         """
         vect = self.input_to_graph_point(x + dx, graph) - self.input_to_graph_point(
@@ -389,49 +428,47 @@ class GraphScene(Scene):
         return angle_of_vector(vect)
 
     def slope_of_tangent(self, *args, **kwargs):
-        """
-        Returns the slople of the tangent to the plotted curve
+        """Returns the slope of the tangent to the plotted curve
         at a particular x-value.
 
         Parameters
         ----------
-        x : int, float
+        x : :class:`float`
             The x value at which the tangent must touch the curve.
 
-        graph : ParametricFunction
-            The ParametricFunction for which to calculate the tangent.
+        graph : :class:`~.ParametricFunction`
+            The :class:`~.ParametricFunction` for which to calculate the tangent.
 
-        dx : int, float, optional
+        dx : Optional[:class:`float`]
             The small change in x with which a small change in y
             will be compared in order to obtain the tangent.
 
         Returns
         -------
-        float
+        :class:`float`
             The slope of the tangent with the x axis.
         """
         return np.tan(self.angle_of_tangent(*args, **kwargs))
 
     def get_derivative_graph(self, graph, dx=0.01, **kwargs):
-        """
-        Returns the curve of the derivative of the passed
+        """Returns the curve of the derivative of the passed
         graph.
 
         Parameters
         ----------
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The graph for which the derivative must be found.
 
-        dx : float, int, optional
+        dx : Optional[:class:`float`]
             The small change in x with which a small change in y
             will be compared in order to obtain the derivative.
 
         **kwargs
-            Any valid keyword argument of ParametricFunction
+            Any valid keyword argument of :class:`~.ParametricFunction`
 
         Returns
         -------
-        ParametricFunction
+        :class:`~.ParametricFunction`
             The curve of the derivative.
         """
         if "color" not in kwargs:
@@ -451,29 +488,28 @@ class GraphScene(Scene):
         buff=MED_SMALL_BUFF,
         color=None,
     ):
-        """
-        This method returns a properly positioned label for the passed graph,
+        """This method returns a properly positioned label for the passed graph,
         styled with the passed parameters.
 
         Parameters
         ----------
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The curve of the function plotted.
 
-        label : str, optional
+        label : Optional[:class:`str`]
             The label for the function's curve.
 
-        x_val : int, float, optional
+        x_val : Optional[:class:`float`]
             The x_value with which the label should be aligned.
 
-        direction : np.ndarray, list, tuple
+        direction : Sequence[:class:`float`]
             The cartesian position, relative to the curve that the label will be at.
             e.g LEFT, RIGHT
 
-        buff : float, int, option
+        buff : Optional[:class:`float`]
             The buffer space between the curve and the label
 
-        color : str, optional
+        color : Optional[:class:`str`]
             The color of the label.
 
         Returns
@@ -512,58 +548,59 @@ class GraphScene(Scene):
         show_signed_area=True,
         width_scale_factor=1.001,
     ):
-        """
-        This method returns the VGroup() of the Riemann Rectangles for
+        """This method returns the VGroup() of the Riemann Rectangles for
         a particular curve.
 
         Parameters
         ----------
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The graph whose area needs to be approximated
             by the Riemann Rectangles.
 
-        x_min : int, float, optional
+        x_min : Optional[:class:`float`]
             The lower bound from which to start adding rectangles
 
-        x_max : int, float, optional
+        x_max : Optional[:class:`float`]
             The upper bound where the rectangles stop.
 
-        dx : int, float, optional
+        dx : Optional[:class:`float`]
             The smallest change in x-values that is
             considered significant.
 
-        input_sample_type : {"left", "right", "center"}
-            Can be any of "left", "right" or "center
+        input_sample_type : Optional[:class:`str`]
+            Can be any of "left", "right" or "center". Refers to where
+            the sample point for the height of each Riemann Rectangle
+            will be inside the segments of the partition.
 
-        stroke_width : int, float, optional
+        stroke_width : Optional[:class:`float`]
             The stroke_width of the border of the rectangles.
 
-        stroke_color : str, optional
+        stroke_color : Optional[:class:`str`]
             The string of hex colour of the rectangle's border.
 
-        fill_opacity : int, float
+        fill_opacity : Optional[:class:`float`]
             The opacity of the rectangles. Takes values from 0 to 1.
 
-        start_color : str, optional
+        start_color : Optional[:class:`str`]
             The hex starting colour for the rectangles,
             this will, if end_color is a different colour,
             make a nice gradient.
 
-        end_color : str, optional
+        end_color : Optional[:class:`str`]
             The hex ending colour for the rectangles,
             this will, if start_color is a different colour,
             make a nice gradient.
 
-        show_signed_area : bool, optional
+        show_signed_area : Optional[:class:`bool`]
             Whether or not to indicate -ve area if curve dips below
             x-axis.
 
-        width_scale_factor : int, float, optional
+        width_scale_factor : Optional[:class:`float`]
             How much the width of the rectangles are scaled by when transforming.
 
         Returns
         -------
-        VGroup
+        :class:`~.VGroup`
             A VGroup containing the Riemann Rectangles.
 
         """
@@ -586,7 +623,7 @@ class GraphScene(Scene):
             else:
                 raise ValueError("Invalid input sample type")
             graph_point = self.input_to_graph_point(sample_input, graph)
-            if bounded_graph == None:
+            if bounded_graph is None:
                 y_point = 0
             else:
                 y_point = bounded_graph.underlying_function(x)
@@ -617,36 +654,37 @@ class GraphScene(Scene):
     def get_riemann_rectangles_list(
         self, graph, n_iterations, max_dx=0.5, power_base=2, stroke_width=1, **kwargs
     ):
-        """
-        This method returns a list of multiple VGroups of Riemann
-        Rectangles. The inital VGroups are relatively inaccurate,
+        """Returns a list of Riemann Rectangles.
+
+        This method returns a list of multiple :class:`VGroups <.VGroup>` of Riemann
+        Rectangles. The initial rectangles are relatively inaccurate,
         but the closer you get to the end the more accurate the Riemann
-        rectangles become
+        rectangles become.
 
         Parameters
         ----------
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The graph whose area needs to be approximated
             by the Riemann Rectangles.
 
-        n_iterations : int,
+        n_iterations : :class:`int`
             The number of VGroups of successive accuracy that are needed.
 
-        max_dx : int, float, optional
+        max_dx : Optional[:class:`float`]
             The maximum change in x between two VGroups of Riemann Rectangles
 
-        power_base : int, float, optional
+        power_base : Optional[:class:`float`]
             Defaults to 2
 
-        stroke_width : int, float, optional
+        stroke_width : Optional[:class:`float`]
             The stroke_width of the border of the rectangles.
 
         **kwargs
-            Any valid keyword arguments of get_riemann_rectangles.
+            Any valid keyword arguments of :meth:`get_riemann_rectangles`.
 
         Returns
         -------
-        list
+        List[:class:`~.VGroup`]
             The list of Riemann Rectangles of increasing accuracy.
         """
         return [
@@ -662,26 +700,25 @@ class GraphScene(Scene):
     def get_area(
         self, graph, t_min, t_max, bounded=None, dx_scaling=1, area_color=WHITE
     ):
-        """
-        Returns a VGroup of Riemann rectangles
+        """Returns a :class:`~.VGroup` of Riemann rectangles
         sufficiently small enough to visually
         approximate the area under the graph passed.
 
         Parameters
         ----------
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The graph/curve for which the area needs to be gotten.
 
-        t_min : int, float
+        t_min : :class:`float`
             The lower bound of x from which to approximate the area.
 
-        t_max : int, float
+        t_max : :class:`float`
             The upper bound of x until which the area must be approximated.
 
         Returns
         -------
-        VGroup
-            The VGroup containing the Riemann Rectangles.
+        :class:`~.VGroup`
+            The :class:`~.VGroup` containing the Riemann Rectangles.
         """
         numerator = max(t_max - t_min, 0.0001)
         dx = float(numerator) / self.num_rects
@@ -699,22 +736,27 @@ class GraphScene(Scene):
         )
 
     def transform_between_riemann_rects(self, curr_rects, new_rects, **kwargs):
-        """
+        """Transform between groups of Riemann Rectangles.
+
         This method is used to transform between two VGroups of Riemann Rectangles,
         if they were obtained by get_riemann_rectangles or get_riemann_rectangles_list.
         No animation is returned, and the animation is directly played.
 
         Parameters
         ----------
-        curr_rects : VGroup
+        curr_rects : :class:`~.VGroup`
             The current Riemann Rectangles
 
-        new_rects : VGroup
+        new_rects : :class:`~.VGroup`
             The Riemann Rectangles to transform to.
 
         **kwargs
-            added_anims
-                Any other animations to play simultaneously.
+
+        Other Parameters
+        ----------------
+        added_anims : :class:`~.Animation`
+            Any other animations to play simultaneously.
+
         """
         transform_kwargs = {"run_time": 2, "lag_ratio": 0.5}
         added_anims = kwargs.get("added_anims", [])
@@ -730,16 +772,15 @@ class GraphScene(Scene):
         self.play(Transform(curr_rects, new_rects, **transform_kwargs), *added_anims)
 
     def get_vertical_line_to_graph(self, x, graph, line_class=Line, **line_kwargs):
-        """
-        This method returns a Vertical line from the x-axis to
+        """This method returns a Vertical line from the x-axis to
         the corresponding point on the graph/curve.
 
         Parameters
         ----------
-        x : int, float
+        x : :class:`float`
             The x-value at which the line should be placed/calculated.
 
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The graph on which the line should extend to.
 
         line_class : Line and similar
@@ -747,13 +788,14 @@ class GraphScene(Scene):
             Defaults to Line.
 
         **line_kwargs
-            Any valid keyword arguments of the object passed in "line_class"
-            If line_class is Line, any valid keyword arguments of Line are allowed.
+            Any valid keyword arguments of the object passed in `line_class`
+            If `line_class` is Line, any valid keyword arguments of Line are allowed.
 
         Return
         ------
-        An object of type passed in "line_class"
-            Defaults to Line
+        :class:`~.Mobject`
+            An object of type passed in `line_class`
+            Defaults to Line.
         """
         if "color" not in line_kwargs:
             line_kwargs["color"] = graph.get_color()
@@ -766,28 +808,27 @@ class GraphScene(Scene):
     def get_vertical_lines_to_graph(
         self, graph, x_min=None, x_max=None, num_lines=20, **kwargs
     ):
-        """
-        Obtains multiple lines from the x axis to the Graph/curve.
+        """Obtains multiple lines from the x axis to the Graph/curve.
 
         Parameters
         ----------
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The graph on which the line should extend to.
 
-        x_min : int, float, optional
+        x_min : Optional[:class:`float`]
             The lower bound from which lines can appear.
 
-        x_max : int, float, optional
+        x_max : Optional[:class:`float`]
             The upper bound until which the lines can appear.
 
-        num_lines : int, optional
+        num_lines : Optional[:class:`int`]
             The number of lines (evenly spaced)
             that are needed.
 
         Returns
         -------
-        VGroup
-            The VGroup of the evenly spaced lines.
+        :class:`~.VGroup`
+            The :class:`~.VGroup` of the evenly spaced lines.
 
         """
         x_min = x_min or self.x_min
@@ -812,53 +853,52 @@ class GraphScene(Scene):
         secant_line_color=None,
         secant_line_length=10,
     ):
-        """
-        This method returns a VGroup of (two lines
+        """This method returns a VGroup of (two lines
         representing dx and df, the labels for dx and
         df, and the Secant to the Graph/curve at a
         particular x value.
 
         Parameters
         ----------
-        x : int, float
+        x : :class:`float`
             The x value at which the secant enters, and intersects
             the graph for the first time.
 
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The curve/graph for which the secant must
             be found.
 
-        dx : int, float, optional
+        dx : Optional[:class:`float`]
             The change in x after which the secant exits.
 
-        dx_line_color : str, optional
+        dx_line_color : Optional[:class:`str`]
             The line color for the line that indicates the change in x.
 
-        df_line_color : str, optional
+        df_line_color : Optional[:class:`str`]
             The line color for the line that indicates the change in y.
 
-        dx_label : str, optional
+        dx_label : Optional[:class:`str`]
             The label to be provided for the change in x.
 
-        df_label : str, optional
+        df_label : Optional[:class:`str`]
             The label to be provided for the change in y.
 
-        include_secant_line : bool, optional
+        include_secant_line : Optional[:class:`bool`]
             Whether or not to include the secant line in the graph,
             or just have the df and dx lines and labels.
 
-        secant_line_color : str, optional
+        secant_line_color : Optional[:class:`str`]
             The color of the secant line.
 
-        secant_line_length : int, float, optional
+        secant_line_length : Optional[:class:`float`]
             How long the secant line should be.
 
 
         Returns
         -------
-        :class:`.VGroup`
-            A group containing the elements ``dx_line``, ``df_line``, and
-            if applicable also ``dx_label``, ``df_label``, ``secant_line``.
+        :class:`~.VGroup`
+            A group containing the elements `dx_line`, `df_line`, and
+            if applicable also `dx_label`, `df_label`, `secant_line`.
 
         """
         kwargs = locals()
@@ -889,22 +929,22 @@ class GraphScene(Scene):
             group.add(group.df_label)
 
         if len(labels) > 0:
-            max_width = 0.8 * group.dx_line.get_width()
-            max_height = 0.8 * group.df_line.get_height()
-            if labels.get_width() > max_width:
-                labels.set_width(max_width)
-            if labels.get_height() > max_height:
-                labels.set_height(max_height)
+            max_width = 0.8 * group.dx_line.width
+            max_height = 0.8 * group.df_line.height
+            if labels.width > max_width:
+                labels.width = max_width
+            if labels.height > max_height:
+                labels.height = max_height
 
         if dx_label is not None:
             group.dx_label.next_to(
-                group.dx_line, np.sign(dx) * DOWN, buff=group.dx_label.get_height() / 2
+                group.dx_line, np.sign(dx) * DOWN, buff=group.dx_label.height / 2
             )
             group.dx_label.set_color(group.dx_line.get_color())
 
         if df_label is not None:
             group.df_label.next_to(
-                group.df_line, np.sign(dx) * RIGHT, buff=group.df_label.get_height() / 2
+                group.df_line, np.sign(dx) * RIGHT, buff=group.df_label.height / 2
             )
             group.df_label.set_color(group.df_line.get_color())
 
@@ -922,7 +962,7 @@ class GraphScene(Scene):
         self, x_val, side=RIGHT, label=None, color=WHITE, animated=False, **kwargs
     ):
         """Create a triangle marker with a vertical line from the x-axis
-        to ``self.v_graph`` at the given x coordinate ``x_val``.
+        to `self.v_graph` at the given x coordinate `x_val`.
 
         This method adds to the Scene:
 
@@ -932,30 +972,32 @@ class GraphScene(Scene):
           the Triangle.
 
         The scene needs to have the graph have the identifier/variable
-        name ``self.v_graph``.
+        name `self.v_graph`.
 
         Parameters
         ----------
-        x_val : float, int
+        x_val : :class:`float`
             The x value at which the secant enters, and intersects
             the graph for the first time.
 
-        side : np.array(), optional
+        side : Optional[Sequence[:class:`float`]]
+            A tuple, list, or array identifying the side on which the
+            label should be drawn. For example, [1,0,0] would be RIGHT.
 
-        label : str, optional
-            The label to give the vertline and triangle
+        label : Optional[:class:`str`]
+            The label to give the vertical line and triangle
 
-        color : str, optional
+        color : Optional[:class:`str`]
             The hex color of the label.
 
-        animated : bool, optional
+        animated : Optional[:class:`bool`]
             Whether or not to animate the addition of the T_label
 
         **kwargs
-            Any valid keyword argument of a self.play call.
+            Any valid keyword argument of a :meth:`self.play` call.
         """
         triangle = RegularPolygon(n=3, start_angle=np.pi / 2)
-        triangle.set_height(MED_SMALL_BUFF)
+        triangle.height = MED_SMALL_BUFF
         triangle.move_to(self.coords_to_point(x_val, 0), UP)
         triangle.set_fill(color, 1)
         triangle.set_stroke(width=0)
@@ -970,7 +1012,7 @@ class GraphScene(Scene):
         if animated:
             self.play(
                 DrawBorderThenFill(triangle),
-                ShowCreation(v_line),
+                Create(v_line),
                 Write(T_label, run_time=1),
                 **kwargs,
             )
@@ -987,8 +1029,7 @@ class GraphScene(Scene):
     def get_animation_integral_bounds_change(
         self, graph, new_t_min, new_t_max, fade_close_to_origin=True, run_time=1.0
     ):
-        """
-        This method requires a lot of prerequisites:
+        """This method requires a lot of prerequisites:
         self.area must be defined from self.get_area()
         self.left_v_line and self.right_v_line must be defined from self.get_v_line
         self.left_T_label_group and self.right_T_label_group must be defined from self.add_T_label
@@ -999,19 +1040,19 @@ class GraphScene(Scene):
 
         Parameters
         ----------
-        graph : ParametricFunction
+        graph : :class:`~.ParametricFunction`
             The graph for which this must be done.
 
-        new_t_min : int, float
+        new_t_min : :class:`float`
             The new lower bound.
 
-        new_t_max : int, float
+        new_t_max : :class:`float`
             The new upper bound.
 
-        fade_close_to_origin : bool, optional
+        fade_close_to_origin : Optional[:class:`bool`]
             Whether or not to fade when close to the origin.
 
-        run_time : int, float, optional
+        run_time : Optional[:class:`float`]
             The run_time of the animation of this change.
         """
         curr_t_min = self.x_axis.point_to_number(self.area.get_left())
@@ -1064,29 +1105,28 @@ class GraphScene(Scene):
         added_anims=None,
         **anim_kwargs,
     ):
-        """
-        This method animates the change of the secant slope group  from
+        """This method animates the change of the secant slope group  from
         the old secant slope group, into a new secant slope group.
 
         Parameters
         ----------
-        secant_slope_group : VGroup
+        secant_slope_group : :class:`~.VGroup`
             The old secant_slope_group
 
-        target_dx : int, float, optional
+        target_dx : Optional[:class:`float`]
             The new dx value.
 
-        target_x : int, float, optional
+        target_x : Optional[:class:`float`]
             The new x value at which the secant should be.
 
-        run_time : int, float, optional
+        run_time : Optional[:class:`float`]
             The run time for this change when animated.
 
-        added_anims : list, optional
+        added_anims : Optional[Sequence[:class:`~.Animation`]]
             Any exta animations that should be played alongside.
 
         **anim_kwargs
-            Any valid kwargs of a self.play call.
+            Any valid kwargs of a :meth:`self.play` call.
 
         NOTE: At least one of target_dx and target_x should be not None.
         """

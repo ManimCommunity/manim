@@ -4,7 +4,9 @@ Example Gallery
 
 This gallery contains a collection of best practice code snippets
 together with their corresponding video/image output, illustrating
-different functionalities all across the library. Enjoy this taste of Manim!
+different functionalities all across the library.
+These are all under the MIT licence, so feel free to copy & paste them to your projects.
+Enjoy this taste of Manim!
 
 .. tip::
 
@@ -14,13 +16,13 @@ different functionalities all across the library. Enjoy this taste of Manim!
    the modules :mod:`~.tex_mobject`, :mod:`~.geometry`, :mod:`~.moving_camera_scene`,
    and many more.
 
+   Check out our `interactive Jupyter environment <https://mybinder.org/v2/gist/behackl/725d956ec80969226b7bf9b4aef40b78/HEAD?filepath=basic%20example%20scenes.ipynb>`_
+   which allows running the examples online, without requiring a local
+   installation.
+
    Also, visit our `Twitter <https://twitter.com/manim_community/>`_ for more
    *manimations*!
 
-
-.. contents:: Overview of thematic video categories
-   :backlinks: none
-   :local:
 
 
 Basic Concepts
@@ -47,23 +49,11 @@ Basic Concepts
             self.add(logo)
 
 
-.. manim:: GradientImageFromArray
-    :save_last_frame:
-    :ref_classes: ImageMobject
-
-    class GradientImageFromArray(Scene):
-        def construct(self):
-            n = 256
-            imageArray = np.uint8(
-                [[i * 256 / n for i in range(0, n)] for _ in range(0, n)]
-            )
-            image = ImageMobject(imageArray).scale(2)
-            self.add(image)
 
 .. manim:: BraceAnnotation
     :save_last_frame:
     :ref_classes: Brace
-    :ref_functions: Brace.get_text Brace.get_tex
+    :ref_methods: Brace.get_text Brace.get_tex
 
     class BraceAnnotation(Scene):
         def construct(self):
@@ -89,87 +79,19 @@ Basic Concepts
             tip_text = Text('(2, 2)').next_to(arrow.get_end(), RIGHT)
             self.add(numberplane, dot, arrow, origin_text, tip_text)
 
-.. manim:: BezierSpline
+.. manim:: GradientImageFromArray
     :save_last_frame:
-    :ref_classes: Line VGroup
-    :ref_functions: VMobject.add_cubic_bezier_curve
+    :ref_classes: ImageMobject
 
-    class BezierSpline(Scene):
+    class GradientImageFromArray(Scene):
         def construct(self):
-            np.random.seed(42)
-            area = 4
-
-            x1 = np.random.randint(-area, area)
-            y1 = np.random.randint(-area, area)
-            p1 = np.array([x1, y1, 0])
-            destination_dot1 = Dot(point=p1).set_color(BLUE)
-
-            x2 = np.random.randint(-area, area)
-            y2 = np.random.randint(-area, area)
-            p2 = np.array([x2, y2, 0])
-            destination_dot2 = Dot(p2).set_color(RED)
-
-            deltaP = p1 - p2
-            deltaPNormalized = deltaP / get_norm(deltaP)
-
-            theta = np.radians(90)
-            r = np.array(
-                (
-                    (np.cos(theta), -np.sin(theta), 0),
-                    (np.sin(theta), np.cos(theta), 0),
-                    (0, 0, 0),
-                )
+            n = 256
+            imageArray = np.uint8(
+                [[i * 256 / n for i in range(0, n)] for _ in range(0, n)]
             )
-            senk = r.dot(deltaPNormalized)
-            offset = 0.1
-            offset_along = 0.5
-            offset_connect = 0.25
-
-            dest_line1_point1 = p1 + senk * offset - deltaPNormalized * offset_along
-            dest_line1_point2 = p2 + senk * offset + deltaPNormalized * offset_along
-            dest_line2_point1 = p1 - senk * offset - deltaPNormalized * offset_along
-            dest_line2_point2 = p2 - senk * offset + deltaPNormalized * offset_along
-            s1 = p1 - offset_connect * deltaPNormalized
-            s2 = p2 + offset_connect * deltaPNormalized
-            dest_line1 = Line(dest_line1_point1, dest_line1_point2)
-            dest_line2 = Line(dest_line2_point1, dest_line2_point2)
-
-            Lp1s1 = Line(p1, s1)
-
-            Lp1s1.add_cubic_bezier_curve(
-                s1,
-                s1 - deltaPNormalized * 0.1,
-                dest_line2_point1 + deltaPNormalized * 0.1,
-                dest_line2_point1 - deltaPNormalized * 0.01,
-            )
-            Lp1s1.add_cubic_bezier_curve(
-                s1,
-                s1 - deltaPNormalized * 0.1,
-                dest_line1_point1 + deltaPNormalized * 0.1,
-                dest_line1_point1,
-            )
-
-            Lp2s2 = Line(p2, s2)
-
-            Lp2s2.add_cubic_bezier_curve(
-                s2,
-                s2 + deltaPNormalized * 0.1,
-                dest_line2_point2 - deltaPNormalized * 0.1,
-                dest_line2_point2,
-            )
-            Lp2s2.add_cubic_bezier_curve(
-                s2,
-                s2 + deltaPNormalized * 0.1,
-                dest_line1_point2 - deltaPNormalized * 0.1,
-                dest_line1_point2,
-            )
-
-            mobjects = VGroup(
-                Lp1s1, Lp2s2, dest_line1, dest_line2, destination_dot1, destination_dot2
-            )
-
-            mobjects.scale(2)
-            self.add(mobjects)
+            image = ImageMobject(imageArray).scale(2)
+            image.background_rectangle = SurroundingRectangle(image, GREEN)
+            self.add(image, image.background_rectangle)
 
 
 Animations
@@ -195,16 +117,75 @@ Animations
             self.wait()
 
 .. manim:: MovingAround
-    :ref_functions: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
+    :ref_methods: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
 
     class MovingAround(Scene):
         def construct(self):
             square = Square(color=BLUE, fill_opacity=1)
 
-            self.play(square.shift, LEFT)
-            self.play(square.set_fill, ORANGE)
-            self.play(square.scale, 0.3)
-            self.play(square.rotate, 0.4)
+            self.play(square.animate.shift(LEFT))
+            self.play(square.animate.set_fill(ORANGE))
+            self.play(square.animate.scale(0.3))
+            self.play(square.animate.rotate(0.4))
+
+.. manim:: MovingAngle
+    :ref_classes: Angle
+    :ref_methods: Mobject.rotate
+
+    class MovingAngle(Scene):
+        def construct(self):
+            rotation_center = LEFT
+
+            theta_tracker = ValueTracker(110)
+            line1 = Line(LEFT, RIGHT)
+            line_moving = Line(LEFT, RIGHT)
+            line_ref = line_moving.copy()
+            line_moving.rotate(
+                theta_tracker.get_value() * DEGREES, about_point=rotation_center
+            )
+            a = Angle(line1, line_moving, radius=0.5, other_angle=False)
+            te = MathTex(r"\theta").move_to(
+                Angle(
+                    line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
+                ).point_from_proportion(0.5)
+            )
+
+            self.add(line1, line_moving, a, te)
+            self.wait()
+
+            line_moving.add_updater(
+                lambda x: x.become(line_ref.copy()).rotate(
+                    theta_tracker.get_value() * DEGREES, about_point=rotation_center
+                )
+            )
+
+            a.add_updater(
+                lambda x: x.become(Angle(line1, line_moving, radius=0.5, other_angle=False))
+            )
+            te.add_updater(
+                lambda x: x.move_to(
+                    Angle(
+                        line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
+                    ).point_from_proportion(0.5)
+                )
+            )
+
+            self.play(theta_tracker.animate.set_value(40))
+            self.play(theta_tracker.animate.increment_value(140))
+            self.play(te.animate.set_color(RED), run_time=0.5)
+            self.play(theta_tracker.animate.set_value(350))
+
+
+
+.. manim:: MovingGroupToDestination
+
+    class MovingGroupToDestination(Scene):
+        def construct(self):
+            group = VGroup(Dot(LEFT), Dot(ORIGIN), Dot(RIGHT, color=RED), Dot(2 * RIGHT)).scale(1.4)
+            dest = Dot([4, 3, 0], color=YELLOW)
+            self.add(group, dest)
+            self.play(group.animate.shift(dest.get_center() - group[2].get_center()))
+            self.wait(0.5)
 
 .. manim:: MovingFrameBox
     :ref_modules: manim.mobject.svg.tex_mobject
@@ -220,7 +201,7 @@ Animations
             framebox1 = SurroundingRectangle(text[1], buff = .1)
             framebox2 = SurroundingRectangle(text[3], buff = .1)
             self.play(
-                ShowCreation(framebox1),
+                Create(framebox1),
             )
             self.wait()
             self.play(
@@ -229,7 +210,7 @@ Animations
             self.wait()
 
 .. manim:: RotationUpdater
-    :ref_functions: Mobject.add_updater Mobject.remove_updater
+    :ref_methods: Mobject.add_updater Mobject.remove_updater
 
     class RotationUpdater(Scene):
         def construct(self):
@@ -250,7 +231,7 @@ Animations
 
 .. manim:: PointWithTrace
     :ref_classes: Rotating
-    :ref_functions: VMobject.set_points_as_corners Mobject.add_updater
+    :ref_methods: VMobject.set_points_as_corners Mobject.add_updater
 
     class PointWithTrace(Scene):
         def construct(self):
@@ -258,15 +239,15 @@ Animations
             dot = Dot()
             path.set_points_as_corners([dot.get_center(), dot.get_center()])
             def update_path(path):
-                previus_path = path.copy()
-                previus_path.add_points_as_corners([dot.get_center()])
-                path.become(previus_path)
+                previous_path = path.copy()
+                previous_path.add_points_as_corners([dot.get_center()])
+                path.become(previous_path)
             path.add_updater(update_path)
             self.add(path, dot)
             self.play(Rotating(dot, radians=PI, about_point=RIGHT, run_time=2))
             self.wait()
-            self.play(dot.shift, UP)
-            self.play(dot.shift, LEFT)
+            self.play(dot.animate.shift(UP))
+            self.play(dot.animate.shift(LEFT))
             self.wait()
 
 
@@ -277,20 +258,23 @@ Plotting with Manim
     :save_last_frame:
     :ref_modules: manim.scene.graph_scene
     :ref_classes: MathTex
-    :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
+    :ref_methods: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.input_to_graph_point
 
     class SinAndCosFunctionPlot(GraphScene):
-        CONFIG = {
-            "x_min": -10,
-            "x_max": 10.3,
-            "num_graph_anchor_points": 100,
-            "y_min": -1.5,
-            "y_max": 1.5,
-            "graph_origin": ORIGIN,
-            "function_color": RED,
-            "axes_color": GREEN,
-            "x_labeled_nums": range(-10, 12, 2),
-        }
+        def __init__(self, **kwargs):
+            GraphScene.__init__(
+                self,
+                x_min=-10,
+                x_max=10.3,
+                num_graph_anchor_points=100,
+                y_min=-1.5,
+                y_max=1.5,
+                graph_origin=ORIGIN,
+                axes_color=GREEN,
+                x_labeled_nums=range(-10, 12, 2),
+                **kwargs
+            )
+            self.function_color = RED
 
         def construct(self):
             self.setup_axes(animate=False)
@@ -308,18 +292,19 @@ Plotting with Manim
 .. manim:: GraphAreaPlot
     :save_last_frame:
     :ref_modules: manim.scenes.graph_scene
-    :ref_functions: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.get_area
+    :ref_methods: GraphScene.setup_axes GraphScene.get_graph GraphScene.get_vertical_line_to_graph GraphScene.get_area
 
     class GraphAreaPlot(GraphScene):
-        CONFIG = {
-            "x_min" : 0,
-            "x_max" : 5,
-            "y_min" : 0,
-            "y_max" : 6,
-            "y_tick_frequency" : 1,
-            "x_tick_frequency" : 1,
-            "x_labeled_nums" : [0,2,3]
-        }
+        def __init__(self, **kwargs):
+            GraphScene.__init__(
+                self,
+                x_min=0,
+                x_max=5,
+                y_min=0,
+                y_max=6,
+                x_labeled_nums=[0,2,3],
+                **kwargs)
+
         def construct(self):
             self.setup_axes()
             curve1 = self.get_graph(lambda x: 4 * x - x ** 2, x_min=0, x_max=4)
@@ -333,19 +318,21 @@ Plotting with Manim
 .. manim:: HeatDiagramPlot
     :save_last_frame:
     :ref_modules: manim.scenes.graph_scene
-    :ref_functions: GraphScene.setup_axes GraphScene.coords_to_point
+    :ref_methods: GraphScene.setup_axes GraphScene.coords_to_point
 
     class HeatDiagramPlot(GraphScene):
-        CONFIG = {
-            "y_axis_label": r"T[$^\circ C$]",
-            "x_axis_label": r"$\Delta Q$",
-            "y_min": -8,
-            "y_max": 30,
-            "x_min": 0,
-            "x_max": 40,
-            "y_labeled_nums": np.arange(-5, 34, 5),
-            "x_labeled_nums": np.arange(0, 40, 5),
-        }
+        def __init__(self, **kwargs):
+            GraphScene.__init__(
+                self,
+                y_axis_label=r"T[$^\circ C$]",
+                x_axis_label=r"$\Delta Q$",
+                y_min=-8,
+                y_max=30,
+                x_min=0,
+                x_max=40,
+                y_labeled_nums=np.arange(-5, 34, 5),
+                x_labeled_nums=np.arange(0, 40, 5),
+                **kwargs)
 
         def construct(self):
             data = [20, 0, 0, -5]
@@ -368,14 +355,14 @@ Special Camera Settings
 .. manim:: FollowingGraphCamera
     :ref_modules: manim.scene.moving_camera_scene
     :ref_classes: GraphScene MovingCameraScene MoveAlongPath Restore
-    :ref_functions: Mobject.add_updater
+    :ref_methods: Mobject.add_updater
 
     class FollowingGraphCamera(GraphScene, MovingCameraScene):
         def setup(self):
             GraphScene.setup(self)
-            MovingCameraScene.setup(self)
+
         def construct(self):
-            self.camera_frame.save_state()
+            self.camera.frame.save_state()
             self.setup_axes(animate=False)
             graph = self.get_graph(lambda x: np.sin(x),
                                    color=BLUE,
@@ -385,41 +372,44 @@ Special Camera Settings
             moving_dot = Dot().move_to(graph.points[0]).set_color(ORANGE)
 
             dot_at_start_graph = Dot().move_to(graph.points[0])
-            dot_at_end_grap = Dot().move_to(graph.points[-1])
-            self.add(graph, dot_at_end_grap, dot_at_start_graph, moving_dot)
-            self.play( self.camera_frame.scale,0.5,self.camera_frame.move_to,moving_dot)
+            dot_at_end_graph = Dot().move_to(graph.points[-1])
+            self.add(graph, dot_at_end_graph, dot_at_start_graph, moving_dot)
+            self.play(self.camera.frame.animate.scale(0.5).move_to(moving_dot))
 
             def update_curve(mob):
                 mob.move_to(moving_dot.get_center())
 
-            self.camera_frame.add_updater(update_curve)
+            self.camera.frame.add_updater(update_curve)
             self.play(MoveAlongPath(moving_dot, graph, rate_func=linear))
-            self.camera_frame.remove_updater(update_curve)
+            self.camera.frame.remove_updater(update_curve)
 
-            self.play(Restore(self.camera_frame))
+            self.play(Restore(self.camera.frame))
 
 .. manim:: MovingZoomedSceneAround
     :ref_modules: manim.scene.zoomed_scene
     :ref_classes: ZoomedScene BackgroundRectangle UpdateFromFunc
-    :ref_functions: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
+    :ref_methods: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
 
     class MovingZoomedSceneAround(ZoomedScene):
     # contributed by TheoremofBeethoven, www.youtube.com/c/TheoremofBeethoven
-        CONFIG = {
-            "zoom_factor": 0.3,
-            "zoomed_display_height": 1,
-            "zoomed_display_width": 6,
-            "image_frame_stroke_width": 20,
-            "zoomed_camera_config": {
-                "default_frame_stroke_width": 3,
-            },
-        }
+        def __init__(self, **kwargs):
+            ZoomedScene.__init__(
+                self,
+                zoom_factor=0.3,
+                zoomed_display_height=1,
+                zoomed_display_width=6,
+                image_frame_stroke_width=20,
+                zoomed_camera_config={
+                    "default_frame_stroke_width": 3,
+                    },
+                **kwargs
+            )
 
         def construct(self):
             dot = Dot().shift(UL * 2)
             image = ImageMobject(np.uint8([[0, 100, 30, 200],
                                            [255, 0, 5, 33]]))
-            image.set_height(7)
+            image.height = 7
             frame_text = Text("Frame", color=PURPLE).scale(1.4)
             zoomed_camera_text = Text("Zoomed camera", color=RED).scale(1.4)
 
@@ -441,7 +431,7 @@ Special Camera Settings
 
             frame_text.next_to(frame, DOWN)
 
-            self.play(ShowCreation(frame), FadeInFrom(frame_text, direction=DOWN))
+            self.play(Create(frame), FadeInFrom(frame_text, direction=DOWN))
             self.activate_zooming()
 
             self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera)
@@ -450,15 +440,15 @@ Special Camera Settings
             # Scale in        x   y  z
             scale_factor = [0.5, 1.5, 0]
             self.play(
-                frame.scale, scale_factor,
-                zoomed_display.scale, scale_factor,
+                frame.animate.scale(scale_factor),
+                zoomed_display.animate.scale(scale_factor),
                 FadeOut(zoomed_camera_text),
                 FadeOut(frame_text)
             )
             self.wait()
             self.play(ScaleInPlace(zoomed_display, 2))
             self.wait()
-            self.play(frame.shift, 2.5 * DOWN)
+            self.play(frame.animate.shift(2.5 * DOWN))
             self.wait()
             self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera, rate_func=lambda t: smooth(1 - t))
             self.play(Uncreate(zoomed_display_frame), FadeOut(frame))
@@ -467,7 +457,7 @@ Special Camera Settings
 .. manim:: FixedInFrameMObjectTest
     :save_last_frame:
     :ref_classes: ThreeDScene
-    :ref_functions: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
+    :ref_methods: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
 
     class FixedInFrameMObjectTest(ThreeDScene):
         def construct(self):
@@ -482,7 +472,7 @@ Special Camera Settings
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
     :ref_classes: ThreeDScene ThreeDAxes ParametricSurface
-    :ref_functions: ThreeDScene.set_camera_orientation
+    :ref_methods: ThreeDScene.set_camera_orientation
 
     class ThreeDLightSourcePosition(ThreeDScene):
         def construct(self):
@@ -501,7 +491,7 @@ Special Camera Settings
 
 .. manim:: ThreeDCameraRotation
     :ref_classes: ThreeDScene ThreeDAxes
-    :ref_functions: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
+    :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
 
     class ThreeDCameraRotation(ThreeDScene):
         def construct(self):
@@ -517,7 +507,7 @@ Special Camera Settings
 
 .. manim:: ThreeDCameraIllusionRotation
     :ref_classes: ThreeDScene ThreeDAxes
-    :ref_functions: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
+    :ref_methods: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
 
     class ThreeDCameraIllusionRotation(ThreeDScene):
         def construct(self):
@@ -587,13 +577,13 @@ Advanced Projects
 =================
 
 .. manim:: OpeningManim
-    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane ShowCreation
-    :ref_functions: NumberPlane.prepare_for_nonlinear_transform
+    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane Create
+    :ref_methods: NumberPlane.prepare_for_nonlinear_transform
 
     class OpeningManim(Scene):
         def construct(self):
-            title = Tex("This is some \\LaTeX")
-            basel = MathTex("\\sum_{n=1}^\\infty " "\\frac{1}{n^2} = \\frac{\\pi^2}{6}")
+            title = Tex(r"This is some \LaTeX")
+            basel = MathTex(r"\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}")
             VGroup(title, basel).arrange(DOWN)
             self.play(
                 Write(title),
@@ -605,7 +595,7 @@ Advanced Projects
             transform_title.to_corner(UP + LEFT)
             self.play(
                 Transform(title, transform_title),
-                LaggedStart(*map(lambda obj: FadeOutAndShift(obj, direction=DOWN), basel)),
+                LaggedStart(*[FadeOutAndShift(obj, direction=DOWN) for obj in basel]),
             )
             self.wait()
 
@@ -618,24 +608,25 @@ Advanced Projects
             self.play(
                 FadeOut(title),
                 FadeInFrom(grid_title, direction=DOWN),
-                ShowCreation(grid, run_time=3, lag_ratio=0.1),
+                Create(grid, run_time=3, lag_ratio=0.1),
             )
             self.wait()
 
             grid_transform_title = Tex(
-                "That was a non-linear function \\\\" "applied to the grid"
+                r"That was a non-linear function \\ applied to the grid"
             )
             grid_transform_title.move_to(grid_title, UL)
             grid.prepare_for_nonlinear_transform()
             self.play(
-                grid.apply_function,
-                lambda p: p
-                          + np.array(
-                    [
-                        np.sin(p[1]),
-                        np.sin(p[0]),
-                        0,
-                    ]
+                grid.animate.apply_function(
+                    lambda p: p
+                              + np.array(
+                        [
+                            np.sin(p[1]),
+                            np.sin(p[0]),
+                            0,
+                        ]
+                    )
                 ),
                 run_time=3,
             )
@@ -645,7 +636,8 @@ Advanced Projects
 
 .. manim:: SineCurveUnitCircle
     :ref_classes: MathTex Circle Dot Line VGroup
-    :ref_functions: Mobject.add_updater Mobject.remove_updater always_redraw
+    :ref_methods: Mobject.add_updater Mobject.remove_updater
+    :ref_functions: always_redraw
 
     class SineCurveUnitCircle(Scene):
         # contributed by heejin_park, https://infograph.tistory.com/230
@@ -668,7 +660,7 @@ Advanced Projects
             self.add(x_axis, y_axis)
             self.add_x_labels()
 
-            self.orgin_point = np.array([-4,0,0])
+            self.origin_point = np.array([-4,0,0])
             self.curve_start = np.array([-3,0,0])
 
         def add_x_labels(self):
@@ -683,14 +675,13 @@ Advanced Projects
 
         def show_circle(self):
             circle = Circle(radius=1)
-            circle.move_to(self.orgin_point)
-
+            circle.move_to(self.origin_point)
             self.add(circle)
             self.circle = circle
 
         def move_dot_and_draw_curve(self):
             orbit = self.circle
-            orgin_point = self.orgin_point
+            origin_point = self.origin_point
 
             dot = Dot(radius=0.08, color=YELLOW)
             dot.move_to(orbit.point_from_proportion(0))
@@ -703,7 +694,7 @@ Advanced Projects
                 mob.move_to(orbit.point_from_proportion(self.t_offset % 1))
 
             def get_line_to_circle():
-                return Line(orgin_point, dot.get_center(), color=BLUE)
+                return Line(origin_point, dot.get_center(), color=BLUE)
 
             def get_line_to_curve():
                 x = self.curve_start[0] + self.t_offset * 4

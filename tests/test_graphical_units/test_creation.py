@@ -1,14 +1,15 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
-class ShowCreationTest(Scene):
+class CreateTest(Scene):
     def construct(self):
         square = Square()
-        self.play(ShowCreation(square))
+        self.play(Create(square))
 
 
 class UncreateTest(Scene):
@@ -44,12 +45,6 @@ class FadeInFromTest(Scene):
     def construct(self):
         square = Square()
         self.play(FadeInFrom(square, direction=UP))
-
-
-class FadeInFromDownTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(FadeInFromDown(square))
 
 
 class FadeOutAndShiftTest(Scene):

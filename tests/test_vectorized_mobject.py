@@ -1,5 +1,31 @@
+import numpy as np
 import pytest
-from manim import Mobject, VMobject, VGroup, VDict
+
+from manim import Line, Mobject, VDict, VGroup, VMobject
+
+
+def test_vmobject_point_from_propotion():
+    obj = VMobject()
+
+    # One long line, one short line
+    obj.set_points_as_corners(
+        [
+            np.array([0, 0, 0]),
+            np.array([4, 0, 0]),
+            np.array([4, 2, 0]),
+        ]
+    )
+
+    # Total length of 6, so halfway along the object
+    # would be at length 3, which lands in the first, long line.
+    assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
+
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        obj.point_from_proportion(2)
+
+    obj.clear_points()
+    with pytest.raises(Exception, match="with no points"):
+        obj.point_from_proportion(0)
 
 
 def test_vgroup_init():
@@ -29,6 +55,78 @@ def test_vgroup_add():
     with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
         # a Mobject cannot contain itself
         obj.add(obj)
+
+
+def test_vgroup_add_dunder():
+    """Test the VGroup __add__ magic method."""
+    obj = VGroup()
+    assert len(obj.submobjects) == 0
+    obj + VMobject()
+    assert len(obj.submobjects) == 0
+    obj += VMobject()
+    assert len(obj.submobjects) == 1
+    with pytest.raises(TypeError):
+        obj += Mobject()
+    assert len(obj.submobjects) == 1
+    with pytest.raises(TypeError):
+        # If only one of the added object is not an instance of VMobject, none of them should be added
+        obj += (VMobject(), Mobject())
+    assert len(obj.submobjects) == 1
+    with pytest.raises(Exception):  # TODO change this to ValueError once #307 is merged
+        # a Mobject cannot contain itself
+        obj += obj
+
+
+def test_vgroup_remove():
+    """Test the VGroup remove method."""
+    a = VMobject()
+    c = VMobject()
+    b = VGroup(c)
+    obj = VGroup(a, b)
+    assert len(obj.submobjects) == 2
+    assert len(b.submobjects) == 1
+    obj.remove(a)
+    b.remove(c)
+    assert len(obj.submobjects) == 1
+    assert len(b.submobjects) == 0
+    obj.remove(b)
+    assert len(obj.submobjects) == 0
+
+
+def test_vgroup_remove_dunder():
+    """Test the VGroup __sub__ magic method."""
+    a = VMobject()
+    c = VMobject()
+    b = VGroup(c)
+    obj = VGroup(a, b)
+    assert len(obj.submobjects) == 2
+    assert len(b.submobjects) == 1
+    assert len((obj - a)) == 1
+    assert len(obj.submobjects) == 2
+    obj -= a
+    b -= c
+    assert len(obj.submobjects) == 1
+    assert len(b.submobjects) == 0
+    obj -= b
+    assert len(obj.submobjects) == 0
+
+
+def test_vmob_add_to_back():
+    """Test the Mobject add_to_back method."""
+    a = VMobject()
+    b = Line()
+    c = "text"
+    with pytest.raises(ValueError):
+        # Mobject cannot contain self
+        a.add_to_back(a)
+    with pytest.raises(TypeError):
+        # All submobjects must be of type Mobject
+        a.add_to_back(c)
+
+    # No submobject gets added twice
+    a.add_to_back(b)
+    a.add_to_back(b, b)
+    assert len(a.submobjects) == 1
 
 
 def test_vdict_init():

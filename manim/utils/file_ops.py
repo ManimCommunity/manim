@@ -11,9 +11,11 @@ __all__ = [
 
 import os
 import platform
-import time
 import subprocess as sp
+import time
 from pathlib import Path
+
+from manim import __version__, config, logger
 
 
 def add_extension_if_not_present(file_name, extension):
@@ -21,6 +23,12 @@ def add_extension_if_not_present(file_name, extension):
         return file_name.with_suffix(extension)
     else:
         return file_name
+
+
+def add_version_before_extension(file_name):
+    file_name = Path(file_name)
+    path, name, suffix = file_name.parent, file_name.stem, file_name.suffix
+    return Path(path, f"{name}_ManimCE_v{__version__}{suffix}")
 
 
 def guarantee_existence(path):
@@ -37,9 +45,7 @@ def seek_full_path_from_defaults(file_name, default_dir, extensions):
     for path in possible_paths:
         if os.path.exists(path):
             return path
-    error = "From: {}, could not find {} at either of these locations: {}".format(
-        os.getcwd(), file_name, possible_paths
-    )
+    error = f"From: {os.getcwd()}, could not find {file_name} at either of these locations: {possible_paths}"
     raise IOError(error)
 
 
@@ -71,3 +77,22 @@ def open_file(file_path, in_browser=False):
             raise OSError("Unable to identify your operating system...")
         commands.append(file_path)
         sp.Popen(commands)
+
+
+def open_media_file(file_writer):
+    file_paths = []
+
+    if config["save_last_frame"]:
+        file_paths.append(file_writer.image_file_path)
+    if config["write_to_movie"] and not config["save_as_gif"]:
+        file_paths.append(file_writer.movie_file_path)
+    if config["save_as_gif"]:
+        file_paths.append(file_writer.gif_file_path)
+
+    for file_path in file_paths:
+        if config["show_in_file_browser"]:
+            open_file(file_path, True)
+        if config["preview"]:
+            open_file(file_path, False)
+
+            logger.info(f"Previewed File at: {file_path}")

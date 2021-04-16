@@ -5,8 +5,7 @@ __all__ = [
     "TexTemplateFromFile",
 ]
 
-
-import os
+import copy
 import re
 
 
@@ -22,7 +21,7 @@ class TexTemplate:
     documentclass : Optional[:class:`str`], optional
         The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
     preamble : Optional[:class:`str`], optional
-        The document's preample, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
+        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
     placeholder_text : Optional[:class:`str`], optional
         Text in the document that will be replaced by the expression to be rendered
     post_doc_commands : Optional[:class:`str`], optional
@@ -49,6 +48,7 @@ class TexTemplate:
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{dsfont}
@@ -79,7 +79,7 @@ class TexTemplate:
         preamble=None,
         placeholder_text=None,
         post_doc_commands=None,
-        **kwargs
+        **kwargs,
     ):
         self.tex_compiler = (
             tex_compiler
@@ -210,7 +210,7 @@ class TexTemplate:
         return begin, end
 
     def get_texcode_for_expression_in_env(self, expression, environment):
-        """Inserts expression into TeX template wrapped in \begin{environemnt} and \end{environment}
+        r"""Inserts expression into TeX template wrapped in \begin{environemnt} and \end{environment}
 
         Parameters
         ----------
@@ -225,9 +225,10 @@ class TexTemplate:
             LaTeX code based on template, containing the given expression inside its environment, ready for typesetting
         """
         begin, end = self._texcode_for_environment(environment)
-        return self.body.replace(
-            self.placeholder_text, "{0}\n{1}\n{2}".format(begin, expression, end)
-        )
+        return self.body.replace(self.placeholder_text, f"{begin}\n{expression}\n{end}")
+
+    def copy(self) -> "TexTemplate":
+        return copy.deepcopy(self)
 
 
 class TexTemplateFromFile(TexTemplate):
@@ -242,7 +243,7 @@ class TexTemplateFromFile(TexTemplate):
     documentclass : Optional[:class:`str`], optional
         The command defining the documentclass, e.g. ``\\documentclass[preview]{standalone}``
     preamble : Optional[:class:`str`], optional
-        The document's preample, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
+        The document's preamble, i.e. the part between ``\\documentclass`` and ``\\begin{document}``
     placeholder_text : Optional[:class:`str`], optional
         Text in the document that will be replaced by the expression to be rendered
     post_doc_commands : Optional[:class:`str`], optional
@@ -268,7 +269,7 @@ class TexTemplateFromFile(TexTemplate):
     """
 
     def __init__(self, **kwargs):
-        self.template_file = kwargs.pop("filename", "tex_template.tex")
+        self.template_file = kwargs.pop("tex_filename", "tex_template.tex")
         super().__init__(**kwargs)
 
     def _rebuild(self):
