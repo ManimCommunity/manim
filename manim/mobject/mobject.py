@@ -13,7 +13,7 @@ import types
 import warnings
 from functools import reduce
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Sequence, Union
 
 import numpy as np
 from colour import Color
@@ -1066,7 +1066,7 @@ class Mobject(Container):
         self,
         angle,
         axis=OUT,
-        about_point: Union[np.ndarray, List, None] = None,
+        about_point: Optional[Sequence[float]] = None,
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
