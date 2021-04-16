@@ -19,6 +19,7 @@ the 3 quotes:
         (...)
         """
 
+
     def dont_do_this():
         """
         This is incorrect.
@@ -61,7 +62,7 @@ Example:
         mobj : Optional[:class:`~.Mobject`], optional
             The mobject linked to this instance. Defaults to `Mobject()` \
     (is set to that if `None` is specified).
-        
+
         Attributes
         ----------
         name : :class:`str`
@@ -73,9 +74,11 @@ Example:
         mobj : :class:`~.Mobject`
             The mobject linked to this instance.
         """
-        
-        def __init__(name, id, singleton, mobj = None):  # in-code typehints are optional for now
-           ...
+
+        def __init__(
+            name, id, singleton, mobj=None
+        ):  # in-code typehints are optional for now
+            ...
 
 2. The usage of ``Parameters`` on functions in order to specify how
    every parameter works and what it does. This should be excluded if
@@ -149,8 +152,8 @@ Example:
 .. code:: py
 
     def my_function(thing, other, name, *, d, test=45):  # typings are optional for now
-      """My cool function. Builds and modifies an :class:`EpicClassInThisFile` instance with the given parameters.
-      
+        """My cool function. Builds and modifies an :class:`EpicClassInThisFile` instance with the given parameters.
+
       Parameters
       ----------
       thing : :class:`int`
@@ -164,7 +167,7 @@ Example:
       test : :class:`int`, optional
           Defines the amount of times things should be tested. \
     Defaults to 45, because that is almost the meaning of life.
-      
+
       Returns
       -------
       :class:`EpicClassInThisFile`
@@ -176,8 +179,8 @@ Example:
 
           my_function(5, np.array([1, 2, 3]), "Chelovek", d=SomeClassFromFarAway(cool=True), test=5)
       """
-      # code...
-      pass
+        # code...
+        pass
 
 .. _types:
 
