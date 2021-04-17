@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 import itertools as it
+from manim.mobject.mobject import Mobject
 import os
 import random
 from math import ceil, floor
@@ -119,25 +120,139 @@ def get_color_field_image_file(
 
 
 class VectorField(VGroup):
+    """A vector field.
+
+    vector fields are based on a function defining a vector at every position.
+    This class does by default not include any visible elements but provides
+    methods to move other :class:`~.Mobject`s along the vector field.
+
+    Parameters
+    ----------
+    func
+        The function defining the rate of change at every position of the `VectorField`.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.VGroup`-constructor
+
+    """
+
     def __init__(self, func: Callable[[np.ndarray], np.ndarray], **kwargs):
         super().__init__(**kwargs)
         self.func = func
         self.submob_movement_updater = None
 
-    def nudge(self, mob, dt=1, substeps=1, pointwise=False):
+    @staticmethod
+    def shift_func(
+        func: Callable[[np.ndarray], np.ndarray], shift_vector: np.ndarray
+    ) -> Callable[[np.ndarray], np.ndarray]:
+        """Shift a vector field function.
+
+        Parameters
+        ----------
+        func
+            The function defining a vector field.
+        shift_vector
+            The shift to be applied to the vector field.
+
+        Returns
+        -------
+        `Callable[[np.ndarray], np.ndarray]`
+            The shifted vector field function.
+
+        """
+        return lambda p: func(p - shift_vector)
+
+    @staticmethod
+    def scale_func(func: Callable[[np.ndarray], np.ndarray], scalar: float) -> Callable[[np.ndarray], np.ndarray]:
+        """Scale a vector field function.
+
+        Parameters
+        ----------
+        func
+            The function defining a vector field.
+        shift_vector
+            The scalar to be applied to the vector field.
+
+        Examples
+        --------
+        .. manim:: ScaleVectorFieldFunction
+
+            class ScaleVectorFieldFunction(Scene):
+                def construct(self):
+                    func = lambda pos: np.sin(pos[1])*RIGHT+np.cos(pos[0])*UP
+                    vector_field = ArrowVectorField(func)
+                    self.add(vector_field)
+                    self.wait()
+
+                    func = VectorField.scale_func(func, 0.5)
+                    self.play(vector_field.animate.become(ArrowVectorField(func)))
+                    self.wait()
+
+        Returns
+        -------
+        `Callable[[np.ndarray], np.ndarray]`
+            The scaled vector field function.
+
+        """
+        return lambda p: func(p * scalar)
+
+    def nudge(self, mob:Mobject, dt:float=1, substeps:int=1, pointwise:bool=False) -> "VectorField":
+        """Nudge a :class:`~.Mobject` along the vector field.
+
+        Parameters
+        ----------
+        mob
+            The mobject to move along the vector field
+        dt
+            A scalar to the amount the mobject is moved along the vector field.
+            The actual distance is based on the magnitude of the vector field. 
+        substeps
+            The amount of steps the whole nudge is devided into. Higher values
+            give more accurate approximations. 
+        pointwise
+            Whether to move the mobject along the vector field. If `True` the vector field takes effect on the center of the given :class:`~.Mobject`. If `False` the vector field takes effect on the points of the individual points of the :class:`~.Mobject`, potentially distorting it. 
+
+        Returns
+        -------
+        VectorField
+            This vector field.
+
+        Examples
+        --------
+
+        .. manim:: Nudging
+
+            class Nudging(Scene):
+                def construct(self):
+                    func = lambda pos: np.sin(pos[1]/2)*RIGHT+np.cos(pos[0]/2)*UP
+                    vector_field = ArrowVectorField(func, delta_x=1, delta_y=1, length_func=lambda x:x/2)
+                    self.add(vector_field)
+                    circle = Circle(radius=2).shift(LEFT)
+                    self.add(circle.copy().set_color(GRAY))
+                    dot = Dot().move_to(circle)
+
+                    vector_field.nudge(circle, -2, 60, True)
+                    vector_field.nudge(dot, -2, 60)
+
+                    circle.add_updater(vector_field.get_nudge_updater(pointwise=True))
+                    dot.add_updater(vector_field.get_nudge_updater())
+                    self.add(circle, dot)
+                    self.wait(6)
+
+        """
         step_size = dt / substeps
         for i in range(substeps):
             if pointwise:
                 mob.apply_function(lambda p: p + self.func(p) * step_size)
             else:
                 mob.shift(self.func(mob.get_center()) * step_size)
+        return self
 
     def nudge_submobjects(self, dt=1, substeps=1, pointwise=False):
         for mob in self.submobjects:
             self.nudge(mob, dt, substeps, pointwise)
 
     def get_nudge_updater(self, speed=1, pointwise=False):
-        return lambda mob, dt: self.nudge(mob, dt * speed)
+        return lambda mob, dt: self.nudge(mob, dt * speed, pointwise=pointwise)
 
     def start_submobject_movement(self, speed=1, pointwise=False):
         self.stop_submobject_movement()
@@ -150,11 +265,7 @@ class VectorField(VGroup):
         self.remove_updater(self.submob_movement_updater)
         self.submob_movement_updater = None
 
-    # def scale(self, scale_factor: float, **kwargs) -> "Mobject":
-    #     return super().scale(scale_factor, **kwargs)
 
-    # def shift(self, *vectors: np.ndarray) -> "Mobject":
-    #     return super().shift(*vectors)
 
 
 class ArrowVectorField(VectorField):
@@ -199,34 +310,33 @@ class ArrowVectorField(VectorField):
         class BasicUsage(Scene):
             def construct(self):
                 func = lambda pos: pos[1]*RIGHT/2+pos[0]*UP/3
-                self.add(VectorField(func))
+                self.add(ArrowVectorField(func))
 
     .. manim:: SizingAndSpacing
 
         class SizingAndSpacing(Scene):
             def construct(self):
                 func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
-                vf = VectorField(func, delta_x=1)
+                vf = ArrowVectorField(func, delta_x=1)
                 self.add(vf)
                 self.wait()
 
                 length_func = lambda x: x / 3
-                vf2 = VectorField(func, delta_x=1, length_func=length_func)
+                vf2 = ArrowVectorField(func, delta_x=1, length_func=length_func)
                 self.play(vf.animate.become(vf2))
                 self.wait()
 
-    .. manim:: ColoringVectorFields
+    .. manim:: Coloring
         :save_last_frame:
 
-        class ColoringVectorFields(Scene):
+        class Coloring(Scene):
             def construct(self):
                 func = lambda pos: pos-LEFT*5
                 colors = [RED, YELLOW, BLUE, DARKER_GRAY]
                 min_radius = Circle(radius=2,  color=colors[0]).shift(LEFT*5)
-                max_radius = Circle(radius=10, color=colors[1]).shift(LEFT*5)
-                vf = VectorField(func, min_magnitude=2, max_magnitude=10, colors=colors)
+                max_radius = Circle(radius=10, color=colors[-1]).shift(LEFT*5)
+                vf = ArrowVectorField(func, min_magnitude=2, max_magnitude=10, colors=colors)
                 self.add(vf, min_radius, max_radius)
-
 
     """
 
