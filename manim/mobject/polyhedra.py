@@ -7,6 +7,7 @@ from .geometry import Polygon
 from .graph import Graph
 from .three_dimensions import Dot3D
 from .types.vectorized_mobject import VMobject, VGroup
+from .mobject_update_utils import always
 
 __all__ = ["Polyhedron", "Tetrahedron", "Octahedron", "Icosahedron", "Dodecahedron"]
 
@@ -45,7 +46,7 @@ class Polyhedron(VGroup):
             face_group.add(Polygon(*face, fill_opacity=0.5, shade_in_3d=True))
         return face_group
 
-    def update_faces(self):
+    def update_faces(self, m):
         face_coords = self.extract_face_coords()
         face_group = VGroup()
         for face in face_coords:
@@ -54,8 +55,7 @@ class Polyhedron(VGroup):
 
     def extract_face_coords(self):
         layout = self.graph._layout
-        print([[layout[j] for j in i] for i in faces_list])
-        return [[layout[j] for j in i] for i in faces_list]
+        return [[layout[j] for j in i] for i in self.faces_list]
 
 
 class Tetrahedron(Polyhedron):
