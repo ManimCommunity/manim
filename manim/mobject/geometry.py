@@ -281,7 +281,7 @@ class Arc(TipableVMobject):
 
     def generate_points(self):
         self.set_pre_positioned_points()
-        self.scale(self.radius, about_point=ORIGIN)
+        self.scale(self.radius, about_point=ORIGIN)  # similar to here?
         self.shift(self.arc_center)
 
     def set_pre_positioned_points(self):
@@ -338,6 +338,11 @@ class Arc(TipableVMobject):
 
     def stop_angle(self):
         return angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU
+
+    def set_radius(self, new_radius: float):
+        self.radius = new_radius
+        self.scale(self.radius)
+        return self
 
 
 class ArcBetweenPoints(Arc):
