@@ -4,6 +4,7 @@ __all__ = ["is_classmethod", "new_methods_in_child_class"]
 
 import inspect
 
+
 def is_classmethod(obj):
     """Gets whether an object is a :class:`classmethod`.
 
@@ -19,6 +20,7 @@ def is_classmethod(obj):
     """
 
     return inspect.ismethod(obj) and isinstance(obj.__self__, type)
+
 
 def new_methods_in_child_class(child: type, parent: type):
     """Gets the new methods defined in a child class.
