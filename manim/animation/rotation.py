@@ -3,7 +3,7 @@
 __all__ = ["Rotating", "Rotate"]
 
 import typing
-from typing import Callable, Optional
+from typing import Callable, Optional, Sequence
 
 import numpy as np
 
@@ -50,8 +50,8 @@ class Rotate(Transform):
         mobject: "Mobject",
         angle: np.ndarray = PI,
         axis: np.ndarray = OUT,
-        about_point: Optional[np.ndarray] = None,
-        about_edge: Optional[np.ndarray] = None,
+        about_point: Optional[Sequence[float]] = None,
+        about_edge: Optional[Sequence[float]] = None,
         **kwargs
     ) -> None:
         if "path_arc" not in kwargs:
