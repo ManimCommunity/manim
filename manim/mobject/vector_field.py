@@ -353,10 +353,18 @@ class ArrowVectorField(VectorField):
     ----------
     func
         The function defining the rate of change at every position of the `VectorField`.
+    x_min
+        The minimum x value for which to draw :class:`~.Vector`s.
+    x_max
+        The maximum x value for which to draw :class:`~.Vector`s.
+    y_min
+        The minimum y value for which to draw :class:`~.Vector`s.
+    y_max
+        The maximum y value for which to draw :class:`~.Vector`s.
     delta_x
-        The distance in x direction between two vectors.
+        The distance in x direction between two :class:`~.Vector`s.
     delta_y
-        The distance in y direction between two vectors.
+        The distance in y direction between two :class:`~.Vector`s.
     min_magnitude
         The magnitude at which the color gradient starts. Every vector with lower magnitude is colored with the first color in the gradient.
     max_magnitude
@@ -364,7 +372,7 @@ class ArrowVectorField(VectorField):
     colors
         The colors used as color gradient.
     length_func
-        The function determining the displayed size of the vectors. The actual size
+        The function determining the displayed size of the :class:`~.Vector`s. The actual size
         of the vector is passed, the returned value will be used as display size for the
         vector. By default this is used to cap the displayed size of vectors to reduce the clutter.
     opacity
@@ -417,16 +425,16 @@ class ArrowVectorField(VectorField):
         self,
         func: Callable[[np.ndarray], np.ndarray],
         # Determining Vector positions:
-        x_min: Optional[float] = -(config["frame_width"] + 1) / 2,
-        x_max: Optional[float] = (config["frame_width"] + 1) / 2,
-        y_min: Optional[float] = -(config["frame_height"] + 1) / 2,
-        y_max: Optional[float] = (config["frame_height"] + 1) / 2,
+        x_min: float = -(config["frame_width"] + 1) / 2,
+        x_max: float = (config["frame_width"] + 1) / 2,
+        y_min: float = -(config["frame_height"] + 1) / 2,
+        y_max: float = (config["frame_height"] + 1) / 2,
         delta_x: float = 0.5,
         delta_y: float = 0.5,
         # Determining Vector appearance:
         min_magnitude: float = 0,
         max_magnitude: float = 2,
-        colors: Sequence = DEFAULT_SCALAR_FIELD_COLORS,
+        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
