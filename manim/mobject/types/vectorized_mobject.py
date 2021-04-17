@@ -13,7 +13,7 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
 import colour
 
@@ -459,10 +459,10 @@ class VMobject(Mobject):
 
     def set_anchors_and_handles(
         self,
-        anchors1: Iterable[float],
-        handles1: Iterable[float],
-        handles2: Iterable[float],
-        anchors2: Iterable[float],
+        anchors1: Sequence[float],
+        handles1: Sequence[float],
+        handles2: Sequence[float],
+        anchors2: Sequence[float],
     ) -> "VMobject":
         """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
 
@@ -621,7 +621,7 @@ class VMobject(Mobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[float]) -> "VMobject":
+    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -829,8 +829,8 @@ class VMobject(Mobject):
             subpaths formed by the points.
         """
         nppcc = self.n_points_per_cubic_curve
-        split_indices = filter(filter_func, range(nppcc, len(points), nppcc))
-        split_indices = [0] + list(split_indices) + [len(points)]
+        filtered = filter(filter_func, range(nppcc, len(points), nppcc))
+        split_indices = [0] + list(filtered) + [len(points)]
         return (
             points[i1:i2]
             for i1, i2 in zip(split_indices, split_indices[1:])
@@ -977,20 +977,30 @@ class VMobject(Mobject):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Get the bezier curve evaluated at a position P,
-        where P is the point corresponding to the proportion defined by the given alpha.
+        """Gets the point at a proportion along the path of the :class:`VMobject`.
 
         Parameters
         ----------
-        alpha : float
-            Proportion.
+        alpha
+            The proportion along the the path of the :class:`VMobject`.
 
         Returns
         -------
-        np.ndarray
-            Point evaluated.
+        :class:`numpy.ndarray`
+            The point on the :class:`VMobject`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the :class:`VMobject` has no points.
         """
 
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+
+        self.throw_error_if_no_points()
         if alpha == 1:
             return self.get_points()[-1]
 
