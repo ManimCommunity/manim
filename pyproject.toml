@@ -50,11 +50,11 @@ moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "*"
-ipywidgets = "^7.6.3"
+ipywidgets = {version="^7.6.3", optional = true}
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
-jupyterlab = ["jupyterlab"]
+jupyterlab = ["jupyterlab", "ipywidgets"]
 
 [tool.poetry.dev-dependencies]
 pytest-cov = "*"
