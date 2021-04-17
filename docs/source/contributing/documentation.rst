@@ -232,7 +232,7 @@ Example: ``:class:`~.Animation`​``, ``:meth:`~.VMobject.set_color`​``,
 
 Example: ``:class:`numpy.ndarray`​`` for a numpy ndarray.
 
-Reference Type specifications
+Reference type specifications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **The following instructions refer to types of attributes, parameters
@@ -358,7 +358,7 @@ When adding type hints to manim, there are some guidelines that should be follow
 
     def height(self, value) -> None:
         self.scale_to_fit_height(value)
-* When a parameter is None by default, it can get the type hint ``Optional``
+* Parameters that are None by default should get the type hint ``Optional``
 
 .. code:: py
 
