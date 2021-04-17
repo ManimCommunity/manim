@@ -388,4 +388,6 @@ Missing Sections
 * Link to MyPy
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
 * Where to find the alias
-* How to use "VMobject" , "Mobject" typehints?
+* When to use Object and when to use "Object".
+* The use of a TypeVar on the type hints for copy().
+* The definition and use of Protocols (like Sized, or Sequence, or Iterable...)
