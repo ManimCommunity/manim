@@ -46,16 +46,16 @@ class Polyhedron(VGroup):
         return face_group
 
     def update_faces(self):
-        face_coords = self.extract_face_coords(self.graph, self.faces_list)
+        face_coords = self.extract_face_coords()
         face_group = VGroup()
         for face in face_coords:
             face_group.add(Polygon(*face, fill_opacity=0.5, shade_in_3d=True))
         self.faces.become(face_group)
 
-    def extract_face_coords(self, graph, faces_list):
-        layout = graph._layout
-        print([[self.layout[j] for j in i] for i in faces_list])
-        return [[self.layout[j] for j in i] for i in faces_list]
+    def extract_face_coords(self):
+        layout = self.graph._layout
+        print([[layout[j] for j in i] for i in faces_list])
+        return [[layout[j] for j in i] for i in faces_list]
 
 
 class Tetrahedron(Polyhedron):
