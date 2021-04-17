@@ -9,11 +9,11 @@ from manim import NumberPlane, ThreeDAxes, config, tempconfig
 def test_initial_config():
     """Check that all attributes are defined properly from the config."""
     cs = CS()
-    assert cs.x_range[0] == -config["frame_x_radius"]
-    assert cs.x_range[1] == config["frame_x_radius"]
+    assert cs.x_range[0] == round(-config["frame_x_radius"])
+    assert cs.x_range[1] == round(config["frame_x_radius"])
     assert cs.x_range[2] == 1.0
-    assert cs.y_range[0] == -config["frame_y_radius"]
-    assert cs.y_range[1] == config["frame_y_radius"]
+    assert cs.y_range[0] == round(-config["frame_y_radius"])
+    assert cs.y_range[1] == round(config["frame_y_radius"])
     assert cs.y_range[2] == 1.0
 
     ax = Axes()
