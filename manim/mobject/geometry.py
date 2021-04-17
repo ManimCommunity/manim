@@ -839,8 +839,15 @@ class Line(TipableVMobject):
         return angle_of_vector(self.get_vector())
 
     def get_projection(self, point):
-        """
-        Return projection of a point onto the line
+        """Return the projection of a point onto the line.
+
+        Examples
+        --------
+        ::
+            >>> import numpy as np
+            >>> line = Line(LEFT, RIGHT)
+            >>> line.get_projection(np.array([0, 1, 0]))
+            array([0, 0, 0])
         """
         unit_vect = self.get_unit_vector()
         start = self.get_start()

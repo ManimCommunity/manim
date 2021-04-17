@@ -40,9 +40,17 @@ class CoordinateSystem:
         self.dimension = dimension
 
         if x_range is None:
-            x_range = [-config["frame_x_radius"], config["frame_x_radius"], 1.0]
+            x_range = [
+                round(-config["frame_x_radius"]),
+                round(config["frame_x_radius"]),
+                1.0,
+            ]
         if y_range is None:
-            y_range = [-config["frame_y_radius"], config["frame_y_radius"], 1.0]
+            y_range = [
+                round(-config["frame_y_radius"]),
+                round(config["frame_y_radius"]),
+                1.0,
+            ]
 
         self.x_range = np.array(x_range)
         self.y_range = np.array(y_range)
@@ -175,6 +183,7 @@ class Axes(VGroup, CoordinateSystem):
     ):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
+
         self.axis_config = {"include_tip": True, "numbers_to_exclude": [0]}
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
