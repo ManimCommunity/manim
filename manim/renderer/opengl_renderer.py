@@ -202,28 +202,23 @@ class OpenGLRenderer:
             scene.__class__.__name__,
         )
         self.scene = scene
-        if config["preview"]:
-            self.window = Window(self)
-            self.context = self.window.ctx
-            self.frame_buffer_object = self.context.detect_framebuffer()
-        else:
-            self.window = None
-            self.context = moderngl.create_standalone_context()
-            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-            self.frame_buffer_object.use()
-        self.context.enable(moderngl.BLEND)
-        self.context.blend_func = (
-            moderngl.SRC_ALPHA,
-            moderngl.ONE_MINUS_SRC_ALPHA,
-            moderngl.ONE,
-            moderngl.ONE,
-        )
-
-        # Initialize shader map.
-        self.id_to_shader_program = {}
-
-        # Initialize texture map.
-        self.path_to_texture_id = {}
+        if not hasattr(self, "window"):
+            if config["preview"]:
+                self.window = Window(self)
+                self.context = self.window.ctx
+                self.frame_buffer_object = self.context.detect_framebuffer()
+            else:
+                self.window = None
+                self.context = moderngl.create_standalone_context()
+                self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
+                self.frame_buffer_object.use()
+            self.context.enable(moderngl.BLEND)
+            self.context.blend_func = (
+                moderngl.SRC_ALPHA,
+                moderngl.ONE_MINUS_SRC_ALPHA,
+                moderngl.ONE,
+                moderngl.ONE,
+            )
 
     def update_depth_test(self, context, shader_wrapper):
         if shader_wrapper.depth_test:
@@ -380,6 +375,11 @@ class OpenGLRenderer:
         if scene.compile_animation_data(*args, **kwargs):
             scene.begin_animations()
             scene.play_internal()
+
+    def clear_screen(self):
+        window_background_color = color_to_rgba(config["background_color"])
+        self.frame_buffer_object.clear(*window_background_color)
+        self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
         def update_frame():
