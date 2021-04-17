@@ -12,7 +12,6 @@ __all__ = [
 ]
 
 import itertools as it
-from manim.mobject.mobject import Mobject
 import os
 import random
 from math import ceil, floor
@@ -21,6 +20,8 @@ from typing import Callable, Optional, Sequence
 import numpy as np
 from colour import Color
 from PIL import Image
+
+from manim.mobject.mobject import Mobject
 
 from .. import config, logger
 from ..animation.composition import AnimationGroup
@@ -162,7 +163,9 @@ class VectorField(VGroup):
         return lambda p: func(p - shift_vector)
 
     @staticmethod
-    def scale_func(func: Callable[[np.ndarray], np.ndarray], scalar: float) -> Callable[[np.ndarray], np.ndarray]:
+    def scale_func(
+        func: Callable[[np.ndarray], np.ndarray], scalar: float
+    ) -> Callable[[np.ndarray], np.ndarray]:
         """Scale a vector field function.
 
         Parameters
@@ -195,7 +198,9 @@ class VectorField(VGroup):
         """
         return lambda p: func(p * scalar)
 
-    def nudge(self, mob:Mobject, dt:float=1, substeps:int=1, pointwise:bool=False) -> "VectorField":
+    def nudge(
+        self, mob: Mobject, dt: float = 1, substeps: int = 1, pointwise: bool = False
+    ) -> "VectorField":
         """Nudge a :class:`~.Mobject` along the vector field.
 
         Parameters
@@ -204,12 +209,12 @@ class VectorField(VGroup):
             The mobject to move along the vector field
         dt
             A scalar to the amount the mobject is moved along the vector field.
-            The actual distance is based on the magnitude of the vector field. 
+            The actual distance is based on the magnitude of the vector field.
         substeps
             The amount of steps the whole nudge is devided into. Higher values
-            give more accurate approximations. 
+            give more accurate approximations.
         pointwise
-            Whether to move the mobject along the vector field. If `True` the vector field takes effect on the center of the given :class:`~.Mobject`. If `False` the vector field takes effect on the points of the individual points of the :class:`~.Mobject`, potentially distorting it. 
+            Whether to move the mobject along the vector field. If `True` the vector field takes effect on the center of the given :class:`~.Mobject`. If `False` the vector field takes effect on the points of the individual points of the :class:`~.Mobject`, potentially distorting it.
 
         Returns
         -------
@@ -264,8 +269,6 @@ class VectorField(VGroup):
     def stop_submobject_movement(self):
         self.remove_updater(self.submob_movement_updater)
         self.submob_movement_updater = None
-
-
 
 
 class ArrowVectorField(VectorField):
