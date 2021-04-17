@@ -16,7 +16,7 @@ __all__ = [
 import itertools as it
 import os
 import random
-from typing import Callable
+from typing import Callable, Optional, Sequence
 
 import numpy as np
 from PIL import Image
@@ -96,6 +96,7 @@ def get_rgb_gradient_function(
     return func
 
 
+# TODO: RASTER_IMAGE_DIR is undefined. Therefor this function doesn't work
 def get_color_field_image_file(
     scalar_func: Callable[[np.ndarray], np.ndarray],
     min_value: int = 0,
@@ -149,18 +150,90 @@ def move_points_along_vector_field(mobject: Mobject, func: Callable) -> Mobject:
 
 
 class VectorField(VGroup):
+    """A Vector field represented by a set of change vectors.
+
+    Vector fields are allways based on a function defining the vector at every position.
+    This the values of this functions is displayed as a grid of vectors.
+    The color of each vector is determined by it's magnitude.
+    A color gradient can be used to color the vectors in a defined interval of magnitudes.  
+
+    Parameters
+    ----------
+    func
+        The function defining the rate of change at every position of the `VectorField`.
+    delta_x
+        The distance in x direction between two vectors.
+    delta_y
+        The distance in y direction between two vectors.
+    min_magnitude
+        The magnitude at which the color gradient starts. Every vector with lower magnitude is colored with the first color in the gradient.
+    max_magnitude
+        The magnitude at which the color gradient ends. Every vector with bigger magnitude is colored with the last color in the gradient. 
+    colors
+        The colors used as color gradient.
+    length_func
+        The function determining the displayed size of the vectors. The actual size
+        of the vector is passed, the returned value will be used as display size for the
+        vector. By default this is used to cap the displayed size of vectors to reduce the clutter.
+    opacity
+        The opacity of the arrows.
+    vector_config
+        Keyword arguments passed to the :class:`~.Vector`-constructor.
+    kwargs : Any
+        Additional arguments to be passed to :class:`~.VGroup`
+    
+    Examples
+    --------
+
+    .. manim:: BasicUsage
+        :save_last_frame:
+
+        class BasicUsage(Scene):
+            def construct(self):
+                func = lambda pos: pos[1]*RIGHT/2+pos[0]*UP/3
+                self.add(VectorField(func))
+
+    .. manim:: SizingAndSpacing
+
+        class SizingAndSpacing(Scene):
+            def construct(self):
+                func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
+                vf = VectorField(func, delta_x=1)
+                self.add(vf)
+                self.wait()
+                
+                length_func = lambda x: x / 3
+                vf2 = VectorField(func, delta_x=1, length_func=length_func)
+                self.play(vf.animate.become(vf2))
+                self.wait()
+
+    .. manim:: ColoringVectorFields
+        :save_last_frame:
+
+        class ColoringVectorFields(Scene):
+            def construct(self):
+                func = lambda pos: pos-LEFT*5
+                colors = [RED, YELLOW, BLUE, DARKER_GRAY]
+                min_radius = Circle(radius=2,  color=colors[0]).shift(LEFT*5)
+                max_radius = Circle(radius=10, color=colors[1]).shift(LEFT*5)
+                vf = VectorField(func, min_magnitude=2, max_magnitude=10, colors=colors)
+                self.add(vf, min_radius, max_radius)
+    
+
+    """
+
     def __init__(
         self,
-        func: Callable,
-        delta_x=0.5,
-        delta_y=0.5,
-        min_magnitude=0,
-        max_magnitude=2,
-        colors=DEFAULT_SCALAR_FIELD_COLORS,
+        func: Callable[[np.ndarray], np.ndarray],
+        delta_x:float=0.5,
+        delta_y:float=0.5,
+        min_magnitude:float=0,
+        max_magnitude:float=2,
+        colors:list=DEFAULT_SCALAR_FIELD_COLORS,
         # Takes in actual norm, spits out displayed norm
-        length_func=lambda norm: 0.45 * sigmoid(norm),
-        opacity=1.0,
-        vector_config=None,
+        length_func:Callable[[float], float]=lambda norm: 0.45 * sigmoid(norm),
+        opacity:float=1.0,
+        vector_config:Optional[dict]=None,
         **kwargs
     ):
         self.delta_x = delta_x
