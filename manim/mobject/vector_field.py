@@ -16,9 +16,9 @@ from math import ceil, floor
 import os
 import random
 from typing import Callable, Optional, Sequence
-from colour import Color
 
 import numpy as np
+from colour import Color
 from PIL import Image
 
 from .. import config, logger
@@ -32,11 +32,11 @@ from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLUE,
     BLUE_E,
-    Colors,
     GREEN,
     RED,
     WHITE,
     YELLOW,
+    Colors,
     color_to_rgb,
     rgb_to_color,
 )
