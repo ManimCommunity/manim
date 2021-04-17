@@ -12,9 +12,9 @@ __all__ = [
 ]
 
 import itertools as it
-from math import ceil, floor
 import os
 import random
+from math import ceil, floor
 from typing import Callable, Optional, Sequence
 
 import numpy as np
@@ -237,10 +237,10 @@ class ArrowVectorField(VectorField):
         self,
         func: Callable[[np.ndarray], np.ndarray],
         # Determining Vector positions:
-        x_min: Optional[float] = -(config["frame_width"]+1) / 2,
-        x_max: Optional[float] = (config["frame_width"]+1) / 2,
-        y_min: Optional[float] = -(config["frame_height"]+1) / 2,
-        y_max: Optional[float] = (config["frame_height"]+1) / 2,
+        x_min: Optional[float] = -(config["frame_width"] + 1) / 2,
+        x_max: Optional[float] = (config["frame_width"] + 1) / 2,
+        y_min: Optional[float] = -(config["frame_height"] + 1) / 2,
+        y_max: Optional[float] = (config["frame_height"] + 1) / 2,
         delta_x: float = 0.5,
         delta_y: float = 0.5,
         # Determining Vector appearance:
