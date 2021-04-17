@@ -6,17 +6,15 @@ __all__ = [
     "ShowPassingFlashWithThinningStrokeWidth",
     "AnimatedStreamLines",
     "get_colored_background_image",
-    "get_rgb_gradient_function",
+    "get_color_gradient_function",
     "get_color_field_image_file",
-    "move_along_vector_field",
-    "move_submobjects_along_vector_field",
-    "move_points_along_vector_field",
 ]
 
 import itertools as it
 import os
 import random
 from typing import Callable, Optional, Sequence
+from colour import Color
 
 import numpy as np
 from PIL import Image
@@ -32,6 +30,7 @@ from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLUE,
     BLUE_E,
+    Colors,
     GREEN,
     RED,
     WHITE,
@@ -72,28 +71,23 @@ def get_colored_background_image(
     return Image.fromarray((rgb_array * 255).astype("uint8"))
 
 
-def get_rgb_gradient_function(
-    min_value: int = 0,
-    max_value: int = 1,
+def get_color_gradient_function(
+    min_value: float = 0,
+    max_value: float = 1,
     colors: list = [BLUE, RED],
-    flip_alphas: bool = True,  # Why?
-) -> Callable[[np.ndarray], float]:
+) -> Callable[[float], Color]:
     rgbs = np.array(list(map(color_to_rgb, colors)))
 
-    def func(values: np.ndarray):
-        alphas = inverse_interpolate(min_value, max_value, np.array(values))
-        alphas = np.clip(alphas, 0, 1)
-        # if flip_alphas:
-        #     alphas = 1 - alphas
-        scaled_alphas = alphas * (len(rgbs) - 1)
-        indices = scaled_alphas.astype(int)
-        next_indices = np.clip(indices + 1, 0, len(rgbs) - 1)
-        inter_alphas = scaled_alphas % 1
-        inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
-        result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
-        return result
+    def get_interpolated_color(value: float):
+        alpha = (value - min_value) / float(max_value - min_value)
+        alpha = np.clip(alpha, 0, 1) * (len(rgbs) - 1)
+        color1 = rgbs[int(alpha)]
+        color2 = rgbs[min(int(alpha + 1), len(rgbs) - 1)]
+        alpha %= 1
+        rgb = (1 - alpha) * color1 + alpha * color2
+        return rgb_to_color(rgb)
 
-    return func
+    return get_interpolated_color
 
 
 # TODO: RASTER_IMAGE_DIR is undefined. Therefor this function doesn't work
@@ -114,7 +108,7 @@ def get_color_field_image_file(
     full_path = os.path.join(RASTER_IMAGE_DIR, file_name)
     if not os.path.exists(full_path):
         logger.info("Rendering color field image " + str(func_hash))
-        rgb_gradient_func = get_rgb_gradient_function(
+        rgb_gradient_func = get_color_gradient_function(
             min_value=min_value, max_value=max_value, colors=colors
         )
         image = get_colored_background_image(scalar_func, rgb_gradient_func)
