@@ -232,7 +232,10 @@ def angle_between_vectors(v1, v2):
         diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
         return min(diff, TAU - diff)
     else:
-        return np.arccos(fdiv(np.dot(v1, v2), get_norm(v1) * get_norm(v2)))
+        ratio = fdiv(np.dot(v1, v2), get_norm(v1) * get_norm(v2))
+        if ratio > 1: #this is necessary because when the vectors are parallel, the ratio sometimes exceeds 1 by a very small amount
+            ratio = 1
+        return np.arccos(ratio)
 
 
 def project_along_vector(point, vector):

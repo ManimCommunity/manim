@@ -30,6 +30,7 @@ class Polyhedron(VGroup):
         self.faces = self.create_faces(self.face_coords)
         self.graph = Graph(self.vertex_indices, self.edges, layout=self.layout, vertex_type=Dot3D)
         self.add(self.faces, self.graph)
+        self.add_updater(self.update_faces)
 
     def get_edges(self, faces_list):
         """Creates list of cyclic pairwise tuples."""
@@ -43,6 +44,19 @@ class Polyhedron(VGroup):
         for face in face_coords:
             face_group.add(Polygon(*face, fill_opacity=0.5, shade_in_3d=True))
         return face_group
+
+    def update_faces(self):
+        face_coords = self.extract_face_coords(self.graph, self.faces_list)
+        face_group = VGroup()
+        for face in face_coords:
+            face_group.add(Polygon(*face, fill_opacity=0.5, shade_in_3d=True))
+        self.faces.become(face_group)
+
+    def extract_face_coords(self, graph, faces_list):
+        layout = graph._layout
+        print([[self.layout[j] for j in i] for i in faces_list])
+        return [[self.layout[j] for j in i] for i in faces_list]
+
 
 class Tetrahedron(Polyhedron):
     """A tetrahedron."""
