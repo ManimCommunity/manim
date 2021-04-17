@@ -300,7 +300,9 @@ class VectorField(VGroup):
         """
         return lambda mob, dt: self.nudge(mob, dt * speed, pointwise=pointwise)
 
-    def start_submobject_movement(self, speed: float = 1, pointwise: bool = False) -> "VectorField":
+    def start_submobject_movement(
+        self, speed: float = 1, pointwise: bool = False
+    ) -> "VectorField":
         """Start continuously moving all submobjects along the vector field.
 
         Calling this method multiple times will result in removing the previous updater created by this method.
@@ -316,7 +318,7 @@ class VectorField(VGroup):
         -------
         VectorField
             This vector field.
-            
+
         """
 
         self.stop_submobject_movement()
