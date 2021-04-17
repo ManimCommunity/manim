@@ -2,6 +2,7 @@
 
 __all__ = [
     "VectorField",
+    "ArrowVectorField",
     "StreamLines",
     "ShowPassingFlashWithThinningStrokeWidth",
     "AnimatedStreamLines",
@@ -11,6 +12,7 @@ __all__ = [
 ]
 
 import itertools as it
+from math import ceil, floor
 import os
 import random
 from typing import Callable, Optional, Sequence
@@ -116,37 +118,52 @@ def get_color_field_image_file(
     return full_path
 
 
-def move_along_vector_field(mobject: Mobject, func: Callable) -> Mobject:
-    mobject.add_updater(lambda m, dt: m.shift(func(m.get_center()) * dt))
-    return mobject
-
-
-def move_submobjects_along_vector_field(mobject: Mobject, func: Callable) -> Mobject:
-    def apply_nudge(mob, dt):
-        for submob in mob:
-            x, y = submob.get_center()[:2]
-            if abs(x) < config["frame_width"] and abs(y) < config["frame_height"]:
-                submob.shift(func(submob.get_center()) * dt)
-
-    mobject.add_updater(apply_nudge)
-    return mobject
-
-
-def move_points_along_vector_field(mobject: Mobject, func: Callable) -> Mobject:
-    def apply_nudge(self, dt):
-        self.mobject.apply_function(lambda p: p + func(p) * dt)
-
-    mobject.add_updater(apply_nudge)
-    return mobject
-
-
 # Mobjects
 
 
 class VectorField(VGroup):
-    """A Vector field represented by a set of change vectors.
+    def __init__(self, func: Callable[[np.ndarray], np.ndarray], **kwargs):
+        super().__init__(**kwargs)
+        self.func = func
+        self.submob_movement_updater = None
 
-    Vector fields are allways based on a function defining the vector at every position.
+    def nudge(self, mob, dt=1, substeps=1, pointwise=False):
+        step_size = dt / substeps
+        for i in range(substeps):
+            if pointwise:
+                mob.apply_function(lambda p: p + self.func(p) * step_size)
+            else:
+                mob.shift(self.func(mob.get_center()) * step_size)
+
+    def nudge_submobjects(self, dt=1, substeps=1, pointwise=False):
+        for mob in self.submobjects:
+            self.nudge(mob, dt, substeps, pointwise)
+
+    def get_nudge_updater(self, speed=1, pointwise=False):
+        return lambda mob, dt: self.nudge(mob, dt * speed)
+
+    def start_submobject_movement(self, speed=1, pointwise=False):
+        self.stop_submobject_movement()
+        self.submob_movement_updater = lambda mob, dt: mob.nudge_submobjects(
+            dt * speed, pointwise=pointwise
+        )
+        self.add_updater(self.submob_movement_updater)
+
+    def stop_submobject_movement(self):
+        self.remove_updater(self.submob_movement_updater)
+        self.submob_movement_updater = None
+
+    # def scale(self, scale_factor: float, **kwargs) -> "Mobject":
+    #     return super().scale(scale_factor, **kwargs)
+
+    # def shift(self, *vectors: np.ndarray) -> "Mobject":
+    #     return super().shift(*vectors)
+
+
+class ArrowVectorField(VectorField):
+    """A :class:`VectorField` represented by a set of change vectors.
+
+    `VectorField`s are allways based on a function defining the vector at every position.
     This the values of this functions is displayed as a grid of vectors.
     The color of each vector is determined by it's magnitude.
     A color gradient can be used to color the vectors in a defined interval of magnitudes.
@@ -219,19 +236,32 @@ class VectorField(VGroup):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
+        # Determining Vector positions:
+        x_min: Optional[float] = -(config["frame_width"]+1) / 2,
+        x_max: Optional[float] = (config["frame_width"]+1) / 2,
+        y_min: Optional[float] = -(config["frame_height"]+1) / 2,
+        y_max: Optional[float] = (config["frame_height"]+1) / 2,
         delta_x: float = 0.5,
         delta_y: float = 0.5,
+        # Determining Vector appearance:
         min_magnitude: float = 0,
         max_magnitude: float = 2,
-        colors: list = DEFAULT_SCALAR_FIELD_COLORS,
+        colors: Sequence = DEFAULT_SCALAR_FIELD_COLORS,
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
         vector_config: Optional[dict] = None,
         **kwargs
     ):
+        super().__init__(func, **kwargs)
+        # Rounding min and max values to fit delta value
+        self.x_min = floor(x_min / delta_x) * delta_x
+        self.x_max = ceil(x_max / delta_x) * delta_x
+        self.y_min = floor(y_min / delta_y) * delta_y
+        self.y_max = ceil(y_max / delta_y) * delta_y
         self.delta_x = delta_x
         self.delta_y = delta_y
+
         self.min_magnitude = min_magnitude
         self.max_magnitude = max_magnitude
         self.colors = colors
@@ -240,23 +270,18 @@ class VectorField(VGroup):
         if vector_config is None:
             vector_config = {}
         self.vector_config = vector_config
-        VGroup.__init__(self, **kwargs)
-        self.x_min = int(np.floor(-config["frame_width"] / 2))
-        self.x_max = int(np.ceil(config["frame_width"] / 2))
-        self.y_min = int(np.floor(-config["frame_height"] / 2))
-        self.y_max = int(np.ceil(config["frame_height"] / 2))
         self.func = func
-        self.rgb_gradient_function = get_rgb_gradient_function(
-            self.min_magnitude, self.max_magnitude, self.colors, flip_alphas=False
+        self.color_gradient = get_color_gradient_function(
+            self.min_magnitude, self.max_magnitude, self.colors
         )
-        x_range = np.arange(self.x_min, self.x_max + self.delta_x, self.delta_x)
-        y_range = np.arange(self.y_min, self.y_max + self.delta_y, self.delta_y)
+
+        x_range = np.arange(self.x_min, self.x_max, self.delta_x)
+        y_range = np.arange(self.y_min, self.y_max, self.delta_y)
         for x, y in it.product(x_range, y_range):
-            point = x * RIGHT + y * UP
-            self.add(self.get_vector(point))
+            self.add(self.get_vector(x * RIGHT + y * UP))
         self.set_opacity(self.opacity)
 
-    def get_vector(self, point: np.ndarray, **kwargs):
+    def get_vector(self, point: np.ndarray):
         """Creates a vector in the `VectorField`.
 
         The created vector is based on the function of the `VectorField` and is
@@ -273,20 +298,28 @@ class VectorField(VGroup):
         """
         output = np.array(self.func(point))
         norm = get_norm(output)
-        if norm == 0:
-            output *= 0
-        else:
+        if not norm == 0:
             output *= self.length_func(norm) / norm
-        vector_config = dict(self.vector_config)
-        vector_config.update(kwargs)
-        vect = Vector(output, **vector_config)
+        vect = Vector(output, **self.vector_config)
         vect.shift(point)
-        fill_color = rgb_to_color(self.rgb_gradient_function(np.array([norm]))[0])
-        vect.set_color(fill_color)
+        vect.set_color(self.color_gradient(norm))
         return vect
 
 
 class StreamLines(VGroup):
+    """StreamLines represented a vector field by showing it's flow by using moving agents.
+
+    `StreamLines` are allways based on a function defining the vector at every position.
+    This the values of this functions is displayed as a grid of vectors.
+    The color of each vector is determined by it's magnitude.
+    A color gradient can be used to color the vectors in a defined interval of magnitudes.
+
+    Parameters
+    ----------
+    func
+
+    """
+
     def __init__(
         self,
         func,
@@ -359,7 +392,7 @@ class StreamLines(VGroup):
         self.set_stroke(self.stroke_color, self.stroke_width)
 
         if self.color_by_arc_length:
-            len_to_rgb = get_rgb_gradient_function(
+            len_to_rgb = get_color_gradient_function(
                 self.min_arc_length,
                 self.max_arc_length,
                 colors=self.colors,
