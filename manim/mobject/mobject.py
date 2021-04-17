@@ -13,7 +13,7 @@ import types
 import warnings
 from functools import reduce
 from pathlib import Path
-from typing import Callable, List, Optional, TypeVar, Union
+from typing import Callable, List, Optional, Sequence, TypeVar, Union
 
 import numpy as np
 from colour import Color
@@ -1067,7 +1067,7 @@ class Mobject(Container):
         self,
         angle,
         axis=OUT,
-        about_point: Union[np.ndarray, List, None] = None,
+        about_point: Sequence[float] = None,
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
@@ -2004,7 +2004,7 @@ class Mobject(Container):
 
     def arrange(
         self,
-        direction: Union[np.ndarray, List] = RIGHT,
+        direction: Sequence[float] = RIGHT,
         buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center=True,
         **kwargs,
