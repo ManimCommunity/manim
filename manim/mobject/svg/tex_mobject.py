@@ -203,6 +203,7 @@ import itertools as it
 import operator as op
 import re
 from functools import reduce
+from textwrap import dedent
 
 from ... import config, logger
 from ...constants import *
@@ -435,11 +436,16 @@ class MathTex(SingleStringMathTex):
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
                 logger.error(
-                    "A group of double braces, {{ ... }}, was detected in your string. "
-                    " Manim splits TeX strings at the double braces, which might have "
-                    "caused the current compilation error. If you didn't use the "
-                    "double brace split intentionally, add spaces between the "
-                    "braces to avoid the automatic splitting: {{ ... }} --> { { ... } }."
+                    dedent(
+                        """\
+                        A group of double braces, {{ ... }}, was detected in
+                        your string. Manim splits TeX strings at the double
+                        braces, which might have caused the current
+                        compilation error. If you didn't use the double brace
+                        split intentionally, add spaces between the braces to
+                        avoid the automatic splitting: {{ ... }} --> { { ... } }.
+                        """
+                    )
                 )
             raise compilation_error
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
@@ -473,7 +479,9 @@ class MathTex(SingleStringMathTex):
                 pieces.extend(re.split(pattern, s))
         else:
             pieces = tex_strings
-        return [p for p in pieces if p]
+        ret = [p for p in pieces if p]
+        print(ret)
+        return ret
 
     def break_up_by_substrings(self):
         """
