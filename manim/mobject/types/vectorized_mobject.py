@@ -13,7 +13,7 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
 import colour
 
@@ -459,10 +459,10 @@ class VMobject(Mobject):
 
     def set_anchors_and_handles(
         self,
-        anchors1: Iterable[float],
-        handles1: Iterable[float],
-        handles2: Iterable[float],
-        anchors2: Iterable[float],
+        anchors1: Sequence[float],
+        handles1: Sequence[float],
+        handles2: Sequence[float],
+        anchors2: Sequence[float],
     ) -> "VMobject":
         """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
 
@@ -621,7 +621,7 @@ class VMobject(Mobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[float]) -> "VMobject":
+    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -829,8 +829,8 @@ class VMobject(Mobject):
             subpaths formed by the points.
         """
         nppcc = self.n_points_per_cubic_curve
-        split_indices = filter(filter_func, range(nppcc, len(points), nppcc))
-        split_indices = [0] + list(split_indices) + [len(points)]
+        filtered = filter(filter_func, range(nppcc, len(points), nppcc))
+        split_indices = [0] + list(filtered) + [len(points)]
         return (
             points[i1:i2]
             for i1, i2 in zip(split_indices, split_indices[1:])
@@ -896,7 +896,7 @@ class VMobject(Mobject):
         return bezier(self.get_nth_curve_points(n))
 
     def get_nth_curve_function_with_length(
-        self, n: int, sample_points: int = 10
+        self, n: int, sample_points: Optional[int] = None
     ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
@@ -914,6 +914,9 @@ class VMobject(Mobject):
         length : :class:`float`
             The length of the nth curve.
         """
+
+        if sample_points is None:
+            sample_points = 10
 
         curve = self.get_nth_curve_function(n)
 
@@ -957,6 +960,11 @@ class VMobject(Mobject):
     ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
+        Parameters
+        ----------
+        **kwargs
+            The keyword arguments passed to :meth:`get_nth_curve_function_with_length`
+
         Returns
         -------
         typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]
@@ -969,27 +977,39 @@ class VMobject(Mobject):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
     def point_from_proportion(self, alpha: float) -> np.ndarray:
-        """Get the bezier curve evaluated at a position P,
-        where P is the point corresponding to the proportion defined by the given alpha.
+        """Gets the point at a proportion along the path of the :class:`VMobject`.
 
         Parameters
         ----------
-        alpha : float
-            Proportion.
+        alpha
+            The proportion along the the path of the :class:`VMobject`.
 
         Returns
         -------
-        np.ndarray
-            Point evaluated.
+        :class:`numpy.ndarray`
+            The point on the :class:`VMobject`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the :class:`VMobject` has no points.
         """
 
-        if alpha >= 1:
-            return self.points[-1]
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
-        target_length = alpha * self.get_arc_length()
+        self.throw_error_if_no_points()
+        if alpha == 1:
+            return self.get_points()[-1]
+
+        curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
+
+        target_length = alpha * np.sum(length for _, length in curves_and_lengths)
         current_length = 0
 
-        for curve, length in self.get_curve_functions_with_lengths():
+        for curve, length in curves_and_lengths:
             if current_length + length >= target_length:
                 if length != 0:
                     residue = (target_length - current_length) / length
@@ -1060,7 +1080,7 @@ class VMobject(Mobject):
         # Probably returns all anchors, but this is weird regarding  the name of the method.
         return np.array(list(it.chain(*[sm.get_anchors() for sm in self.get_family()])))
 
-    def get_arc_length(self, sample_points_per_curve: Optional[float] = None) -> float:
+    def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
         """Return the approximated length of the whole curve.
 
         Parameters
@@ -1071,16 +1091,14 @@ class VMobject(Mobject):
         Returns
         -------
         float
-            The length of the curve
+            The length of the :class:`VMobject`.
         """
-        kwargs = {}
-        if sample_points_per_curve is not None:
-            kwargs["sample_points"] = sample_points_per_curve
+
         return np.sum(
-            [
-                length
-                for curve, length in self.get_curve_functions_with_lengths(**kwargs)
-            ]
+            length
+            for _, length in self.get_curve_functions_with_lengths(
+                sample_points=sample_points_per_curve
+            )
         )
 
     # Alignment
