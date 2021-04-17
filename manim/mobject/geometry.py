@@ -846,8 +846,8 @@ class Line(TipableVMobject):
         ::
             >>> import numpy as np
             >>> line = Line(LEFT, RIGHT)
-            >>> line.get_projection(np.array([0, 1, 0])) + 0.
-            array([0, 0, 0])
+            >>> line.get_projection(np.array([0, 1, 0]))
+            array([0., 0., 0.])
         """
         unit_vect = self.get_unit_vector()
         start = self.get_start()
