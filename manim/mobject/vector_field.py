@@ -155,7 +155,7 @@ class VectorField(VGroup):
     Vector fields are allways based on a function defining the vector at every position.
     This the values of this functions is displayed as a grid of vectors.
     The color of each vector is determined by it's magnitude.
-    A color gradient can be used to color the vectors in a defined interval of magnitudes.  
+    A color gradient can be used to color the vectors in a defined interval of magnitudes.
 
     Parameters
     ----------
@@ -168,7 +168,7 @@ class VectorField(VGroup):
     min_magnitude
         The magnitude at which the color gradient starts. Every vector with lower magnitude is colored with the first color in the gradient.
     max_magnitude
-        The magnitude at which the color gradient ends. Every vector with bigger magnitude is colored with the last color in the gradient. 
+        The magnitude at which the color gradient ends. Every vector with bigger magnitude is colored with the last color in the gradient.
     colors
         The colors used as color gradient.
     length_func
@@ -178,10 +178,10 @@ class VectorField(VGroup):
     opacity
         The opacity of the arrows.
     vector_config
-        Keyword arguments passed to the :class:`~.Vector`-constructor.
+        Additional arguments to be passed to the :class:`~.Vector`-constructor
     kwargs : Any
-        Additional arguments to be passed to :class:`~.VGroup`
-    
+        Additional arguments to be passed to the :class:`~.VGroup`-constructor
+
     Examples
     --------
 
@@ -201,7 +201,7 @@ class VectorField(VGroup):
                 vf = VectorField(func, delta_x=1)
                 self.add(vf)
                 self.wait()
-                
+
                 length_func = lambda x: x / 3
                 vf2 = VectorField(func, delta_x=1, length_func=length_func)
                 self.play(vf.animate.become(vf2))
@@ -218,22 +218,22 @@ class VectorField(VGroup):
                 max_radius = Circle(radius=10, color=colors[1]).shift(LEFT*5)
                 vf = VectorField(func, min_magnitude=2, max_magnitude=10, colors=colors)
                 self.add(vf, min_radius, max_radius)
-    
+
 
     """
 
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        delta_x:float=0.5,
-        delta_y:float=0.5,
-        min_magnitude:float=0,
-        max_magnitude:float=2,
-        colors:list=DEFAULT_SCALAR_FIELD_COLORS,
+        delta_x: float = 0.5,
+        delta_y: float = 0.5,
+        min_magnitude: float = 0,
+        max_magnitude: float = 2,
+        colors: list = DEFAULT_SCALAR_FIELD_COLORS,
         # Takes in actual norm, spits out displayed norm
-        length_func:Callable[[float], float]=lambda norm: 0.45 * sigmoid(norm),
-        opacity:float=1.0,
-        vector_config:Optional[dict]=None,
+        length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
+        opacity: float = 1.0,
+        vector_config: Optional[dict] = None,
         **kwargs
     ):
         self.delta_x = delta_x
@@ -262,7 +262,21 @@ class VectorField(VGroup):
             self.add(self.get_vector(point))
         self.set_opacity(self.opacity)
 
-    def get_vector(self, point, **kwargs):
+    def get_vector(self, point: np.ndarray, **kwargs):
+        """Creates a vector in the `VectorField`.
+
+        The created vector is based on the function of the `VectorField` and is
+        rooted in the given point. Color and length fit the specifications of
+        this `VectorField`.
+
+        Parameters
+        ----------
+        point
+            The root point of the vector.
+        kwargs : Any
+            Additional arguments to be passed to the :class:`~.Vector`-constructor
+
+        """
         output = np.array(self.func(point))
         norm = get_norm(output)
         if norm == 0:
