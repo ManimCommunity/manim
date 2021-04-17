@@ -244,6 +244,7 @@ class VectorField(VGroup):
                     self.wait(6)
 
         """
+
         step_size = dt / substeps
         for i in range(substeps):
             if pointwise:
@@ -252,23 +253,90 @@ class VectorField(VGroup):
                 mob.shift(self.func(mob.get_center()) * step_size)
         return self
 
-    def nudge_submobjects(self, dt=1, substeps=1, pointwise=False):
+    def nudge_submobjects(
+        self, dt: float = 1, substeps: int = 1, pointwise: bool = False
+    ) -> "VectorField":
+        """Apply a nudge along the vector field to all submobjects.
+
+        Parameters
+        ----------
+        dt
+            A scalar to the amount the mobject is moved along the vector field.
+            The actual distance is based on the magnitude of the vector field.
+        substeps
+            The amount of steps the whole nudge is devided into. Higher values
+            give more accurate approximations.
+        pointwise
+            Whether to move the mobject along the vector field. See :meth:`nudge` for details.
+
+        Returns
+        -------
+        VectorField
+            This vector field.
+
+        """
         for mob in self.submobjects:
             self.nudge(mob, dt, substeps, pointwise)
+        return self
 
-    def get_nudge_updater(self, speed=1, pointwise=False):
+    def get_nudge_updater(
+        self, speed: float = 1, pointwise: bool = False
+    ) -> Callable[[Mobject, float], Mobject]:
+        """Get an update function to move a :class:`~.Mobject` along the vector field.
+
+        When used with :meth:`~.Mobject.add_updater`, the mobject will move along the vector field, where it's speed is determined by the magnitude of the vector field.
+
+        Parameters
+        ----------
+        speed
+            At `speed=1` the distance a mobject moves is equal to the magnitude of the vector field along it's path. The speed value scales the speed of such a mobject.
+        pointwise
+            Whether to move the mobject along the vector field. See :meth:`nudge` for details.
+
+        Returns
+        -------
+        Callable[[Mobject, float], Mobject]
+            The update function.
+        """
         return lambda mob, dt: self.nudge(mob, dt * speed, pointwise=pointwise)
 
-    def start_submobject_movement(self, speed=1, pointwise=False):
+    def start_submobject_movement(self, speed: float = 1, pointwise: bool = False) -> "VectorField":
+        """Start continuously moving all submobjects along the vector field.
+
+        Calling this method multiple times will result in removing the previous updater created by this method.
+
+        Parameters
+        ----------
+        speed
+            The speed at which to move the submobjects. See :meth:`get_nudge_updater` for details.
+        pointwise
+            Whether to move the mobject along the vector field. See :meth:`nudge` for details.
+
+        Returns
+        -------
+        VectorField
+            This vector field.
+            
+        """
+
         self.stop_submobject_movement()
         self.submob_movement_updater = lambda mob, dt: mob.nudge_submobjects(
             dt * speed, pointwise=pointwise
         )
         self.add_updater(self.submob_movement_updater)
+        return self
 
-    def stop_submobject_movement(self):
+    def stop_submobject_movement(self) -> "VectorField":
+        """Stops the continous movement started using :meth:`start_submobject_movement`.
+
+        Returns
+        -------
+        VectorField
+            This vector field.
+        """
         self.remove_updater(self.submob_movement_updater)
         self.submob_movement_updater = None
+        return self
 
 
 class ArrowVectorField(VectorField):
