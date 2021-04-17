@@ -479,9 +479,7 @@ class MathTex(SingleStringMathTex):
                 pieces.extend(re.split(pattern, s))
         else:
             pieces = tex_strings
-        ret = [p for p in pieces if p]
-        print(ret)
-        return ret
+        return [p for p in pieces if p]
 
     def break_up_by_substrings(self):
         """
