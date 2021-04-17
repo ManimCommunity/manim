@@ -26,9 +26,7 @@ from ..animation.composition import AnimationGroup
 from ..animation.indication import ShowPassingFlash
 from ..constants import *
 from ..mobject.geometry import Vector
-from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLUE,
     BLUE_E,
@@ -36,7 +34,6 @@ from ..utils.color import (
     RED,
     WHITE,
     YELLOW,
-    Colors,
     color_to_rgb,
     rgb_to_color,
 )
