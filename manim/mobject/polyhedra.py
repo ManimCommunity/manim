@@ -48,10 +48,7 @@ class Polyhedron(VGroup):
 
     def update_faces(self, m):
         face_coords = self.extract_face_coords()
-        face_group = VGroup()
-        for face in face_coords:
-            face_group.add(Polygon(*face, fill_opacity=0.5, shade_in_3d=True))
-        self.faces.become(face_group)
+        self.faces.become(self.create_faces(face_coords))
 
     def extract_face_coords(self):
         layout = self.graph._layout
