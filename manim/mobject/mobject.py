@@ -1531,7 +1531,11 @@ class Mobject(Container):
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
-        axis = normalize(cross(curr_vect, target_vect)) if get_norm(cross(curr_vect, target_vect)) != 0 else OUT
+        axis = (
+            normalize(cross(curr_vect, target_vect))
+            if get_norm(cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
             get_norm(target_vect) / get_norm(curr_vect),
             about_point=curr_start,
@@ -1539,7 +1543,7 @@ class Mobject(Container):
         self.rotate(
             angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
-            axis=axis
+            axis=axis,
         )
         self.shift(start - curr_start)
         return self

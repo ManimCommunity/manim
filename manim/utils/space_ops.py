@@ -233,7 +233,9 @@ def angle_between_vectors(v1, v2):
         return min(diff, TAU - diff)
     else:
         ratio = fdiv(np.dot(v1, v2), get_norm(v1) * get_norm(v2))
-        if ratio > 1: #this is necessary because when the vectors are parallel, the ratio sometimes exceeds 1 by a very small amount
+        if (
+            ratio > 1
+        ):  # this is necessary because when the vectors are parallel, the ratio sometimes exceeds 1 by a very small amount
             ratio = 1
         return np.arccos(ratio)
 
