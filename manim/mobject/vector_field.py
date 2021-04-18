@@ -51,104 +51,6 @@ from ..utils.space_ops import get_norm
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
 
-# def get_colored_background_image(
-#     scalar_field_func: Callable,  # TODO: What is taken as parameters?
-#     number_to_rgb_func: Callable,
-# ) -> Image:
-#     ph = config["pixel_height"]
-#     pw = config["pixel_width"]
-#     fw = config["frame_width"]
-#     fh = config["frame_height"]
-#     points_array = np.zeros((ph, pw, 3))
-#     x_array = np.linspace(-fw / 2, fw / 2, pw)
-#     x_array = x_array.reshape((1, len(x_array)))
-#     x_array = x_array.repeat(ph, axis=0)
-
-#     y_array = np.linspace(fh / 2, -fh / 2, ph)
-#     y_array = y_array.reshape((len(y_array), 1))
-#     y_array.repeat(pw, axis=1)
-#     points_array[:, :, 0] = x_array
-#     points_array[:, :, 1] = y_array
-#     print(points_array.shape)
-#     scalars = np.apply_along_axis(scalar_field_func, 2, points_array)
-#     norms = np.apply_along_axis(lambda p: get_norm(p), 2, points_array)
-#     print(scalars.shape, norms.shape)
-#     rgb_array = number_to_rgb_func(scalars.flatten()).reshape((ph, pw, 3))
-#     return Image.fromarray((rgb_array * 255).astype("uint8"))
-
-
-# def get_color_gradient_function(
-#     min_value: float = 0,
-#     max_value: float = 1,
-#     colors: list = [BLUE, RED],
-# ) -> Callable[[float], Color]:
-#     rgbs = np.array(list(map(color_to_rgb, colors)))
-
-#     def get_interpolated_color(value: float):
-#         alpha = (value - min_value) / float(max_value - min_value)
-#         alpha = np.clip(alpha, 0, 1) * (len(rgbs) - 1)
-#         color1 = rgbs[int(alpha)]
-#         color2 = rgbs[min(int(alpha + 1), len(rgbs) - 1)]
-#         alpha %= 1
-#         rgb = (1 - alpha) * color1 + alpha * color2
-#         return rgb_to_color(rgb)
-
-#     return get_interpolated_color
-
-
-# def get_rgb_gradient_function(
-#     min_value: int = 0,
-#     max_value: int = 1,
-#     colors: list = [BLUE, RED],
-#     flip_alphas: bool = True,  # Why?
-# ) -> Callable[[np.ndarray], float]:
-#     rgbs = np.array(list(map(color_to_rgb, colors)))
-
-#     def func(values: np.ndarray):
-#         alphas = inverse_interpolate(min_value, max_value, np.array(values))
-#         alphas = np.clip(alphas, 0, 1)
-#         # if flip_alphas:
-#         #     alphas = 1 - alphas
-#         scaled_alphas = alphas * (len(rgbs) - 1)
-#         indices = scaled_alphas.astype(int)
-#         next_indices = np.clip(indices + 1, 0, len(rgbs) - 1)
-#         inter_alphas = scaled_alphas % 1
-#         inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
-#         result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
-#         return result
-
-#     return func
-
-
-# # TODO: RASTER_IMAGE_DIR is undefined. Therefor this function doesn't work
-# def get_color_field_image_file(
-#     scalar_func: Callable[[np.ndarray], np.ndarray],
-#     min_value: int = 0,
-#     max_value: int = 2,
-#     colors: list = DEFAULT_SCALAR_FIELD_COLORS,
-# ) -> str:
-#     # try_hash
-#     np.random.seed(0)
-#     sample_inputs = 5 * np.random.random(size=(10, 3)) - 10
-#     sample_outputs = np.apply_along_axis(scalar_func, 1, sample_inputs)
-#     func_hash = hash(
-#         str(min_value) + str(max_value) + str(colors) + str(sample_outputs)
-#     )
-#     file_name = "%d.png" % func_hash
-#     full_path = os.path.join(RASTER_IMAGE_DIR, file_name)
-#     if not os.path.exists(full_path):
-#         logger.info("Rendering color field image " + str(func_hash))
-#         rgb_gradient_func = get_color_gradient_function(
-#             min_value=min_value, max_value=max_value, colors=colors
-#         )
-#         image = get_colored_background_image(scalar_func, rgb_gradient_func)
-#         image.save(full_path)
-#     return full_path
-
-
-# Mobjects
-
-
 class VectorField(VGroup):
     """A vector field.
 
@@ -160,6 +62,14 @@ class VectorField(VGroup):
     ----------
     func
         The function defining the rate of change at every position of the `VectorField`.
+    color_scheme
+        A function mapping a vector to a single value. This value gives the position in the color gradient defined using `min_color_scheme_value`, `max_color_scheme_value` and `colors`.
+    min_color_scheme_value
+        The value of the color_scheme function to be mapped to the first color in `colors`. Lower values also result in the first color of the gradient.
+    min_color_scheme_value
+        The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
+    colors
+        The colors defining the color gradient of the vector field.
     kwargs : Any
         Additional arguments to be passed to the :class:`~.VGroup`-constructor
 
@@ -168,9 +78,9 @@ class VectorField(VGroup):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color_scheme: Callable[[np.ndarray], float] = get_norm,
-        min_color_value: float = 0,
-        max_color_value: float = 2,
+        color_scheme: Callable[[np.ndarray], float] = get_norm, # TODO maybe other default for direction?
+        min_color_scheme_value: float = 0,
+        max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         **kwargs
     ):
@@ -182,9 +92,11 @@ class VectorField(VGroup):
         def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
             vec = self.func(pos)
             color_value = np.clip(
-                self.color_scheme(vec), min_color_value, max_color_value
+                self.color_scheme(vec), min_color_scheme_value, max_color_scheme_value
             )
-            alpha = inverse_interpolate(min_color_value, max_color_value, color_value)
+            alpha = inverse_interpolate(
+                min_color_scheme_value, max_color_scheme_value, color_value
+            )
             alpha *= len(self.rgbs) - 1
             c1 = self.rgbs[int(alpha)]
             c2 = self.rgbs[min(int(alpha + 1), len(self.rgbs) - 1)]
@@ -192,7 +104,7 @@ class VectorField(VGroup):
             return interpolate(c1, c2, alpha)
 
         self.pos_to_rgb = pos_to_rgb
-        self.pos_to_color = lambda pos: rgb_to_color(self.pos_to_rgb)
+        self.pos_to_color = lambda pos: rgb_to_color(self.pos_to_rgb(pos))
         self.submob_movement_updater = None
 
     @staticmethod
@@ -394,7 +306,27 @@ class VectorField(VGroup):
         self.submob_movement_updater = None
         return self
 
-    def get_colored_background_image(self, sampling_rate=5) -> Image:
+    def get_colored_background_image(self, sampling_rate: int = 5) -> Image:
+        """Generate an image that displays the vector field.
+
+        The color at each position is calculated by passing the positing through a
+        series of steps:
+        Calculate the vector field function at that position, map that vector to a
+        single value using `self.color_scheme` and finally generate a color from
+        that value using the color gradient.
+
+        Parameters
+        ----------
+        sampling_rate
+            The stepsize at which pixels get included in the image. Lower values give more accurate results, but may take a long time to compute.
+
+        Returns
+        -------
+        Image
+            The vector field image.
+        """
+
+        # TODO: should return a file path
         ph = int(config["pixel_height"] / sampling_rate)
         pw = int(config["pixel_width"] / sampling_rate)
         fw = config["frame_width"]
@@ -412,6 +344,7 @@ class VectorField(VGroup):
         rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
         print(len(rgbs), len(rgbs[0]), rgbs.shape)
         img = Image.fromarray((rgbs * 255).astype("uint8"))
+        img.show()  # TODO remove
         return img
 
 
@@ -427,6 +360,14 @@ class ArrowVectorField(VectorField):
     ----------
     func
         The function defining the rate of change at every position of the `VectorField`.
+    color_scheme
+        A function mapping a vector to a single value. This value gives the position in the color gradient defined using `min_color_scheme_value`, `max_color_scheme_value` and `colors`.
+    min_color_scheme_value
+        The value of the color_scheme function to be mapped to the first color in `colors`. Lower values also result in the first color of the gradient.
+    min_color_scheme_value
+        The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
+    colors
+        The colors defining the color gradient of the vector field.
     x_min
         The minimum x value for which to draw :class:`~.Vector`s.
     x_max
@@ -439,12 +380,6 @@ class ArrowVectorField(VectorField):
         The distance in x direction between two :class:`~.Vector`s.
     delta_y
         The distance in y direction between two :class:`~.Vector`s.
-    min_magnitude
-        The magnitude at which the color gradient starts. Every vector with lower magnitude is colored with the first color in the gradient.
-    max_magnitude
-        The magnitude at which the color gradient ends. Every vector with bigger magnitude is colored with the last color in the gradient.
-    colors
-        The colors used as color gradient.
     length_func
         The function determining the displayed size of the :class:`~.Vector`s. The actual size
         of the vector is passed, the returned value will be used as display size for the
@@ -498,6 +433,10 @@ class ArrowVectorField(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
+        color_scheme: Callable[[np.ndarray], float] = get_norm,
+        min_color_scheme_value: float = 0,
+        max_color_scheme_value: float = 2,
+        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining Vector positions:
         x_min: float = -(config["frame_width"] + 1) / 2,
         x_max: float = (config["frame_width"] + 1) / 2,
@@ -505,17 +444,20 @@ class ArrowVectorField(VectorField):
         y_max: float = (config["frame_height"] + 1) / 2,
         delta_x: float = 0.5,
         delta_y: float = 0.5,
-        # Determining Vector appearance:
-        min_magnitude: float = 0,
-        max_magnitude: float = 2,
-        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
         vector_config: Optional[dict] = None,
         **kwargs
     ):
-        super().__init__(func, **kwargs)
+        super().__init__(
+            func,
+            color_scheme,
+            min_color_scheme_value,
+            max_color_scheme_value,
+            colors,
+            **kwargs,
+        )
         # Rounding min and max values to fit delta value
         self.x_min = floor(x_min / delta_x) * delta_x
         self.x_max = ceil(x_max / delta_x) * delta_x
@@ -524,18 +466,12 @@ class ArrowVectorField(VectorField):
         self.delta_x = delta_x
         self.delta_y = delta_y
 
-        self.min_magnitude = min_magnitude
-        self.max_magnitude = max_magnitude
-        self.colors = colors
         self.length_func = length_func
         self.opacity = opacity
         if vector_config is None:
             vector_config = {}
         self.vector_config = vector_config
         self.func = func
-        self.color_gradient = get_color_gradient_function(
-            self.min_magnitude, self.max_magnitude, self.colors
-        )
 
         x_range = np.arange(self.x_min, self.x_max, self.delta_x)
         y_range = np.arange(self.y_min, self.y_max, self.delta_y)
@@ -564,7 +500,7 @@ class ArrowVectorField(VectorField):
             output *= self.length_func(norm) / norm
         vect = Vector(output, **self.vector_config)
         vect.shift(point)
-        vect.set_color(self.color_gradient(norm))
+        vect.set_color(self.pos_to_color(point))
         return vect
 
 
