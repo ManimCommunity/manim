@@ -407,6 +407,7 @@ class Text(SVGMobject):
         tab_width: int = 4,
         disable_ligatures: bool = False,
         wrap_text: bool = True,
+        scale_automatically: bool = True,
         # Mobject
         height: float = config["pixel_height"],
         width: float = config["pixel_width"],
@@ -422,8 +423,29 @@ class Text(SVGMobject):
         self.gradient = gradient
         self.tab_width = tab_width
         self.wrap_text = wrap_text
-        self.svg_width = width
-        self.svg_height = height
+
+        if scale_automatically:
+            self.svg_width = width
+            self.svg_height = height
+            height = math.fabs(
+                self.svg_height / (self.svg_height - self.svg_width or self.svg_height)
+            )
+            width = (
+                math.fabs(
+                    (
+                        self.svg_width
+                        / (self.svg_width - self.svg_height or self.svg_width)
+                    )
+                )
+                + 10
+            )
+        else:
+            height = None
+            width = None
+            # previously these was the default svg width and size
+            self.svg_width = 600
+            self.svg_height = 400
+
         if t2c is None:
             t2c = {}
         if t2f is None:
@@ -463,13 +485,8 @@ class Text(SVGMobject):
             color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
-            height=math.fabs(
-                self.svg_height / (self.svg_height - self.svg_width or self.svg_height)
-            ),
-            width=math.fabs(
-                (self.svg_width / (self.svg_width - self.svg_height or self.svg_width))
-            )
-            + 10,
+            height=height,
+            width=width,
             should_center=should_center,
             unpack_groups=unpack_groups,
             **kwargs,
@@ -502,6 +519,8 @@ class Text(SVGMobject):
             self.set_color_by_gradient(*self.gradient)
         if self.t2g:
             self.set_color_by_t2g()
+        if height is None and width is None:
+            self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def __repr__(self):
         return f"Text({repr(self.original_text)})"
