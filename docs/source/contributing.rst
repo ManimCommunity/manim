@@ -2,7 +2,7 @@
 Contributing
 ############
 
-Thank you for your interest in contributing to Manim! However you have decided to contribute
+Thank you for your interest in contributing to Manim! However, you have decided to contribute
 or interact with the community, please always be civil and respect other
 members of the community. If you haven't read our :doc:`code of conduct<conduct>`,
 do so here. Manim is Free and Open Source Software (FOSS) for mathematical
@@ -24,7 +24,7 @@ some are detailed below:
 
 
 
-Contributing can be confusing, so here's a few guides:
+Contributing can be confusing, so here are a few guides:
 
 .. toctree::
    :maxdepth: 2

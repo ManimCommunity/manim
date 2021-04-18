@@ -2,7 +2,7 @@
 Quickstart
 ==========
 
-This document will lead you step by step through the necessary procedure to get
+This document will lead you to step by step through the necessary procedure to get
 started with manim for the first time as soon as possible.  This tutorial
 assumes you have already installed manim following the steps in
 :doc:`../installation`.
@@ -75,7 +75,7 @@ video playing the following animation.
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
            self.play(Create(circle))     # show the circle on screen
 
-If you see the video and it looks correct, congrats! You just wrote your first
+If you see the video and it looks correct congrats! You just wrote your first
 manim scene from scratch.  If you get an error message instead, or if do not
 see a video, or if the video output does not look like this, it is likely that
 manim has not been installed correctly. Please refer to the
@@ -120,14 +120,14 @@ The next two lines create a circle and set its color and opacity.
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
 
 Finally, the last line uses the animation :class:`.Create` to display the
-circle on screen.
+circle on the screen.
 
 .. code-block:: python
 
            self.play(Create(circle))  # show the circle on screen
 
 .. tip:: Every animation must be contained within the :meth:`~.Scene.construct` method of a
-         class that derives from :class:`.Scene`.  Other code, for example auxiliary
+         class that derives from :class:`.Scene`.  Other code, for example, auxiliary
          or mathematical functions, may reside outside the class.
 
 
@@ -180,7 +180,7 @@ The output should look as follows.
            self.play(FadeOut(square))           # fade out animation
 
 This example shows one of the most basic features of manim: the ability to
-implement complicated and mathematically-intensive animations (such as cleanly
+implement complicated and mathematically intensive animations (such as cleanly
 interpolating between two geometric shapes) in very few lines of code.
 
 
@@ -188,10 +188,10 @@ interpolating between two geometric shapes) in very few lines of code.
 You're done!
 ************
 
-With a working installation of manim, and the bare basics under your belt, it
+With a working installation of manim and the bare basics under your belt, it
 is now time to start creating awesome mathematical animations.  For a look
 under the hood at what manim is doing when rendering the ``SquareToCircle``
-scene, see the next tutorial :doc:`a_deeper_look`.  For an extensive review of
+the scene, see the next tutorial :doc:`a_deeper_look`.  For an extensive review of
 manim's features, as well as its configuration and other settings, see the
 other :doc:`../tutorials`.  For a list of all available features, see the
 :doc:`../reference` page.

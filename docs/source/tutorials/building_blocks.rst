@@ -9,7 +9,7 @@ Essentially, manim puts at your disposal three different concepts that you can
 orchestrate together in order to produce mathematical animations: the
 **mathematical object** (or **mobject** for short) the **animation**, and the
 **scene**.  As we will see in the following sections, each of these three
-concepts is implemented in manim as a separate class: the :class:`.Mobject`,
+concepts are implemented in manim as a separate class: the :class:`.Mobject`,
 :class:`.Animation`, and :class:`.Scene` classes.
 
 .. note:: It is recommended that you read the tutorials :doc:`quickstart` and
@@ -22,15 +22,15 @@ Mobjects
 
 Mobjects are the basic building block for all manim animations.  Each class
 that derives from :class:`.Mobject` represents an object that can be displayed
-on screen.  For example, simple shapes such as :class:`.Circle`,
+on the screen.  For example, simple shapes such as :class:`.Circle`,
 :class:`.Arrow`, and :class:`.Rectangle` are all mobjects.  More complicated
 constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or
 :class:`.BarChart` are mobjects as well.
 
-If you try to display on screen an instance of :class:`.Mobject`, you will only
+If you try to display on the screen an instance of :class:`.Mobject`, you will only
 see an empty frame.  The reason is that the :class:`.Mobject` class is an
 abstract base class of all other mobjects, i.e. it does not have any
-pre-determined visual shape that can be displayed on screen.  It is only the
+pre-determined visual shape that can be displayed on the screen.  It is only the
 skeleton of a thing that *could* be displayed.  Therefore, you will rarely need
 to use plain instances of :class:`.Mobject`; instead you will most likely
 create instances of its derived classes.  One of these derived classes is
@@ -41,7 +41,7 @@ the time, you will be dealing with vmobjects, though we will continue to use
 the term "mobject" to refer to the class of shapes that can be displayed on
 screen, as it is more general.
 
-.. note:: Any object that can be displayed on screen is a ``mobject``, even if
+.. note:: Any object that can be displayed on the screen is a ``mobject``, even if
           it is not necessarily *mathematical* in nature.
 
 .. tip:: To see examples of classes derived from :class:`.Mobject`, see the
@@ -212,7 +212,7 @@ mobjects are added to the scene.  In ``MobjectStyling``, we added them as
 ``add(triangle, square, circle)``.
 
 As you can see, the order of the arguments of :meth:`~.Scene.add` determines
-the order that the mobjects are displayed on screen, with the left-most
+the order that the mobjects are displayed on the screen, with the left-most
 arguments being put in the back.
 
 

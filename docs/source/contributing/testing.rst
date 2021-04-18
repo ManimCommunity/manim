@@ -26,7 +26,7 @@ Some useful pytest flags:
 How it Works
 ~~~~~~~~~~~~
 
-At the moment there are three type of tests:
+At the moment there are three types of tests:
 
 #. Unit Tests:
 
@@ -44,7 +44,7 @@ At the moment there are three type of tests:
 
    As Manim is a video library, we have to test videos as well. Unfortunately,
    we cannot directly test video content as rendered videos can
-   differ slightly depending on system (for reasons related to
+   differ slightly depending on the system (for reasons related to
    ffmpeg). Therefore, we only compare video configuration values, exported in
    .json.
 
@@ -155,7 +155,7 @@ Unit Tests
 
 Pytest determines which functions are tests by searching for files whose
 names begin with "test\_", and then within those files for functions
-beginning with "test" and classes beginning with "Test". These kind of
+beginning with "test" and classes beginning with "Test". These kinds of
 tests must be in ``tests/`` (e.g. ``tests/test_container.py``).
 
 Graphical Unit Test
@@ -222,7 +222,7 @@ It will look something like this:
     set_test_scene(CircleTest, "geometry")
 
 ``set_test_scene`` takes two parameters: the scene to test, and the
-module name. You can generate the test data by running the file (it suffices to type the name of the file in terminal; you do not have to run
+module name. You can generate the test data by running the file (it suffices to type the name of the file in the terminal; you do not have to run
 it like how you would normally run manim files). It will automatically generate the control data in the
 right directory (in this case,
 ``tests/control_data/graphical_units_data/geometry/CircleTest.npz``).
@@ -230,7 +230,7 @@ right directory (in this case,
 Please make sure to add the control data to git as
 soon as it is produced with ``git add <your-control-data.npz>``. However, do not
 include changes to the template script (template\_generate\_graphical\_units\_data.py) in your pull request so that others
-may continue to use the unmodified file to generate their own tests.
+may continue to use the unmodified file to generate their tests.
 
 
 Videos tests
@@ -267,7 +267,7 @@ Note the fixtures here:
 
 - tmp_path is a pytest fixture to get a tmp_path. Manim will output here, according to the flag ``--media_dir``.
 
-- ``manim_cfg_file`` fixture that return a path pointing to ``test_scene_rendering/standard_config.cfg``. It's just to shorten the code, in the case multiple tests need to use this cfg file.
+- ``manim_cfg_file`` fixture that return a path pointing to ``test_scene_rendering/standard_config.cfg``. It's just to shorten the code, in this case, multiple tests need to use this cfg file.
 
 - ``simple_scenes_path`` same as above, except for ``test_scene_rendering/simple_scene.py``
 
