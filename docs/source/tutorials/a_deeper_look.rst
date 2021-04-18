@@ -18,7 +18,7 @@ At this point, you have just executed the following command.
 
 Let's dissect what just happened step by step.  First, this command executes
 manim on the file ``scene.py``, which contains our animation code.  Further,
-this command tells manim exactly which ``Scene`` to be rendered, in this case,
+this command tells manim exactly which ``Scene`` is to be rendered, in this case,
 it is ``SquareToCircle``.  This is necessary because a single scene file may
 contain more than one scene.  Next, the flag `-p` tells manim to play the scene
 once it's rendered, and the `-ql` flag tells manim to render the scene in low
