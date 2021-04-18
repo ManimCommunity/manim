@@ -47,37 +47,12 @@ from ..utils.space_ops import get_norm
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
 
-# def get_color_field_image_file(scalar_func,
-#                                min_value=0, max_value=2,
-#                                colors=DEFAULT_SCALAR_FIELD_COLORS
-#                                ):
-#     # # try_hash
-#     # np.random.seed(0)
-#     # sample_inputs = 5 * np.random.random(size=(10, 3)) - 10
-#     # sample_outputs = np.apply_along_axis(scalar_func, 1, sample_inputs)
-#     # func_hash = hash(
-#     #     str(min_value) + str(max_value) + str(colors) + str(sample_outputs)
-#     # )
-#     # file_name = "%d.png" % func_hash
-#     full_path = os.path.join("./media/test", "abc.png")
-#     if not os.path.exists(full_path):
-#         print("Rendering color field image " + str(full_path))
-#         rgb_gradient_func = get_rgb_gradient_function(
-#             min_value=min_value,
-#             max_value=max_value,
-#             colors=colors
-#         )
-#         image = get_colored_background_image(scalar_func, rgb_gradient_func)
-#         image.save(full_path)
-#     return full_path
-
-
 class VectorField(VGroup):
     """A vector field.
 
     vector fields are based on a function defining a vector at every position.
     This class does by default not include any visible elements but provides
-    methods to move other :class:`~.Mobject`s along the vector field.
+    methods to move other :class:`~.Mobject` s along the vector field.
 
     Parameters
     ----------
@@ -89,12 +64,12 @@ class VectorField(VGroup):
         A function mapping a vector to a single value. This value gives the position in the color gradient defined using `min_color_scheme_value`, `max_color_scheme_value` and `colors`.
     min_color_scheme_value
         The value of the color_scheme function to be mapped to the first color in `colors`. Lower values also result in the first color of the gradient.
-    min_color_scheme_value
+    max_color_scheme_value
         The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
     colors
         The colors defining the color gradient of the vector field.
     kwargs : Any
-        Additional arguments to be passed to the :class:`~.VGroup`-constructor
+        Additional arguments to be passed to the :class:`~.VGroup` constructor
 
     """
 
@@ -339,7 +314,7 @@ class VectorField(VGroup):
         self.submob_movement_updater = None
         return self
 
-    def get_colored_background_image(self, sampling_rate: int = 5) -> Image:
+    def get_colored_background_image(self, sampling_rate: int = 5) -> str:
         """Generate an image that displays the vector field.
 
         The color at each position is calculated by passing the positing through a
@@ -355,8 +330,8 @@ class VectorField(VGroup):
 
         Returns
         -------
-        Image
-            The vector field image.
+        str
+            The file path of the vector field image.
         """
         if self.single_color:
             raise ValueError(
@@ -376,18 +351,14 @@ class VectorField(VGroup):
         y_array.repeat(pw, axis=1)  # TODO why not y_array = y_array.repeat(...)?
         points_array[:, :, 0] = x_array
         points_array[:, :, 1] = y_array
-        print(points_array.shape)
         rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
-        print(len(rgbs), len(rgbs[0]), rgbs.shape)
-        img = Image.fromarray((rgbs * 255).astype("uint8"))
-        img.show()  # TODO remove
-        return img
+        return Image.fromarray((rgbs * 255).astype("uint8"))._dump()
 
 
 class ArrowVectorField(VectorField):
     """A :class:`VectorField` represented by a set of change vectors.
 
-    `VectorField`s are allways based on a function defining the vector at every position.
+    Vector fields are allways based on a function defining the :class:`~.Vector` at every position.
     The values of this functions is displayed as a grid of vectors.
     By default the color of each vector is determined by it's magnitude.
     Other color schemes can be used however.
@@ -395,39 +366,39 @@ class ArrowVectorField(VectorField):
     Parameters
     ----------
     func
-        The function defining the rate of change at every position of the `VectorField`.
+        The function defining the rate of change at every position of the vector field.
     color
         The color of the vector field. If set, position-specific coloring is disabled.
     color_scheme
         A function mapping a vector to a single value. This value gives the position in the color gradient defined using `min_color_scheme_value`, `max_color_scheme_value` and `colors`.
     min_color_scheme_value
         The value of the color_scheme function to be mapped to the first color in `colors`. Lower values also result in the first color of the gradient.
-    min_color_scheme_value
+    max_color_scheme_value
         The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
     colors
         The colors defining the color gradient of the vector field.
     x_min
-        The minimum x value for which to draw :class:`~.Vector`s.
+        The minimum x value for which to draw vectors.
     x_max
-        The maximum x value for which to draw :class:`~.Vector`s.
+        The maximum x value for which to draw vectors.
     y_min
-        The minimum y value for which to draw :class:`~.Vector`s.
+        The minimum y value for which to draw vectors.
     y_max
-        The maximum y value for which to draw :class:`~.Vector`s.
+        The maximum y value for which to draw vectors.
     delta_x
-        The distance in x direction between two :class:`~.Vector`s.
+        The distance in x direction between two vectors.
     delta_y
-        The distance in y direction between two :class:`~.Vector`s.
+        The distance in y direction between two vectors.
     length_func
-        The function determining the displayed size of the :class:`~.Vector`s. The actual size
+        The function determining the displayed size of the vectors. The actual size
         of the vector is passed, the returned value will be used as display size for the
         vector. By default this is used to cap the displayed size of vectors to reduce the clutter.
     opacity
         The opacity of the arrows.
     vector_config
-        Additional arguments to be passed to the :class:`~.Vector`-constructor
+        Additional arguments to be passed to the :class:`~.Vector` constructor
     kwargs : Any
-        Additional arguments to be passed to the :class:`~.VGroup`-constructor
+        Additional arguments to be passed to the :class:`~.VGroup` constructor
 
     Examples
     --------
@@ -520,18 +491,18 @@ class ArrowVectorField(VectorField):
         self.set_opacity(self.opacity)
 
     def get_vector(self, point: np.ndarray):
-        """Creates a vector in the `VectorField`.
+        """Creates a vector in the vector field.
 
-        The created vector is based on the function of the `VectorField` and is
+        The created vector is based on the function of the vector field and is
         rooted in the given point. Color and length fit the specifications of
-        this `VectorField`.
+        this vector field.
 
         Parameters
         ----------
         point
             The root point of the vector.
         kwargs : Any
-            Additional arguments to be passed to the :class:`~.Vector`-constructor
+            Additional arguments to be passed to the :class:`~.Vector` constructor
 
         """
         output = np.array(self.func(point))
@@ -550,24 +521,62 @@ class ArrowVectorField(VectorField):
 class StreamLines(VectorField):
     """StreamLines represent the flow of a :class:`VectorField` using the trace of moving agents.
 
-    `VectorField`s are allways based on a function defining the vector at every position.
+    Vector fields are always based on a function defining the vector at every position.
     The values of this functions is displayed by moving many agents along the vector field
     and showing their trace.
 
     Parameters
     ----------
     func
-        The function defining the rate of change at every position of the `VectorField`.
+        The function defining the rate of change at every position of the vector field.
     color
         The color of the vector field. If set, position-specific coloring is disabled.
     color_scheme
         A function mapping a vector to a single value. This value gives the position in the color gradient defined using `min_color_scheme_value`, `max_color_scheme_value` and `colors`.
     min_color_scheme_value
         The value of the color_scheme function to be mapped to the first color in `colors`. Lower values also result in the first color of the gradient.
-    min_color_scheme_value
+    max_color_scheme_value
         The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
     colors
         The colors defining the color gradient of the vector field.
+    x_min
+        The minimum x value at which agends are spawned
+    x_max
+        The maximum x value at which agends are spawned
+    y_min
+        The minimum y value at which agends are spawned
+    y_max
+        The maximum y value at which agends are spawned
+    delta_x
+        The distance in x direction between two agents.
+    delta_y
+        The distance in y direction between two agents.
+    noise_factor
+        The amount by which the starting position of each agent is altered along each axis. Defaults to :code:`delta_y / 2` if not defined.
+    n_repeats
+        The number of agents generated at each starting point.
+    dt
+        The factor by which the distance an agend moves per step is stretched. Lower values result in a better approximation of the trajectories in the vector field.
+    virtual_time
+        The time the agents get to move in the vector field. Higher values therefor result in longer stream lines. However, this whole time gets simulated upon creation. 
+    max_anchors_per_line
+        The maximum number of anchors per line. Lines with more anchors get reduced in complexity, not in length.
+    padding
+        The distance agents can move out of the generation area before being terminated. 
+    stroke_width
+        The stroke with of the stream lines.
+    opacity
+        The opacity of the stream lines.
+
+    Examples
+    --------
+
+    .. manim:: BasicUsage
+
+        class BasicUsage(Scene):
+            def construct(self):
+                func = lambda pos: np.sin(pos[0])*UR+np.cos(pos[1])*LEFT+pos/5
+                self.add(StreamLines(func, color=WHITE))
 
     """
 
@@ -581,7 +590,7 @@ class StreamLines(VectorField):
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
-        # Determining stream line (starting) positions:
+        # Determining stream line starting positions:
         x_min: float = -(config["frame_width"] + 1) / 2,
         x_max: float = (config["frame_width"] + 1) / 2,
         y_min: float = -(config["frame_height"] + 1) / 2,
@@ -594,6 +603,7 @@ class StreamLines(VectorField):
         dt=0.05,
         virtual_time=3,
         max_anchors_per_line=100,
+        padding=0,
         # Determining stream line appearance:
         stroke_width=1,
         opacity=1,
@@ -617,19 +627,22 @@ class StreamLines(VectorField):
         self.noise_factor = noise_factor if noise_factor is not None else delta_y / 2
         self.n_repeats = n_repeats
         self.max_anchors_per_line = max_anchors_per_line
+        self.padding = padding
         self.stroke_width = stroke_width
 
         start_points = self.get_start_points()
 
         def outside_box(p):
             return (
-                p[0] < self.x_min
-                or p[0] > self.x_max
-                or p[1] < self.y_min
-                or p[1] > self.y_max
+                p[0] < self.x_min - self.padding
+                or p[0] > self.x_max + self.padding
+                or p[1] < self.y_min - self.padding
+                or p[1] > self.y_max + self.padding
             )
 
         max_steps = ceil(virtual_time / dt)
+        if not self.single_color:
+            self.background_img = self.get_colored_background_image()
         for point in start_points:
             points = [point]
             for _ in range(max_steps):
@@ -645,15 +658,17 @@ class StreamLines(VectorField):
             else:
                 # line.set_stroke([color_func(p) for p in line.get_anchors()])
                 # TODO use color_from_background_image
-                pass
+                line.color_using_background_image(self.background_img)
             line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
-            print(len(self.submobjects))
 
     def get_start_points(self):
+        half_noise = self.noise_factor / 2
         return np.array(
             [
-                x * RIGHT + y * UP + self.noise_factor * np.random.random(3)
+                (x - half_noise) * RIGHT
+                + (y - half_noise) * UP
+                + self.noise_factor * np.random.random(3)
                 for n in range(self.n_repeats)
                 for x in np.arange(self.x_min, self.x_max + self.delta_x, self.delta_x)
                 for y in np.arange(self.y_min, self.y_max + self.delta_y, self.delta_y)
