@@ -12,7 +12,7 @@ steps to clone your fork.
 
    If you have installed a non-developer version of manim, please uninstall
    it. This is to avoid any accidental usage of the non-developer version
-   when developing and testing  your local copy of the repository. This
+   when developing and testing your local copy of the repository. This
    warning doesn't apply to users who use `poetry
    <https://python-poetry.org>`_ (chapter below.)
 
