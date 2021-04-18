@@ -568,7 +568,7 @@ class ArrowVectorField(VectorField):
         return vect
 
 
-class StreamLines(VGroup):
+class StreamLines(VectorField):
     """StreamLines represented a vector field by showing it's flow by using moving agents.
 
     `StreamLines` are allways based on a function defining the vector at every position.
@@ -585,112 +585,93 @@ class StreamLines(VGroup):
     def __init__(
         self,
         func,
-        # Config for choosing start points
-        x_min=-8,
-        x_max=8,
-        y_min=-5,
-        y_max=5,
-        delta_x=0.5,
-        delta_y=0.5,
+        # Determining stream line (starting) positions:
+        x_min: float = -(config["frame_width"] + 1) / 2,
+        x_max: float = (config["frame_width"] + 1) / 2,
+        y_min: float = -(config["frame_height"] + 1) / 2,
+        y_max: float = (config["frame_height"] + 1) / 2,
+        delta_x: float = 0.5,
+        delta_y: float = 0.5,
+        noise_factor: Optional[float] = None,
         n_repeats=1,
-        noise_factor=None,
-        # Config for drawing lines
+        # Determining how lines are drawn
         dt=0.05,
         virtual_time=3,
-        n_anchors_per_line=100,
+        max_anchors_per_line=100,
+        # Determining stream line appearance:
         stroke_width=1,
-        stroke_color=WHITE,
-        color_by_arc_length=True,
-        # Min and max arc lengths meant to define
-        # the color range, should color_by_arc_length be True
-        min_arc_length=0,
-        max_arc_length=12,
-        color_by_magnitude=False,
-        # Min and max magnitudes meant to define
-        # the color range, should color_by_magnitude be True
-        min_magnitude=0.5,
-        max_magnitude=1.5,
+        stroke_color: Optional[Color] = None,
+        color_by_magnitude: Optional[bool] = None,
+        min_magnitude: float = 0,
+        max_magnitude: float = 2,
         colors=DEFAULT_SCALAR_FIELD_COLORS,
-        cutoff_norm=15,
+        opacity=1,
         **kwargs
     ):
-        VGroup.__init__(
-            self, stroke_color=stroke_color, stroke_width=stroke_width, **kwargs
-        )
-        self.func = func
+        super().__init__(func, **kwargs)
         self.x_min = x_min
         self.x_max = x_max
         self.y_min = y_min
         self.y_max = y_max
         self.delta_x = delta_x
         self.delta_y = delta_y
+        self.noise_factor = noise_factor if noise_factor is not None else delta_y / 2
         self.n_repeats = n_repeats
-        self.noise_factor = noise_factor
-        self.dt = dt
-        self.virtual_time = virtual_time
-        self.n_anchors_per_line = n_anchors_per_line
-        self.color_by_arc_length = color_by_arc_length
-        self.min_arc_length = min_arc_length
-        self.max_arc_length = max_arc_length
-        self.color_by_magnitude = color_by_magnitude
-        self.min_magnitude = min_magnitude
-        self.max_magnitude = max_magnitude
-        self.colors = colors
-        self.cutoff_norm = cutoff_norm
+        self.max_anchors_per_line = max_anchors_per_line
 
+        self.stroke_width = stroke_width
+        if (
+            color_by_magnitude is None
+            and stroke_color is None
+            or color_by_magnitude is not None and not color_by_magnitude
+        ):
+            self.color_by_magnitude = True
+            self.color_gradient = get_color_gradient_function(
+                min_magnitude, max_magnitude, colors
+            )
+        else:
+            self.color_by_magnitude = False
+            self.stroke_color = stroke_color if stroke_color is not None else WHITE
+
+        print(self.color_by_magnitude)
         start_points = self.get_start_points()
+
+        def outside_box(p):
+            return (
+                p[0] < self.x_min
+                or p[0] > self.x_max
+                or p[1] < self.y_min
+                or p[1] > self.y_max
+            )
+
+        max_steps = ceil(virtual_time / dt)
         for point in start_points:
             points = [point]
-            for _ in np.arange(0, self.virtual_time, dt):
+            for _ in range(max_steps):
                 last_point = points[-1]
                 points.append(last_point + dt * func(last_point))
-                if get_norm(last_point) > self.cutoff_norm:
+                if outside_box(last_point):
                     break
             line = VMobject()
-            step = max(1, int(len(points) / self.n_anchors_per_line))
+            step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
+            if self.color_by_magnitude:
+                #TODO This is buggy since multiple stroke colors are not applied along the path.
+                color_func = lambda p: self.color_gradient(get_norm(self.func(p)))
+                line.set_stroke([color_func(p) for p in line.get_anchors()])
+            else:
+                line.set_stroke(self.stroke_color)
+            line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
-
-        self.set_stroke(self.stroke_color, self.stroke_width)
-
-        if self.color_by_arc_length:
-            len_to_rgb = get_color_gradient_function(
-                self.min_arc_length,
-                self.max_arc_length,
-                colors=self.colors,
-            )
-            for line in self:
-                arc_length = line.get_arc_length()
-                rgb = len_to_rgb([arc_length])[0]
-                color = rgb_to_color(rgb)
-                line.set_color(color)
-        elif self.color_by_magnitude:
-            image_file = get_color_field_image_file(
-                lambda p: get_norm(func(p)),
-                min_value=self.min_magnitude,
-                max_value=self.max_magnitude,
-                colors=self.colors,
-            )
-            self.color_using_background_image(image_file)
+            print(len(self.submobjects))
 
     def get_start_points(self):
-        x_min = self.x_min
-        x_max = self.x_max
-        y_min = self.y_min
-        y_max = self.y_max
-        delta_x = self.delta_x
-        delta_y = self.delta_y
-        n_repeats = self.n_repeats
-        noise_factor = self.noise_factor
-
-        if noise_factor is None:
-            noise_factor = delta_y / 2
         return np.array(
             [
-                x * RIGHT + y * UP + noise_factor * np.random.random(3)
-                for n in range(n_repeats)
-                for x in np.arange(x_min, x_max + delta_x, delta_x)
-                for y in np.arange(y_min, y_max + delta_y, delta_y)
+                x * RIGHT + y * UP + self.noise_factor * np.random.random(3)
+                for n in range(self.n_repeats)
+                for x in np.arange(self.x_min, self.x_max + self.delta_x, self.delta_x)
+                for y in np.arange(self.y_min, self.y_max + self.delta_y, self.delta_y)
             ]
         )
 
