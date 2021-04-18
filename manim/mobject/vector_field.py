@@ -644,7 +644,7 @@ class StreamLines(VectorField):
                 line.set_stroke(self.color)
             else:
                 # line.set_stroke([color_func(p) for p in line.get_anchors()])
-                #TODO use color_from_background_image
+                # TODO use color_from_background_image
                 pass
             line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
