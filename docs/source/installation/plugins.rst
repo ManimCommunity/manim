@@ -6,7 +6,7 @@ Plugins
 
 Plugins are features that extend Manim's core functionality. Since Manim is
 extensible and not everything belongs in its core, we'll go over how to
-install, use, and create your plugins.
+install, use, and create your own plugins.
 
 .. note:: 
 
