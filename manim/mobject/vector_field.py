@@ -62,6 +62,8 @@ class VectorField(VGroup):
     ----------
     func
         The function defining the rate of change at every position of the `VectorField`.
+    color
+        The color of the vector field. If set, position-specific coloring is disabled.
     color_scheme
         A function mapping a vector to a single value. This value gives the position in the color gradient defined using `min_color_scheme_value`, `max_color_scheme_value` and `colors`.
     min_color_scheme_value
@@ -78,6 +80,7 @@ class VectorField(VGroup):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
+        color: Optional[Color] = None,
         color_scheme: Callable[
             [np.ndarray], float
         ] = get_norm,  # TODO maybe other default for direction?
@@ -88,25 +91,32 @@ class VectorField(VGroup):
     ):
         super().__init__(**kwargs)
         self.func = func
-        self.color_scheme = color_scheme
-        self.rgbs = np.array(list(map(color_to_rgb, colors)))
+        if color is None:
+            self.single_color = False
+            self.color_scheme = color_scheme
+            self.rgbs = np.array(list(map(color_to_rgb, colors)))
 
-        def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
-            vec = self.func(pos)
-            color_value = np.clip(
-                self.color_scheme(vec), min_color_scheme_value, max_color_scheme_value
-            )
-            alpha = inverse_interpolate(
-                min_color_scheme_value, max_color_scheme_value, color_value
-            )
-            alpha *= len(self.rgbs) - 1
-            c1 = self.rgbs[int(alpha)]
-            c2 = self.rgbs[min(int(alpha + 1), len(self.rgbs) - 1)]
-            alpha %= 1
-            return interpolate(c1, c2, alpha)
+            def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
+                vec = self.func(pos)
+                color_value = np.clip(
+                    self.color_scheme(vec),
+                    min_color_scheme_value,
+                    max_color_scheme_value,
+                )
+                alpha = inverse_interpolate(
+                    min_color_scheme_value, max_color_scheme_value, color_value
+                )
+                alpha *= len(self.rgbs) - 1
+                c1 = self.rgbs[int(alpha)]
+                c2 = self.rgbs[min(int(alpha + 1), len(self.rgbs) - 1)]
+                alpha %= 1
+                return interpolate(c1, c2, alpha)
 
-        self.pos_to_rgb = pos_to_rgb
-        self.pos_to_color = lambda pos: rgb_to_color(self.pos_to_rgb(pos))
+            self.pos_to_rgb = pos_to_rgb
+            self.pos_to_color = lambda pos: rgb_to_color(self.pos_to_rgb(pos))
+        else:
+            self.single_color = True
+            self.color = color
         self.submob_movement_updater = None
 
     @staticmethod
@@ -327,7 +337,10 @@ class VectorField(VGroup):
         Image
             The vector field image.
         """
-
+        if self.single_color:
+            raise ValueError(
+                "There is no point in generating an image if the vector field uses a single color."
+            )
         # TODO: should return a file path
         ph = int(config["pixel_height"] / sampling_rate)
         pw = int(config["pixel_width"] / sampling_rate)
@@ -354,14 +367,16 @@ class ArrowVectorField(VectorField):
     """A :class:`VectorField` represented by a set of change vectors.
 
     `VectorField`s are allways based on a function defining the vector at every position.
-    This the values of this functions is displayed as a grid of vectors.
-    The color of each vector is determined by it's magnitude.
-    A color gradient can be used to color the vectors in a defined interval of magnitudes.
+    The values of this functions is displayed as a grid of vectors.
+    By default the color of each vector is determined by it's magnitude.
+    Other color schemes can be used however.
 
     Parameters
     ----------
     func
         The function defining the rate of change at every position of the `VectorField`.
+    color
+        The color of the vector field. If set, position-specific coloring is disabled.
     color_scheme
         A function mapping a vector to a single value. This value gives the position in the color gradient defined using `min_color_scheme_value`, `max_color_scheme_value` and `colors`.
     min_color_scheme_value
@@ -427,7 +442,7 @@ class ArrowVectorField(VectorField):
                 colors = [RED, YELLOW, BLUE, DARKER_GRAY]
                 min_radius = Circle(radius=2,  color=colors[0]).shift(LEFT*5)
                 max_radius = Circle(radius=10, color=colors[-1]).shift(LEFT*5)
-                vf = ArrowVectorField(func, min_magnitude=2, max_magnitude=10, colors=colors)
+                vf = ArrowVectorField(func, min_color_scheme_value=2, max_color_scheme_value=10, colors=colors)
                 self.add(vf, min_radius, max_radius)
 
     """
@@ -435,6 +450,7 @@ class ArrowVectorField(VectorField):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
+        color: Optional[Color] = None,
         color_scheme: Callable[[np.ndarray], float] = get_norm,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
@@ -454,6 +470,7 @@ class ArrowVectorField(VectorField):
     ):
         super().__init__(
             func,
+            color,
             color_scheme,
             min_color_scheme_value,
             max_color_scheme_value,
@@ -507,22 +524,39 @@ class ArrowVectorField(VectorField):
 
 
 class StreamLines(VectorField):
-    """StreamLines represented a vector field by showing it's flow by using moving agents.
+    """StreamLines represent the flow of a :class:`VectorField` using the trace of moving agents.
 
-    `StreamLines` are allways based on a function defining the vector at every position.
-    This the values of this functions is displayed as a grid of vectors.
-    The color of each vector is determined by it's magnitude.
-    A color gradient can be used to color the vectors in a defined interval of magnitudes.
+    `VectorField`s are allways based on a function defining the vector at every position.
+    The values of this functions is displayed by moving many agents along the vector field
+    and showing their trace.
 
     Parameters
     ----------
     func
+        The function defining the rate of change at every position of the `VectorField`.
+    color
+        The color of the vector field. If set, position-specific coloring is disabled.
+    color_scheme
+        A function mapping a vector to a single value. This value gives the position in the color gradient defined using `min_color_scheme_value`, `max_color_scheme_value` and `colors`.
+    min_color_scheme_value
+        The value of the color_scheme function to be mapped to the first color in `colors`. Lower values also result in the first color of the gradient.
+    min_color_scheme_value
+        The value of the color_scheme function to be mapped to the last color in `colors`. Higher values also result in the last color of the gradient.
+    colors
+        The colors defining the color gradient of the vector field.
 
     """
 
     def __init__(
         self,
-        func,
+        func: Callable[[np.ndarray], np.ndarray],
+        color: Optional[Color] = None,
+        color_scheme: Callable[
+            [np.ndarray], float
+        ] = get_norm,  # TODO maybe other default for direction?
+        min_color_scheme_value: float = 0,
+        max_color_scheme_value: float = 2,
+        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining stream line (starting) positions:
         x_min: float = -(config["frame_width"] + 1) / 2,
         x_max: float = (config["frame_width"] + 1) / 2,
@@ -540,13 +574,18 @@ class StreamLines(VectorField):
         stroke_width=1,
         stroke_color: Optional[Color] = None,
         color_by_magnitude: Optional[bool] = None,
-        min_magnitude: float = 0,
-        max_magnitude: float = 2,
-        colors=DEFAULT_SCALAR_FIELD_COLORS,
         opacity=1,
         **kwargs
     ):
-        super().__init__(func, **kwargs)
+        super().__init__(
+            func,
+            color,
+            color_scheme,
+            min_color_scheme_value,
+            max_color_scheme_value,
+            colors,
+            **kwargs,
+        )
         self.x_min = x_min
         self.x_max = x_max
         self.y_min = y_min
