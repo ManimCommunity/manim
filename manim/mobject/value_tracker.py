@@ -47,6 +47,22 @@ class ValueTracker(Mobject):
                 self.play(pointer_tracker.animate.set_value(3))
                 self.play(pointer_tracker.animate.increment_value(-2))
                 self.wait(0.5)
+
+    .. note::
+
+        You can also link ValueTrackers to updaters. In this case, you have to make sure that the ValueTracker is added to the scene by ``ad``
+
+    .. manim:: ValueTrackerExample
+
+        class ValueTrackerExample(Scene):
+            def construct(self):
+                pointer_tracker = ValueTracker(0)
+                label = Dot(radius=3).add_updater(lambda x : x.set_x(pointer_tracker.get_value()))
+                self.add(label)
+                self.add(pointer_tracker)
+                pointer_tracker.add_updater(lambda mobject, dt: mobject.increment_value(dt))
+                self.wait(2)
+
     """
 
     def __init__(self, value=0, **kwargs):
