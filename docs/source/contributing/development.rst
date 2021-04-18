@@ -66,7 +66,7 @@ You are now ready to work on manim!
 Develop your contribution
 -------------------------
 
-#. Check out your local repository's master branch and pull the latest
+#. Checkout your local repository's master branch and pull the latest
    changes from ManimCommunity, ``upstream``, into your local repository:
 
    .. code-block:: shell
