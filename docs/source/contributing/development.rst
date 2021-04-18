@@ -161,7 +161,7 @@ them."
 
 #. Make a pull request (PR) on GitHub.
 
-   To make the ManimCommunity development team aware of your changes,
+   In order to make the ManimCommunity development team aware of your changes,
    you can make a PR to the ManimCommunity repository from your fork.
 
    .. WARNING::
