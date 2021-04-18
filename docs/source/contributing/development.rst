@@ -223,7 +223,7 @@ wants to merge your changes! Once approved, your changes may be merged!
 Further useful guidelines
 =========================
 
-#. When submitting a PR, please make a special note of whether your proposed
+#. When submitting  PR, please make a special note of whether your proposed
    changes will result in breaking changes.
 
 #. When submitting a PR, make sure that your proposed changes are as general as
