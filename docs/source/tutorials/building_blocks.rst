@@ -27,7 +27,7 @@ on the screen.  For example, simple shapes such as :class:`.Circle`,
 constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or
 :class:`.BarChart` are mobjects as well.
 
-If you try to display on the screen an instance of :class:`.Mobject`, you will only
+If you try to display an instance of :class:`.Mobject` on the screen, you will only
 see an empty frame.  The reason is that the :class:`.Mobject` class is an
 abstract base class of all other mobjects, i.e. it does not have any
 pre-determined visual shape that can be displayed on the screen.  It is only the
