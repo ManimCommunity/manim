@@ -11,6 +11,7 @@ __all__ = [
     "rotation_matrix",
     "rotation_about_z",
     "z_to_vector",
+    "angle_between",
     "angle_of_vector",
     "angle_between_vectors",
     "project_along_vector",
@@ -203,6 +204,10 @@ def z_to_vector(vector):
         [[np.cos(phi), 0, np.sin(phi)], [0, 1, 0], [-np.sin(phi), 0, np.cos(phi)]]
     )
     return np.dot(rotation_about_z(theta), phi_down)
+
+
+def angle_between(v1, v2):
+    return np.arccos(np.dot(v1 / get_norm(v1), v2 / get_norm(v2)))
 
 
 def angle_of_vector(vector):
