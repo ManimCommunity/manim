@@ -127,7 +127,7 @@ circle on the screen.
            self.play(Create(circle))  # show the circle on screen
 
 .. tip:: Every animation must be contained within the :meth:`~.Scene.construct` method of a
-         class that derives from :class:`.Scene`.  Other code, for example, auxiliary
+         class that derives from :class:`.Scene`.  Other code, for example auxiliary
          or mathematical functions, may reside outside the class.
 
 
@@ -191,7 +191,7 @@ You're done!
 With a working installation of manim and the bare basics under your belt, it
 is now time to start creating awesome mathematical animations.  For a look
 under the hood at what manim is doing when rendering the ``SquareToCircle``
-the scene, see the next tutorial :doc:`a_deeper_look`.  For an extensive review of
+scene, see the next tutorial :doc:`a_deeper_look`.  For an extensive review of
 manim's features, as well as its configuration and other settings, see the
 other :doc:`../tutorials`.  For a list of all available features, see the
 :doc:`../reference` page.
