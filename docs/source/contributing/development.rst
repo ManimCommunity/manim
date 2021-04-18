@@ -10,7 +10,7 @@ For first-time contributors
 
 
 #. Fork the project. Go to https://github.com/ManimCommunity/manim and
-   click the "fork" button to create your copy of the project. You will
+   click the "fork" button to create a copy of the project for you to work on. You will
    need a GitHub account. This will allow you to make a "Pull Request" (PR)
    to the ManimCommunity repo later on.
 
@@ -107,7 +107,7 @@ Develop your contribution
 
    Depending on your changes, you may need to update or add new tests. For new
    features, it is required that you include tests with your PR. Details of
-   our testing system is explained in the :doc:`testing guide <testing>`.
+   our testing system are explained in the :doc:`testing guide <testing>`.
 
 
 #. Update docstrings and documentation:
@@ -223,8 +223,7 @@ wants to merge your changes! Once approved, your changes may be merged!
 Further useful guidelines
 =========================
 
-#. When submitting  PR, please make a special note of whether your proposed
-   changes will result in breaking changes.
+#. When submitting a PR, please mention explicitly if it includes breaking changes.
 
 #. When submitting a PR, make sure that your proposed changes are as general as
    possible, and ready to be taken advantage of by all of manim's users. In
@@ -234,8 +233,8 @@ Further useful guidelines
 #. If you are a maintainer, please label issues and PRs appropriately and
    frequently.
 
-#. When opening a new issue, if there are old issues that are related, link
-   them to your new issue (even if the old ones are closed).
+#. When opening a new issue, if there are old issues that are related, add a link
+   to them in your new issue (even if the old ones are closed).
 
 #. When submitting a code review, it is highly recommended that you adhere to
    `these general guidelines <https://conventionalcomments.org/>`_. 
