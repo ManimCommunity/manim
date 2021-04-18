@@ -2,7 +2,7 @@
 Quickstart
 ==========
 
-This document will lead you to step by step through the necessary procedure to get
+This document will lead you step by step through the necessary procedure to get
 started with manim for the first time as soon as possible.  This tutorial
 assumes you have already installed manim following the steps in
 :doc:`../installation`.
