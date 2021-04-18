@@ -55,7 +55,8 @@ class ValueTracker(Mobject):
         self.set_value(value)
 
     def get_value(self) -> float:
-        """Get the current value of the ValueTracker. This value changes continuously when :attr:`animate` for the ValueTracker is called."""
+        """Get the current value of the ValueTracker. This value changes continuously
+        when :attr:`animate` for the ValueTracker is called."""
         return self.points[0, 0]
 
     def set_value(self, value: Union[float, int]):
@@ -87,24 +88,84 @@ class ValueTracker(Mobject):
 
 
 class ExponentialValueTracker(ValueTracker):
-    """
-    Operates just like ValueTracker, except it encodes the value as the
+    """Operates just like ValueTracker, except it encodes the value as the
     exponential of a position coordinate, which changes how interpolation
-    behaves
+    behaves.
+
+    Note that ExponentialValueTracker does not handle non-positive values.
+
+    Examples
+    --------
+    .. manim:: ExponentialValueTrackerExample
+
+        class ExponentialValueTrackerExample(Scene):
+            def construct(self):
+                number_line = NumberLine()
+                pointer = Vector(DOWN)
+                label = MathTex("x").add_updater(lambda m: m.next_to(pointer, UP))
+
+                pointer_value = ExponentialValueTracker(4)
+                pointer.add_updater(
+                    lambda m: m.next_to(
+                                pointer_value.get_value() * RIGHT,
+                                UP
+                            )
+                )
+                self.add(number_line, pointer,label)
+
+                self.play(pointer_value.animate.set_value(0.5))
+                self.wait(0.5)
+                self.play(pointer_value.animate.set_value(6))
+                self.wait(0.5)
+                self.play(pointer_value.animate.set_value(3))
+                self.wait(0.5)
+                self.play(pointer_value.animate.set_value(2))
+                self.wait(0.5)
     """
 
     def get_value(self):
+        """Get the current value of the ExponentialValueTracker."""
         return np.exp(ValueTracker.get_value(self))
 
     def set_value(self, value):
+        """Set a new scalar value to the ExponentialValueTracker. The value cannot
+        be non-positive."""
         return ValueTracker.set_value(self, np.log(value))
 
 
 class ComplexValueTracker(ValueTracker):
+    """Operates like ValueTracker, except it encodes a complex-valued
+    parameter as opposed to a real-valued parameter.
+
+    Examples
+    --------
+    .. manim:: ComplexValueTrackerExample
+
+        class ComplexValueTrackerExample(Scene):
+            def construct(self):
+                tracker = ComplexValueTracker(-2+1j)
+                dot = Dot().add_updater(
+                    lambda x: x.move_to(tracker.points)
+                )
+
+                self.add(NumberPlane(), dot)
+
+                self.play(tracker.animate.set_value(3+2j))
+                self.play(tracker.animate.set_value(tracker.get_value() * 1j))
+                self.play(tracker.animate.set_value(tracker.get_value() - 2j))
+                self.play(tracker.animate.set_value(tracker.get_value() / (-2 + 3j)))
+    """
+
     def get_value(self):
+        """Get the current value of the ComplexValueTracker. This value changes
+        continuously when :attr:`animate` for the ComplexValueTracker is called."""
         return complex(*self.points[0, :2])
 
     def set_value(self, z):
+        """Sets a new complex value to the ComplexValueTracker
+
+        When the value is set through :attr:`animate`, the value will take a straight
+        path from the source point to the destination point."""
         z = complex(z)
         self.points[0, :2] = (z.real, z.imag)
         return self
