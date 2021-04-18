@@ -6,10 +6,6 @@ __all__ = [
     "StreamLines",
     "ShowPassingFlashWithThinningStrokeWidth",
     "AnimatedStreamLines",
-    # "get_colored_background_image",
-    # "get_color_gradient_function",
-    # "get_rgb_gradient_function",
-    # "get_color_field_image_file",
 ]
 
 import itertools as it
@@ -49,6 +45,31 @@ from ..utils.space_ops import get_norm
 
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
+
+
+# def get_color_field_image_file(scalar_func,
+#                                min_value=0, max_value=2,
+#                                colors=DEFAULT_SCALAR_FIELD_COLORS
+#                                ):
+#     # # try_hash
+#     # np.random.seed(0)
+#     # sample_inputs = 5 * np.random.random(size=(10, 3)) - 10
+#     # sample_outputs = np.apply_along_axis(scalar_func, 1, sample_inputs)
+#     # func_hash = hash(
+#     #     str(min_value) + str(max_value) + str(colors) + str(sample_outputs)
+#     # )
+#     # file_name = "%d.png" % func_hash
+#     full_path = os.path.join("./media/test", "abc.png")
+#     if not os.path.exists(full_path):
+#         print("Rendering color field image " + str(full_path))
+#         rgb_gradient_func = get_rgb_gradient_function(
+#             min_value=min_value,
+#             max_value=max_value,
+#             colors=colors
+#         )
+#         image = get_colored_background_image(scalar_func, rgb_gradient_func)
+#         image.save(full_path)
+#     return full_path
 
 
 class VectorField(VGroup):
@@ -519,7 +540,10 @@ class ArrowVectorField(VectorField):
             output *= self.length_func(norm) / norm
         vect = Vector(output, **self.vector_config)
         vect.shift(point)
-        vect.set_color(self.pos_to_color(point))
+        if self.single_color:
+            vect.set_color(self.color)
+        else:
+            vect.set_color(self.pos_to_color(point))
         return vect
 
 
@@ -572,8 +596,6 @@ class StreamLines(VectorField):
         max_anchors_per_line=100,
         # Determining stream line appearance:
         stroke_width=1,
-        stroke_color: Optional[Color] = None,
-        color_by_magnitude: Optional[bool] = None,
         opacity=1,
         **kwargs
     ):
@@ -595,23 +617,8 @@ class StreamLines(VectorField):
         self.noise_factor = noise_factor if noise_factor is not None else delta_y / 2
         self.n_repeats = n_repeats
         self.max_anchors_per_line = max_anchors_per_line
-
         self.stroke_width = stroke_width
-        if (
-            color_by_magnitude is None
-            and stroke_color is None
-            or color_by_magnitude is not None
-            and not color_by_magnitude
-        ):
-            self.color_by_magnitude = True
-            self.color_gradient = get_color_gradient_function(
-                min_magnitude, max_magnitude, colors
-            )
-        else:
-            self.color_by_magnitude = False
-            self.stroke_color = stroke_color if stroke_color is not None else WHITE
 
-        print(self.color_by_magnitude)
         start_points = self.get_start_points()
 
         def outside_box(p):
@@ -633,12 +640,12 @@ class StreamLines(VectorField):
             line = VMobject()
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
-            if self.color_by_magnitude:
-                # TODO This is buggy since multiple stroke colors are not applied along the path.
-                color_func = lambda p: self.color_gradient(get_norm(self.func(p)))
-                line.set_stroke([color_func(p) for p in line.get_anchors()])
+            if self.single_color:
+                line.set_stroke(self.color)
             else:
-                line.set_stroke(self.stroke_color)
+                # line.set_stroke([color_func(p) for p in line.get_anchors()])
+                #TODO use color_from_background_image
+                pass
             line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
             print(len(self.submobjects))
