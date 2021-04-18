@@ -7,10 +7,6 @@ import shutil
 import webbrowser
 from pathlib import Path
 
-import ipywidgets
-import PIL
-from ipywidgets import AppLayout, Button, GridspecLayout, Layout, widgets
-
 from manim import config, tempconfig
 from manim.__main__ import main
 
@@ -76,7 +72,7 @@ def video_viewer(video_path, small_width, large_width):
 
     original1t1_width = f"{config.frame_size[0]}px"
 
-    dis_video = ipywidgets.Video.from_file(video_path)
+    dis_video = Video.from_file(video_path)
     dis_video.controls = True
 
     dis_but = widgets.ToggleButton(
@@ -125,7 +121,9 @@ try:
         magics_class,
         needs_local_scope,
     )
-    from IPython.display import Image, Video, display
+    from IPython.display import display
+    from ipywidgets import AppLayout, Button, GridspecLayout, Layout, Video, widgets
+
 except ImportError:
     pass
 else:
