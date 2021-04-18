@@ -61,6 +61,7 @@ __all__ = [
 
 import math
 import warnings
+from typing import Sequence
 
 import numpy as np
 
@@ -819,7 +820,27 @@ class Line(TipableVMobject):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def put_start_and_end_on(self, start, end):
+    def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
+        """
+        Examples
+        --------
+        .. manim:: LineExample
+
+            class LineExample(Scene):
+                def construct(self):
+                    d = VGroup()
+                    for i in range(0,10):
+                        d.add(Dot())
+                    d.arrange_in_grid(buff=1)
+                    self.add(d)
+                    l= Line(d[0], d[1])
+                    self.add(l)
+                    self.wait()
+                    l.put_start_and_end_on(d[1].get_center(), d[2].get_center())
+                    self.wait()
+                    l.put_start_and_end_on(d[4].get_center(), d[7].get_center())
+                    self.wait()
+        """
         curr_start, curr_end = self.get_start_and_end()
         if np.all(curr_start == curr_end):
             # TODO, any problems with resetting

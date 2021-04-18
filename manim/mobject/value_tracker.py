@@ -30,22 +30,22 @@ class ValueTracker(Mobject):
                 pointer = Vector(DOWN)
                 label = MathTex("x").add_updater(lambda m: m.next_to(pointer, UP))
 
-                pointer_value = ValueTracker(0)
+                pointer_tracker = ValueTracker(0)
                 pointer.add_updater(
                     lambda m: m.next_to(
-                                number_line.n2p(pointer_value.get_value()),
+                                number_line.n2p(pointer_tracker.get_value()),
                                 UP
                             )
                 )
                 self.add(number_line, pointer,label)
-                pointer_value += 1.5
+                pointer_tracker += 1.5
                 self.wait(1)
-                pointer_value -= 4
+                pointer_tracker -= 4
                 self.wait(0.5)
-                self.play(pointer_value.animate.set_value(5)),
+                self.play(pointer_tracker.animate.set_value(5)),
                 self.wait(0.5)
-                self.play(pointer_value.animate.set_value(3))
-                self.play(pointer_value.animate.increment_value(-2))
+                self.play(pointer_tracker.animate.set_value(3))
+                self.play(pointer_tracker.animate.increment_value(-2))
                 self.wait(0.5)
     """
 
