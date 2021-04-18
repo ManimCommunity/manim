@@ -264,8 +264,7 @@ class CairoRenderer:
             if self.num_plays > config["upto_animation_number"]:
                 self.skip_animations = True
                 raise EndSceneEarlyException()
-        if config["save_last_frame"]:
-            self.skip_animations = True
+
 
     def scene_finished(self, scene):
         # If no animations in scene, render an image instead
