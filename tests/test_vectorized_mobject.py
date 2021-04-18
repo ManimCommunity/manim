@@ -1,5 +1,31 @@
+import numpy as np
 import pytest
-from manim import Mobject, VMobject, VGroup, VDict
+
+from manim import Line, Mobject, VDict, VGroup, VMobject
+
+
+def test_vmobject_point_from_propotion():
+    obj = VMobject()
+
+    # One long line, one short line
+    obj.set_points_as_corners(
+        [
+            np.array([0, 0, 0]),
+            np.array([4, 0, 0]),
+            np.array([4, 2, 0]),
+        ]
+    )
+
+    # Total length of 6, so halfway along the object
+    # would be at length 3, which lands in the first, long line.
+    assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
+
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        obj.point_from_proportion(2)
+
+    obj.clear_points()
+    with pytest.raises(Exception, match="with no points"):
+        obj.point_from_proportion(0)
 
 
 def test_vgroup_init():
@@ -83,6 +109,24 @@ def test_vgroup_remove_dunder():
     assert len(b.submobjects) == 0
     obj -= b
     assert len(obj.submobjects) == 0
+
+
+def test_vmob_add_to_back():
+    """Test the Mobject add_to_back method."""
+    a = VMobject()
+    b = Line()
+    c = "text"
+    with pytest.raises(ValueError):
+        # Mobject cannot contain self
+        a.add_to_back(a)
+    with pytest.raises(TypeError):
+        # All submobjects must be of type Mobject
+        a.add_to_back(c)
+
+    # No submobject gets added twice
+    a.add_to_back(b)
+    a.add_to_back(b, b)
+    assert len(a.submobjects) == 1
 
 
 def test_vdict_init():

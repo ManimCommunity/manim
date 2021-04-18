@@ -6,17 +6,16 @@ group.
 
 """
 import os
-import click
-
 from ast import literal_eval
 from typing import Union
+
+import click
 from rich.errors import StyleSyntaxError
 from rich.style import Style
 
 from ... import config, console
-from ...constants import EPILOG
-from ...constants import CONTEXT_SETTINGS
 from ..._config.utils import config_file_paths, make_config_parser
+from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.file_ops import guarantee_existence, open_file
 
 RICH_COLOUR_INSTRUCTIONS: str = """

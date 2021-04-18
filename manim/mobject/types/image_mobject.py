@@ -3,20 +3,20 @@
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
+
 import colour
-
 import numpy as np
-
 from PIL import Image
+
+from manim.constants import DEFAULT_QUALITY, QUALITIES
 
 from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.shape_matchers import SurroundingRectangle
 from ...utils.bezier import interpolate
-from ...utils.color import color_to_int_rgb, WHITE
+from ...utils.color import WHITE, color_to_int_rgb
 from ...utils.images import get_full_raster_image_path
-from manim.constants import QUALITIES, DEFAULT_QUALITY
 
 
 class AbstractImageMobject(Mobject):
@@ -30,9 +30,16 @@ class AbstractImageMobject(Mobject):
         This is a custom parameter of ImageMobject so that rendering a scene with e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering won't effect the position of the image on the screen.
     """
 
-    def __init__(self, scale_to_resolution, pixel_array_dtype="uint8", **kwargs):
+    def __init__(
+        self,
+        scale_to_resolution,
+        pixel_array_dtype="uint8",
+        resampling_algorithm=Image.BICUBIC,
+        **kwargs,
+    ):
         self.pixel_array_dtype = pixel_array_dtype
         self.scale_to_resolution = scale_to_resolution
+        self.set_resampling_algorithm(resampling_algorithm)
         Mobject.__init__(self, **kwargs)
 
     def get_pixel_array(self):
@@ -41,6 +48,28 @@ class AbstractImageMobject(Mobject):
     def set_color(self):
         # Likely to be implemented in subclasses, but no obligation
         pass
+
+    def set_resampling_algorithm(self, resampling_algorithm):
+        """
+        Sets the interpolation method for upscaling the image. By default the image is interpolated using bicubic algorithm. This method lets you change it.
+        Interpolation is done internally using Pillow, and the function besides the string constants describing the algorithm accepts the Pillow integer constants.
+
+        Parameters
+        ----------
+        resampling_algorithm : :class:`int`, an integer constant described in the Pillow library, or one from the RESAMPLING_ALGORITHMS global dictionary, under the following keys:
+         * 'bicubic' or 'cubic'
+         * 'nearest' or 'none'
+         * 'box'
+         * 'bilinear' or 'linear'
+         * 'hamming'
+         * 'lanczos' or 'antialias'
+        """
+        if isinstance(resampling_algorithm, int):
+            self.resampling_algorithm = resampling_algorithm
+        else:
+            raise ValueError(
+                "resampling_algorithm has to be an int, one of the values defined in RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', 'hamming', 'lanczos'."
+            )
 
     def reset_points(self):
         # Corresponding corners of image are fixed to these 3 points
@@ -83,6 +112,41 @@ class ImageMobject(AbstractImageMobject):
                 image.height = 7
                 self.add(image)
 
+
+    Changing interpolation style:
+
+    .. manim:: ImageInterpolationEx
+        :save_last_frame:
+
+        class ImageInterpolationEx(Scene):
+            def construct(self):
+                img = ImageMobject(np.uint8([[63, 0, 0, 0],
+                                                [0, 127, 0, 0],
+                                                [0, 0, 191, 0],
+                                                [0, 0, 0, 255]
+                                                ]))
+
+                img.height = 2
+                img1 = img.copy()
+                img2 = img.copy()
+                img3 = img.copy()
+                img4 = img.copy()
+                img5 = img.copy()
+
+                img1.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+                img2.set_resampling_algorithm(RESAMPLING_ALGORITHMS["lanczos"])
+                img3.set_resampling_algorithm(RESAMPLING_ALGORITHMS["linear"])
+                img4.set_resampling_algorithm(RESAMPLING_ALGORITHMS["cubic"])
+                img5.set_resampling_algorithm(RESAMPLING_ALGORITHMS["box"])
+                img1.add(Text("nearest").scale(0.5).next_to(img1,UP))
+                img2.add(Text("lanczos").scale(0.5).next_to(img2,UP))
+                img3.add(Text("linear").scale(0.5).next_to(img3,UP))
+                img4.add(Text("cubic").scale(0.5).next_to(img4,UP))
+                img5.add(Text("box").scale(0.5).next_to(img5,UP))
+
+                x= Group(img1,img2,img3,img4,img5)
+                x.arrange()
+                self.add(x)
     """
 
     def __init__(

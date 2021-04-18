@@ -1,5 +1,6 @@
-from manim import __name__, __version__
 import pkg_resources
+
+from manim import __name__, __version__
 
 
 def test_version():

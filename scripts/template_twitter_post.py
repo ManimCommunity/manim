@@ -1,5 +1,6 @@
-from manim import *
 import pkg_resources
+
+from manim import *
 
 version_num = pkg_resources.get_distribution("manim").version
 

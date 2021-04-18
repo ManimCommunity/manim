@@ -1,33 +1,29 @@
-from manim.utils.exceptions import EndSceneEarlyException
-from manim.utils.caching import handle_caching_play
-from manim.renderer.cairo_renderer import handle_play_like_call
-from manim.utils.color import color_to_rgba
-import moderngl
-from .opengl_renderer_window import Window
-from .shader_wrapper import ShaderWrapper
-import numpy as np
-from ..mobject.types.vectorized_mobject import VMobject
 import itertools as it
 import time
+
+import moderngl
+import numpy as np
+from PIL import Image
+
+from manim import config
+from manim.renderer.cairo_renderer import handle_play_like_call
+from manim.utils.caching import handle_caching_play
+from manim.utils.color import color_to_rgba
+from manim.utils.exceptions import EndSceneEarlyException
+
 from .. import logger
 from ..constants import *
-from ..utils.space_ops import (
-    cross2d,
-    earclip_triangulation,
-    z_to_vector,
-    quaternion_mult,
-    quaternion_from_angle_axis,
-    rotation_matrix_transpose_from_quaternion,
-    rotation_matrix_transpose,
-    angle_of_vector,
-)
-from ..utils.simple_functions import clip
-
-from ..mobject import opengl_geometry
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from PIL import Image
-from manim import config
 from ..scene.scene_file_writer import SceneFileWriter
+from ..utils.simple_functions import clip
+from ..utils.space_ops import (
+    angle_of_vector,
+    quaternion_from_angle_axis,
+    quaternion_mult,
+    rotation_matrix_transpose,
+    rotation_matrix_transpose_from_quaternion,
+)
+from .opengl_renderer_window import Window
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -206,28 +202,23 @@ class OpenGLRenderer:
             scene.__class__.__name__,
         )
         self.scene = scene
-        if config["preview"]:
-            self.window = Window(self)
-            self.context = self.window.ctx
-            self.frame_buffer_object = self.context.detect_framebuffer()
-        else:
-            self.window = None
-            self.context = moderngl.create_standalone_context()
-            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-            self.frame_buffer_object.use()
-        self.context.enable(moderngl.BLEND)
-        self.context.blend_func = (
-            moderngl.SRC_ALPHA,
-            moderngl.ONE_MINUS_SRC_ALPHA,
-            moderngl.ONE,
-            moderngl.ONE,
-        )
-
-        # Initialize shader map.
-        self.id_to_shader_program = {}
-
-        # Initialize texture map.
-        self.path_to_texture_id = {}
+        if not hasattr(self, "window"):
+            if config["preview"]:
+                self.window = Window(self)
+                self.context = self.window.ctx
+                self.frame_buffer_object = self.context.detect_framebuffer()
+            else:
+                self.window = None
+                self.context = moderngl.create_standalone_context()
+                self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
+                self.frame_buffer_object.use()
+            self.context.enable(moderngl.BLEND)
+            self.context.blend_func = (
+                moderngl.SRC_ALPHA,
+                moderngl.ONE_MINUS_SRC_ALPHA,
+                moderngl.ONE,
+                moderngl.ONE,
+            )
 
     def update_depth_test(self, context, shader_wrapper):
         if shader_wrapper.depth_test:
@@ -272,7 +263,6 @@ class OpenGLRenderer:
 
     def render_render_group(self, render_group):
         shader_wrapper = render_group["shader_wrapper"]
-        shader_program = render_group["prog"]
         self.set_shader_uniforms(render_group["prog"], render_group["shader_wrapper"])
         self.update_depth_test(self.context, shader_wrapper)
         render_group["vao"].render(int(shader_wrapper.render_primitive))
@@ -385,6 +375,11 @@ class OpenGLRenderer:
         if scene.compile_animation_data(*args, **kwargs):
             scene.begin_animations()
             scene.play_internal()
+
+    def clear_screen(self):
+        window_background_color = color_to_rgba(config["background_color"])
+        self.frame_buffer_object.clear(*window_background_color)
+        self.window.swap_buffers()
 
     def render(self, scene, frame_offset, moving_mobjects):
         def update_frame():

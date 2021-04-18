@@ -3,30 +3,29 @@
 
 __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
 
-from functools import reduce
+import copy
 import itertools as it
 import operator as op
 import time
-import copy
+from functools import reduce
 
-from PIL import Image
-from scipy.spatial.distance import pdist
 import cairo
 import numpy as np
+from PIL import Image
+from scipy.spatial.distance import pdist
 
-from .. import logger, config
+from .. import config, logger
 from ..constants import *
-from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.mobject import Mobject
+from ..mobject.types.image_mobject import AbstractImageMobject
 from ..mobject.types.point_cloud_mobject import PMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import color_to_int_rgba
+from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
 from ..utils.simple_functions import fdiv
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
-from ..utils.family import extract_mobject_family_members
+from ..utils.space_ops import angle_of_vector, get_norm
 
 
 class Camera:
@@ -891,7 +890,7 @@ class Camera:
         for image_mobject in image_mobjects:
             self.display_image_mobject(image_mobject, pixel_array)
 
-    def display_image_mobject(self, image_mobject, pixel_array):
+    def display_image_mobject(self, image_mobject: AbstractImageMobject, pixel_array):
         """Displays an ImageMobject by changing the pixel_array suitably.
 
         Parameters
@@ -913,7 +912,7 @@ class Camera:
         pixel_width = max(int(pdist([ul_coords, ur_coords])), 1)
         pixel_height = max(int(pdist([ul_coords, dl_coords])), 1)
         sub_image = sub_image.resize(
-            (pixel_width, pixel_height), resample=Image.BICUBIC
+            (pixel_width, pixel_height), resample=image_mobject.resampling_algorithm
         )
 
         # Rotate
@@ -921,7 +920,7 @@ class Camera:
         adjusted_angle = -int(360 * angle / TAU)
         if adjusted_angle != 0:
             sub_image = sub_image.rotate(
-                adjusted_angle, resample=Image.BICUBIC, expand=1
+                adjusted_angle, resample=image_mobject.resampling_algorithm, expand=1
             )
 
         # TODO, there is no accounting for a shear...

@@ -1,15 +1,16 @@
-import typing
 import time
+import typing
+
 import numpy as np
 
 from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
 from ..camera.camera import Camera
+from ..mobject.mobject import Mobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
-from ..mobject.mobject import Mobject
 
 
 def handle_play_like_call(func):
@@ -267,7 +268,15 @@ class CairoRenderer:
             self.skip_animations = True
 
     def scene_finished(self, scene):
-        self.file_writer.finish()
+        # If no animations in scene, render an image instead
+        if self.num_plays:
+            self.file_writer.finish()
+        elif config.write_to_movie:
+            config.save_last_frame = True
+            config.write_to_movie = False
+        else:
+            self.update_frame(scene)
+
         if config["save_last_frame"]:
-            self.update_frame(scene, ignore_skipping=False)
+            self.update_frame(scene)
             self.file_writer.save_final_image(self.camera.get_image())

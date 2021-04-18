@@ -12,9 +12,9 @@ See :doc:`/tutorials/configuration` for an introduction to Manim's configuration
 import argparse
 import configparser
 import copy
+import errno
 import logging
 import os
-import errno
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -25,6 +25,7 @@ import numpy as np
 
 from .. import constants
 from ..utils.tex import TexTemplate, TexTemplateFromFile
+from ..utils.tex_templates import TexTemplateLibrary
 from .logger_utils import set_file_logger
 
 
@@ -157,11 +158,11 @@ class ManimConfig(MutableMapping):
     Each config option allows for dict syntax and attribute syntax.  For
     example, the following two lines are equivalent,
 
-    .. code-block:: python
+    .. code-block:: pycon
 
-       >>> from manim import config, WHITE
-       >>> config.background_color = WHITE
-       >>> config['background_color'] = WHITE
+        >>> from manim import config, WHITE
+        >>> config.background_color = WHITE
+        >>> config["background_color"] = WHITE
 
     The former is preferred; the latter is provided mostly for backwards
     compatibility.
@@ -169,7 +170,7 @@ class ManimConfig(MutableMapping):
     The config options are designed to keep internal consistency.  For example,
     setting ``frame_y_radius`` will affect ``frame_height``:
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> config.frame_height
         8.0
@@ -224,9 +225,12 @@ class ManimConfig(MutableMapping):
     .. code-block:: python
 
         from manim import *
+
         config.background_color = RED
+
+
         class MyScene(Scene):
-            # ...
+            ...
 
     the background color will be set to RED, regardless of the contents of
     ``manim.cfg`` or the CLI arguments used when invoking manim.
@@ -256,6 +260,7 @@ class ManimConfig(MutableMapping):
         "max_files_cached",
         "media_dir",
         "movie_file_extension",
+        "notify_outdated_version",
         "partial_movie_dir",
         "pixel_height",
         "pixel_width",
@@ -488,6 +493,7 @@ class ManimConfig(MutableMapping):
 
         # boolean keys
         for key in [
+            "notify_outdated_version",
             "write_to_movie",
             "save_last_frame",
             "write_all",
@@ -611,6 +617,7 @@ class ManimConfig(MutableMapping):
         self.output_file = args.output_file
 
         for key in [
+            "notify_outdated_version",
             "preview",
             "show_in_file_browser",
             "write_to_movie",
@@ -783,6 +790,12 @@ class ManimConfig(MutableMapping):
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
             set_file_logger(self, self["verbosity"])
+
+    notify_outdated_version = property(
+        lambda self: self._d["notify_outdated_version"],
+        lambda self, val: self._set_boolean("notify_outdated_version", val),
+        doc="Whether to notify if there is a version update available.",
+    )
 
     write_to_movie = property(
         lambda self: self._d["write_to_movie"],
@@ -1142,7 +1155,7 @@ class ManimConfig(MutableMapping):
         i.e. it is a subfolder of wherever ``config.media_dir`` is located.  In
         order to get the *actual* directory, use :meth:`~ManimConfig.get_dir`.
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> from manim import config
             >>> config.tex_dir
@@ -1155,9 +1168,9 @@ class ManimConfig(MutableMapping):
         Resolving directories is done in a lazy way, at the last possible
         moment, to reflect any changes in other config options:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
-            >>> config.media_dir = 'my_media_dir'
+            >>> config.media_dir = "my_media_dir"
             >>> config.get_dir("tex_dir").as_posix()
             'my_media_dir/Tex'
 
@@ -1166,7 +1179,7 @@ class ManimConfig(MutableMapping):
         includes the name of the input file and the video quality
         (e.g. 480p15). This informamtion has to be supplied via ``kwargs``:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.video_dir
             '{media_dir}/videos/{module_name}/{quality}'
@@ -1183,27 +1196,29 @@ class ManimConfig(MutableMapping):
         ``partial_movie_dir`` depends on ``video_dir``, which in turn depends
         on ``media_dir``:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.partial_movie_dir
             '{video_dir}/partial_movie_files/{scene_name}'
             >>> config.get_dir("partial_movie_dir")
             Traceback (most recent call last):
             KeyError: 'partial_movie_dir {video_dir}/partial_movie_files/{scene_name} requires the following keyword arguments: scene_name'
-            >>> config.get_dir("partial_movie_dir", module_name="myfile", scene_name="myscene").as_posix()
+            >>> config.get_dir(
+            ...     "partial_movie_dir", module_name="myfile", scene_name="myscene"
+            ... ).as_posix()
             'my_media_dir/videos/myfile/1080p60.0/partial_movie_files/myscene'
 
         Standard f-string syntax is used.  Arbitrary names can be used when
         defining directories, as long as the corresponding values are passed to
         :meth:`ManimConfig.get_dir` via ``kwargs``.
 
-        .. code-block:: python
+        .. code-block:: pycon
 
             >>> config.media_dir = "{dir1}/{dir2}"
             >>> config.get_dir("media_dir")
             Traceback (most recent call last):
             KeyError: 'media_dir {dir1}/{dir2} requires the following keyword arguments: dir1'
-            >>> config.get_dir("media_dir", dir1='foo', dir2='bar').as_posix()
+            >>> config.get_dir("media_dir", dir1="foo", dir2="bar").as_posix()
             'foo/bar'
             >>> config.media_dir = "./media"
             >>> config.get_dir("media_dir").as_posix()
@@ -1327,7 +1342,7 @@ class ManimConfig(MutableMapping):
             if fn:
                 self._tex_template = TexTemplateFromFile(filename=fn)
             else:
-                self._tex_template = TexTemplate()
+                self._tex_template = TexTemplateLibrary.default.copy()
         return self._tex_template
 
     @tex_template.setter

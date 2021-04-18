@@ -1,14 +1,15 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class GradientTest(Scene):
     def construct(self):
         c = Circle(fill_opacity=1).set_color(color=[YELLOW, GREEN])
-        self.play(Animation(c))
+        self.add(c)
 
 
 MODULE_NAME = "modifier_methods"

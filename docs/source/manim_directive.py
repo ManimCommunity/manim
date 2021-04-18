@@ -72,17 +72,16 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
-from docutils import nodes
-from docutils.parsers.rst import directives, Directive
-from docutils.statemachine import StringList
-
-import jinja2
 import os
+import shutil
 from os.path import relpath
 from pathlib import Path
 from typing import List
 
-import shutil
+import jinja2
+from docutils import nodes
+from docutils.parsers.rst import Directive, directives
+from docutils.statemachine import StringList
 
 from manim import QUALITIES
 
@@ -171,11 +170,8 @@ class ManimDirective(Directive):
             + self.options.get("ref_methods", [])
         )
         if ref_content:
-            ref_block = f"""
-.. admonition:: Example References
-    :class: example-reference
+            ref_block = "References: " + " ".join(ref_content)
 
-    {' '.join(ref_content)}"""
         else:
             ref_block = ""
 
@@ -206,6 +202,7 @@ class ManimDirective(Directive):
         source_block = [
             ".. code-block:: python",
             "",
+            "    from manim import *\n",
             *["    " + line for line in self.content],
         ]
         source_block = "\n".join(source_block)
@@ -222,6 +219,7 @@ class ManimDirective(Directive):
             f'config["pixel_width"] = {pixel_width}',
             f'config["save_last_frame"] = {save_last_frame}',
             f'config["save_as_gif"] = {save_as_gif}',
+            f'config["write_to_movie"] = {not save_last_frame}',
             f'config["output_file"] = r"{output_file}"',
         ]
 
@@ -291,30 +289,30 @@ TEMPLATE = r"""
 {% if not hide_source %}
 .. raw:: html
 
-    <div class="manim-example">
+    <div id="{{ clsname_lowercase }}" class="admonition admonition-manim-example">
+    <p class="admonition-title">Example: {{ clsname }} <a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></p>
 
 {% endif %}
 
 {% if not (save_as_gif or save_last_frame) %}
 .. raw:: html
 
-    <video id="{{ clsname_lowercase }}" class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+    <video class="manim-video" controls loop autoplay src="./{{ output_file }}.mp4"></video>
+
 {% elif save_as_gif %}
 .. image:: /{{ filesrc_rel }}
     :align: center
-    :name: {{ clsname_lowercase }}
+
 {% elif save_last_frame %}
 .. image:: /{{ filesrc_rel }}
     :align: center
-    :name: {{ clsname_lowercase }}
+
 {% endif %}
 {% if not hide_source %}
-.. raw:: html
-
-    <h5 class="example-header">{{ clsname }}<a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></h5>
-
 {{ source_block }}
+
 {{ ref_block }}
+
 {% endif %}
 
 .. raw:: html

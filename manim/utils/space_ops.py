@@ -32,21 +32,17 @@ __all__ = [
 ]
 
 
+import itertools as it
+import math
 from functools import reduce
 
 import numpy as np
-import math
 from mapbox_earcut import triangulate_float32 as earcut
 
-from ..constants import OUT
-from ..constants import PI
-from ..constants import RIGHT
-from ..constants import TAU
-from ..constants import DOWN
+from .. import config
+from ..constants import DOWN, OUT, PI, RIGHT, TAU
 from ..utils.iterables import adjacent_pairs
 from ..utils.simple_functions import fdiv
-import itertools as it
-from .. import config
 
 
 def get_norm(vect):
@@ -232,7 +228,11 @@ def angle_between_vectors(v1, v2):
     Returns the angle between two 3D vectors.
     This angle will always be btw 0 and pi
     """
-    return np.arccos(fdiv(np.dot(v1, v2), get_norm(v1) * get_norm(v2)))
+    if config["renderer"] == "opengl":
+        diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
+        return min(diff, TAU - diff)
+    else:
+        return np.arccos(fdiv(np.dot(v1, v2), get_norm(v1) * get_norm(v2)))
 
 
 def project_along_vector(point, vector):

@@ -5,7 +5,7 @@ __all__ = [
     "TexTemplateFromFile",
 ]
 
-
+import copy
 import re
 
 
@@ -46,24 +46,8 @@ class TexTemplate:
     default_documentclass = r"\documentclass[preview]{standalone}"
     default_preamble = r"""
 \usepackage[english]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{dsfont}
-\usepackage{setspace}
-\usepackage{tipa}
-\usepackage{relsize}
-\usepackage{textcomp}
-\usepackage{mathrsfs}
-\usepackage{calligra}
-\usepackage{wasysym}
-\usepackage{ragged2e}
-\usepackage{physics}
-\usepackage{xcolor}
-\usepackage{microtype}
-\DisableLigatures{encoding = *, family = * }
-\linespread{1}
 """
     default_placeholder_text = "YourTextHere"
     default_tex_compiler = "latex"
@@ -225,6 +209,9 @@ class TexTemplate:
         """
         begin, end = self._texcode_for_environment(environment)
         return self.body.replace(self.placeholder_text, f"{begin}\n{expression}\n{end}")
+
+    def copy(self) -> "TexTemplate":
+        return copy.deepcopy(self)
 
 
 class TexTemplateFromFile(TexTemplate):

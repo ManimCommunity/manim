@@ -6,17 +6,18 @@ __all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweenPoints"]
 import numpy as np
 
 from ...animation.composition import AnimationGroup
-from ...constants import *
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
-from ...mobject.svg.tex_mobject import MathTex
-from ...mobject.svg.tex_mobject import Tex
-from ...mobject.types.vectorized_mobject import VMobject
+from ...constants import *
 from ...mobject.geometry import Line
+from ...mobject.svg.svg_path import SVGPathMobject
+from ...mobject.svg.tex_mobject import MathTex, Tex
+from ...mobject.types.vectorized_mobject import VMobject
+from ...utils.color import BLACK
 from ...utils.space_ops import get_norm
 
 
-class Brace(MathTex):
+class Brace(SVGPathMobject):
     """Takes a mobject and draws a brace adjacent to it.
 
     Passing a direction vector determines the direction from which the
@@ -36,14 +37,18 @@ class Brace(MathTex):
     Examples
     --------
     .. manim:: BraceExample
+        :save_last_frame:
 
         class BraceExample(Scene):
             def construct(self):
-                circle = Circle()
-                brace = Brace(circle, direction=RIGHT)
-                self.play(Create(circle))
-                self.play(Create(brace))
-                self.wait(2)
+                s = Square()
+                self.add(s)
+                for i in np.linspace(0.1,1.0,4):
+                    br = Brace(s, sharpness=i)
+                    t = Text(f"sharpness= {i}").next_to(br, RIGHT)
+                    self.add(t)
+                    self.add(br)
+                VGroup(*self.mobjects).arrange(DOWN, buff=0.2)
 
     """
 
@@ -52,35 +57,43 @@ class Brace(MathTex):
         mobject,
         direction=DOWN,
         buff=0.2,
-        width_multiplier=2,
-        max_num_quads=15,
-        min_num_quads=0,
+        sharpness=2,
+        stroke_width=0,
+        fill_opacity=1.0,
         background_stroke_width=0,
+        background_stroke_color=BLACK,
         **kwargs
     ):
-        self.width_multiplier = width_multiplier
-        self.max_num_quads = max_num_quads
-        self.min_num_quads = min_num_quads
+        path_string_template = "m0.01216 0c-0.01152 0-0.01216 6.103e-4 -0.01216 0.01311v0.007762c0.06776 0.122 0.1799 0.1455 0.2307 0.1455h{0}c0.03046 3.899e-4 0.07964 0.00449 0.1246 0.02636 0.0537 0.02695 0.07418 0.05816 0.08648 0.07769 0.001562 0.002538 0.004539 0.002563 0.01098 0.002563 0.006444-2e-8 0.009421-2.47e-5 0.01098-0.002563 0.0123-0.01953 0.03278-0.05074 0.08648-0.07769 0.04491-0.02187 0.09409-0.02597 0.1246-0.02636h{0}c0.05077 0 0.1629-0.02346 0.2307-0.1455v-0.007762c-1.78e-6 -0.0125-6.365e-4 -0.01311-0.01216-0.01311-0.006444-3.919e-8 -0.009348 2.448e-5 -0.01091 0.002563-0.0123 0.01953-0.03278 0.05074-0.08648 0.07769-0.04491 0.02187-0.09416 0.02597-0.1246 0.02636h{1}c-0.04786 0-0.1502 0.02094-0.2185 0.1256-0.06833-0.1046-0.1706-0.1256-0.2185-0.1256h{1}c-0.03046-3.899e-4 -0.07972-0.004491-0.1246-0.02636-0.0537-0.02695-0.07418-0.05816-0.08648-0.07769-0.001562-0.002538-0.004467-0.002563-0.01091-0.002563z"
+        default_min_width = 0.90552
+
         self.buff = buff
+
         angle = -np.arctan2(*direction[:2]) + np.pi
         mobject.rotate(-angle, about_point=ORIGIN)
         left = mobject.get_corner(DOWN + LEFT)
         right = mobject.get_corner(DOWN + RIGHT)
         target_width = right[0] - left[0]
+        linear_section_length = max(
+            0, (target_width * sharpness - default_min_width) / 2
+        )
 
-        # Adding int(target_width) qquads gives approximately the right width
-        num_quads = np.clip(
-            int(self.width_multiplier * target_width),
-            self.min_num_quads,
-            self.max_num_quads,
+        path = path_string_template.format(
+            linear_section_length, -linear_section_length
         )
-        tex_string = "\\underbrace{%s}" % (num_quads * "\\qquad")
-        MathTex.__init__(
-            self, tex_string, background_stroke_width=background_stroke_width, **kwargs
+
+        SVGPathMobject.__init__(
+            self,
+            path_string=path,
+            stroke_width=stroke_width,
+            fill_opacity=fill_opacity,
+            background_stroke_width=background_stroke_width,
+            background_stroke_color=background_stroke_color,
+            **kwargs
         )
-        self.tip_point_index = np.argmin(self.get_all_points()[:, 1])
         self.stretch_to_fit_width(target_width)
         self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
+
         for mob in mobject, self:
             mob.rotate(angle, about_point=ORIGIN)
 
@@ -105,10 +118,8 @@ class Brace(MathTex):
         return tex_mob
 
     def get_tip(self):
-        # Very specific to the LaTeX representation
-        # of a brace, but it's the only way I can think
-        # of to get the tip regardless of orientation.
-        return self.get_all_points()[self.tip_point_index]
+        # Returns the position of the seventh point in the path, which is the tip.
+        return self.points[28]  # = 7*4
 
     def get_direction(self):
         vect = self.get_tip() - self.get_center()

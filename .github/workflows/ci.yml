@@ -11,7 +11,6 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     env:
-      POETRY_VIRTUALENVS_CREATE: false
       DISPLAY: :0
       PYTEST_ADDOPTS: "--color=yes" # colors in pytest
     strategy:
@@ -24,7 +23,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
@@ -34,54 +33,83 @@ jobs:
           pip install wheel
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
+      - name: Setup cache variables
+        shell: bash
+        id: cache-vars
+        run: |
+          export PATH="$HOME/.poetry/bin:$PATH"
+          echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
+          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
+
+      - name: Setup Poetry cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
+          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install and cache ffmpeg (all OS)
+        uses: FedericoCarboni/setup-ffmpeg@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        id: setup-ffmpeg
+
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt update
-          sudo apt install -y ffmpeg
           sudo apt-get -y install texlive texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-fonts-extra tipa python-opengl libpango1.0-dev xvfb
           echo "$HOME/.poetry/bin" >> $GITHUB_PATH
           # start xvfb in the background
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
-      - name: Install system dependencies (MacOS)
+      - name: Setup macOS cache
+        id: cache-macos
         if: runner.os == 'macOS'
-        run: |
-          brew install openssl readline ffmpeg pyenv pyenv-virtualenv
-          brew install --cask basictex
-          eval "$(/usr/libexec/path_helper -s)"
-          sudo tlmgr update --self
-          brew install pkg-config
-          brew install libffi
-          brew install pango
-          brew install glib
-          sudo tlmgr install standalone preview doublestroke relsize fundus-calligra wasysym physics dvisvgm.x86_64-darwin dvisvgm rsfs wasy cm-super
-          echo "/Library/TeX/texbin" >> $GITHUB_PATH
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-
-      - name: Get Poetry Cache Dir
-        shell: bash
-        id: pip-cache-and-time
-        run: |
-          export PATH="$HOME/.poetry/bin:$PATH"
-          echo "::set-output name=dir::$(poetry config cache-dir)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%Y")"
-
-      - name: pip cache
         uses: actions/cache@v2
         with:
-          path: ${{ steps.pip-cache-and-time.outputs.dir }}
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}-${{ matrix.python }}
+          path: ${{ github.workspace }}/macos-cache
+          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}
 
-      - name: Cache Windows
+      - name: Install system dependencies (MacOS)
+        if: runner.os == 'macOS' && steps.cache-macos.outputs.cache-hit != 'true'
+        run: |
+          tinyTexPackages=$(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['macos']['tinytex']))")
+          IFS=' '
+          read -a ttp <<< "$tinyTexPackages"
+          oriPath=$PATH
+          sudo mkdir -p $PWD/macos-cache
+          echo "Install TinyTeX"
+          sudo curl -L -o "/tmp/TinyTeX.tgz" "https://ci.appveyor.com/api/projects/yihui/tinytex/artifacts/TinyTeX.tgz?job=image:%20macOS"
+          sudo tar zxf "/tmp/TinyTeX.tgz" -C "$PWD/macos-cache"
+          export PATH="$PWD/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
+          sudo tlmgr update --self
+          for i in "${ttp[@]}"; do
+            sudo tlmgr install "$i"
+          done
+          export PATH="$oriPath"
+          echo "Completed TinyTeX"
+
+      - name: Install cairo (MacOS)
+        if: runner.os == 'macOS'
+        run: brew install cairo
+
+      - name: Add macOS dependencies to PATH
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          echo "/Library/TeX/texbin" >> $GITHUB_PATH
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+          echo "$PWD/macos-cache/TinyTeX/bin/universal-darwin" >> $GITHUB_PATH
+
+      - name: Setup Windows cache
         id: cache-windows
         if: runner.os == 'Windows'
         uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}\ManimCache
-          key: ${{ runner.os }}-dependencies-ffmpeg-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.pip-cache-and-time.outputs.date }}
+          key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}
 
-      - name: Setup MSYS2
+      - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
@@ -91,11 +119,9 @@ jobs:
           install: >-
             mingw-w64-x86_64-mesa
 
-      - name: Download system dependencies (Windows)
+      - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
         run: |
-          $ffmpegUrl = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['ffmpeg'])"
-          $pangoVersion = python -c "import json;print(json.load(open('.github/manimdependency.json'))['windows']['pango'])"
           $tinyTexPackages = $(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['windows']['tinytex']))") -Split ' '
           $OriPath = $env:PATH
           echo "Install Tinytex"
@@ -109,27 +135,20 @@ jobs:
           }
           $env:PATH=$OriPath
           echo "Completed Latex"
-          Invoke-WebRequest "$ffmpegUrl" -O "$($env:TMP)\ffmpeg.zip"
-          7z x "$($env:TMP)\ffmpeg.zip" -o"$($PWD)\ManimCache"
-          Move-Item "ManimCache\ffmpeg-*" "ManimCache\FFmpeg"
-          Invoke-WebRequest "https://github.com/ManimCommunity/pango-windows-binaries/releases/download/$($pangoVersion)/pango-windows-binaires-x64.zip" -O "$($env:TMP)\Pango.zip"
-          mkdir "$($PWD)\ManimCache\Pango"
-          7z x "$($env:TMP)\Pango.zip" -o"$($PWD)\ManimCache\Pango"
 
-      - name: Add Windows dependecies to path
+      - name: Add Windows dependencies to PATH
         if: runner.os == 'Windows'
         run: |
           Remove-Item C:\msys64\mingw64\bin\python.exe -Force
           Remove-Item C:\msys64\mingw64\bin\python3.exe -Force
-          $env:Path += ";" + "$($PWD)\ManimCache\FFmpeg\bin"
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\win32"
-          $env:Path += ";" + "$($PWD)\ManimCache\Pango\pango"
           $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           $env:PATH = "C:\msys64\mingw64\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Install manim
         run: |
+          poetry config experimental.new-installer false
           poetry install -E webgl_renderer
 
       - name: Run tests

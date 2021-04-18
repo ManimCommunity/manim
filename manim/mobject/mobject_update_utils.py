@@ -13,10 +13,10 @@ __all__ = [
 
 
 import inspect
+
 import numpy as np
 
-from ..constants import DEGREES
-from ..constants import RIGHT
+from ..constants import DEGREES, RIGHT
 from ..mobject.mobject import Mobject
 
 
@@ -83,7 +83,6 @@ def turn_animation_into_updater(animation, cycle=False, **kwargs):
     the updater will be popped upon completion
     """
     mobject = animation.mobject
-    animation.update_config(**kwargs)
     animation.suspend_mobject_updating = False
     animation.begin()
     animation.total_time = 0

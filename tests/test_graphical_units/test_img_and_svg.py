@@ -2,12 +2,13 @@ import sys
 from pathlib import Path
 
 import pytest
+
 from manim import *
-from ..helpers.path_utils import get_project_root
-from ..utils.testing_utils import get_scenes_to_test
-from ..utils.GraphicalUnitTester import GraphicalUnitTester
 
 from ..helpers.graphical_units import set_test_scene
+from ..helpers.path_utils import get_project_root
+from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 def get_test_resource(filename):
@@ -20,6 +21,13 @@ def get_test_resource(filename):
 # and ones where the SVG is realistically complex, and the output should be visually inspected.
 
 # First are the simple tests.
+
+
+class LineTest(Scene):
+    def construct(self):
+        line_demo = SVGMobject(get_test_resource("line.svg"))
+        self.add(line_demo)
+        self.wait()
 
 
 class CubicPathTest(Scene):
@@ -229,6 +237,30 @@ class ImageMobjectTest(Scene):
         im3 = ImageMobject(file_path, scale_to_resolution=540).shift(4 * RIGHT)
         self.add(im1, im2, im3)
         self.wait(1)
+
+
+class ImageInterpolationTest(Scene):
+    def construct(self):
+        img = ImageMobject(
+            np.uint8([[63, 0, 0, 0], [0, 127, 0, 0], [0, 0, 191, 0], [0, 0, 0, 255]])
+        )
+
+        img.height = 2
+        img1 = img.copy()
+        img2 = img.copy()
+        img3 = img.copy()
+        img4 = img.copy()
+        img5 = img.copy()
+
+        img1.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
+        img2.set_resampling_algorithm(RESAMPLING_ALGORITHMS["lanczos"])
+        img3.set_resampling_algorithm(RESAMPLING_ALGORITHMS["linear"])
+        img4.set_resampling_algorithm(RESAMPLING_ALGORITHMS["cubic"])
+        img5.set_resampling_algorithm(RESAMPLING_ALGORITHMS["box"])
+
+        self.add(img1, img2, img3, img4, img5)
+        [s.shift(4 * LEFT + pos * 2 * RIGHT) for pos, s in enumerate(self.mobjects)]
+        self.wait()
 
 
 MODULE_NAME = "img_and_svg"

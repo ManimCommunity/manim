@@ -59,27 +59,27 @@ __all__ = [
     "RightAngle",
 ]
 
-import warnings
-import numpy as np
 import math
+import warnings
 
+import numpy as np
+
+from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.types.vectorized_mobject import DashedVMobject
-from ..utils.iterables import adjacent_n_tuples
-from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
-from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import angle_between_vectors
-from ..utils.space_ops import compass_directions
-from ..utils.space_ops import line_intersection
-from ..utils.space_ops import get_norm
-from ..utils.space_ops import normalize
-from ..utils.space_ops import rotate_vector
+from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
-from .. import logger
+from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
+from ..utils.simple_functions import fdiv
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    compass_directions,
+    get_norm,
+    line_intersection,
+    normalize,
+    rotate_vector,
+)
 
 
 class TipableVMobject(VMobject):
@@ -1394,10 +1394,10 @@ class Polygon(VMobject):
             >>> sq = Square()
             >>> points = sq.get_vertices()
             >>> points
-            array([[-1.,  1.,  0.],
-                   [ 1.,  1.,  0.],
-                   [ 1., -1.,  0.],
-                   [-1., -1.,  0.]])
+            array([[ 1.,  1.,  0.],
+                   [-1.,  1.,  0.],
+                   [-1., -1.,  0.],
+                   [ 1., -1.,  0.]])
 
         Returns
         -------
@@ -1820,7 +1820,7 @@ class Rectangle(Polygon):
     ):
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
-        Polygon.__init__(self, UL, UR, DR, DL, color=color, **kwargs)
+        Polygon.__init__(self, UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
@@ -2270,6 +2270,27 @@ class Angle(Arc, Elbow):
                 self.add(
                     line_list
                 )
+    .. manim:: FilledAngle
+        :save_last_frame:
+
+        class FilledAngle(Scene):
+            def construct(self):
+                l1 = Line(ORIGIN, 2 * UP + RIGHT).set_color(GREEN)
+                l2 = (
+                    Line(ORIGIN, 2 * UP + RIGHT)
+                    .set_color(GREEN)
+                    .rotate(-20 * DEGREES, about_point=ORIGIN)
+                )
+                norm = l1.get_length()
+                a1 = Angle(l1, l2, other_angle=True, radius=norm - 0.5).set_color(GREEN)
+                a2 = Angle(l1, l2, other_angle=True, radius=norm).set_color(GREEN)
+                q1 = a1.get_points() #  save all coordinates of points of angle a1
+                q2 = a2.reverse_direction().get_points()  #  save all coordinates of points of angle a1 (in reversed direction)
+                pnts = np.concatenate([q1, q2, q1[0].reshape(1, 3)])  # adds points and ensures that path starts and ends at same point
+                mfill = VMobject().set_color(ORANGE)
+                mfill.set_points_as_corners(pnts).set_fill(GREEN, opacity=1)
+                self.add(l1, l2)
+                self.add(mfill)
 
     """
 

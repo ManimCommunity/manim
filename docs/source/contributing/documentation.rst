@@ -19,6 +19,7 @@ the 3 quotes:
         (...)
         """
 
+
     def dont_do_this():
         """
         This is incorrect.
@@ -61,7 +62,7 @@ Example:
         mobj : Optional[:class:`~.Mobject`], optional
             The mobject linked to this instance. Defaults to `Mobject()` \
     (is set to that if `None` is specified).
-        
+
         Attributes
         ----------
         name : :class:`str`
@@ -73,9 +74,11 @@ Example:
         mobj : :class:`~.Mobject`
             The mobject linked to this instance.
         """
-        
-        def __init__(name, id, singleton, mobj = None):  # in-code typehints are optional for now
-           ...
+
+        def __init__(
+            name, id, singleton, mobj=None
+        ):  # in-code typehints are optional for now
+            ...
 
 2. The usage of ``Parameters`` on functions in order to specify how
    every parameter works and what it does. This should be excluded if
@@ -149,8 +152,8 @@ Example:
 .. code:: py
 
     def my_function(thing, other, name, *, d, test=45):  # typings are optional for now
-      """My cool function. Builds and modifies an :class:`EpicClassInThisFile` instance with the given parameters.
-      
+        """My cool function. Builds and modifies an :class:`EpicClassInThisFile` instance with the given parameters.
+
       Parameters
       ----------
       thing : :class:`int`
@@ -164,7 +167,7 @@ Example:
       test : :class:`int`, optional
           Defines the amount of times things should be tested. \
     Defaults to 45, because that is almost the meaning of life.
-      
+
       Returns
       -------
       :class:`EpicClassInThisFile`
@@ -176,13 +179,13 @@ Example:
 
           my_function(5, np.array([1, 2, 3]), "Chelovek", d=SomeClassFromFarAway(cool=True), test=5)
       """
-      # code...
-      pass
+        # code...
+        pass
 
 .. _types:
 
-Types
------
+Reference to types in documentaion
+----------------------------------
 
 Always specify types with the correct **role** (see
 https://www.sphinx-doc.org/en/1.7/domains.html#python-roles) for the
@@ -229,8 +232,8 @@ Example: ``:class:`~.Animation`​``, ``:meth:`~.VMobject.set_color`​``,
 
 Example: ``:class:`numpy.ndarray`​`` for a numpy ndarray.
 
-Type specifications
-~~~~~~~~~~~~~~~~~~~
+Reference type specifications
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **The following instructions refer to types of attributes, parameters
 and return values.** When specifying a type mid-text, it does not
@@ -314,3 +317,77 @@ elements that are either a ``str`` or ``None``;
 ``Tuple[:class:`str`, :class:`int`]`` for a tuple of type
 ``(str, int)``; ``Tuple[:class:`int`, ...]`` for a tuple of variable
 length with only integers.
+
+
+Adding type hints to functions and parameters
+---------------------------------------------
+
+If you've never used type hints before, this is a good place to get started:
+https://realpython.com/python-type-checking/#hello-types.
+
+When adding type hints to manim, there are some guidelines that should be followed:
+
+* Coordinates have the typehint ``Sequence[float]``, e.g.
+
+.. code:: py
+
+    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
+        """Given an array of points, set them as corner of the Vmobject."""
+* ``**kwargs`` has no typehint
+
+* Mobjects have the typehint "Mobject", e.g.
+
+.. code:: py
+
+    def match_color(self, mobject: "Mobject"):
+        """Match the color with the color of another :class:`~.Mobject`."""
+        return self.set_color(mobject.get_color())
+* Colors have the typehint ``Color``, e.g.
+
+.. code:: py
+
+    def set_color(self, color: Color = YELLOW_C, family: bool = True):
+        """Condition is function which takes in one arguments, (x, y, z)."""
+* As ``float`` and ``Union[int, float]`` are the same, use only ``float``
+
+* For numpy arrays use the typehint ``np.ndarray``
+
+* Functions that does not return a value should get the type hint ``None``. (This annotations help catch the kinds of subtle bugs where you are trying to use a meaningless return value. )
+
+.. code:: py
+
+    def height(self, value) -> None:
+        self.scale_to_fit_height(value)
+* Parameters that are None by default should get the type hint ``Optional``
+
+.. code:: py
+
+    def rotate(
+        self,
+        angle,
+        axis=OUT,
+        about_point: Optional[Sequence[float]] = None,
+        **kwargs,
+    ):
+        pass
+
+
+* the .__init__() method always should have None as its return type.
+
+* functions and lambda functions should get the typehint ``Callable``
+
+.. code:: py
+
+    rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
+
+*  numpy arrays can get type hints with ``np.ndarray``
+
+Missing Sections
+----------------
+* Tools for typehinting
+* Link to MyPy
+* Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
+* Where to find the alias
+* When to use Object and when to use "Object".
+* The use of a TypeVar on the type hints for copy().
+* The definition and use of Protocols (like Sized, or Sequence, or Iterable...)

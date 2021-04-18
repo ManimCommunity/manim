@@ -2,14 +2,13 @@
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-
-import copy
 import uuid
-from ..utils.family import extract_mobject_family_members
+
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
+from ..utils.family import extract_mobject_family_members
 
 
 class DecimalNumber(VMobject):

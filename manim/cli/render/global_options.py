@@ -1,7 +1,6 @@
 import click
 from cloup import option, option_group
 
-
 global_options = option_group(
     "Global options",
     option(
@@ -30,5 +29,11 @@ global_options = option_group(
             case_sensitive=False,
         ),
         help="Verbosity of CLI output. Changes ffmpeg log level unless 5+.",
+    ),
+    option(
+        "--notify_outdated_version/--silent",
+        is_flag=True,
+        default=None,
+        help="Display warnings for outdated installation.",
     ),
 )

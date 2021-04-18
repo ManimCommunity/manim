@@ -1,13 +1,15 @@
-import pytest
 import sys
-import numpy as np
-from PIL import Image
 from pathlib import Path
-from manim.__main__ import main
+
+import numpy as np
+import pytest
 from click.testing import CliRunner
+from PIL import Image
+
+from manim.__main__ import main
+from manim.utils.file_ops import add_version_before_extension
 
 from ..utils.video_tester import *
-from manim.utils.file_ops import add_version_before_extension
 
 
 @pytest.mark.slow

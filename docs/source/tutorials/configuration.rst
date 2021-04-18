@@ -17,11 +17,11 @@ which is an instance of :class:`.ManimConfig`.  Each property of this class is
 a config option that can be accessed either with standard attribute syntax, or
 with dict-like syntax:
 
-.. code-block:: python
+.. code-block:: pycon
 
    >>> from manim import *
    >>> config.background_color = WHITE
-   >>> config['background_color'] = WHITE
+   >>> config["background_color"] = WHITE
 
 The former is preferred; the latter is provided mostly for backwards
 compatibility.
@@ -30,7 +30,7 @@ Most classes, including :class:`.Camera`, :class:`.Mobject`, and
 :class:`.Animation`, read some of their default configuration from the global
 ``config``.
 
-.. code-block:: python
+.. code-block:: pycon
 
    >>> Camera({}).background_color
    <Color white>
@@ -41,7 +41,7 @@ Most classes, including :class:`.Camera`, :class:`.Mobject`, and
 :class:`.ManimConfig` is designed to keep internal consistency.  For example,
 setting ``frame_y_radius`` will affect ``frame_height``:
 
-.. code-block:: python
+.. code-block:: pycon
 
     >>> config.frame_height
     8.0
@@ -49,7 +49,7 @@ setting ``frame_y_radius`` will affect ``frame_height``:
     >>> config.frame_height
     10.0
 
-The global ``config`` object is mean to be the single source of truth for all
+The global ``config`` object is meant to be the single source of truth for all
 config options.  All of the other ways of setting config options ultimately
 change the values of the global ``config`` object.
 
@@ -346,7 +346,7 @@ A list of all config options
    'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
    'from_animation_number', 'images_dir', 'input_file', 'left_side',
    'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
-   'movie_file_extension', 'output_file', 'partial_movie_dir',
+   'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
    'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',
    'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
    'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
