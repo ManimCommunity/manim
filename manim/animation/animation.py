@@ -212,25 +212,16 @@ def prepare_animation(
     Examples
     --------
 
-    ::
+    .. manim:: PrepareAnimationExample
 
-        >>> from manim import Square, FadeIn
-        >>> s = Square()
-        >>> prepare_animation(FadeIn(s))
-        FadeIn(Square)
-
-    ::
-
-        >>> prepare_animation(s.animate.scale(2).rotate(42))
-        _MethodAnimation(Square)
-
-    ::
-
-        >>> prepare_animation(42)
-        Traceback (most recent call last):
-        ...
-        TypeError: Object 42 cannot be converted to an animation
-
+        class PrepareAnimationExample(Scene):
+            def construct(self):
+                square = Square()
+                fade_in = animation.animation.prepare_animation(FadeIn(square))
+                self.play(fade_in)
+                self.wait(2)
+                complex_animation = animation.animation.prepare_animation(s.animate.scale(2).rotate(42))
+                self.play(complex_animation)
     """
     if isinstance(anim, mobject._AnimationBuilder):
         return anim.build()
