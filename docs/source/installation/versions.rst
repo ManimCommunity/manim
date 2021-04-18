@@ -17,7 +17,7 @@ it was very difficult for other users to install and use it.
 
 In late 2019, Grant started working on faster OpenGL rendering in a new branch, 
 known as the shaders branch. In mid-2020, a group of developers forked it into what is now the community edition; 
-this is the version that is documented by this website. 
+this is the version documented on this website. 
 In early 2021, Grant merged the shaders branch back into master, making it the default branch in his repository. 
 The old version is still available as the branch ``cairo-backend``.
 
