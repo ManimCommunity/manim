@@ -267,7 +267,7 @@ Note the fixtures here:
 
 - tmp_path is a pytest fixture to get a tmp_path. Manim will output here, according to the flag ``--media_dir``.
 
-- ``manim_cfg_file`` fixture that return a path pointing to ``test_scene_rendering/standard_config.cfg``. It's just to shorten the code, in this case, multiple tests need to use this cfg file.
+- ``manim_cfg_file`` fixture that return a path pointing to ``test_scene_rendering/standard_config.cfg``. It's just to shorten the code, in the case multiple tests need to use this cfg file.
 
 - ``simple_scenes_path`` same as above, except for ``test_scene_rendering/simple_scene.py``
 
