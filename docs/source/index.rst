@@ -33,6 +33,10 @@ information here will make it easier for newcomers to get started using
    contributing
    conduct
 
+.. SEEALSO::
+
+    :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.MathTex`, :class:`~.ValueTracker`
+
 
 Navigation
 ==================
