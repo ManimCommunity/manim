@@ -46,11 +46,11 @@ from ..utils.simple_functions import fdiv
 
 
 def get_norm(vect):
-    return sum([x ** 2 for x in vect]) ** 0.5
+    return np.linalg.norm(vect)
 
 
 def norm_squared(v):
-    return v[0] * v[0] + v[1] * v[1] + v[2] * v[2]
+    np.linalg.dot(v, v)
 
 
 # Quaternions
@@ -232,7 +232,7 @@ def angle_between_vectors(v1, v2):
         diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
         return min(diff, TAU - diff)
     else:
-        return np.arccos(fdiv(np.dot(v1, v2), get_norm(v1) * get_norm(v2)))
+        return 2*np.arctan2(get_norm(normalize(v1)-normalize(v2)), get_norm(normalize(v1)+normalize(v2)))
 
 
 def project_along_vector(point, vector):
@@ -260,13 +260,7 @@ def normalize_along_axis(array, axis, fall_back=None):
 
 
 def cross(v1, v2):
-    return np.array(
-        [
-            v1[1] * v2[2] - v1[2] * v2[1],
-            v1[2] * v2[0] - v1[0] * v2[2],
-            v1[0] * v2[1] - v1[1] * v2[0],
-        ]
-    )
+    return np.cross(v1, v2)
 
 
 def get_unit_normal(v1, v2, tol=1e-6):
