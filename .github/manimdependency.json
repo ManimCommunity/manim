@@ -1,29 +1,42 @@
 {
-	"windows": {
-		"ffmpeg": "https://github.com/GyanD/codexffmpeg/releases/download/4.3.1-2020-11-19/ffmpeg-4.3.1-2020-11-19-full_build.zip",
-		"pango": "v0.1.0",
-		"tinytex": [
-			"standalone",
-			"preview",
-			"doublestroke",
-			"ms",
-			"everysel",
-			"setspace",
-			"rsfs",
-			"relsize",
-			"ragged2e",
-			"fundus-calligra",
-			"microtype",
-			"wasysym",
-			"physics",
-			"dvisvgm",
-			"jknapltx",
-			"wasy",
-			"cm-super",
-			"babel-english",
-			"gnu-freefont",
-			"mathastext",
-			"cbfonts-fd"
-		]
-	}
+    "windows": {
+        "tinytex": [
+            "standalone",
+            "preview",
+            "doublestroke",
+            "ms",
+            "everysel",
+            "setspace",
+            "rsfs",
+            "relsize",
+            "ragged2e",
+            "fundus-calligra",
+            "microtype",
+            "wasysym",
+            "physics",
+            "dvisvgm",
+            "jknapltx",
+            "wasy",
+            "cm-super",
+            "babel-english",
+            "gnu-freefont",
+            "mathastext",
+            "cbfonts-fd"
+        ]
+    },
+    "macos": {
+        "tinytex": [
+            "standalone",
+            "preview",
+            "doublestroke",
+            "relsize",
+            "fundus-calligra",
+            "wasysym",
+            "physics",
+            "dvisvgm",
+            "rsfs",
+            "wasy",
+            "cm-super"
+        ]
+    }
 }

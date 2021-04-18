@@ -46,25 +46,8 @@ class TexTemplate:
     default_documentclass = r"\documentclass[preview]{standalone}"
     default_preamble = r"""
 \usepackage[english]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{dsfont}
-\usepackage{setspace}
-\usepackage{tipa}
-\usepackage{relsize}
-\usepackage{textcomp}
-\usepackage{mathrsfs}
-\usepackage{calligra}
-\usepackage{wasysym}
-\usepackage{ragged2e}
-\usepackage{physics}
-\usepackage{xcolor}
-\usepackage{microtype}
-\DisableLigatures{encoding = *, family = * }
-\linespread{1}
 """
     default_placeholder_text = "YourTextHere"
     default_tex_compiler = "latex"

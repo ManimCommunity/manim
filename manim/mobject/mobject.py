@@ -13,7 +13,7 @@ import types
 import warnings
 from functools import reduce
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, TypeVar, Union
 
 import numpy as np
 from colour import Color
@@ -46,6 +46,7 @@ from ..utils.space_ops import (
 # TODO: Explain array_attrs
 
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
+T = TypeVar("T", bound="Mobject")
 
 
 class Mobject(Container):
@@ -651,7 +652,7 @@ class Mobject(Container):
             Path(config.get_dir("video_dir")).joinpath((name or str(self)) + ".png")
         )
 
-    def copy(self) -> "Mobject":
+    def copy(self: T) -> T:
         """Create and return an identical copy of the :class:`Mobject` including all :attr:`submobjects`.
 
         Returns
@@ -1531,7 +1532,11 @@ class Mobject(Container):
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
-        axis = normalize(cross(curr_vect, target_vect)) if get_norm(cross(curr_vect, target_vect)) != 0 else OUT
+        axis = (
+            normalize(cross(curr_vect, target_vect))
+            if get_norm(cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
             get_norm(target_vect) / get_norm(curr_vect),
             about_point=curr_start,
@@ -1539,7 +1544,7 @@ class Mobject(Container):
         self.rotate(
             angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
-            axis=axis
+            axis=axis,
         )
         self.shift(start - curr_start)
         return self
@@ -2153,7 +2158,7 @@ class Mobject(Container):
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject):
+    def align_data(self, mobject: "Mobject"):
         self.null_point_align(mobject)
         self.align_submobjects(mobject)
         self.align_points(mobject)
