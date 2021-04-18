@@ -344,7 +344,7 @@ python-versions = "*"
 
 [[package]]
 name = "docutils"
-version = "0.17"
+version = "0.17.1"
 description = "Docutils -- Python Documentation Utilities"
 category = "dev"
 optional = false
@@ -368,7 +368,7 @@ python-versions = "*"
 
 [[package]]
 name = "flake8"
-version = "3.9.0"
+version = "3.9.1"
 description = "the modular source code checker: pep8 pyflakes and co"
 category = "dev"
 optional = false
@@ -492,7 +492,7 @@ test = ["flake8 (>=3.8.4,<3.9.0)", "pycodestyle (>=2.6.0,<2.7.0)"]
 
 [[package]]
 name = "importlib-metadata"
-version = "3.10.0"
+version = "3.10.1"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -691,7 +691,7 @@ traitlets = "*"
 
 [[package]]
 name = "jupyter-packaging"
-version = "0.8.3"
+version = "0.9.1"
 description = "Jupyter Packaging Utilities."
 category = "main"
 optional = true
@@ -707,7 +707,7 @@ test = ["build", "coverage", "pytest", "pytest-cov", "pytest-mock"]
 
 [[package]]
 name = "jupyter-server"
-version = "1.6.0"
+version = "1.6.2"
 description = "The backend—i.e. core services, APIs, and REST endpoints—to Jupyter web applications."
 category = "main"
 optional = true
@@ -720,6 +720,7 @@ ipython-genutils = "*"
 jinja2 = "*"
 jupyter-client = ">=6.1.1"
 jupyter-core = ">=4.4.0"
+jupyter-packaging = ">=0.9,<1.0"
 nbconvert = "*"
 nbformat = "*"
 prometheus-client = "*"
@@ -731,7 +732,7 @@ tornado = ">=6.1.0"
 traitlets = ">=4.2.1"
 
 [package.extras]
-test = ["coverage", "requests", "pytest", "pytest-cov", "pytest-tornasync", "pytest-console-scripts", "ipykernel"]
+test = ["coverage", "pytest", "pytest-cov", "pytest-mock", "requests", "pytest-tornasync", "pytest-console-scripts", "ipykernel"]
 
 [[package]]
 name = "jupyterlab"
@@ -805,7 +806,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
 [[package]]
 name = "manimpango"
-version = "0.2.5.post0"
+version = "0.2.6"
 description = "Bindings for Pango for using with Manim."
 category = "main"
 optional = false
@@ -1159,7 +1160,7 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 name = "pre-commit"
-version = "2.12.0"
+version = "2.12.1"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 category = "dev"
 optional = false
@@ -1282,7 +1283,7 @@ integrations = ["cryptography"]
 
 [[package]]
 name = "pyglet"
-version = "1.5.15"
+version = "1.5.16"
 description = "Cross-platform windowing and multimedia library"
 category = "main"
 optional = false
@@ -1857,7 +1858,7 @@ webgl_renderer = ["grpcio", "grpcio-tools", "watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "703367c80ac07b34620d6e4b65907ff9cc58dcbe01443150351a30c96b4f5615"
+content-hash = "9ff2a8750708595dcaa6d1ea3bf817ece16a211765dd40399ea57858548b236c"
 
 [metadata.files]
 alabaster = [
@@ -2084,8 +2085,8 @@ distlib = [
     {file = "distlib-0.3.1.zip", hash = "sha256:edf6116872c863e1aa9d5bb7cb5e05a022c519a4594dc703843343a9ddd9bff1"},
 ]
 docutils = [
-    {file = "docutils-0.17-py2.py3-none-any.whl", hash = "sha256:a71042bb7207c03d5647f280427f14bfbd1a65c9eb84f4b341d85fafb6bb4bdf"},
-    {file = "docutils-0.17.tar.gz", hash = "sha256:e2ffeea817964356ba4470efba7c2f42b6b0de0b04e66378507e3e2504bbff4c"},
+    {file = "docutils-0.17.1-py2.py3-none-any.whl", hash = "sha256:cf316c8370a737a022b72b56874f6602acf974a37a9fba42ec2876387549fc61"},
+    {file = "docutils-0.17.1.tar.gz", hash = "sha256:686577d2e4c32380bb50cbb22f575ed742d58168cee37e99117a854bcd88f125"},
 ]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
@@ -2096,8 +2097,8 @@ filelock = [
     {file = "filelock-3.0.12.tar.gz", hash = "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"},
 ]
 flake8 = [
-    {file = "flake8-3.9.0-py2.py3-none-any.whl", hash = "sha256:12d05ab02614b6aee8df7c36b97d1a3b2372761222b19b58621355e82acddcff"},
-    {file = "flake8-3.9.0.tar.gz", hash = "sha256:78873e372b12b093da7b5e5ed302e8ad9e988b38b063b61ad937f26ca58fc5f0"},
+    {file = "flake8-3.9.1-py2.py3-none-any.whl", hash = "sha256:3b9f848952dddccf635be78098ca75010f073bfe14d2c6bda867154bea728d2a"},
+    {file = "flake8-3.9.1.tar.gz", hash = "sha256:1aa8990be1e689d96c745c5682b687ea49f2e05a443aff1f8251092b0014e378"},
 ]
 furo = [
     {file = "furo-2021.4.11b34-py3-none-any.whl", hash = "sha256:576a1dc1bcbe337d7c53cbc75b886802778a5964fd2e3324433d706066e9aea8"},
@@ -2263,8 +2264,8 @@ immutables = [
     {file = "immutables-0.15.tar.gz", hash = "sha256:3713ab1ebbb6946b7ce1387bb9d1d7f5e09c45add58c2a2ee65f963c171e746b"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-3.10.0-py3-none-any.whl", hash = "sha256:d2d46ef77ffc85cbf7dac7e81dd663fde71c45326131bea8033b9bad42268ebe"},
-    {file = "importlib_metadata-3.10.0.tar.gz", hash = "sha256:c9db46394197244adf2f0b08ec5bc3cf16757e9590b02af1fca085c16c0d600a"},
+    {file = "importlib_metadata-3.10.1-py3-none-any.whl", hash = "sha256:2ec0faae539743ae6aaa84b49a169670a465f7f5d64e6add98388cc29fd1f2f6"},
+    {file = "importlib_metadata-3.10.1.tar.gz", hash = "sha256:c9356b657de65c53744046fa8f7358afe0714a1af7d570c00c3835c2d724a7c1"},
 ]
 importlib-resources = [
     {file = "importlib_resources-5.1.2-py3-none-any.whl", hash = "sha256:ebab3efe74d83b04d6bf5cd9a17f0c5c93e60fb60f30c90f56265fce4682a469"},
@@ -2315,12 +2316,12 @@ jupyter-core = [
     {file = "jupyter_core-4.7.1.tar.gz", hash = "sha256:79025cb3225efcd36847d0840f3fc672c0abd7afd0de83ba8a1d3837619122b4"},
 ]
 jupyter-packaging = [
-    {file = "jupyter_packaging-0.8.3-py2.py3-none-any.whl", hash = "sha256:67b37ea81c37d12aefe1057c99b3e3121f5c6a49605249f45a302c3b45d94c1f"},
-    {file = "jupyter_packaging-0.8.3.tar.gz", hash = "sha256:c52debebf8b23e5903ef22053294885440b77c525b1035afa7268585fc1a83a7"},
+    {file = "jupyter_packaging-0.9.1-py2.py3-none-any.whl", hash = "sha256:a3e6135d2f287cb66d1fc25d02307c68fa77bb93269c3b21dfe814efc1f9c4ed"},
+    {file = "jupyter_packaging-0.9.1.tar.gz", hash = "sha256:6f819759804536f9e563cc8a76a9d8588bb90cd735deaa550a6d8453012b0164"},
 ]
 jupyter-server = [
-    {file = "jupyter_server-1.6.0-py3-none-any.whl", hash = "sha256:b0ae09aeaf4a73d4f195d55ade9bfdc2e399276c158e27ce820796d2e10ba1f5"},
-    {file = "jupyter_server-1.6.0.tar.gz", hash = "sha256:348f2c744d1fa1676d314475e0be357a95b21cbe6e19d15c2a25a9ea647f99d2"},
+    {file = "jupyter_server-1.6.2-py3-none-any.whl", hash = "sha256:c863481c4f6fc7c9fcb82b5f903b5a73742bb89b2b4d1babc814116a3dc40635"},
+    {file = "jupyter_server-1.6.2.tar.gz", hash = "sha256:17b5216a09104202fca73e51df21465f2a3e34e795f0a0f7004f6c67d9527f85"},
 ]
 jupyterlab = [
     {file = "jupyterlab-3.0.14-py3-none-any.whl", hash = "sha256:223ad786032119f495edc894a81925b6cc327a184f150adbc4e5ef94965d4921"},
@@ -2393,19 +2394,19 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.6.0-cp39-cp39-win_amd64.whl", hash = "sha256:f5144c75445ae3ca2057faac03fda5a902eff196702b0a24daf1d6ce0650514b"},
 ]
 manimpango = [
-    {file = "ManimPango-0.2.5.post0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:53f754594ccedeaf464028777d4502fb31f2251b9dca7e99b40786b3e4ff394d"},
-    {file = "ManimPango-0.2.5.post0-cp36-cp36m-win32.whl", hash = "sha256:ac33cc00a89aabe7459043b7aab8851e4ec4c7fa78cea2b3dacb618b2b03c98b"},
-    {file = "ManimPango-0.2.5.post0-cp36-cp36m-win_amd64.whl", hash = "sha256:87e205f5a35ff5504104cd30b8d086e9f97c17f95cf490de7cc1d4aa8c2a8425"},
-    {file = "ManimPango-0.2.5.post0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:70e59f888ca5ad0be37777f761cee8fb3d6e28c5d949e5da13f727326b46da60"},
-    {file = "ManimPango-0.2.5.post0-cp37-cp37m-win32.whl", hash = "sha256:d9cc5ac80dd363fd4f3fa233f7fad74e9749965b6e4af10a2174f946fe1d9813"},
-    {file = "ManimPango-0.2.5.post0-cp37-cp37m-win_amd64.whl", hash = "sha256:3bef549783fc5e3f39598880e7cc41bb44dc2e37ceb8c7e20f0381fd8d67b3e8"},
-    {file = "ManimPango-0.2.5.post0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:978bcf4c6cf145f723ec551ed18a1959f6952f100d61c7b4431939ee850f9308"},
-    {file = "ManimPango-0.2.5.post0-cp38-cp38-win32.whl", hash = "sha256:db877a3a037739ce2f647f747bc750c7e9a881ce5175a4ad764170f24fb2d68a"},
-    {file = "ManimPango-0.2.5.post0-cp38-cp38-win_amd64.whl", hash = "sha256:2876c64724a73893ba22c250ddf603724865c650a925ddca76102eea0e489373"},
-    {file = "ManimPango-0.2.5.post0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:e3694ae99ef758a8eaf847f77b0fa2bf7318ed2ee55a32b3a3bb155dd2d6ec9b"},
-    {file = "ManimPango-0.2.5.post0-cp39-cp39-win32.whl", hash = "sha256:139469a6130270e3cf94c4b01fa9b17dc516170a11b901ff0ce0f6cdff6752e9"},
-    {file = "ManimPango-0.2.5.post0-cp39-cp39-win_amd64.whl", hash = "sha256:aad57df6ec62585f52c662b84f2d5ff2c686daa8ca753326b6cde8b798c4da96"},
-    {file = "ManimPango-0.2.5.post0.tar.gz", hash = "sha256:c33d073d4389ad93bbac13029b8a0da5d8ee0b8fe7f282379ff95012e34d324e"},
+    {file = "ManimPango-0.2.6-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:2a2d0ba8ca06e761650076a0e0050743acb2f1fb163f9b7db52decf95d91ced8"},
+    {file = "ManimPango-0.2.6-cp36-cp36m-win32.whl", hash = "sha256:05c1d1af85d2016819f4ce40758d0ef6564baa121238ef6a88240ad96220a7a8"},
+    {file = "ManimPango-0.2.6-cp36-cp36m-win_amd64.whl", hash = "sha256:ed9cc957df9513d31b450acdb8f9bc76885ed5eae1a71d71e939c3133c14eb09"},
+    {file = "ManimPango-0.2.6-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e094d1f136f99408bb10bf4748ee6b51efba68e54e310096e75a8d38bb7ef111"},
+    {file = "ManimPango-0.2.6-cp37-cp37m-win32.whl", hash = "sha256:b2062fac21e968930cb91945a8bfcf4593a3152f8bea5d6950c6aa304eb831a7"},
+    {file = "ManimPango-0.2.6-cp37-cp37m-win_amd64.whl", hash = "sha256:76d1ab6c131389e91cc84e0d3c4f746978cd301237ddd1e463f9463ff872d17f"},
+    {file = "ManimPango-0.2.6-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:88bdd9c2714b94ee85da28002fd28122e4b26cb7ef74a48fe93d50cb06e8a35b"},
+    {file = "ManimPango-0.2.6-cp38-cp38-win32.whl", hash = "sha256:28165fd23d8cfe7e260affa8d240d63bf66808f96154507ba534548b47834208"},
+    {file = "ManimPango-0.2.6-cp38-cp38-win_amd64.whl", hash = "sha256:e74690f948c5fe2cc5e13f22683c1875155fee4a4a75c4e24ce1dc6e4f9f9883"},
+    {file = "ManimPango-0.2.6-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:2297b1c829cfff6d91f5d32a7a8e903e30d0b28be8006e9f61fd653981ce7827"},
+    {file = "ManimPango-0.2.6-cp39-cp39-win32.whl", hash = "sha256:de974e2435d445b1244a713b7b6ce4383bc6c574e0a1b59a6f33b8a16d1a147e"},
+    {file = "ManimPango-0.2.6-cp39-cp39-win_amd64.whl", hash = "sha256:59a575fb28183fe68f3d8f5e93c98b7afa8e495eb0124ec09c660eef15adfcbb"},
+    {file = "ManimPango-0.2.6.tar.gz", hash = "sha256:64028b62b151bc80b047cc1757b27943498416dc4a85f073892a524b4d90ab41"},
 ]
 mapbox-earcut = [
     {file = "mapbox_earcut-0.12.10-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:2aaf7bdb002d36d38d1412088329a9176de3fcadc24a53951b76e49a27e34d78"},
@@ -2707,8 +2708,8 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 pre-commit = [
-    {file = "pre_commit-2.12.0-py2.py3-none-any.whl", hash = "sha256:029d53cb83c241fe7d66eeee1e24db426f42c858f15a38d20bcefd8d8e05c9da"},
-    {file = "pre_commit-2.12.0.tar.gz", hash = "sha256:46b6ffbab37986c47d0a35e40906ae029376deed89a0eb2e446fb6e67b220427"},
+    {file = "pre_commit-2.12.1-py2.py3-none-any.whl", hash = "sha256:70c5ec1f30406250b706eda35e868b87e3e4ba099af8787e3e8b4b01e84f4712"},
+    {file = "pre_commit-2.12.1.tar.gz", hash = "sha256:900d3c7e1bf4cf0374bb2893c24c23304952181405b4d88c9c40b72bda1bb8a9"},
 ]
 prometheus-client = [
     {file = "prometheus_client-0.10.1-py2.py3-none-any.whl", hash = "sha256:030e4f9df5f53db2292eec37c6255957eb76168c6f974e4176c711cf91ed34aa"},
@@ -2780,8 +2781,8 @@ pygithub = [
     {file = "PyGithub-1.54.1.tar.gz", hash = "sha256:300bc16e62886ca6537b0830e8f516ea4bc3ef12d308e0c5aff8bdbd099173d4"},
 ]
 pyglet = [
-    {file = "pyglet-1.5.15-py3-none-any.whl", hash = "sha256:4401cc176580e4e17e2df8bbf7536f27e691327dc3f38f209a12f1859c70aed2"},
-    {file = "pyglet-1.5.15.zip", hash = "sha256:da9d8337388cedabf1f1c5dc21a45bb2b0e5327fba47f996c8573818c3dfa478"},
+    {file = "pyglet-1.5.16-py3-none-any.whl", hash = "sha256:37cced6f4f7e30e7ace73779d068c86b3dc26f1a28b602016d37113ae830d7f8"},
+    {file = "pyglet-1.5.16.zip", hash = "sha256:ad4a02d6fbebdaa748f8af6d2d388d64d446b6ccdfb9c0d7dfd49d7164913400"},
 ]
 pygments = [
     {file = "Pygments-2.8.1-py3-none-any.whl", hash = "sha256:534ef71d539ae97d4c3a4cf7d6f110f214b0e687e92f9cb9d2a3b0d3101289c8"},

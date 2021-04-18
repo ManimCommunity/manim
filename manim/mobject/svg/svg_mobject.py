@@ -13,9 +13,7 @@ from typing import Dict, List
 from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
-from manim import logger
-
-from ... import config
+from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
@@ -553,12 +551,12 @@ class SVGMobject(VMobject):
         width, height, and/or center it. Use ``width``, ``height``, and
         ``should_center`` respectively to modify this.
         """
-        if self.should_center:
-            self.center()
         if height is not None:
             self.height = height
         if width is not None:
             self.width = width
+        if self.should_center:
+            self.center()
 
     def init_colors(self, propagate_colors=False):
         VMobject.init_colors(self, propagate_colors=propagate_colors)

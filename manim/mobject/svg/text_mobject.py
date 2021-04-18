@@ -47,6 +47,7 @@ __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 import copy
 import hashlib
+import math
 import os
 import re
 import typing
@@ -404,12 +405,13 @@ class Text(SVGMobject):
         t2w: Dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
+        disable_ligatures: bool = False,
+        wrap_text: bool = True,
         # Mobject
-        height: int = None,
-        width: int = None,
+        height: float = config["pixel_height"],
+        width: float = config["pixel_width"],
         should_center: bool = True,
         unpack_groups: bool = True,
-        disable_ligatures: bool = False,
         **kwargs,
     ):
         self.size = size
@@ -419,6 +421,9 @@ class Text(SVGMobject):
         self.weight = weight
         self.gradient = gradient
         self.tab_width = tab_width
+        self.wrap_text = wrap_text
+        self.svg_width = width
+        self.svg_height = height
         if t2c is None:
             t2c = {}
         if t2f is None:
@@ -453,14 +458,18 @@ class Text(SVGMobject):
             self.line_spacing = self.size + self.size * self.line_spacing
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        SVGMobject.__init__(
-            self,
+        super().__init__(
             file_name,
             color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
-            height=height,
-            width=width,
+            height=math.fabs(
+                self.svg_height / (self.svg_height - self.svg_width or self.svg_height)
+            ),
+            width=math.fabs(
+                (self.svg_width / (self.svg_width - self.svg_height or self.svg_width))
+            )
+            + 10,
             should_center=should_center,
             unpack_groups=unpack_groups,
             **kwargs,
@@ -493,9 +502,6 @@ class Text(SVGMobject):
             self.set_color_by_gradient(*self.gradient)
         if self.t2g:
             self.set_color_by_t2g()
-        # anti-aliasing
-        if height is None and width is None:
-            self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def __repr__(self):
         return f"Text({repr(self.original_text)})"
@@ -578,6 +584,8 @@ class Text(SVGMobject):
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w)
         settings += str(self.line_spacing) + str(self.size)
         settings += str(self.disable_ligatures)
+        settings += str(self.wrap_text)
+        settings += str(self.svg_width) + str(self.svg_height)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
@@ -643,9 +651,12 @@ class Text(SVGMobject):
         if os.path.exists(file_name):
             return file_name
         settings = self.text2settings()
-        width = 600
-        height = 400
-
+        width = self.svg_width
+        height = self.svg_height
+        if not self.wrap_text:
+            pango_width = -1
+        else:
+            pango_width = None
         return manimpango.text2svg(
             settings,
             size,
@@ -657,6 +668,7 @@ class Text(SVGMobject):
             width,
             height,
             self.text,
+            pango_width=pango_width,
         )
 
     def init_colors(self, propagate_colors=True):
