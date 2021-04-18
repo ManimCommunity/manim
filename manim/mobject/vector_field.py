@@ -558,11 +558,11 @@ class StreamLines(VectorField):
     dt
         The factor by which the distance an agend moves per step is stretched. Lower values result in a better approximation of the trajectories in the vector field.
     virtual_time
-        The time the agents get to move in the vector field. Higher values therefor result in longer stream lines. However, this whole time gets simulated upon creation. 
+        The time the agents get to move in the vector field. Higher values therefor result in longer stream lines. However, this whole time gets simulated upon creation.
     max_anchors_per_line
         The maximum number of anchors per line. Lines with more anchors get reduced in complexity, not in length.
     padding
-        The distance agents can move out of the generation area before being terminated. 
+        The distance agents can move out of the generation area before being terminated.
     stroke_width
         The stroke with of the stream lines.
     opacity
