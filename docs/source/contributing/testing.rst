@@ -230,7 +230,7 @@ right directory (in this case,
 Please make sure to add the control data to git as
 soon as it is produced with ``git add <your-control-data.npz>``. However, do not
 include changes to the template script (template\_generate\_graphical\_units\_data.py) in your pull request so that others
-may continue to use the unmodified file to generate their tests.
+may continue to use the unmodified file to generate their own tests.
 
 
 Videos tests
