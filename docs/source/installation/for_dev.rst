@@ -54,7 +54,7 @@ Installing System Dependencies
 ******************************
 
 Please follow the instructions under :ref:`installing-manim` to install all
-dependencies (e.g. ``LaTeX``, ``ffmpeg``, etc.). Afterward, proceed with the
+dependencies (e.g. ``LaTeX``, ``ffmpeg``, etc.). Afterwards, proceed with the
 installation with Poetry.
 
 .. important:: Windows users can skip the steps to install Pycairo.
