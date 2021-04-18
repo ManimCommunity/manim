@@ -87,7 +87,7 @@ class NumberLine(Line):
             **kwargs,
         )
         if self.length:
-            self.rescale_to_fit(self.length, 0, stretch=False)
+            self.set_length(self.length)
             self.unit_size = self.get_unit_size()
         else:
             self.scale(self.unit_size)
