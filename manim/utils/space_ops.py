@@ -227,7 +227,10 @@ def angle_between_vectors(v1, v2):
         diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
         return min(diff, TAU - diff)
     else:
-        return 2*np.arctan2(get_norm(normalize(v1)-normalize(v2)), get_norm(normalize(v1)+normalize(v2)))
+        return 2 * np.arctan2(
+            get_norm(normalize(v1) - normalize(v2)),
+            get_norm(normalize(v1) + normalize(v2)),
+        )
 
 
 def project_along_vector(point, vector):
