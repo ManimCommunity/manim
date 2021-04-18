@@ -6,16 +6,18 @@ __all__ = [
     "StreamLines",
     "ShowPassingFlashWithThinningStrokeWidth",
     "AnimatedStreamLines",
-    "get_colored_background_image",
-    "get_color_gradient_function",
-    "get_color_field_image_file",
+    # "get_colored_background_image",
+    # "get_color_gradient_function",
+    # "get_rgb_gradient_function",
+    # "get_color_field_image_file",
 ]
 
 import itertools as it
+from manim.utils.bezier import interpolate, inverse_interpolate
 import os
 import random
 from math import ceil, floor
-from typing import Callable, Optional, Sequence
+from typing import Callable, Optional, Sequence, Tuple
 
 import numpy as np
 from colour import Color
@@ -49,72 +51,99 @@ from ..utils.space_ops import get_norm
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
 
-def get_colored_background_image(
-    scalar_field_func: Callable,  # TODO: What is taken as parameters?
-    number_to_rgb_func: Callable,
-) -> Image:
-    ph = config["pixel_height"]
-    pw = config["pixel_width"]
-    fw = config["frame_width"]
-    fh = config["frame_height"]
-    points_array = np.zeros((ph, pw, 3))
-    x_array = np.linspace(-fw / 2, fw / 2, pw)
-    x_array = x_array.reshape((1, len(x_array)))
-    x_array = x_array.repeat(ph, axis=0)
+# def get_colored_background_image(
+#     scalar_field_func: Callable,  # TODO: What is taken as parameters?
+#     number_to_rgb_func: Callable,
+# ) -> Image:
+#     ph = config["pixel_height"]
+#     pw = config["pixel_width"]
+#     fw = config["frame_width"]
+#     fh = config["frame_height"]
+#     points_array = np.zeros((ph, pw, 3))
+#     x_array = np.linspace(-fw / 2, fw / 2, pw)
+#     x_array = x_array.reshape((1, len(x_array)))
+#     x_array = x_array.repeat(ph, axis=0)
 
-    y_array = np.linspace(fh / 2, -fh / 2, ph)
-    y_array = y_array.reshape((len(y_array), 1))
-    y_array.repeat(pw, axis=1)
-    points_array[:, :, 0] = x_array
-    points_array[:, :, 1] = y_array
-    scalars = np.apply_along_axis(scalar_field_func, 2, points_array)
-    rgb_array = number_to_rgb_func(scalars.flatten()).reshape((ph, pw, 3))
-    return Image.fromarray((rgb_array * 255).astype("uint8"))
-
-
-def get_color_gradient_function(
-    min_value: float = 0,
-    max_value: float = 1,
-    colors: list = [BLUE, RED],
-) -> Callable[[float], Color]:
-    rgbs = np.array(list(map(color_to_rgb, colors)))
-
-    def get_interpolated_color(value: float):
-        alpha = (value - min_value) / float(max_value - min_value)
-        alpha = np.clip(alpha, 0, 1) * (len(rgbs) - 1)
-        color1 = rgbs[int(alpha)]
-        color2 = rgbs[min(int(alpha + 1), len(rgbs) - 1)]
-        alpha %= 1
-        rgb = (1 - alpha) * color1 + alpha * color2
-        return rgb_to_color(rgb)
-
-    return get_interpolated_color
+#     y_array = np.linspace(fh / 2, -fh / 2, ph)
+#     y_array = y_array.reshape((len(y_array), 1))
+#     y_array.repeat(pw, axis=1)
+#     points_array[:, :, 0] = x_array
+#     points_array[:, :, 1] = y_array
+#     print(points_array.shape)
+#     scalars = np.apply_along_axis(scalar_field_func, 2, points_array)
+#     norms = np.apply_along_axis(lambda p: get_norm(p), 2, points_array)
+#     print(scalars.shape, norms.shape)
+#     rgb_array = number_to_rgb_func(scalars.flatten()).reshape((ph, pw, 3))
+#     return Image.fromarray((rgb_array * 255).astype("uint8"))
 
 
-# TODO: RASTER_IMAGE_DIR is undefined. Therefor this function doesn't work
-def get_color_field_image_file(
-    scalar_func: Callable[[np.ndarray], np.ndarray],
-    min_value: int = 0,
-    max_value: int = 2,
-    colors: list = DEFAULT_SCALAR_FIELD_COLORS,
-) -> str:
-    # try_hash
-    np.random.seed(0)
-    sample_inputs = 5 * np.random.random(size=(10, 3)) - 10
-    sample_outputs = np.apply_along_axis(scalar_func, 1, sample_inputs)
-    func_hash = hash(
-        str(min_value) + str(max_value) + str(colors) + str(sample_outputs)
-    )
-    file_name = "%d.png" % func_hash
-    full_path = os.path.join(RASTER_IMAGE_DIR, file_name)
-    if not os.path.exists(full_path):
-        logger.info("Rendering color field image " + str(func_hash))
-        rgb_gradient_func = get_color_gradient_function(
-            min_value=min_value, max_value=max_value, colors=colors
-        )
-        image = get_colored_background_image(scalar_func, rgb_gradient_func)
-        image.save(full_path)
-    return full_path
+# def get_color_gradient_function(
+#     min_value: float = 0,
+#     max_value: float = 1,
+#     colors: list = [BLUE, RED],
+# ) -> Callable[[float], Color]:
+#     rgbs = np.array(list(map(color_to_rgb, colors)))
+
+#     def get_interpolated_color(value: float):
+#         alpha = (value - min_value) / float(max_value - min_value)
+#         alpha = np.clip(alpha, 0, 1) * (len(rgbs) - 1)
+#         color1 = rgbs[int(alpha)]
+#         color2 = rgbs[min(int(alpha + 1), len(rgbs) - 1)]
+#         alpha %= 1
+#         rgb = (1 - alpha) * color1 + alpha * color2
+#         return rgb_to_color(rgb)
+
+#     return get_interpolated_color
+
+
+# def get_rgb_gradient_function(
+#     min_value: int = 0,
+#     max_value: int = 1,
+#     colors: list = [BLUE, RED],
+#     flip_alphas: bool = True,  # Why?
+# ) -> Callable[[np.ndarray], float]:
+#     rgbs = np.array(list(map(color_to_rgb, colors)))
+
+#     def func(values: np.ndarray):
+#         alphas = inverse_interpolate(min_value, max_value, np.array(values))
+#         alphas = np.clip(alphas, 0, 1)
+#         # if flip_alphas:
+#         #     alphas = 1 - alphas
+#         scaled_alphas = alphas * (len(rgbs) - 1)
+#         indices = scaled_alphas.astype(int)
+#         next_indices = np.clip(indices + 1, 0, len(rgbs) - 1)
+#         inter_alphas = scaled_alphas % 1
+#         inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
+#         result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
+#         return result
+
+#     return func
+
+
+# # TODO: RASTER_IMAGE_DIR is undefined. Therefor this function doesn't work
+# def get_color_field_image_file(
+#     scalar_func: Callable[[np.ndarray], np.ndarray],
+#     min_value: int = 0,
+#     max_value: int = 2,
+#     colors: list = DEFAULT_SCALAR_FIELD_COLORS,
+# ) -> str:
+#     # try_hash
+#     np.random.seed(0)
+#     sample_inputs = 5 * np.random.random(size=(10, 3)) - 10
+#     sample_outputs = np.apply_along_axis(scalar_func, 1, sample_inputs)
+#     func_hash = hash(
+#         str(min_value) + str(max_value) + str(colors) + str(sample_outputs)
+#     )
+#     file_name = "%d.png" % func_hash
+#     full_path = os.path.join(RASTER_IMAGE_DIR, file_name)
+#     if not os.path.exists(full_path):
+#         logger.info("Rendering color field image " + str(func_hash))
+#         rgb_gradient_func = get_color_gradient_function(
+#             min_value=min_value, max_value=max_value, colors=colors
+#         )
+#         image = get_colored_background_image(scalar_func, rgb_gradient_func)
+#         image.save(full_path)
+#     return full_path
 
 
 # Mobjects
@@ -136,9 +165,34 @@ class VectorField(VGroup):
 
     """
 
-    def __init__(self, func: Callable[[np.ndarray], np.ndarray], **kwargs):
+    def __init__(
+        self,
+        func: Callable[[np.ndarray], np.ndarray],
+        color_scheme: Callable[[np.ndarray], float] = get_norm,
+        min_color_value: float = 0,
+        max_color_value: float = 2,
+        colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self.func = func
+        self.color_scheme = color_scheme
+        self.rgbs = np.array(list(map(color_to_rgb, colors)))
+
+        def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
+            vec = self.func(pos)
+            color_value = np.clip(
+                self.color_scheme(vec), min_color_value, max_color_value
+            )
+            alpha = inverse_interpolate(min_color_value, max_color_value, color_value)
+            alpha *= len(self.rgbs) - 1
+            c1 = self.rgbs[int(alpha)]
+            c2 = self.rgbs[min(int(alpha + 1), len(self.rgbs) - 1)]
+            alpha %= 1
+            return interpolate(c1, c2, alpha)
+
+        self.pos_to_rgb = pos_to_rgb
+        self.pos_to_color = lambda pos: rgb_to_color(self.pos_to_rgb)
         self.submob_movement_updater = None
 
     @staticmethod
@@ -339,6 +393,26 @@ class VectorField(VGroup):
         self.remove_updater(self.submob_movement_updater)
         self.submob_movement_updater = None
         return self
+
+    def get_colored_background_image(self, sampling_rate=5) -> Image:
+        ph = int(config["pixel_height"] / sampling_rate)
+        pw = int(config["pixel_width"] / sampling_rate)
+        fw = config["frame_width"]
+        fh = config["frame_height"]
+        points_array = np.zeros((ph, pw, 3))
+        x_array = np.linspace(-fw / 2, fw / 2, pw)
+        y_array = np.linspace(fh / 2, -fh / 2, ph)
+        x_array = x_array.reshape((1, len(x_array)))
+        y_array = y_array.reshape((len(y_array), 1))
+        x_array = x_array.repeat(ph, axis=0)
+        y_array.repeat(pw, axis=1)  # TODO why not y_array = y_array.repeat(...)?
+        points_array[:, :, 0] = x_array
+        points_array[:, :, 1] = y_array
+        print(points_array.shape)
+        rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
+        print(len(rgbs), len(rgbs[0]), rgbs.shape)
+        img = Image.fromarray((rgbs * 255).astype("uint8"))
+        return img
 
 
 class ArrowVectorField(VectorField):
