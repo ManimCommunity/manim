@@ -9,7 +9,7 @@ Essentially, manim puts at your disposal three different concepts that you can
 orchestrate together in order to produce mathematical animations: the
 **mathematical object** (or **mobject** for short) the **animation**, and the
 **scene**.  As we will see in the following sections, each of these three
-concepts are implemented in manim as a separate class: the :class:`.Mobject`,
+concepts is implemented in manim as a separate class: the :class:`.Mobject`,
 :class:`.Animation`, and :class:`.Scene` classes.
 
 .. note:: It is recommended that you read the tutorials :doc:`quickstart` and
