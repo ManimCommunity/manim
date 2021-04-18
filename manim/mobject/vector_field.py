@@ -78,7 +78,9 @@ class VectorField(VGroup):
     def __init__(
         self,
         func: Callable[[np.ndarray], np.ndarray],
-        color_scheme: Callable[[np.ndarray], float] = get_norm, # TODO maybe other default for direction?
+        color_scheme: Callable[
+            [np.ndarray], float
+        ] = get_norm,  # TODO maybe other default for direction?
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
