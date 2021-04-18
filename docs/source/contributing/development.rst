@@ -10,7 +10,7 @@ For first-time contributors
 
 
 #. Fork the project. Go to https://github.com/ManimCommunity/manim and
-   click the "fork" button to create your copy of the project. You will
+   click the "fork" button to create a copy of the project for you to work on. You will
    need a GitHub account. This will allow you to make a "Pull Request" (PR)
    to the ManimCommunity repo later on.
 
