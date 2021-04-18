@@ -207,6 +207,10 @@ def z_to_vector(vector):
 
 
 def angle_between(v1, v2):
+    logger.warning(
+        "angle_between has been deprecated and will be removed in a future release."
+        "Use angle_between_vectors instead."
+    )
     return np.arccos(np.dot(v1 / get_norm(v1), v2 / get_norm(v2)))
 
 
