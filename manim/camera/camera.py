@@ -1251,7 +1251,8 @@ class BackgroundColoredVMobjectDisplayer:
             cvmobjects, lambda cv: cv.get_background_image_file()
         )
         curr_array = None
-        for batch, image_file in batch_image_file_pairs:
+        for image_file, batch in batch_image_file_pairs:
+            print(image_file)
             background_array = self.get_background_array(image_file)
             pixel_array = self.pixel_array
             self.camera.display_multiple_non_background_colored_vmobjects(
