@@ -2,7 +2,7 @@ Differences between Manim Versions
 ==================================
 
 While originally a single library, there are now three main versions of manim, 
-each with its own advantages, disadvantages, and ideal use cases. 
+each with their own advantages, disadvantages, and ideal use cases. 
 It is important to understand these differences in order to select the best version 
 for your use case and avoid confusion arising from version mismatches.
 
