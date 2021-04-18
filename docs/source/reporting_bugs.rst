@@ -25,9 +25,9 @@ steps:
    operating system, python version, and any stack traces that the code may
    have generated (if applicable).
 
-4. Please open an issue only after you have gathered this information.  When
+4. Please open an issue only after you have gathered this information. When
    submitting an issue, make sure to follow the template (this is the default
-   the text you are shown when first opening the 'New Issue' page).  A community
+   text you are shown when first opening the 'New Issue' page).  A community
    member will (hopefully) respond and start a conversation to address the
    issue.
 
