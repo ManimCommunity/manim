@@ -290,9 +290,82 @@ class Text(SVGMobject):
 
     Parameters
     ----------
-    text : :class:`str`
+    text
         The text that need to created as mobject.
+    fill_opacity
+        Changes the opacity of the text. 
+        This is passed to :class:`~.SVGMobject`.
+    stroke_width
+        Default stroke sidth while rendering SVG.
+        This is passed to :class:`~.SVGMobject`.
+    color
+        Set the colour of the Text.
+    size
+        Set the size of the Text in relative units
+        screen size.
+    line_spacing
+        Set's the spacing better two lines.
+        
+        .. SEEALSO::
 
+            :class:`~.Paragraph`
+    
+    font
+        The font family in which the text should be rendered.
+        The fonts family specified here should be installed
+        first or :func:`register_font` must be used to 
+        temporarily add the font file to search path.
+
+        .. note::
+
+            You can get a list of fonts families available on 
+            the system using ``manimpango.list_fonts()``.
+    
+    slant
+        Style's for the font. It can be either ``NORMAL``,
+        ``ITALIC`` or ``OBLIQUE``.
+    weight
+        Weight of the font.
+    gradient
+        The gradient to be applied on the Text. Should be in the
+        form of tuple.
+    tab_width
+        Conversion of tab's to spaces.
+        Defaults to ``4``.
+    disable_ligatures
+        Disable ligatures. See `What is Ligature? <https://en.wikipedia.org/wiki/Orthographic_ligature>`_.
+        Defaults to ``False``.
+    wrap_text
+        Disable wrapping of text when the line exceed the screen.
+        Defaults to ``True``.
+    scale_automatically
+        Disable automatic scaling. This is usually useful if you want
+        same font size across the video.
+        Defaults to ``True``.
+    t2c
+        Text to colour mappings.
+    t2f
+        Text to font mappings.
+    t2g
+        Text to gradient mappings.
+    t2s
+        Text to slant mappings.
+    t2w
+        Text to weight mappings.
+    height
+        Height of the :class:`~.Mobject`.
+        Defaults to ``config["pixel_height"]``
+    width
+        Width of the :class:`~.Mobject`.
+        Defaults to ``config["pixel_width"]``.
+    should_center
+        Align to the center of the screen.
+        Defaults to ``True``.
+    unpack_groups
+        Whether the hierarchies of VGroups generated should be flattened.
+        Defaults to ``True``.
+        Same as that of :class:`~SVGMobject`.
+    
     Returns
     -------
     :class:`Text`
@@ -398,16 +471,16 @@ class Text(SVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
-        t2c: Dict[str, str] = None,
-        t2f: Dict[str, str] = None,
-        t2g: Dict[str, tuple] = None,
-        t2s: Dict[str, str] = None,
-        t2w: Dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
         disable_ligatures: bool = False,
         wrap_text: bool = True,
         scale_automatically: bool = True,
+        t2c: Dict[str, str] = None,
+        t2f: Dict[str, str] = None,
+        t2g: Dict[str, tuple] = None,
+        t2s: Dict[str, str] = None,
+        t2w: Dict[str, str] = None,
         # Mobject
         height: float = config["pixel_height"],
         width: float = config["pixel_width"],
