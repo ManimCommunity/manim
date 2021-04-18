@@ -75,7 +75,7 @@ video playing the following animation.
            circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
            self.play(Create(circle))     # show the circle on screen
 
-If you see the video and it looks correct congrats! You just wrote your first
+If you see the video and it looks correct, congrats! You just wrote your first
 manim scene from scratch.  If you get an error message instead, or if do not
 see a video, or if the video output does not look like this, it is likely that
 manim has not been installed correctly. Please refer to the
