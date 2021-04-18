@@ -623,7 +623,8 @@ class StreamLines(VectorField):
         if (
             color_by_magnitude is None
             and stroke_color is None
-            or color_by_magnitude is not None and not color_by_magnitude
+            or color_by_magnitude is not None
+            and not color_by_magnitude
         ):
             self.color_by_magnitude = True
             self.color_gradient = get_color_gradient_function(
@@ -656,7 +657,7 @@ class StreamLines(VectorField):
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
             if self.color_by_magnitude:
-                #TODO This is buggy since multiple stroke colors are not applied along the path.
+                # TODO This is buggy since multiple stroke colors are not applied along the path.
                 color_func = lambda p: self.color_gradient(get_norm(self.func(p)))
                 line.set_stroke([color_func(p) for p in line.get_anchors()])
             else:
