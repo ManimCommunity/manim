@@ -13,7 +13,6 @@ __all__ = [
 ]
 
 import itertools as it
-from manim.utils.bezier import interpolate, inverse_interpolate
 import os
 import random
 from math import ceil, floor
@@ -24,6 +23,7 @@ from colour import Color
 from PIL import Image
 
 from manim.mobject.mobject import Mobject
+from manim.utils.bezier import interpolate, inverse_interpolate
 
 from .. import config, logger
 from ..animation.composition import AnimationGroup
