@@ -4,21 +4,22 @@ __all__ = [
     "VectorField",
     "ArrowVectorField",
     "StreamLines",
-    "ShowPassingFlashWithThinningStrokeWidth",
     "AnimatedStreamLines",
 ]
 
 import itertools as it
+from manim.animation.update import UpdateFromAlphaFunc, UpdateFromFunc
 import random
 from math import ceil, floor
-from typing import Callable, Optional, Sequence, Tuple
+from typing import Callable, Optional, Sequence, Tuple, Type
 
 import numpy as np
 from colour import Color
 from PIL import Image
 
 from .. import config
-from ..animation.composition import AnimationGroup
+from ..animation.animation import Animation, Wait
+from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import *
@@ -666,18 +667,21 @@ class StreamLines(VectorField):
                 or p[1] > self.y_max + self.padding
             )
 
-        max_steps = ceil(virtual_time / dt)
+        max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
         for point in start_points:
             points = [point]
-            for _ in range(max_steps):
+            for step in range(max_steps):
                 last_point = points[-1]
                 new_point = last_point + dt * func(last_point)
                 if outside_box(new_point):
                     break
                 points.append(new_point)
+            if step == 0:
+                continue
             line = VMobject()
+            line.duration = step * dt
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
             if self.single_color:
@@ -688,6 +692,7 @@ class StreamLines(VectorField):
                 line.color_using_background_image(self.background_img)
             line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
+        self.stream_lines = [*self.submobjects]
 
     def create(
         self,
@@ -736,48 +741,86 @@ class StreamLines(VectorField):
             lag_ratio = run_time / 2 / len(self.submobjects)
 
         animations = [
-            Create(line, run_time=run_time, **kwargs) for line in self.submobjects
+            Create(line, run_time=run_time, **kwargs) for line in self.stream_lines
         ]
         random.shuffle(animations)
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
+
+    def start_animation(
+        self,
+        warm_up=True,
+        speed: float = 1,
+        time_width: float = 0.3,
+        rate_func: Callable[[float], float] = linear,
+        line_animation_class: Type[ShowPassingFlash] = ShowPassingFlash,
+        **kwargs
+    ) -> None:
+        for line in self.stream_lines:
+            run_time = line.duration / speed
+            line.anim = line_animation_class(
+                line,
+                run_time=run_time,
+                rate_func=rate_func,
+                time_width=time_width,
+                **kwargs,
+            )
+            line.anim.begin()
+            line.time = random.random() * self.virtual_time
+            if warm_up:
+                line.time *= -1
+            self.add(line.anim.mobject)
+
+        def updater(mob, dt):
+            for line in mob.stream_lines:
+                line.time += dt * speed
+                if line.time >= self.virtual_time:
+                    line.time -= self.virtual_time
+                line.anim.interpolate(np.clip(line.time / line.anim.run_time, 0, 1))
+
+        self.add_updater(updater)
+        self.flow_animation = updater
+        self.flow_speed = speed
+
+    def fade_out_animation(self):
+        if self.flow_animation is None:
+            raise ValueError("You have to start the animation before fading it out.")
+
+        def hide_and_wait(mob, alpha):
+            if alpha == 0:
+                mob.set_stroke(opacity=0)
+            elif alpha == 1:
+                mob.set_stroke(opacity=1)
+
+        def finish_updater_cycle(line, alpha):
+                line.time += dt * self.flow_speed
+                line.anim.interpolate(min(line.time / line.anim.run_time, 1))
+                if alpha == 1:
+                    self.remove(line.anim.mobject)
+                    line.anim.finish()
+
+        max_run_time = self.virtual_time / self.flow_speed
+        dt = 1 / config["frame_rate"]
+        animations = []
+        self.remove_updater(self.flow_animation)
+        self.flow_animation = None
+
+        for line in self.stream_lines:
+            if(line.time <= 0):
+                animations.append(Succession(
+                    UpdateFromAlphaFunc(line, hide_and_wait, run_time=-line.time / self.flow_speed),
+                    Create(line, run_time=max_run_time/2, rate_func=linear)
+                ))
+                self.remove(line.anim.mobject)
+                line.anim.finish()
+            else:
+                remaining_time = max_run_time - line.time
+                animations.append(Succession(
+                    UpdateFromAlphaFunc(line, finish_updater_cycle, run_time=remaining_time),
+                    Create(line, run_time=max_run_time/2, rate_func=linear),
+                ))
+        return AnimationGroup(*animations)
 
 
 # TODO: Make it so that you can have a group of stream_lines
 # varying in response to a changing vector field, and still
 # animate the resulting flow
-
-
-# TODO, this is untested after turning it from a
-# ContinualAnimation into a VGroup
-class AnimatedStreamLines(VGroup):
-    def __init__(
-        self,
-        stream_lines,
-        lag_range=4,
-        line_anim_class=ShowPassingFlash,
-        line_anim_config={
-            "run_time": 4,
-            "rate_func": linear,
-            "time_width": 0.3,
-        },
-        **kwargs
-    ):
-        VGroup.__init__(self, **kwargs)
-        self.stream_lines = stream_lines
-        self.lag_range = lag_range
-        self.line_anim_class = line_anim_class
-        self.line_anim_config = line_anim_config
-        for line in stream_lines:
-            line.anim = self.line_anim_class(line, **self.line_anim_config)
-            line.anim.begin()
-            line.time = -self.lag_range * random.random()
-            self.add(line.anim.mobject)
-
-        self.add_updater(lambda m, dt: m.update(dt))
-
-    def update(self, dt):
-        stream_lines = self.stream_lines
-        for line in stream_lines:
-            line.time += dt
-            adjusted_time = max(line.time, 0) % line.anim.run_time
-            line.anim.interpolate(adjusted_time / line.anim.run_time)
