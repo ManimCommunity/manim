@@ -194,8 +194,6 @@ __all__ = [
     "Tex",
     "BulletedList",
     "Title",
-    "TexMobject",
-    "TextMobject",
 ]
 
 
