@@ -132,15 +132,6 @@ class FadeInAndOutTest(Scene):
         self.play(FadeOut(square))
 
 
-class BecomeStyleScene(Scene):
-    def construct(self):
-        circ = Circle(fill_color=RED, fill_opacity=0.8)
-        square = Square(fill_color=BLUE, fill_opacity=0.2)
-        self.add(circ)
-        circ.become_style(square)
-        self.wait()
-
-
 class MatchPointsScene(Scene):
     def construct(self):
         circ = Circle(fill_color=RED, fill_opacity=0.8)
