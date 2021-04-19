@@ -904,7 +904,7 @@ class StreamLines(VectorField):
                 self.remove(line.anim.mobject)
                 line.anim.finish()
             else:
-                remaining_time = max_run_time - line.time / self.flow_speed 
+                remaining_time = max_run_time - line.time / self.flow_speed
                 animations.append(
                     Succession(
                         UpdateFromAlphaFunc(
