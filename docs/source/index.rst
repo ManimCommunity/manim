@@ -35,7 +35,8 @@ information here will make it easier for newcomers to get started using
 
 .. SEEALSO::
 
-    :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.MathTex`, :class:`~.ValueTracker`
+    As a quick reference, here are some often used classes:
+    :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text`
 
 
 Navigation
