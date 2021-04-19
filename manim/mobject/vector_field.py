@@ -8,7 +8,6 @@ __all__ = [
 ]
 
 import itertools as it
-from manim.animation.update import UpdateFromAlphaFunc, UpdateFromFunc
 import random
 from math import ceil, floor
 from typing import Callable, Optional, Sequence, Tuple, Type
@@ -16,6 +15,8 @@ from typing import Callable, Optional, Sequence, Tuple, Type
 import numpy as np
 from colour import Color
 from PIL import Image
+
+from manim.animation.update import UpdateFromAlphaFunc, UpdateFromFunc
 
 from .. import config
 from ..animation.animation import Animation, Wait
@@ -792,11 +793,11 @@ class StreamLines(VectorField):
                 mob.set_stroke(opacity=1)
 
         def finish_updater_cycle(line, alpha):
-                line.time += dt * self.flow_speed
-                line.anim.interpolate(min(line.time / line.anim.run_time, 1))
-                if alpha == 1:
-                    self.remove(line.anim.mobject)
-                    line.anim.finish()
+            line.time += dt * self.flow_speed
+            line.anim.interpolate(min(line.time / line.anim.run_time, 1))
+            if alpha == 1:
+                self.remove(line.anim.mobject)
+                line.anim.finish()
 
         max_run_time = self.virtual_time / self.flow_speed
         dt = 1 / config["frame_rate"]
@@ -805,19 +806,27 @@ class StreamLines(VectorField):
         self.flow_animation = None
 
         for line in self.stream_lines:
-            if(line.time <= 0):
-                animations.append(Succession(
-                    UpdateFromAlphaFunc(line, hide_and_wait, run_time=-line.time / self.flow_speed),
-                    Create(line, run_time=max_run_time/2, rate_func=linear)
-                ))
+            if line.time <= 0:
+                animations.append(
+                    Succession(
+                        UpdateFromAlphaFunc(
+                            line, hide_and_wait, run_time=-line.time / self.flow_speed
+                        ),
+                        Create(line, run_time=max_run_time / 2, rate_func=linear),
+                    )
+                )
                 self.remove(line.anim.mobject)
                 line.anim.finish()
             else:
                 remaining_time = max_run_time - line.time
-                animations.append(Succession(
-                    UpdateFromAlphaFunc(line, finish_updater_cycle, run_time=remaining_time),
-                    Create(line, run_time=max_run_time/2, rate_func=linear),
-                ))
+                animations.append(
+                    Succession(
+                        UpdateFromAlphaFunc(
+                            line, finish_updater_cycle, run_time=remaining_time
+                        ),
+                        Create(line, run_time=max_run_time / 2, rate_func=linear),
+                    )
+                )
         return AnimationGroup(*animations)
 
 
