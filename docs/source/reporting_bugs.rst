@@ -10,7 +10,7 @@ steps:
 
 2. Search for other users who may have had similar issues in the
    past. Search the repository's `issues page <https://github.com/ManimCommunity/manim/issues>`_ (don't forget to search closed
-   issues), bring it up on out `Discord server <https://discord.gg/mMRrZQW>`_, use sites like StackOverflow, and exercise
+   issues), bring it up on our `Discord server <https://discord.gg/mMRrZQW>`_, use sites like StackOverflow, and exercise
    your best Google practices.  If you can't find anything helpful, then go to
    the next step.
 
@@ -25,7 +25,7 @@ steps:
    operating system, python version, and any stack traces that the code may
    have generated (if applicable).
 
-4. Please open an issue only after you have gathered this information.  When
+4. Please open an issue only after you have gathered this information. When
    submitting an issue, make sure to follow the template (this is the default
    text you are shown when first opening the 'New Issue' page).  A community
    member will (hopefully) respond and start a conversation to address the

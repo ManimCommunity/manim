@@ -2,7 +2,7 @@ A deeper look
 =============
 
 This document will focus on understanding manim's output files and some of the
-main command line flags available.
+main command-line flags available.
 
 .. note:: This tutorial picks up where :doc:`quickstart` left off, so please
           read that document before starting this one.
@@ -18,7 +18,7 @@ At this point, you have just executed the following command.
 
 Let's dissect what just happened step by step.  First, this command executes
 manim on the file ``scene.py``, which contains our animation code.  Further,
-this command tells manim exactly which ``Scene`` to be rendered, in this case
+this command tells manim exactly which ``Scene`` is to be rendered, in this case,
 it is ``SquareToCircle``.  This is necessary because a single scene file may
 contain more than one scene.  Next, the flag `-p` tells manim to play the scene
 once it's rendered, and the `-ql` flag tells manim to render the scene in low
@@ -162,8 +162,8 @@ can use the ``-f`` flag.  You can also omit these two flags.
 
 Finally, by default manim will output .mp4 files.  If you want your animations
 in .gif format instead, use the ``-i`` flag.  The output files will be in the
-same folder as the .mp4 files, and with the same name, but different file
+same folder as the .mp4 files, and with the same name, but a different file
 extension.
 
-This was a quick review of some of the most frequent command line flags.  For a
+This was a quick review of some of the most frequent command-line flags.  For a
 thorough review of all flags available, see :doc:`configuration`.

@@ -26,7 +26,7 @@ Some useful pytest flags:
 How it Works
 ~~~~~~~~~~~~
 
-At the moment there are three type of tests:
+At the moment there are three types of tests:
 
 #. Unit Tests:
 
@@ -44,7 +44,7 @@ At the moment there are three type of tests:
 
    As Manim is a video library, we have to test videos as well. Unfortunately,
    we cannot directly test video content as rendered videos can
-   differ slightly depending on system (for reasons related to
+   differ slightly depending on the system (for reasons related to
    ffmpeg). Therefore, we only compare video configuration values, exported in
    .json.
 
@@ -155,7 +155,7 @@ Unit Tests
 
 Pytest determines which functions are tests by searching for files whose
 names begin with "test\_", and then within those files for functions
-beginning with "test" and classes beginning with "Test". These kind of
+beginning with "test" and classes beginning with "Test". These kinds of
 tests must be in ``tests/`` (e.g. ``tests/test_container.py``).
 
 Graphical Unit Test
@@ -222,7 +222,7 @@ It will look something like this:
     set_test_scene(CircleTest, "geometry")
 
 ``set_test_scene`` takes two parameters: the scene to test, and the
-module name. You can generate the test data by running the file (it suffices to type the name of the file in terminal; you do not have to run
+module name. You can generate the test data by running the file (it suffices to type the name of the file in the terminal; you do not have to run
 it like how you would normally run manim files). It will automatically generate the control data in the
 right directory (in this case,
 ``tests/control_data/graphical_units_data/geometry/CircleTest.npz``).
