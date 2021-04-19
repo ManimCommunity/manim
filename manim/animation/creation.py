@@ -61,6 +61,8 @@ __all__ = [
     "ShowCreation",
     "Create",
     "Uncreate",
+    "Add",
+    "Remove",
     "DrawBorderThenFill",
     "Write",
     "Unwrite",
@@ -198,6 +200,105 @@ class Uncreate(Create):
         **kwargs,
     ) -> None:
         super().__init__(mobject, rate_func=rate_func, remover=remover, **kwargs)
+
+
+class Add(Animation):
+    """Adds a Mobject to the scene with no animated effect. This is functionally equivalent to :meth:`~.Scene.add`
+
+    Parameters
+    ----------
+    mobject : :class:`~.Mobject`
+        The Mobject to add.
+
+    Raises
+    ------
+    :class:`TypeError`
+        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLVMobject`.
+
+    Examples
+    --------
+    .. manim:: AddScene
+
+        class AddScene(Scene):
+            def construct(self):
+                self.wait(0.5)
+                self.play(Add(Square()))
+                self.wait(0.5)
+
+    See Also
+    --------
+    :class:`~.Create`
+    :meth:`~.Scene.add`
+
+    """
+
+    def __init__(self, mobject: Union[Mobject, OpenGLVMobject]) -> None:
+        super().__init__(mobject)
+
+    def begin(self) -> None:
+        pass
+
+    def finish(self) -> None:
+        pass
+
+    def clean_up_from_scene(self, scene: "Scene") -> None:
+        scene.add(self.mobject)
+
+    def update_mobjects(self, dt: float) -> None:
+        pass
+
+    def interpolate(self, alpha: float) -> None:
+        pass
+
+
+class Remove(Animation):
+    """Removes a Mobject from the scene with no animated effect. This is functionally equivalent to :meth:`~.Scene.remove`
+
+    Parameters
+    ----------
+    mobject : :class:`~.Mobject`
+        The Mobject to remove.
+
+    Raises
+    ------
+    :class:`TypeError`
+        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLVMobject`.
+
+    Examples
+    --------
+    .. manim:: RemoveScene
+
+        class RemoveScene(Scene):
+            def construct(self):
+                square = Square()
+                self.add(square)
+                self.wait(0.5)
+                self.play(Remove(square))
+                self.wait(0.5)
+
+    See Also
+    --------
+    :class:`~.Uncreate`
+    :meth:`~.Scene.remove`
+
+    """
+    def __init__(self, mobject: Union[Mobject, OpenGLVMobject]) -> None:
+        super().__init__(mobject)
+
+    def begin(self) -> None:
+        pass
+
+    def finish(self) -> None:
+        pass
+
+    def clean_up_from_scene(self, scene: "Scene") -> None:
+        scene.remove(self.mobject)
+
+    def update_mobjects(self, dt: float) -> None:
+        pass
+
+    def interpolate(self, alpha: float) -> None:
+        pass
 
 
 class DrawBorderThenFill(Animation):
