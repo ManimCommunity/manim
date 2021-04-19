@@ -2293,7 +2293,7 @@ class Mobject(Container):
 
         Examples
         --------
-        .. manim:: BecomeScene
+        .. manim:: MatchPointsScene
 
             class MatchPointsScene(Scene):
                 def construct(self):
