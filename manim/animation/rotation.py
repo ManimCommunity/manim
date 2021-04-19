@@ -2,6 +2,7 @@
 
 __all__ = ["Rotating", "Rotate"]
 
+import typing
 from typing import Callable, Optional, Sequence
 
 import numpy as np
