@@ -31,8 +31,8 @@ class InCodeTexTemplate(Scene):
         # Set the compiler and output format (default: latex and .dvi)
         # possible tex compilers: "latex", "pdflatex", "xelatex", "lualatex", "luatex"
         # possible output formats: ".dvi",  ".pdf", and ".xdv"
-        myTemplate.tex_compiler = "pdflatex"
-        myTemplate.output_format = ".pdf"
+        myTemplate.tex_compiler = "latex"
+        myTemplate.output_format = ".dvi"
 
         # To use this template in a Tex() or MathTex() object
         # use the keyword argument tex_template
