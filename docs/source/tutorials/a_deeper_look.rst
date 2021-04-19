@@ -50,7 +50,7 @@ the video was generated at 480 resolution at 15 frames per second from the
 ``scene.py`` file.  Therefore, the output can be found inside
 ``media/videos/scene/480p15``.  The additional folders
 ``media/videos/scene/480p15/partial_movie_files`` as well as ``media/text`` and
-``media/Tex``contain files that are used by manim internally.
+``media/Tex`` contain files that are used by manim internally.
 
 You can see how manim makes use of the generated folder structure by executing
 the following command,
