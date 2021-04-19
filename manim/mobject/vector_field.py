@@ -820,8 +820,8 @@ class StreamLines(VectorField):
         self.flow_speed = flow_speed
         self.time_width = time_width
 
-    def fade_out_animation(self) -> AnimationGroup:
-        """Fade out the stream line animation.
+    def end_animation(self) -> AnimationGroup:
+        """End the stream line animation smoothly.
 
         Returns an animation resulting in fully displayed stream lines without a noticable cut.
 
@@ -838,9 +838,9 @@ class StreamLines(VectorField):
         Examples
         --------
 
-        .. manim:: FadeOutAnimation
+        .. manim:: EndAnimation
 
-            class FadeOutAnimation(Scene):
+            class EndAnimation(Scene):
                 def construct(self):
                     func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
                     stream_lines = StreamLines(
@@ -851,7 +851,7 @@ class StreamLines(VectorField):
                     self.add(stream_lines)
                     stream_lines.start_animation(warm_up=False, flow_speed=1.5)
                     self.wait(2)
-                    self.play(stream_lines.fade_out_animation())
+                    self.play(stream_lines.end_animation())
                     self.wait()
 
         """
