@@ -15,25 +15,20 @@ import numpy as np
 from colour import Color
 from PIL import Image
 
-from manim.animation.update import UpdateFromAlphaFunc, UpdateFromFunc
-
 from .. import config
-from ..animation.animation import Animation, Wait
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
+from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.geometry import Vector
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
-from ..utils.rate_functions import ease_out_sine, linear, rush_from, rush_into
+from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
 from ..utils.space_ops import get_norm
-
-# from ..utils.space_ops import normalize
-
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
