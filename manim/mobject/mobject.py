@@ -2287,7 +2287,7 @@ class Mobject(Container):
             sm1.interpolate_color(sm1, sm2, 1)
         return self
 
-    def become_points(self, mobject: "Mobject", copy_submobjects: bool = True):
+    def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
         """Edit points, positions, and submobjects to be identical
         to another :class:`~.Mobject`, while keeping the style unchanged.
 
@@ -2295,13 +2295,13 @@ class Mobject(Container):
         --------
         .. manim:: BecomeScene
 
-            class BecomePointsScene(Scene):
+            class MatchPointsScene(Scene):
                 def construct(self):
                     circ = Circle(fill_color=RED, fill_opacity=0.8)
                     square = Square(fill_color=BLUE, fill_opacity=0.2)
                     self.add(circ)
                     self.wait(0.5)
-                    circ.become_points(square)
+                    circ.match_points(square)
                     self.wait(0.5)
         """
         self.align_data(mobject)
