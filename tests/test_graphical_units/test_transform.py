@@ -136,9 +136,7 @@ class MatchPointsScene(Scene):
     def construct(self):
         circ = Circle(fill_color=RED, fill_opacity=0.8)
         square = Square(fill_color=BLUE, fill_opacity=0.2)
-        self.add(circ)
-        circ.match_points(square)
-        self.wait()
+        self.play(circ.animate.match_points(square))
 
 
 class AnimationBuilderTest(Scene):

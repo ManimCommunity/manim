@@ -2301,7 +2301,7 @@ class Mobject(Container):
                     square = Square(fill_color=BLUE, fill_opacity=0.2)
                     self.add(circ)
                     self.wait(0.5)
-                    circ.match_points(square)
+                    self.play(circ.animate.match_points(square))
                     self.wait(0.5)
         """
         self.align_data(mobject)
