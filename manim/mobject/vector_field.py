@@ -7,7 +7,6 @@ __all__ = [
 ]
 
 import itertools as it
-from manim.animation.update import UpdateFromAlphaFunc, UpdateFromFunc
 import random
 from math import ceil, floor
 from typing import Callable, Optional, Sequence, Tuple, Type
@@ -15,6 +14,8 @@ from typing import Callable, Optional, Sequence, Tuple, Type
 import numpy as np
 from colour import Color
 from PIL import Image
+
+from manim.animation.update import UpdateFromAlphaFunc, UpdateFromFunc
 
 from .. import config
 from ..animation.animation import Animation, Wait
