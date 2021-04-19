@@ -280,6 +280,7 @@ class Remove(Animation):
     :meth:`~.Scene.remove`
 
     """
+
     def __init__(self, mobject: Union[Mobject, OpenGLMobject]) -> None:
         super().__init__(mobject)
 
