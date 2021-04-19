@@ -9,7 +9,6 @@ __all__ = [
 ]
 
 import itertools as it
-import os
 import random
 from math import ceil, floor
 from typing import Callable, Optional, Sequence, Tuple
@@ -18,21 +17,19 @@ import numpy as np
 from colour import Color
 from PIL import Image
 
-from manim.mobject.mobject import Mobject
-from manim.utils.bezier import interpolate, inverse_interpolate
-
-from .. import config, logger
+from .. import config
 from ..animation.composition import AnimationGroup
+from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import *
 from ..mobject.geometry import Vector
+from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
-    BLUE,
     BLUE_E,
     GREEN,
     RED,
-    WHITE,
     YELLOW,
     color_to_rgb,
     rgb_to_color,
@@ -572,11 +569,36 @@ class StreamLines(VectorField):
     --------
 
     .. manim:: BasicUsage
+        :save_last_frame:
 
         class BasicUsage(Scene):
             def construct(self):
+                func = lambda pos: (pos[0]*UR+pos[1]*LEFT) - pos
+                self.add(StreamLines(func))
+
+    .. manim:: SpawningAndFlowingArea
+        :save_last_frame:
+
+        class SpawningAndFlowingArea(Scene):
+            def construct(self):
                 func = lambda pos: np.sin(pos[0])*UR+np.cos(pos[1])*LEFT+pos/5
-                self.add(StreamLines(func, color=WHITE))
+                stream_lines = StreamLines(
+                    func,
+                    x_min=-3, x_max=3, delta_x=0.2,
+                    y_min=-2, y_max=2, delta_y=0.2,
+                    padding=1
+                )
+
+                spawning_area = Rectangle(width=6, height=4)
+                flowing_area = Rectangle(width=8, height=6)
+                labels = [
+                    Tex("Spawning Area"),
+                    Tex("Flowing Area").shift(DOWN*2.5)
+                ]
+                for lbl in labels:
+                    lbl.add_background_rectangle(opacity=0.6, buff=0.05)
+
+                self.add(stream_lines, spawning_area, flowing_area, *labels)
 
     """
 
@@ -603,7 +625,7 @@ class StreamLines(VectorField):
         dt=0.05,
         virtual_time=3,
         max_anchors_per_line=100,
-        padding=0,
+        padding=3,
         # Determining stream line appearance:
         stroke_width=1,
         opacity=1,
@@ -626,11 +648,22 @@ class StreamLines(VectorField):
         self.delta_y = delta_y
         self.noise_factor = noise_factor if noise_factor is not None else delta_y / 2
         self.n_repeats = n_repeats
+        self.virtual_time = virtual_time
         self.max_anchors_per_line = max_anchors_per_line
         self.padding = padding
         self.stroke_width = stroke_width
 
-        start_points = self.get_start_points()
+        half_noise = self.noise_factor / 2
+        start_points = np.array(
+            [
+                (x - half_noise) * RIGHT
+                + (y - half_noise) * UP
+                + self.noise_factor * np.random.random(3)
+                for n in range(self.n_repeats)
+                for x in np.arange(self.x_min, self.x_max + self.delta_x, self.delta_x)
+                for y in np.arange(self.y_min, self.y_max + self.delta_y, self.delta_y)
+            ]
+        )
 
         def outside_box(p):
             return (
@@ -647,9 +680,10 @@ class StreamLines(VectorField):
             points = [point]
             for _ in range(max_steps):
                 last_point = points[-1]
-                points.append(last_point + dt * func(last_point))
-                if outside_box(last_point):
+                new_point = last_point + dt * func(last_point)
+                if outside_box(new_point):
                     break
+                points.append(new_point)
             line = VMobject()
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
@@ -662,18 +696,57 @@ class StreamLines(VectorField):
             line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
 
-    def get_start_points(self):
-        half_noise = self.noise_factor / 2
-        return np.array(
-            [
-                (x - half_noise) * RIGHT
-                + (y - half_noise) * UP
-                + self.noise_factor * np.random.random(3)
-                for n in range(self.n_repeats)
-                for x in np.arange(self.x_min, self.x_max + self.delta_x, self.delta_x)
-                for y in np.arange(self.y_min, self.y_max + self.delta_y, self.delta_y)
-            ]
-        )
+    def create(
+        self,
+        lag_ratio: Optional[float] = None,
+        run_time: Optional[Callable[[float], float]] = None,
+        **kwargs
+    ) -> AnimationGroup:
+        """The creation animation of the stream lines.
+
+        The stream lines appear in random order.
+
+        Parameters
+        ----------
+        lag_ratio
+            The lag ratio ot the animation.
+            If undefined, it will be selected so that the total animation length is 1.5 times the run time of each stream line creation.
+        run_time
+            The run time of every single stream line creation. The runtime of the whole animation might be longer due to the `lag_ratio`.
+            If undefined, the virtual time of the stream lines is used as run time.
+
+        Returns
+        -------
+        :class:`~.AnimationGroup`
+            The creation animation of the stream lines.
+
+        Examples
+        --------
+
+        .. manim:: StreamLineCreation
+
+            class StreamLineCreation(Scene):
+                def construct(self):
+                    func = lambda pos: (pos[0]*UR+pos[1]*LEFT) - pos
+                    stream_lines = StreamLines(
+                        func,
+                        delta_x=1, delta_y=1, stroke_width=3,
+                        virtual_time=1,          # use shorter lines
+                        max_anchors_per_line=30, #better performance with fewer anchors
+                    )
+                    self.play(stream_lines.create()) # uses virtual_time as run_time
+
+        """
+        if run_time is None:
+            run_time = self.virtual_time
+        if lag_ratio is None:
+            lag_ratio = run_time / 2 / len(self.submobjects)
+
+        animations = [
+            Create(line, run_time=run_time, **kwargs) for line in self.submobjects
+        ]
+        random.shuffle(animations)
+        return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
 
 # TODO: Make it so that you can have a group of stream_lines
