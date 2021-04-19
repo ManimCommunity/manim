@@ -835,6 +835,25 @@ class StreamLines(VectorField):
         ValueError
             if no stream line animation is running
 
+        Examples
+        --------
+
+        .. manim:: FadeOutAnimation
+
+            class FadeOutAnimation(Scene):
+                def construct(self):
+                    func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
+                    stream_lines = StreamLines(
+                        func, stroke_width=3,
+                        max_anchors_per_line=30,
+                        max_color_scheme_value=5
+                    )
+                    self.add(stream_lines)
+                    stream_lines.start_animation(warm_up=False, flow_speed=1.5)
+                    self.wait(2)
+                    self.play(stream_lines.fade_out_animation())
+                    self.wait()
+
         """
 
         if self.flow_animation is None:
@@ -885,7 +904,7 @@ class StreamLines(VectorField):
                 self.remove(line.anim.mobject)
                 line.anim.finish()
             else:
-                remaining_time = (max_run_time - line.time) / self.flow_speed
+                remaining_time = max_run_time - line.time / self.flow_speed 
                 animations.append(
                     Succession(
                         UpdateFromAlphaFunc(
@@ -897,6 +916,4 @@ class StreamLines(VectorField):
         return AnimationGroup(*animations)
 
 
-# TODO: Make it so that you can have a group of stream_lines
-# varying in response to a changing vector field, and still
-# animate the resulting flow
+# TODO: Variant of StreamLines that is able to respond to changes in the vector field function
