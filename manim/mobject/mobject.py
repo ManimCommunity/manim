@@ -2274,8 +2274,8 @@ class Mobject(Container):
 
             class BecomeScene(Scene):
                 def construct(self):
-                    circ = Circle(fill_color=RED)
-                    square = Square(fill_color=BLUE)
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
                     self.add(circ)
                     self.wait(0.5)
                     circ.become(square)
@@ -2284,6 +2284,50 @@ class Mobject(Container):
         self.align_data(mobject)
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
+            sm1.interpolate_color(sm1, sm2, 1)
+        return self
+
+    def become_points(self, mobject: "Mobject", copy_submobjects: bool = True):
+        """Edit points, positions, and submobjects to be identical
+        to another :class:`~.Mobject`, while keeping the style unchanged.
+
+        Examples
+        --------
+        .. manim:: BecomeScene
+
+            class BecomePointsScene(Scene):
+                def construct(self):
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
+                    self.add(circ)
+                    self.wait(0.5)
+                    circ.become_points(square)
+                    self.wait(0.5)
+        """
+        self.align_data(mobject)
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+            sm1.points = np.array(sm2.points)
+        return self
+
+    def become_style(self, mobject: "Mobject", copy_submobjects: bool = True):
+        """Edit colors and style to be identical
+        to another :class:`~.Mobject`, while keeping the position and points unchanged.
+
+        Examples
+        --------
+        .. manim:: BecomeScene
+
+            class BecomeStyleScene(Scene):
+                def construct(self):
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
+                    self.add(circ)
+                    self.wait(0.5)
+                    circ.become_style(square)
+                    self.wait(0.5)
+        """
+        self.align_data(mobject)
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.interpolate_color(sm1, sm2, 1)
         return self
 
