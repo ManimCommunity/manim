@@ -275,6 +275,7 @@ class ManimConfig(MutableMapping):
         "show_in_file_browser",
         "tex_dir",
         "tex_template_file",
+        "text_scale_automatically",
         "text_dir",
         "upto_animation_number",
         "renderer",
@@ -507,6 +508,7 @@ class ManimConfig(MutableMapping):
             "custom_folders",
             "use_opengl_renderer",
             "use_webgl_renderer",
+            "text_scale_automatically",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -635,6 +637,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "use_opengl_renderer",
             "use_webgl_renderer",
+            "text_scale_automatically",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1055,6 +1058,14 @@ class ManimConfig(MutableMapping):
                 "individually. (write_to_movie, write_all, "
                 "save_last_frame, save_pngs, or save_as_gif)"
             )
+
+    @property
+    def text_scale_automatically(self):
+        return self._d["text_scale_automatically"]
+
+    @text_scale_automatically.setter
+    def text_scale_automatically(self, val: bool) -> None:
+        self._d["text_scale_automatically"] = val
 
     @property
     def renderer(self):

@@ -11,7 +11,7 @@ Examples
 
     class HelloWorld(Scene):
         def construct(self):
-            text = Text('Hello world').scale(3)
+            text = Text('Hello world')
             self.add(text)
 
 .. manim:: TextAlignment
@@ -23,16 +23,16 @@ Examples
             title.scale_in_place(0.75)
             self.add(title.to_edge(UP))
 
-            t1 = Text("1. Measuring").set_color(WHITE)
+            t1 = Text("1. Measuring", scale_automatically=False).set_color(WHITE)
             t1.next_to(ORIGIN, direction=RIGHT, aligned_edge=UP)
 
-            t2 = Text("2. Clustering").set_color(WHITE)
+            t2 = Text("2. Clustering", scale_automatically=False).set_color(WHITE)
             t2.next_to(t1, direction=DOWN, aligned_edge=LEFT)
 
-            t3 = Text("3. Regression").set_color(WHITE)
+            t3 = Text("3. Regression", scale_automatically=False).set_color(WHITE)
             t3.next_to(t2, direction=DOWN, aligned_edge=LEFT)
 
-            t4 = Text("4. Prediction").set_color(WHITE)
+            t4 = Text("4. Prediction", scale_automatically=False).set_color(WHITE)
             t4.next_to(t3, direction=DOWN, aligned_edge=LEFT)
 
             x = VGroup(t1, t2, t3, t4).scale_in_place(0.7)
@@ -293,7 +293,7 @@ class Text(SVGMobject):
     text
         The text that need to created as mobject.
     fill_opacity
-        Changes the opacity of the text. 
+        Changes the opacity of the text.
         This is passed to :class:`~.SVGMobject`.
     stroke_width
         Default stroke sidth while rendering SVG.
@@ -305,22 +305,22 @@ class Text(SVGMobject):
         screen size.
     line_spacing
         Set's the spacing better two lines.
-        
+
         .. SEEALSO::
 
-            :class:`~.Paragraph`
-    
+            :class:`~.Paragraph` for working with Paragraphs.
+
     font
         The font family in which the text should be rendered.
         The fonts family specified here should be installed
-        first or :func:`register_font` must be used to 
+        first or :func:`register_font` must be used to
         temporarily add the font file to search path.
 
         .. note::
 
-            You can get a list of fonts families available on 
+            You can get a list of fonts families available on
             the system using ``manimpango.list_fonts()``.
-    
+
     slant
         Style's for the font. It can be either ``NORMAL``,
         ``ITALIC`` or ``OBLIQUE``.
@@ -365,7 +365,7 @@ class Text(SVGMobject):
         Whether the hierarchies of VGroups generated should be flattened.
         Defaults to ``True``.
         Same as that of :class:`~SVGMobject`.
-    
+
     Returns
     -------
     :class:`Text`
@@ -379,7 +379,7 @@ class Text(SVGMobject):
 
         class Example1Text(Scene):
             def construct(self):
-                text = Text('Hello world').scale(3)
+                text = Text('Hello world')
                 self.add(text)
 
     .. manim:: TextColorExample
@@ -387,8 +387,8 @@ class Text(SVGMobject):
 
         class TextColorExample(Scene):
             def construct(self):
-                text1 = Text('Hello world', color=BLUE).scale(3)
-                text2 = Text('Hello world', gradient=(BLUE, GREEN)).scale(3).next_to(text1, DOWN)
+                text1 = Text('Hello world', color=BLUE)
+                text2 = Text('Hello world', gradient=(BLUE, GREEN)).next_to(text1, DOWN)
                 self.add(text1, text2)
 
     .. manim:: TextItalicAndBoldExample
@@ -396,6 +396,7 @@ class Text(SVGMobject):
 
         class TextItalicAndBoldExample(Scene):
             def construct(self):
+                config["text_scale_automatically"] = False
                 text0 = Text('Hello world', slant=ITALIC)
                 text1 = Text('Hello world', t2s={'world':ITALIC})
                 text2 = Text('Hello world', weight=BOLD)
@@ -414,7 +415,7 @@ class Text(SVGMobject):
                         'Google',
                         t2c={'[:1]': '#3174f0', '[1:2]': '#e53125',
                              '[2:3]': '#fbb003', '[3:4]': '#3174f0',
-                             '[4:5]': '#269a43', '[5:]': '#e53125'}, size=1.2).scale(3)
+                             '[4:5]': '#269a43', '[5:]': '#e53125'}, size=1.2)
                     self.add(text1)
 
     As :class:`Text` uses Pango to render text, rendering non-English
@@ -425,6 +426,7 @@ class Text(SVGMobject):
 
         class MultipleFonts(Scene):
             def construct(self):
+                config["text_scale_automatically"] = False
                 morning = Text("வணக்கம்", font="sans-serif")
                 chin = Text(
                     "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
@@ -497,6 +499,7 @@ class Text(SVGMobject):
         self.tab_width = tab_width
         self.wrap_text = wrap_text
 
+        scale_automatically = config["text_scale_automatically"]
         if scale_automatically:
             self.svg_width = width
             self.svg_height = height
