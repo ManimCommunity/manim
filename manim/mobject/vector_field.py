@@ -747,7 +747,6 @@ class StreamLines(VectorField):
 # animate the resulting flow
 
 
-
 # TODO, this is untested after turning it from a
 # ContinualAnimation into a VGroup
 class AnimatedStreamLines(VGroup):

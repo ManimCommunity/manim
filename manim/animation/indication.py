@@ -230,6 +230,7 @@ class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
             ],
         )
 
+
 class ShowCreationThenDestruction(ShowPassingFlash):
     def __init__(
         self, mobject: "Mobject", time_width: float = 2.0, run_time: float = 1, **kwargs
