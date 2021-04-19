@@ -4,7 +4,6 @@ __all__ = [
     "VectorField",
     "ArrowVectorField",
     "StreamLines",
-    "AnimatedStreamLines",
 ]
 
 import itertools as it
@@ -28,7 +27,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
-from ..utils.rate_functions import linear
+from ..utils.rate_functions import ease_out_sine, linear, rush_from, rush_into
 from ..utils.simple_functions import sigmoid
 from ..utils.space_ops import get_norm
 
@@ -254,7 +253,7 @@ class VectorField(VGroup):
         Parameters
         ----------
         speed
-            At `speed=1` the distance a mobject moves is equal to the magnitude of the vector field along it's path. The speed value scales the speed of such a mobject.
+            At `speed=1` the distance a mobject moves per second is equal to the magnitude of the vector field along it's path. The speed value scales the speed of such a mobject.
         pointwise
             Whether to move the mobject along the vector field. See :meth:`nudge` for details.
 
@@ -399,7 +398,7 @@ class ArrowVectorField(VectorField):
 
         class BasicUsage(Scene):
             def construct(self):
-                func = lambda pos: pos[1]*RIGHT/2+pos[0]*UP/3
+                func = lambda pos: ((pos[0]*UR+pos[1]*LEFT)-pos)/3
                 self.add(ArrowVectorField(func))
 
     .. manim:: SizingAndSpacing
@@ -567,7 +566,7 @@ class StreamLines(VectorField):
 
         class BasicUsage(Scene):
             def construct(self):
-                func = lambda pos: (pos[0]*UR+pos[1]*LEFT) - pos
+                func = lambda pos: ((pos[0]*UR+pos[1]*LEFT) - pos)/3
                 self.add(StreamLines(func))
 
     .. manim:: SpawningAndFlowingArea
@@ -648,6 +647,7 @@ class StreamLines(VectorField):
         self.stroke_width = stroke_width
 
         half_noise = self.noise_factor / 2
+        np.random.seed(0)
         start_points = np.array(
             [
                 (x - half_noise) * RIGHT
@@ -728,11 +728,13 @@ class StreamLines(VectorField):
                     func = lambda pos: (pos[0]*UR+pos[1]*LEFT) - pos
                     stream_lines = StreamLines(
                         func,
+                        max_color_scheme_value=5,
                         delta_x=1, delta_y=1, stroke_width=3,
                         virtual_time=1,          # use shorter lines
                         max_anchors_per_line=30, #better performance with fewer anchors
                     )
                     self.play(stream_lines.create()) # uses virtual_time as run_time
+                    self.wait()
 
         """
         if run_time is None:
@@ -749,14 +751,49 @@ class StreamLines(VectorField):
     def start_animation(
         self,
         warm_up=True,
-        speed: float = 1,
+        flow_speed: float = 1,
         time_width: float = 0.3,
         rate_func: Callable[[float], float] = linear,
         line_animation_class: Type[ShowPassingFlash] = ShowPassingFlash,
         **kwargs
     ) -> None:
+        """Animates the stream lines using an updater.
+
+        The stream lines will continously flow
+
+        Parameters
+        ----------
+        warm_up : bool, optional
+            If `True` the animation is initialized line by line. Otherwise it starts with all lines shown.
+        flow_speed
+            At `flow_speed=1` the distance the flow moves per second is equal to the magnitude of the vector field along it's path. The speed value scales the speed of this flow.
+        time_width
+            The proportion of the stream line shown while beeing animated
+        rate_func
+            The rate function of each stream line flashing
+        line_animation_class
+            The animation class beeing used
+
+        Examples
+        --------
+
+        .. manim:: ContinuousMotion
+
+            class ContinuousMotion(Scene):
+                def construct(self):
+                    func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
+                    stream_lines = StreamLines(
+                        func, stroke_width=3,
+                        max_anchors_per_line=30
+                    )
+                    self.add(stream_lines)
+                    stream_lines.start_animation(warm_up=False, flow_speed=1.5)
+                    self.wait(stream_lines.virtual_time / stream_lines.flow_speed)
+
+        """
+
         for line in self.stream_lines:
-            run_time = line.duration / speed
+            run_time = line.duration / flow_speed
             line.anim = line_animation_class(
                 line,
                 run_time=run_time,
@@ -772,16 +809,33 @@ class StreamLines(VectorField):
 
         def updater(mob, dt):
             for line in mob.stream_lines:
-                line.time += dt * speed
+                line.time += dt * flow_speed
                 if line.time >= self.virtual_time:
                     line.time -= self.virtual_time
                 line.anim.interpolate(np.clip(line.time / line.anim.run_time, 0, 1))
 
         self.add_updater(updater)
         self.flow_animation = updater
-        self.flow_speed = speed
+        self.flow_speed = flow_speed
+        self.time_width = time_width
 
-    def fade_out_animation(self):
+    def fade_out_animation(self) -> AnimationGroup:
+        """Fade out the stream line animation.
+
+        Returns an animation resulting in fully displayed stream lines without a noticable cut.
+
+        Returns
+        -------
+        :class:`~.AnimationGroup`
+            The animation fading out the running stream animation.
+
+        Raises
+        ------
+        ValueError
+            if no stream line animation is running
+
+        """
+
         if self.flow_animation is None:
             raise ValueError("You have to start the animation before fading it out.")
 
@@ -792,32 +846,53 @@ class StreamLines(VectorField):
                 mob.set_stroke(opacity=1)
 
         def finish_updater_cycle(line, alpha):
-                line.time += dt * self.flow_speed
-                line.anim.interpolate(min(line.time / line.anim.run_time, 1))
-                if alpha == 1:
-                    self.remove(line.anim.mobject)
-                    line.anim.finish()
+            line.time += dt * self.flow_speed
+            line.anim.interpolate(min(line.time / line.anim.run_time, 1))
+            if alpha == 1:
+                self.remove(line.anim.mobject)
+                line.anim.finish()
 
         max_run_time = self.virtual_time / self.flow_speed
+        creation_rate_func = ease_out_sine
+        creation_staring_speed = creation_rate_func(0.001) * 1000
+        creation_run_time = (
+            max_run_time / (1 + self.time_width) * creation_staring_speed
+        )
+        # creation_run_time is calculated so that the creation animation starts at the same speed
+        # as the regular line flash animation but eases out.
+
         dt = 1 / config["frame_rate"]
         animations = []
         self.remove_updater(self.flow_animation)
         self.flow_animation = None
 
         for line in self.stream_lines:
-            if(line.time <= 0):
-                animations.append(Succession(
-                    UpdateFromAlphaFunc(line, hide_and_wait, run_time=-line.time / self.flow_speed),
-                    Create(line, run_time=max_run_time/2, rate_func=linear)
-                ))
+            create = Create(
+                line,
+                run_time=creation_run_time,
+                rate_func=creation_rate_func,
+            )
+            if line.time <= 0:
+                animations.append(
+                    Succession(
+                        UpdateFromAlphaFunc(
+                            line, hide_and_wait, run_time=-line.time / self.flow_speed
+                        ),
+                        create,
+                    )
+                )
                 self.remove(line.anim.mobject)
                 line.anim.finish()
             else:
-                remaining_time = max_run_time - line.time
-                animations.append(Succession(
-                    UpdateFromAlphaFunc(line, finish_updater_cycle, run_time=remaining_time),
-                    Create(line, run_time=max_run_time/2, rate_func=linear),
-                ))
+                remaining_time = (max_run_time - line.time) / self.flow_speed
+                animations.append(
+                    Succession(
+                        UpdateFromAlphaFunc(
+                            line, finish_updater_cycle, run_time=remaining_time
+                        ),
+                        create,
+                    )
+                )
         return AnimationGroup(*animations)
 
 
