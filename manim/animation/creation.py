@@ -213,7 +213,7 @@ class Add(Animation):
     Raises
     ------
     :class:`TypeError`
-        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLVMobject`.
+        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLMobject`.
 
     Examples
     --------
@@ -223,7 +223,6 @@ class Add(Animation):
             def construct(self):
                 self.wait(0.5)
                 self.play(Add(Square()))
-                self.wait(0.5)
 
     See Also
     --------
@@ -232,7 +231,7 @@ class Add(Animation):
 
     """
 
-    def __init__(self, mobject: Union[Mobject, OpenGLVMobject]) -> None:
+    def __init__(self, mobject: Union[Mobject, OpenGLMobject]) -> None:
         super().__init__(mobject)
 
     def begin(self) -> None:
@@ -262,7 +261,7 @@ class Remove(Animation):
     Raises
     ------
     :class:`TypeError`
-        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLVMobject`.
+        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLMobject`.
 
     Examples
     --------
@@ -274,7 +273,6 @@ class Remove(Animation):
                 self.add(square)
                 self.wait(0.5)
                 self.play(Remove(square))
-                self.wait(0.5)
 
     See Also
     --------
@@ -282,7 +280,7 @@ class Remove(Animation):
     :meth:`~.Scene.remove`
 
     """
-    def __init__(self, mobject: Union[Mobject, OpenGLVMobject]) -> None:
+    def __init__(self, mobject: Union[Mobject, OpenGLMobject]) -> None:
         super().__init__(mobject)
 
     def begin(self) -> None:
