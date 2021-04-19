@@ -162,18 +162,19 @@ def render(
         except Exception:
             logger.debug(f"Something went wrong: {warn_prompt}")
 
-        try:
-            stable = req_info.json()["info"]["version"]
+        if req_info.ok:
+            try:
+                stable = req_info.json()["info"]["version"]
 
-            if stable != __version__:
-                console.print(
-                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
-                )
-                console.print(
-                    "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
-                )
-        except json.JSONDecodeError:
-            logger.debug(warn_prompt)
-            logger.debug(f"Error decoding JSON from {manim_info_url}")
+                if stable != __version__:
+                    console.print(
+                        f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
+                    )
+                    console.print(
+                        "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
+                    )
+            except json.JSONDecodeError:
+                logger.debug(warn_prompt)
+                logger.debug(f"Error decoding JSON from {manim_info_url}")
 
     return args
