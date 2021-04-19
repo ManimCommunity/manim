@@ -220,7 +220,7 @@ def prepare_animation(
                 fade_in = animation.animation.prepare_animation(FadeIn(square))
                 self.play(fade_in)
                 self.wait(2)
-                complex_animation = animation.animation.prepare_animation(s.animate.scale(2).rotate(42))
+                complex_animation = animation.animation.prepare_animation(square.animate.scale(2).rotate(42))
                 self.play(complex_animation)
     """
     if isinstance(anim, mobject._AnimationBuilder):
