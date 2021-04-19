@@ -6,6 +6,7 @@ __all__ = [
     "Flash",
     "CircleIndicate",
     "ShowPassingFlash",
+    "ShowPassingFlashWithThinningStrokeWidth",
     "ShowCreationThenDestruction",
     "ShowCreationThenFadeOut",
     "AnimationOnSurroundingRectangle",
@@ -206,6 +207,28 @@ class ShowPassingFlash(ShowPartial):
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
 
+
+class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
+    def __init__(self, vmobject, n_segments=10, time_width=0.1, remover=True, **kwargs):
+        self.n_segments = n_segments
+        self.time_width = time_width
+        self.remover = remover
+        max_stroke_width = vmobject.get_stroke_width()
+        max_time_width = kwargs.pop("time_width", self.time_width)
+        AnimationGroup.__init__(
+            self,
+            *[
+                ShowPassingFlash(
+                    vmobject.deepcopy().set_stroke(width=stroke_width),
+                    time_width=time_width,
+                    **kwargs,
+                )
+                for stroke_width, time_width in zip(
+                    np.linspace(0, max_stroke_width, self.n_segments),
+                    np.linspace(max_time_width, 0, self.n_segments),
+                )
+            ],
+        )
 
 class ShowCreationThenDestruction(ShowPassingFlash):
     def __init__(

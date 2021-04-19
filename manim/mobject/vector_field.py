@@ -421,7 +421,7 @@ class ArrowVectorField(VectorField):
         class Coloring(Scene):
             def construct(self):
                 func = lambda pos: pos-LEFT*5
-                colors = [RED, YELLOW, BLUE, DARKER_GRAY]
+                colors = [RED, YELLOW, BLUE, DARK_GRAY]
                 min_radius = Circle(radius=2,  color=colors[0]).shift(LEFT*5)
                 max_radius = Circle(radius=10, color=colors[-1]).shift(LEFT*5)
                 vf = ArrowVectorField(func, min_color_scheme_value=2, max_color_scheme_value=10, colors=colors)
@@ -745,27 +745,7 @@ class StreamLines(VectorField):
 # TODO: Make it so that you can have a group of stream_lines
 # varying in response to a changing vector field, and still
 # animate the resulting flow
-class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
-    def __init__(self, vmobject, n_segments=10, time_width=0.1, remover=True, **kwargs):
-        self.n_segments = n_segments
-        self.time_width = time_width
-        self.remover = remover
-        max_stroke_width = vmobject.get_stroke_width()
-        max_time_width = kwargs.pop("time_width", self.time_width)
-        AnimationGroup.__init__(
-            self,
-            *[
-                ShowPassingFlash(
-                    vmobject.deepcopy().set_stroke(width=stroke_width),
-                    time_width=time_width,
-                    **kwargs,
-                )
-                for stroke_width, time_width in zip(
-                    np.linspace(0, max_stroke_width, self.n_segments),
-                    np.linspace(max_time_width, 0, self.n_segments),
-                )
-            ],
-        )
+
 
 
 # TODO, this is untested after turning it from a
