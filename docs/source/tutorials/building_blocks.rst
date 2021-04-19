@@ -30,7 +30,7 @@ constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or
 If you try to display an instance of :class:`.Mobject` on the screen, you will only
 see an empty frame.  The reason is that the :class:`.Mobject` class is an
 abstract base class of all other mobjects, i.e. it does not have any
-pre-determined visual shape that can be displayed on screen.  It is only the
+pre-determined visual shape that can be displayed on the screen.  It is only the
 skeleton of a thing that *could* be displayed.  Therefore, you will rarely need
 to use plain instances of :class:`.Mobject`; instead you will most likely
 create instances of its derived classes.  One of these derived classes is
@@ -212,7 +212,7 @@ mobjects are added to the scene.  In ``MobjectStyling``, we added them as
 ``add(triangle, square, circle)``.
 
 As you can see, the order of the arguments of :meth:`~.Scene.add` determines
-the order that the mobjects are displayed on screen, with the left-most
+the order that the mobjects are displayed on the screen, with the left-most
 arguments being put in the back.
 
 
