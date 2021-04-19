@@ -1067,7 +1067,7 @@ class Mobject(Container):
         self,
         angle,
         axis=OUT,
-        about_point: Sequence[float] = None,
+        about_point: Optional[Sequence[float]] = None,
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
