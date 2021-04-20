@@ -274,7 +274,7 @@ def cross(v1, v2):
     logger.warning(
         "cross has been deprecated and will be removed in a future release."
         "Use np.cross instead."
-    )     
+    )
     return np.cross(v1, v2)
 
 
