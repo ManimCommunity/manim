@@ -62,9 +62,7 @@ class VectorField(VGroup):
         self,
         func: Callable[[np.ndarray], np.ndarray],
         color: Optional[Color] = None,
-        color_scheme: Optional[Callable[
-            [np.ndarray], float
-        ]] = None,
+        color_scheme: Optional[Callable[[np.ndarray], float]] = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -74,7 +72,9 @@ class VectorField(VGroup):
         self.func = func
         if color is None:
             self.single_color = False
-            self.color_scheme = np.linalg.norm if color_scheme is None else color_scheme # TODO maybe other default for direction?
+            self.color_scheme = (
+                np.linalg.norm if color_scheme is None else color_scheme
+            )  # TODO maybe other default for direction?
             self.rgbs = np.array(list(map(color_to_rgb, colors)))
 
             def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
@@ -594,9 +594,7 @@ class StreamLines(VectorField):
         self,
         func: Callable[[np.ndarray], np.ndarray],
         color: Optional[Color] = None,
-        color_scheme: Optional[Callable[
-            [np.ndarray], float
-        ]] = None,
+        color_scheme: Optional[Callable[[np.ndarray], float]] = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
