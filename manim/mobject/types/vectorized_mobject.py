@@ -66,7 +66,7 @@ class VMobject(Mobject):
         close_new_points=False,
         pre_function_handle_to_anchor_scale_factor=0.01,
         make_smooth_after_applying_functions=False,
-        background_image_file=None,
+        background_image=None,
         shade_in_3d=False,
         # This is within a pixel
         # TODO, do we care about accounting for
@@ -90,7 +90,7 @@ class VMobject(Mobject):
             pre_function_handle_to_anchor_scale_factor
         )
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
-        self.background_image_file = background_image_file
+        self.background_image = background_image
         self.shade_in_3d = shade_in_3d
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
@@ -226,7 +226,7 @@ class VMobject(Mobject):
         background_stroke_opacity=None,
         sheen_factor=None,
         sheen_direction=None,
-        background_image_file=None,
+        background_image=None,
         family=True,
     ):
         self.set_fill(color=fill_color, opacity=fill_opacity, family=family)
@@ -248,8 +248,8 @@ class VMobject(Mobject):
                 direction=sheen_direction,
                 family=family,
             )
-        if background_image_file:
-            self.color_using_background_image(background_image_file)
+        if background_image:
+            self.color_using_background_image(background_image)
         return self
 
     def get_style(self, simple=False):
@@ -271,7 +271,7 @@ class VMobject(Mobject):
             ret["background_stroke_opacity"] = self.get_stroke_opacity(background=True)
             ret["sheen_factor"] = self.get_sheen_factor()
             ret["sheen_direction"] = self.get_sheen_direction()
-            ret["background_image_file"] = self.get_background_image_file()
+            ret["background_image"] = self.get_background_image()
 
         return ret
 
@@ -428,18 +428,18 @@ class VMobject(Mobject):
             offset = np.dot(bases, direction)
             return (c - offset, c + offset)
 
-    def color_using_background_image(self, background_image_file):
-        self.background_image_file = background_image_file
+    def color_using_background_image(self, background_image):
+        self.background_image = background_image
         self.set_color(WHITE)
         for submob in self.submobjects:
-            submob.color_using_background_image(background_image_file)
+            submob.color_using_background_image(background_image)
         return self
 
-    def get_background_image_file(self):
-        return self.background_image_file
+    def get_background_image(self):
+        return self.background_image
 
-    def match_background_image_file(self, vmobject):
-        self.color_using_background_image(vmobject.get_background_image_file())
+    def match_background_image(self, vmobject):
+        self.color_using_background_image(vmobject.get_background_image())
         return self
 
     def set_shade_in_3d(self, value=True, z_index_as_group=False):

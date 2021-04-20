@@ -574,7 +574,7 @@ class Camera:
         if len(vmobjects) == 0:
             return
         batch_file_pairs = it.groupby(
-            vmobjects, lambda vm: vm.get_background_image_file()
+            vmobjects, lambda vm: vm.get_background_image()
         )
         for file_name, batch in batch_file_pairs:
             if file_name:
@@ -1248,7 +1248,7 @@ class BackgroundColoredVMobjectDisplayer:
             The pixel array with the `cvmobjects` displayed.
         """
         batch_image_file_pairs = it.groupby(
-            cvmobjects, lambda cv: cv.get_background_image_file()
+            cvmobjects, lambda cv: cv.get_background_image()
         )
         curr_array = None
         for batch, image_file in batch_image_file_pairs:
