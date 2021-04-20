@@ -271,6 +271,10 @@ def normalize_along_axis(array, axis, fall_back=None):
 
 
 def cross(v1, v2):
+    logger.warning(
+        "cross has been deprecated and will be removed in a future release."
+        "Use np.cross instead."
+    )     
     return np.cross(v1, v2)
 
 
@@ -278,18 +282,18 @@ def get_unit_normal(v1, v2, tol=1e-6):
     if config.renderer == "opengl":
         v1 = normalize(v1)
         v2 = normalize(v2)
-        cp = cross(v1, v2)
+        cp = np.cross(v1, v2)
         cp_norm = np.linalg.norm(cp)
         if cp_norm < tol:
             # Vectors align, so find a normal to them in the plane shared with the z-axis
-            new_cp = cross(cross(v1, OUT), v1)
+            new_cp = np.cross(np.cross(v1, OUT), v1)
             new_cp_norm = np.linalg.norm(new_cp)
             if new_cp_norm < tol:
                 return DOWN
             return new_cp / new_cp_norm
         return cp / cp_norm
     else:
-        return normalize(cross(v1, v2))
+        return normalize(np.cross(v1, v2))
 
 
 ###
