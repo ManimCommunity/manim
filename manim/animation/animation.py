@@ -213,14 +213,19 @@ def prepare_animation(
     --------
 
     ::
+
         >>> from manim import Square, FadeIn
         >>> s = Square()
         >>> prepare_animation(FadeIn(s))
         FadeIn(Square)
+
     ::
+
         >>> prepare_animation(s.animate.scale(2).rotate(42))
         _MethodAnimation(Square)
+
     ::
+
         >>> prepare_animation(42)
         Traceback (most recent call last):
         ...
