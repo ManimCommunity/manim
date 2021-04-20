@@ -64,7 +64,7 @@ class VectorField(VGroup):
         color: Optional[Color] = None,
         color_scheme: Callable[
             [np.ndarray], float
-        ] = np.linalg.norm  # TODO maybe other default for direction?
+        ] = np.linalg.norm,  # TODO maybe other default for direction?
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
