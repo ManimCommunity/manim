@@ -35,6 +35,7 @@ from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
+    normalize,
     rotation_matrix,
     rotation_matrix_transpose,
 )
