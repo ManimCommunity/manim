@@ -214,7 +214,7 @@ class Add(Animation):
     Raises
     ------
     :class:`TypeError`
-        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLMobject`.
+        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLMobject`
 
     Examples
     --------
@@ -262,7 +262,7 @@ class Remove(Animation):
     Raises
     ------
     :class:`TypeError`
-        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLMobject`.
+        If ``mobject`` is not an instance of :class:`~.Mobject` or :class:`~.OpenGLMobject`
 
     Examples
     --------
@@ -274,6 +274,7 @@ class Remove(Animation):
                 self.add(square)
                 self.wait(0.5)
                 self.play(Remove(square))
+                self.wait(0.5)
 
     See Also
     --------
