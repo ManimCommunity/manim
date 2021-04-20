@@ -132,6 +132,13 @@ class FadeInAndOutTest(Scene):
         self.play(FadeOut(square))
 
 
+class MatchPointsScene(Scene):
+    def construct(self):
+        circ = Circle(fill_color=RED, fill_opacity=0.8)
+        square = Square(fill_color=BLUE, fill_opacity=0.2)
+        self.play(circ.animate.match_points(square))
+
+
 class AnimationBuilderTest(Scene):
     def construct(self):
         self.play(Square().animate.shift(RIGHT).rotate(PI / 4))
