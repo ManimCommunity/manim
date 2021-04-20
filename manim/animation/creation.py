@@ -62,6 +62,7 @@ __all__ = [
     "DrawBorderThenFill",
     "Write",
     "Unwrite",
+    "ShowPartial",
     "ShowIncreasingSubsets",
     "AddTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
