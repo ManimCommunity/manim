@@ -162,7 +162,7 @@ def render(
         except Exception:
             logger.debug(f"Something went wrong: {warn_prompt}")
 
-        if req_info.ok:
+        if req_info.status_code == requests.codes.ok:
             try:
                 stable = req_info.json()["info"]["version"]
 
