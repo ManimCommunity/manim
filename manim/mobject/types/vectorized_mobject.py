@@ -14,10 +14,10 @@ __all__ = [
 import itertools as it
 import sys
 from typing import Iterable, Optional, Sequence, Union
-from PIL.Image import Image
 
 import colour
 import numpy as np
+from PIL.Image import Image
 
 from ...constants import *
 from ...mobject.mobject import Mobject
