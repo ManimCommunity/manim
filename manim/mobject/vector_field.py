@@ -36,7 +36,7 @@ DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 class VectorField(VGroup):
     """A vector field.
 
-    vector fields are based on a function defining a vector at every position.
+    Vector fields are based on a function defining a vector at every position.
     This class does by default not include any visible elements but provides
     methods to move other :class:`~.Mobject` s along the vector field.
 
