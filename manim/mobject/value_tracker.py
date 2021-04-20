@@ -50,7 +50,7 @@ class ValueTracker(Mobject):
 
     .. note::
 
-        You can also link ValueTrackers to updaters. In this case, you have to make sure that the ValueTracker is added to the scene by ``ad``
+        You can also link ValueTrackers to updaters. In this case, you have to make sure that the ValueTracker is added to the scene by ``add``
 
     .. manim:: ValueTrackerExample
 
