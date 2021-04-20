@@ -3,6 +3,8 @@
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 
+import numpy as np
+
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -16,7 +18,6 @@ from ...utils.color import (
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
-from ...utils.space_ops import get_norm
 
 
 class PMobject(Mobject):
@@ -181,7 +182,7 @@ class Mobject1D(PMobject):
 
     def add_line(self, start, end, color=None):
         start, end = list(map(np.array, [start, end]))
-        length = get_norm(end - start)
+        length = np.linalg.norm(end - start)
         if length == 0:
             points = [start]
         else:

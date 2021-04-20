@@ -24,7 +24,7 @@ some are detailed below:
 
 
 
-Contributing can be confusing, so here's a few guides:
+Contributing can be confusing, so here are a few guides:
 
 .. toctree::
    :maxdepth: 2
