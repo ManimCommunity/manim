@@ -195,7 +195,7 @@ that manim still works as intended and that the code you added
 sticks to our coding conventions.
 
 - *Code style*: We use the code style imposed
-  by `Black <https://black.readthedocs.io/en/stable/>`, `isort <https://pycqa.github.io/isort/>` 
+  by `Black <https://black.readthedocs.io/en/stable/>`_, `isort <https://pycqa.github.io/isort/>`_
   or `flake8 <https://flake8.pycqa.org/en/latest/>`_. The pipeline
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
