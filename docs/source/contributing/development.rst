@@ -48,7 +48,7 @@ For first-time contributors
 
 #. Install Manim:
  
-   - See our :doc:`instructions for developers<installation/for_dev>` for
+   - See our :doc:`instructions for developers<../installation/for_dev>` for
      details and continue here afterwards.
 
 #. Install Pre-Commit:
