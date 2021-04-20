@@ -171,7 +171,7 @@ class VectorField(VGroup):
             A scalar to the amount the mobject is moved along the vector field.
             The actual distance is based on the magnitude of the vector field.
         substeps
-            The amount of steps the whole nudge is devided into. Higher values
+            The amount of steps the whole nudge is divided into. Higher values
             give more accurate approximations.
         pointwise
             Whether to move the mobject along the vector field. If `True` the vector field takes effect on the center of the given :class:`~.Mobject`. If `False` the vector field takes effect on the points of the individual points of the :class:`~.Mobject`, potentially distorting it.
@@ -244,12 +244,12 @@ class VectorField(VGroup):
     ) -> Callable[[Mobject, float], Mobject]:
         """Get an update function to move a :class:`~.Mobject` along the vector field.
 
-        When used with :meth:`~.Mobject.add_updater`, the mobject will move along the vector field, where it's speed is determined by the magnitude of the vector field.
+        When used with :meth:`~.Mobject.add_updater`, the mobject will move along the vector field, where its speed is determined by the magnitude of the vector field.
 
         Parameters
         ----------
         speed
-            At `speed=1` the distance a mobject moves per second is equal to the magnitude of the vector field along it's path. The speed value scales the speed of such a mobject.
+            At `speed=1` the distance a mobject moves per second is equal to the magnitude of the vector field along its path. The speed value scales the speed of such a mobject.
         pointwise
             Whether to move the mobject along the vector field. See :meth:`nudge` for details.
 
@@ -344,7 +344,7 @@ class VectorField(VGroup):
 class ArrowVectorField(VectorField):
     """A :class:`VectorField` represented by a set of change vectors.
 
-    Vector fields are allways based on a function defining the :class:`~.Vector` at every position.
+    Vector fields are always based on a function defining the :class:`~.Vector` at every position.
     The values of this functions is displayed as a grid of vectors.
     By default the color of each vector is determined by it's magnitude.
     Other color schemes can be used however.
@@ -762,9 +762,9 @@ class StreamLines(VectorField):
         warm_up : bool, optional
             If `True` the animation is initialized line by line. Otherwise it starts with all lines shown.
         flow_speed
-            At `flow_speed=1` the distance the flow moves per second is equal to the magnitude of the vector field along it's path. The speed value scales the speed of this flow.
+            At `flow_speed=1` the distance the flow moves per second is equal to the magnitude of the vector field along its path. The speed value scales the speed of this flow.
         time_width
-            The proportion of the stream line shown while beeing animated
+            The proportion of the stream line shown while being animated
         rate_func
             The rate function of each stream line flashing
         line_animation_class
