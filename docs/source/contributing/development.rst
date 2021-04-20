@@ -200,8 +200,7 @@ sticks to our coding conventions.
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
   fix your code style by running ``black <file or directory>`` and 
-  ``isort <file or directory>`` to automatically format your files. You could also use `flake8` 
-  if you want to modify the style manually by running ``flake8 <file or directory>``.
+To fix code style problems, run ``flake8 <file or directory>`` for a style report, and then fix the problems that were detected by ``flake8 ``
 
 - *Tests*: The pipeline runs manim's test suite on different operating systems
   (the latest versions of Ubuntu, MacOS, and Windows) for different versions of Python.
