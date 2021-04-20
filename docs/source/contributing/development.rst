@@ -201,7 +201,7 @@ sticks to our coding conventions.
   also adhere to this code style. If this step of the pipeline fails,
   fix your code style by running ``black <file or directory>`` or 
   ``isort <file or directory>`` to automatically format your files. You could also use `flake8` 
-  if you want to modify the style manually by running ``flake <file or directory>``.
+  if you want to modify the style manually by running ``flake8 <file or directory>``.
 
 - *Tests*: The pipeline runs manim's test suite on different operating systems
   (the latest versions of Ubuntu, MacOS, and Windows) for different versions of Python.
