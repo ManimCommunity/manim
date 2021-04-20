@@ -723,10 +723,10 @@ class StreamLines(VectorField):
                     func = lambda pos: (pos[0]*UR+pos[1]*LEFT) - pos
                     stream_lines = StreamLines(
                         func,
-                        max_color_scheme_value=5,
+                        color=YELLOW,
                         delta_x=1, delta_y=1, stroke_width=3,
                         virtual_time=1,          # use shorter lines
-                        max_anchors_per_line=30, #better performance with fewer anchors
+                        max_anchors_per_line=5,  #better performance with fewer anchors
                     )
                     self.play(stream_lines.create()) # uses virtual_time as run_time
                     self.wait()
@@ -839,13 +839,17 @@ class StreamLines(VectorField):
                     func = lambda pos: np.sin(pos[0]/2)*UR+np.cos(pos[1]/2)*LEFT
                     stream_lines = StreamLines(
                         func, stroke_width=3,
-                        max_anchors_per_line=30
+                        max_anchors_per_line=5,
+                        virtual_time=1, color=BLUE
                     )
                     self.add(stream_lines)
-                    stream_lines.start_animation(warm_up=False, flow_speed=1.5)
-                    self.wait(2)
+                    stream_lines.start_animation(
+                        warm_up=False,
+                        flow_speed=1.5,
+                        time_width=0.5
+                    )
+                    self.wait(1)
                     self.play(stream_lines.end_animation())
-                    self.wait()
 
         """
 
