@@ -27,7 +27,7 @@ from .render_options import render_options
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
-@click.argument("file", type=Path, required=False)
+@click.argument("file", type=Path, required=True)
 @click.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
