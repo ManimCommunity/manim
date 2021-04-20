@@ -199,7 +199,7 @@ sticks to our coding conventions.
   and `flake8 <https://flake8.pycqa.org/en/latest/>`_. The pipeline
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
-  fix your code style by running ``black <file or directory>`` or 
+  fix your code style by running ``black <file or directory>`` and 
   ``isort <file or directory>`` to automatically format your files. You could also use `flake8` 
   if you want to modify the style manually by running ``flake8 <file or directory>``.
 
