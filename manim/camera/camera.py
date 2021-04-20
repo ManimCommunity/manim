@@ -1222,8 +1222,10 @@ class BackgroundColoredVMobjectDisplayer:
         np.ndarray
             The pixel array of the given image (file)
         """
-        if image in self.file_name_to_pixel_array_map:
-            return self.file_name_to_pixel_array_map[image]
+        image_key = str(image)
+
+        if image_key in self.file_name_to_pixel_array_map:
+            return self.file_name_to_pixel_array_map[image_key]
         if isinstance(image, str):
             full_path = get_full_raster_image_path(image)
             image = Image.open(full_path)
@@ -1233,7 +1235,7 @@ class BackgroundColoredVMobjectDisplayer:
         if not np.all(pixel_array.shape == back_array.shape):
             back_array = self.resize_background_array_to_match(back_array, pixel_array)
 
-        self.file_name_to_pixel_array_map[image] = back_array
+        self.file_name_to_pixel_array_map[image_key] = back_array
         return back_array
 
     def display(self, *cvmobjects):
