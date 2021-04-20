@@ -64,7 +64,7 @@ class VectorField(VGroup):
         color: Optional[Color] = None,
         color_scheme: Callable[
             [np.ndarray], float
-        ] = get_norm,  # TODO maybe other default for direction?
+        ] = np.linalg.norm  # TODO maybe other default for direction?
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -428,7 +428,7 @@ class ArrowVectorField(VectorField):
         self,
         func: Callable[[np.ndarray], np.ndarray],
         color: Optional[Color] = None,
-        color_scheme: Callable[[np.ndarray], float] = get_norm,
+        color_scheme: Callable[[np.ndarray], float] = np.linalg.norm,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -491,7 +491,7 @@ class ArrowVectorField(VectorField):
 
         """
         output = np.array(self.func(point))
-        norm = get_norm(output)
+        norm = np.linalg.norm(output)
         if not norm == 0:
             output *= self.length_func(norm) / norm
         vect = Vector(output, **self.vector_config)
@@ -596,7 +596,7 @@ class StreamLines(VectorField):
         color: Optional[Color] = None,
         color_scheme: Callable[
             [np.ndarray], float
-        ] = get_norm,  # TODO maybe other default for direction?
+        ] = np.linalg.norm,  # TODO maybe other default for direction?
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[Color] = DEFAULT_SCALAR_FIELD_COLORS,
