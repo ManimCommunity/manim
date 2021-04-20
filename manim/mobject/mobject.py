@@ -13,7 +13,7 @@ import types
 import warnings
 from functools import reduce
 from pathlib import Path
-from typing import Callable, List, Optional, TypeVar, Union
+from typing import Callable, List, Optional, Sequence, TypeVar, Union
 
 import numpy as np
 from colour import Color
@@ -1066,7 +1066,7 @@ class Mobject(Container):
         self,
         angle,
         axis=OUT,
-        about_point: Union[np.ndarray, List, None] = None,
+        about_point: Optional[Sequence[float]] = None,
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
@@ -2003,7 +2003,7 @@ class Mobject(Container):
 
     def arrange(
         self,
-        direction: Union[np.ndarray, List] = RIGHT,
+        direction: Sequence[float] = RIGHT,
         buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center=True,
         **kwargs,
@@ -2273,8 +2273,8 @@ class Mobject(Container):
 
             class BecomeScene(Scene):
                 def construct(self):
-                    circ = Circle(fill_color=RED)
-                    square = Square(fill_color=BLUE)
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
                     self.add(circ)
                     self.wait(0.5)
                     circ.become(square)
@@ -2284,6 +2284,28 @@ class Mobject(Container):
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
+        return self
+
+    def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
+        """Edit points, positions, and submobjects to be identical
+        to another :class:`~.Mobject`, while keeping the style unchanged.
+
+        Examples
+        --------
+        .. manim:: MatchPointsScene
+
+            class MatchPointsScene(Scene):
+                def construct(self):
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
+                    self.add(circ)
+                    self.wait(0.5)
+                    self.play(circ.animate.match_points(square))
+                    self.wait(0.5)
+        """
+        self.align_data(mobject)
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+            sm1.points = np.array(sm2.points)
         return self
 
     # Errors
