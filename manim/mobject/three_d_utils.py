@@ -15,7 +15,7 @@ __all__ = [
 import numpy as np
 
 from ..constants import ORIGIN, UP
-from ..utils.space_ops import get_norm, get_unit_normal
+from ..utils.space_ops import get_unit_normal
 
 
 def get_3d_vmob_gradient_start_and_end_points(vmob):
@@ -56,7 +56,7 @@ def get_3d_vmob_unit_normal(vmob, point_index):
         vmob.points[ip3] - vmob.points[i],
         vmob.points[im3] - vmob.points[i],
     )
-    if get_norm(unit_normal) == 0:
+    if np.linalg.norm(unit_normal) == 0:
         return np.array(UP)
     return unit_normal
 

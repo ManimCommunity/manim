@@ -14,7 +14,6 @@ from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
-from ...utils.space_ops import get_norm
 
 
 class Brace(SVGPathMobject):
@@ -123,7 +122,7 @@ class Brace(SVGPathMobject):
 
     def get_direction(self):
         vect = self.get_tip() - self.get_center()
-        return vect / get_norm(vect)
+        return vect / np.linalg.norm(vect)
 
 
 class BraceLabel(VMobject):

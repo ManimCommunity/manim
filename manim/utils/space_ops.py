@@ -46,6 +46,10 @@ from ..utils.simple_functions import fdiv
 
 
 def get_norm(vect):
+    logger.warning(
+        "get_norm has been deprecated and will be removed in a future release."
+        "Use np.linalg.norm instead."
+    )    
     return np.linalg.norm(vect)
 
 
@@ -187,14 +191,14 @@ def z_to_vector(vector):
     Returns some matrix in SO(3) which takes the z-axis to the
     (normalized) vector provided as an argument
     """
-    norm = get_norm(vector)
+    norm = np.linalg.norm(vector)
     if norm == 0:
         return np.identity(3)
     v = np.array(vector) / norm
     phi = np.arccos(v[2])
     if any(v[:2]):
         # projection of vector to unit circle
-        axis_proj = v[:2] / get_norm(v[:2])
+        axis_proj = v[:2] / np.linalg.norm(v[:2])
         theta = np.arccos(axis_proj[0])
         if axis_proj[1] < 0:
             theta = -theta
@@ -211,7 +215,7 @@ def angle_between(v1, v2):
         "angle_between has been deprecated and will be removed in a future release."
         "Use angle_between_vectors instead."
     )
-    return np.arccos(np.dot(v1 / get_norm(v1), v2 / get_norm(v2)))
+    return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
 
 
 def angle_of_vector(vector):
@@ -237,8 +241,8 @@ def angle_between_vectors(v1, v2):
         return min(diff, TAU - diff)
     else:
         return 2 * np.arctan2(
-            get_norm(normalize(v1) - normalize(v2)),
-            get_norm(normalize(v1) + normalize(v2)),
+            np.linalg.norm(normalize(v1) - normalize(v2)),
+            np.linalg.norm(normalize(v1) + normalize(v2)),
         )
 
 
@@ -248,7 +252,7 @@ def project_along_vector(point, vector):
 
 
 def normalize(vect, fall_back=None):
-    norm = get_norm(vect)
+    norm = np.linalg.norm(vect)
     if norm > 0:
         return np.array(vect) / norm
     else:
@@ -275,11 +279,11 @@ def get_unit_normal(v1, v2, tol=1e-6):
         v1 = normalize(v1)
         v2 = normalize(v2)
         cp = cross(v1, v2)
-        cp_norm = get_norm(cp)
+        cp_norm = np.linalg.norm(cp)
         if cp_norm < tol:
             # Vectors align, so find a normal to them in the plane shared with the z-axis
             new_cp = cross(cross(v1, OUT), v1)
-            new_cp_norm = get_norm(new_cp)
+            new_cp_norm = np.linalg.norm(new_cp)
             if new_cp_norm < tol:
                 return DOWN
             return new_cp / new_cp_norm

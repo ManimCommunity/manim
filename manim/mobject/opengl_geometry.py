@@ -16,7 +16,6 @@ from ..utils.space_ops import (
     angle_of_vector,
     compass_directions,
     find_intersection,
-    get_norm,
     normalize,
     rotate_vector,
     rotation_matrix_transpose,
@@ -192,7 +191,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
 
     def get_length(self):
         start, end = self.get_start_and_end()
-        return get_norm(start - end)
+        return np.linalg.norm(start - end)
 
 
 class OpenGLArc(OpenGLTipableVMobject):
@@ -654,7 +653,7 @@ class OpenGLArrow(OpenGLLine):
     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
         # Find the right tip length and thickness
         vect = end - start
-        length = max(get_norm(vect), 1e-8)
+        length = max(np.linalg.norm(vect), 1e-8)
         thickness = self.thickness
         w_ratio = fdiv(self.max_width_to_length_ratio, fdiv(thickness, length))
         if w_ratio < 1:
@@ -869,7 +868,7 @@ class OpenGLArrowTip(OpenGLTriangle):
         return angle_of_vector(self.get_vector())
 
     def get_length(self):
-        return get_norm(self.get_vector())
+        return np.linalg.norm(self.get_vector())
 
 
 class OpenGLRectangle(OpenGLPolygon):
