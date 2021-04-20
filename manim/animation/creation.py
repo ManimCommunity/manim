@@ -57,8 +57,6 @@ r"""Animate the display or removal of a mobject from a scene.
 
 
 __all__ = [
-    "ShowPartial",
-    "ShowCreation",
     "Create",
     "Uncreate",
     "DrawBorderThenFill",
@@ -154,19 +152,6 @@ class Create(ShowPartial):
         lag_ratio: float = 1.0,
         **kwargs,
     ) -> None:
-        super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
-
-    def _get_bounds(self, alpha: float) -> Tuple[int, float]:
-        return (0, alpha)
-
-
-class ShowCreation(Create):
-    """Deprecated. Use :class:`~.Create` instead."""
-
-    def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
-        logger.warning(
-            "ShowCreation has been deprecated in favor of Create. Please use Create instead!"
-        )
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
     def _get_bounds(self, alpha: float) -> Tuple[int, float]:
