@@ -430,7 +430,7 @@ class VMobject(Mobject):
             offset = np.dot(bases, direction)
             return (c - offset, c + offset)
 
-    def color_using_background_image(self, background_image:Union[Image.Image, str]):
+    def color_using_background_image(self, background_image: Union[Image.Image, str]):
         self.background_image = background_image
         self.set_color(WHITE)
         for submob in self.submobjects:

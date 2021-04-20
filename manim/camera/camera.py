@@ -574,9 +574,7 @@ class Camera:
         """
         if len(vmobjects) == 0:
             return
-        batch_image_pairs = it.groupby(
-            vmobjects, lambda vm: vm.get_background_image()
-        )
+        batch_image_pairs = it.groupby(vmobjects, lambda vm: vm.get_background_image())
         for image, batch in batch_image_pairs:
             if image:
                 self.display_multiple_background_colored_vmobjects(batch, pixel_array)
@@ -1209,7 +1207,7 @@ class BackgroundColoredVMobjectDisplayer:
         mode = "RGBA" if pixel_array.shape[2] == 4 else "RGB"
         return self.resize_background_array(background_array, width, height, mode)
 
-    def get_background_array(self, image:Union[Image.Image, str]):
+    def get_background_array(self, image: Union[Image.Image, str]):
         """Gets the background array that has the passed file_name.
 
         Parameters
@@ -1251,9 +1249,7 @@ class BackgroundColoredVMobjectDisplayer:
         np.array
             The pixel array with the `cvmobjects` displayed.
         """
-        batch_image_pairs = it.groupby(
-            cvmobjects, lambda cv: cv.get_background_image()
-        )
+        batch_image_pairs = it.groupby(cvmobjects, lambda cv: cv.get_background_image())
         curr_array = None
         for image, batch in batch_image_pairs:
             background_array = self.get_background_array(image)
