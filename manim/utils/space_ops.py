@@ -49,7 +49,7 @@ def get_norm(vect):
     logger.warning(
         "get_norm has been deprecated and will be removed in a future release."
         "Use np.linalg.norm instead."
-    )    
+    )
     return np.linalg.norm(vect)
 
 

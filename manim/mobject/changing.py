@@ -10,7 +10,6 @@ from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
 
 
-
 class AnimatedBoundary(VGroup):
     """Boundary of a :class:`.VMobject` with animated color change.
 

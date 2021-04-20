@@ -12,11 +12,11 @@ __all__ = [
 
 
 import itertools as it
-import numpy as np
 import sys
 from typing import Iterable, Optional, Sequence
 
 import colour
+import numpy as np
 
 from ...constants import *
 from ...mobject.mobject import Mobject
