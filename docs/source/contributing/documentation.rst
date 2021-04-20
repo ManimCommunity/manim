@@ -35,12 +35,12 @@ https://numpydoc.readthedocs.io/en/latest/format.html.
 This includes:
 
 1. The usage of ``Attributes`` to specify ALL ATTRIBUTES that a
-   class can have, their respective types and a brief (or long, if
+   class can have, their respective types, and a brief (or long, if
    needed) description. (See more on :ref:`_types`)
 
 Also, ``__init__`` parameters should be specified as ``Parameters`` **on
 the class docstring**, *rather than under* ``__init__``. Note that this
-can be omitted if the parameters and the attributes are the exact same
+can be omitted if the parameters and the attributes are the same
 (i.e., dataclass) - priority should be given to the ``Attributes``
 section, in this case, which must **always be present**, unless the
 class specifies no attributes at all. (See more on Parameters in number
@@ -80,7 +80,7 @@ Example:
         ):  # in-code typehints are optional for now
             ...
 
-2. The usage of ``Parameters`` on functions in order to specify how
+2. The usage of ``Parameters`` on functions to specify how
    every parameter works and what it does. This should be excluded if
    the function has no parameters. Note that you **should not** specify
    the default value of the parameter on the type. On the documentation
@@ -220,7 +220,7 @@ different class in the same file.
    name (e.g. ``~manim.animations.Animation``) or simply use the
    shortened way (``~.Animation``). Note that, if there is ambiguity,
    then the full dotted name must be used where the actual class can't
-   be deduced. Also note the ``~`` before the path - this is so that it
+   be deduced. Also, note the ``~`` before the path - this is so that it
    displays just ``Animation`` instead of the full location in the
    rendering. It can be removed for disambiguation purposes only.
 
@@ -235,11 +235,11 @@ Example: ``:class:`numpy.ndarray`​`` for a numpy ndarray.
 Reference type specifications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**The following instructions refer to types of attributes, parameters
+**The following instructions refer to types of attributes, parameters,
 and return values.** When specifying a type mid-text, it does not
 necessarily have to be typeset. However, if it's a class name, a method,
 or an enum's attribute/variant, then it is recommended to be typeset at
-least on the first occurrence of the name, so that the users can quickly
+least on the first occurrence of the name so that the users can quickly
 jump to the related documentation.
 
 1. Class names should be wrapped in ``:class:`path_goes_here`​``. See
@@ -309,7 +309,7 @@ dictionary that maps a string to either an int or an instance of
    a list, ``Tuple[type_a, type_b, (...), type_n]`` for a tuple (if the
    elements are all different) or ``Tuple[type, ...]`` (if all elements
    have the same type). Each ``type_n`` on those representations
-   correspond to elements in the returned list/tuple, and must follow
+   corresponds to elements in the returned list/tuple and must follow
    the guidelines in the current section.
 
 Example: ``List[Optional[:class:`str`]]`` for a list that returns
