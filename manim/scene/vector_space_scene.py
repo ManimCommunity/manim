@@ -21,7 +21,7 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
 from ..utils.color import BLUE_D, GREEN_C, GREY, LIGHT_GREY, RED_C, WHITE, YELLOW
 from ..utils.rate_functions import rush_from, rush_into
-from ..utils.space_ops import angle_of_vector, get_norm
+from ..utils.space_ops import angle_of_vector
 
 X_COLOR = GREEN_C
 Y_COLOR = RED_C
@@ -290,7 +290,7 @@ class VectorScene(Scene):
 
         if at_tip:
             vect = vector.get_vector()
-            vect /= get_norm(vect)
+            vect /= np.linalg.norm(vect)
             label.next_to(vector.get_end(), vect, buff=SMALL_BUFF)
         else:
             angle = vector.get_angle()
@@ -940,7 +940,7 @@ class LinearTransformationScene(VectorScene):
         """
         for v in self.moving_vectors:
             v.target = Vector(func(v.get_end()), color=v.get_color())
-            norm = get_norm(v.target.get_end())
+            norm = np.linalg.norm(v.target.get_end())
             if norm < 0.1:
                 v.target.get_tip().scale_in_place(norm)
         return self.get_piece_movement(self.moving_vectors)
