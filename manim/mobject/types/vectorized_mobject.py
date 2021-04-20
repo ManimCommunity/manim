@@ -13,7 +13,8 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence, Union
+from PIL.Image import Image
 
 import colour
 
@@ -428,14 +429,14 @@ class VMobject(Mobject):
             offset = np.dot(bases, direction)
             return (c - offset, c + offset)
 
-    def color_using_background_image(self, background_image):
+    def color_using_background_image(self, background_image:Union[Image.Image, str]):
         self.background_image = background_image
         self.set_color(WHITE)
         for submob in self.submobjects:
             submob.color_using_background_image(background_image)
         return self
 
-    def get_background_image(self):
+    def get_background_image(self) -> Union[Image.Image, str]:
         return self.background_image
 
     def match_background_image(self, vmobject):
