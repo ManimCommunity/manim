@@ -27,7 +27,6 @@ from ...utils.space_ops import (
     angle_between_vectors,
     cross2d,
     earclip_triangulation,
-    get_norm,
     get_unit_normal,
     z_to_vector,
 )
@@ -511,7 +510,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     #
     def consider_points_equals(self, p0, p1):
-        return get_norm(p1 - p0) < self.tolerance_for_point_equality
+        return np.linalg.norm(p1 - p0) < self.tolerance_for_point_equality
 
     # Information about the curve
     def get_bezier_tuples_from_points(self, points):
@@ -578,7 +577,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(get_norm, 1, diffs)
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
 
         length = np.sum(norms)
 
@@ -770,7 +769,7 @@ class OpenGLVMobject(OpenGLMobject):
             return OUT
 
         area_vect = self.get_area_vector()
-        area = get_norm(area_vect)
+        area = np.linalg.norm(area_vect)
         if area > 0:
             return area_vect / area
         else:
@@ -845,7 +844,7 @@ class OpenGLVMobject(OpenGLMobject):
             return np.repeat(points, nppc * n, 0)
 
         bezier_groups = self.get_bezier_tuples_from_points(points)
-        norms = np.array([get_norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
+        norms = np.array([np.linalg.norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
         total_norm = sum(norms)
         # Calculate insertions per curve (ipc)
         if total_norm < 1e-6:
