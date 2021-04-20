@@ -199,7 +199,7 @@ sticks to our coding conventions.
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
   fix your code style by running ``black <file or directory>`` to
-  automatically format your files.
+  automatically format your files.a
 
 - *Tests*: The pipeline runs manim's test suite on different operating systems
   (the latest versions of Ubuntu, MacOS, and Windows) for different versions of Python.
