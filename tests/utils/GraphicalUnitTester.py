@@ -62,7 +62,7 @@ class GraphicalUnitTester:
             os.makedirs(dir_temp)
 
         with tempconfig({"dry_run": True}):
-            if config["use_opengl_renderer"]:
+            if config["renderer"] == "opengl":
                 self.scene = scene_class(renderer=OpenGLRenderer())
             else:
                 self.scene = scene_class(skip_animations=True)

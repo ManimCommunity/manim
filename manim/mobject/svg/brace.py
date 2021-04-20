@@ -14,7 +14,6 @@ from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
-from ...utils.space_ops import get_norm
 
 
 class Brace(SVGPathMobject):
@@ -37,14 +36,18 @@ class Brace(SVGPathMobject):
     Examples
     --------
     .. manim:: BraceExample
+        :save_last_frame:
 
         class BraceExample(Scene):
             def construct(self):
-                circle = Circle()
-                brace = Brace(circle, direction=RIGHT)
-                self.play(Create(circle))
-                self.play(Create(brace))
-                self.wait(2)
+                s = Square()
+                self.add(s)
+                for i in np.linspace(0.1,1.0,4):
+                    br = Brace(s, sharpness=i)
+                    t = Text(f"sharpness= {i}").next_to(br, RIGHT)
+                    self.add(t)
+                    self.add(br)
+                VGroup(*self.mobjects).arrange(DOWN, buff=0.2)
 
     """
 
@@ -119,7 +122,7 @@ class Brace(SVGPathMobject):
 
     def get_direction(self):
         vect = self.get_tip() - self.get_center()
-        return vect / get_norm(vect)
+        return vect / np.linalg.norm(vect)
 
 
 class BraceLabel(VMobject):

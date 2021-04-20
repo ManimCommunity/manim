@@ -49,6 +49,7 @@ moderngl = "^5.6.3"
 moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
+requests = "*"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
@@ -68,13 +69,6 @@ pre-commit = "^2.11.1"
 gitpython = "^3"
 pygithub = "^1"
 flake8 = "^3.9.0"
-flake8-bugbear = "^21.3.2"
-flake8-builtins = "^1.5.3"
-flake8-comprehensions = "^3.4.0"
-flake8-pytest-style = "^1.4.0"
-flake8-logging-format = "^0.6.0"
-flake8-rst-docstrings = "^0.0.14"
-flake8-docstrings = "^1.6.0"
 isort = "^5.8.0"
 
 [tool.poetry.dev-dependencies.black]

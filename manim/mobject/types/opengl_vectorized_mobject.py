@@ -1,6 +1,7 @@
 import itertools as it
 import operator as op
 from functools import reduce, wraps
+from typing import Optional
 
 import moderngl
 import numpy as np
@@ -22,12 +23,10 @@ from ...utils.color import *
 # from manimlib.utils.iterables import resize_array
 # from manimlib.utils.color import rgb_to_hex
 from ...utils.iterables import listify, make_even, resize_with_interpolation
-
-# from manimlib.utils.space_ops import angle_between_vectors
 from ...utils.space_ops import (
+    angle_between_vectors,
     cross2d,
     earclip_triangulation,
-    get_norm,
     get_unit_normal,
     z_to_vector,
 )
@@ -77,6 +76,8 @@ class OpenGLVMobject(OpenGLMobject):
         tolerance_for_point_equality=1e-8,
         n_points_per_curve=3,
         long_lines=False,
+        should_subdivide_sharp_curves=False,
+        should_remove_null_curves=False,
         # Could also be "bevel", "miter", "round"
         joint_type="auto",
         flat_stroke=True,
@@ -103,6 +104,8 @@ class OpenGLVMobject(OpenGLMobject):
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_curve = n_points_per_curve
         self.long_lines = long_lines
+        self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
+        self.should_remove_null_curves = should_remove_null_curves
         # Could also be "bevel", "miter", "round"
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
@@ -115,10 +118,8 @@ class OpenGLVMobject(OpenGLMobject):
         super().__init__(**kwargs)
         self.refresh_unit_normal()
 
-        #
-        #     def get_group_class(self):
-        #         return VGroup
-        #
+    def get_group_class(self):
+        return OpenGLVGroup
 
     def init_data(self):
         super().init_data()
@@ -509,7 +510,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     #
     def consider_points_equals(self, p0, p1):
-        return get_norm(p1 - p0) < self.tolerance_for_point_equality
+        return np.linalg.norm(p1 - p0) < self.tolerance_for_point_equality
 
     # Information about the curve
     def get_bezier_tuples_from_points(self, points):
@@ -550,7 +551,7 @@ class OpenGLVMobject(OpenGLMobject):
         return bezier(self.get_nth_curve_points(n))
 
     def get_nth_curve_function_with_length(
-        self, n: int, n_sample_points: int = 10
+        self, n: int, sample_points: Optional[int] = None
     ) -> typing.Tuple[typing.Callable[[float], np.ndarray], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
@@ -558,7 +559,7 @@ class OpenGLVMobject(OpenGLMobject):
         ----------
         n
             The index of the desired curve.
-        n_sample_points
+        sample_points
             The number of points to sample to find the length.
 
         Returns
@@ -569,11 +570,14 @@ class OpenGLVMobject(OpenGLMobject):
             The length of the nth curve.
         """
 
+        if sample_points is None:
+            sample_points = 10
+
         curve = self.get_nth_curve_function(n)
 
-        points = np.array([curve(a) for a in np.linspace(0, 1, n_sample_points)])
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(get_norm, 1, diffs)
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
 
         length = np.sum(norms)
 
@@ -599,9 +603,14 @@ class OpenGLVMobject(OpenGLMobject):
             yield self.get_nth_curve_function(n)
 
     def get_curve_functions_with_lengths(
-        self,
+        self, **kwargs
     ) -> typing.Iterable[typing.Tuple[typing.Callable[[float], np.ndarray], float]]:
         """Gets the functions and lengths of the curves for the mobject.
+
+        Parameters
+        ----------
+        **kwargs
+            The keyword arguments passed to :meth:`get_nth_curve_function_with_length`
 
         Returns
         -------
@@ -612,16 +621,42 @@ class OpenGLVMobject(OpenGLMobject):
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
-            yield self.get_nth_curve_function_with_length(n)
+            yield self.get_nth_curve_function_with_length(n, **kwargs)
 
-    def point_from_proportion(self, alpha):
-        curves_with_lengths = list(self.get_curve_functions_with_lengths())
+    def point_from_proportion(self, alpha: float) -> np.ndarray:
+        """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
 
-        total_length = np.sum(length for _, length in curves_with_lengths)
-        target_length = alpha * total_length
+        Parameters
+        ----------
+        alpha
+            The proportion along the the path of the :class:`OpenGLVMobject`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The point on the :class:`OpenGLVMobject`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the :class:`OpenGLVMobject` has no points.
+        """
+
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+
+        self.throw_error_if_no_points()
+        if alpha == 1:
+            return self.get_points()[-1]
+
+        curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
+
+        target_length = alpha * np.sum(length for _, length in curves_and_lengths)
         current_length = 0
 
-        for curve, length in curves_with_lengths:
+        for curve, length in curves_and_lengths:
             if current_length + length >= target_length:
                 if length != 0:
                     residue = (target_length - current_length) / length
@@ -677,15 +712,26 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return points[distinct_curves.repeat(nppc)]
 
-    def get_arc_length(self, n_sample_points=None):
-        if n_sample_points is None:
-            n_sample_points = 4 * self.get_num_curves() + 1
-        points = np.array(
-            [self.point_from_proportion(a) for a in np.linspace(0, 1, n_sample_points)]
+    def get_arc_length(self, sample_points_per_curve: Optional[int] = None) -> float:
+        """Return the approximated length of the whole curve.
+
+        Parameters
+        ----------
+        sample_points_per_curve
+            Number of sample points per curve used to approximate the length. More points result in a better approximation.
+
+        Returns
+        -------
+        float
+            The length of the :class:`OpenGLVMobject`.
+        """
+
+        return np.sum(
+            length
+            for _, length in self.get_curve_functions_with_lengths(
+                sample_points=sample_points_per_curve
+            )
         )
-        diffs = points[1:] - points[:-1]
-        norms = np.array([get_norm(d) for d in diffs])
-        return norms.sum()
 
     def get_area_vector(self):
         # Returns a vector whose length is the area bound by
@@ -723,7 +769,7 @@ class OpenGLVMobject(OpenGLMobject):
             return OUT
 
         area_vect = self.get_area_vector()
-        area = get_norm(area_vect)
+        area = np.linalg.norm(area_vect)
         if area > 0:
             return area_vect / area
         else:
@@ -798,7 +844,7 @@ class OpenGLVMobject(OpenGLMobject):
             return np.repeat(points, nppc * n, 0)
 
         bezier_groups = self.get_bezier_tuples_from_points(points)
-        norms = np.array([get_norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
+        norms = np.array([np.linalg.norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
         total_norm = sum(norms)
         # Calculate insertions per curve (ipc)
         if total_norm < 1e-6:

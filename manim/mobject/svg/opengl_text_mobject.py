@@ -42,26 +42,29 @@ Examples
 
 """
 
-__all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
+# __all__ = ["Text", "Paragraph", "CairoText", "MarkupText", "register_font"]
 
 
 import copy
 import hashlib
 import os
 import re
+import sys
 import typing
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict
+from xml.sax.saxutils import escape
 
+import cairo
 import manimpango
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
 from ...constants import *
-from ...mobject.geometry import Dot
-from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.types.vectorized_mobject import VGroup
+from ...mobject.opengl_geometry import OpenGLDot
+from ...mobject.svg.opengl_svg_mobject import OpenGLSVGMobject
+from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
 from ...utils.color import WHITE, Colors
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -101,7 +104,7 @@ def remove_invisible_chars(mobject):
     return mobject_without_dots
 
 
-class Paragraph(VGroup):
+class OpenGLParagraph(OpenGLVGroup):
     r"""Display a paragraph of text.
 
     For a given :class:`.Paragraph` ``par``, the attribute ``par.chars`` is a
@@ -135,14 +138,14 @@ class Paragraph(VGroup):
     def __init__(self, *text, line_spacing=-1, alignment=None, **config):
         self.line_spacing = line_spacing
         self.alignment = alignment
-        VGroup.__init__(self, **config)
+        OpenGLVGroup.__init__(self, **config)
 
         lines_str = "\n".join(list(text))
-        self.lines_text = Text(lines_str, line_spacing=line_spacing, **config)
+        self.lines_text = OpenGLText(lines_str, line_spacing=line_spacing, **config)
         lines_str_list = lines_str.split("\n")
         self.chars = self.gen_chars(lines_str_list)
 
-        chars_lines_text_list = VGroup()
+        chars_lines_text_list = OpenGLVGroup()
         char_index_counter = 0
         for line_index in range(lines_str_list.__len__()):
             chars_lines_text_list.add(
@@ -164,7 +167,7 @@ class Paragraph(VGroup):
         self.lines[1].extend(
             [self.alignment for _ in range(chars_lines_text_list.__len__())]
         )
-        VGroup.__init__(
+        OpenGLVGroup.__init__(
             self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config
         )
         self.move_to(np.array([0, 0, 0]))
@@ -185,9 +188,9 @@ class Paragraph(VGroup):
             The generated 2d-VGroup of chars.
         """
         char_index_counter = 0
-        chars = VGroup()
+        chars = OpenGLVGroup()
         for line_no in range(lines_str_list.__len__()):
-            chars.add(VGroup())
+            chars.add(OpenGLVGroup())
             chars[line_no].add(
                 *self.lines_text.chars[
                     char_index_counter : char_index_counter
@@ -281,7 +284,7 @@ class Paragraph(VGroup):
             )
 
 
-class Text(SVGMobject):
+class OpenGLText(OpenGLSVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
@@ -453,7 +456,7 @@ class Text(SVGMobject):
             self.line_spacing = self.size + self.size * self.line_spacing
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        SVGMobject.__init__(
+        OpenGLSVGMobject.__init__(
             self,
             file_name,
             color=color,
@@ -468,13 +471,19 @@ class Text(SVGMobject):
         self.text = text
         if self.disable_ligatures:
             self.submobjects = [*self.gen_chars()]
-        self.chars = VGroup(*self.submobjects)
+        self.chars = OpenGLVGroup(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
-        nppc = self.n_points_per_cubic_curve
+        if config["renderer"] == "opengl":
+            nppc = self.n_points_per_curve
+        else:
+            nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.points) == 0:
+            if config["renderer"] == "opengl":
+                points = each.data["points"]
+            else:
+                nppc = each.points
+            if len(points) == 0:
                 continue
-            points = each.points
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -501,11 +510,11 @@ class Text(SVGMobject):
         return f"Text({repr(self.original_text)})"
 
     def gen_chars(self):
-        chars = VGroup()
+        chars = OpenGLVGroup()
         submobjects_char_index = 0
         for char_index in range(self.text.__len__()):
             if self.text[char_index] in (" ", "\t", "\n"):
-                space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
+                space = OpenGLDot(radius=0, fill_opacity=0, stroke_opacity=0)
                 if char_index == 0:
                     space.move_to(self.submobjects[submobjects_char_index].get_center())
                 else:
@@ -660,10 +669,18 @@ class Text(SVGMobject):
         )
 
     def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+        OpenGLSVGMobject.set_style(
+            self,
+            fill_color=self.fill_color or self.color,
+            fill_opacity=self.fill_opacity,
+            stroke_color=self.stroke_color or self.color,
+            stroke_width=self.stroke_width,
+            stroke_opacity=self.stroke_opacity,
+            recurse=propagate_colors,
+        )
 
 
-class MarkupText(SVGMobject):
+class OpenGLMarkupText(OpenGLSVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
@@ -937,7 +954,7 @@ class MarkupText(SVGMobject):
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        SVGMobject.__init__(
+        OpenGLSVGMobject.__init__(
             self,
             file_name,
             fill_opacity=fill_opacity,
@@ -948,14 +965,20 @@ class MarkupText(SVGMobject):
             unpack_groups=unpack_groups,
             **kwargs,
         )
-        self.chars = VGroup(*self.submobjects)
+        self.chars = OpenGLVGroup(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
-        nppc = self.n_points_per_cubic_curve
+        if config["renderer"] == "opengl":
+            nppc = self.n_points_per_curve
+        else:
+            nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.points) == 0:
+            if config["renderer"] == "opengl":
+                points = each.data["points"]
+            else:
+                points = each.points
+            if len(points) == 0:
                 continue
-            points = each.points
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -1161,6 +1184,10 @@ def register_font(font_file: typing.Union[str, Path]):
 
     AttributeError:
         If this method is used on macOS.
+
+    Notes
+    -----
+    This method of adding font files also works with :class:`CairoText`.
 
     .. important ::
 

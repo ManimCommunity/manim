@@ -54,7 +54,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.extlinks",
-    "sphinx.ext.linkcode",
+    "sphinx.ext.viewcode",
     "sphinxext.opengraph",
     "manim_directive",
 ]
@@ -126,19 +126,6 @@ html_title = f"Manim Community v{manim.__version__}"
 
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
-
-
-# source links to github
-def linkcode_resolve(domain, info):
-    if domain != "py":
-        return None
-    if not info["module"]:
-        return None
-    filename = info["module"].replace(".", "/")
-    version = os.getenv("READTHEDOCS_VERSION", "master")
-    if version == "latest" or version == "stable":
-        version = "master"
-    return f"https://github.com/ManimCommunity/manim/blob/{version}/{filename}.py"
 
 
 # external links
