@@ -1208,22 +1208,23 @@ class BackgroundColoredVMobjectDisplayer:
         mode = "RGBA" if pixel_array.shape[2] == 4 else "RGB"
         return self.resize_background_array(background_array, width, height, mode)
 
-    def get_background_array(self, file_name):
+    def get_background_array(self, image:Union[Image.Image, str]):
         """Gets the background array that has the passed file_name.
 
         Parameters
         ----------
-        file_name : str
-            The file_name of the background image.
+        image
+            The background image or its file_name.
 
         Returns
         -------
         np.ndarray
-            The pixel array of the file whose file name is `file_name`
+            The pixel array of the given image (file)
         """
-        if file_name in self.file_name_to_pixel_array_map:
-            return self.file_name_to_pixel_array_map[file_name]
-        full_path = get_full_raster_image_path(file_name)
+        if image in self.file_name_to_pixel_array_map:
+            return self.file_name_to_pixel_array_map[image]
+        if isinstance(image, str):
+            full_path = get_full_raster_image_path(image)
         image = Image.open(full_path)
         back_array = np.array(image)
 
@@ -1231,7 +1232,7 @@ class BackgroundColoredVMobjectDisplayer:
         if not np.all(pixel_array.shape == back_array.shape):
             back_array = self.resize_background_array_to_match(back_array, pixel_array)
 
-        self.file_name_to_pixel_array_map[file_name] = back_array
+        self.file_name_to_pixel_array_map[image] = back_array
         return back_array
 
     def display(self, *cvmobjects):
