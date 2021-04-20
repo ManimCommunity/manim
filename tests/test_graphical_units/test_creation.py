@@ -19,6 +19,15 @@ class UncreateTest(Scene):
         self.play(Uncreate(square))
 
 
+class AddTest(Scene):
+    def construct(self):
+        square = Square()
+        self.play(Add(square))
+
+
+# There is no RemoveTest because it would be all blank pixels.
+
+
 class DrawBorderThenFillTest(Scene):
     def construct(self):
         square = Square(fill_opacity=1)
