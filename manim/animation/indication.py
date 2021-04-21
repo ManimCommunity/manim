@@ -288,15 +288,30 @@ class CircleIndicate(Indicate):
 class ShowPassingFlash(ShowPartial):
     """Show only a sliver of the VMobject each frame.
 
+    Parameters
+    ----------
+    mobject
+        The mobject whose stroke is animated.
+    time_width
+        The length of the sliver relative to the length of the stroke.  
+
     Examples
     --------
-    .. manim:: ShowPassingFlashScene
+    .. manim:: TimeWidthValues
 
-        class ShowPassingFlashScene(Scene):
+        class TimeWidthValues(Scene):
             def construct(self):
-                p = RegularPolygon(5)
-                self.add(p)
-                self.play(ShowPassingFlash(p.copy().set_color(YELLOW)))
+                p = RegularPolygon(5, color=DARK_GRAY, stroke_width=6).scale(3)
+                lbl = VMobject()
+                self.add(p, lbl)
+                p = p.copy().set_color(BLUE)
+                for time_width in [0.2, 0.5, 1, 2]:
+                    lbl.become(Tex(r"\\texttt{time\\_width={{%.1f}}}"%time_width))
+                    self.play(ShowPassingFlash(
+                        p.copy().set_color(BLUE),
+                        run_time=2,
+                        time_width=time_width
+                    ))
 
     See Also
     --------
@@ -306,13 +321,12 @@ class ShowPassingFlash(ShowPartial):
 
     def __init__(
         self,
-        mobject: "Mobject",
+        mobject: "VMobject",
         time_width: float = 0.1,
-        remover: bool = True,
         **kwargs
     ) -> None:
         self.time_width = time_width
-        super().__init__(mobject, remover=remover, **kwargs)
+        super().__init__(mobject, remover=True, **kwargs)
 
     def _get_bounds(self, alpha: float) -> typing.Tuple[float]:
         tw = self.time_width
