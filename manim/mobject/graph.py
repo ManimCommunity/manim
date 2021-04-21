@@ -754,11 +754,15 @@ class Graph(VMobject):
             A group containing all newly added vertices and edges.
 
         """
+        if edge_config is None:
+            edge_config = self.default_edge_config.copy()
         added_mobjects = []
         for v in edge:
             if v not in self.vertices:
                 added_mobjects.append(self.add_vertex(v))
         u, v = edge
+
+        self._graph.add_edge(u, v)
 
         base_edge_config = self.default_edge_config.copy()
         base_edge_config.update(edge_config)
@@ -766,7 +770,7 @@ class Graph(VMobject):
         self._edge_config[(u, v)] = edge_config
 
         edge_mobject = edge_type(
-            self[u].get_center(), self[v].get_center, z_index=-1, **edge_config
+            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
         )
         self.edges[(u, v)] = edge_mobject
 
@@ -813,6 +817,8 @@ class Graph(VMobject):
             A group containing all newly added vertices and edges.
 
         """
+        if edge_config is None:
+            edge_config = {}
         non_edge_settings = {k: v for (k, v) in edge_config.items() if k not in edges}
         base_edge_config = self.default_edge_config.copy()
         base_edge_config.update(non_edge_settings)
