@@ -185,7 +185,7 @@ class Flash(AnimationGroup):
             line.rotate(angle, about_point=ORIGIN)
             lines.add(line)
         lines.set_color(self.color)
-        lines.set_stroke(width=3)
+        lines.set_stroke(width=self.line_stroke_width)
         lines.add_updater(lambda l: l.move_to(self.point))
         return lines
 
