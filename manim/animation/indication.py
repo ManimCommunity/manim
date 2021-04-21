@@ -15,7 +15,7 @@ __all__ = [
     "ApplyWave",
     "WiggleOutThenIn",
     "TurnInsideOut",
-    #New:
+    # New:
     "Circumscribe",
 ]
 
@@ -48,19 +48,19 @@ if typing.TYPE_CHECKING:
 
 
 class FocusOn(Transform):
-    """Draw attention to a position be shrinking a spotlight to it. 
+    """Draw attention to a position be shrinking a spotlight to it.
 
     Parameters
     ----------
     focus_point
-        The point at which to shrink the spotlight.
+        The point at which to shrink the spotlight. If it is a :class:`.~Mobject` its center will be used.
     opacity
         The opacity of the spotlight.
     color
         The color of the spotlight.
     run_time
         The duration of the animation.
-  
+
     Examples
     --------
     .. manim:: UsingFocusOn
@@ -70,8 +70,9 @@ class FocusOn(Transform):
                 dot = Dot(color=YELLOW).shift(DOWN)
                 self.add(Tex("Focusing on the dot below:"), dot)
                 self.play(FocusOn(dot))
+                self.wait()
     """
-    
+
     def __init__(
         self,
         focus_point: Union[np.ndarray, Mobject],
@@ -104,6 +105,29 @@ class FocusOn(Transform):
 
 
 class Indicate(Transform):
+    """Draw attention to a Mobject by temporaly resizing and recoloring it.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to indicate.
+    scale_factor
+        The factor by which the mobject will be temporally scaled
+    color
+        The color the mobject temporally takes.
+    rate_func
+        The function definig the animation progress at every point in time.
+
+    Examples
+    --------
+    .. manim:: UsingIndicate
+
+        class UsingIndicate(Scene):
+            def construct(self):
+                self.play(Indicate(Tex("Indicate")))
+                self.wait()
+    """
+
     def __init__(
         self,
         mobject: "Mobject",
