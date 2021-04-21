@@ -31,12 +31,15 @@ class Mesh:
         # Set matrix uniforms.
         if self.model_matrix_needs_update:
             pass
-        self.shader.set_uniform(
-            "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
-        )
-        self.shader.set_uniform(
-            "u_projection_matrix", opengl.perspective_projection_matrix()
-        )
+        try:
+            self.shader.set_uniform(
+                "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
+            )
+            self.shader.set_uniform(
+                "u_projection_matrix", opengl.perspective_projection_matrix()
+            )
+        except:
+            pass
 
         if self.use_depth_test:
             self.shader.context.enable(moderngl.DEPTH_TEST)

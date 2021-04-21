@@ -36,6 +36,8 @@ from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
 from ..renderer.shader import Mesh
+from ..utils import opengl
+from ..utils import space_ops
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -103,6 +105,7 @@ class Scene(Container):
         self.queue = Queue()
         self.skip_animation_preview = False
         self.meshes = []
+        self.camera_target = ORIGIN
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -1181,6 +1184,7 @@ class Scene(Container):
             self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
         else:
             self.camera.shift(20.0 * shift)
+        self.on_mouse_scroll_2(point, offset)
 
     def on_key_press(self, symbol, modifiers):
         try:
@@ -1201,3 +1205,80 @@ class Scene(Container):
         self.mouse_drag_point.move_to(point)
         self.camera.increment_theta(-d_point[0])
         self.camera.increment_phi(d_point[1])
+        self.on_mouse_drag_2(point, d_point, buttons, modifiers)
+
+    def on_mouse_scroll_2(self, point, offset):
+        camera_to_target = self.camera_target - self.camera.get_position()
+        camera_to_target *= np.sign(offset[1])
+        shift_vector = 0.01 * camera_to_target
+        self.camera.model_matrix = (
+            opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
+        )
+
+    def on_mouse_drag_2(self, point, d_point, buttons, modifiers):
+        # Left click drag.
+        if buttons == 1:
+            # Translate to target the origin and rotate around the z axis.
+            self.camera.model_matrix = (
+                opengl.rotation_matrix(z=-d_point[0])
+                @ opengl.translation_matrix(*-self.camera_target)
+                @ self.camera.model_matrix
+            )
+
+            # Rotation off of the z axis.
+            camera_position = self.camera.get_position()
+            camera_y_axis = self.camera.model_matrix[:3, 1]
+            axis_of_rotation = space_ops.normalize(
+                np.cross(camera_y_axis, camera_position)
+            )
+            rotation_matrix = space_ops.rotation_matrix(
+                d_point[1], axis_of_rotation, homogeneous=True
+            )
+
+            maximum_polar_angle = PI / 2
+            minimum_polar_angle = 0
+
+            potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
+            potential_camera_location = potential_camera_model_matrix[:3, 3]
+            potential_camera_y_axis = potential_camera_model_matrix[:3, 1]
+            sign = (
+                np.sign(potential_camera_y_axis[2])
+                if potential_camera_y_axis[2] != 0
+                else 1
+            )
+            potential_polar_angle = sign * np.arccos(
+                potential_camera_location[2] / np.linalg.norm(potential_camera_location)
+            )
+            if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
+                self.camera.model_matrix = potential_camera_model_matrix
+            else:
+                sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
+                current_polar_angle = sign * np.arccos(
+                    camera_position[2] / np.linalg.norm(camera_position)
+                )
+                if potential_polar_angle > maximum_polar_angle:
+                    polar_angle_delta = maximum_polar_angle - current_polar_angle
+                else:
+                    polar_angle_delta = minimum_polar_angle - current_polar_angle
+                rotation_matrix = space_ops.rotation_matrix(
+                    polar_angle_delta, axis_of_rotation, homogeneous=True
+                )
+                self.camera.model_matrix = rotation_matrix @ self.camera.model_matrix
+
+            # Translate to target the original target.
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*self.camera_target)
+                @ self.camera.model_matrix
+            )
+        # Right click drag.
+        elif buttons == 4:
+            camera_x_axis = self.camera.model_matrix[:3, 0]
+            horizontal_shift_vector = -d_point[0] * camera_x_axis
+            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
+            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*total_shift_vector)
+                @ self.camera.model_matrix
+            )
+            self.camera_target += total_shift_vector

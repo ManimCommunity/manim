@@ -10,215 +10,84 @@ import manim.utils.space_ops as space_ops
 # Lines that do not yet work with the Community Version are commented.
 
 
-class CubeTest(Scene):
+def get_plane_mesh(context):
+    shader = Shader(context, name="vertex_colors")
+    attributes = np.zeros(
+        18,
+        dtype=[
+            ("in_vert", np.float32, (4,)),
+            ("in_color", np.float32, (4,)),
+        ],
+    )
+    attributes["in_vert"] = np.array(
+        [
+            # xy plane
+            [-1, -1, 0, 1],
+            [-1, 1, 0, 1],
+            [1, 1, 0, 1],
+            [-1, -1, 0, 1],
+            [1, -1, 0, 1],
+            [1, 1, 0, 1],
+            # yz plane
+            [0, -1, -1, 1],
+            [0, -1, 1, 1],
+            [0, 1, 1, 1],
+            [0, -1, -1, 1],
+            [0, 1, -1, 1],
+            [0, 1, 1, 1],
+            # xz plane
+            [-1, 0, -1, 1],
+            [-1, 0, 1, 1],
+            [1, 0, 1, 1],
+            [-1, 0, -1, 1],
+            [1, 0, -1, 1],
+            [1, 0, 1, 1],
+        ]
+    )
+    attributes["in_color"] = np.array(
+        [
+            # xy plane
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            # yz plane
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            # xz plane
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+        ]
+    )
+    return Mesh(shader, attributes)
+
+
+class MobjectTest(Scene):
     def construct(self):
         config["background_color"] = "#333333"
 
-        shader = Shader(self.renderer.context, name="vertex_colors")
+        s = OpenGLSquare()
+        self.add(s)
 
-        # shader.set_uniform("u_color", (1.0, 0.0, 0.0, 1.0))
-        attributes = np.zeros(
-            18,
-            dtype=[
-                ("in_vert", np.float32, (4,)),
-                ("in_color", np.float32, (4,)),
-            ],
-        )
-        attributes["in_vert"] = np.array(
-            [
-                # xy plane
-                [-1, -1, 0, 1],
-                [-1, 1, 0, 1],
-                [1, 1, 0, 1],
-                [-1, -1, 0, 1],
-                [1, -1, 0, 1],
-                [1, 1, 0, 1],
-                # yz plane
-                [0, -1, -1, 1],
-                [0, -1, 1, 1],
-                [0, 1, 1, 1],
-                [0, -1, -1, 1],
-                [0, 1, -1, 1],
-                [0, 1, 1, 1],
-                # xz plane
-                [-1, 0, -1, 1],
-                [-1, 0, 1, 1],
-                [1, 0, 1, 1],
-                [-1, 0, -1, 1],
-                [1, 0, -1, 1],
-                [1, 0, 1, 1],
-            ]
-        )
-        attributes["in_color"] = np.array(
-            [
-                # xy plane
-                [1, 0, 0, 1],
-                [1, 0, 0, 1],
-                [1, 0, 0, 1],
-                [1, 0, 0, 1],
-                [1, 0, 0, 1],
-                [1, 0, 0, 1],
-                # yz plane
-                [0, 1, 0, 1],
-                [0, 1, 0, 1],
-                [0, 1, 0, 1],
-                [0, 1, 0, 1],
-                [0, 1, 0, 1],
-                [0, 1, 0, 1],
-                # xz plane
-                [0, 0, 1, 1],
-                [0, 0, 1, 1],
-                [0, 0, 1, 1],
-                [0, 0, 1, 1],
-                [0, 0, 1, 1],
-                [0, 0, 1, 1],
-            ]
-        )
-        mesh = Mesh(shader, attributes)
+        mesh = get_plane_mesh(self.renderer.context)
         self.add(mesh)
 
-        # def update_mesh(mesh, dt):
-        #     mesh.model_matrix = np.matmul(
-        #         opengl.rotation_matrix(y=dt), mesh.model_matrix
-        #     )
-
-        # mesh.add_updater(update_mesh)
-
-        total_time = 0
-
-        def update_camera(camera, dt):
-            nonlocal total_time
-            # Rotate the camera in place.
-            # camera_translation = camera.get_position()
-            # camera.model_matrix = np.matmul(
-            #     translation_matrix(*-camera_translation), camera.model_matrix
-            # )
-            # camera.model_matrix = np.matmul(
-            #     rotation_matrix(x=dt / (TAU / 8)), camera.model_matrix
-            # )
-            # camera.model_matrix = np.matmul(
-            #     translation_matrix(*camera_translation), camera.model_matrix
-            # )
-
-            # if total_time <= 2.5:
-            #     # Rotate the camera around the z axis.
-            #     self.camera.model_matrix = np.matmul(
-            #         rotation_matrix(z=dt / 8),
-            #         self.camera.model_matrix,
-            #     )
-            # else:
-            #     # Increase the angle off the z axis.
-            #     origin_to_camera = self.camera.get_position()
-            #     axis_of_rotation = np.cross(OUT, origin_to_camera)
-            #     rot_matrix = space_ops.rotation_matrix(dt / 4, axis_of_rotation)
-            #     print(axis_of_rotation)
-
-            #     # Convert to homogeneous coordinates.
-            #     rot_matrix = np.hstack((rot_matrix, np.array([[0], [0], [0]])))
-            #     rot_matrix = np.vstack((rot_matrix, np.array([0, 0, 0, 1])))
-
-            #     self.camera.model_matrix = np.matmul(
-            #         rot_matrix,
-            #         self.camera.model_matrix,
-            #     )
-
-            total_time += dt
-
-        camera_target = ORIGIN
-
-        def on_mouse_drag(point, d_point, buttons, modifiers):
-            nonlocal camera_target
-            # Left click drag.
-            if buttons == 1:
-                # Translate to target the origin and rotate around the z axis.
-                self.camera.model_matrix = (
-                    opengl.rotation_matrix(z=-d_point[0])
-                    @ opengl.translation_matrix(*-camera_target)
-                    @ self.camera.model_matrix
-                )
-
-                # Rotation off of the z axis.
-                camera_position = self.camera.get_position()
-                camera_y_axis = self.camera.model_matrix[:3, 1]
-                axis_of_rotation = space_ops.normalize(
-                    np.cross(camera_y_axis, camera_position)
-                )
-                rotation_matrix = space_ops.rotation_matrix(
-                    d_point[1], axis_of_rotation, homogeneous=True
-                )
-
-                maximum_polar_angle = PI / 2
-                minimum_polar_angle = 0
-
-                potential_camera_model_matrix = (
-                    rotation_matrix @ self.camera.model_matrix
-                )
-                potential_camera_location = potential_camera_model_matrix[:3, 3]
-                potential_camera_y_axis = potential_camera_model_matrix[:3, 1]
-                sign = (
-                    np.sign(potential_camera_y_axis[2])
-                    if potential_camera_y_axis[2] != 0
-                    else 1
-                )
-                potential_polar_angle = sign * np.arccos(
-                    potential_camera_location[2]
-                    / np.linalg.norm(potential_camera_location)
-                )
-                if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
-                    self.camera.model_matrix = potential_camera_model_matrix
-                else:
-                    sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
-                    current_polar_angle = sign * np.arccos(
-                        camera_position[2] / np.linalg.norm(camera_position)
-                    )
-                    if potential_polar_angle > maximum_polar_angle:
-                        polar_angle_delta = maximum_polar_angle - current_polar_angle
-                    else:
-                        polar_angle_delta = minimum_polar_angle - current_polar_angle
-                    rotation_matrix = space_ops.rotation_matrix(
-                        polar_angle_delta, axis_of_rotation, homogeneous=True
-                    )
-                    self.camera.model_matrix = (
-                        rotation_matrix @ self.camera.model_matrix
-                    )
-
-                # Translate to target the original target.
-                self.camera.model_matrix = (
-                    opengl.translation_matrix(*camera_target) @ self.camera.model_matrix
-                )
-            # Right click drag.
-            elif buttons == 4:
-                camera_x_axis = self.camera.model_matrix[:3, 0]
-                horizontal_shift_vector = -d_point[0] * camera_x_axis
-                vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
-                total_shift_vector = horizontal_shift_vector + vertical_shift_vector
-
-                self.camera.model_matrix = (
-                    opengl.translation_matrix(*total_shift_vector)
-                    @ self.camera.model_matrix
-                )
-                camera_target += total_shift_vector
-
-        def on_mouse_scroll(point, offset):
-            nonlocal camera_target
-            camera_to_target = camera_target - self.camera.get_position()
-            camera_to_target *= np.sign(offset[1])
-            shift_vector = 0.01 * camera_to_target
-            self.camera.model_matrix = (
-                opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
+        def update_mesh(mesh, dt):
+            mesh.model_matrix = np.matmul(
+                opengl.rotation_matrix(z=dt), mesh.model_matrix
             )
 
-        setattr(self, "on_mouse_drag", on_mouse_drag)
-        setattr(self, "on_mouse_scroll", on_mouse_scroll)
-
-        self.camera.add_updater(update_camera)
-
-        # self.camera.model_matrix = (
-        #     opengl.rotation_matrix(x=TAU / 8) @ self.camera.model_matrix
-        # )
-        # self.camera.model_matrix = (
-        #     opengl.rotation_matrix(z=TAU / 8) @ self.camera.model_matrix
-        # )
+        mesh.add_updater(update_mesh)
 
         self.interactive_embed()
 
