@@ -5,7 +5,7 @@ __all__ = [
 ]
 
 from copy import copy
-from typing import Hashable, List, Tuple, Union, Optional
+from typing import Hashable, List, Tuple, Type, Union, Optional
 
 import networkx as nx
 import numpy as np
@@ -355,10 +355,10 @@ class Graph(VMobject):
         layout: Union[str, dict] = "spring",
         layout_scale: float = 2,
         layout_config: Union[dict, None] = None,
-        vertex_type: "Mobject" = Dot,
+        vertex_type: Type["Mobject"] = Dot,
         vertex_config: Union[dict, None] = None,
         vertex_mobjects: Optional[dict] = None,
-        edge_type: "Mobject" = Line,
+        edge_type: Type["Mobject"] = Line,
         partitions: Union[List[List[Hashable]], None] = None,
         root_vertex: Union[Hashable, None] = None,
         edge_config: Union[dict, None] = None,
@@ -391,6 +391,9 @@ class Graph(VMobject):
 
         if self._labels and vertex_type is Dot:
             vertex_type = LabeledDot
+
+        if vertex_mobjects is None:
+            vertex_mobjects = {}
 
         # build vertex_config
         if vertex_config is None:
@@ -463,7 +466,7 @@ class Graph(VMobject):
         position: Optional[np.ndarray] = None,
         label: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: type = Dot,
+        vertex_type: Type["Mobject"] = Dot,
         vertex_config: Optional[dict] = None,
         vertex_mobject: Optional[dict] = None,
     ) -> "Mobject":
@@ -490,6 +493,9 @@ class Graph(VMobject):
         vertex_config
             A dictionary containing keyword arguments to be passed to
             the class specified via ``vertex_type``.
+        vertex_mobject
+            The mobject to be used as the vertex. Overrides all other
+            vertex customization options.
         """
         if position is None:
             position = self.get_center()
@@ -535,10 +541,8 @@ class Graph(VMobject):
     def _add_vertex_animation(self, *args, anim_args=None, **kwargs):
         if anim_args is None:
             anim_args = {}
-        if "animation" in anim_args:
-            animation = anim_args.pop("animation")
-        else:
-            animation = Create
+
+        animation = anim_args.pop("animation", Create)
 
         vertex_mobject = self.add_vertex(*args, **kwargs)
         return animation(vertex_mobject, **anim_args)
@@ -549,7 +553,7 @@ class Graph(VMobject):
         positions: Optional[dict] = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: type = Dot,
+        vertex_type: Type["Mobject"] = Dot,
         vertex_config: Optional[dict] = None,
         vertex_mobjects: Optional[dict] = None,
     ):
@@ -576,6 +580,10 @@ class Graph(VMobject):
         vertex_config
             A dictionary containing keyword arguments to be passed to
             the class specified via ``vertex_type``.
+        vertex_mobjects
+            A dictionary whose keys are the vertex identifiers, and whose
+            values are mobjects that should be used as vertices. Overrides
+            all other vertex customization options.
         """
         if positions is None:
             positions = {}
@@ -625,10 +633,8 @@ class Graph(VMobject):
     def _add_vertices_animation(self, *args, anim_args=None, **kwargs):
         if anim_args is None:
             anim_args = {}
-        if "animation" in anim_args:
-            animation = anim_args.pop("animation")
-        else:
-            animation = Create
+
+        animation = anim_args.pop("animation", Create)
 
         vertex_mobjects = self.add_vertices(*args, **kwargs)
         return AnimationGroup(*[animation(v, **anim_args) for v in vertex_mobjects])
@@ -645,17 +651,18 @@ class Graph(VMobject):
         Returns
         -------
 
-        VGroup
+        Group
             A mobject containing all removed objects.
 
         Examples
         --------
+        ::
 
-        >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-        >>> G.remove_vertex(2)
-        VGroup(Line, Line, Dot)
-        >>> G
-        Graph on 1 vertices and 0 edges
+            >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
+            >>> G.remove_vertex(2)
+            VGroup(Line, Line, Dot)
+            >>> G
+            Graph on 1 vertices and 0 edges
 
         """
         if vertex not in self.vertices:
@@ -682,10 +689,8 @@ class Graph(VMobject):
     def _remove_vertex_animation(self, vertex, anim_args=None):
         if anim_args is None:
             anim_args = {}
-        if "animation" in anim_args:
-            animation = anim_args.pop("animation")
-        else:
-            animation = Uncreate
+
+        animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_vertex(vertex)
         return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
@@ -716,12 +721,200 @@ class Graph(VMobject):
     def _remove_vertices_animation(self, *vertices, anim_args=None):
         if anim_args is None:
             anim_args = {}
-        if "animation" in anim_args:
-            animation = anim_args.pop("animation")
-        else:
-            animation = Uncreate
+
+        animation = anim_args.pop("animation", Uncreate)
 
         mobjects = self.remove_vertices(*vertices)
+        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+
+    def add_edge(
+        self,
+        edge: Tuple[Hashable, Hashable],
+        edge_type: Type["Mobject"] = Line,
+        edge_config: Optional[dict] = None,
+    ):
+        """Add a new edge to the graph.
+
+        Parameters
+        ----------
+
+        edge
+            The edge (as a tuple of vertex identifiers) to be added. If a non-existing
+            vertex is passed, a new vertex with default settings will be created. Create
+            new vertices yourself beforehand to customize them.
+        edge_type
+            The mobject class used for displaying edges in the scene.
+        edge_config
+            A dictionary containing keyword arguments to be passed
+            to the class specified via ``edge_type``.
+
+        Returns
+        -------
+        Group
+            A group containing all newly added vertices and edges.
+
+        """
+        added_mobjects = []
+        for v in edge:
+            if v not in self.vertices:
+                added_mobjects.append(self.add_vertex(v))
+        u, v = edge
+
+        base_edge_config = self.default_edge_config.copy()
+        base_edge_config.update(edge_config)
+        edge_config = base_edge_config
+        self._edge_config[(u, v)] = edge_config
+
+        edge_mobject = edge_type(
+            self[u].get_center(), self[v].get_center, z_index=-1, **edge_config
+        )
+        self.edges[(u, v)] = edge_mobject
+
+        self.add(edge_mobject)
+        added_mobjects.append(edge_mobject)
+        return Group(*added_mobjects)
+
+    @override_animate(add_edge)
+    def _add_edge_animation(self, *args, anim_args=None, **kwargs):
+        if anim_args is None:
+            anim_args = {}
+        animation = anim_args.pop("animation", Create)
+
+        mobjects = self.add_edge(*args, **kwargs)
+        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+
+    def add_edges(
+        self,
+        *edges: List[Tuple[Hashable, Hashable]],
+        edge_type: Type["Mobject"] = Line,
+        edge_config: Optional[dict] = None,
+    ):
+        """Add new edges to the graph.
+
+        Parameters
+        ----------
+
+        edges
+            The edge (as a tuple of vertex identifiers) to be added. If a non-existing
+            vertex is passed, a new vertex with default settings will be created. Create
+            new vertices yourself beforehand to customize them.
+        edge_type
+            The mobject class used for displaying edges in the scene.
+        edge_config
+            A dictionary either containing keyword arguments to be passed
+            to the class specified via ``edge_type``, or a dictionary
+            whose keys are the edge tuples, and whose values are dictionaries
+            containing keyword arguments to be passed for the construction
+            of the corresponding edge.
+
+        Returns
+        -------
+        Group
+            A group containing all newly added vertices and edges.
+
+        """
+        non_edge_settings = {k: v for (k, v) in edge_config.items() if k not in edges}
+        base_edge_config = self.default_edge_config.copy()
+        base_edge_config.update(non_edge_settings)
+        base_edge_config = {e: base_edge_config.copy() for e in edges}
+        for e in edges:
+            base_edge_config[e].update(edge_config.get(e, {}))
+        edge_config = base_edge_config
+
+        added_mobjects = sum(
+            [
+                self.add_edge(
+                    edge, edge_type=edge_type, edge_config=edge_config[edge]
+                ).submobjects
+                for edge in edges
+            ],
+            [],
+        )
+        return Group(*added_mobjects)
+
+    @override_animate(add_edges)
+    def _add_edges_animation(self, *args, anim_args=None, **kwargs):
+        if anim_args is None:
+            anim_args = {}
+        animation = anim_args.pop("animation", Create)
+
+        mobjects = self.add_edges(*args, **kwargs)
+        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+
+    def remove_edge(self, edge: Tuple[Hashable]):
+        """Remove an edge from the graph.
+
+        Parameters
+        ----------
+
+        edge
+            The edge (i.e., a tuple of vertex identifiers) to be removed from the graph.
+
+        Returns
+        -------
+
+        Mobject
+            The removed edge.
+
+        Examples
+        --------
+
+        ::
+
+            >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
+            >>> G.remove_edge((2, 3))
+            Line
+            >>> G
+            Graph on 3 vertices and 1 edges
+        """
+        if edge not in self.edges:
+            edge = edge[::-1]
+            if edge not in self.edges:
+                raise ValueError(f"The graph does not contain a edge '{edge}'")
+
+        edge_mobject = self.edges.pop(edge)
+
+        self._graph.remove_edge(*edge)
+        self._edge_config.pop(edge, None)
+
+        self.remove(edge_mobject)
+        return edge_mobject
+
+    @override_animate(remove_edge)
+    def _remove_edge_animation(self, edge, anim_args=None):
+        if anim_args is None:
+            anim_args = {}
+
+        animation = anim_args.pop("animation", Uncreate)
+
+        mobject = self.remove_edge(edge)
+        return animation(mobject, **anim_args)
+
+    def remove_edges(self, *edges: List[Tuple[Hashable]]):
+        """Remove several edges from the graph.
+
+        Parameters
+        ----------
+        edges
+            A list of edges to be removed from the graph.
+
+        Returns
+        -------
+        Group
+            A group containing all removed edges.
+
+        """
+        edge_mobjects = [self.remove_edge(edge) for edge in edges]
+        return Group(*edge_mobjects)
+
+    @override_animate(remove_edges)
+    def _remove_edges_animation(self, *edges, anim_args=None):
+        if anim_args is None:
+            anim_args = {}
+
+        animation = anim_args.pop("animation", Uncreate)
+
+        mobjects = self.remove_edges()
         return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
 
     @staticmethod
