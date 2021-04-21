@@ -55,8 +55,10 @@ class ValueTracker(Mobject):
         self.set_value(value)
 
     def get_value(self) -> float:
-        """Get the current value of the ValueTracker. This value changes continuously
-        when :attr:`animate` for the ValueTracker is called."""
+        """Get the current value of this value tracker. 
+        
+        The value changes continuously when :attr:`animate`
+        for the ValueTracker is called."""
         return self.points[0, 0]
 
     def set_value(self, value: Union[float, int]):
@@ -70,31 +72,31 @@ class ValueTracker(Mobject):
         return self
 
     def __bool__(self):
-        """Allows ValueTracker to be tested directly in boolean expressions. True if the value of the ValueTracker is nonzero."""
+        """Return whether the value of this value tracker evaluates as true."""
         return bool(self.get_value())
 
     def __iadd__(self, d_value: Union[float, int]):
-        """adds ``+=`` syntax to increment the value of the ValueTracker"""
+        """Add ``d_value`` to the value of this value tracker."""
         self.increment_value(d_value)
         return self
 
     def __ifloordiv__(self, d_value: Union[float, int]):
-        """adds ``//=`` syntax to floor divide the value of the ValueTracker"""
+        """Set the value of this value tracker to the floor division of the current value by ``d_value``. """
         self.set_value(self.get_value() // d_value)
         return self
 
     def __imod__(self, d_value: Union[float, int]):
-        """adds ``%=`` syntax to floor mod the value of the ValueTracker"""
+        """Set the value of this value tracker to the current value modulo ``d_value``."""
         self.set_value(self.get_value() % d_value)
         return self
 
     def __imul__(self, d_value: Union[float, int]):
-        """adds ``*=`` syntax to multiply the value of the ValueTracker"""
+        """Set the value of this value tracker to the product of the current value and ``d_value``."""
         self.set_value(self.get_value() * d_value)
         return self
 
     def __ipow__(self, d_value: Union[float, int]):
-        """adds ``**=`` syntax to exponentiate the value of the ValueTracker"""
+        """Set the value of this value tracker to the current value raised to the power of ``d_value``."""
         self.set_value(self.get_value() ** d_value)
         return self
 
@@ -104,7 +106,7 @@ class ValueTracker(Mobject):
         return self
 
     def __itruediv__(self, d_value: Union[float, int]):
-        """adds ``/=`` syntax to floor divide the value of the ValueTracker"""
+        """Sets the value of this value tracker to the current value divided by ``d_value``."""
         self.set_value(self.get_value() / d_value)
         return self
 
@@ -164,8 +166,7 @@ class ExponentialValueTracker(ValueTracker):
 
 
 class ComplexValueTracker(ValueTracker):
-    """Operates like ValueTracker, except it encodes a complex-valued
-    parameter as opposed to a real-valued parameter.
+    """Tracks a complex-valued parameter.
 
     Examples
     --------
@@ -187,8 +188,10 @@ class ComplexValueTracker(ValueTracker):
     """
 
     def get_value(self):
-        """Get the current value of the ComplexValueTracker. This value changes
-        continuously when :attr:`animate` for the ComplexValueTracker is called."""
+        """Get the current value of this value tracker. 
+        
+        This value changes continuously when animated using
+        the :attr:`animate` syntax."""
         return complex(*self.points[0, :2])
 
     def set_value(self, z):
