@@ -12,12 +12,12 @@ import string
 import threading
 import types
 import warnings
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 from queue import Queue
 
 import numpy as np
 from tqdm import tqdm
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
