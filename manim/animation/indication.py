@@ -20,7 +20,9 @@ __all__ = [
 ]
 
 
-from typing import Type, Union
+from manim.utils.simple_functions import clip
+from manim.utils.space_ops import normalize
+from typing import Callable, Type, Union
 
 import numpy as np
 from colour import Color
@@ -39,9 +41,9 @@ from ..mobject.geometry import Circle, Dot, Line, Rectangle
 from ..mobject.mobject import Mobject
 from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.bezier import interpolate
+from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
-from ..utils.rate_functions import there_and_back, wiggle
+from ..utils.rate_functions import linear, rush_from, smooth, there_and_back, wiggle
 
 if typing.TYPE_CHECKING:
     from ..mobject.mobject import Mobject
@@ -293,7 +295,7 @@ class ShowPassingFlash(ShowPartial):
     mobject
         The mobject whose stroke is animated.
     time_width
-        The length of the sliver relative to the length of the stroke.  
+        The length of the sliver relative to the length of the stroke.
 
     Examples
     --------
@@ -319,12 +321,7 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(
-        self,
-        mobject: "VMobject",
-        time_width: float = 0.1,
-        **kwargs
-    ) -> None:
+    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, **kwargs)
 
@@ -429,27 +426,90 @@ class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
 
 
 class ApplyWave(Homotopy):
+    """Send a wave through the Mobject distorting it temporarily.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be distorted.
+    direction
+        The direction in which the wave nudges points of the shape
+    amplitude
+        The distance points of the shape get shifted
+    wave_func
+        The function defining the shape of one wave flank.
+    time_width
+        The length of the wave relative to the width of the mobject.
+    ripples
+        The number of ripples of the wave
+    run_time
+        The duration of the animation.
+
+    Examples
+    --------
+
+    .. manim:: ApplyingWaves
+
+        class ApplyingWaves(Scene):
+            def construct(self):
+                tex = Tex("WaveWaveWaveWaveWave").scale(2)
+                self.play(ApplyWave(tex))
+                self.play(ApplyWave(
+                    tex,
+                    direction=RIGHT,
+                    time_width=0.5,
+                    amplitude=0.3
+                ))
+                self.play(ApplyWave(
+                    tex,
+                    rate_func=ease_in_out_sine,
+                    ripples=4
+                ))
+
+    """
+
     def __init__(
         self,
         mobject: "Mobject",
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
-        run_time: float = 1,
+        wave_func: Callable[[float], float] = smooth,
+        time_width: float = 1,
+        ripples: int = 1,
+        run_time: float = 2,
         **kwargs
     ) -> None:
-        self.direction = direction
-        self.amplitude = amplitude
-        left_x = mobject.get_left()[0]
-        right_x = mobject.get_right()[0]
-        vect = self.amplitude * self.direction
+        x_min = mobject.get_left()[0]
+        x_max = mobject.get_right()[0]
+        vect = amplitude * normalize(direction)
+
+        def wave(t):
+            # Creates a wave with n ripples from a simple rate_func
+            # Do yourself a favor and don't try to understand it...
+            t = 1 - t
+            if t >= 1 or t <= 0:
+                return 0
+            phases = ripples * 2
+            phase = int(t * phases)
+            if phase == 0:
+                return wave_func(t * phases)
+            elif phase == phases - 1:
+                t -= phase / phases
+                return (1 - wave_func(t * phases)) * (1 - 2 * ((phase + ripples) % 2))
+            else:
+                phase = int((phase - 1) / 2)
+                t -= (2 * phase + 1) / phases
+                return (1 - 2 * wave_func(t * ripples)) * (1 - 2 * ((phase) % 2))
 
         def homotopy(
             x: float, y: float, z: float, t: float
         ) -> typing.Tuple[float, float, float]:
-            alpha = (x - left_x) / (right_x - left_x)
-            power = np.exp(2.0 * (alpha - 0.5))
-            nudge = there_and_back(t ** power)
-            return np.array([x, y, z]) + nudge * vect
+            upper = interpolate(0, 1 + time_width, t)
+            lower = upper - time_width
+            relative_x = inverse_interpolate(x_min, x_max, x)
+            wave_phase = inverse_interpolate(lower, upper, relative_x)
+            nudge = wave(wave_phase) * vect
+            return np.array([x, y, z]) + nudge
 
         super().__init__(homotopy, mobject, run_time=run_time, **kwargs)
 
