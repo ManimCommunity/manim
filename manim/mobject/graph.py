@@ -5,13 +5,13 @@ __all__ = [
 ]
 
 from copy import copy
-from typing import Hashable, List, Tuple, Type, Union, Optional
+from typing import Hashable, List, Optional, Tuple, Type, Union
 
 import networkx as nx
 import numpy as np
 
-from ..animation.creation import Create, Uncreate
 from ..animation.composition import AnimationGroup
+from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
 from .mobject import Group, Mobject, override_animate

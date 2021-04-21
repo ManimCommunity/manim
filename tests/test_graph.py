@@ -10,6 +10,7 @@ def test_graph_creation():
     G_spring = Graph(vertices=vertices, edges=edges)
     assert str(G_spring) == "Graph on 4 vertices and 4 edges"
 
+
 def test_graph_add_vertices():
     G = Graph([1, 2, 3], [(1, 2), (2, 3)])
     G.add_vertex(4)
@@ -20,7 +21,8 @@ def test_graph_add_vertices():
     assert 5 in G._vertex_config
     G.add_vertices([6, 7, 8])
     assert len(G.vertices) == 8
-    assert len(G._graph.nodes()) == 8 
+    assert len(G._graph.nodes()) == 8
+
 
 def test_graph_remove_vertices():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3), (3, 4), (4, 5)])
@@ -34,6 +36,7 @@ def test_graph_remove_vertices():
     assert str(G) == "Graph on 2 vertices and 1 edges"
     assert list(G.vertices.keys()) == [1, 2]
     assert list(G.edges.keys()) == [(1, 2)]
+
 
 def test_graph_add_edges():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3)])
@@ -54,8 +57,11 @@ def test_graph_add_edges():
     assert str(G) == "Graph on 8 vertices and 7 edges"
     assert set(G.vertices.keys()) == set([1, 2, 3, 4, 5, 42, 6, 7])
     assert set(G._graph.nodes()) == set(G.vertices.keys())
-    assert set(G.edges.keys()) == set([(1, 2), (2, 3), (1, 3), (1, 42), (4, 5), (5, 6), (6, 7)])
+    assert set(G.edges.keys()) == set(
+        [(1, 2), (2, 3), (1, 3), (1, 42), (4, 5), (5, 6), (6, 7)]
+    )
     assert set(G._graph.edges()) == set(G.edges.keys())
+
 
 def test_graph_remove_edges():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3), (3, 4), (4, 5), (1, 5)])
