@@ -68,9 +68,6 @@ from ..utils.color import GREY, YELLOW
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
-if typing.TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
-
 
 class FocusOn(Transform):
     """Shrink a spotlight to a position.
