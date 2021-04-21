@@ -103,7 +103,7 @@ def quaternion_from_angle_axis(
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
-def angle_axis_from_quaternion(quaternion: np.ndarray) -> int:
+def angle_axis_from_quaternion(quaternion: np.ndarray) -> intvsc:
     axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
     angle = 2 * np.arccos(quaternion[0])
     if angle > TAU / 2:
@@ -220,7 +220,7 @@ def angle_between(v1, v2):
     return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
 
 
-def angle_of_vector(vector: float) -> numpy.float64:
+def angle_of_vector(vector: float) -> np.float64:
     """
     Returns polar coordinate theta when vector is project on xy plane
     """
@@ -301,7 +301,7 @@ def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol=1e-6) -> np.ndarray:
 ###
 
 
-def compass_directions(n=4, start_vect=RIGHT) -> nd.array:
+def compass_directions(n=4, start_vect=RIGHT) -> np.ndarray:
     angle = TAU / n
     return np.array([rotate_vector(start_vect, k * angle) for k in range(n)])
 
@@ -386,7 +386,7 @@ def get_winding_number(points: list) -> float:
     return total_angle / TAU
 
 
-def shoelace(x_y: Union[np.ndarray, List]) -> float:
+def shoelace(x_y: np.ndarray) -> float:
     """2D implementation of the shoelace formula.
 
     Returns
@@ -400,7 +400,7 @@ def shoelace(x_y: Union[np.ndarray, List]) -> float:
     return area
 
 
-def shoelace_direction(x_y: Union[np.ndarray, List]) -> str:
+def shoelace_direction(x_y: np.ndarray) -> str:
     """
     Uses the area determined by the shoelace method to determine whether
     the input set of points is directed clockwise or counterclockwise.
