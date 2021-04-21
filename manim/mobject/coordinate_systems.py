@@ -13,7 +13,7 @@ from ..mobject.functions import ParametricFunction
 from ..mobject.geometry import Arrow, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
@@ -122,6 +122,19 @@ class CoordinateSystem:
                 return graph.point_from_proportion(alpha)
             else:
                 return None
+
+    def get_line_graph(self, x_values, y_values, z_values=None, **kwargs):
+        x_values, y_values = map(np.array, (x_values, y_values))
+        if z_values is None:
+            z_values = np.zeros(x_values.shape)
+        line_graph = VMobject(**kwargs)
+        line_graph.set_points_as_corners(
+            [
+                self.coords_to_point(x, y, z)
+                for x, y, z in zip(x_values, y_values, z_values)
+            ]
+        )
+        return line_graph
 
 
 class Axes(VGroup, CoordinateSystem):
