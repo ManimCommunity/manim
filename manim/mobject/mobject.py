@@ -1534,7 +1534,10 @@ class Mobject(Container):
             if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
             else OUT
         )
-        self.scale(np.linalg.norm(target_vect) / np.linalg.norm(curr_vect), about_point=curr_start)
+        self.scale(
+            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
+            about_point=curr_start,
+        )
         self.rotate(
             angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
