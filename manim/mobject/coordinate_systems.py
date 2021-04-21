@@ -10,11 +10,11 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, Line
+from ..mobject.geometry import Arrow, Dot, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE
+from ..mobject.types.vectorized_mobject import VDict, VGroup, VMobject
+from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE, YELLOW
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
@@ -123,17 +123,39 @@ class CoordinateSystem:
             else:
                 return None
 
-    def get_line_graph(self, x_values, y_values, z_values=None, **kwargs):
+    def get_line_graph(
+        self,
+        x_values,
+        y_values,
+        z_values=None,
+        line_color=YELLOW,
+        add_vertex_dots=True,
+        vertex_dot_radius=DEFAULT_DOT_RADIUS,
+        vertex_dot_style=None,
+        **line_style
+    ):
         x_values, y_values = map(np.array, (x_values, y_values))
         if z_values is None:
             z_values = np.zeros(x_values.shape)
-        line_graph = VMobject(**kwargs)
-        line_graph.set_points_as_corners(
-            [
-                self.coords_to_point(x, y, z)
-                for x, y, z in zip(x_values, y_values, z_values)
-            ]
-        )
+
+        line_graph = VDict()
+        graph = VMobject(color=line_color, **line_style)
+        vertices = [
+            self.coords_to_point(x, y, z)
+            for x, y, z in zip(x_values, y_values, z_values)
+        ]
+        graph.set_points_as_corners(vertices)
+        graph.z_index = -1
+        line_graph["line_graph"] = graph
+
+        if add_vertex_dots:
+            vertex_dot_style = vertex_dot_style or {}
+            vertex_dots = VGroup(
+                *[Dot(point=vertex, radius=vertex_dot_radius) for vertex in vertices]
+            ).set_style(**vertex_dot_style)
+            vertex_dots.z_index = -1
+            line_graph["vertex_dots"] = vertex_dots
+
         return line_graph
 
 
