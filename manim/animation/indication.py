@@ -19,13 +19,13 @@ __all__ = [
 ]
 
 
-from manim._config import logger
 from typing import Type, Union
-from colour import Color
 
 import numpy as np
+from colour import Color
 
-from ..mobject.mobject import Mobject
+from manim._config import logger
+
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
@@ -35,6 +35,7 @@ from ..animation.movement import Homotopy
 from ..animation.transform import Transform
 from ..constants import *
 from ..mobject.geometry import Circle, Dot, Line, Rectangle
+from ..mobject.mobject import Mobject
 from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate
