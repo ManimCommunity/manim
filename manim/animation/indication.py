@@ -166,6 +166,8 @@ class Flash(AnimationGroup):
         The stroke width of the flash lines.
     color
         The color of the flash lines.
+    time_width
+        The time width used for the flash lines. See :class:`.~ShowPassingFlash` for more details.
     run_time
         The duration of the animation.
 
@@ -189,6 +191,7 @@ class Flash(AnimationGroup):
         flash_radius: float = 0.1,
         line_stroke_width: int = 3,
         color: str = YELLOW,
+        time_width: float = 1,  # TODO add docs
         run_time: float = 1.0,
         **kwargs
     ) -> None:
@@ -198,18 +201,19 @@ class Flash(AnimationGroup):
         self.num_lines = num_lines
         self.flash_radius = flash_radius
         self.line_stroke_width = line_stroke_width
+        self.run_time = run_time
+        self.time_width = time_width
 
         self.lines = self.create_lines()
         animations = self.create_line_anims()
         super().__init__(
             *animations,
             group=self.lines,
-            run_time=run_time,
             **kwargs,
         )
 
     def create_lines(self) -> VGroup:
-        #TODO change meaning of flash_radius
+        # TODO change meaning of flash_radius
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
             line = Line(ORIGIN, self.line_length * RIGHT)
@@ -221,8 +225,11 @@ class Flash(AnimationGroup):
         lines.add_updater(lambda l: l.move_to(self.point))
         return lines
 
-    def create_line_anims(self) -> typing.Iterable["ShowCreationThenDestruction"]:
-        return [ShowCreationThenDestruction(line) for line in self.lines]
+    def create_line_anims(self) -> typing.Iterable["ShowPassingFlash"]:
+        return [
+            ShowPassingFlash(line, run_time=self.run_time, time_width=self.time_width)
+            for line in self.lines
+        ]
 
 
 class CircleIndicate(Indicate):
