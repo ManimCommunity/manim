@@ -51,7 +51,7 @@ if typing.TYPE_CHECKING:
 
 
 class FocusOn(Transform):
-    """Draw attention to a position be shrinking a spotlight to it.
+    """Shrink a spotlight to a position.
 
     Parameters
     ----------
@@ -110,7 +110,7 @@ class FocusOn(Transform):
 
 
 class Indicate(Transform):
-    """Draw attention to a Mobject by temporaly resizing and recoloring it.
+    """Indicate a Mobject by temporaly resizing and recoloring it.
 
     Parameters
     ----------
@@ -131,7 +131,8 @@ class Indicate(Transform):
 
         class UsingIndicate(Scene):
             def construct(self):
-                self.play(Indicate(Tex("Indicate")))
+                tex = Tex("Indicate").scale(3)
+                self.play(Indicate(tex))
                 self.wait()
     """
 
@@ -157,7 +158,7 @@ class Indicate(Transform):
 
 
 class Flash(AnimationGroup):
-    """Draw attention to a position be sending out lines in all directions.
+    """Send out lines in all directions.
 
     Parameters
     ----------
@@ -547,8 +548,9 @@ class Wiggle(Animation):
 
         class ApplyingWaves(Scene):
             def construct(self):
-                tex = Tex("Wiggle").scale(4)
+                tex = Tex("Wiggle").scale(3)
                 self.play(Wiggle(tex))
+                self.wait()
 
     """
 
@@ -603,7 +605,11 @@ class WiggleOutThenIn(Wiggle):
 
 
 class TurnInsideOut(Transform):
+    """Deprecated. Use :code:`mobject.animate.become(mobject.copy().reverse_points())` instead if you have to."""
     def __init__(self, mobject: "Mobject", path_arc: float = TAU / 4, **kwargs) -> None:
+        logger.warning(
+            "TurnInsideOut has been deprecated. Please stop using TurnInsideOut!"
+        )
         super().__init__(mobject, path_arc=path_arc, **kwargs)
 
     def create_target(self) -> "Mobject":
