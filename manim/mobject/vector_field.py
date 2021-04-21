@@ -31,6 +31,8 @@ from ..utils.simple_functions import sigmoid
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
+# def get_norm(p):
+#     return np.linalg.norm(p)
 
 class VectorField(VGroup):
     """A vector field.
@@ -72,9 +74,9 @@ class VectorField(VGroup):
         self.func = func
         if color is None:
             self.single_color = False
-            self.color_scheme = (
-                np.linalg.norm if color_scheme is None else color_scheme
-            )  # TODO maybe other default for direction?
+            if color_scheme is None:
+                color_scheme = lambda p: np.linalg.norm(p)
+            self.color_scheme = color_scheme # TODO maybe other default for direction?
             self.rgbs = np.array(list(map(color_to_rgb, colors)))
 
             def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
