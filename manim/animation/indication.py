@@ -188,12 +188,20 @@ class Flash(AnimationGroup):
                 self.play(Flash(dot))
                 self.wait()
 
-        class FashOnCircle(Scene):
+    .. manim:: FlashOnCircle
+
+        class FlashOnCircle(Scene):
             def construct(self):
-                dot = Dot(color=YELLOW).shift(DOWN)
-                self.add(Tex("Flash the dot below:"), dot)
-                self.play(Flash(dot))
-                self.wait()
+                radius = 2
+                circle = Circle(radius)
+                self.add(circle)
+                self.play(Flash(
+                    circle, line_length=1,
+                    num_lines=30, color=RED,
+                    flash_radius=radius+SMALL_BUFF,
+                    time_width=0.3, run_time=2,
+                    rate_func = rush_from
+                ))
     """
 
     def __init__(
