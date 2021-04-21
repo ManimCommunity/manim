@@ -19,20 +19,21 @@ Examples
 
     class TextAlignment(Scene):
         def construct(self):
+            config["text_scale_automatically"] = False
             title = Text("K-means clustering and Logistic Regression", color=WHITE)
             title.scale_in_place(0.75)
             self.add(title.to_edge(UP))
 
-            t1 = Text("1. Measuring", scale_automatically=False).set_color(WHITE)
+            t1 = Text("1. Measuring").set_color(WHITE)
             t1.next_to(ORIGIN, direction=RIGHT, aligned_edge=UP)
 
-            t2 = Text("2. Clustering", scale_automatically=False).set_color(WHITE)
+            t2 = Text("2. Clustering").set_color(WHITE)
             t2.next_to(t1, direction=DOWN, aligned_edge=LEFT)
 
-            t3 = Text("3. Regression", scale_automatically=False).set_color(WHITE)
+            t3 = Text("3. Regression").set_color(WHITE)
             t3.next_to(t2, direction=DOWN, aligned_edge=LEFT)
 
-            t4 = Text("4. Prediction", scale_automatically=False).set_color(WHITE)
+            t4 = Text("4. Prediction").set_color(WHITE)
             t4.next_to(t3, direction=DOWN, aligned_edge=LEFT)
 
             x = VGroup(t1, t2, t3, t4).scale_in_place(0.7)
@@ -285,8 +286,17 @@ class Paragraph(VGroup):
 class Text(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
-    Text objects behave like a :class:`.VGroup`-like iterable of all characters
+    Text objects behave like a :class:`~.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
+
+    Default behaviour of :class:`Text` is to scale to fit to screen size. You can
+    disable this by setting :attr:`scale_automatically` to ``False``.
+
+    If you want to match the number of :attr:`submobject` to match the characters
+    of :attr:`text` then you should set :attr:`disable_ligatures` to ``True``.
+
+    By default :class:`Text` will wrap :attr:`text` to next line unless
+    :attr:`wrap_text` is set to ``False``.
 
     Parameters
     ----------
@@ -421,10 +431,10 @@ class Text(SVGMobject):
     As :class:`Text` uses Pango to render text, rendering non-English
     characters is easily possible:
 
-    .. manim:: MultipleFonts
+    .. manim:: MultipleLanguage
         :save_last_frame:
 
-        class MultipleFonts(Scene):
+        class MultipleLanguage(Scene):
             def construct(self):
                 config["text_scale_automatically"] = False
                 morning = Text("வணக்கம்", font="sans-serif")
@@ -499,8 +509,8 @@ class Text(SVGMobject):
         self.tab_width = tab_width
         self.wrap_text = wrap_text
 
-        scale_automatically = config["text_scale_automatically"]
-        if scale_automatically:
+        config_scale_automatically = config["text_scale_automatically"]
+        if scale_automatically and config_scale_automatically:
             self.svg_width = width
             self.svg_height = height
             height = math.fabs(
@@ -824,6 +834,15 @@ class MarkupText(SVGMobject):
     Please be aware that not all features are supported by this class and that
     the ``<gradient>`` tag mentioned above is not supported by Pango.
 
+    Default behaviour of :class:`MarkupText` is to scale to fit to screen size like :class:`Text`.
+    You can disable this by setting :attr:`scale_automatically` to ``False``.
+
+    If you want to match the number of :attr:`submobject` to match the characters
+    of :attr:`text` then you should set :attr:`disable_ligatures` to ``True``.
+
+    By default :class:`Text` will wrap :attr:`text` to next line unless
+    :attr:`wrap_text` is set to ``False``.
+
     Parameters
     ----------
     text : :class:`str`
@@ -861,6 +880,7 @@ class MarkupText(SVGMobject):
 
         class BasicMarkupExample(Scene):
             def construct(self):
+                config["text_scale_automatically"] = False
                 text1 = MarkupText("<b>foo</b> <i>bar</i> <b><i>foobar</i></b>")
                 text2 = MarkupText("<s>foo</s> <u>bar</u> <big>big</big> <small>small</small>")
                 text3 = MarkupText("H<sub>2</sub>O and H<sub>3</sub>O<sup>+</sup>")
@@ -876,6 +896,7 @@ class MarkupText(SVGMobject):
 
         class ColorExample(Scene):
             def construct(self):
+                config["text_scale_automatically"] = False
                 text1 = MarkupText(
                     f'all in red <span fgcolor="{YELLOW}">except this</span>', color=RED
                 )
@@ -904,6 +925,7 @@ class MarkupText(SVGMobject):
 
         class UnderlineExample(Scene):
             def construct(self):
+                config["text_scale_automatically"] = False
                 text1 = MarkupText(
                     '<span underline="double" underline_color="green">bla</span>'
                 )
@@ -927,6 +949,7 @@ class MarkupText(SVGMobject):
 
         class FontExample(Scene):
             def construct(self):
+                config["text_scale_automatically"] = False
                 text1 = MarkupText(
                     'all in sans <span font_family="serif">except this</span>', font="sans"
                 )
@@ -965,6 +988,7 @@ class MarkupText(SVGMobject):
 
         class MultiLanguage(Scene):
             def construct(self):
+                config["text_scale_automatically"] = False
                 morning = MarkupText("வணக்கம்", font="sans-serif")
                 chin = MarkupText(
                     '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
@@ -1000,11 +1024,14 @@ class MarkupText(SVGMobject):
         weight: str = NORMAL,
         gradient: tuple = None,
         tab_width: int = 4,
-        height: int = None,
-        width: int = None,
         should_center: bool = True,
         unpack_groups: bool = True,
         disable_ligatures: bool = False,
+        wrap_text: bool = True,
+        scale_automatically: bool = True,
+        # Mobject configuration
+        height: float = config["pixel_height"],
+        width: float = config["pixel_width"],
         **kwargs,
     ):
         self.text = text
@@ -1016,12 +1043,36 @@ class MarkupText(SVGMobject):
         self.weight = weight
         self.gradient = gradient
         self.tab_width = tab_width
+        self.wrap_text = wrap_text
 
         self.original_text = text
         self.disable_ligatures = disable_ligatures
         text_without_tabs = text
         if "\t" in text:
             text_without_tabs = text.replace("\t", " " * self.tab_width)
+
+        config_scale_automatically: bool = config["text_scale_automatically"]
+        if scale_automatically and config_scale_automatically:
+            self.svg_width = width
+            self.svg_height = height
+            height = math.fabs(
+                self.svg_height / (self.svg_height - self.svg_width or self.svg_height)
+            )
+            width = (
+                math.fabs(
+                    (
+                        self.svg_width
+                        / (self.svg_width - self.svg_height or self.svg_width)
+                    )
+                )
+                + 10
+            )
+        else:
+            height = None
+            width = None
+            # previously these was the default svg width and size
+            self.svg_width = 600
+            self.svg_height = 400
 
         colormap = self.extract_color_tags()
         if len(colormap) > 0:
@@ -1044,8 +1095,8 @@ class MarkupText(SVGMobject):
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        SVGMobject.__init__(
-            self,
+
+        super().__init__(
             file_name,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
@@ -1094,7 +1145,7 @@ class MarkupText(SVGMobject):
             ].set_color_by_gradient(
                 *(self._parse_color(grad["from"]), self._parse_color(grad["to"]))
             )
-        # anti-aliasing
+
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
@@ -1105,6 +1156,8 @@ class MarkupText(SVGMobject):
         )  # to differentiate from classical Pango Text
         settings += str(self.line_spacing) + str(self.size)
         settings += str(self.disable_ligatures)
+        settings += str(self.wrap_text)
+        settings += str(self.svg_width) + str(self.svg_height)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
@@ -1124,6 +1177,13 @@ class MarkupText(SVGMobject):
             return file_name
 
         logger.debug(f"Setting Text {self.text}")
+
+        width = self.svg_width
+        height = self.svg_height
+        if not self.wrap_text:
+            pango_width = -1
+        else:
+            pango_width = None
         return MarkupUtils.text2svg(
             f'<span foreground="{self.color}">{self.text}</span>',
             self.font,
@@ -1135,8 +1195,9 @@ class MarkupText(SVGMobject):
             file_name,
             START_X,
             START_Y,
-            600,  # width
-            400,  # height
+            width,  # width
+            height,  # height,
+            pango_width=pango_width,
         )
 
     def _count_real_chars(self, s):
