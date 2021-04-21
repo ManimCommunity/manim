@@ -606,6 +606,7 @@ class WiggleOutThenIn(Wiggle):
 
 class TurnInsideOut(Transform):
     """Deprecated. Use :code:`mobject.animate.become(mobject.copy().reverse_points())` instead if you have to."""
+
     def __init__(self, mobject: "Mobject", path_arc: float = TAU / 4, **kwargs) -> None:
         logger.warning(
             "TurnInsideOut has been deprecated. Please stop using TurnInsideOut!"
