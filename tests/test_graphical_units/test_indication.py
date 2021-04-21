@@ -59,7 +59,7 @@ class WiggleTest(Scene):
     def construct(self):
         square = Square()
         self.add(square)
-        self.play(WiggleOutThenIn(square))
+        self.play(Wiggle(square))
 
 
 MODULE_NAME = "indication"
