@@ -153,7 +153,6 @@ class CoordinateSystem:
             vertex_dots = VGroup(
                 *[Dot(point=vertex, radius=vertex_dot_radius) for vertex in vertices]
             ).set_style(**vertex_dot_style)
-            vertex_dots.z_index = -1
             line_graph["vertex_dots"] = vertex_dots
 
         return line_graph
