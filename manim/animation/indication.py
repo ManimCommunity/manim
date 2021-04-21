@@ -1,4 +1,29 @@
-"""Animations drawing attention to particular mobjects."""
+"""Animations drawing attention to particular mobjects.
+
+Examples
+--------
+
+.. manim:: Indications
+
+    class Indications(Scene):
+        def construct(self):
+            indications = [ApplyWave,Circumscribe,Flash,FocusOn,Indicate,ShowPassingFlash,Wiggle]
+            names = [Tex(i.__name__).scale(3) for i in indications]
+
+            self.add(names[0])
+            for i in range(len(names)):
+                if indications[i] is Flash:
+                    self.play(Flash(UP))
+                elif indications[i] is ShowPassingFlash:
+                    self.play(ShowPassingFlash(Underline(names[i])))
+                else:
+                    self.play(indications[i](names[i]))
+                self.play(AnimationGroup(
+                    FadeOutAndShift(names[i], UP*1.5),
+                    FadeInFrom(names[(i+1)%len(names)], DOWN*1.5),
+                ))
+
+"""
 
 __all__ = [
     "FocusOn",
@@ -15,7 +40,6 @@ __all__ = [
     "ApplyWave",
     "WiggleOutThenIn",
     "TurnInsideOut",
-    # New:
     "Circumscribe",
     "Wiggle",
 ]
@@ -26,11 +50,8 @@ from typing import Callable, Type, Union
 import numpy as np
 from colour import Color
 
-from manim._config import logger
-from manim.utils.simple_functions import clip
-from manim.utils.space_ops import normalize
-
 from .. import config
+from .._config import logger
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, ShowPartial, Uncreate
@@ -44,7 +65,8 @@ from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
-from ..utils.rate_functions import linear, rush_from, smooth, there_and_back, wiggle
+from ..utils.rate_functions import smooth, there_and_back, wiggle
+from ..utils.space_ops import normalize
 
 if typing.TYPE_CHECKING:
     from ..mobject.mobject import Mobject
@@ -353,7 +375,11 @@ class ShowCreationThenDestruction(ShowPassingFlash):
         super().__init__(mobject, time_width=time_width, run_time=run_time, **kwargs)
 
 
-class ShowCreationThenFadeOut(Succession):  # TODO maybe remove?
+# TODO Decide what to do with this class:
+#   Remove?
+#   Deprecate?
+#   Keep and add docs?
+class ShowCreationThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
