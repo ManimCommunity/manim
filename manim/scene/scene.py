@@ -36,6 +36,8 @@ from ..utils.space_ops import rotate_vector
 
 
 class RerunSceneHandler(FileSystemEventHandler):
+    """A class to handle rerunning a Scene after the input file is modified."""
+
     def __init__(self, queue):
         super().__init__()
         self.queue = queue
