@@ -378,8 +378,40 @@ class Circumscribe(Succession):
 
     Parameters
     ----------
-    Succession : [type]
-        [description]
+    mobject
+        The mobject to be circumscribed.
+    shape
+        The shape with which to surrond the given mobject. Should be either "rectangle" or "circle"
+    fade_in
+        Whether to make the surrounding shape to fade in. It will be drawn otherwise.
+    fade_out
+        Whether to make the surrounding shape to fade out. It will be undrawn otherwise.
+    time_width
+        The time_width of the drawing and undrawing. Gets ignored if either `fade_in` or `fade_out` is `True`.
+    buff
+        The distance between the surrounding shape and the given mobject.
+    color
+        The color of the surrounding shape.
+    run_time
+        The duration of the entire animation.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.Succession` constructor
+
+    Examples
+    --------
+
+    .. manim:: UsingCircumscribe
+
+        class UsingCircumscribe(Scene):
+            def construct(self):
+                lbl = Tex(r"Circum-\\\\scribe")
+                self.add(lbl)
+                self.play(Circumscribe(lbl))
+                self.play(Circumscribe(lbl, "circle"))
+                self.play(Circumscribe(lbl, fade_out=True))
+                self.play(Circumscribe(lbl, time_width=2))
+                self.play(Circumscribe(lbl, "circle", True))
+
     """
 
     def __init__(
@@ -392,45 +424,42 @@ class Circumscribe(Succession):
         buff: float = SMALL_BUFF,
         color: Color = YELLOW,
         run_time=1,
+        stroke_width=DEFAULT_STROKE_WIDTH,
         **kwargs
     ):
-        self.mobject = mobject
-        self.fade_in = fade_in
-        self.fade_out = fade_out
-        self.time_width = time_width
-        self.buff = buff
-        self.color = color
-
         if shape in ("rectangle", "rectangular", Rectangle):
-            self.frame = SurroundingRectangle(self.mobject, color, buff)
+            frame = SurroundingRectangle(
+                mobject, color, buff, stroke_width=stroke_width
+            )
         elif shape in ("circle", "circular", Circle):
-            self.frame = Circle(color=color).surround(self.mobject, buffer_factor=1)
-            radius = self.frame.width / 2
-            self.frame.scale((radius + buff) / radius)
-
+            frame = Circle(color=color, stroke_width=stroke_width).surround(
+                mobject, buffer_factor=1
+            )
+            radius = frame.width / 2
+            frame.scale((radius + buff) / radius)
         else:
             raise ValueError('shape should be either "rectangle" or "circle".')
 
         if fade_in and fade_out:
             super().__init__(
-                FadeIn(self.frame, run_time=run_time / 2),
-                FadeOut(self.frame, run_time=run_time / 2),
+                FadeIn(frame, run_time=run_time / 2),
+                FadeOut(frame, run_time=run_time / 2),
                 **kwargs,
             )
         elif fade_in:
+            frame.reverse_direction()
             super().__init__(
-                FadeIn(self.frame, run_time=run_time / 2),
-                Uncreate(self.frame, run_time=run_time / 2),
+                FadeIn(frame, run_time=run_time / 2),
+                Uncreate(frame, run_time=run_time / 2),
                 **kwargs,
             )
         elif fade_out:
             super().__init__(
-                Create(self.frame, run_time=run_time / 2),
-                FadeOut(self.frame, run_time=run_time / 2),
+                Create(frame, run_time=run_time / 2),
+                FadeOut(frame, run_time=run_time / 2),
                 **kwargs,
             )
         else:
             super().__init__(
-                ShowPassingFlash(self.frame, self.time_width, run_time=run_time),
-                **kwargs,
+                ShowPassingFlash(frame, time_width, run_time=run_time), **kwargs
             )
