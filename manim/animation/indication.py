@@ -181,7 +181,7 @@ class Flash(AnimationGroup):
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
             line = Line(ORIGIN, self.line_length * RIGHT)
-            line.shift((self.flash_radius - self.line_length) * RIGHT)
+            line.shift((self.flash_radius) * RIGHT)
             line.rotate(angle, about_point=ORIGIN)
             lines.add(line)
         lines.set_color(self.color)
