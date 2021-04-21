@@ -25,7 +25,7 @@ from ..utils.iterables import (
 )
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import angle_of_vector, get_norm, rotation_matrix_transpose
+from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose
 
 
 class OpenGLMobject:
@@ -954,7 +954,7 @@ class OpenGLMobject:
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = end - start
         self.scale(
-            get_norm(target_vect) / get_norm(curr_vect),
+            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
         )
         self.rotate(

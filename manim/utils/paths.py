@@ -12,7 +12,7 @@ import numpy as np
 
 from ..constants import OUT
 from ..utils.bezier import interpolate
-from ..utils.space_ops import get_norm, rotation_matrix
+from ..utils.space_ops import rotation_matrix
 
 STRAIGHT_PATH_THRESHOLD = 0.01
 
@@ -34,9 +34,9 @@ def path_along_arc(arc_angle, axis=OUT):
     """
     if abs(arc_angle) < STRAIGHT_PATH_THRESHOLD:
         return straight_path
-    if get_norm(axis) == 0:
+    if np.linalg.norm(axis) == 0:
         axis = OUT
-    unit_axis = axis / get_norm(axis)
+    unit_axis = axis / np.linalg.norm(axis)
 
     def path(start_points, end_points, alpha):
         vects = end_points - start_points
