@@ -23,7 +23,6 @@ from tqdm import tqdm
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.transform import MoveToTarget, _MethodAnimation
 from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
@@ -100,7 +99,6 @@ class Scene(Container):
         self.duration = None
         self.last_t = None
         self.queue = Queue()
-        self.saved_methods = {}
         self.skip_animation_preview = False
         self.meshes = []
 
@@ -203,18 +201,20 @@ class Scene(Container):
             self.construct()
         except EndSceneEarlyException:
             pass
-        except RerunSceneException:
+        except RerunSceneException as e:
             self.remove(*self.mobjects)
             self.renderer.clear_screen()
             self.renderer.num_plays = 0
-            return "rerun me please"
+            return True
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
-        logger.info(
-            f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
-        )
+        # Show info only if animations are rendered or to get image
+        if self.renderer.num_plays or config["save_last_frame"] or config["save_pngs"]:
+            logger.info(
+                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
+            )
 
         # If preview open up the render after rendering.
         if preview:
@@ -850,7 +850,7 @@ class Scene(Container):
         self.renderer.play(self, *args, **kwargs)
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-        self.play(Wait(duration=duration, stop_condition=stop_condition))
+        self.play(Wait(run_time=duration, stop_condition=stop_condition))
 
     def wait_until(self, stop_condition, max_time=60):
         """
@@ -964,11 +964,9 @@ class Scene(Container):
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
-    def embed_2(self):
+    def interactive_embed(self):
         """
         Like embed(), but allows for screen interaction.
-        WARNING: This causes the 'q' key to restart the preview window and break the
-        IPython terminal!
         """
 
         def ipython(shell, namespace):
@@ -996,13 +994,11 @@ class Scene(Container):
 
         local_namespace = inspect.currentframe().f_back.f_locals
         for method in ("play", "wait", "add", "remove"):
-            self.saved_methods[method] = getattr(self, method)
             embedded_method = get_embedded_method(method)
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
 
         from IPython.terminal.embed import InteractiveShellEmbed
-
         from traitlets.config import Config
 
         cfg = Config()
@@ -1028,6 +1024,7 @@ class Scene(Container):
         file_observer.start()
 
         self.quit_interaction = False
+        keyboard_thread_needs_join = True
         while not (self.renderer.window.is_closing or self.quit_interaction):
             if not self.queue.empty():
                 tup = self.queue.get_nowait()
@@ -1044,28 +1041,34 @@ class Scene(Container):
                         config["from_animation_number"] = kwargs[
                             "from_animation_number"
                         ]
-                    # # TODO: This option only makes sense if embed_2() is run at the
+                    # # TODO: This option only makes sense if interactive_embed() is run at the
                     # # end of a scene by default.
                     # if "upto_animation_number" in kwargs:
                     #     config["upto_animation_number"] = kwargs[
                     #         "upto_animation_number"
                     #     ]
 
+                    keyboard_thread.join()
                     raise RerunSceneException
                 elif tup[0].startswith("exit"):
                     keyboard_thread.join()
-                    # Intentionally skip calling join() on the file thread to save time.
-                    file_observer.stop()
+                    keyboard_thread_needs_join = False
                     break
                 else:
                     method, args, kwargs = tup
-                    self.saved_methods[method](*args, **kwargs)
+                    getattr(self, method)(*args, **kwargs)
             else:
                 self.renderer.animation_start_time = 0
                 dt = 1 / config["frame_rate"]
                 self.renderer.render(self, dt, self.moving_mobjects)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
+
+        # Join the keyboard thread if necessary.
+        if shell is not None and keyboard_thread_needs_join:
+            shell.pt_app.app.exit(exception=EOFError)
+            keyboard_thread.join()
+
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
 

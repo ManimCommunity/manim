@@ -1,4 +1,5 @@
 
+
 # Code of Conduct
 
 
@@ -7,7 +8,7 @@
 
 ## Purpose
 
-The Manim Community includes members of varying skills, languages, personalities, cultural backgrounds, and experiences from around the globe. Through these differences, we continue to grow and collectively improve upon an open source animation engine. When working in a community, it is important to remember that you are interacting with humans on the other end of your screen. This code of conduct will guide your interactions and keep Manim a positive environment for our developers, users, and fundamentally our growing community.
+The Manim Community includes members of varying skills, languages, personalities, cultural backgrounds, and experiences from around the globe. Through these differences, we continue to grow and collectively improve upon an open-source animation engine. When working in a community, it is important to remember that you are interacting with humans on the other end of your screen. This code of conduct will guide your interactions and keep Manim a positive environment for our developers, users, and fundamentally our growing community.
 
 
 
@@ -33,7 +34,7 @@ Members of Manim Community are respectful, open, and considerate. Behaviors that
 
 ## Our Standards
 
-Every member of our community has the right to have their identity respected. Manim Community is dedicated to providing a positive environment for everyone, regardless of age, gender identity and expression, sexual orientation, disability, physical appearance, body size, ethnicity, nationality, race, religion (or lack thereof), education, or socio-economic status.
+Every member of our community has the right to have their identity respected. Manim Community is dedicated to providing a positive environment for everyone, regardless of age, gender identity and expression, sexual orientation, disability, physical appearance, body size, ethnicity, nationality, race, religion (or lack thereof), education, or socioeconomic status.
 
 
 
@@ -48,8 +49,8 @@ Examples of unacceptable behavior by participants include:
    * Violent threats or language directed against another person
    * Incitement of violence or harassment towards any individual, including encouraging a person to commit suicide or to engage in self-harm
    * Creating additional online accounts in order to harass another person or circumvent a ban
-   * Sexual language and imagery in online communities or in any conference venue, including talks
-   * Insults, put downs, or jokes that are based upon stereotypes, that are exclusionary, or that hold others up for ridicule
+   * Sexual language and imagery in online communities or any conference venue, including talks
+   * Insults, put-downs, or jokes that are based upon stereotypes, that are exclusionary, or that hold others up for ridicule
    * Excessive swearing
    * Unwelcome sexual attention or advances
    * Unwelcome physical contact, including simulated physical contact (eg, textual descriptions like "hug" or "backrub") without consent or after a request to stop
@@ -165,12 +166,12 @@ Anyone who has a conflict of interest will remove themselves from the discussion
    * *Did this occur in a space that is within our Code of Conduct's scope?* If the incident occurred outside the community, but a community member's mental health or physical safety may be negatively impacted if no action is taken, the incident may be in scope. Private conversations in community spaces are also in scope.
 #### Impact
 
-   * *Did this incident occur in a private conversation or in a public space?* Incidents that all community members can see will have more negative impact.
+   * *Did this incident occur in a private conversation or a public space?* Incidents that all community members can see will have a more negative impact.
    * *Does this behavior negatively impact a marginalized group in our community?* Is the reporter a person from a marginalized group in our community? How is the reporter being negatively impacted by the reported person's behavior? Are members of the marginalized group likely to disengage with the community if no action was taken on this report?
    * *Does this incident involve a community leader?* Community members often look up to community leaders to set the standard of acceptable behavior
 #### Risk
 
-   * *Does this incident include sexual harrasment?*
+   * *Does this incident include sexual harassment?*
    * *Does this pose a safety risk?* Does the behavior put a person's physical safety at risk? Will this incident severely negatively impact someone's mental health?
    * *Is there a risk of this behavior being repeated?* Does the reported person understand why their behavior was inappropriate? Is there an established pattern of behavior from past reports?
 
@@ -203,7 +204,7 @@ Some team members may have a conflict of interest and may be excluded from discu
 
 Once the team has approved the behavioral modification plans and consequences, they will communicate the recommended response to the Manim Community moderators. The team should not state who reported this incident. They should attempt to anonymize any identifying information from the report.
 
-Moderators are required to respond back with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Moderators are encouraged to respond within a week. 
+Moderators are required to respond with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Moderators are encouraged to respond within a week. 
 
 In cases where the moderators disagree on the suggested resolution for a report, the Manim Community Code of Conduct team may choose to notify the Manim Community Moderators.
 
@@ -227,9 +228,9 @@ If the reported person provides additional context, the Manim Community Code of 
 
 ### Follow up with the reporter
 
-A person who makes a report should receive a follow up response stating what action was taken in response to the report. If the team decided no response was needed, they should provide an explanation why it was not a Code of Conduct violation. Reports that are not made in good faith (such as "reverse sexism" or "reverse racism") may receive no response.
+A person who makes a report should receive a follow-up response stating what action was taken in response to the report. If the team decided no response was needed, they should provide an explanation why it was not a Code of Conduct violation. Reports that are not made in good faith (such as "reverse sexism" or "reverse racism") may receive no response.
 
-The follow up should be sent no later than one week after the receipt of the report. If deliberation or follow up with the reported person takes longer than one week, the team should send a status update to the reporter.
+The follow-up should be sent no later than one week after the receipt of the report. If deliberation or follow-up with the reported person takes longer than one week, the team should send a status update to the reporter.
 
 
 

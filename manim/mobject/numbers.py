@@ -2,8 +2,6 @@
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-
-import copy
 import uuid
 
 from ..constants import *

@@ -5,6 +5,7 @@ Constant definitions.
 import typing
 
 import numpy as np
+from PIL import Image
 
 # Messages
 NOT_SETTING_FONT_MSG: str = """
@@ -42,6 +43,18 @@ ULTRABOLD: str = "ULTRABOLD"
 HEAVY: str = "HEAVY"
 ULTRAHEAVY: str = "ULTRAHEAVY"
 
+RESAMPLING_ALGORITHMS = {
+    "nearest": Image.NEAREST,
+    "none": Image.NEAREST,
+    "lanczos": Image.LANCZOS,
+    "antialias": Image.LANCZOS,
+    "bilinear": Image.BILINEAR,
+    "linear": Image.BILINEAR,
+    "bicubic": Image.BICUBIC,
+    "cubic": Image.BICUBIC,
+    "box": Image.BOX,
+    "hamming": Image.HAMMING,
+}
 
 # Geometry: directions
 ORIGIN: np.ndarray = np.array((0.0, 0.0, 0.0))
@@ -86,10 +99,10 @@ DR: np.ndarray = DOWN + RIGHT
 # Geometry
 START_X: int = 30
 START_Y: int = 20
-DEFAULT_DOT_RADIUS = 0.08
-DEFAULT_SMALL_DOT_RADIUS = 0.04
-DEFAULT_DASH_LENGTH = 0.05
-DEFAULT_ARROW_TIP_LENGTH = 0.35
+DEFAULT_DOT_RADIUS: float = 0.08
+DEFAULT_SMALL_DOT_RADIUS: float = 0.04
+DEFAULT_DASH_LENGTH: float = 0.05
+DEFAULT_ARROW_TIP_LENGTH: float = 0.35
 
 # Default buffers (padding)
 SMALL_BUFF: float = 0.1

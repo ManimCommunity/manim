@@ -49,14 +49,15 @@ def tempconfig(temp: Union[ManimConfig, dict]) -> _GeneratorContextManager:
     Use ``with tempconfig({...})`` to temporarily change the default values of
     certain config options.
 
-    .. code-block:: python
+    .. code-block:: pycon
 
-       >>> config['frame_height']
+       >>> config["frame_height"]
        8.0
-       >>> with tempconfig({'frame_height': 100.0}):
-       ...     print(config['frame_height'])
+       >>> with tempconfig({"frame_height": 100.0}):
+       ...     print(config["frame_height"])
+       ...
        100.0
-       >>> config['frame_height']
+       >>> config["frame_height"]
        8.0
 
     """

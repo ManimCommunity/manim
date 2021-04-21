@@ -220,7 +220,7 @@ class CubeTest(Scene):
         #     opengl.rotation_matrix(z=TAU / 8) @ self.camera.model_matrix
         # )
 
-        self.embed_2()
+        self.interactive_embed()
 
 
 class FullscreenQuadTest(Scene):
