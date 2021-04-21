@@ -96,7 +96,6 @@ class Scene(Container):
         self.duration = None
         self.last_t = None
         self.queue = Queue()
-        self.saved_methods = {}
         self.skip_animation_preview = False
 
         if config.renderer == "opengl":
@@ -969,7 +968,6 @@ class Scene(Container):
 
         local_namespace = inspect.currentframe().f_back.f_locals
         for method in ("play", "wait", "add", "remove"):
-            self.saved_methods[method] = getattr(self, method)
             embedded_method = get_embedded_method(method)
             # Allow for calling scene methods without prepending 'self.'.
             local_namespace[method] = embedded_method
@@ -990,10 +988,9 @@ class Scene(Container):
         self.interact(shell, keyboard_thread)
 
     def interact(self, shell, keyboard_thread):
-        path = config["input_file"]
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
-        file_observer.schedule(event_handler, path, recursive=True)
+        file_observer.schedule(event_handler, config["input_file"], recursive=True)
         file_observer.start()
 
         self.quit_interaction = False
@@ -1003,8 +1000,6 @@ class Scene(Container):
                 tup = self.queue.get_nowait()
                 if tup[0].startswith("rerun"):
                     # Intentionally skip calling join() on the file thread to save time.
-                    file_observer.stop()
-
                     if not tup[0].endswith("keyboard"):
                         shell.pt_app.app.exit(exception=EOFError)
                     keyboard_thread.join()

@@ -3,33 +3,9 @@ from pathlib import Path
 
 from manim import *
 from manim.opengl import *
-from manim.communitycolors import *
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.
-
-
-class Test(Scene):
-    def construct(self):
-        config["background_color"] = "#333333"
-        self.skip_animation_preview = True
-
-        s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE).shift(
-            RIGHT + 2 * UP
-        )
-        self.play(ShowCreation(s))
-
-        d = OpenGLCircle(stroke_color=RED, fill_opacity=0.5).shift(UL + DOWN)
-        self.play(Create(d))
-
-        c = OpenGLSquare(fill_color=BLUE, fill_opacity=0.7).shift(RIGHT + 2 * DOWN)
-        self.play(ShowCreation(c))
-
-        self.skip_animation_preview = False
-
-        print(config["input_file"])
-        # self.play(Uncreate(c), run_time=1)
-        self.interactive_embed()
 
 
 class InteractiveDevelopment(Scene):
