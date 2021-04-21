@@ -103,7 +103,7 @@ def quaternion_from_angle_axis(
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
-def angle_axis_from_quaternion(quaternion: np.ndarray) -> int, np.ndarray:
+def angle_axis_from_quaternion(quaternion: np.ndarray) -> int:
     axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
     angle = 2 * np.arccos(quaternion[0])
     if angle > TAU / 2:
@@ -138,7 +138,7 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
     return (np.abs(row_indices - col_indices) < thickness).astype("uint8")
 
 
-def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> list :
+def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> list:
     quat_inv = quaternion_conjugate(quat)
     return [
         quaternion_mult(quat, [0, *basis], quat_inv)[1:]
@@ -154,7 +154,7 @@ def rotation_matrix_from_quaternion(quat: list) -> np.ndarray:
     return np.transpose(rotation_matrix_transpose_from_quaternion(quat))
 
 
-def rotation_matrix_transpose(angle: int, axis: np.ndarray) -> list :
+def rotation_matrix_transpose(angle: int, axis: np.ndarray) -> list:
     if axis[0] == 0 and axis[1] == 0:
         # axis = [0, 0, z] case is common enough it's worth
         # having a shortcut
@@ -170,7 +170,7 @@ def rotation_matrix_transpose(angle: int, axis: np.ndarray) -> list :
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray :
+def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
     """
     Rotation in R^3 about a specified axis of rotation.
     """
