@@ -29,9 +29,9 @@ class FlashTest(Scene):
 
 class CircumscribeTest(Scene):
     def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(Circumscribe(square))
+        circle = Circle()
+        self.add(circle)
+        self.play(Circumscribe(circle))
 
 
 class ShowPassingFlashTest(Scene):
