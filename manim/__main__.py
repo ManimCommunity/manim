@@ -15,7 +15,7 @@ def exit_early(ctx, param, value):
         sys.exit()
 
 
-console.print(f"Manim Community [green]v{__version__}[/green]")
+console.print(f"Manim Community [green]v{__version__}[/green]\n")
 
 
 @click.group(

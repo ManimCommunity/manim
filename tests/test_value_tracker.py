@@ -26,3 +26,10 @@ def test_value_tracker_iadd():
     tracker = ValueTracker(0.0)
     tracker += 10.0
     assert tracker.get_value() == 10.0
+
+
+def test_value_tracker_isub():
+    """Test ValueTracker.__isub__()"""
+    tracker = ValueTracker(20.0)
+    tracker -= 10.0
+    assert tracker.get_value() == 10.0

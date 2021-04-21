@@ -13,23 +13,17 @@ from manim.utils.exceptions import EndSceneEarlyException
 
 from .. import logger
 from ..constants import *
-from ..mobject import opengl_geometry
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
-from ..mobject.types.vectorized_mobject import VMobject
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_of_vector,
-    cross2d,
-    earclip_triangulation,
     quaternion_from_angle_axis,
     quaternion_mult,
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
-    z_to_vector,
 )
 from .opengl_renderer_window import Window
-from .shader_wrapper import ShaderWrapper
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -226,12 +220,6 @@ class OpenGLRenderer:
                 moderngl.ONE,
             )
 
-        # Initialize shader map.
-        self.id_to_shader_program = {}
-
-        # Initialize texture map.
-        self.path_to_texture_id = {}
-
     def update_depth_test(self, context, shader_wrapper):
         if shader_wrapper.depth_test:
             self.context.enable(moderngl.DEPTH_TEST)
@@ -275,7 +263,6 @@ class OpenGLRenderer:
 
     def render_render_group(self, render_group):
         shader_wrapper = render_group["shader_wrapper"]
-        shader_program = render_group["prog"]
         self.set_shader_uniforms(render_group["prog"], render_group["shader_wrapper"])
         self.update_depth_test(self.context, shader_wrapper)
         render_group["vao"].render(int(shader_wrapper.render_primitive))

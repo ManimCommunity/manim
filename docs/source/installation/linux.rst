@@ -1,7 +1,7 @@
 Linux
 =====
 
-The following instructions are given for different linux distributions that use
+The following instructions are given for different Linux distributions that use
 different package managers.  After executing the instructions corresponding to
 your distribution, go to `Certifying a clean install`_ to check whether the
 dependencies are installed correctly.  All distributions will follow the same

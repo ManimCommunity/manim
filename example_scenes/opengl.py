@@ -14,19 +14,22 @@ class Test(Scene):
         config["background_color"] = "#333333"
         self.skip_animation_preview = True
 
-        s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE)
+        s = OpenGLCircle(stroke_color=BLUE, fill_opacity=0.5, fill_color=BLUE).shift(
+            RIGHT + 2 * UP
+        )
         self.play(ShowCreation(s))
 
-        d = OpenGLCircle(stroke_color=GREEN, fill_opacity=0.5).shift(UL + DOWN)
+        d = OpenGLCircle(stroke_color=RED, fill_opacity=0.5).shift(UL + DOWN)
         self.play(Create(d))
 
-        c = OpenGLSquare(fill_color=BLUE, fill_opacity=0.5).shift(2 * RIGHT + 2 * DOWN)
+        c = OpenGLSquare(fill_color=BLUE, fill_opacity=0.7).shift(RIGHT + 2 * DOWN)
         self.play(ShowCreation(c))
 
         self.skip_animation_preview = False
 
-        self.play(Uncreate(c), run_time=1)
-        self.embed_2()
+        print(config["input_file"])
+        # self.play(Uncreate(c), run_time=1)
+        self.interactive_embed()
 
 
 class InteractiveDevelopment(Scene):

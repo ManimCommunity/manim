@@ -74,7 +74,6 @@ from .. import logger
 from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..constants import DOWN, ORIGIN
-from ..mobject.mobject import Group
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import interpolate
