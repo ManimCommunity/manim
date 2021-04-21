@@ -60,6 +60,8 @@ class FocusOn(Transform):
         The color of the spotlight.
     run_time
         The duration of the animation.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
     --------
@@ -117,6 +119,8 @@ class Indicate(Transform):
         The color the mobject temporally takes.
     rate_func
         The function definig the animation progress at every point in time.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
     --------
@@ -170,12 +174,21 @@ class Flash(AnimationGroup):
         The time width used for the flash lines. See :class:`.~ShowPassingFlash` for more details.
     run_time
         The duration of the animation.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.Succession` constructor
 
     Examples
     --------
     .. manim:: UsingFlash
 
         class UsingFlash(Scene):
+            def construct(self):
+                dot = Dot(color=YELLOW).shift(DOWN)
+                self.add(Tex("Flash the dot below:"), dot)
+                self.play(Flash(dot))
+                self.wait()
+
+        class FashOnCircle(Scene):
             def construct(self):
                 dot = Dot(color=YELLOW).shift(DOWN)
                 self.add(Tex("Flash the dot below:"), dot)
@@ -191,7 +204,7 @@ class Flash(AnimationGroup):
         flash_radius: float = 0.1,
         line_stroke_width: int = 3,
         color: str = YELLOW,
-        time_width: float = 1,  # TODO add docs
+        time_width: float = 1,
         run_time: float = 1.0,
         **kwargs
     ) -> None:
@@ -203,14 +216,11 @@ class Flash(AnimationGroup):
         self.line_stroke_width = line_stroke_width
         self.run_time = run_time
         self.time_width = time_width
+        self.animation_config = kwargs
 
         self.lines = self.create_lines()
         animations = self.create_line_anims()
-        super().__init__(
-            *animations,
-            group=self.lines,
-            **kwargs,
-        )
+        super().__init__(*animations, group=self.lines)
 
     def create_lines(self) -> VGroup:
         # TODO change meaning of flash_radius
@@ -227,7 +237,12 @@ class Flash(AnimationGroup):
 
     def create_line_anims(self) -> typing.Iterable["ShowPassingFlash"]:
         return [
-            ShowPassingFlash(line, run_time=self.run_time, time_width=self.time_width)
+            ShowPassingFlash(
+                line,
+                time_width=self.time_width,
+                run_time=self.run_time,
+                **self.animation_config,
+            )
             for line in self.lines
         ]
 
