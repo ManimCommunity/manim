@@ -15,22 +15,26 @@ __all__ = [
     "ApplyWave",
     "WiggleOutThenIn",
     "TurnInsideOut",
+    "Circumscribe",
 ]
 
 
-import typing
+from manim._config import logger
+from typing import Type, Union
+from colour import Color
 
 import numpy as np
 
+from ..mobject.mobject import Mobject
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create, ShowPartial
-from ..animation.fading import FadeOut
+from ..animation.creation import Create, ShowPartial, Uncreate
+from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
 from ..constants import *
-from ..mobject.geometry import Circle, Dot, Line
+from ..mobject.geometry import Circle, Dot, Line, Rectangle
 from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate
@@ -220,6 +224,8 @@ class ShowCreationThenFadeOut(Succession):
 
 
 class AnimationOnSurroundingRectangle(AnimationGroup):
+    """Deprecated. Use :class:`~.Circumscribe` instead or build an Animation using :class:`~SurroundingRectangle`."""
+
     def __init__(
         self,
         mobject: "Mobject",
@@ -227,6 +233,9 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         surrounding_rectangle_config: typing.Dict[str, typing.Any] = {},
         **kwargs
     ) -> None:
+        logger.warning(
+            "AnimationOnSurroundingRectangle has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         # Callable which takes in a rectangle, and spits out some animation.  Could be
         # some animation class, could be something more
         self.rect_animation = rect_animation
@@ -247,29 +256,44 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
 
 
 class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
+    """Deprecated. Use :class:`~.Circumscribe` instead."""
+
     def __init__(
         self, mobject: "Mobject", rect_animation: Animation = ShowPassingFlash, **kwargs
     ) -> None:
+        logger.warning(
+            "ShowPassingFlashAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
+    """Deprecated. Use :class:`~.Circumscribe` instead."""
+
     def __init__(
         self,
         mobject: "Mobject",
         rect_animation: Animation = ShowCreationThenDestruction,
         **kwargs
     ) -> None:
+        logger.warning(
+            "ShowCreationThenDestructionAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
 class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
+    """Deprecated. Use :class:`~.Circumscribe` instead."""
+
     def __init__(
         self,
         mobject: "Mobject",
         rect_animation: Animation = ShowCreationThenFadeOut,
         **kwargs
     ) -> None:
+        logger.warning(
+            "ShowCreationThenFadeAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
@@ -346,3 +370,66 @@ class TurnInsideOut(Transform):
 
     def create_target(self) -> "Mobject":
         return self.mobject.copy().reverse_points()
+
+
+class Circumscribe(Succession):
+    """Draw a temporary line surrounding the mobject.
+
+    Parameters
+    ----------
+    Succession : [type]
+        [description]
+    """
+
+    def __init__(
+        self,
+        mobject: Mobject,
+        shape: Union[str, Type] = "rectangle",
+        fade_in=False,
+        fade_out=False,
+        time_width=0.3,
+        buff: float = SMALL_BUFF,
+        color: Color = YELLOW,
+        run_time=1,
+        **kwargs
+    ):
+        self.mobject = mobject
+        self.fade_in = fade_in
+        self.fade_out = fade_out
+        self.time_width = time_width
+        self.buff = buff
+        self.color = color
+
+        if shape in ("rectangle", "rectangular", Rectangle):
+            self.frame = SurroundingRectangle(self.mobject, color, buff)
+        elif shape in ("circle", "circular", Circle):
+            self.frame = Circle(color=color).surround(self.mobject, buffer_factor=1)
+            radius = self.frame.width / 2
+            self.frame.scale((radius + buff) / radius)
+
+        else:
+            raise ValueError('shape should be either "rectangle" or "circle".')
+
+        if fade_in and fade_out:
+            super().__init__(
+                FadeIn(self.frame, run_time=run_time / 2),
+                FadeOut(self.frame, run_time=run_time / 2),
+                **kwargs,
+            )
+        elif fade_in:
+            super().__init__(
+                FadeIn(self.frame, run_time=run_time / 2),
+                Uncreate(self.frame, run_time=run_time / 2),
+                **kwargs,
+            )
+        elif fade_out:
+            super().__init__(
+                Create(self.frame, run_time=run_time / 2),
+                FadeOut(self.frame, run_time=run_time / 2),
+                **kwargs,
+            )
+        else:
+            super().__init__(
+                ShowPassingFlash(self.frame, self.time_width, run_time=run_time),
+                **kwargs,
+            )
