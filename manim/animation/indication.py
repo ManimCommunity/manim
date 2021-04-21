@@ -256,6 +256,8 @@ class Flash(AnimationGroup):
 
 
 class CircleIndicate(Indicate):
+    """Deprecated. Use :class:`~.Circumscribe` instead."""
+
     def __init__(
         self,
         mobject: "Mobject",
@@ -266,6 +268,9 @@ class CircleIndicate(Indicate):
         remover: bool = True,
         **kwargs
     ) -> None:
+        logger.warning(
+            "ShowCreationThenDestructionAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         self.circle_config = circle_config
         circle = self.get_circle(mobject)
         super().__init__(circle, rate_func=rate_func, remover=remover, **kwargs)
