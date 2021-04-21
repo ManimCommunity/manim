@@ -15,6 +15,7 @@ __all__ = [
     "ApplyWave",
     "WiggleOutThenIn",
     "TurnInsideOut",
+    #New:
     "Circumscribe",
 ]
 
@@ -47,18 +48,42 @@ if typing.TYPE_CHECKING:
 
 
 class FocusOn(Transform):
+    """Draw attention to a position be shrinking a spotlight to it. 
+
+    Parameters
+    ----------
+    focus_point
+        The point at which to shrink the spotlight.
+    opacity
+        The opacity of the spotlight.
+    color
+        The color of the spotlight.
+    run_time
+        The duration of the animation.
+  
+    Examples
+    --------
+    .. manim:: UsingFocusOn
+
+        class UsingFocusOn(Scene):
+            def construct(self):
+                dot = Dot(color=YELLOW).shift(DOWN)
+                self.add(Tex("Focusing on the dot below:"), dot)
+                self.play(FocusOn(dot))
+    """
+    
     def __init__(
         self,
-        focus_point: np.ndarray,
+        focus_point: Union[np.ndarray, Mobject],
         opacity: float = 0.2,
         color: str = GREY,
         run_time: float = 2,
-        remover: bool = True,
         **kwargs
     ) -> None:
         self.focus_point = focus_point
         self.color = color
         self.opacity = opacity
+        remover = True
         # Initialize with blank mobject, while create_target
         # and create_starting_mobject handle the meat
         super().__init__(VMobject(), run_time=run_time, remover=remover, **kwargs)
