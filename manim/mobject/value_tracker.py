@@ -67,16 +67,39 @@ class ValueTracker(Mobject):
     def increment_value(self, d_value: Union[float, int]):
         """Increments (adds) a scalar value  to the ValueTracker"""
         self.set_value(self.get_value() + d_value)
+    
+    def __bool__(self):
+        """Allows ValueTracker to be tested directly in boolean expressions. True if the value of the ValueTracker is nonzero."""
+        return bool(self.get_value())
 
     def __iadd__(self, d_value: Union[float, int]):
         """adds ``+=`` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
         return self
+    
+    def __ifloordiv__(self, d_value: Union[float, int]):
+        """adds ``//=`` syntax to floor divide the value of the ValueTracker"""
+        self.set_value(self.get_value() // d_value)
 
+    def __imod__(self, d_value: Union[float, int]):
+        """adds ``%=`` syntax to floor mod the value of the ValueTracker"""
+        self.set_value(self.get_value() % d_value)
+    
+    def __imul__(self, d_value: Union[float, int]):
+        """adds ``*=`` syntax to multiply the value of the ValueTracker"""
+        self.set_value(self.get_value() * d_value)
+    
+    def __ipow__(self, d_value: Union[float, int]):
+        """adds ``**=`` syntax to exponentiate the value of the ValueTracker"""
+    
     def __isub__(self, d_value: Union[float, int]):
         """adds ``-=`` syntax to decrement the value of the ValueTracker"""
         self.increment_value(-d_value)
         return self
+    
+    def __itruediv__(self, d_value: Union[float, int]):
+        """adds ``/=`` syntax to floor divide the value of the ValueTracker"""
+        self.set_value(self.get_value() / d_value)
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
         """
