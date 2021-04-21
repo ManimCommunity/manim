@@ -1161,7 +1161,7 @@ class Arrow(Line):
             >>> scaled_arrow = arrow.scale(2)
             >>> np.round(scaled_arrow.get_start_and_end(), 8)
             array([[-2., -2.,  0.], 
-                   [ 2., 2., 0.]])
+                   [ 2.,  2.,  0.]])
             >>> arrow.tip.length == scaled_arrow.tip.length
             True
 
