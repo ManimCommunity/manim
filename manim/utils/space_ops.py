@@ -53,7 +53,7 @@ def get_norm(vect):
     return np.linalg.norm(vect)
 
 
-def norm_squared(v):
+def norm_squared(v: float) -> np.ndarray:
     return np.linalg.dot(v, v)
 
 
@@ -61,7 +61,7 @@ def norm_squared(v):
 # TODO, implement quaternion type
 
 
-def quaternion_mult(*quats):
+def quaternion_mult(*quats: tuple) -> list:
     if config.renderer == "opengl":
         if len(quats) == 0:
             return [1, 0, 0, 0]
@@ -92,7 +92,9 @@ def quaternion_mult(*quats):
         )
 
 
-def quaternion_from_angle_axis(angle, axis, axis_normalized=False):
+def quaternion_from_angle_axis(
+    angle: int, axis: np.ndarray, axis_normalized=False
+) -> np.ndarray:
     if config.renderer == "opengl":
         if not axis_normalized:
             axis = normalize(axis)
@@ -101,7 +103,7 @@ def quaternion_from_angle_axis(angle, axis, axis_normalized=False):
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
-def angle_axis_from_quaternion(quaternion):
+def angle_axis_from_quaternion(quaternion: np.ndarray) -> int, np.ndarray:
     axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
     angle = 2 * np.arccos(quaternion[0])
     if angle > TAU / 2:
@@ -109,13 +111,13 @@ def angle_axis_from_quaternion(quaternion):
     return angle, axis
 
 
-def quaternion_conjugate(quaternion):
+def quaternion_conjugate(quaternion: np.ndarray) -> np.ndarray:
     result = np.array(quaternion)
     result[1:] *= -1
     return result
 
 
-def rotate_vector(vector, angle, axis=OUT):
+def rotate_vector(vector: list, angle: int, axis=OUT) -> np.ndarray:
     if len(vector) == 2:
         # Use complex numbers...because why not
         z = complex(*vector) * np.exp(complex(0, angle))
@@ -130,13 +132,13 @@ def rotate_vector(vector, angle, axis=OUT):
         raise ValueError("vector must be of dimension 2 or 3")
 
 
-def thick_diagonal(dim, thickness=2):
+def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
     row_indices = np.arange(dim).repeat(dim).reshape((dim, dim))
     col_indices = np.transpose(row_indices)
     return (np.abs(row_indices - col_indices) < thickness).astype("uint8")
 
 
-def rotation_matrix_transpose_from_quaternion(quat):
+def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> list :
     quat_inv = quaternion_conjugate(quat)
     return [
         quaternion_mult(quat, [0, *basis], quat_inv)[1:]
@@ -148,11 +150,11 @@ def rotation_matrix_transpose_from_quaternion(quat):
     ]
 
 
-def rotation_matrix_from_quaternion(quat):
+def rotation_matrix_from_quaternion(quat: list) -> np.ndarray:
     return np.transpose(rotation_matrix_transpose_from_quaternion(quat))
 
 
-def rotation_matrix_transpose(angle, axis):
+def rotation_matrix_transpose(angle: int, axis: np.ndarray) -> list :
     if axis[0] == 0 and axis[1] == 0:
         # axis = [0, 0, z] case is common enough it's worth
         # having a shortcut
@@ -168,7 +170,7 @@ def rotation_matrix_transpose(angle, axis):
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle, axis):
+def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray :
     """
     Rotation in R^3 about a specified axis of rotation.
     """
@@ -178,7 +180,7 @@ def rotation_matrix(angle, axis):
     return reduce(np.dot, [z_to_axis, about_z, axis_to_z])
 
 
-def rotation_about_z(angle):
+def rotation_about_z(angle: int) -> list:
     return [
         [np.cos(angle), -np.sin(angle), 0],
         [np.sin(angle), np.cos(angle), 0],
@@ -186,7 +188,7 @@ def rotation_about_z(angle):
     ]
 
 
-def z_to_vector(vector):
+def z_to_vector(vector: np.ndarray) -> np.ndarray:
     """
     Returns some matrix in SO(3) which takes the z-axis to the
     (normalized) vector provided as an argument
@@ -218,7 +220,7 @@ def angle_between(v1, v2):
     return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
 
 
-def angle_of_vector(vector):
+def angle_of_vector(vector: float) -> numpy.float64:
     """
     Returns polar coordinate theta when vector is project on xy plane
     """
@@ -231,7 +233,7 @@ def angle_of_vector(vector):
         return np.angle(complex(*vector[:2]))
 
 
-def angle_between_vectors(v1, v2):
+def angle_between_vectors(v1: tuple, v2: tuple) -> np.float64:
     """
     Returns the angle between two 3D vectors.
     This angle will always be btw 0 and pi
@@ -246,12 +248,12 @@ def angle_between_vectors(v1, v2):
         )
 
 
-def project_along_vector(point, vector):
+def project_along_vector(point, vector) -> np.ndarray:
     matrix = np.identity(3) - np.outer(vector, vector)
     return np.dot(point, matrix.T)
 
 
-def normalize(vect, fall_back=None):
+def normalize(vect: np.ndarray, fall_back=None) -> np.ndarray:
     norm = np.linalg.norm(vect)
     if norm > 0:
         return np.array(vect) / norm
@@ -278,7 +280,7 @@ def cross(v1, v2):
     return np.cross(v1, v2)
 
 
-def get_unit_normal(v1, v2, tol=1e-6):
+def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol=1e-6) -> np.ndarray:
     if config.renderer == "opengl":
         v1 = normalize(v1)
         v2 = normalize(v2)
@@ -299,16 +301,16 @@ def get_unit_normal(v1, v2, tol=1e-6):
 ###
 
 
-def compass_directions(n=4, start_vect=RIGHT):
+def compass_directions(n=4, start_vect=RIGHT) -> nd.array:
     angle = TAU / n
     return np.array([rotate_vector(start_vect, k * angle) for k in range(n)])
 
 
-def complex_to_R3(complex_num):
+def complex_to_R3(complex_num: complex) -> np.ndarray:
     return np.array((complex_num.real, complex_num.imag, 0))
 
 
-def R3_to_complex(point):
+def R3_to_complex(point: tuple) -> np.ndarray:
     return complex(*point[:2])
 
 
@@ -316,16 +318,16 @@ def complex_func_to_R3_func(complex_func):
     return lambda p: complex_to_R3(complex_func(R3_to_complex(p)))
 
 
-def center_of_mass(points):
+def center_of_mass(points: list) -> int:
     points = [np.array(point).astype("float") for point in points]
     return sum(points) / len(points)
 
 
-def midpoint(point1, point2):
+def midpoint(point1: list, point2: list) -> int:
     return center_of_mass([point1, point2])
 
 
-def line_intersection(line1, line2):
+def line_intersection(line1, line2) -> np.ndarray:
     """
     Returns intersection point of two lines,
     each defined with a pair of vectors determining
@@ -346,7 +348,7 @@ def line_intersection(line1, line2):
     return np.array([x, y, 0])
 
 
-def find_intersection(p0, v0, p1, v1, threshold=1e-5):
+def find_intersection(p0, v0, p1, v1, threshold=1e-5) -> np.ndarray:
     """
     Return the intersection of a line passing through p0 in direction v0
     with one passing through p1 in direction v1.  (Or array of intersections
@@ -375,7 +377,7 @@ def find_intersection(p0, v0, p1, v1, threshold=1e-5):
     return p0 + ratio * v0
 
 
-def get_winding_number(points):
+def get_winding_number(points: list) -> float:
     total_angle = 0
     for p1, p2 in adjacent_pairs(points):
         d_angle = angle_of_vector(p2) - angle_of_vector(p1)
@@ -384,7 +386,7 @@ def get_winding_number(points):
     return total_angle / TAU
 
 
-def shoelace(x_y):
+def shoelace(x_y: Union[np.ndarray, List]) -> float:
     """2D implementation of the shoelace formula.
 
     Returns
@@ -398,7 +400,7 @@ def shoelace(x_y):
     return area
 
 
-def shoelace_direction(x_y):
+def shoelace_direction(x_y: Union[np.ndarray, List]) -> str:
     """
     Uses the area determined by the shoelace method to determine whether
     the input set of points is directed clockwise or counterclockwise.
@@ -412,14 +414,14 @@ def shoelace_direction(x_y):
     return "CW" if area > 0 else "CCW"
 
 
-def cross2d(a, b):
+def cross2d(a: int, b: int) -> float:
     if len(a.shape) == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
     else:
         return a[0] * b[1] - b[0] * a[1]
 
 
-def earclip_triangulation(verts, ring_ends):
+def earclip_triangulation(verts: tuple, ring_ends: list) -> list:
     """
     Returns a list of indices giving a triangulation
     of a polygon, potentially with holes
