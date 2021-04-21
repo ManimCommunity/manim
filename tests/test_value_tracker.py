@@ -1,9 +1,9 @@
-from manim.mobject.value_tracker import (
-    ValueTracker,
-    ExponentialValueTracker,
-    ComplexValueTracker,
-)
 from manim.mobject.geometry import Dot
+from manim.mobject.value_tracker import (
+    ComplexValueTracker,
+    ExponentialValueTracker,
+    ValueTracker,
+)
 
 
 def test_value_tracker_set_value():
