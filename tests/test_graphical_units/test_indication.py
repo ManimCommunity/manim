@@ -27,11 +27,11 @@ class FlashTest(Scene):
         self.play(Flash(ORIGIN))
 
 
-class CircumscribeTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(Circumscribe(square))
+# class CircumscribeTest(Scene):
+#     def construct(self):
+#         square = Square()
+#         self.add(square)
+#         self.play(Circumscribe(square))
 
 
 class ShowPassingFlashTest(Scene):
