@@ -204,6 +204,10 @@ class Graph(VMobject):
         the class specified via ``vertex_type``, or a dictionary whose keys
         are the vertices, and whose values are dictionaries containing keyword
         arguments for the mobject related to the corresponding vertex.
+    vertex_mobjects
+        A dictionary whose keys are the vertices, and whose values are
+        mobjects to be used as vertices. Passing vertices here overrides
+        all other configuration options for a vertex.
     edge_type
         The mobject class used for displaying edges in the scene.
     edge_config
@@ -353,6 +357,7 @@ class Graph(VMobject):
         layout_config: Union[dict, None] = None,
         vertex_type: "Mobject" = Dot,
         vertex_config: Union[dict, None] = None,
+        vertex_mobjects: Optional[dict] = None,
         edge_type: "Mobject" = Line,
         partitions: Union[List[List[Hashable]], None] = None,
         root_vertex: Union[Hashable, None] = None,
@@ -403,6 +408,7 @@ class Graph(VMobject):
             self._vertex_config[v]["label"] = label
 
         self.vertices = {v: vertex_type(**self._vertex_config[v]) for v in vertices}
+        self.vertices.update(vertex_mobjects)
         for v in self.vertices:
             self[v].move_to(self._layout[v])
 
@@ -459,6 +465,7 @@ class Graph(VMobject):
         label_fill_color: str = BLACK,
         vertex_type: type = Dot,
         vertex_config: Optional[dict] = None,
+        vertex_mobject: Optional[dict] = None,
     ) -> "Mobject":
         """Add a vertex to the graph.
 
@@ -514,7 +521,12 @@ class Graph(VMobject):
 
         self._vertex_config[vertex] = vertex_config
 
-        self.vertices[vertex] = vertex_type(**vertex_config).move_to(position)
+        if vertex_mobject is None:
+            self.vertices[vertex] = vertex_type(**vertex_config)
+        else:
+            self.vertices[vertex] = vertex_mobject
+
+        self.vertices[vertex].move_to(position)
         self.add(self.vertices[vertex])
 
         return self.vertices[vertex]
@@ -539,6 +551,7 @@ class Graph(VMobject):
         label_fill_color: str = BLACK,
         vertex_type: type = Dot,
         vertex_config: Optional[dict] = None,
+        vertex_mobjects: Optional[dict] = None,
     ):
         """Add a list of vertices to the graph.
 
@@ -566,6 +579,8 @@ class Graph(VMobject):
         """
         if positions is None:
             positions = {}
+        if vertex_mobjects is None:
+            vertex_mobjects = {}
 
         graph_center = self.get_center()
         base_positions = {v: graph_center for v in vertices}
@@ -589,9 +604,7 @@ class Graph(VMobject):
             {key: val for key, val in vertex_config.items() if key not in vertices}
         )
         vertex_config = {
-            v: (
-                vertex_config[v] if v in vertex_config else copy(base_vertex_config)
-            )
+            v: (vertex_config[v] if v in vertex_config else copy(base_vertex_config))
             for v in vertices
         }
 
@@ -603,6 +616,7 @@ class Graph(VMobject):
                 label_fill_color=label_fill_color,
                 vertex_type=vertex_type,
                 vertex_config=vertex_config[v],
+                vertex_mobject=vertex_mobjects[v] if v in vertex_mobjects else None,
             )
             for v in vertices
         ]
@@ -630,7 +644,7 @@ class Graph(VMobject):
 
         Returns
         -------
-        
+
         VGroup
             A mobject containing all removed objects.
 
@@ -642,10 +656,12 @@ class Graph(VMobject):
         VGroup(Line, Line, Dot)
         >>> G
         Graph on 1 vertices and 0 edges
-        
+
         """
         if vertex not in self.vertices:
-            raise ValueError(f"The graph does not contain a vertex with identifier '{vertex}'")
+            raise ValueError(
+                f"The graph does not contain a vertex with identifier '{vertex}'"
+            )
 
         self._graph.remove_node(vertex)
         self._layout.pop(vertex)
@@ -661,7 +677,6 @@ class Graph(VMobject):
 
         self.remove(*to_remove)
         return Group(*to_remove)
-
 
     @override_animate(remove_vertex)
     def _remove_vertex_animation(self, vertex, anim_args=None):
@@ -708,7 +723,6 @@ class Graph(VMobject):
 
         mobjects = self.remove_vertices(*vertices)
         return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
-        
 
     @staticmethod
     def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> "Graph":
