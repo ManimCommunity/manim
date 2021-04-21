@@ -20,6 +20,13 @@ def test_vmobject_point_from_propotion():
     # would be at length 3, which lands in the first, long line.
     assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
 
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        obj.point_from_proportion(2)
+
+    obj.clear_points()
+    with pytest.raises(Exception, match="with no points"):
+        obj.point_from_proportion(0)
+
 
 def test_vgroup_init():
     """Test the VGroup instantiation."""
