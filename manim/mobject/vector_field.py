@@ -34,6 +34,7 @@ DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 # def get_norm(p):
 #     return np.linalg.norm(p)
 
+
 class VectorField(VGroup):
     """A vector field.
 
@@ -76,7 +77,7 @@ class VectorField(VGroup):
             self.single_color = False
             if color_scheme is None:
                 color_scheme = lambda p: np.linalg.norm(p)
-            self.color_scheme = color_scheme # TODO maybe other default for direction?
+            self.color_scheme = color_scheme  # TODO maybe other default for direction?
             self.rgbs = np.array(list(map(color_to_rgb, colors)))
 
             def pos_to_rgb(pos: np.ndarray) -> Tuple[float, float, float, float]:
