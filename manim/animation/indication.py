@@ -17,6 +17,7 @@ __all__ = [
     "TurnInsideOut",
     # New:
     "Circumscribe",
+    "Wiggle",
 ]
 
 
@@ -340,13 +341,18 @@ class ShowPassingFlash(ShowPartial):
 
 
 class ShowCreationThenDestruction(ShowPassingFlash):
+    """Deprecated. Use :class:`~.ShowPassingFlash` instead."""
+
     def __init__(
         self, mobject: "Mobject", time_width: float = 2.0, run_time: float = 1, **kwargs
     ) -> None:
+        logger.warning(
+            "ShowCreationThenDestruction has been deprecated in favor of ShowPassingFlash. Please use ShowPassingFlash instead!"
+        )
         super().__init__(mobject, time_width=time_width, run_time=run_time, **kwargs)
 
 
-class ShowCreationThenFadeOut(Succession):
+class ShowCreationThenFadeOut(Succession):  # TODO maybe remove?
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
@@ -462,7 +468,7 @@ class ApplyWave(Homotopy):
                 ))
                 self.play(ApplyWave(
                     tex,
-                    rate_func=ease_in_out_sine,
+                    rate_func=linear,
                     ripples=4
                 ))
 
@@ -514,7 +520,38 @@ class ApplyWave(Homotopy):
         super().__init__(homotopy, mobject, run_time=run_time, **kwargs)
 
 
-class WiggleOutThenIn(Animation):
+class Wiggle(Animation):
+    """Wiggle a Mobject.
+
+    Parameters
+    ----------
+    mobject : Mobject
+        The mobject to wiggle.
+    scale_value
+        The factor by which the mobject will be temporarilly scaled.
+    rotation_angle
+        The wiggle angle.
+    n_wiggles
+        The number of wiggles.
+    scale_about_point
+        The point about which the mobject gets scaled.
+    rotate_about_point
+        The point around which the mobject gets rotated.
+    run_time
+        The duration of the animation
+
+    Examples
+    --------
+
+    .. manim:: ApplyingWaves
+
+        class ApplyingWaves(Scene):
+            def construct(self):
+                tex = Tex("Wiggle").scale(4)
+                self.play(Wiggle(tex))
+
+    """
+
     def __init__(
         self,
         mobject: "Mobject",
@@ -553,6 +590,16 @@ class WiggleOutThenIn(Animation):
             wiggle(alpha, self.n_wiggles) * self.rotation_angle,
             about_point=self.get_rotate_about_point(),
         )
+
+
+class WiggleOutThenIn(Wiggle):
+    """Deprecated. Use :class:`~.Wiggle` instead."""
+
+    def __init__(*args, **kwargs):
+        logger.warning(
+            "WiggleOutThenIn has been deprecated in favor of Wiggle. Please use Wiggle instead!"
+        )
+        super().__init(*args, **kwargs)
 
 
 class TurnInsideOut(Transform):
