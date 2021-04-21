@@ -15,7 +15,7 @@ __all__ = [
     "ApplyWave",
     "WiggleOutThenIn",
     "TurnInsideOut",
-    #New:
+    # New:
     "Circumscribe",
 ]
 
@@ -48,7 +48,7 @@ if typing.TYPE_CHECKING:
 
 
 class FocusOn(Transform):
-    """Draw attention to a position be shrinking a spotlight to it. 
+    """Draw attention to a position be shrinking a spotlight to it.
 
     Parameters
     ----------
@@ -60,7 +60,7 @@ class FocusOn(Transform):
         The color of the spotlight.
     run_time
         The duration of the animation.
-  
+
     Examples
     --------
     .. manim:: UsingFocusOn
@@ -71,7 +71,7 @@ class FocusOn(Transform):
                 self.add(Tex("Focusing on the dot below:"), dot)
                 self.play(FocusOn(dot))
     """
-    
+
     def __init__(
         self,
         focus_point: Union[np.ndarray, Mobject],
