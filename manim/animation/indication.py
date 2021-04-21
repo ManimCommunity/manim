@@ -293,7 +293,7 @@ class ShowPassingFlash(ShowPartial):
     mobject
         The mobject whose stroke is animated.
     time_width
-        The length of the sliver relative to the length of the stroke.  
+        The length of the sliver relative to the length of the stroke.
 
     Examples
     --------
@@ -319,12 +319,7 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(
-        self,
-        mobject: "VMobject",
-        time_width: float = 0.1,
-        **kwargs
-    ) -> None:
+    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
         super().__init__(mobject, remover=True, **kwargs)
 
