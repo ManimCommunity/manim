@@ -55,8 +55,8 @@ class ValueTracker(Mobject):
         self.set_value(value)
 
     def get_value(self) -> float:
-        """Get the current value of this value tracker. 
-        
+        """Get the current value of this value tracker.
+
         The value changes continuously when :attr:`animate`
         for the ValueTracker is called."""
         return self.points[0, 0]
@@ -188,8 +188,8 @@ class ComplexValueTracker(ValueTracker):
     """
 
     def get_value(self):
-        """Get the current value of this value tracker. 
-        
+        """Get the current value of this value tracker.
+
         This value changes continuously when animated using
         the :attr:`animate` syntax."""
         return complex(*self.points[0, :2])
