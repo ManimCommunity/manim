@@ -29,7 +29,7 @@ ideas from @kolibril13), so please give feedback, and feel free to update this l
 
 * As soon as simple functionalities are explained, the chapter can also include more complicated examples and show how functionalities work together in context.
 
-* When adding an example, you don't add the from `manim import *` statement, this will be done automatically. #TODO: If it will be also shown on the docs is still under discussion.
+* When adding an example, you don't add the from ``manim import *`` statement, this will be done automatically. #TODO: If it will be also shown on the docs is still under discussion.
 
 * There should be a balance of animated and non-animated examples.
 
@@ -48,8 +48,8 @@ How Examples are Structured
 
 How to write examples
 ~~~~~~~~~~~~~~~~~~~~~
-When you want to edit them/or add new examples, they can be found in `/manim-community/docs/source`. In this folder, you can see ".rts" 
-files (the format is restructured text, similar to markdown), one file per example category. In one file, e.g. `formulas.rst` you can see 
+When you want to edit them/or add new examples, they can be found in ``/manim-community/docs/source``. In this folder, you can see ``.rts`` 
+files (the format is restructured text, similar to markdown), one file per example category. In one file, e.g. ``formulas.rst`` you can see 
 several manim examples. Every Example is in a separate block, and it can look like this:
 
  .. code:: rst
@@ -68,31 +68,30 @@ several manim examples. Every Example is in a separate block, and it can look li
                 self.add(t)
                 self.wait(1)
 
-In the building process of the docs, all `.rts` are scanned, and `.. manim::` blocks are identified as scenes, that will be run by the current version of manim.
+In the building process of the docs, all ``.rts`` are scanned, and ``.. manim::`` blocks are identified as scenes, that will be run by the current version of manim.
 Here is the syntax:
-* `.. manim:: Formula1` has no indentation.
+* ``.. manim:: Formula1`` has no indentation.
 
 * The flags are followed in the next line (no blank line here!), with the indention level of one tab.
 
 * All flags can be added by having them lined up next to each other. Possible flags are:
 
-    * `:quality:` medium
+    * ``:quality:`` medium
        Controls render quality of the video, in analogy to the corresponding command-line flags. The default for the docs should be medium, but one can also use low or high here.
 
-    * `:save_last_frame:` the last frame of the scene will be rendered and displayed, instead of a video.
+    * ``:save_last_frame:`` the last frame of the scene will be rendered and displayed, instead of a video.
 
-    * `:hide_source:` Hides the python code and only shows the rendered example.
+    * ``:hide_source:`` Hides the python code and only shows the rendered example.
 * After the last flag, there is an empty line
 
 * Finally, here comes the manim code, also with start indention level of one tab, and Python-related indention.
 
 * After the code block, set one blank line.
 
-In the example above, Formula1 followed by .. manim:: and is the scene that will be rendered, so in the python code the class must have the same name: class Formula1(Scene)
+In the example above, ``Formula1`` followed by ``.. manim::`` and is the scene that will be rendered, so in the python code the class must have the same name: ``class Formula1(Scene)``
 
 Further notes:
-Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new 
-"incognito" tab" in your browser, then the latest docs should be shown.
+* Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new "incognito" tab" in your browser, then the latest docs should be shown.
 
 Formatting and Running Tests
 ----------------------------
