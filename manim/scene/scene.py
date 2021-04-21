@@ -38,7 +38,9 @@ from ..utils.space_ops import rotate_vector
 from ..renderer.shader import Mesh
 
 
-class MyHandler(FileSystemEventHandler):
+class RerunSceneHandler(FileSystemEventHandler):
+    """A class to handle rerunning a Scene after the input file is modified."""
+
     def __init__(self, queue):
         super().__init__()
         self.queue = queue
@@ -1007,20 +1009,16 @@ class Scene(Container):
 
         keyboard_thread = threading.Thread(
             target=ipython,
-            args=(
-                shell,
-                local_namespace,
-            ),
+            args=(shell, local_namespace),
         )
         keyboard_thread.start()
 
         self.interact(shell, keyboard_thread)
 
     def interact(self, shell, keyboard_thread):
-        path = "./example_scenes/opengl.py"
-        event_handler = MyHandler(self.queue)
+        event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
-        file_observer.schedule(event_handler, path, recursive=True)
+        file_observer.schedule(event_handler, config["input_file"], recursive=True)
         file_observer.start()
 
         self.quit_interaction = False
@@ -1030,8 +1028,6 @@ class Scene(Container):
                 tup = self.queue.get_nowait()
                 if tup[0].startswith("rerun"):
                     # Intentionally skip calling join() on the file thread to save time.
-                    file_observer.stop()
-
                     if not tup[0].endswith("keyboard"):
                         shell.pt_app.app.exit(exception=EOFError)
                     keyboard_thread.join()
