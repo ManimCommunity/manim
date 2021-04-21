@@ -150,12 +150,43 @@ class Indicate(Transform):
 
 
 class Flash(AnimationGroup):
+    """Draw attention to a position be sending out lines in all directions.
+
+    Parameters
+    ----------
+    point
+        The center of the flash lines. If it is a :class:`.~Mobject` its center will be used.
+    line_length
+        The length of the flash lines.
+    num_lines
+        The number of flash lines.
+    flash_radius
+        The distance from `point` at which the flash lines start.
+    line_stroke_width
+        The stroke width of the flash lines.
+    color
+        The color of the flash lines.
+    run_time
+        The duration of the animation.
+
+    Examples
+    --------
+    .. manim:: UsingFlash
+
+        class UsingFlash(Scene):
+            def construct(self):
+                dot = Dot(color=YELLOW).shift(DOWN)
+                self.add(Tex("Flash the dot below:"), dot)
+                self.play(Flash(dot))
+                self.wait()
+    """
+
     def __init__(
         self,
         point: np.ndarray,
         line_length: float = 0.2,
         num_lines: int = 12,
-        flash_radius: float = 0.3,
+        flash_radius: float = 0.1,
         line_stroke_width: int = 3,
         color: str = YELLOW,
         run_time: float = 1.0,
@@ -178,6 +209,7 @@ class Flash(AnimationGroup):
         )
 
     def create_lines(self) -> VGroup:
+        #TODO change meaning of flash_radius
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
             line = Line(ORIGIN, self.line_length * RIGHT)
