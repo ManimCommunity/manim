@@ -20,14 +20,14 @@ __all__ = [
 ]
 
 
-from manim.utils.simple_functions import clip
-from manim.utils.space_ops import normalize
 from typing import Callable, Type, Union
 
 import numpy as np
 from colour import Color
 
 from manim._config import logger
+from manim.utils.simple_functions import clip
+from manim.utils.space_ops import normalize
 
 from .. import config
 from ..animation.animation import Animation
