@@ -22,27 +22,30 @@ information here will make it easier for newcomers to get started using
 
 .. note::
 
-    As a quick reference, here are some often used modules,classes, functions and attributes:
+    As a quick reference, here are some often used modules,classes, methods and attributes.
+    Modules:
     :mod:`~.moving_camera_scene`,
     :mod:`~.tex_mobject`,
     :mod:`~.geometry`,
+
     Classes:
     :class:`~.Mobject` ,
     :class:`~.VMobject`,
     :class:`~.ValueTracker`,
     :class:`~.MathTex`,
-    :class:`~.Angel`,
+    :class:`~.Angle`,
     :class:`~.Tex`,
     :class:`~.Text`,
     :class:`~.ManimBanner`
 
-    Functions:
-    :func:`~.Mobject.add_updater`,
+    Methods:
+    :meth:`~.Mobject.add_updater`,
+    :meth:`~.VMobject.set_color`
     Attributes:
-    :attr:`~.VMobject.color`
+    :attr:`~.Mobject.depth`
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    installation
    tutorials
