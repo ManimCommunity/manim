@@ -392,9 +392,9 @@ Missing Sections for typehints are:
 * The definition and use of Protocols (like Sized, or Sequence, or Iterable...)
 
 
-=========================================================
 Adding Blocks for Tip, Note, Important etc. (Admonitions)
-=========================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 The following directives are called Admonitions. You
 can use them to point out additional or important
