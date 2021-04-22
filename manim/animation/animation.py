@@ -4,13 +4,10 @@
 __all__ = ["Animation", "Wait"]
 
 
-import typing
 from copy import deepcopy
-from typing import Union
+from typing import TYPE_CHECKING, Callable, Iterable, Optional, Tuple, Union
 
-import numpy as np
-
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.scene.scene import Scene
 
 from .. import logger
@@ -26,7 +23,7 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 class Animation:
     def __init__(
         self,
-        mobject: Mobject,
+        mobject: Union[Mobject, None],
         # If lag_ratio is 0, the animation is applied to all submobjects
         # at the same time
         # If 1, it is applied to each successively.
@@ -34,21 +31,21 @@ class Animation:
         # with lagged start times
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
-        rate_func: typing.Callable[[float, float], np.ndarray] = smooth,
+        rate_func: Callable[[float], float] = smooth,
         name: str = None,
         remover: bool = False,  # remove a mobject from the screen?
         suspend_mobject_updating: bool = True,
         **kwargs,
     ) -> None:
         self._typecheck_input(mobject)
-        self.run_time = run_time
-        self.rate_func = rate_func
-        self.name = name
-        self.remover = remover
-        self.suspend_mobject_updating = suspend_mobject_updating
-        self.lag_ratio = lag_ratio
-        self.starting_mobject = None
-        self.mobject = mobject
+        self.run_time: float = run_time
+        self.rate_func: Callable[[float], float] = rate_func
+        self.name: Optional[str] = name
+        self.remover: bool = remover
+        self.suspend_mobject_updating: bool = suspend_mobject_updating
+        self.lag_ratio: float = lag_ratio
+        self.starting_mobject: Mobject = Mobject()
+        self.mobject: Mobject = mobject if mobject is not None else Mobject()
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
@@ -60,9 +57,9 @@ class Animation:
                 )
             )
 
-    def _typecheck_input(self, mobject: Mobject) -> None:
+    def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
         if mobject is None:
-            logger.debug("creating dummy animation")
+            logger.debug("Animation with empty mobject")
         elif not isinstance(mobject, Mobject) and not isinstance(
             mobject, OpenGLMobject
         ):
@@ -94,7 +91,7 @@ class Animation:
 
     def finish(self) -> None:
         self.interpolate(1)
-        if self.suspend_mobject_updating:
+        if self.suspend_mobject_updating and self.mobject is not None:
             self.mobject.resume_updating()
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
@@ -105,13 +102,13 @@ class Animation:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> typing.Tuple[Mobject, typing.Union[Mobject, None]]:
+    def get_all_mobjects(self) -> Tuple[Mobject, Mobject]:
         """
         Ordering must match the ordering of arguments to interpolate_submobject
         """
         return self.mobject, self.starting_mobject
 
-    def get_all_families_zipped(self) -> typing.Iterator[typing.Tuple]:
+    def get_all_families_zipped(self) -> Iterable[Tuple]:
         return zip(
             *[mob.family_members_with_points() for mob in self.get_all_mobjects()]
         )
@@ -138,7 +135,7 @@ class Animation:
 
     # Methods for interpolation, the mean of an Animation
     def interpolate(self, alpha: float) -> None:
-        alpha = np.clip(alpha, 0, 1)
+        alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
 
     def update(self, alpha: float) -> None:
@@ -159,12 +156,16 @@ class Animation:
             self.interpolate_submobject(*mobs, sub_alpha)
 
     def interpolate_submobject(
-        self, submobject: Mobject, starting_submobject: Mobject, alpha: float
-    ) -> None:
+        self,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differes in Transform().
+        alpha: float,
+    ) -> "Animation":
         # Typically implemented by subclass
         pass
 
-    def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int):
+    def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int) -> float:
         # TODO, make this more understandable, and/or combine
         # its functionality with AnimationGroup's method
         # build_animations_with_timings
@@ -172,7 +173,7 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        return np.clip((value - lower), 0, 1)
+        return min(max((value - lower), 0), 1)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> "Animation":
@@ -183,12 +184,15 @@ class Animation:
         return self.run_time
 
     def set_rate_func(
-        self, rate_func: typing.Callable[[float, float], np.ndarray]
+        self,
+        rate_func: Callable[[float], float],
     ) -> "Animation":
         self.rate_func = rate_func
         return self
 
-    def get_rate_func(self) -> typing.Callable[[float, float], np.ndarray]:
+    def get_rate_func(
+        self,
+    ) -> Callable[[float], float]:
         return self.rate_func
 
     def set_name(self, name: str) -> "Animation":
@@ -197,9 +201,6 @@ class Animation:
 
     def is_remover(self) -> bool:
         return self.remover
-
-    def is_dummy(self) -> bool:
-        return self.mobject is None
 
 
 def prepare_animation(
@@ -245,13 +246,14 @@ def prepare_animation(
 
 class Wait(Animation):
     def __init__(
-        self, duration: float = 1, stop_condition=None, **kwargs
+        self, run_time: float = 1, stop_condition=None, **kwargs
     ):  # what is stop_condition?
-        self.duration = duration
-        self.mobject = None
+        self.duration: float = run_time
         self.stop_condition = stop_condition
-        self.is_static_wait = False
-        super().__init__(None, **kwargs)
+        self.is_static_wait: bool = False
+        super().__init__(None, run_time=run_time, **kwargs)
+        # quick fix to work in opengl setting:
+        self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
         pass

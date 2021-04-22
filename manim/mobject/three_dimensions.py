@@ -14,13 +14,15 @@ __all__ = [
     "Torus",
 ]
 
+import numpy as np
+
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import tuplify
-from ..utils.space_ops import get_norm, normalize, z_to_vector
+from ..utils.space_ops import normalize, z_to_vector
 
 
 class ThreeDVMobject(VMobject):
@@ -543,7 +545,7 @@ class Line3D(Cylinder):
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
         self.vect = rough_end - rough_start
-        self.length = get_norm(self.vect)
+        self.length = np.linalg.norm(self.vect)
         self.direction = normalize(self.vect)
         # Now that we know the direction between them,
         # we can the appropriate boundary point from
@@ -552,7 +554,7 @@ class Line3D(Cylinder):
         self.end = self.pointify(end, -self.direction)
         Cylinder.__init__(
             self,
-            height=get_norm(self.vect),
+            height=np.linalg.norm(self.vect),
             radius=self.thickness,
             direction=self.direction,
             **kwargs,
@@ -616,7 +618,7 @@ class Arrow3D(Line3D):
     ):
         Line3D.__init__(self, start=start, end=end, **kwargs)
 
-        self.length = get_norm(self.vect)
+        self.length = np.linalg.norm(self.vect)
         self.set_start_and_end_attrs(
             self.start,
             self.end - height * self.direction,
