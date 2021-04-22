@@ -22,12 +22,27 @@ information here will make it easier for newcomers to get started using
 
 .. note::
 
-    As a quick reference, here are some often used classes:
-    :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text`
+    As a quick reference, here are some often used modules,classes, functions and attributes:
+    :mod:`~.moving_camera_scene`,
+    :mod:`~.tex_mobject`,
+    :mod:`~.geometry`,
+    Classes:
+    :class:`~.Mobject` ,
+    :class:`~.VMobject`,
+    :class:`~.ValueTracker`,
+    :class:`~.MathTex`,
+    :class:`~.Angel`,
+    :class:`~.Tex`,
+    :class:`~.Text`,
+    :class:`~.ManimBanner`
 
+    Functions:
+    :func:`~.Mobject.add_updater`,
+    Attributes:
+    :attr:`~.VMobject.color`
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    installation
    tutorials
