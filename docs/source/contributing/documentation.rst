@@ -46,7 +46,7 @@ How examples are structured
 Writing examples
 ~~~~~~~~~~~~~~~~
 
-When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in ``rst`` format and use the manim directive, ``.. manim::``. Every example is in its own block, and looks like this:
+When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in ``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:
 
  .. code:: rst
 
@@ -71,25 +71,13 @@ Here is the syntax:
 
 * The flags are followed in the next line (no blank line here!), with the indention level of one tab.
 
-* All flags can be added by having them lined up next to each other. Possible flags are:
-
-    * ``:quality:`` medium
-       Controls render quality of the video, in analogy to the corresponding command-line flags. The default for the docs should be medium, but one can also use low or high here.
-
-    * ``:save_last_frame:`` the last frame of the scene will be rendered and displayed, instead of a video.
-
-    * ``:hide_source:`` Hides the python code and only shows the rendered example.
-* After the last flag, an empty line is required.
-
-* Finally, here comes the manim code, also with start indention level of one tab, and Python-related indention.
-
-* After the code block, add an empty line.
+All possible flags can be found at :mod:`~.manim_directive`
 
 In the example above, ``Formula1`` followed by ``.. manim::`` and is the scene that will be rendered, so in the python code the class must have the same name: ``class Formula1(Scene)``
 
 .. note::
 
-   Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new "incognito" tab" in your browser, then the latest docs should be shown. If this still doesn't work, you may need to delete the contents of ``docs/source/references``.
+   Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new `incognito tab`` in your browser, then the latest docs should be shown. If this still doesn't work, you may need to delete the contents of ``docs/source/references``.
 
 Formatting and Running Tests
 ----------------------------
