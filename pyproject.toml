@@ -52,7 +52,7 @@ cloup = "^0.7.0"
 requests = "*"
 
 [tool.poetry.extras]
-webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
+webgl_renderer = ["grpcio","grpcio-tools"]
 jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
