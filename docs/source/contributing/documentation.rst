@@ -415,10 +415,10 @@ See also
 .. code-block:: rest
 
    .. seealso::
-        Some ideas at :mod:`~.tex_mobject`, :class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`.~make_config_parser`
+        Some ideas at :mod:`~.tex_mobject`, :class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`~.make_config_parser`
 
 .. seealso::
-    Some ideas at :mod:`~.tex_mobject`, :class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`.~make_config_parser`
+    Some ideas at :mod:`~.tex_mobject`, :class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`~.make_config_parser`
 
 .. index:: reST directives; note
 
@@ -484,3 +484,5 @@ Attention
 
 .. attention::
    A attention
+
+You can find further inforamtion about Admonitions here: https://pradyunsg.me/furo/reference/admonitions/
