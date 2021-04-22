@@ -22,7 +22,8 @@ information here will make it easier for newcomers to get started using
 
 .. note::
 
-    As a quick reference, here are some often used modules,classes, methods and attributes.
+    As a quick reference, here are some often used modules, classes and methods:
+
     Modules:
     :mod:`~.moving_camera_scene`,
     :mod:`~.tex_mobject`,
@@ -36,13 +37,10 @@ information here will make it easier for newcomers to get started using
     :class:`~.Angle`,
     :class:`~.Tex`,
     :class:`~.Text`,
-    :class:`~.ManimBanner`
 
     Methods:
     :meth:`~.Mobject.add_updater`,
-    :meth:`~.VMobject.set_color`
-    Attributes:
-    :attr:`~.Mobject.depth`
+
 
 .. toctree::
    :maxdepth: 2
