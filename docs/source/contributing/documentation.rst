@@ -382,8 +382,7 @@ When adding type hints to manim, there are some guidelines that should be follow
 
 *  numpy arrays can get type hints with ``np.ndarray``
 
-Missing Sections
-----------------
+Missing Sections for typehints are:
 * Tools for typehinting
 * Link to MyPy
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
@@ -391,3 +390,89 @@ Missing Sections
 * When to use Object and when to use "Object".
 * The use of a TypeVar on the type hints for copy().
 * The definition and use of Protocols (like Sized, or Sequence, or Iterable...)
+
+
+=========================================================
+Adding Blocks for Tip, Note, Important etc. (Admonitions)
+=========================================================
+
+The following directives are called Admonitions. You
+can use them to point out additional or important
+information.
+
+Examples
+========
+
+See also
+--------
+
+.. code-block:: rest
+
+   .. seealso::
+        Some other classes :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text`
+
+.. seealso::
+    Some other classes :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text`
+
+.. index:: reST directives; note
+
+Note
+----
+
+.. code-block:: rest
+
+   .. note::
+      A note
+
+.. note::
+   A note
+
+Tip
+---
+
+.. code-block:: rest
+
+   .. tip::
+      A tip
+
+.. tip::
+   A tip
+
+You may also use the admonition **hint**, but this is very similar
+and **tip** is more commonly used in the documentation.
+
+Important
+---------
+
+.. code-block:: rest
+
+   .. important::
+      Some important information which should be considered.
+
+.. important::
+   Some important information which should be considered.
+
+Warning
+-------
+
+.. code-block:: rest
+
+   .. warning::
+      Some text pointing out something that people should be warned about.
+
+.. warning::
+   Some text pointing out something that people should be warned about.
+
+You may also use the admonitions **caution** or even **danger** if the
+severity of the warning must be stressed.
+
+Attention
+---------
+
+.. code-block:: rest
+
+   .. attention::
+      A attention
+
+.. attention::
+   A attention
