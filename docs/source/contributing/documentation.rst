@@ -415,10 +415,10 @@ See also
 .. code-block:: rest
 
    .. seealso::
-        Some other classes :class:`~.Mobject`, :mod:`~.tex_mobject`,  :attr:`~.VMobject.color` ,:func:`~.Mobject.set`
+        Some ideas at :mod:`~.tex_mobject`,:class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`make_config_parser`
 
 .. seealso::
-    Some other classes :class:`~.Mobject`, :mod:`~.tex_mobject`, :func:`~.Mobject.set`, :attr:`~.VMobject.color`,
+    Some ideas at :mod:`~.tex_mobject`,:class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`make_config_parser`
 
 .. index:: reST directives; note
 
