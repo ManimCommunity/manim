@@ -322,6 +322,10 @@ length with only integers.
 Adding type hints to functions and parameters
 ---------------------------------------------
 
+.. warning::
+   This is type hints section is still work in progress.
+
+
 If you've never used type hints before, this is a good place to get started:
 https://realpython.com/python-type-checking/#hello-types.
 
@@ -382,6 +386,8 @@ When adding type hints to manim, there are some guidelines that should be follow
 
 *  numpy arrays can get type hints with ``np.ndarray``
 
+* assuming that typical path objects are either Paths or strs, one can use the typehint ``typing.Union[str, pathlib.Path]``
+
 Missing Sections for typehints are:
 * Tools for typehinting
 * Link to MyPy
@@ -393,7 +399,7 @@ Missing Sections for typehints are:
 
 
 Adding Blocks for Tip, Note, Important etc. (Admonitions)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------------------------
 
 
 The following directives are called Admonitions. You
@@ -409,12 +415,14 @@ See also
 .. code-block:: rest
 
    .. seealso::
-        Some other classes :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text`
+        Some other classes :class:`~.Mobject`, :mod:`~.tex_mobject`,  :attr:`~.VMobject.color` ,:func:`~.Mobject.set`
 
 .. seealso::
-    Some other classes :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text`
+    Some other classes :class:`~.Mobject`, :mod:`~.tex_mobject`,  :attr:`~.VMobject.color` ,:func:`~.Mobject.set`
 
 .. index:: reST directives; note
+
+
 
 Note
 ----
