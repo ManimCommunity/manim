@@ -418,7 +418,7 @@ See also
         Some other classes :class:`~.Mobject`, :mod:`~.tex_mobject`,  :attr:`~.VMobject.color` ,:func:`~.Mobject.set`
 
 .. seealso::
-    Some other classes :class:`~.Mobject`, :mod:`~.tex_mobject`,  :attr:`~.VMobject.color` ,:func:`~.Mobject.set`
+    Some other classes :class:`~.Mobject`, :mod:`~.tex_mobject`, :func:`~.Mobject.set`, :attr:`~.VMobject.color`,
 
 .. index:: reST directives; note
 
