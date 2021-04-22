@@ -195,11 +195,12 @@ that manim still works as intended and that the code you added
 sticks to our coding conventions.
 
 - *Code style*: We use the code style imposed
-  by `Black <https://black.readthedocs.io/en/stable/>`_. The pipeline
+  by `Black <https://black.readthedocs.io/en/stable/>`_, `isort <https://pycqa.github.io/isort/>`_
+  and `flake8 <https://flake8.pycqa.org/en/latest/>`_. The GitHub pipeline
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
-  fix your code style by running ``black <file or directory>`` to
-  automatically format your files.
+  fix your code formating automatically by running ``black <file or directory>`` and ``isort <file or directory>``. 
+  To fix code style problems, run ``flake8 <file or directory>`` for a style report, and then fix the problems manually that were detected by ``flake8 ``.
 
 - *Tests*: The pipeline runs manim's test suite on different operating systems
   (the latest versions of Ubuntu, MacOS, and Windows) for different versions of Python.
