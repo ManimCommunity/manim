@@ -55,7 +55,6 @@ When you want to add/edit examples, they can be found in the ``docs/source/`` di
     ========
 
     .. manim:: Formula1
-        :quality: medium
         :save_last_frame:
 
         class Formula1(Scene):
