@@ -659,8 +659,10 @@ class Graph(VMobject):
         ::
 
             >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-            >>> G.remove_vertex(2)
-            VGroup(Line, Line, Dot)
+            >>> removed = G.remove_vertex(2); removed
+            Group
+            >>> removed.submobjects
+            [Line, Line, Dot]
             >>> G
             Graph on 1 vertices and 0 edges
 
@@ -706,10 +708,11 @@ class Graph(VMobject):
 
         Examples
         --------
+        ::
 
-        >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-        >>> G.remove_vertices(2, 3)
-        Graph on 1 vertices and 0 edges
+            >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
+            >>> G.remove_vertices(2, 3)
+            Graph on 1 vertices and 0 edges
 
         """
         mobjects = []
