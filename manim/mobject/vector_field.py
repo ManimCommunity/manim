@@ -41,7 +41,6 @@ from ..utils.color import (
 )
 from ..utils.rate_functions import linear
 from ..utils.simple_functions import sigmoid
-from ..utils.space_ops import get_norm
 
 # from ..utils.space_ops import normalize
 
@@ -191,7 +190,7 @@ class VectorField(VGroup):
 
     def get_vector(self, point, **kwargs):
         output = np.array(self.func(point))
-        norm = get_norm(output)
+        norm = np.linalg.norm(output)
         if norm == 0:
             output *= 0
         else:
@@ -270,7 +269,7 @@ class StreamLines(VGroup):
             for _ in np.arange(0, self.virtual_time, dt):
                 last_point = points[-1]
                 points.append(last_point + dt * func(last_point))
-                if get_norm(last_point) > self.cutoff_norm:
+                if np.linalg.norm(last_point) > self.cutoff_norm:
                     break
             line = VMobject()
             step = max(1, int(len(points) / self.n_anchors_per_line))
@@ -292,7 +291,7 @@ class StreamLines(VGroup):
                 line.set_color(color)
         elif self.color_by_magnitude:
             image_file = get_color_field_image_file(
-                lambda p: get_norm(func(p)),
+                lambda p: np.linalg.norm(func(p)),
                 min_value=self.min_magnitude,
                 max_value=self.max_magnitude,
                 colors=self.colors,

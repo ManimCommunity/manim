@@ -25,7 +25,7 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.images import get_full_raster_image_path
 from ..utils.iterables import list_difference_update
 from ..utils.simple_functions import fdiv
-from ..utils.space_ops import angle_of_vector, get_norm
+from ..utils.space_ops import angle_of_vector
 
 
 class Camera:
@@ -985,7 +985,7 @@ class Camera:
         """
         if not np.any(points > self.max_allowable_norm):
             return points
-        norms = np.apply_along_axis(get_norm, 1, points)
+        norms = np.apply_along_axis(np.linalg.norm, 1, points)
         violator_indices = norms > self.max_allowable_norm
         violators = points[violator_indices, :]
         violator_norms = norms[violator_indices]
