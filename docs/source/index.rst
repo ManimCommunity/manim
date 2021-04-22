@@ -20,6 +20,11 @@ information here will make it easier for newcomers to get started using
     All content of the docs is licensed under the MIT license. Especially for the examples
     you encounter: Feel free to use this code in your own projects!
 
+.. note::
+
+    As a quick reference, here are some often used classes:
+    :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text`
+
 
 .. toctree::
    :maxdepth: 2
@@ -33,10 +38,6 @@ information here will make it easier for newcomers to get started using
    contributing
    conduct
 
-.. SEEALSO::
-
-    As a quick reference, here are some often used classes:
-    :class:`~.Mobject` , :class:`~.VMobject`, :class:`~.ValueTracker`, :class:`~.MathTex`, :class:`~.Tex`, :class:`~.Text`
 
 
 Navigation
