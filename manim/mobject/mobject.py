@@ -17,6 +17,7 @@ from typing import Callable, List, Optional, Sequence, TypeVar, Union
 
 import numpy as np
 from colour import Color
+from math import ceil
 
 from .. import config
 from ..constants import *
@@ -2032,7 +2033,7 @@ class Mobject(Container):
             self.center()
         return self
 
-    def arrange_in_grid(self, n_rows=None, n_cols=None, **kwargs):
+    def arrange_in_grid(self, rows=None, cols=None, buff=MED_SMALL_BUFF, cell_alignment=ORIGIN, **kwargs):
         """Sorts :class:`~.Mobject` next to each other on screen using a grid.
 
         Examples
@@ -2048,24 +2049,37 @@ class Mobject(Container):
                     self.add(x)
         """
 
-        submobs = self.submobjects
-        if n_rows is None and n_cols is None:
-            n_cols = int(np.sqrt(len(submobs)))
+        start_pos = self.get_center()
+        mobs = self.submobjects
+        if rows is None and cols is None:
+            cols = ceil(np.sqrt(len(mobs)))
 
-        if n_rows is not None:
-            v1 = RIGHT
-            v2 = DOWN
-            n = len(submobs) // n_rows
-        elif n_cols is not None:
-            v1 = DOWN
-            v2 = RIGHT
-            n = len(submobs) // n_cols
-        Group(
-            *[
-                Group(*submobs[i : i + n]).arrange(v1, **kwargs)
-                for i in range(0, len(submobs), n)
-            ]
-        ).arrange(v2, **kwargs)
+        if rows is None:
+            rows = ceil(len(mobs) / cols)
+        if cols is None:
+            cols = ceil(len(mobs) // rows)
+        placeholder = Mobject()
+        mobs.extend([placeholder]*(rows*cols-len(mobs)))
+        grid = [[mobs[c+r*cols] for c in range(cols)] for r in range(rows)]
+        widths = [max([grid[r][c].width for r in range(rows)]) for c in range(cols)]
+        heights = [max([grid[r][c].height for c in range(cols)]) for r in range(rows)]
+        
+        x_offsets = [0]*cols
+        for c in range(1, cols):
+            x_offsets[c] += x_offsets[c-1] + widths[c-1] + buff
+
+        y_offsets = [0]*rows
+        for r in range(1, rows):
+            y_offsets[r] += y_offsets[r-1]+ heights[r-1] + buff
+
+        for c in range(cols):
+            for r in range(rows):
+                if grid[r][c] is placeholder:
+                    continue
+                x = x_offsets[c] + widths[c]/2
+                y = y_offsets[r] + heights[r]/2 
+                grid[r][c].move_to(x*RIGHT+y*DOWN)
+        Group(*mobs).move_to(start_pos)
         return self
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
