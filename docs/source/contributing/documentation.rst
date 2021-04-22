@@ -3,60 +3,56 @@ Adding Documentation
 ====================
 
 When submitting a new class through a PR, or any changes in general,
-there should be documentation where possible. Here are the guidelines
-for writing it.
+there should be documentation where possible. Here are our guidelines
+for writing documentation.
 
-Guidelines for contributing examples to docs
---------------------------------------------
-Everybody is very welcome to contribute examples to the docs, 
-which will occur here: https://manimce.readthedocs.io/en/latest/examples.html
+Guidelines for examples
+-----------------------
 
-How examples should look like
------------------------------
-For new contributors, having straightforward examples is a very good resource 
-for quickly learning manim.
+Everybody is welcome to contribute examples to the documentation. Since straightforward examples are a great resource for quickly learning manim, here are some guidelines.
 
-Therefore, here are some guidelines for creating the examples (these are currently 
-ideas from @kolibril13), so please give feedback, and feel free to update this list:
+What makes a great example
+--------------------------
 
-* Examples can be organized into chapters and subchapters.
+.. note:: 
 
+   As soon as a new version of manim is released, the documentation will be a snapshot of that version. Examples contributed after the release will only be shown in the latest documentation.
+   
 * Examples should be ready to copy and paste for use.
 
-* Examples should be as minimal as possible and easy to understand.
+* Examples should be brief yet still easy to understand.
 
-* When you create examples, the beginning of example chapter should focus on only one functionality. When it is a very simple functionality, then maybe two or three in one example.
-
-* As soon as simple functionalities are explained, the chapter can also include more complicated examples and show how functionalities work together in context.
-
-* When adding an example, you don't add the from ``manim import *`` statement, this will be done automatically. #TODO: If it will be also shown on the docs is still under discussion.
+* Examples don't require the ``from manim import *`` statement, this will be done automatically.
 
 * There should be a balance of animated and non-animated examples.
 
-* As manim is there to make animations, we should, of course, include lots of animated examples.
+- As manim makes animations, we can include lots of animated examples; however, our RTD has a maximum 15 minutes to build. Animated examples should only be used when necessary!
 
-* However, lots of examples (like the size of a plot-axis, making an area, annotation stuff, setting opacities, making texts) will also work very well as images. For people that read the docs, it will be a lot more convenient to look at an example and immediately see what they want to see, instead of having an animation, that has also the time component and therefore one more abstraction level. So animations should be avoided when they are not necessary.
+- Lots of examples (e.g. size of a plot-axis, setting opacities, making texts, etc.) will also work as images. It is a lot more convenient to see the end product immediately instead of waiting for an animation to reveal it.
 
-* Examples should not have uncommented code or comments in the code -> Explanations should be added outside the example code
+* Examples should not have comments in the code. Explanations should be added outside of the example code.
 
-* Please make sure that the examples run on the current master of manim community when you contribute an example.
+* Please ensure the examples run on the current master when you contribute an example.
 
-* As soon as a new version of manim is released, the docs will be a snapshot of that version. Examples contributed after the release will only be shown when the next version of manim is released #TODO: Still in discussion
-
-How Examples are Structured
+How examples are structured
 ---------------------------
 
-How to write examples
-~~~~~~~~~~~~~~~~~~~~~
-When you want to edit them/or add new examples, they can be found in ``/manim-community/docs/source``. In this folder, you can see ``.rts`` 
-files (the format is restructured text, similar to markdown), one file per example category. In one file, e.g. ``formulas.rst`` you can see 
-several manim examples. Every Example is in a separate block, and it can look like this:
+* Examples can be organized into chapters and subchapters.
+
+- When you create examples, the beginning example chapter should focus on only one functionality. When the functionality is simple, multiple ideas can be illustrated under a single example.
+
+- As soon as simple functionalities are explained, the chapter may include more complex examples which build on the simpler ideas.
+
+Writing examples
+~~~~~~~~~~~~~~~~
+
+When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in ``rst`` format and use the manim directive, ``.. manim::``. Every example is in its own block, and looks like this:
 
  .. code:: rst
 
     Formulas
 
-    =================================
+    ========
 
     .. manim:: Formula1
         :quality: medium
@@ -68,9 +64,10 @@ several manim examples. Every Example is in a separate block, and it can look li
                 self.add(t)
                 self.wait(1)
 
-In the building process of the docs, all ``.rts`` are scanned, and ``.. manim::`` blocks are identified as scenes, that will be run by the current version of manim.
+In the building process of the docs, all ``rst`` files are scanned, and the manim directive (``.. manim::``) blocks are identified as scenes, that will be run by the current version of manim.
 Here is the syntax:
-* ``.. manim:: Formula1`` has no indentation.
+
+* ``.. manim:: [SCENE_NAME]`` has no indentation and ``SCENE_NAME`` refers to the name of the class below.
 
 * The flags are followed in the next line (no blank line here!), with the indention level of one tab.
 
@@ -82,16 +79,17 @@ Here is the syntax:
     * ``:save_last_frame:`` the last frame of the scene will be rendered and displayed, instead of a video.
 
     * ``:hide_source:`` Hides the python code and only shows the rendered example.
-* After the last flag, there is an empty line
+* After the last flag, an empty line is required.
 
 * Finally, here comes the manim code, also with start indention level of one tab, and Python-related indention.
 
-* After the code block, set one blank line.
+* After the code block, add an empty line.
 
 In the example above, ``Formula1`` followed by ``.. manim::`` and is the scene that will be rendered, so in the python code the class must have the same name: ``class Formula1(Scene)``
 
-Further notes:
-* Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new "incognito" tab" in your browser, then the latest docs should be shown.
+.. note::
+
+   Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new "incognito" tab" in your browser, then the latest docs should be shown. If this still doesn't work, you may need to delete the contents of ``docs/source/references``.
 
 Formatting and Running Tests
 ----------------------------
