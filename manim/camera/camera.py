@@ -6,6 +6,7 @@ __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
 import copy
 import itertools as it
 import operator as op
+import pathlib
 import time
 from functools import reduce
 from typing import Union
@@ -1207,7 +1208,7 @@ class BackgroundColoredVMobjectDisplayer:
         mode = "RGBA" if pixel_array.shape[2] == 4 else "RGB"
         return self.resize_background_array(background_array, width, height, mode)
 
-    def get_background_array(self, image: Union[Image.Image, str]):
+    def get_background_array(self, image: Union[Image.Image, pathlib.Path, str]):
         """Gets the background array that has the passed file_name.
 
         Parameters
