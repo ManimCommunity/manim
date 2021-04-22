@@ -26,7 +26,7 @@ What makes a great example
 
 * There should be a balance of animated and non-animated examples.
 
-- As manim makes animations, we can include lots of animated examples; however, our RTD has a maximum 15 minutes to build. Animated examples should only be used when necessary!
+- As manim makes animations, we can include lots of animated examples; however, our RTD has a maximum 15 minutes to build. Animated examples should only be used when necessary, as last frame examples render faster.
 
 - Lots of examples (e.g. size of a plot-axis, setting opacities, making texts, etc.) will also work as images. It is a lot more convenient to see the end product immediately instead of waiting for an animation to reveal it.
 
