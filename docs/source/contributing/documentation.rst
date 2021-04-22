@@ -22,7 +22,7 @@ What makes a great example
 
 * Examples should be brief yet still easy to understand.
 
-* Examples don't require the ``from manim import *`` statement, this will be done automatically.
+* Examples don't require the ``from manim import *`` statement, this will be added automatically when the docs are build```
 
 * There should be a balance of animated and non-animated examples.
 
