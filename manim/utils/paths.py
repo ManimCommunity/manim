@@ -32,7 +32,7 @@ def path_along_arc(arc_angle, axis=OUT):
     If vect is vector from start to end, [vect[:,1], -vect[:,0]] is
     perpendicular to vect in the left direction.
     """
-    if abs(arc_angle) < STRAIGHT_PATH_THRESHOLD:
+    if abs(arc_angle) < STRAIGHT_PATH_THRESHOLD or arc_angle == 0:
         return straight_path
     if np.linalg.norm(axis) == 0:
         axis = OUT
