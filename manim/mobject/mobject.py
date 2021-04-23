@@ -13,7 +13,7 @@ import types
 import warnings
 from functools import reduce
 from pathlib import Path
-from typing import Callable, List, Optional, Sequence, TypeVar, Union
+from typing import Callable, Iterable, List, Optional, Sequence, Tuple, TypeVar, Union
 
 import numpy as np
 from colour import Color
@@ -2033,53 +2033,143 @@ class Mobject(Container):
             self.center()
         return self
 
-    def arrange_in_grid(self, rows=None, cols=None, buff=MED_SMALL_BUFF, cell_alignment=ORIGIN, **kwargs):
-        """Sorts :class:`~.Mobject` next to each other on screen using a grid.
+    def arrange_in_grid(
+        self,
+        rows: Optional[int] = None,
+        cols: Optional[int] = None,
+        buff: Union[float, Tuple[float, float]] = MED_SMALL_BUFF,
+        cell_alignment: np.ndarray = ORIGIN,
+        row_alignments: Optional[str] = None,  # "ucd"
+        col_alignments: Optional[str] = None,  # "lcr"
+        row_heights: Optional[Iterable[Optional[float]]] = None,
+        col_widths: Optional[Iterable[Optional[float]]] = None,
+        flow_order: str = "rd",  # "dr" ### "ld" "dl", "ru", "ur", "lu", "ul"
+        **kwargs,
+    ) -> "Mobject":
+        """Arrange submobjects in a grid."""
+        from manim import Line
 
-        Examples
-        --------
-
-        .. manim:: ArrangeExample
-            :save_last_frame:
-
-            class ArrangeExample(Scene):
-                def construct(self):
-                    self.add(*[Square(color= random_bright_color()) for i in range(0,5)])
-                    x = VGroup(*self.mobjects).arrange_in_grid(buff=0.2)
-                    self.add(x)
-        """
-
-        start_pos = self.get_center()
         mobs = self.submobjects
+        # group = Group(*mobs)
+        start_pos = self.get_center()
+
+        # get cols / rows values if given (implicitly)
+        def init_size(num, alignments, sizes):
+            if num is not None:
+                return num
+            if alignments is not None:
+                return len(alignments)
+            if sizes is not None:
+                return len(sizes)
+
+        cols = init_size(cols, col_alignments, col_widths)
+        rows = init_size(rows, row_alignments, row_heights)
+
+        # calculate rows cols
         if rows is None and cols is None:
             cols = ceil(np.sqrt(len(mobs)))
-
+            # make the grid as close to quadratic as possible.
+            # choosing cols first can results in cols>rows.
+            # This is favored over rows>cols since in general
+            # the sceene is wider than high.
         if rows is None:
             rows = ceil(len(mobs) / cols)
         if cols is None:
-            cols = ceil(len(mobs) // rows)
-        placeholder = Mobject()
-        mobs.extend([placeholder]*(rows*cols-len(mobs)))
-        grid = [[mobs[c+r*cols] for c in range(cols)] for r in range(rows)]
-        widths = [max([grid[r][c].width for r in range(rows)]) for c in range(cols)]
-        heights = [max([grid[r][c].height for c in range(cols)]) for r in range(rows)]
-        
-        x_offsets = [0]*cols
-        for c in range(1, cols):
-            x_offsets[c] += x_offsets[c-1] + widths[c-1] + buff
+            cols = ceil(len(mobs) / rows)
+        if rows * cols < len(mobs):
+            raise ValueError("Too few rows and columns to fit all submobjetcs.")
+        # rows and cols are now finally valid.
 
-        y_offsets = [0]*rows
-        for r in range(1, rows):
-            y_offsets[r] += y_offsets[r-1]+ heights[r-1] + buff
+        if isinstance(buff, tuple):
+            buff_x = buff[0]
+            buff_y = buff[1]
+        else:
+            buff_x = buff_y = buff
 
-        for c in range(cols):
-            for r in range(rows):
-                if grid[r][c] is placeholder:
-                    continue
-                x = x_offsets[c] + widths[c]/2
-                y = y_offsets[r] + heights[r]/2 
-                grid[r][c].move_to(x*RIGHT+y*DOWN)
-        Group(*mobs).move_to(start_pos)
+        # Initialize row_alignments / alignments correctly
+        def init_alignments(alignments, num, mapping, name, dir):
+            if alignments is None:
+                # Use cell_alignment as fallback
+                return [cell_alignment * dir] * num
+            if len(alignments) != num:
+                raise ValueError("{}_alignments has a mismatching size.".format(name))
+            alignments = list(alignments)
+            for i in range(num):
+                alignments[i] = mapping[alignments[i]]
+            return alignments
+
+        print(cell_alignment)
+
+        row_alignments = init_alignments(
+            row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
+        )
+        col_alignments = init_alignments(
+            col_alignments, cols, {"l": LEFT, "c": ORIGIN, "r": RIGHT}, "col", UP
+        )
+        # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
+
+        mapper = {
+            "dr": lambda r, c: (rows - r - 1) + c * rows,
+            "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
+            "ur": lambda r, c: r + c * rows,
+            "ul": lambda r, c: r + (cols - c - 1) * rows,
+            "rd": lambda r, c: (rows - r - 1) * cols + c,
+            "ld": lambda r, c: (rows - r - 1) * cols + (cols - c - 1),
+            "ru": lambda r, c: r * cols + c,
+            "lu": lambda r, c: r * cols + (cols - c - 1),
+        }
+        if flow_order not in mapper:
+            raise ValueError(
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".'
+            )
+        flow_order = mapper[flow_order]
+
+        placeholder = Mobject()  # TODO use None
+        # Used to fill up the grid temporarily, doesn't get added to the scene.
+        # In this case a Mobject is better than None since it has width and height
+        # properties of 0.
+
+        mobs.extend([placeholder] * (rows * cols - len(mobs)))
+        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
+
+        measured_heigths = [
+            max([grid[r][c].height for c in range(cols)]) for r in range(rows)
+        ]
+        measured_widths = [
+            max([grid[r][c].width for r in range(rows)]) for c in range(cols)
+        ]
+
+        # Initialize row_heights / col_widths correctly using measurements as fallback
+        def init_sizes(sizes, num, measures, name):
+            if sizes is None:
+                sizes = [None] * num
+            if len(sizes) != num:
+                raise ValueError("{} has a mismatching size.".format(name))
+            return [
+                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
+            ]
+
+        heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
+        widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
+
+        x, y = 0, 0
+        for r in range(rows):
+            x = 0
+            for c in range(cols):
+                if grid[r][c] is not placeholder:
+                    alignment = row_alignments[r] + col_alignments[c]
+                    line = Line(
+                        x * RIGHT + y * UP,
+                        (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
+                    )
+                    # Use any mobject to avoid rewriting align inside
+                    # box code that Mobject.move_to(Mobject) already
+                    # includes.
+
+                    grid[r][c].move_to(line, alignment)
+                x += widths[c]
+            y += heights[r]
+        self.move_to(start_pos)
         return self
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
