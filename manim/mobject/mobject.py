@@ -2043,14 +2043,74 @@ class Mobject(Container):
         col_alignments: Optional[str] = None,  # "lcr"
         row_heights: Optional[Iterable[Optional[float]]] = None,
         col_widths: Optional[Iterable[Optional[float]]] = None,
-        flow_order: str = "rd",  # "dr" ### "ld" "dl", "ru", "ur", "lu", "ul"
+        flow_order: str = "rd",
         **kwargs,
     ) -> "Mobject":
-        """Arrange submobjects in a grid."""
+        """Arrange submobjects in a grid.
+
+        Parameters
+        ----------
+        rows
+            The number of rows in the grid.
+        cols
+            The number of columns in the grid.
+        buff
+            The gap between grid cells. To specify a different buffer in horizontal and
+            vertical direction, a tuple of two values can be given. The first value
+            containing defines the buffer in horizontal, the second the buffer in vertical
+            direction.
+        cell_alignment
+            The way each submobject is aligned in its grid cell.
+        row_alignments
+            The way each row of submobjects (from top to bottom) is aligned vertically.
+            If defined the given string must only contain the following characters: "u"
+            (up), "c" (centered) and "d" (down).
+        col_alignments
+            The way each column of submobjects (from left to righht) is aligned horizontally.
+            If defined the given string must only contain the following characters: "l"
+            (left), "c" (centered) and "r" (right).
+        row_heights #TODO reverse
+            Specific heights for certain rows (from top to bottom). The given list can contain
+            `None`. In that case the corresponding row will fit its height automatically based
+            on the highest element in that row.
+        col_widths
+            Specific widths for certain columns (from left to right). The given list can contain
+            `None`. In that case the corresponding column will fit its width automatically based
+            on the widest element in that column.
+        flow_order
+            The order in which the grid gets filled with the submobjects. Can be one of the 
+            following values: "rd", "dr", "ld", "dl", "ru", "ur", "lu", "ul". For example,
+            "dr" (down right) means: Fill the table column by column downwards, filling the
+            columns rigthwards. "u" and "l" stand for upwards and leftwards.
+
+        .. note:: If either :code:`rows` or :code:`cols` is not defined, it is set to the length of either
+            :code:`row_alignments` / :code:`col_alignments` or :code:`row_heights` / :code:`col_widths` if
+            one of those is defined. If only one of :code:`rows` and :code:`cols` can be determined
+            like this, the other will be choosen big enough to fit all submobjects.
+            If neither :code:`cols` nor :code:`rows` is set implicitly, they will be choosen to be
+            about the same, tending towards :code:`cols > rows` (simply because videos are wider
+            then they are high).
+        
+        .. note:: If both :code:`cell_alignment` and either :code:`row_alignments` or :code:`col_alignments` is
+            defined the latter has higher priority in its direction.
+
+
+        Returns
+        -------
+        Mobject
+            The mobject.
+
+        Raises
+        ------
+        ValueError
+            If rows and cols are choosen to small to fit all submobjetcs.
+        ValueError
+            :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
+            :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
+        """
         from manim import Line
 
-        mobs = self.submobjects
-        # group = Group(*mobs)
+        mobs = self.submobjects.copy()
         start_pos = self.get_center()
 
         # get cols / rows values if given (implicitly)
@@ -2086,7 +2146,7 @@ class Mobject(Container):
         else:
             buff_x = buff_y = buff
 
-        # Initialize row_alignments / alignments correctly
+        # Initialize alignments correctly
         def init_alignments(alignments, num, mapping, name, dir):
             if alignments is None:
                 # Use cell_alignment as fallback
@@ -2100,6 +2160,10 @@ class Mobject(Container):
 
         print(cell_alignment)
 
+        if row_alignments is not None:
+            row_alignments = list(row_alignments)
+            row_alignments.reverse()
+            # necessary since the grid filling is bottom up
         row_alignments = init_alignments(
             row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
         )
@@ -2124,7 +2188,7 @@ class Mobject(Container):
             )
         flow_order = mapper[flow_order]
 
-        placeholder = Mobject()  # TODO use None
+        placeholder = Mobject()
         # Used to fill up the grid temporarily, doesn't get added to the scene.
         # In this case a Mobject is better than None since it has width and height
         # properties of 0.
@@ -2162,13 +2226,14 @@ class Mobject(Container):
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
                     )
-                    # Use any mobject to avoid rewriting align inside
+                    # Use a mobject to avoid rewriting align inside
                     # box code that Mobject.move_to(Mobject) already
                     # includes.
 
                     grid[r][c].move_to(line, alignment)
-                x += widths[c]
-            y += heights[r]
+                x += widths[c] + buff_x
+            y += heights[r] + buff_y
+
         self.move_to(start_pos)
         return self
 
