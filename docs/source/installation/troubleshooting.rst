@@ -52,7 +52,7 @@ First, make sure your ``dvisvgm`` version is at least 2.4:
 
 If you do not know how to update ``dvisvgm``, please refer to your operating system's documentation.
 
-Second, check whether your ``dvisvgm`` supports PostScript specials. This is needed in order to convert from PDF to SVG.
+Second, check whether your ``dvisvgm`` supports PostScript specials. This is needed to convert from PDF to SVG.
 
 .. code-block:: bash
 
@@ -86,7 +86,7 @@ or (on Windows)
   dvisvgm -l
 
 
-You should now see ``ps    dvips PostScript specials`` in the output. Refer to your operating system's documentation in order to find out how you can set or export the environment variable ``LIBGS`` automatically whenever you open a shell.
+You should now see ``ps    dvips PostScript specials`` in the output. Refer to your operating system's documentation to find out how you can set or export the environment variable ``LIBGS`` automatically whenever you open a shell.
 
 As a last check, you can run
 
@@ -96,6 +96,6 @@ As a last check, you can run
 
 while still having ``LIBGS`` set to the correct path, of course. If ``dvisvgm`` can find your Ghostscript installation, it will be shown in the output together with the version number.
 
-If you do not have the necessary library on your system, please refer to your operating system's documentation in order to find out where you can get it and how you have to install it.
+If you do not have the necessary library on your system, please refer to your operating system's documentation to find out where you can get it and how you have to install it.
 
 If you are unable to solve your problem, check out the `dvisvgm FAQ <https://dvisvgm.de/FAQ/>`_.

@@ -32,7 +32,6 @@ __all__ = [
     "Dot",
     "AnnotationDot",
     "LabeledDot",
-    "SmallDot",
     "Ellipse",
     "AnnularSector",
     "Sector",
@@ -75,7 +74,6 @@ from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
     compass_directions,
-    get_norm,
     line_intersection,
     normalize,
     rotate_vector,
@@ -252,7 +250,7 @@ class TipableVMobject(VMobject):
 
     def get_length(self):
         start, end = self.get_start_and_end()
-        return get_norm(start - end)
+        return np.linalg.norm(start - end)
 
 
 class Arc(TipableVMobject):
@@ -260,9 +258,9 @@ class Arc(TipableVMobject):
 
     def __init__(
         self,
+        radius: float = 1.0,
         start_angle=0,
         angle=TAU / 4,
-        radius=1.0,
         num_components=9,
         anchors_span_full_range=True,
         arc_center=ORIGIN,
@@ -421,10 +419,16 @@ class Circle(Arc):
     """
 
     def __init__(
-        self, color=RED, close_new_points=True, anchors_span_full_range=False, **kwargs
+        self,
+        radius: float = None,
+        color=RED,
+        close_new_points=True,
+        anchors_span_full_range=False,
+        **kwargs
     ):
         Arc.__init__(
             self,
+            radius=radius,
             start_angle=0,
             angle=TAU,
             color=color,
@@ -550,7 +554,7 @@ class Dot(Circle):
     def __init__(
         self,
         point=ORIGIN,
-        radius=DEFAULT_DOT_RADIUS,
+        radius: float = DEFAULT_DOT_RADIUS,
         stroke_width=0,
         fill_opacity=1.0,
         color=WHITE,
@@ -567,17 +571,6 @@ class Dot(Circle):
         )
 
 
-class SmallDot(Dot):
-    """Deprecated - A dot with small radius"""
-
-    def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
-        logger.warning(
-            "SmallDot has been deprecated and will be removed in a future release. "
-            "Use Dot instead."
-        )
-        Dot.__init__(self, radius=radius, **kwargs)
-
-
 class AnnotationDot(Dot):
     """
     A dot with bigger radius and bold stroke to annotate scenes.
@@ -585,7 +578,7 @@ class AnnotationDot(Dot):
 
     def __init__(
         self,
-        radius=DEFAULT_DOT_RADIUS * 1.3,
+        radius: float = DEFAULT_DOT_RADIUS * 1.3,
         stroke_width=5,
         stroke_color=WHITE,
         fill_color=BLUE,
@@ -1166,8 +1159,9 @@ class Arrow(Line):
 
             >>> arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
             >>> scaled_arrow = arrow.scale(2)
-            >>> scaled_arrow.get_start_and_end()
-            (array([-2., -2.,  0.]), array([2., 2., 0.]))
+            >>> np.round(scaled_arrow.get_start_and_end(), 8) + 0
+            array([[-2., -2.,  0.],
+                   [ 2.,  2.,  0.]])
             >>> arrow.tip.length == scaled_arrow.tip.length
             True
 
@@ -2034,7 +2028,7 @@ class ArrowTip(VMobject):
             0.35
 
         """
-        return get_norm(self.vector)
+        return np.linalg.norm(self.vector)
 
 
 class ArrowTriangleTip(ArrowTip, Triangle):
