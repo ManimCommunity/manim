@@ -2464,8 +2464,10 @@ def override_animate(method):
                 self.content = None
 
             @override_animate(clear_content)
-            def _clear_content_animation(self):
-                anim = Uncreate(self.content)
+            def _clear_content_animation(self, anim_args=None):
+                if anim_args is None:
+                    anim_args = {}
+                anim = Uncreate(self.content, **anim_args)
                 self.clear_content()
                 return anim
 
