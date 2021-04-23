@@ -540,9 +540,13 @@ class PolarPlane(NumberPlane):
                 class PolarPlaneUnits(Scene):
                     def construct(self):
                         self.add(polarplot)
+                        self.wait(2)
                         self.play(Transform(polarplot, PolarPlane(azimuth_units="TAU radians").scale(0.4)))
+                        self.wait(2)
                         self.play(Transform(polarplot, PolarPlane(azimuth_units="degrees").scale(0.4)))
+                        self.wait(2)
                         self.play(Transform(polarplot, PolarPlane(azimuth_units="gradians").scale(0.4)))
+                        self.wait(2)
 
     azimuth_offset : :class:`float`, optional
         The angle offset of the azimuth labels, expressed in radians.
