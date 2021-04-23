@@ -531,22 +531,28 @@ class PolarPlane(NumberPlane):
             - ``"degrees"``: Decimal labels in the interval :math:`\left[0, 360\right]` with a degree (:math:`^{\circ}`) symbol.
             - ``"gradians"``: Decimal lables in the interval :math:`\left[0, 400\right]` with a superscript "g" (:math:`^{g}`).
 
-          .. manim:: PolarPlaneUnits
-                :ref_classes: PolarPlane
+        .. manim:: PolarPlaneUnits
+            :ref_classes: PolarPlane
 
-                polarplot = PolarPlane(azimuth_units="PI radians").scale(0.4)
-                polarplot.add_coordinates()
+            polarplot_pi = PolarPlane(azimuth_units="PI radians").scale(0.4).add_coordinates()
+            polarplot_tau = PolarPlane(azimuth_units="TAU radians").scale(0.4).add_coordinates()
+            polarplot_degrees = PolarPlane(azimuth_units="degrees").scale(0.4).add_coordinates()
+            polarplot_gradians = PolarPlane(azimuth_units="gradians").scale(0.4).add_coordinates()
 
-                class PolarPlaneUnits(Scene):
-                    def construct(self):
-                        self.add(polarplot)
-                        self.wait(2)
-                        self.play(Transform(polarplot, PolarPlane(azimuth_units="TAU radians").scale(0.4)))
-                        self.wait(2)
-                        self.play(Transform(polarplot, PolarPlane(azimuth_units="degrees").scale(0.4)))
-                        self.wait(2)
-                        self.play(Transform(polarplot, PolarPlane(azimuth_units="gradians").scale(0.4)))
-                        self.wait(2)
+            class PolarPlaneUnits(Scene):
+                def construct(self):
+                    self.add(polarplot_pi)
+                    self.wait(2)
+                    self.play(FadeOutAndShift(polarplot_pi, LEFT))
+                    self.play(FadeInFrom(polarplot_tau, RIGHT))
+                    self.wait(2)
+                    self.play(FadeOutAndShift(polarplot_tau, LEFT))
+                    self.play(FadeInFrom(polarplot_degrees, RIGHT))
+                    self.wait(2)
+                    self.play(FadeOutAndShift(polarplot_degrees, LEFT))
+                    self.play(FadeInFrom(polarplot_gradians, RIGHT))
+                    self.wait(2)
+
 
     azimuth_offset : :class:`float`, optional
         The angle offset of the azimuth labels, expressed in radians.
@@ -555,15 +561,15 @@ class PolarPlane(NumberPlane):
         The direction of the azimuth labels.
 
             - ``"CW"``: Clockwise.
-            - ``"CCW"`` Anti-clockwise.
+            - ``"CCW"``: Anti-clockwise.
 
     azimuth_buff : :class:`int`, optional
         The buffer for the azimuth labels.
 
-    radius_config: :class:`dict`
+    radius_config: :class:`dict`, optional
         The axis config for the radius.
 
-    radius_max : :class:`float`
+    radius_max : :class:`float`, optional
         The maximum value of the radius.
     """
 
