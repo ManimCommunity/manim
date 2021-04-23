@@ -22,15 +22,13 @@ What makes a great example
 
 * Examples should be brief yet still easy to understand.
 
-* Examples don't require the ``from manim import *`` statement, this will be added automatically when the docs are build```
+* Examples don't require the ``from manim import *`` statement, this will be added automatically when the docs are built.
 
 * There should be a balance of animated and non-animated examples.
 
 - As manim makes animations, we can include lots of animated examples; however, our RTD has a maximum 15 minutes to build. Animated examples should only be used when necessary, as last frame examples render faster.
 
 - Lots of examples (e.g. size of a plot-axis, setting opacities, making texts, etc.) will also work as images. It is a lot more convenient to see the end product immediately instead of waiting for an animation to reveal it.
-
-* Examples should not have comments in the code. Explanations should be added outside of the example code.
 
 * Please ensure the examples run on the current master when you contribute an example.
 
@@ -46,10 +44,10 @@ How examples are structured
 Writing examples
 ~~~~~~~~~~~~~~~~
 
-When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in ``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:
+When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in 
+``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:
 
  .. code:: rst
-
     Formulas
 
     ========
@@ -76,7 +74,8 @@ In the example above, ``Formula1`` followed by ``.. manim::`` and is the scene t
 
 .. note::
 
-   Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new `incognito tab`` in your browser, then the latest docs should be shown. If this still doesn't work, you may need to delete the contents of ``docs/source/references``.
+   **Only for locally built documentation:** Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new `incognito tab`` 
+   in your browser, then the latest docs should be shown. If this still doesn't work, you may need to delete the contents of ``docs/source/references``.
 
 Formatting and Running Tests
 ----------------------------
