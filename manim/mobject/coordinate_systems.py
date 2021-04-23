@@ -506,18 +506,18 @@ class ComplexPlane(NumberPlane):
 
 
 class PolarPlane(NumberPlane):
-    """A version of `NumberPlane` for polar coordinates.
+    r"""A version of ``NumberPlane`` for polar coordinates.
 
     Parameters
     ----------
     azimuth_line_frequency : :class:`float`, optional
         The frequency of faded lines in the azimuth, expressed in units of revolution
-        (so :math:`\\frac{1}{n}` would result in :math:`n` lines). If ``None`` is specified then it will use the default
+        (so :math:`\frac{1}{n}` would result in :math:`n` lines). If ``None`` is specified then it will use the default
         specified by ``azimuth_units``:
 
-            - ``"PI radians"`` or ``"TAU radians"``: :math:`\\frac{1}{20}`
-            - ``"degrees"``: :math:`\\frac{1}{36}`
-            - ``"gradians"``: :math:`\\frac{1}{40}`
+            - ``"PI radians"`` or ``"TAU radians"``: :math:`\frac{1}{20}`
+            - ``"degrees"``: :math:`\frac{1}{36}`
+            - ``"gradians"``: :math:`\frac{1}{40}`
             - ``None``: :math:`1`
 
     radius_line_frequency : :class:`float`, optional
@@ -526,75 +526,32 @@ class PolarPlane(NumberPlane):
     azimuth_units : Optional[:class:`str`], optional
         Specifies a default labelling system for the azimuth. Choices are:
 
-            - ``"PI radians"``: Fractional labels in the interval :math:`\\left[0, 2\\pi\\right]` with :math:`\\pi` as a constant.
+            - ``"PI radians"``: Fractional labels in the interval :math:`\left[0, 2\pi\right]` with :math:`\pi` as a constant.
+            - ``"TAU radians"``: Fractional labels in the interval :math:`\left[0, \tau\right]` (where :math:`\tau = 2\pi`) with :math:`\tau` as a constant.
+            - ``"degrees"``: Decimal labels in the interval :math:`\left[0, 360\right]` with a degree (:math:`^{\circ}`) symbol.
+            - ``"gradians"``: Decimal lables in the interval :math:`\left[0, 400\right]` with a superscript "g" (:math:`^{g}`).
 
-              .. manim:: PolarPlanePIradians
-                    :ref_classes: PolarPlane
-                    :save_last_frame:
+          .. manim:: PolarPlaneUnits
+                :ref_classes: PolarPlane
 
-                    polarplot = PolarPlane(azimuth_units="PI radians").scale(0.4)
-                    polarplot.add_coordinates()
+                polarplot = PolarPlane(azimuth_units="PI radians").scale(0.4)
+                polarplot.add_coordinates()
 
-                    class PolarPlanePIradians(Scene):
-                        def construct(self):
-                            self.add(polarplot)
+                class PolarPlaneUnits(Scene):
+                    def construct(self):
+                        self.add(polarplot)
+                        self.play(Transform(polarplot, PolarPlane(azimuth_units="TAU radians").scale(0.4)))
+                        self.play(Transform(polarplot, PolarPlane(azimuth_units="degrees").scale(0.4)))
+                        self.play(Transform(polarplot, PolarPlane(azimuth_units="gradians").scale(0.4)))
 
-            - ``"TAU radians"``: Fractional labels in the interval :math:`\\left[0, \\tau\\right]` (where :math:`\\tau = 2\\pi`) with :math:`\\tau` as a constant.
+    azimuth_offset : :class:`float`, optional
+        The angle offset of the azimuth labels, expressed in radians.
 
-              .. manim:: PolarPlaneTAUradians
-                    :ref_classes: PolarPlane
-                    :save_last_frame:
-
-                    polarplot = PolarPlane(azimuth_units="TAU radians").scale(0.4)
-                    polarplot.add_coordinates()
-
-                    class PolarPlaneTAUradians(Scene):
-                        def construct(self):
-                            self.add(polarplot)
-
-            - ``"degrees"``: Decimal labels in the interval :math:`\\left[0, 360\\right]` with a degree (:math:`^{\\circ}`) symbol.
-
-              .. manim:: PolarPlaneDegrees
-                    :ref_classes: PolarPlane
-                    :save_last_frame:
-
-                    polarplot = PolarPlane(azimuth_units="degrees").scale(0.4)
-                    polarplot.add_coordinates()
-
-                    class PolarPlaneDegrees(Scene):
-                        def construct(self):
-                            self.add(polarplot)
-
-            - ``"gradians"``: Decimal lables in the interval :math:`\\left[0, 400\\right]` with a superscript "g" (:math:`^{g}`).
-
-              .. manim:: PolarPlaneGradians
-                    :ref_classes: PolarPlane
-                    :save_last_frame:
-
-                    polarplot = PolarPlane(azimuth_units="gradians").scale(0.4)
-                    polarplot.add_coordinates()
-
-                    class PolarPlaneGradians(Scene):
-                        def construct(self):
-                            self.add(polarplot)
-
-    azimuth_offset : Optional[:class:`float`], optional
-        The angle offset of the azimuth labels, expressed in radians. If ``None`` is specified then it will
-        use the default specified by ``azimuth_units``.
-
-            - ``"PI radians"`` or ``"TAU radians"`` or ``None``: :math:`0`
-            - ``"degrees"`` or ``"gradians"``: :math:`\\frac{\\pi}{2}`
-
-    azimuth_direction : Optional[:class:`str`], optional
+    azimuth_direction : :class:`str`, optional
         The direction of the azimuth labels.
 
             - ``"CW"``: Clockwise.
             - ``"CCW"`` Anti-clockwise.
-
-        If ``None`` is specified then it will use the default specified by ``azimuth_units``:
-
-            - `"PI radians"` or ``"TAU radians"`` or ``None``: ``"CW"``
-            - `"degrees"` or `"gradians"`: ``"CCW"``
 
     azimuth_buff : :class:`int`, optional
         The buffer for the azimuth labels.
@@ -612,14 +569,17 @@ class PolarPlane(NumberPlane):
         azimuth_line_frequency=None,
         radius_line_frequency=1,
         azimuth_units="PI radians",
-        azimuth_offset=None,
-        azimuth_direction=None,
+        azimuth_offset=0,
+        azimuth_direction="CCW",
         azimuth_buff=SMALL_BUFF,
         radius_config={"label_direction": DOWN + LEFT},
         radius_max=None,
         **kwargs,
     ):
-        self.azimuth_units = azimuth_units
+        if azimuth_units not in ["PI radians", "TAU radians", "degrees", "gradians", None]:
+            self.azimuth_units = azimuth_units
+        else:
+            ValueError("Invalid azimuth units. Expected one of: PI radians, TAU radians, degrees, gradians or None.")
         self.azimuth_frequency = (
             {
                 "PI radians": (1 / 20),
@@ -630,28 +590,6 @@ class PolarPlane(NumberPlane):
             }[self.azimuth_units]
             if azimuth_line_frequency is None
             else azimuth_line_frequency
-        )
-        self.azimuth_offset = (
-            {
-                "PI radians": 0,
-                "TAU radians": 0,
-                "degrees": PI / 2,
-                "gradians": PI / 2,
-                None: 0,
-            }[self.azimuth_units]
-            if azimuth_offset is None
-            else azimuth_offset
-        )
-        self.azimuth_direction = (
-            {
-                "PI radians": "CCW",
-                "TAU radians": "CCW",
-                "degrees": "CW",
-                "gradians": "CW",
-                None: "CCW",
-            }[self.azimuth_units]
-            if azimuth_direction is None
-            else azimuth_direction
         )
         super().__init__(
             color=color,
@@ -664,6 +602,8 @@ class PolarPlane(NumberPlane):
             y_max=config["frame_x_radius"] if (radius_max is None) else radius_max,
             **kwargs,
         )
+        self.azimuth_offset = azimuth_offset
+        self.azimuth_direction = azimuth_direction
         self.azimuth_buff = azimuth_buff
         self.prepare_for_nonlinear_transform()
         self.background_lines.apply_function(
@@ -678,7 +618,7 @@ class PolarPlane(NumberPlane):
         return self
 
     def polar_to_point(self, radius, azimuth):
-        """Gets a point from polar coordinates.
+        r"""Gets a point from polar coordinates.
 
         Parameters
         ----------
@@ -686,7 +626,7 @@ class PolarPlane(NumberPlane):
             The coordinate radius (:math:`r`).
 
         azimuth : :class:`float`
-            The coordinate azimuth (:math:`\\theta`).
+            The coordinate azimuth (:math:`\theta`).
 
         Returns
         -------
@@ -700,7 +640,7 @@ class PolarPlane(NumberPlane):
         return self.polar_to_point(radius, azimuth)
 
     def point_to_polar(self, point):
-        """Gets polar coordinates from a point.
+        r"""Gets polar coordinates from a point.
 
         Parameters
         ----------
@@ -710,7 +650,7 @@ class PolarPlane(NumberPlane):
         Returns
         -------
         Tuple[:class:`float`, :class:`float`]
-            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\\theta`).
+            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
         """
         x, y = self.point_to_coords(point)
         return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
@@ -733,7 +673,7 @@ class PolarPlane(NumberPlane):
             d = -1
         else:
             d = 0
-            ValueError()
+            ValueError("Invalid azimuth direction. Expected one of: CW, CCW")
         a_points = [
             {
                 "label": i,
