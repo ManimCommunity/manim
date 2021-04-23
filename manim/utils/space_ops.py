@@ -12,6 +12,7 @@ __all__ = [
     "rotation_about_z",
     "z_to_vector",
     "angle_of_vector",
+    "angle_between",
     "angle_between_vectors",
     "project_along_vector",
     "normalize",
