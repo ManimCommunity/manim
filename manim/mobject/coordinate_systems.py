@@ -173,8 +173,8 @@ class Axes(VGroup, CoordinateSystem):
         self,
         x_range=None,
         y_range=None,
-        x_length=config.frame_width - 2,
-        y_length=config.frame_height - 2,
+        x_length=round(config.frame_width) - 2,
+        y_length=round(config.frame_height) - 2,
         axis_config=None,
         x_axis_config=None,
         y_axis_config=None,
@@ -330,8 +330,8 @@ class NumberPlane(Axes):
         self,
         x_range=None,
         y_range=None,
-        x_length=config.frame_width,
-        y_length=config.frame_height,
+        x_length=round(config.frame_width),
+        y_length=round(config.frame_height),
         axis_config=None,
         y_axis_config=None,
         background_line_style=None,
@@ -340,23 +340,6 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
-
-        # use ceilings and floors to make the box bound the screen when None is passed.
-        if x_range is None:
-            x_range = [
-                math.ceil(-config["frame_x_radius"]),
-                math.floor(config["frame_x_radius"]),
-                1.0,
-            ]
-        if y_range is None:
-            y_range = [
-                math.ceil(-config["frame_y_radius"]),
-                math.floor(config["frame_y_radius"]),
-                1.0,
-            ]
-
-        y_range = np.array(y_range)
-        x_range = np.array(x_range)
 
         # configs
         self.axis_config = {
