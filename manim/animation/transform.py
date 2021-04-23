@@ -75,20 +75,29 @@ class Transform(Animation):
         super().__init__(mobject, **kwargs)
 
     @property
-    def path_arc(self):
+    def path_arc(self) -> float:
         return self._path_arc
 
     @path_arc.setter
-    def path_arc(self, path_arc):
+    def path_arc(self, path_arc: float) -> None:
         self._path_arc = path_arc
         self._path_func = path_along_arc(self._path_arc, self.path_arc_axis)
 
     @property
-    def path_func(self):
+    def path_func(
+        self,
+    ) -> Callable[
+        [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+    ]:
         return self._path_func
 
     @path_func.setter
-    def path_func(self, path_func):
+    def path_func(
+        self,
+        path_func: Callable[
+            [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+        ],
+    ) -> None:
         if path_func is not None:
             self._path_func = path_func
 
