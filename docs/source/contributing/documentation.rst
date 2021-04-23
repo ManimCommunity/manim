@@ -47,7 +47,7 @@ Writing examples
 When you want to add/edit examples, they can be found in the ``docs/source/`` directory, or directly in the manim source code (e.g. ``manim/mobject/mobject.py``). The examples are written in 
 ``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:
 
- .. code:: rst
+.. code:: rst
     Formulas
 
     ========
@@ -74,8 +74,9 @@ In the example above, ``Formula1`` followed by ``.. manim::`` and is the scene t
 
 .. note::
 
-   **Only for locally built documentation:** Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new `incognito tab`` 
-   in your browser, then the latest docs should be shown. If this still doesn't work, you may need to delete the contents of ``docs/source/references``.
+   Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new ``incognito tab``
+   in your browser, then the latest docs should be shown. 
+   **Only for locally built documentation:** If this still doesn't work, you may need to delete the contents of ``docs/source/references``.
 
 Formatting and Running Tests
 ----------------------------
@@ -211,9 +212,10 @@ See an example on list item 4.
 
        # python code here
 
-**NOTE: Also, if this is a video- or animation-related change, please
-try to add an example GIF or video if possible for demonstration
-purposes.**
+.. NOTE::
+   Also, if this is a video- or animation-related change, please
+   try to add an example GIF or video if possible for demonstration
+   purposes.
 
 Make sure to be as explicit as possible in your documentation. We all
 want the users to have an easier time using this library.
@@ -223,7 +225,8 @@ Example:
 .. code:: py
 
     def my_function(thing, other, name, *, d, test=45):  # typings are optional for now
-        """My cool function. Builds and modifies an :class:`EpicClassInThisFile` instance with the given parameters.
+        """My cool function. Builds and modifies an :class:`EpicClassInThisFile` instance with the given 
+        parameters.
 
       Parameters
       ----------
