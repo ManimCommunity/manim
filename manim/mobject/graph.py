@@ -664,7 +664,7 @@ class Graph(VMobject):
             >>> removed.submobjects
             [Line, Line, Dot]
             >>> G
-            Graph on 1 vertices and 0 edges
+            Graph on 2 vertices and 0 edges
 
         """
         if vertex not in self.vertices:
@@ -711,7 +711,11 @@ class Graph(VMobject):
         ::
 
             >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-            >>> G.remove_vertices(2, 3)
+            >>> removed = G.remove_vertices(2, 3); removed
+            Group
+            >>> removed.submobjects
+            [Line, Line, Dot, Dot]
+            >>> G
             Graph on 1 vertices and 0 edges
 
         """
