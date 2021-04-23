@@ -74,20 +74,20 @@ def get_plane_mesh(context):
 
 class MobjectTest(Scene):
     def construct(self):
-        config["background_color"] = "#333333"
+        # config["background_color"] = "#333333"
 
         s = OpenGLSquare()
         self.add(s)
 
-        mesh = get_plane_mesh(self.renderer.context)
-        self.add(mesh)
+        # mesh = get_plane_mesh(self.renderer.context)
+        # self.add(mesh)
 
-        def update_mesh(mesh, dt):
-            mesh.model_matrix = np.matmul(
-                opengl.rotation_matrix(z=dt), mesh.model_matrix
-            )
+        # def update_mesh(mesh, dt):
+        #     mesh.model_matrix = np.matmul(
+        #         opengl.rotation_matrix(z=dt), mesh.model_matrix
+        #     )
 
-        mesh.add_updater(update_mesh)
+        # mesh.add_updater(update_mesh)
 
         self.interactive_embed()
 

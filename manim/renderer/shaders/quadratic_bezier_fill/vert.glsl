@@ -2,8 +2,12 @@
 
 #include ../include/camera_uniform_declarations.glsl
 
-in vec3 point;
-in vec3 unit_normal;
+uniform mat4 u_model_matrix;
+uniform mat4 u_view_matrix;
+uniform mat4 u_projection_matrix;
+
+in vec4 point;
+in vec4 unit_normal;
 in vec4 color;
 in float vert_index;
 
@@ -16,8 +20,10 @@ out float v_vert_index;
 #include ../include/position_point_into_frame.glsl
 
 void main(){
-    bp = position_point_into_frame(point);
-    v_global_unit_normal = rotate_point_into_frame(unit_normal);
+    bp = position_point_into_frame(point.xyz);
+    v_global_unit_normal = rotate_point_into_frame(unit_normal.xyz);
+    // bp = (u_view_matrix * u_model_matrix * point).xyz;
+    // v_global_unit_normal = (u_view_matrix * u_model_matrix * unit_normal).xyz;
     v_color = color;
     v_vert_index = vert_index;
 }

@@ -13,6 +13,7 @@ uniform float is_fixed_in_frame;
 uniform vec3 light_source_position;
 uniform float gloss;
 uniform float shadow;
+uniform mat4 u_projection_matrix;
 
 in vec3 bp[3];
 in vec3 v_global_unit_normal[3];

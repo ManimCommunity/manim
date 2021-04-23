@@ -10,39 +10,44 @@ def matrix_to_shader_input(matrix):
     return tuple(matrix.T.ravel())
 
 
-def orthographic_projection_matrix(width=None, height=None, near=1, far=depth + 1):
+def orthographic_projection_matrix(
+    width=None, height=None, near=1, far=depth + 1, format=True
+):
     if width is None:
         width = config["frame_width"]
     if height is None:
         height = config["frame_height"]
-    return tuple(
-        np.array(
-            [
-                [2 / width, 0, 0, 0],
-                [0, 2 / height, 0, 0],
-                [0, 0, -2 / (far - near), -(far + near) / (far - near)],
-                [0, 0, 0, 1],
-            ]
-        ).T.ravel()
+    projection_matrix = np.array(
+        [
+            [2 / width, 0, 0, 0],
+            [0, 2 / height, 0, 0],
+            [0, 0, -2 / (far - near), -(far + near) / (far - near)],
+            [0, 0, 0, 1],
+        ]
     )
+    if format:
+        return matrix_to_shader_input(projection_matrix)
+    else:
+        return projection_matrix
 
 
-def perspective_projection_matrix(width=None, height=None, near=4, far=18):
+def perspective_projection_matrix(width=None, height=None, near=4, far=18, format=True):
     if width is None:
         width = config["frame_width"] / 3
     if height is None:
         height = config["frame_height"] / 3
-
-    return tuple(
-        np.array(
-            [
-                [2 * near / width, 0, 0, 0],
-                [0, 2 * near / height, 0, 0],
-                [0, 0, (far + near) / (near - far), (2 * far * near) / (near - far)],
-                [0, 0, -1, 0],
-            ]
-        ).T.ravel()
+    projection_matrix = np.array(
+        [
+            [2 * near / width, 0, 0, 0],
+            [0, 2 * near / height, 0, 0],
+            [0, 0, (far + near) / (near - far), (2 * far * near) / (near - far)],
+            [0, 0, -1, 0],
+        ]
     )
+    if format:
+        return matrix_to_shader_input(projection_matrix)
+    else:
+        return projection_matrix
 
 
 def translation_matrix(x=0, y=0, z=0):

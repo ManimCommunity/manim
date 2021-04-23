@@ -35,9 +35,6 @@ class Mesh:
             self.shader.set_uniform(
                 "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
             )
-            self.shader.set_uniform(
-                "u_projection_matrix", opengl.perspective_projection_matrix()
-            )
         except:
             pass
 

@@ -1111,6 +1111,33 @@ class OpenGLVMobject(OpenGLMobject):
                 wrapper = wlist[0]
                 wrapper.combine_with(*wlist[1:])
                 result.append(wrapper)
+
+                if wlist is fill_shader_wrappers:
+                    # Convert wrapper to homogeneous coords.
+                    homogeneous_fill_dtype = [
+                        ("point", np.float32, (4,)),
+                        ("unit_normal", np.float32, (4,)),
+                        ("color", np.float32, (4,)),
+                        ("vert_index", np.float32, (1,)),
+                    ]
+                    num_vertices = wrapper.vert_data.shape[0]
+                    fill_data = np.zeros(num_vertices, dtype=homogeneous_fill_dtype)
+                    fill_data["point"] = np.hstack(
+                        (
+                            wrapper.vert_data["point"],
+                            np.ones((num_vertices, 1)),
+                        )
+                    )
+                    fill_data["unit_normal"] = np.hstack(
+                        (
+                            wrapper.vert_data["unit_normal"],
+                            np.zeros((num_vertices, 1)),
+                        )
+                    )
+                    fill_data["color"] = wrapper.vert_data["color"]
+                    fill_data["vert_index"] = wrapper.vert_data["vert_index"]
+                    wrapper.vert_data = fill_data
+
         return result
 
     def get_stroke_uniforms(self):

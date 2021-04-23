@@ -72,8 +72,11 @@ class OpenGLCamera(OpenGLMobject):
     def get_position(self):
         return self.model_matrix[:, 3][:3]
 
-    def get_view_matrix(self):
-        return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
+    def get_view_matrix(self, format=True):
+        if format:
+            return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
+        else:
+            return np.linalg.inv(self.model_matrix)
 
     def init_data(self):
         super().init_data()
@@ -254,6 +257,10 @@ class OpenGLRenderer:
         shader_wrapper_list = mobject.get_shader_wrapper_list()
 
         # Convert ShaderWrappers to Meshes.
+        view_matrix = self.scene.camera.get_view_matrix()
+        projection_matrix_unformatted = opengl.orthographic_projection_matrix(
+            format=False
+        )
         for shader_wrapper in shader_wrapper_list:
             shader = Shader(self.context, shader_wrapper.shader_folder)
 
@@ -270,6 +277,13 @@ class OpenGLRenderer:
                     shader.set_uniform(name, value)
                 except KeyError:
                     pass
+            try:
+                shader.set_uniform("u_view_matrix", view_matrix)
+                shader.set_uniform(
+                    "u_projection_matrix", opengl.orthographic_projection_matrix()
+                )
+            except:
+                pass
 
             # Set depth test.
             if shader_wrapper.depth_test:
@@ -339,6 +353,9 @@ class OpenGLRenderer:
             view_matrix = scene.camera.get_view_matrix()
             for mesh in scene.meshes:
                 mesh.shader.set_uniform("u_view_matrix", view_matrix)
+                mesh.shader.set_uniform(
+                    "u_projection_matrix", opengl.perspective_projection_matrix()
+                )
                 mesh.render()
 
             # shader = MyShader(self.context, name="design_3")
