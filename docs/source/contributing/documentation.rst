@@ -48,8 +48,8 @@ When you want to add/edit examples, they can be found in the ``docs/source/`` di
 ``rst`` format and use the manim directive (see :mod:`~.manim_directive` ), ``.. manim::``. Every example is in its own block, and looks like this:
 
 .. code:: rst
-    Formulas
 
+    Formulas
     ========
 
     .. manim:: Formula1
