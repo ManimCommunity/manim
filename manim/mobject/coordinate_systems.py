@@ -576,7 +576,7 @@ class PolarPlane(NumberPlane):
         radius_max=None,
         **kwargs,
     ):
-        if azimuth_units not in ["PI radians", "TAU radians", "degrees", "gradians", None]:
+        if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
         else:
             ValueError("Invalid azimuth units. Expected one of: PI radians, TAU radians, degrees, gradians or None.")
