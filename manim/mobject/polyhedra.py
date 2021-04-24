@@ -71,11 +71,26 @@ class Polyhedron(VGroup):
         self,
         vertex_coords: List[np.ndarray],
         faces_list: List[List[Hashable]],
-        faces_config: dict = {"fill_opacity": 0.5},
+        faces_config: dict = {},
         graph_config: dict = {},
     ):
         VGroup.__init__(self)
-        self.faces_config = faces_config
+        self.faces_config = dict(
+            {
+                "fill_opacity": 0.5,
+                "shade_in_3d": True
+            },
+            **faces_config
+        )
+        self.graph_config = dict(
+            {
+                "vertex_type": Dot3D,
+                "edge_config": {
+                    "stroke_opacity": 0, # I find that having 
+                }
+            },
+            **graph_config
+        )
         self.vertex_coords = vertex_coords
         self.vertex_indices = list(range(len(self.vertex_coords)))
         self.layout = dict(enumerate(self.vertex_coords))
@@ -84,7 +99,7 @@ class Polyhedron(VGroup):
         self.edges = self.get_edges(self.faces_list)
         self.faces = self.create_faces(self.face_coords)
         self.graph = Graph(
-            self.vertex_indices, self.edges, layout=self.layout, vertex_type=Dot3D
+            self.vertex_indices, self.edges, layout=self.layout, **self.graph_config
         )
         self.add(self.faces, self.graph)
         self.add_updater(self.update_faces)
@@ -97,22 +112,25 @@ class Polyhedron(VGroup):
         return edges
 
     def create_faces(self, face_coords):
+        """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
         for face in face_coords:
-            face_group.add(Polygon(*face, shade_in_3d=True, **self.faces_config))
+            face_group.add(Polygon(*face, **self.faces_config))
         return face_group
 
     def update_faces(self, m):
         face_coords = self.extract_face_coords()
-        new_faces = self.create_faces(self, face_coords)
+        new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
 
     def extract_face_coords(self):
+        """Extracts the coordinates of the vertices in the graph.
+        Used for updating faces.
+        """
         new_vertex_coords = []
         for v in self.graph.vertices:
             new_vertex_coords.append(self.graph[v].get_center())
         layout = dict(enumerate(new_vertex_coords))
-        print(layout[3])
         return [[layout[j] for j in i] for i in self.faces_list]
 
 
