@@ -124,85 +124,6 @@ class CoordinateSystem:
             else:
                 return None
 
-    def get_line_graph(
-        self,
-        x_values: Iterable[float],
-        y_values: Iterable[float],
-        z_values: Optional[Iterable[float]] = None,
-        line_color: Colors = YELLOW,
-        add_vertex_dots: bool = True,
-        vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
-        vertex_dot_style: Optional[dict] = None,
-        **kwargs
-    ) -> VDict:
-        """Draws a line graph connecting the vertices formed from zipping
-        x_values, y_values and z_values. Also adds :class:`~.Dot`s at the
-        vertices if add_vertex_dots is set to True.
-
-        Parameters
-        ----------
-        x_values : :class:`Iterable`
-            Iterable of values along the x-axis.
-        y_values : :class:`Iterable`
-            Iterable of values along the y-axis.
-        z_values : :class:`Iterable`, optional
-            Iterable of values (zeros if z_values is None) along the z-axis.
-        line_color : :class:`Colors`
-            Color for the line graph.
-        add_vertex_dots : :class:`bool`
-            Whether or not to add :class:`~.Dot`s at the vertices.
-        vertex_dot_radius : :class:`float`
-            Radius for the :class:`~.Dot`s at vertices.
-        vertex_dot_style : :class:`dict`
-            Style arguments to be passed into :class:`~.Dot`s at the vertices.
-        kwargs : Any
-            Additional arguments to be passed into :class:`~.VMobject`
-
-        Examples
-        --------
-
-        .. manim:: LineGraphExample
-            :save_last_frame:
-
-            class LineGraphExample(Scene):
-                def construct(self):
-                    plane = NumberPlane(x_min=0, x_max=7, y_min=0, y_max=5, axis_config={"width": 7, "include_numbers": True})
-                    plane.center()
-                    line_graph = plane.get_line_graph(
-                        x_values = [0, 1.5, 2, 2.8, 4, 6.25],
-                        y_values = [1, 3, 2.25, 4, 2.5, 1.75],
-                        line_color=GOLD_E,
-                        vertex_dot_style=dict(stroke_width=3,  fill_color=PURPLE),
-                        stroke_width = 4,
-                    )
-                    self.add(plane, line_graph)
-        """
-        x_values, y_values = map(np.array, (x_values, y_values))
-        if z_values is None:
-            z_values = np.zeros(x_values.shape)
-
-        line_graph = VDict()
-        graph = VMobject(color=line_color, **kwargs)
-        vertices = [
-            self.coords_to_point(x, y, z)
-            for x, y, z in zip(x_values, y_values, z_values)
-        ]
-        graph.set_points_as_corners(vertices)
-        graph.z_index = -1
-        line_graph["line_graph"] = graph
-
-        if add_vertex_dots:
-            vertex_dot_style = vertex_dot_style or {}
-            vertex_dots = VGroup(
-                *[
-                    Dot(point=vertex, radius=vertex_dot_radius, **vertex_dot_style)
-                    for vertex in vertices
-                ]
-            )
-            line_graph["vertex_dots"] = vertex_dots
-
-        return line_graph
-
 
 class Axes(VGroup, CoordinateSystem):
     def __init__(
@@ -287,6 +208,85 @@ class Axes(VGroup, CoordinateSystem):
 
         self.coordinate_labels = VGroup(x_mobs, y_mobs)
         return self.coordinate_labels
+
+    def get_line_graph(
+        self,
+        x_values: Iterable[float],
+        y_values: Iterable[float],
+        z_values: Optional[Iterable[float]] = None,
+        line_color: Colors = YELLOW,
+        add_vertex_dots: bool = True,
+        vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
+        vertex_dot_style: Optional[dict] = None,
+        **kwargs
+    ) -> VDict:
+        """Draws a line graph connecting the vertices formed from zipping
+        x_values, y_values and z_values. Also adds :class:`~.Dot`s at the
+        vertices if add_vertex_dots is set to True.
+
+        Parameters
+        ----------
+        x_values : :class:`Iterable`
+            Iterable of values along the x-axis.
+        y_values : :class:`Iterable`
+            Iterable of values along the y-axis.
+        z_values : :class:`Iterable`, optional
+            Iterable of values (zeros if z_values is None) along the z-axis.
+        line_color : :class:`Colors`
+            Color for the line graph.
+        add_vertex_dots : :class:`bool`
+            Whether or not to add :class:`~.Dot`s at the vertices.
+        vertex_dot_radius : :class:`float`
+            Radius for the :class:`~.Dot`s at vertices.
+        vertex_dot_style : :class:`dict`
+            Style arguments to be passed into :class:`~.Dot`s at the vertices.
+        kwargs : Any
+            Additional arguments to be passed into :class:`~.VMobject`
+
+        Examples
+        --------
+
+        .. manim:: LineGraphExample
+            :save_last_frame:
+
+            class LineGraphExample(Scene):
+                def construct(self):
+                    plane = NumberPlane(x_min=0, x_max=7, y_min=0, y_max=5, axis_config={"width": 7, "include_numbers": True})
+                    plane.center()
+                    line_graph = plane.get_line_graph(
+                        x_values = [0, 1.5, 2, 2.8, 4, 6.25],
+                        y_values = [1, 3, 2.25, 4, 2.5, 1.75],
+                        line_color=GOLD_E,
+                        vertex_dot_style=dict(stroke_width=3,  fill_color=PURPLE),
+                        stroke_width = 4,
+                    )
+                    self.add(plane, line_graph)
+        """
+        x_values, y_values = map(np.array, (x_values, y_values))
+        if z_values is None:
+            z_values = np.zeros(x_values.shape)
+
+        line_graph = VDict()
+        graph = VMobject(color=line_color, **kwargs)
+        vertices = [
+            self.coords_to_point(x, y, z)
+            for x, y, z in zip(x_values, y_values, z_values)
+        ]
+        graph.set_points_as_corners(vertices)
+        graph.z_index = -1
+        line_graph["line_graph"] = graph
+
+        if add_vertex_dots:
+            vertex_dot_style = vertex_dot_style or {}
+            vertex_dots = VGroup(
+                *[
+                    Dot(point=vertex, radius=vertex_dot_radius, **vertex_dot_style)
+                    for vertex in vertices
+                ]
+            )
+            line_graph["vertex_dots"] = vertex_dots
+
+        return line_graph
 
     def add_coordinates(self, x_vals=None, y_vals=None):
         self.add(self.get_coordinate_labels(x_vals, y_vals))
