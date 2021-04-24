@@ -209,6 +209,10 @@ class Axes(VGroup, CoordinateSystem):
         self.coordinate_labels = VGroup(x_mobs, y_mobs)
         return self.coordinate_labels
 
+    def add_coordinates(self, x_vals=None, y_vals=None):
+        self.add(self.get_coordinate_labels(x_vals, y_vals))
+        return self
+
     def get_line_graph(
         self,
         x_values: Iterable[float],
@@ -235,13 +239,13 @@ class Axes(VGroup, CoordinateSystem):
         line_color : :class:`Colors`
             Color for the line graph.
         add_vertex_dots : :class:`bool`
-            Whether or not to add :class:`~.Dot`s at the vertices.
+            Whether or not to add :class:`~.Dot` at each vertex.
         vertex_dot_radius : :class:`float`
-            Radius for the :class:`~.Dot`s at vertices.
+            Radius for the :class:`~.Dot` at each vertex.
         vertex_dot_style : :class:`dict`
-            Style arguments to be passed into :class:`~.Dot`s at the vertices.
+            Style arguments to be passed into :class:`~.Dot` at each vertex.
         kwargs : Any
-            Additional arguments to be passed into :class:`~.VMobject`
+            Additional arguments to be passed into :class:`~.VMobject`.
 
         Examples
         --------
@@ -287,10 +291,6 @@ class Axes(VGroup, CoordinateSystem):
             line_graph["vertex_dots"] = vertex_dots
 
         return line_graph
-
-    def add_coordinates(self, x_vals=None, y_vals=None):
-        self.add(self.get_coordinate_labels(x_vals, y_vals))
-        return self
 
 
 class ThreeDAxes(Axes):
