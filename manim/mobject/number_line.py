@@ -100,6 +100,7 @@ class NumberLine(Line):
 
         if self.include_ticks:
             self.add_ticks()
+
         self.rotate(self.rotation)
         if self.include_numbers:
             self.add_numbers(excluding=self.numbers_to_exclude)

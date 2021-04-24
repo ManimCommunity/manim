@@ -208,11 +208,23 @@ class Axes(VGroup, CoordinateSystem):
                 update_dict_recursively(default_config, passed_config)
 
     def create_axis(self, range_terms, axis_config, length):
+        """Creates an axis and dynamically adjusts its position depending on the 0 value.
+
+        Parameters
+        ----------
+        range_terms : Union[:class:`list`, :class:`numpy.ndarray`]
+            The range of the the axis : `(x_min, x_max, x_step)`.
+        axis_config : :class:`dict`
+            Additional parameters that are passed to :class:`NumberLine`.
+        length : :class:`float`
+            The length of the axis.
+        """
         new_config = merge_dicts_recursively(self.axis_config, axis_config)
         new_config["length"] = length
         axis = NumberLine(range_terms, **new_config)
 
         # without the if/elif, graph does not exist when min > 0 or max < 0
+        # shifts the axis so that 0 is centered
         if range_terms[0] > 0:
             axis.shift(-axis.number_to_point(range_terms[0]))
         elif range_terms[1] < 0:
@@ -341,7 +353,6 @@ class NumberPlane(Axes):
         **kwargs,
     ):
 
-
         # configs
         self.axis_config = {
             "stroke_color": WHITE,
@@ -381,11 +392,11 @@ class NumberPlane(Axes):
             **kwargs,
         )
 
-        # dynamically adjusts x_length so that the unit_size is one by default
+        # dynamically adjusts x_length and y_length so that the unit_size is one by default
         if x_length is None:
-            x_length = self.x_range[1]-self.x_range[0]
+            x_length = self.x_range[1] - self.x_range[0]
         if y_length is None:
-            y_length = self.y_range[1]-self.y_range[0]
+            y_length = self.y_range[1] - self.y_range[0]
 
         self.init_background_lines()
 
