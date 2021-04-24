@@ -14,10 +14,10 @@ __all__ = ["Polyhedron", "Tetrahedron", "Octahedron", "Icosahedron", "Dodecahedr
 
 class Polyhedron(VGroup):
     """An abstract polyhedra class.
-    
+
     In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list
     of faces. This implementataion mirrors that of a standard polyhedral data format (OFF files).
-    
+
     Parameters
     ----------
     vertex_coords:
