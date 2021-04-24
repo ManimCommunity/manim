@@ -13,16 +13,67 @@ __all__ = ["Polyhedron", "Tetrahedron", "Octahedron", "Icosahedron", "Dodecahedr
 
 
 class Polyhedron(VGroup):
-    """An abstract polyhedra class."""
+    """An abstract polyhedra class.
+    
+    In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list
+    of faces. This implementataion mirrors that of a standard polyhedral data format (OFF files).
+    
+    Parameters
+    ----------
+    vertex_coords:
+        A list of coordinates of the corresponding vertices in the polyhedron. Each coordinate will correspond to
+        a vertex. The vertices are indexed with the usual indexing of Python.
+    faces_list:
+        A list of faces. Each face is a sublist containing the indicies of the vertices that form the corners of that face.
+    faces_config:
+        Configuration for the polygons representing the faces of the polyhedron.
+    graph_config:
+        Configuration for the graph containing the vertices and edges of the polyhedron.
+
+    Examples
+    --------
+    To understand how to create a custom polyhedra, let's use the example of a rather simple one - a square pyramid.
+    .. manim:: SquarePyramidScene
+        :save_last_frame:
+
+        class SquarePyramidScene(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                vertex_coords = [
+                    [1, 1, 0],
+                    [1, -1, 0],
+                    [-1, -1, 0],
+                    [-1, 1, 0],
+                    [0, 0, 2]
+                ]
+                faces_list = [
+                    [0, 1, 4],
+                    [1, 2, 4],
+                    [2, 3, 4],
+                    [3, 0, 4],
+                    [0, 1, 2, 3]
+                ]
+                pyramid = Polyhedron(vertex_coords, faces_list)
+                self.add(pyramid)
+
+    In defining the polyhedron above, we first defined the coordinates of the vertices.
+    These are the corners of the square base, given as the first four coordinates in the vertex list,
+    and the apex, the last coordinate in the list.
+
+    Next, we define the faces of the polyhedron. The triangular surfaces of the pyramid are polygons
+    with two adjacent vertices in the base and the vertex at the apex as corners. We thus define these
+    surfaces in the first four elements of our face list. The last element defines the base of the pyramid.
+    """
 
     def __init__(
         self,
         vertex_coords: List[np.ndarray],
         faces_list: List[List[Hashable]],
-        faces_config={},
-        graph_config={},
+        faces_config: dict = {"fill_opacity": 0.5},
+        graph_config: dict = {},
     ):
         VGroup.__init__(self)
+        self.faces_config = faces_config
         self.vertex_coords = vertex_coords
         self.vertex_indices = list(range(len(self.vertex_coords)))
         self.layout = dict(enumerate(self.vertex_coords))
@@ -46,7 +97,7 @@ class Polyhedron(VGroup):
     def create_faces(self, face_coords):
         face_group = VGroup()
         for face in face_coords:
-            face_group.add(Polygon(*face, fill_opacity=0.5, shade_in_3d=True))
+            face_group.add(Polygon(*face, shade_in_3d=True, **self.faces_config))
         return face_group
 
     def update_faces(self, m):
@@ -64,9 +115,15 @@ class Polyhedron(VGroup):
 
 
 class Tetrahedron(Polyhedron):
-    """A tetrahedron."""
+    """A tetrahedron, one of the five platonic solids.
 
-    def __init__(self, edge_length=1):
+    Parameters
+    ----------
+    edge_length:
+        The length of an edge between any two vertices.
+    """
+
+    def __init__(self, edge_length: float = 1, **kwargs):
         unit = edge_length * np.sqrt(2) / 4
         Polyhedron.__init__(
             self,
@@ -77,11 +134,18 @@ class Tetrahedron(Polyhedron):
                 np.array([-unit, -unit, unit]),
             ],
             faces_list=[[0, 1, 2], [3, 0, 2], [0, 1, 3], [3, 1, 2]],
+            **kwargs
         )
 
 
 class Octahedron(Polyhedron):
-    """An octahedron."""
+    """An octahedron, one of the five platonic solids.
+
+    Parameters
+    ----------
+    edge_length:
+        The length of an edge between any two vertices.
+    """
 
     def __init__(self, edge_length=1):
         unit = edge_length * np.sqrt(2) / 2
@@ -109,7 +173,13 @@ class Octahedron(Polyhedron):
 
 
 class Icosahedron(Polyhedron):
-    """An icosahedron."""
+    """An icosahedron, one of the five platonic solids.
+
+    Parameters
+    ----------
+    edge_length:
+        The length of an edge between any two vertices.
+    """
 
     def __init__(self, edge_length):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
@@ -156,7 +226,13 @@ class Icosahedron(Polyhedron):
 
 
 class Dodecahedron(Polyhedron):
-    """A dodecahedron."""
+    """A dodecahedron, one of the five platonic solids.
+
+    Parameters
+    ----------
+    edge_length:
+        The length of an edge between any two vertices.
+    """
 
     def __init__(self, edge_length=1):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
