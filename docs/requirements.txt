@@ -3,3 +3,4 @@ furo
 recommonmark>=0.5.0
 sphinx-copybutton
 sphinxext-opengraph
+typestring-parser

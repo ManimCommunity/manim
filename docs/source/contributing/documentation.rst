@@ -318,6 +318,24 @@ elements that are either a ``str`` or ``None``;
 ``(str, int)``; ``Tuple[:class:`int`, ...]`` for a tuple of variable
 length with only integers.
 
+.. note::
+   If you don't know how to still use these typesets, you could use
+   `typestring-parser` which can be accessed by `from typestring_parser import parse` 
+
+    Example
+   .. code:: py
+
+    >>> from typestring_parser import parse
+    >>>
+    >>> parse('int')
+    <class 'int'>
+    >>> parse('int or str')
+    typing.Union[int, str]
+    >>> parse('list of str or str')
+    typing.Union[typing.List[str], str]
+    >>> parse('list of (int, str)')
+    typing.List[typing.Tuple[int, str]]
+
 
 Adding type hints to functions and parameters
 ---------------------------------------------
