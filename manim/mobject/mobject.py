@@ -12,12 +12,12 @@ import sys
 import types
 import warnings
 from functools import reduce
+from math import ceil
 from pathlib import Path
 from typing import Callable, Iterable, List, Optional, Sequence, Tuple, TypeVar, Union
 
 import numpy as np
 from colour import Color
-from math import ceil
 
 from .. import config
 from ..constants import *
