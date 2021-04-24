@@ -66,8 +66,8 @@ class Polyhedron(VGroup):
 class Tetrahedron(Polyhedron):
     """A tetrahedron."""
 
-    def __init__(self, side_length=1):
-        unit = side_length * np.sqrt(2) / 4
+    def __init__(self, edge_length=1):
+        unit = edge_length * np.sqrt(2) / 4
         Polyhedron.__init__(
             self,
             vertex_coords=[
@@ -83,8 +83,8 @@ class Tetrahedron(Polyhedron):
 class Octahedron(Polyhedron):
     """An octahedron."""
 
-    def __init__(self, side_length=1):
-        unit = side_length * np.sqrt(2) / 2
+    def __init__(self, edge_length=1):
+        unit = edge_length * np.sqrt(2) / 2
         Polyhedron.__init__(
             self,
             vertex_coords=[
@@ -111,9 +111,9 @@ class Octahedron(Polyhedron):
 class Icosahedron(Polyhedron):
     """An icosahedron."""
 
-    def __init__(self, side_length):
-        unit_a = side_length * ((1 + np.sqrt(5)) / 4)
-        unit_b = side_length * (1 / 2)
+    def __init__(self, edge_length):
+        unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
+        unit_b = edge_length * (1 / 2)
         Polyhedron.__init__(
             self,
             vertex_coords=[
@@ -158,10 +158,10 @@ class Icosahedron(Polyhedron):
 class Dodecahedron(Polyhedron):
     """A dodecahedron."""
 
-    def __init__(self, side_length=1):
-        unit_a = side_length * ((1 + np.sqrt(5)) / 4)
-        unit_b = side_length * ((3 + np.sqrt(5)) / 4)
-        unit_c = side_length * (1 / 2)
+    def __init__(self, edge_length=1):
+        unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
+        unit_b = edge_length * ((3 + np.sqrt(5)) / 4)
+        unit_c = edge_length * (1 / 2)
         Polyhedron.__init__(
             self,
             vertex_coords=[

@@ -39,14 +39,14 @@ class TetrahedronTest(ThreeDScene):
 class OctahedronTest(ThreeDScene):
     def construct(self):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-        a = Octahedron(side_length=3)
+        a = Octahedron(edge_length=3)
         self.add(a)
 
 
 class IcosahedronTest(ThreeDScene):
     def construct(self):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-        a = Icosahedron(side_length=3)
+        a = Icosahedron(edge_length=3)
         self.add(a)
         self.play(a.graph[0].animate.move_to(ORIGIN))
         self.wait()
@@ -55,7 +55,7 @@ class IcosahedronTest(ThreeDScene):
 class DodecahedronTest(ThreeDScene):
     def construct(self):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
-        a = Dodecahedron(side_length=3)
+        a = Dodecahedron(edge_length=3)
         self.add(a)
 
 
