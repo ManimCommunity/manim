@@ -68,7 +68,7 @@ Here is the syntax:
 
 * The flags are followed in the next line (no blank line here!), with the indention level of one tab.
 
-All possible flags can be found at :mod:`~.manim_directive`
+All possible flags can be found at :mod:`~.manim_directive`.
 
 In the example above, ``Formula1`` followed by ``.. manim::`` and is the scene that will be rendered, so in the python code the class must have the same name: ``class Formula1(Scene)``
 
