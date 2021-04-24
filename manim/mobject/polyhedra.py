@@ -90,18 +90,14 @@ class Polyhedron(VGroup):
     ):
         VGroup.__init__(self)
         self.faces_config = dict(
-            {
-                "fill_opacity": 0.5,
-                "shade_in_3d": True
-            },
-            **faces_config
+            {"fill_opacity": 0.5, "shade_in_3d": True}, **faces_config
         )
         self.graph_config = dict(
             {
                 "vertex_type": Dot3D,
                 "edge_config": {
-                    "stroke_opacity": 0, # I find that having 
-                }
+                    "stroke_opacity": 0,  # I find that having
+                },
             },
             **graph_config
         )
@@ -166,7 +162,7 @@ class Tetrahedron(Polyhedron):
             def construct(self):
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 obj = Tetrahedron()
-                self.add(obj)   
+                self.add(obj)
     """
 
     def __init__(self, edge_length: float = 1, **kwargs):
@@ -249,7 +245,7 @@ class Icosahedron(Polyhedron):
             def construct(self):
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 obj = Icosahedron()
-                self.add(obj)   
+                self.add(obj)
     """
 
     def __init__(self, edge_length: float = 1, **kwargs):
@@ -315,7 +311,7 @@ class Dodecahedron(Polyhedron):
             def construct(self):
                 self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
                 obj = Dodecahedron()
-                self.add(obj)   
+                self.add(obj)
     """
 
     def __init__(self, edge_length: float = 1, **kwargs):
