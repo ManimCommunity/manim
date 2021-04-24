@@ -66,7 +66,7 @@ class UpdatersTest(ThreeDScene):
         faces = [[0, 1, 2, 3]]
         a = Polyhedron(vertices, faces)
         self.add(a)
-        self.remove(a.faces)
+        # self.remove(a.faces)
         self.play(a.graph[0].animate.move_to(ORIGIN))
         self.wait()
 

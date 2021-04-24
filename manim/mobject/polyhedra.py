@@ -51,11 +51,15 @@ class Polyhedron(VGroup):
 
     def update_faces(self, m):
         face_coords = self.extract_face_coords()
-        for face in self.faces:
-            face.set_points_as_corners([*face_coords[face.index()], face_coords[0]])
+        new_faces = self.create_faces(self, face_coords)
+        self.faces.match_points(new_faces)
 
     def extract_face_coords(self):
-        layout = self.graph._layout
+        new_vertex_coords = []
+        for v in self.graph.vertices:
+            new_vertex_coords.append(self.graph[v].get_center())
+        layout = dict(enumerate(new_vertex_coords))
+        print(layout[3])
         return [[layout[j] for j in i] for i in self.faces_list]
 
 
