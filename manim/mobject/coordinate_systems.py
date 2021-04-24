@@ -328,10 +328,10 @@ class ThreeDAxes(Axes):
 class NumberPlane(Axes):
     def __init__(
         self,
-        x_range=None,
-        y_range=None,
-        x_length=round(config.frame_width),
-        y_length=round(config.frame_height),
+        x_range=(-6, 6, 1),
+        y_range=(-3, 3, 1),
+        x_length=None,
+        y_length=None,
         axis_config=None,
         y_axis_config=None,
         background_line_style=None,
@@ -340,6 +340,7 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
+
 
         # configs
         self.axis_config = {
@@ -379,6 +380,13 @@ class NumberPlane(Axes):
             y_axis_config=self.y_axis_config,
             **kwargs,
         )
+
+        # dynamically adjusts x_length so that the unit_size is one by default
+        if x_length is None:
+            x_length = self.x_range[1]-self.x_range[0]
+        if y_length is None:
+            y_length = self.y_range[1]-self.y_range[0]
+
         self.init_background_lines()
 
     def init_background_lines(self):
