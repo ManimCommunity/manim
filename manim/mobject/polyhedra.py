@@ -18,7 +18,7 @@ class Polyhedron(VGroup):
     """An abstract polyhedra class.
 
     In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list
-    of faces. This implementataion mirrors that of a standard polyhedral data format (OFF files).
+    of faces. This implementataion mirrors that of a standard polyhedral data format (OFF, object file format).
 
     Parameters
     ----------
@@ -155,6 +155,18 @@ class Tetrahedron(Polyhedron):
     ----------
     edge_length:
         The length of an edge between any two vertices.
+
+    Examples
+    --------
+
+    .. manim:: TetrahedronScene
+        :save_last_frame:
+
+        class TetrahedronScene(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                obj = Tetrahedron()
+                self.add(obj)   
     """
 
     def __init__(self, edge_length: float = 1, **kwargs):
@@ -179,6 +191,18 @@ class Octahedron(Polyhedron):
     ----------
     edge_length:
         The length of an edge between any two vertices.
+
+    Examples
+    --------
+
+    .. manim:: OctahedronScene
+        :save_last_frame:
+
+        class OctahedronScene(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                obj = Octahedron()
+                self.add(obj)
     """
 
     def __init__(self, edge_length: float = 1, **kwargs):
@@ -214,6 +238,18 @@ class Icosahedron(Polyhedron):
     ----------
     edge_length:
         The length of an edge between any two vertices.
+
+    Examples
+    --------
+
+    .. manim:: IcosahedronScene
+        :save_last_frame:
+
+        class IcosahedronScene(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                obj = Icosahedron()
+                self.add(obj)   
     """
 
     def __init__(self, edge_length: float = 1, **kwargs):
@@ -268,6 +304,18 @@ class Dodecahedron(Polyhedron):
     ----------
     edge_length:
         The length of an edge between any two vertices.
+
+    Examples
+    --------
+
+    .. manim:: DodecahedronScene
+        :save_last_frame:
+
+        class DodecahedronScene(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                obj = Dodecahedron()
+                self.add(obj)   
     """
 
     def __init__(self, edge_length: float = 1, **kwargs):
