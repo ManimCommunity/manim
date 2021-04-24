@@ -341,7 +341,6 @@ class NumberPlane(Axes):
         **kwargs,
     ):
 
-
         # configs
         self.axis_config = {
             "stroke_color": WHITE,
@@ -383,9 +382,9 @@ class NumberPlane(Axes):
 
         # dynamically adjusts x_length so that the unit_size is one by default
         if x_length is None:
-            x_length = self.x_range[1]-self.x_range[0]
+            x_length = self.x_range[1] - self.x_range[0]
         if y_length is None:
-            y_length = self.y_range[1]-self.y_range[0]
+            y_length = self.y_range[1] - self.y_range[0]
 
         self.init_background_lines()
 
