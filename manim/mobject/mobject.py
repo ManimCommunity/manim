@@ -2078,7 +2078,7 @@ class Mobject(Container):
             `None`. In that case the corresponding column will fit its width automatically based
             on the widest element in that column.
         flow_order
-            The order in which the grid gets filled with the submobjects. Can be one of the 
+            The order in which the grid gets filled with the submobjects. Can be one of the
             following values: "rd", "dr", "ld", "dl", "ru", "ur", "lu", "ul". For example,
             "dr" (down right) means: Fill the table column by column downwards, filling the
             columns rigthwards. "u" and "l" stand for upwards and leftwards.
@@ -2090,7 +2090,7 @@ class Mobject(Container):
             If neither :code:`cols` nor :code:`rows` is set implicitly, they will be choosen to be
             about the same, tending towards :code:`cols > rows` (simply because videos are wider
             then they are high).
-        
+
         .. note:: If both :code:`cell_alignment` and either :code:`row_alignments` or :code:`col_alignments` is
             defined the latter has higher priority in its direction.
 
@@ -2212,6 +2212,7 @@ class Mobject(Container):
                 maybe_list = list(row_alignments)
                 maybe_list.reverse()
                 return maybe_list
+
         row_alignments = reverse(row_alignments)
         row_heights = reverse(row_heights)
 
