@@ -320,10 +320,10 @@ length with only integers.
 
 .. NOTE::
    If you don't know how to still use these typesets, you could use
-   `typestring-parser` which can be accessed by `from typestring_parser import parse` 
+   ``typestring-parser`` which can be accessed by ``from typestring_parser import parse``.
 
    Example
-   .. code-block:: python
+   .. code:: py
 
     >>> from typestring_parser import parse
     >>>
