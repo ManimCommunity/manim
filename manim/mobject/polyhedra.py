@@ -1,3 +1,5 @@
+"""General polyhedral class and platonic solids."""
+
 from copy import copy
 from typing import Hashable, List, Tuple, Union
 
