@@ -2069,7 +2069,7 @@ class Mobject(Container):
             The way each column of submobjects (from left to righht) is aligned horizontally.
             If defined the given string must only contain the following characters: "l"
             (left), "c" (centered) and "r" (right).
-        row_heights #TODO reverse
+        row_heights
             Specific heights for certain rows (from top to bottom). The given list can contain
             `None`. In that case the corresponding row will fit its height automatically based
             on the highest element in that row.
@@ -2107,6 +2107,29 @@ class Mobject(Container):
         ValueError
             :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
             :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
+
+        Examples
+        --------
+
+        .. manim:: ArrangeInGrid
+            :save_last_frame:
+
+            class ArrangeInGrid(Scene):
+                def construct(self):
+                    #Add some numbered boxes:
+                    np.random.seed(3)
+                    boxes = VGroup(*[Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5)) for i in range(22)])
+                    self.add(boxes)
+
+                    boxes.arrange_in_grid(
+                        buff=(0.25,0.5),
+                        col_alignments="lccccr",
+                        row_alignments="uccd",
+                        col_widths=[2, *[None]*4, 2],
+                        flow_order="dr"
+                    )
+
+
         """
         from manim import Line
 
@@ -2158,12 +2181,6 @@ class Mobject(Container):
                 alignments[i] = mapping[alignments[i]]
             return alignments
 
-        print(cell_alignment)
-
-        if row_alignments is not None:
-            row_alignments = list(row_alignments)
-            row_alignments.reverse()
-            # necessary since the grid filling is bottom up
         row_alignments = init_alignments(
             row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
         )
@@ -2187,6 +2204,16 @@ class Mobject(Container):
                 'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".'
             )
         flow_order = mapper[flow_order]
+
+        # Reverse row_alignments and row_heights. Necessary since the
+        # grid filling is handled bottom up for simplicity reasons.
+        def reverse(maybe_list):
+            if maybe_list is not None:
+                maybe_list = list(row_alignments)
+                maybe_list.reverse()
+                return maybe_list
+        row_alignments = reverse(row_alignments)
+        row_heights = reverse(row_heights)
 
         placeholder = Mobject()
         # Used to fill up the grid temporarily, doesn't get added to the scene.
