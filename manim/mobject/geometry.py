@@ -1159,8 +1159,9 @@ class Arrow(Line):
 
             >>> arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
             >>> scaled_arrow = arrow.scale(2)
-            >>> scaled_arrow.get_start_and_end()
-            (array([-2., -2.,  0.]), array([2., 2., 0.]))
+            >>> np.round(scaled_arrow.get_start_and_end(), 8) + 0
+            array([[-2., -2.,  0.],
+                   [ 2.,  2.,  0.]])
             >>> arrow.tip.length == scaled_arrow.tip.length
             True
 
