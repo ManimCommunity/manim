@@ -70,7 +70,9 @@ Here is the syntax:
 
 All possible flags can be found at :mod:`~.manim_directive`.
 
-In the example above, ``Formula1`` followed by ``.. manim::`` and is the scene that will be rendered, so in the python code the class must have the same name: ``class Formula1(Scene)``
+In the example above, the ``Formula1`` following ``.. manim::`` is the scene
+that the directive expects to render; thus, in the python code, the class
+has the same name: ``class Formula1(Scene)``.
 
 .. note::
 
