@@ -147,7 +147,7 @@ class Octahedron(Polyhedron):
         The length of an edge between any two vertices.
     """
 
-    def __init__(self, edge_length=1):
+    def __init__(self, edge_length: float = 1, **kwargs):
         unit = edge_length * np.sqrt(2) / 2
         Polyhedron.__init__(
             self,
@@ -169,6 +169,7 @@ class Octahedron(Polyhedron):
                 [2, 5, 1],
                 [0, 5, 2],
             ],
+            **kwargs
         )
 
 
@@ -181,7 +182,7 @@ class Icosahedron(Polyhedron):
         The length of an edge between any two vertices.
     """
 
-    def __init__(self, edge_length):
+    def __init__(self, edge_length: float = 1, **kwargs):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * (1 / 2)
         Polyhedron.__init__(
@@ -222,6 +223,7 @@ class Icosahedron(Polyhedron):
                 [10, 11, 7],
                 [10, 11, 6],
             ],
+            **kwargs
         )
 
 
@@ -234,7 +236,7 @@ class Dodecahedron(Polyhedron):
         The length of an edge between any two vertices.
     """
 
-    def __init__(self, edge_length=1):
+    def __init__(self, edge_length: float = 1, **kwargs):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * ((3 + np.sqrt(5)) / 4)
         unit_c = edge_length * (1 / 2)
@@ -276,4 +278,5 @@ class Dodecahedron(Polyhedron):
                 [19, 5, 9, 10, 7],
                 [7, 10, 3, 14, 15],
             ],
+            **kwargs
         )
