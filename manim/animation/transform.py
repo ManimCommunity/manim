@@ -63,9 +63,9 @@ class Transform(Animation):
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
+        self.path_arc_axis: np.ndarray = path_arc_axis
         self.path_arc: float = path_arc
         self.path_func: Optional[Callable] = path_func
-        self.path_arc_axis: np.ndarray = path_arc_axis
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
@@ -73,18 +73,33 @@ class Transform(Animation):
             target_mobject if target_mobject is not None else Mobject()
         )
         super().__init__(mobject, **kwargs)
-        self._init_path_func()
 
-    def _init_path_func(self) -> None:
-        if self.path_func is not None:
-            return
-        elif self.path_arc == 0:
-            self.path_func = straight_path
-        else:
-            self.path_func = path_along_arc(
-                self.path_arc,
-                self.path_arc_axis,
-            )
+    @property
+    def path_arc(self) -> float:
+        return self._path_arc
+
+    @path_arc.setter
+    def path_arc(self, path_arc: float) -> None:
+        self._path_arc = path_arc
+        self._path_func = path_along_arc(self._path_arc, self.path_arc_axis)
+
+    @property
+    def path_func(
+        self,
+    ) -> Callable[
+        [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+    ]:
+        return self._path_func
+
+    @path_func.setter
+    def path_func(
+        self,
+        path_func: Callable[
+            [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+        ],
+    ) -> None:
+        if path_func is not None:
+            self._path_func = path_func
 
     def begin(self) -> None:
         # Use a copy of target_mobject for the align_data
