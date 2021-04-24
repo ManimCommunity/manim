@@ -65,6 +65,20 @@ class Polyhedron(VGroup):
     Next, we define the faces of the polyhedron. The triangular surfaces of the pyramid are polygons
     with two adjacent vertices in the base and the vertex at the apex as corners. We thus define these
     surfaces in the first four elements of our face list. The last element defines the base of the pyramid.
+
+    The graph and faces of polyhedra can also be accessed and modified directly, after instantiation.
+    They are stored in the `graph` and `faces` attributes respectively.
+
+    .. manim:: PolyhedronSubMobjects
+        :save_last_frame:
+
+        class PolyhedronSubMobjects(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                octahedron = Octahedron(edge_length = 3)
+                octahedron.graph[0].set_color(RED)
+                octahedron.faces[2].set_color(YELLOW)
+                self.add(octahedron)
     """
 
     def __init__(

@@ -122,3 +122,11 @@ class TetrahedronTest(ThreeDScene):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         a = Tetrahedron()
         self.add(a)
+
+class PolyhedronSubMobjects(ThreeDScene):
+    def construct(self):
+        self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+        octahedron = Octahedron(edge_length = 3)
+        octahedron.graph[0].set_color(RED)
+        octahedron.faces[2].set_color(YELLOW)
+        self.add(octahedron)
