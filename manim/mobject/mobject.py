@@ -34,8 +34,9 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
+    angle_between_vectors,
     angle_of_vector,
-    get_norm,
+    normalize,
     rotation_matrix,
     rotation_matrix_transpose,
 )
@@ -1529,13 +1530,19 @@ class Mobject(Container):
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
+        axis = (
+            normalize(np.cross(curr_vect, target_vect))
+            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
-            get_norm(target_vect) / get_norm(curr_vect),
+            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
         )
         self.rotate(
-            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+            angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
+            axis=axis,
         )
         self.shift(start - curr_start)
         return self
@@ -1638,7 +1645,7 @@ class Mobject(Container):
             center = self.get_center()
 
         for mob in self.family_members_with_points():
-            t = get_norm(mob.get_center() - center) / radius
+            t = np.linalg.norm(mob.get_center() - center) / radius
             t = min(t, 1)
             mob_color = interpolate_color(inner_color, outer_color, t)
             mob.set_color(mob_color, family=False)

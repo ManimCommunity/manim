@@ -74,7 +74,6 @@ from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
     compass_directions,
-    get_norm,
     line_intersection,
     normalize,
     rotate_vector,
@@ -251,7 +250,7 @@ class TipableVMobject(VMobject):
 
     def get_length(self):
         start, end = self.get_start_and_end()
-        return get_norm(start - end)
+        return np.linalg.norm(start - end)
 
 
 class Arc(TipableVMobject):
@@ -1160,8 +1159,9 @@ class Arrow(Line):
 
             >>> arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
             >>> scaled_arrow = arrow.scale(2)
-            >>> scaled_arrow.get_start_and_end()
-            (array([-2., -2.,  0.]), array([2., 2., 0.]))
+            >>> np.round(scaled_arrow.get_start_and_end(), 8) + 0
+            array([[-2., -2.,  0.],
+                   [ 2.,  2.,  0.]])
             >>> arrow.tip.length == scaled_arrow.tip.length
             True
 
@@ -2028,7 +2028,7 @@ class ArrowTip(VMobject):
             0.35
 
         """
-        return get_norm(self.vector)
+        return np.linalg.norm(self.vector)
 
 
 class ArrowTriangleTip(ArrowTip, Triangle):
