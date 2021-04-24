@@ -318,12 +318,12 @@ elements that are either a ``str`` or ``None``;
 ``(str, int)``; ``Tuple[:class:`int`, ...]`` for a tuple of variable
 length with only integers.
 
-.. note::
+.. NOTE::
    If you don't know how to still use these typesets, you could use
    `typestring-parser` which can be accessed by `from typestring_parser import parse` 
 
-    Example
-   .. code:: py
+   Example
+   .. code-block:: python
 
     >>> from typestring_parser import parse
     >>>
