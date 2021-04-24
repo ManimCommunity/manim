@@ -35,6 +35,7 @@ __all__ = [
 import itertools as it
 import math
 from functools import reduce
+from typing import Callable, List, Optional, Sequence, TypeVar, Union
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -61,7 +62,7 @@ def norm_squared(v: float) -> np.ndarray:
 # TODO, implement quaternion type
 
 
-def quaternion_mult(*quats: tuple) -> list:
+def quaternion_mult(*quats: Sequence[float]) -> List[Union[float, np.ndarray]]:
     if config.renderer == "opengl":
         if len(quats) == 0:
             return [1, 0, 0, 0]
@@ -103,7 +104,7 @@ def quaternion_from_angle_axis(
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
-def angle_axis_from_quaternion(quaternion: np.ndarray) -> int:
+def angle_axis_from_quaternion(quaternion: np.ndarray) -> Union[int, float]:
     axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
     angle = 2 * np.arccos(quaternion[0])
     if angle > TAU / 2:
@@ -117,7 +118,7 @@ def quaternion_conjugate(quaternion: np.ndarray) -> np.ndarray:
     return result
 
 
-def rotate_vector(vector: list, angle: int, axis=OUT) -> np.ndarray:
+def rotate_vector(vector: np.ndarray, angle: int, axis=OUT) -> np.ndarray:
     if len(vector) == 2:
         # Use complex numbers...because why not
         z = complex(*vector) * np.exp(complex(0, angle))
@@ -138,7 +139,7 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
     return (np.abs(row_indices - col_indices) < thickness).astype("uint8")
 
 
-def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> list:
+def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
     quat_inv = quaternion_conjugate(quat)
     return [
         quaternion_mult(quat, [0, *basis], quat_inv)[1:]
@@ -150,11 +151,11 @@ def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> list:
     ]
 
 
-def rotation_matrix_from_quaternion(quat: list) -> np.ndarray:
+def rotation_matrix_from_quaternion(quat: np.ndarray) -> np.ndarray:
     return np.transpose(rotation_matrix_transpose_from_quaternion(quat))
 
 
-def rotation_matrix_transpose(angle: int, axis: np.ndarray) -> list:
+def rotation_matrix_transpose(angle: Union[int, float], axis: np.ndarray) -> np.ndarray:
     if axis[0] == 0 and axis[1] == 0:
         # axis = [0, 0, z] case is common enough it's worth
         # having a shortcut
@@ -170,7 +171,7 @@ def rotation_matrix_transpose(angle: int, axis: np.ndarray) -> list:
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
+def rotation_matrix(angle: Union[int, float], axis: np.ndarray) -> np.ndarray:
     """
     Rotation in R^3 about a specified axis of rotation.
     """
@@ -180,7 +181,7 @@ def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
     return reduce(np.dot, [z_to_axis, about_z, axis_to_z])
 
 
-def rotation_about_z(angle: int) -> list:
+def rotation_about_z(angle: Union[int, float]) -> List[Union[int, float]]:
     return [
         [np.cos(angle), -np.sin(angle), 0],
         [np.sin(angle), np.cos(angle), 0],
@@ -220,7 +221,7 @@ def angle_between(v1, v2):
     return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
 
 
-def angle_of_vector(vector: float) -> np.float64:
+def angle_of_vector(vector: Sequence[float]) -> float:
     """
     Returns polar coordinate theta when vector is project on xy plane
     """
@@ -233,7 +234,7 @@ def angle_of_vector(vector: float) -> np.float64:
         return np.angle(complex(*vector[:2]))
 
 
-def angle_between_vectors(v1: tuple, v2: tuple) -> np.float64:
+def angle_between_vectors(v1: Sequence[float], v2: Sequence[float]) -> float:
     """
     Returns the angle between two 3D vectors.
     This angle will always be btw 0 and pi
@@ -248,7 +249,7 @@ def angle_between_vectors(v1: tuple, v2: tuple) -> np.float64:
         )
 
 
-def project_along_vector(point, vector) -> np.ndarray:
+def project_along_vector(point: float, vector: np.ndarray) -> np.ndarray:
     matrix = np.identity(3) - np.outer(vector, vector)
     return np.dot(point, matrix.T)
 
@@ -264,7 +265,9 @@ def normalize(vect: np.ndarray, fall_back=None) -> np.ndarray:
             return np.zeros(len(vect))
 
 
-def normalize_along_axis(array, axis, fall_back=None):
+def normalize_along_axis(
+    array: np.ndarray, axis: np.ndarray, fall_back=None
+) -> np.ndarray:
     norms = np.sqrt((array * array).sum(axis))
     norms[norms == 0] = 1
     buffed_norms = np.repeat(norms, array.shape[axis]).reshape(array.shape)
@@ -310,7 +313,7 @@ def complex_to_R3(complex_num: complex) -> np.ndarray:
     return np.array((complex_num.real, complex_num.imag, 0))
 
 
-def R3_to_complex(point: tuple) -> np.ndarray:
+def R3_to_complex(point: Sequence[float]) -> np.ndarray:
     return complex(*point[:2])
 
 
@@ -318,16 +321,18 @@ def complex_func_to_R3_func(complex_func):
     return lambda p: complex_to_R3(complex_func(R3_to_complex(p)))
 
 
-def center_of_mass(points: list) -> int:
+def center_of_mass(points: Sequence[float]) -> np.ndarray:
     points = [np.array(point).astype("float") for point in points]
     return sum(points) / len(points)
 
 
-def midpoint(point1: list, point2: list) -> int:
+def midpoint(
+    point1: Sequence[float], point2: Sequence[float]
+) -> Union[float, np.ndarray]:
     return center_of_mass([point1, point2])
 
 
-def line_intersection(line1, line2) -> np.ndarray:
+def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndarray:
     """
     Returns intersection point of two lines,
     each defined with a pair of vectors determining
@@ -377,7 +382,7 @@ def find_intersection(p0, v0, p1, v1, threshold=1e-5) -> np.ndarray:
     return p0 + ratio * v0
 
 
-def get_winding_number(points: list) -> float:
+def get_winding_number(points: Sequence[float]) -> float:
     total_angle = 0
     for p1, p2 in adjacent_pairs(points):
         d_angle = angle_of_vector(p2) - angle_of_vector(p1)
