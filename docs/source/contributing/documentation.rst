@@ -320,10 +320,10 @@ length with only integers.
 
 .. NOTE::
    As a helper for tool for typesets, you can use ``typestring-parser`` which can 
-   be accessed by ``from typestring_parser import parse``.
+   be accessed by first downloading it via ``pip`` - ``pip install typestring-parser`` and
+   then using ``from typestring_parser import parse``.
 
    Example
-   .. code:: py
 
     >>> from typestring_parser import parse
     >>>
