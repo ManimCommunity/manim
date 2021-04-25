@@ -25,6 +25,7 @@ import numpy as np
 
 from .. import constants
 from ..utils.tex import TexTemplate, TexTemplateFromFile
+from ..utils.tex_templates import TexTemplateLibrary
 from .logger_utils import set_file_logger
 
 
@@ -1341,7 +1342,7 @@ class ManimConfig(MutableMapping):
             if fn:
                 self._tex_template = TexTemplateFromFile(filename=fn)
             else:
-                self._tex_template = TexTemplate()
+                self._tex_template = TexTemplateLibrary.default.copy()
         return self._tex_template
 
     @tex_template.setter

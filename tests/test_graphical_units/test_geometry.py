@@ -14,7 +14,7 @@ class CoordinatesTest(Scene):
 
 class ArcTest(Scene):
     def construct(self):
-        a = Arc(PI)
+        a = Arc(radius=1, start_angle=PI)
         self.add(a)
 
 
