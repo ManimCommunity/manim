@@ -1,6 +1,6 @@
 """Mobjects that dynamically show the change of a variable."""
 
-__all__ = ["ValueTracker", "ExponentialValueTracker", "ComplexValueTracker"]
+__all__ = ["ValueTracker", "ComplexValueTracker"]
 
 
 from typing import Union
@@ -115,52 +115,6 @@ class ValueTracker(Mobject):
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         return self
-
-
-class ExponentialValueTracker(ValueTracker):
-    """Operates just like ValueTracker, except it encodes the value as the
-    exponential of a position coordinate, which changes how interpolation
-    behaves.
-
-    Note that ExponentialValueTracker does not handle non-positive values.
-
-    Examples
-    --------
-    .. manim:: ExponentialValueTrackerExample
-
-        class ExponentialValueTrackerExample(Scene):
-            def construct(self):
-                number_line = NumberLine()
-                pointer = Vector(DOWN)
-                label = MathTex("x").add_updater(lambda m: m.next_to(pointer, UP))
-
-                pointer_value = ExponentialValueTracker(4)
-                pointer.add_updater(
-                    lambda m: m.next_to(
-                                pointer_value.get_value() * RIGHT,
-                                UP
-                            )
-                )
-                self.add(number_line, pointer,label)
-
-                self.play(pointer_value.animate.set_value(0.5))
-                self.wait(0.5)
-                self.play(pointer_value.animate.set_value(6))
-                self.wait(0.5)
-                self.play(pointer_value.animate.set_value(3))
-                self.wait(0.5)
-                self.play(pointer_value.animate.set_value(2))
-                self.wait(0.5)
-    """
-
-    def get_value(self):
-        """Get the current value of the ExponentialValueTracker."""
-        return np.exp(ValueTracker.get_value(self))
-
-    def set_value(self, value):
-        """Set a new scalar value to the ExponentialValueTracker. The value cannot
-        be non-positive."""
-        return ValueTracker.set_value(self, np.log(value))
 
 
 class ComplexValueTracker(ValueTracker):

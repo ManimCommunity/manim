@@ -91,19 +91,6 @@ def test_value_tracker_itruediv():
     assert tracker.get_value() == 2.5
 
 
-def test_exponential_value_tracker_set_value():
-    """Test ExponentialValueTracker.set_value()"""
-    tracker = ExponentialValueTracker()
-    tracker.set_value(2.0)
-    assert tracker.get_value() == 2.0
-
-
-def test_exponential_value_tracker_get_value():
-    """Test ExponentialValueTracker.get_value()"""
-    tracker = ExponentialValueTracker(2.0)
-    assert tracker.get_value() == 2.0
-
-
 def test_complex_value_tracker_set_value():
     """Test ComplexValueTracker.set_value()"""
     tracker = ComplexValueTracker()
