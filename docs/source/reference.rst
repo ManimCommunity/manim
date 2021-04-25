@@ -122,6 +122,7 @@ Utilities
    ~utils.bezier
    ~utils.color
    ~utils.config_ops
+   ~utils.decorators
    ~utils.hashing
    ~utils.ipython_magic
    ~utils.images
