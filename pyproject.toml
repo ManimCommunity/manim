@@ -70,6 +70,7 @@ gitpython = "^3"
 pygithub = "^1"
 flake8 = "^3.9.0"
 isort = "^5.8.0"
+typestring-parser ="*"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
