@@ -515,20 +515,57 @@ class ApplyWave(Homotopy):
 
         def wave(t):
             # Creates a wave with n ripples from a simple rate_func
-            # Do yourself a favor and don't try to understand it...
+            # This wave is build up as follows:
+            # The time is split into 2*ripples phases. In every phase the amplitude
+            # either rises to one or goes down to zero. Consecutive ripples will have
+            # their amplitudes in oppising directions (first ripple from 0 to 1 to 0,
+            # second from 0 to -1 to 0 and so on). This is how two ripples would be
+            # devided into phases:
+
+            #         ####|####        |            |
+            #       ##    |    ##      |            |
+            #     ##      |      ##    |            |
+            # ####        |        ####|####        |        ####
+            #             |            |    ##      |      ##
+            #             |            |      ##    |    ##
+            #             |            |        ####|####
+
+            # However, this looks weired in the middle between two ripples. Therefor the
+            # middle phases do acutally use only one appropriately scaled version of the
+            # rate like this:
+
+            # 1 / 4 Time  | 2 / 4 Time            | 1 / 4 Time
+            #         ####|######                 |
+            #       ##    |      ###              |
+            #     ##      |         ##            |
+            # ####        |           #           |        ####
+            #             |            ##         |      ##
+            #             |              ###      |    ##
+            #             |                 ######|####
+
+            # Mirrored looks better in the way the wave is used.
             t = 1 - t
+
+            # Clamp input
             if t >= 1 or t <= 0:
                 return 0
+
             phases = ripples * 2
             phase = int(t * phases)
             if phase == 0:
+                # First rising ripple 
                 return wave_func(t * phases)
             elif phase == phases - 1:
-                t -= phase / phases
-                return (1 - wave_func(t * phases)) * (1 - 2 * ((phase + ripples) % 2))
+                # last ripple. Rising or falling depening on the number of ripples
+                # The (ripples % 2)-term is used to make this destinction.
+                t -= phase / phases # Time relative to the phase
+                return (1 - wave_func(t * phases)) * (2 * (ripples % 2)-1)
             else:
+                # Longer phases:
                 phase = int((phase - 1) / 2)
                 t -= (2 * phase + 1) / phases
+
+                # Similar to last ripple:
                 return (1 - 2 * wave_func(t * ripples)) * (1 - 2 * ((phase) % 2))
 
         def homotopy(
