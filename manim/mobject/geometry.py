@@ -814,7 +814,7 @@ class Line(TipableVMobject):
         return np.array(mob_or_point)
 
     def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
-        """
+        """Sets starts and end coordinates of a line.
         Examples
         --------
         .. manim:: LineExample
