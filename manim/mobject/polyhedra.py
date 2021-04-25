@@ -35,7 +35,7 @@ class Polyhedron(VGroup):
     Examples
     --------
     To understand how to create a custom polyhedra, let's use the example of a rather simple one - a square pyramid.
-    
+
     .. manim:: SquarePyramidScene
         :save_last_frame:
 
@@ -146,7 +146,7 @@ class Polyhedron(VGroup):
 
 
 class Tetrahedron(Polyhedron):
-    """A tetrahedron, one of the five platonic solids.
+    """A tetrahedron, one of the five platonic solids. It has 4 faces, 6 edges, and 4 vertices.
 
     Parameters
     ----------
@@ -182,7 +182,7 @@ class Tetrahedron(Polyhedron):
 
 
 class Octahedron(Polyhedron):
-    """An octahedron, one of the five platonic solids.
+    """An octahedron, one of the five platonic solids. It has 8 faces, 12 edges and 6 vertices.
 
     Parameters
     ----------
@@ -229,7 +229,7 @@ class Octahedron(Polyhedron):
 
 
 class Icosahedron(Polyhedron):
-    """An icosahedron, one of the five platonic solids.
+    """An icosahedron, one of the five platonic solids. It has 20 faces, 30 edges and 12 vertices.
 
     Parameters
     ----------
@@ -295,7 +295,7 @@ class Icosahedron(Polyhedron):
 
 
 class Dodecahedron(Polyhedron):
-    """A dodecahedron, one of the five platonic solids.
+    """A dodecahedron, one of the five platonic solids. It has 12 faces, 30 edges and 20 vertices.
 
     Parameters
     ----------
