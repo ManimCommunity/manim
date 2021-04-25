@@ -323,8 +323,8 @@ Adding type hints to functions and parameters
 ---------------------------------------------
 
 .. warning::
-   This is type hints section is still work in progress.
 
+   This section is still a work in progress.
 
 If you've never used type hints before, this is a good place to get started:
 https://realpython.com/python-type-checking/#hello-types.
