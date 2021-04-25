@@ -97,7 +97,7 @@ class Polyhedron(VGroup):
             {
                 "vertex_type": Dot3D,
                 "edge_config": {
-                    "stroke_opacity": 0,  # I find that having
+                    "stroke_opacity": 0,  # I find that having the edges visible makes the polyhedra look weird
                 },
             },
             **graph_config
