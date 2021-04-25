@@ -254,7 +254,6 @@ class Flash(AnimationGroup):
         super().__init__(*animations, group=self.lines)
 
     def create_lines(self) -> VGroup:
-        # TODO change meaning of flash_radius
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
             line = Line(ORIGIN, self.line_length * RIGHT)
