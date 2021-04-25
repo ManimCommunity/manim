@@ -319,8 +319,8 @@ elements that are either a ``str`` or ``None``;
 length with only integers.
 
 .. NOTE::
-   If you don't know how to still use these typesets, you could use
-   ``typestring-parser`` which can be accessed by ``from typestring_parser import parse``.
+   As a helper for tool for typesets, you can use ``typestring-parser`` which can 
+   be accessed by ``from typestring_parser import parse``.
 
    Example
    .. code:: py
