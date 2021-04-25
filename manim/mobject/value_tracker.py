@@ -20,6 +20,8 @@ class ValueTracker(Mobject):
     uses for its update function, and by treating it as a mobject it can
     still be animated and manipulated just like anything else.
 
+    This value changes continuously when animated using the :attr:`animate` syntax.
+
     Examples
     --------
     .. manim:: ValueTrackerExample
@@ -50,7 +52,8 @@ class ValueTracker(Mobject):
 
     .. note::
 
-        You can also link ValueTrackers to updaters. In this case, you have to make sure that the ValueTracker is added to the scene by ``add``
+        You can also link ValueTrackers to updaters. In this case, you have to make sure that the
+        ValueTracker is added to the scene by ``add``
 
     .. manim:: ValueTrackerExample
 
@@ -71,10 +74,7 @@ class ValueTracker(Mobject):
         self.set_value(value)
 
     def get_value(self) -> float:
-        """Get the current value of this value tracker.
-
-        The value changes continuously when :attr:`animate`
-        for the ValueTracker is called."""
+        """Get the current value of this value tracker."""
         return self.points[0, 0]
 
     def set_value(self, value: Union[float, int]):
@@ -138,6 +138,9 @@ class ValueTracker(Mobject):
 class ComplexValueTracker(ValueTracker):
     """Tracks a complex-valued parameter.
 
+    When the value is set through :attr:`animate`, the value will take a straight path from the
+    source point to the destination point.
+
     Examples
     --------
     .. manim:: ComplexValueTrackerExample
@@ -158,17 +161,11 @@ class ComplexValueTracker(ValueTracker):
     """
 
     def get_value(self):
-        """Get the current value of this value tracker.
-
-        This value changes continuously when animated using
-        the :attr:`animate` syntax."""
+        """Get the current value of this value tracker."""
         return complex(*self.points[0, :2])
 
     def set_value(self, z):
-        """Sets a new complex value to the ComplexValueTracker
-
-        When the value is set through :attr:`animate`, the value will take a straight
-        path from the source point to the destination point."""
+        """Sets a new complex value to the ComplexValueTracker"""
         z = complex(z)
         self.points[0, :2] = (z.real, z.imag)
         return self
