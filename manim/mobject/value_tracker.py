@@ -161,7 +161,10 @@ class ComplexValueTracker(ValueTracker):
     """
 
     def get_value(self):
-        """Get the current value of this value tracker."""
+        """Get the current value of this value tracker as a complex number.
+        
+        The value is internally stored as a points array [a, b, 0]. This can be accessed directly
+        to represent the value geometrically, see the usage example."""
         return complex(*self.points[0, :2])
 
     def set_value(self, z):
