@@ -323,7 +323,6 @@ Adding type hints to functions and parameters
 ---------------------------------------------
 
 .. warning::
-
    This section is still a work in progress.
 
 If you've never used type hints before, this is a good place to get started:
@@ -388,14 +387,6 @@ When adding type hints to manim, there are some guidelines that should be follow
 
 * assuming that typical path objects are either Paths or strs, one can use the typehint ``typing.Union[str, pathlib.Path]``
 
-Missing Sections for typehints are:
-* Tools for typehinting
-* Link to MyPy
-* Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
-* Where to find the alias
-* When to use Object and when to use "Object".
-* The use of a TypeVar on the type hints for copy().
-* The definition and use of Protocols (like Sized, or Sequence, or Iterable...)
 
 
 Adding Blocks for Tip, Note, Important etc. (Admonitions)
@@ -403,13 +394,10 @@ Adding Blocks for Tip, Note, Important etc. (Admonitions)
 
 The following directives are called Admonitions. You
 can use them to point out additional or important
-information.
-
-Examples
-========
+information. Here are some examples:
 
 See also
---------
+~~~~~~~~
 
 .. code-block:: rest
 
@@ -424,7 +412,7 @@ See also
 
 
 Note
-----
+~~~~
 
 .. code-block:: rest
 
@@ -435,7 +423,7 @@ Note
    A note
 
 Tip
----
+~~~
 
 .. code-block:: rest
 
@@ -449,7 +437,7 @@ You may also use the admonition **hint**, but this is very similar
 and **tip** is more commonly used in the documentation.
 
 Important
----------
+~~~~~~~~~
 
 .. code-block:: rest
 
@@ -460,7 +448,7 @@ Important
    Some important information which should be considered.
 
 Warning
--------
+~~~~~~~
 
 .. code-block:: rest
 
@@ -474,7 +462,7 @@ You may also use the admonitions **caution** or even **danger** if the
 severity of the warning must be stressed.
 
 Attention
----------
+~~~~~~~~~
 
 .. code-block:: rest
 
@@ -484,4 +472,16 @@ Attention
 .. attention::
    A attention
 
-You can find further inforamtion about Admonitions here: https://pradyunsg.me/furo/reference/admonitions/
+You can find further information about Admonitions here: https://pradyunsg.me/furo/reference/admonitions/
+
+
+
+Missing Sections for typehints are:
+-----------------------------------
+* Tools for typehinting
+* Link to MyPy
+* Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
+* Where to find the alias
+* When to use Object and when to use "Object".
+* The use of a TypeVar on the type hints for copy().
+* The definition and use of Protocols (like Sized, or Sequence, or Iterable...)
