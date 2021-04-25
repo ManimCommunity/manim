@@ -1,8 +1,10 @@
+"""Function decorators."""
+
 __all__ = ["deprecated", "deprecated_params"]
 
 
 import re
-from typing import Any, Callable, Iterable, Optional, Tuple, Union
+from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 from decorator import decorate, decorator
 
@@ -85,6 +87,47 @@ def deprecated(
     -------
     Callable
         The decorated callable. 
+    
+    Examples
+    --------
+    Basic usage::
+        
+        @deprecated
+        def foo(**kwargs):
+            pass
+
+        @deprecated
+        class Bar:
+            def __init__(self):
+                pass
+
+            @deprecated
+            def baz(self):
+                pass
+
+        foo()
+        # WARNING  The function foo is deprecated and may be deleted soon.
+
+        a = Bar()
+        # WARNING  The class Bar is deprecated and may be deleted soon.
+
+        a.baz()
+        # WARNING  The method Bar.baz is deprecated and may be deleted soon.   
+
+    You can also specify additional information for a more precise warning::
+
+        @deprecated(
+            since="0.2",
+            until="0.4",
+            replacement="bar",
+            message="It is cooler."
+        )
+        def foo():
+            pass
+
+        foo()
+        # WARNING  The function foo is deprecated since 0.2 and will be deleted after 0.4. Use bar instead. It is cooler.
+
     """
     # If used as factory:
     if func is None:
@@ -92,7 +135,7 @@ def deprecated(
 
     what, name = get_callable_info(func)
 
-    def warning_msg(for_docs=False) -> str:
+    def warning_msg(for_docs:bool=False) -> str:
         """Generate the deprecation warning message.
 
         Parameters
@@ -134,16 +177,16 @@ def deprecated(
         Parameters
         ----------
         func
-            The callable to docorate.
+            The callable to decorate.
         args
-            The arguments passed to the given function.
+            The arguments passed to the given callable.
         kwargs
-            The keyword arguments passed to the given function.
+            The keyword arguments passed to the given callable.
 
         Returns
         -------
         Any
-            The return value of the given function when beeing passed the given
+            The return value of the given callable when beeing passed the given
             arguments.
         """
         logger.warning(warning_msg())
@@ -318,7 +361,21 @@ def deprecated_params(
 
     redirections = list(redirections)
 
-    def warning_msg(func, used):
+    def warning_msg(func:Callable, used:List[str]):
+        """Generate the deprecation warning message.
+
+        Parameters
+        ----------
+        func
+            The callable with deprecated parameters.
+        used
+            The list of depecated parameters used in a call.
+
+        Returns
+        -------
+        str
+            The deprecation message.
+        """
         what, name = get_callable_info(func)
         plural = len(used) > 1
         prameter_s = "s" if plural else ""
@@ -329,7 +386,16 @@ def deprecated_params(
             f"The parameter{prameter_s} {used_} of {what} {name} {is_are} {deprecated}"
         )
 
-    def redirect_params(kwargs, used):
+    def redirect_params(kwargs:dict, used:List[str]):
+        """Adjust the keyword arguments as defined by the redirections.
+
+        Parameters
+        ----------
+        kwargs
+            The keyword argument dictionary to be updated.
+        used
+            The list of depecated parameters used in a call.
+        """
         for redirector in redirections:
             if isinstance(redirector, tuple):
                 old_param, new_param = redirector
@@ -345,6 +411,27 @@ def deprecated_params(
                     kwargs.update(redirector(**redirector_args))
 
     def deprecate_params(func, *args, **kwargs):
+        """The actual decorator function used to extend the callables behavior.
+
+        Logs a warning message when a deprecated parameter is used and redirects it if
+        specified.
+
+        Parameters
+        ----------
+        func
+            The callable to decorate.
+        args
+            The arguments passed to the given callable.
+        kwargs
+            The keyword arguments passed to the given callable.
+
+        Returns
+        -------
+        Any
+            The return value of the given callable when beeing passed the given
+            arguments.
+
+        """
         used = []
         for param in params:
             if param in kwargs:
@@ -355,7 +442,4 @@ def deprecated_params(
             redirect_params(kwargs, used)
         return func(*args, **kwargs)
 
-    def caller(f, *args, **kw):
-        return deprecate_params(f, *args, **kw)
-
-    return decorator(caller)
+    return decorator(deprecate_params)
