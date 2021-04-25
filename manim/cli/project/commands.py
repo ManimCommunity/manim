@@ -17,8 +17,10 @@ new  -  The new command group has 2 commands. these commands handle project crea
                     scene command can create new files and insert new scenes in there.
                     It can also insert new scenes in an already existing python file.
 """
+# Chack Resolution
 
 import configparser
+import curses
 from pathlib import Path
 from shutil import copyfile
 
@@ -27,28 +29,28 @@ import click
 from ... import console
 from ...constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
 
-cfg_vars = {
+CFG_DEFAULTS = {
     "frame_rate": 60,
-    "resolution": (1920, 1200),
     "background_color": "BLACK",
     "background_opacity": 1,
-    "scene_names": "DefaultScene",
+    "scene_names": "default",
+    "resolution": (1280, 720),
 }
 
 cfg_resolutions = []
 
 
-def update_cfg(cfg_vars, project_cfg_path):
+def update_cfg(CFG_DEFAULTS, project_cfg_path):
     """Updates the manim.cfg file in the newly created project
     Parameters
     ----------
-    values : dictionary : Look at `cfg_vars`
+    values : dictionary : Look at `CFG_DEFAULTS`
         dictionary of values that will be edited in the manim.cfg file
     """
     config = configparser.ConfigParser()
     config.read(project_cfg_path)
     cli_config = config["CLI"]
-    for key, value in cfg_vars.items():
+    for key, value in CFG_DEFAULTS.items():
         if key == "resolution":
             cli_config["pixel_height"] = value[0]
             cli_config["pixel_width"] = value[1]
@@ -78,7 +80,7 @@ def copy_template_files(project_dir=Path("."), template_name="default"):
 
     if not template_scene_path.exists():
         template_scene_path = Path.resolve(
-            Path(__file__).parent / f"templates/{template_name}.py"
+            Path(__file__).parent / "templates/default.py"
         )
 
     copyfile(template_cfg_path, Path.resolve(project_dir / "manim.cfg"))
@@ -88,37 +90,9 @@ def copy_template_files(project_dir=Path("."), template_name="default"):
     console.print("...copied [green]main.py[/green]\n")
 
 
-def select_resolution(stdscr):
-    for key, quality in QUALITIES.items():
-        cfg_resolutions.append((key, quality))
-
-    attributes = {}
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    attributes["normal"] = curses.color_pair(1)
-
-    curses.init_pair(2, curses.COLOR_BLACK, curses.COLOR_WHITE)
-    attributes["highlighted"] = curses.color_pair(2)
-
-    c = 0  # last character read
-    option = 0  # the current option that is marked
-    while c != 10:  # Enter in ascii
-        stdscr.erase()
-        stdscr.addstr("Select rendring quality?\n", curses.A_UNDERLINE)
-        for i in range(len(cfg_resolutions)):
-            if i == option:
-                attr = attributes["highlighted"]
-            else:
-                attr = attributes["normal"]
-            stdscr.addstr("{0}. ".format(i + 1))
-            stdscr.addstr(cfg_resolutions[i][0] + "\n", attr)
-        c = stdscr.getch()
-        if c == curses.KEY_UP and option > 0:
-            option -= 1
-        elif c == curses.KEY_DOWN and option < len(cfg_resolutions) - 1:
-            option += 1
-
-    stdscr.addstr("You chose {0}".format(cfg_resolutions[option][0]))
-    stdscr.getch()
+def resolution_to_tuple(str):
+    resolution = str.split("x", 1)
+    return (resolution[0], resolution[1])
 
 
 @click.command(
@@ -147,19 +121,24 @@ def project(default_settings, **args):
         console.print("Project Name Exists")
     else:
         project_name.mkdir()
-        new_cfg_vars = dict()
+        new_cfg = dict()
 
         if not default_settings:
-            for key, value in cfg_vars.items():
+            for key, value in CFG_DEFAULTS.items():
                 if key == "scene_names":
-                    pass
+                    if args["template_name"]:
+                        new_cfg[key] = args["template_name"]
+                    else:
+                        new_cfg[key] = value
                 elif key == "resolution":
-                    pass
+                    new_cfg[key] = resolution_to_tuple(
+                        click.prompt("\nResolution", default="1920x1080")
+                    )
                 else:
-                    new_cfg_vars[key] = click.prompt(f"{key}")
+                    new_cfg[key] = click.prompt(f"\n{key}", default=value)
 
             copy_template_files(project_name)
-            update_cfg(new_cfg_vars, Path.resolve(project_name / "manim.cfg"))
+            update_cfg(new_cfg, Path.resolve(project_name / "manim.cfg"))
 
         else:
             console.print(default_settings)

@@ -6,6 +6,7 @@ from click_default_group import DefaultGroup
 from . import __version__, console
 from .cli.cfg.commands import cfg
 from .cli.plugins.commands import plugins
+from .cli.project.commands import project
 from .cli.render.commands import render
 from .constants import CONTEXT_SETTINGS, EPILOG
 
@@ -42,6 +43,7 @@ def main(ctx):
 
 main.add_command(cfg)
 main.add_command(plugins)
+main.add_command(project)
 main.add_command(render)
 
 if __name__ == "__main__":
