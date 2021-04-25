@@ -24,8 +24,8 @@ from ..utils.space_ops import (
     rotation_matrix_transpose_from_quaternion,
 )
 from .opengl_renderer_window import Window
-from .shader_wrapper import ShaderWrapper
 from .shader import *
+from .shader_wrapper import ShaderWrapper
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -94,6 +94,7 @@ class OpenGLCamera(OpenGLMobject):
         self.set_height(config["frame_height"])
         self.set_width(config["frame_width"])
         self.set_euler_angles(0, 0, 0)
+        self.model_matrix = opengl.translation_matrix(0, 0, 11)
         return self
 
     def refresh_rotation_matrix(self):
@@ -147,7 +148,7 @@ class OpenGLCamera(OpenGLMobject):
 
     def increment_phi(self, dphi):
         phi = self.data["euler_angles"][1]
-        new_phi = clip(phi + dphi, 0, PI)
+        new_phi = clip(phi + dphi, -PI / 2, PI / 2)
         self.data["euler_angles"][1] = new_phi
         self.refresh_rotation_matrix()
         return self

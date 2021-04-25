@@ -9,17 +9,17 @@ import inspect
 import platform
 import random
 import string
+import sys
 import threading
+import time
 import types
 import warnings
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-import sys
-import time
 from queue import Queue
 
 import numpy as np
 from tqdm import tqdm
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
@@ -29,15 +29,14 @@ from ..container import Container
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
+from ..renderer.shader import Mesh
+from ..utils import opengl, space_ops
 from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
-from ..renderer.shader import Mesh
-from ..utils import opengl
-from ..utils import space_ops
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -307,7 +306,6 @@ class Scene(Container):
         """
         for mobject in self.mobjects:
             mobject.update(dt)
-        self.camera.update(dt)
 
     def update_meshes(self, dt):
         for mesh in self.meshes:
@@ -1174,16 +1172,15 @@ class Scene(Container):
             self.camera.shift(shift)
 
     def on_mouse_scroll(self, point, offset):
-        if CTRL_VALUE in self.renderer.pressed_keys:
-            factor = 1 + np.arctan(-20 * offset[1])
-            self.camera.scale(factor, about_point=point)
+        factor = 1 + np.arctan(-2.1 * offset[1])
+        self.camera.scale(factor, about_point=self.camera_target)
 
-        transform = self.camera.inverse_rotation_matrix
-        shift = np.dot(np.transpose(transform), offset)
-        if SHIFT_VALUE in self.renderer.pressed_keys:
-            self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
-        else:
-            self.camera.shift(20.0 * shift)
+        # transform = self.camera.inverse_rotation_matrix
+        # shift = np.dot(np.transpose(transform), offset)
+        # if SHIFT_VALUE in self.renderer.pressed_keys:
+        #     self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
+        # else:
+        #     self.camera.shift(20.0 * shift)
         self.on_mouse_scroll_2(point, offset)
 
     def on_key_press(self, symbol, modifiers):
@@ -1195,6 +1192,7 @@ class Scene(Container):
 
         if char == "r":
             self.camera.to_default_state()
+            self.camera_target = np.array([0, 0, 0], dtype=np.float32)
         elif char == "q":
             self.quit_interaction = True
 
@@ -1203,8 +1201,16 @@ class Scene(Container):
 
     def on_mouse_drag(self, point, d_point, buttons, modifiers):
         self.mouse_drag_point.move_to(point)
-        self.camera.increment_theta(-d_point[0])
-        self.camera.increment_phi(d_point[1])
+        if buttons == 1:
+            self.camera.increment_theta(-d_point[0])
+            self.camera.increment_phi(d_point[1])
+        elif buttons == 4:
+            camera_x_axis = self.camera.model_matrix[:3, 0]
+            horizontal_shift_vector = -d_point[0] * camera_x_axis
+            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
+            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+            self.camera.shift(1.1 * total_shift_vector)
+
         self.on_mouse_drag_2(point, d_point, buttons, modifiers)
 
     def on_mouse_scroll_2(self, point, offset):
@@ -1236,7 +1242,7 @@ class Scene(Container):
             )
 
             maximum_polar_angle = PI / 2
-            minimum_polar_angle = 0
+            minimum_polar_angle = -PI / 2
 
             potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
             potential_camera_location = potential_camera_model_matrix[:3, 3]
