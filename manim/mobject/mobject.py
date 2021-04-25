@@ -33,11 +33,8 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
-    angle_between,
     angle_between_vectors,
     angle_of_vector,
-    cross,
-    get_norm,
     normalize,
     rotation_matrix,
     rotation_matrix_transpose,
