@@ -1,13 +1,11 @@
 __all__ = ["deprecated", "deprecated_params"]
 
 
-from manim.constants import SMALL_BUFF
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Union
+from typing import Any, Callable, Iterable, Optional, Tuple, Union
 import re
+from functools import wraps
 
-from numpy import sinc
-
-# from .. import logger
+from .. import logger
 
 
 def get_callable_description(callable: Callable) -> Tuple[str, str]:
@@ -45,11 +43,11 @@ def deprecated(
         return f"The {what} {name} is {deprecated}"
 
     def decorator(func):
+        @wraps(func)
         def deprecated_func(*args, **kwargs):
-            print(warning_msg(func))
+            logger.warn(warning_msg(func))
             return func(*args, **kwargs)
 
-        deprecated_func.__qualname__ = func.__qualname__
         return deprecated_func
 
     if func is None:
@@ -101,13 +99,14 @@ def deprecated_params(
         )
 
     def decorator(func):
+        @wraps(func)
         def deprecated_func(*args, **kwargs):
             used = []
             for param in params:
                 if param in kwargs:
                     used.append(param)
             if len(used) > 0:
-                print(warning_msg(func, used))
+                logger.warn(warning_msg(func, used))
 
                 for redirector in redirections:
                     if isinstance(redirector, tuple):
@@ -126,109 +125,6 @@ def deprecated_params(
 
             return func(*args, **kwargs)
 
-        deprecated_func.__qualname__ = func.__qualname__
         return deprecated_func
 
     return decorator
-
-
-# @redirect_params(
-#     ("n_cols", "cols"),  # equivalent to second line
-#     lambda n_cols: {"cols": n_cols},
-#     lambda buff_x=SMALL_BUFF, buff_y=SMALL_BUFF: {"buff": (buff_x, buff_y)},
-#     lambda buff: {"buff_x": buff, "buff_y": buff},
-# )
-
-# vorgehen:
-# Einen nach dem anderen durchgehen, gucken ob min ein param passt
-# Falls ja:
-#   Ausführen (muss halt im Zweifelsfall defaults haben)
-
-
-# @deprecated
-# @deprecated(since="0.2")
-# @deprecated(until="0.5")
-# @deprecated(since="0.2", until="0.5")
-# @deprecated(replacement="bar", message="It's better.")
-# def foo():
-#     pass
-
-
-# @deprecated
-# class Foo:
-#     @deprecated
-#     def bar(self):
-#         pass
-
-
-# @deprecated_params(redirections=[
-#         ("n_rows", "rows"),
-#         lambda n_cols: {"cols": n_cols}, # equivalent to ("n_cols", "cols"),
-#         lambda buff_x=SMALL_BUFF, buff_y=SMALL_BUFF: {"buff": (buff_x, buff_y)}
-# ])
-# def baz(rows=None, cols=None, buff=None):
-#     print(f"rows={rows}, cols={cols}, buff={buff}")
-
-
-# @deprecated_params(
-#     since="0.2",
-#     until="0.5",
-#     redirections=[
-#         lambda buff: {"buff_x": buff[0], "buff_y": buff[1]}
-#         if isinstance(buff, tuple)
-#         else {"buff_x": buff, "buff_y": buff}
-#     ],
-# )
-# def zab(buff_x=None, buff_y=None):
-#     print(f"buff_x={buff_x}, buff_y={buff_y}")
-
-
-# print("")
-# # zab(buff=2)
-
-
-# # foo()
-
-# baz(n_rows=2)
-# baz(n_cols=2, n_rows=4)
-# baz(buff_x=1)
-# baz(buff_x=1, buff_y=2)
-# print("")
-# # baz(n_cols=2)
-# # print("")
-# # baz(n_rows=5, n_cols=2)
-# # print("")
-
-# # print("")
-
-
-# # # print("")
-
-# # a = Foo()
-
-# # print("")
-
-# # a.bar()
-
-# # # print("")
-
-# # @deprecated_params(params="useless_param, other_useless_param", until="0.5")
-# # def foo(useless_param=None, other_useless_param=None):
-# #     pass
-
-# # foo()
-# # foo(useless_param=2)
-# # foo(useless_param=2, other_useless_param=0)
-
-
-# @deprecated_params(redirections=[
-#         lambda buff: {"buff_x": buff[0], "buff_y": buff[1]} if isinstance(buff, tuple)
-#                 else {"buff_x": buff, "buff_y": buff}
-# ])
-# def zab(buff_x, buff_y):
-#     print(f"buff_x={buff_x}, buff_y={buff_y}")
-
-# print("")
-
-# zab(buff=1)
-# zab(buff=(2,3))
