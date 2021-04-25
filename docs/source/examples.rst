@@ -489,10 +489,6 @@ Special Camera Settings
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
-.. note::
-
-   These ThreeD examples are videos, however, only the last frame of these examples because they slow down the build of the documentation.
-
 
 .. manim:: ThreeDCameraRotation
     :save_last_frame:
