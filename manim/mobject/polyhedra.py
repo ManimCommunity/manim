@@ -35,6 +35,7 @@ class Polyhedron(VGroup):
     Examples
     --------
     To understand how to create a custom polyhedra, let's use the example of a rather simple one - a square pyramid.
+    
     .. manim:: SquarePyramidScene
         :save_last_frame:
 
