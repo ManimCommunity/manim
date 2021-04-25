@@ -30,23 +30,39 @@ class ValueTracker(Mobject):
                 pointer = Vector(DOWN)
                 label = MathTex("x").add_updater(lambda m: m.next_to(pointer, UP))
 
-                pointer_value = ValueTracker(0)
+                pointer_tracker = ValueTracker(0)
                 pointer.add_updater(
                     lambda m: m.next_to(
-                                number_line.n2p(pointer_value.get_value()),
+                                number_line.n2p(pointer_tracker.get_value()),
                                 UP
                             )
                 )
                 self.add(number_line, pointer,label)
-                pointer_value += 1.5
+                pointer_tracker += 1.5
                 self.wait(1)
-                pointer_value -= 4
+                pointer_tracker -= 4
                 self.wait(0.5)
-                self.play(pointer_value.animate.set_value(5)),
+                self.play(pointer_tracker.animate.set_value(5)),
                 self.wait(0.5)
-                self.play(pointer_value.animate.set_value(3))
-                self.play(pointer_value.animate.increment_value(-2))
+                self.play(pointer_tracker.animate.set_value(3))
+                self.play(pointer_tracker.animate.increment_value(-2))
                 self.wait(0.5)
+
+    .. note::
+
+        You can also link ValueTrackers to updaters. In this case, you have to make sure that the ValueTracker is added to the scene by ``add``
+
+    .. manim:: ValueTrackerExample
+
+        class ValueTrackerExample(Scene):
+            def construct(self):
+                pointer_tracker = ValueTracker(0)
+                label = Dot(radius=3).add_updater(lambda x : x.set_x(pointer_tracker.get_value()))
+                self.add(label)
+                self.add(pointer_tracker)
+                pointer_tracker.add_updater(lambda mobject, dt: mobject.increment_value(dt))
+                self.wait(2)
+
     """
 
     def __init__(self, value=0, **kwargs):
@@ -55,8 +71,10 @@ class ValueTracker(Mobject):
         self.set_value(value)
 
     def get_value(self) -> float:
-        """Get the current value of the ValueTracker. This value changes continuously
-        when :attr:`animate` for the ValueTracker is called."""
+        """Get the current value of this value tracker.
+
+        The value changes continuously when :attr:`animate`
+        for the ValueTracker is called."""
         return self.points[0, 0]
 
     def set_value(self, value: Union[float, int]):
@@ -70,31 +88,31 @@ class ValueTracker(Mobject):
         return self
 
     def __bool__(self):
-        """Allows ValueTracker to be tested directly in boolean expressions. True if the value of the ValueTracker is nonzero."""
+        """Return whether the value of this value tracker evaluates as true."""
         return bool(self.get_value())
 
     def __iadd__(self, d_value: Union[float, int]):
-        """adds ``+=`` syntax to increment the value of the ValueTracker"""
+        """Add ``d_value`` to the value of this value tracker."""
         self.increment_value(d_value)
         return self
 
     def __ifloordiv__(self, d_value: Union[float, int]):
-        """adds ``//=`` syntax to floor divide the value of the ValueTracker"""
+        """Set the value of this value tracker to the floor division of the current value by ``d_value``. """
         self.set_value(self.get_value() // d_value)
         return self
 
     def __imod__(self, d_value: Union[float, int]):
-        """adds ``%=`` syntax to floor mod the value of the ValueTracker"""
+        """Set the value of this value tracker to the current value modulo ``d_value``."""
         self.set_value(self.get_value() % d_value)
         return self
 
     def __imul__(self, d_value: Union[float, int]):
-        """adds ``*=`` syntax to multiply the value of the ValueTracker"""
+        """Set the value of this value tracker to the product of the current value and ``d_value``."""
         self.set_value(self.get_value() * d_value)
         return self
 
     def __ipow__(self, d_value: Union[float, int]):
-        """adds ``**=`` syntax to exponentiate the value of the ValueTracker"""
+        """Set the value of this value tracker to the current value raised to the power of ``d_value``."""
         self.set_value(self.get_value() ** d_value)
         return self
 
@@ -104,7 +122,7 @@ class ValueTracker(Mobject):
         return self
 
     def __itruediv__(self, d_value: Union[float, int]):
-        """adds ``/=`` syntax to floor divide the value of the ValueTracker"""
+        """Sets the value of this value tracker to the current value divided by ``d_value``."""
         self.set_value(self.get_value() / d_value)
         return self
 
@@ -118,8 +136,7 @@ class ValueTracker(Mobject):
 
 
 class ComplexValueTracker(ValueTracker):
-    """Operates like ValueTracker, except it encodes a complex-valued
-    parameter as opposed to a real-valued parameter.
+    """Tracks a complex-valued parameter.
 
     Examples
     --------
@@ -141,8 +158,10 @@ class ComplexValueTracker(ValueTracker):
     """
 
     def get_value(self):
-        """Get the current value of the ComplexValueTracker. This value changes
-        continuously when :attr:`animate` for the ComplexValueTracker is called."""
+        """Get the current value of this value tracker.
+
+        This value changes continuously when animated using
+        the :attr:`animate` syntax."""
         return complex(*self.points[0, :2])
 
     def set_value(self, z):
