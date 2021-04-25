@@ -1,9 +1,10 @@
 __all__ = ["deprecated", "deprecated_params"]
 
 
-from typing import Any, Callable, Iterable, Optional, Tuple, Union
 import re
-from functools import wraps
+from typing import Any, Callable, Iterable, Optional, Tuple, Union
+
+from decorator import decorate, decorator
 
 from .. import logger
 
@@ -33,27 +34,39 @@ def deprecated(
     replacement: Optional[str] = None,
     message: str = "",
 ) -> Callable:
-    def warning_msg(func):
-        what, name = get_callable_description(func)
+    # If used as factory:
+    if func is None:
+        return lambda func: deprecated(func, since, until, replacement, message)
+
+    what, name = get_callable_description(func)
+
+    def warning_msg(for_docs=False):
         message_ = message
         if replacement is not None:
-            message_ = f"Use {replacement} instead. {message}"
+            replacement_ = replacement
+            if for_docs:
+                mapper = {"class": "class", "method": "meth", "function": "func"}
+                replacement_ = f":{mapper[what]}:`~.{replacement}`"
+            message_ = f"Use {replacement_} instead. {message}"
         deprecated = deprecation_text_component(since, until, message_)
-
         return f"The {what} {name} is {deprecated}"
 
-    def decorator(func):
-        @wraps(func)
-        def deprecated_func(*args, **kwargs):
-            logger.warn(warning_msg(func))
-            return func(*args, **kwargs)
+    def deprecate_docs(func):
+        warning = warning_msg(True)
+        func.__doc__ = f"Deprecated.\n .. warning::\n  {warning}\n{func.__doc__}"
 
-        return deprecated_func
+    def deprecate(func, *args, **kwargs):
+        logger.warning(warning_msg())
+        return func(*args, **kwargs)
 
-    if func is None:
-        return decorator
-    else:
-        return decorator(func)
+    if type(func) == type:
+        deprecate_docs(func)
+        func.__init__ = decorate(func.__init__, deprecate)
+        return func
+
+    func = decorate(func, deprecate)
+    deprecate_docs(func)
+    return func
 
 
 def deprecated_params(
@@ -62,6 +75,7 @@ def deprecated_params(
     until: Optional[str] = None,
     message: str = "",
     redirections: "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]" = [],
+    func: Callable = None,
 ) -> Callable:
     # Check if decorator is used without parenthesis
     if callable(params):
@@ -76,9 +90,7 @@ def deprecated_params(
             params.append(redirector[0])
         else:
             params.extend(redirector.__code__.co_varnames)
-
-    # remove duplicates
-    prams = list(set(params))
+    params = list(set(params))
 
     # Make sure prams only contains valid identifiers
     identifier = re.compile(r"^[^\d\W]\w*\Z", re.UNICODE)
@@ -98,33 +110,33 @@ def deprecated_params(
             f"The parameter{prameter_s} {used_} of {what} {name} {is_are} {deprecated}"
         )
 
-    def decorator(func):
-        @wraps(func)
-        def deprecated_func(*args, **kwargs):
-            used = []
-            for param in params:
-                if param in kwargs:
-                    used.append(param)
-            if len(used) > 0:
-                logger.warn(warning_msg(func, used))
+    def redirect_params(kwargs, used):
+        for redirector in redirections:
+            if isinstance(redirector, tuple):
+                old_param, new_param = redirector
+                if old_param in used:
+                    kwargs[new_param] = kwargs.pop(old_param)
+            else:
+                redirector_params = redirector.__code__.co_varnames
+                redirector_args = {}
+                for redirector_param in redirector_params:
+                    if redirector_param in used:
+                        redirector_args[redirector_param] = kwargs.pop(redirector_param)
+                if len(redirector_args) > 0:
+                    kwargs.update(redirector(**redirector_args))
 
-                for redirector in redirections:
-                    if isinstance(redirector, tuple):
-                        old_param, new_param = redirector
+    def deprecate_params(func, *args, **kwargs):
+        used = []
+        for param in params:
+            if param in kwargs:
+                used.append(param)
 
-                        if old_param in used:
-                            kwargs[new_param] = kwargs.pop(old_param)
-                    else:
-                        redirector_params = redirector.__code__.co_varnames
-                        redirector_args = {}
-                        for r_param in redirector_params:
-                            if r_param in used:
-                                redirector_args[r_param] = kwargs.pop(r_param)
-                        if len(redirector_args) > 0:
-                            kwargs.update(redirector(**redirector_args))
+        if len(used) > 0:
+            logger.warning(warning_msg(func, used))
+            redirect_params(kwargs, used)
+        return func(*args, **kwargs)
 
-            return func(*args, **kwargs)
+    def caller(f, *args, **kw):
+        return deprecate_params(f, *args, **kw)
 
-        return deprecated_func
-
-    return decorator
+    return decorator(caller)
