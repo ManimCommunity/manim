@@ -552,13 +552,13 @@ class ApplyWave(Homotopy):
             phases = ripples * 2
             phase = int(t * phases)
             if phase == 0:
-                # First rising ripple 
+                # First rising ripple
                 return wave_func(t * phases)
             elif phase == phases - 1:
                 # last ripple. Rising or falling depening on the number of ripples
                 # The (ripples % 2)-term is used to make this destinction.
-                t -= phase / phases # Time relative to the phase
-                return (1 - wave_func(t * phases)) * (2 * (ripples % 2)-1)
+                t -= phase / phases  # Time relative to the phase
+                return (1 - wave_func(t * phases)) * (2 * (ripples % 2) - 1)
             else:
                 # Longer phases:
                 phase = int((phase - 1) / 2)
