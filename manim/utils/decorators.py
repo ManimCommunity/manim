@@ -9,7 +9,20 @@ from decorator import decorate, decorator
 from .. import logger
 
 
-def get_callable_description(callable: Callable) -> Tuple[str, str]:
+def get_callable_info(callable: Callable) -> Tuple[str, str]:
+    """Returns type and name of a callable.
+
+    Parameters
+    ----------
+    callable
+        The callable
+
+    Returns
+    -------
+    Tuple[str, str]
+        The type and name of the callable. Type can can be one of "class", "method" (for
+        functions defined in classes) or "function"). For methods, name is Class.method.
+    """
     what = type(callable).__name__
     name = callable.__qualname__
     if what == "function" and name[0].isupper():  # TODO a bit hacky but works
@@ -22,6 +35,22 @@ def get_callable_description(callable: Callable) -> Tuple[str, str]:
 def deprecation_text_component(
     since: Optional[str], until: Optional[str], message: str
 ) -> str:
+    """Generates a text component used in deprecation messages.
+
+    Parameters
+    ----------
+    since
+        Since when something is deprecated
+    until
+        Until when something is deprecated
+    message
+        A message to add.
+
+    Returns
+    -------
+    str
+        The deprecation message text component.
+    """
     since = "" if since is None else f"since {since} "
     until = "may be deleted soon" if until is None else f"will be deleted after {until}"
     return f"deprecated {since}and {until}. {message}"
@@ -34,13 +63,48 @@ def deprecated(
     replacement: Optional[str] = None,
     message: str = "",
 ) -> Callable:
+    """Decorator to mark a callable as deprecated.
+
+    The decorated callable will cause a warning when used. The doc string of the
+    deprecated callable is adjusted to indicate that this callable is deprecated.
+
+    Parameters
+    ----------
+    func
+        The function to be decorated. Should not be set by the user.
+    since 
+        Since when the callable is deprecated.
+    until
+        Until when the callable is deprecated.
+    replacement
+        The identifier of the callable replacing the deprecated one.
+    message
+        Additional informations to add to the deprecation message. 
+
+    Returns
+    -------
+    Callable
+        The decorated callable. 
+    """
     # If used as factory:
     if func is None:
         return lambda func: deprecated(func, since, until, replacement, message)
 
-    what, name = get_callable_description(func)
+    what, name = get_callable_info(func)
 
-    def warning_msg(for_docs=False):
+    def warning_msg(for_docs=False) -> str:
+        """Generate the deprecation warning message.
+
+        Parameters
+        ----------
+        for_docs
+            Wheather to format the message for the use in the documentation.
+
+        Returns
+        -------
+        str
+            The deprecation message.
+        """
         message_ = message
         if replacement is not None:
             replacement_ = replacement
@@ -51,11 +115,37 @@ def deprecated(
         deprecated = deprecation_text_component(since, until, message_)
         return f"The {what} {name} is {deprecated}"
 
-    def deprecate_docs(func):
+    def deprecate_docs(func:Callable):
+        """Adjust doc string to indicate the deprecation.
+
+        Parameters
+        ----------
+        func
+            The callable whose docstring to adjust.
+        """
         warning = warning_msg(True)
         func.__doc__ = f"Deprecated.\n .. warning::\n  {warning}\n{func.__doc__}"
 
-    def deprecate(func, *args, **kwargs):
+    def deprecate(func:Callable, *args, **kwargs):
+        """The actual decorator used to extend the callables behavior.
+
+        Logs a warning message.
+
+        Parameters
+        ----------
+        func
+            The callable to docorate.
+        args
+            The arguments passed to the given function.
+        kwargs
+            The keyword arguments passed to the given function.
+
+        Returns
+        -------
+        Any
+            The return value of the given function when beeing passed the given
+            arguments.
+        """
         logger.warning(warning_msg())
         return func(*args, **kwargs)
 
@@ -74,9 +164,138 @@ def deprecated_params(
     since: Optional[str] = None,
     until: Optional[str] = None,
     message: str = "",
-    redirections: "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]" = [],
-    func: Callable = None,
+    redirections: "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]" = []
 ) -> Callable:
+    """Decorator to mark parametes of a callable as deprecated.
+
+    It can also be used to automatically redirect deprecated parameter values to their
+    replacements.
+
+    Parameters
+    ----------
+    params
+        The parameters to be deprecated. Can be either an iterable of strings, where
+        each one parameter to deprecate, or a single string in which the parameters 
+        names are separated by commas or spaces.
+    since 
+        Since when the parameters are deprecated.
+    until
+        Until when the parameters are deprecated.
+    message
+        Additional informations to add to the deprecation message. 
+    redirections
+        A list of parameter redirections. Each redirection can be one of the following:
+
+        * A tuple of two strings. The first one defines the name of the deprecated
+          parameter, the second defines to which parameter given values should be 
+          redirected.
+
+        * A function performing the mapping operation. The parameter names of the
+          function determine which parameters are used as input. The function must
+          return a dictionary which contains the redirected arguments.
+        
+        Redirected parameters are also implicitly deprecated.
+
+    Returns
+    -------
+    Callable
+        The decorated callable.
+
+    Raises
+    ------
+    ValueError
+        If no parameters are defined (neiter explicitly nor implicitly).
+    ValueError
+        If defined parameters are invalid python identifiers.
+
+    Examples
+    --------
+    Basic usage::
+        
+        @deprecated_params(params="a, b, c")
+        def foo(**kwargs):
+            pass
+
+        foo(x=2, y=3, z=4)
+        # No warning
+
+        foo(a=2, b=3, z=4)
+        # WARNING  The parameters a and b of function foo are deprecated and may be deleted soon.
+    
+    You can also specify additional information for a more precise warning::
+
+        @deprecated_params(
+            params="a, b, c",
+            since="0.2",
+            until="0.4",
+            message="The letters x, y, z are cooler."
+        )
+        def foo(**kwargs):
+            pass
+
+        foo(a=2)
+        # WARNING  The parameter a of function foo is deprecated since 0.2 and will be deleted after 0.4. The letters x, y, z are cooler. 
+        
+    Basic parameter redirection::
+
+        @deprecated_params(redirections=[
+            #Two way to redict one parameter to another:
+            ("old_param", "new_param"),
+            lambda old_param2: {"new_param22": old_param2}
+        ])
+        def foo(**kwargs):
+            return kwargs
+
+        foo(x=1, old_param=2)
+        # WARNING  The parameter old_param of function foo is deprecated and may be deleted soon.
+        # returns {"x": 1, "new_param": 2}
+        
+    Redirecting using a calculated value::
+
+        @deprecated_params(redirections=[
+            lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}
+        ])
+        def foo(**kwargs):
+            print(kwargs)
+            return kwargs
+
+        foo(runtime_in_ms=500)
+        # WARNING  The parameter runtime_in_ms of function foo is deprecated and may be deleted soon. 
+        # returns {"run_time": 0.5}
+    
+    Redirecting multiple parameter values to one::
+
+        @deprecated_params(redirections=[
+            lambda buff_x=1, buff_y=1: {"buff": (buff_x, buff_y)}
+        ])
+        def foo(**kwargs):
+            print(kwargs)
+            return kwargs
+
+        foo(buff_x=2)
+        # WARNING  The parameter buff_x of function foo is deprecated and may be deleted soon.
+        # returns {"buff": (2, 1)}
+    
+    Redirect one parameter to multiple::
+
+        @deprecated_params(redirections=[
+            lambda buff=1: {"buff_x": buff[0], "buff_y": buff[1]} if isinstance(buff, tuple)
+                    else {"buff_x": buff,    "buff_y": buff}
+        ])
+        def foo(**kwargs):
+            print(kwargs)
+            return kwargs
+
+        foo(buff=0)
+        foo(buff=(1,2))
+        # WARNING  The parameter buff of function foo is deprecated and may be deleted soon.
+        # returns {"buff_x": 0, buff_y: 0}
+
+        # WARNING  The parameter buff of function foo is deprecated and may be deleted soon.
+        # returns {"buff_x": 1, buff_y: 2}
+
+    
+    """
     # Check if decorator is used without parenthesis
     if callable(params):
         raise ValueError("deprecate_parameters requires arguments to be specified.")
@@ -100,7 +319,7 @@ def deprecated_params(
     redirections = list(redirections)
 
     def warning_msg(func, used):
-        what, name = get_callable_description(func)
+        what, name = get_callable_info(func)
         plural = len(used) > 1
         prameter_s = "s" if plural else ""
         used_ = ", ".join(used[:-1]) + " and " + used[-1] if plural else used[0]
