@@ -491,7 +491,6 @@ Special Camera Settings
 
 
 .. manim:: ThreeDCameraRotation
-    :save_last_frame:
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
 
