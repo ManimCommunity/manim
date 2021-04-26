@@ -110,19 +110,19 @@ def deprecated(
                 pass
 
         foo()
-        # WARNING  The function foo is deprecated and may be deleted soon.
+        # WARNING  The function foo has been deprecated and may be deleted in a future version.
 
         a = Bar()
-        # WARNING  The class Bar is deprecated and may be deleted soon.
+        # WARNING  The class Bar has been deprecated and may be deleted in a future version.
 
         a.baz()
-        # WARNING  The method Bar.baz is deprecated and may be deleted soon.
+        # WARNING  The method Bar.baz has been deprecated and may be deleted in a future version.
 
-    You can also specify additional information for a more precise warning::
+    You can specify additional information for a more precise warning::
 
         @deprecated(
-            since="0.2",
-            until="0.4",
+            since="v0.2",
+            until="v0.4",
             replacement="bar",
             message="It is cooler."
         )
@@ -130,7 +130,16 @@ def deprecated(
             pass
 
         foo()
-        # WARNING  The function foo is deprecated since 0.2 and will be deleted after 0.4. Use bar instead. It is cooler.
+        # WARNING  The function foo has been deprecated since v0.2 and is expected to be deleted after v0.4. Use bar instead. It is cooler.
+
+    You may also use dates instead of versions::
+
+        @deprecated(since="05/01/2021", until="06/01/2021")
+        def foo():
+            pass
+
+        foo()
+        # WARNING  The function foo has been deprecated since 05/01/2021 and is expected to be deleted after 06/01/2021.
 
     """
     # If used as factory:
@@ -268,21 +277,21 @@ def deprecated_params(
         # No warning
 
         foo(a=2, b=3, z=4)
-        # WARNING  The parameters a and b of function foo are deprecated and may be deleted soon.
+        # WARNING  The parameters a and b of function foo have been deprecated and may be deleted in a future version.
 
     You can also specify additional information for a more precise warning::
 
         @deprecated_params(
             params="a, b, c",
-            since="0.2",
-            until="0.4",
+            since="v0.2",
+            until="v0.4",
             message="The letters x, y, z are cooler."
         )
         def foo(**kwargs):
             pass
 
         foo(a=2)
-        # WARNING  The parameter a of function foo is deprecated since 0.2 and will be deleted after 0.4. The letters x, y, z are cooler.
+        # WARNING  The parameter a of function foo has been deprecated since v0.2 and is expected to be deleted after v0.4. The letters x, y, z are cooler.
 
     Basic parameter redirection::
 
@@ -295,7 +304,7 @@ def deprecated_params(
             return kwargs
 
         foo(x=1, old_param=2)
-        # WARNING  The parameter old_param of function foo is deprecated and may be deleted soon.
+        # WARNING  The parameter old_param of function foo has been deprecated and may be deleted in a future version.
         # returns {"x": 1, "new_param": 2}
 
     Redirecting using a calculated value::
@@ -304,11 +313,10 @@ def deprecated_params(
             lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}
         ])
         def foo(**kwargs):
-            print(kwargs)
             return kwargs
 
         foo(runtime_in_ms=500)
-        # WARNING  The parameter runtime_in_ms of function foo is deprecated and may be deleted soon.
+        # WARNING  The parameter runtime_in_ms of function foo has been deprecated and may be deleted in a future version.
         # returns {"run_time": 0.5}
 
     Redirecting multiple parameter values to one::
@@ -317,11 +325,10 @@ def deprecated_params(
             lambda buff_x=1, buff_y=1: {"buff": (buff_x, buff_y)}
         ])
         def foo(**kwargs):
-            print(kwargs)
             return kwargs
 
         foo(buff_x=2)
-        # WARNING  The parameter buff_x of function foo is deprecated and may be deleted soon.
+        # WARNING  The parameter buff_x of function foo has been deprecated and may be deleted in a future version.
         # returns {"buff": (2, 1)}
 
     Redirect one parameter to multiple::
@@ -331,15 +338,14 @@ def deprecated_params(
                     else {"buff_x": buff,    "buff_y": buff}
         ])
         def foo(**kwargs):
-            print(kwargs)
             return kwargs
 
         foo(buff=0)
         foo(buff=(1,2))
-        # WARNING  The parameter buff of function foo is deprecated and may be deleted soon.
+        # WARNING  The parameter buff of function foo has been deprecated and may be deleted in a future version. 
         # returns {"buff_x": 0, buff_y: 0}
 
-        # WARNING  The parameter buff of function foo is deprecated and may be deleted soon.
+        # WARNING  The parameter buff of function foo has been deprecated and may be deleted in a future version.
         # returns {"buff_x": 1, buff_y: 2}
 
 
