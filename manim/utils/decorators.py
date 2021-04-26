@@ -213,7 +213,7 @@ def deprecated_params(
     message: str = "",
     redirections: "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]" = [],
 ) -> Callable:
-    """Decorator to mark parametes of a callable as deprecated.
+    """Decorator to mark parameters of a callable as deprecated.
 
     It can also be used to automatically redirect deprecated parameter values to their
     replacements.
