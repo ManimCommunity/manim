@@ -385,11 +385,9 @@ def deprecated_params(
         plural = len(used) > 1
         prameter_s = "s" if plural else ""
         used_ = ", ".join(used[:-1]) + " and " + used[-1] if plural else used[0]
-        is_are = "are" if plural else "is"
+        has_have_been = "have been" if plural else "has been"
         deprecated = __deprecation_text_component(since, until, message)
-        return (
-            f"The parameter{prameter_s} {used_} of {what} {name} {is_are} {deprecated}"
-        )
+        return f"The parameter{prameter_s} {used_} of {what} {name} {has_have_been} {deprecated}"
 
     def redirect_params(kwargs: dict, used: List[str]):
         """Adjust the keyword arguments as defined by the redirections.
