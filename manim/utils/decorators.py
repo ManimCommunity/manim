@@ -237,7 +237,7 @@ def deprecated_params(
         * A tuple of two strings. The first string defines the name of the deprecated
           parameter; the second string defines the name of the parameter to redirect to,
           when attempting to use the first string.
-          
+
         * A function performing the mapping operation. The parameter names of the
           function determine which parameters are used as input. The function must
           return a dictionary which contains the redirected arguments.
