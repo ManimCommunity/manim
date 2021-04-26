@@ -287,7 +287,7 @@ def deprecated_params(
     Basic parameter redirection::
 
         @deprecated_params(redirections=[
-            #Two way to redict one parameter to another:
+            #Two ways to redict one parameter to another:
             ("old_param", "new_param"),
             lambda old_param2: {"new_param22": old_param2}
         ])
