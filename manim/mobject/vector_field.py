@@ -544,7 +544,7 @@ class StreamLines(VectorField):
     n_repeats
         The number of agents generated at each starting point.
     dt
-        The factor by which the distance an agend moves per step is stretched. Lower values result in a better approximation of the trajectories in the vector field.
+        The factor by which the distance an agent moves per step is stretched. Lower values result in a better approximation of the trajectories in the vector field.
     virtual_time
         The time the agents get to move in the vector field. Higher values therefor result in longer stream lines. However, this whole time gets simulated upon creation.
     max_anchors_per_line
