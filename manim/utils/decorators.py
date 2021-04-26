@@ -222,7 +222,7 @@ def deprecated_params(
     ----------
     params
         The parameters to be deprecated. Can consist of:
-        
+
         * An iterable of strings, with each element representing a parameter to deprecate
         * A single string, with parameter names separated by commas or spaces.
     since
