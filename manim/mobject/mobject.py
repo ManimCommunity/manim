@@ -2084,7 +2084,16 @@ class Mobject(Container):
             "dr" (down right) means: Fill the table column by column downwards, filling the
             columns rigthwards. "u" and "l" stand for upwards and leftwards.
 
-        .. note:: If either :code:`rows` or :code:`cols` is not defined, it is set to the length of either
+        Returns
+        -------
+        Mobject
+            The mobject.
+
+        NOTES
+        -----
+
+        .. note::
+            If either :code:`rows` or :code:`cols` is not defined, it is set to the length of either
             :code:`row_alignments` / :code:`col_alignments` or :code:`row_heights` / :code:`col_widths` if
             one of those is defined. If only one of :code:`rows` and :code:`cols` can be determined
             like this, the other will be choosen big enough to fit all submobjects.
@@ -2092,14 +2101,10 @@ class Mobject(Container):
             about the same, tending towards :code:`cols > rows` (simply because videos are wider
             then they are high).
 
-        .. note:: If both :code:`cell_alignment` and :code:`row_alignments` / :code:`col_alignments` are
+        .. note::
+            If both :code:`cell_alignment` and :code:`row_alignments` / :code:`col_alignments` are
             defined, the latter has higher priority.
 
-
-        Returns
-        -------
-        Mobject
-            The mobject.
 
         Raises
         ------
