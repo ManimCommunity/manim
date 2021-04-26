@@ -222,7 +222,7 @@ def deprecated_params(
     ----------
     params
         The parameters to be deprecated. Can consist of:
-        
+
         * An iterable of strings, with each element representing a parameter to deprecate
         * A single string, with parameter names separated by commas or spaces.
     since
@@ -234,10 +234,10 @@ def deprecated_params(
     redirections
         A list of parameter redirections. Each redirection can be one of the following:
 
-        * A tuple of two strings. The first one defines the name of the deprecated
-          parameter, the second defines to which parameter given values should be
-          redirected.
-
+        * A tuple of two strings. The first string defines the name of the deprecated
+          parameter; the second string defines the name of the parameter to redirect to,
+          when attempting to use the first string.
+          
         * A function performing the mapping operation. The parameter names of the
           function determine which parameters are used as input. The function must
           return a dictionary which contains the redirected arguments.
