@@ -11,7 +11,7 @@ from decorator import decorate, decorator
 from .. import logger
 
 
-def get_callable_info(callable: Callable) -> Tuple[str, str]:
+def __get_callable_info(callable: Callable) -> Tuple[str, str]:
     """Returns type and name of a callable.
 
     Parameters
@@ -34,7 +34,7 @@ def get_callable_info(callable: Callable) -> Tuple[str, str]:
     return (what, name)
 
 
-def deprecation_text_component(
+def __deprecation_text_component(
     since: Optional[str], until: Optional[str], message: str
 ) -> str:
     """Generates a text component used in deprecation messages.
@@ -133,7 +133,7 @@ def deprecated(
     if func is None:
         return lambda func: deprecated(func, since, until, replacement, message)
 
-    what, name = get_callable_info(func)
+    what, name = __get_callable_info(func)
 
     def warning_msg(for_docs: bool = False) -> str:
         """Generate the deprecation warning message.
@@ -155,7 +155,7 @@ def deprecated(
                 mapper = {"class": "class", "method": "meth", "function": "func"}
                 replacement_ = f":{mapper[what]}:`~.{replacement}`"
             message_ = f"Use {replacement_} instead. {message}"
-        deprecated = deprecation_text_component(since, until, message_)
+        deprecated = __deprecation_text_component(since, until, message_)
         return f"The {what} {name} is {deprecated}"
 
     def deprecate_docs(func: Callable):
@@ -376,12 +376,12 @@ def deprecated_params(
         str
             The deprecation message.
         """
-        what, name = get_callable_info(func)
+        what, name = __get_callable_info(func)
         plural = len(used) > 1
         prameter_s = "s" if plural else ""
         used_ = ", ".join(used[:-1]) + " and " + used[-1] if plural else used[0]
         is_are = "are" if plural else "is"
-        deprecated = deprecation_text_component(since, until, message)
+        deprecated = __deprecation_text_component(since, until, message)
         return (
             f"The parameter{prameter_s} {used_} of {what} {name} {is_are} {deprecated}"
         )
