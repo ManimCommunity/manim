@@ -974,6 +974,7 @@ pandocfilters = ">=1.4.1"
 pygments = ">=2.4.1"
 testpath = "*"
 traitlets = ">=4.2"
+decorator = ">=5.0"
 
 [package.extras]
 all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)", "tornado (>=4.0)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
