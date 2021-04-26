@@ -14,8 +14,12 @@ from ...mobject.value_tracker import ValueTracker
 from ...renderer.webgl_renderer import WebGLRenderer
 from ...utils.family import extract_mobject_family_members
 from ...utils.module_ops import scene_classes_from_file
-from ..gen import (frameserver_pb2, frameserver_pb2_grpc, renderserver_pb2,
-                   renderserver_pb2_grpc)
+from ..gen import (
+    frameserver_pb2,
+    frameserver_pb2_grpc,
+    renderserver_pb2,
+    renderserver_pb2_grpc,
+)
 
 
 class FrameServer(frameserver_pb2_grpc.FrameServerServicer):

@@ -12,11 +12,17 @@ from .. import config
 from ..constants import *
 from ..utils.bezier import interpolate
 from ..utils.color import *
+
 # from ..utils.iterables import batch_by_property
-from ..utils.iterables import (batch_by_property, list_update, listify,
-                               make_even, resize_array,
-                               resize_preserving_order,
-                               resize_with_interpolation)
+from ..utils.iterables import (
+    batch_by_property,
+    list_update,
+    listify,
+    make_even,
+    resize_array,
+    resize_preserving_order,
+    resize_with_interpolation,
+)
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose
