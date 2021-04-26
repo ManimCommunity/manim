@@ -2062,28 +2062,22 @@ class Mobject(Container):
         cols
             The number of columns in the grid.
         buff
-            The gap between grid cells. To specify a different buffer in horizontal and
-            vertical direction, a tuple of two values can be given. The first value
-            containing defines the buffer in horizontal, the second the buffer in vertical
-            direction.
+            The gap between grid cells. To specify a different buffer in the horizontal and
+            vertical directions, a tuple of two values can be given - `(row, col)`. 
         cell_alignment
             The way each submobject is aligned in its grid cell.
         row_alignments
-            The way each row of submobjects (from top to bottom) is aligned vertically.
-            If defined the given string must only contain the following characters: "u"
-            (up), "c" (centered) and "d" (down).
+            The vertical alignment for each row (top to bottom). Accepts the following characters: `"u"` - 
+            up, `"c"` - center, `"d"` - down.
         col_alignments
-            The way each column of submobjects (from left to righht) is aligned horizontally.
-            If defined the given string must only contain the following characters: "l"
-            (left), "c" (centered) and "r" (right).
+            The horizontal alignment for each column (left to right). Accepts the following characters `"l"` - left,
+             `"c"` - center, `"r"` - right.
         row_heights
-            Specific heights for certain rows (from top to bottom). The given list can contain
-            `None`. In that case the corresponding row will fit its height automatically based
+            Defines a list of heights for certain rows (top to bottom). If the list contains `None`, the corresponding row will fit its height automatically based
             on the highest element in that row.
         col_widths
-            Specific widths for certain columns (from left to right). The given list can contain
-            `None`. In that case the corresponding column will fit its width automatically based
-            on the widest element in that column.
+            Defines a list of widths for certain columns (left to right). If the list contains `None`, the 
+            corresponding column will fit its width automatically based on the widest element in that column.
         flow_order
             The order in which the grid gets filled with the submobjects. Can be one of the
             following values: "rd", "dr", "ld", "dl", "ru", "ur", "lu", "ul". For example,
@@ -2098,8 +2092,8 @@ class Mobject(Container):
             about the same, tending towards :code:`cols > rows` (simply because videos are wider
             then they are high).
 
-        .. note:: If both :code:`cell_alignment` and either :code:`row_alignments` or :code:`col_alignments` is
-            defined the latter has higher priority in its direction.
+        .. note:: If both :code:`cell_alignment` and :code:`row_alignments` / :code:`col_alignments` are
+            defined, the latter has higher priority.
 
 
         Returns
@@ -2110,9 +2104,9 @@ class Mobject(Container):
         Raises
         ------
         ValueError
-            If rows and cols are choosen to small to fit all submobjetcs.
+            If :attr:`rows` and :attr:`cols` are too small to fit all submobjects.
         ValueError
-            :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
+            If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
             :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
 
         Examples
@@ -2138,7 +2132,7 @@ class Mobject(Container):
 
 
         """
-        from manim import Line
+        from .geometry import Line
 
         mobs = self.submobjects.copy()
         start_pos = self.get_center()
