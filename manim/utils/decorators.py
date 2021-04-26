@@ -221,9 +221,10 @@ def deprecated_params(
     Parameters
     ----------
     params
-        The parameters to be deprecated. Can be either an iterable of strings, where
-        each one parameter to deprecate, or a single string in which the parameters
-        names are separated by commas or spaces.
+        The parameters to be deprecated. Can consist of:
+        
+        * An iterable of strings, with each element representing a parameter to deprecate
+        * A single string, with parameter names separated by commas or spaces.
     since
         The version or date since deprecation.
     until
