@@ -359,7 +359,7 @@ def deprecated_params(
             params.extend(redirector.__code__.co_varnames)
     params = list(set(params))
 
-    # Make sure prams only contains valid identifiers
+    # Make sure params only contains valid identifiers
     identifier = re.compile(r"^[^\d\W]\w*\Z", re.UNICODE)
     if not all(re.match(identifier, param) for param in params):
         raise ValueError("Given parameter values are invalid.")
