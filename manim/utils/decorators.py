@@ -11,7 +11,7 @@ from decorator import decorate, decorator
 from .. import logger
 
 
-def __get_callable_info(callable: Callable) -> Tuple[str, str]:
+def _get_callable_info(callable: Callable) -> Tuple[str, str]:
     """Returns type and name of a callable.
 
     Parameters
@@ -34,7 +34,7 @@ def __get_callable_info(callable: Callable) -> Tuple[str, str]:
     return (what, name)
 
 
-def __deprecation_text_component(
+def _deprecation_text_component(
     since: Optional[str], until: Optional[str], message: str
 ) -> str:
     """Generates a text component used in deprecation messages.
@@ -296,7 +296,7 @@ def deprecated_params(
     Basic parameter redirection::
 
         @deprecated_params(redirections=[
-            #Two ways to redict one parameter to another:
+            #Two ways to redirect one parameter to another:
             ("old_param", "new_param"),
             lambda old_param2: {"new_param22": old_param2}
         ])
