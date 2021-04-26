@@ -342,7 +342,7 @@ def deprecated_params(
 
         foo(buff=0)
         foo(buff=(1,2))
-        # WARNING  The parameter buff of function foo has been deprecated and may be deleted in a future version. 
+        # WARNING  The parameter buff of function foo has been deprecated and may be deleted in a future version.
         # returns {"buff_x": 0, buff_y: 0}
 
         # WARNING  The parameter buff of function foo has been deprecated and may be deleted in a future version.
