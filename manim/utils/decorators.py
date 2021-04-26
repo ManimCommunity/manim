@@ -145,7 +145,7 @@ def deprecated(
         Parameters
         ----------
         for_docs
-            Wheather to format the message for the use in the documentation.
+            Whether or not to format the message for use in documentation.
 
         Returns
         -------
