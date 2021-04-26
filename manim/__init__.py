@@ -74,7 +74,6 @@ from .utils.bezier import *
 from .utils.color import *
 from .utils.config_ops import *
 from .utils.debug import *
-from .utils.decorators import *
 from .utils.file_ops import *
 from .utils.images import *
 from .utils.iterables import *
