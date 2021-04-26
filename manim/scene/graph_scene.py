@@ -60,8 +60,16 @@ from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
 from ..utils.bezier import interpolate
-from ..utils.color import (BLACK, BLUE, GREEN, GREY, WHITE, YELLOW,
-                           color_gradient, invert_color)
+from ..utils.color import (
+    BLACK,
+    BLUE,
+    GREEN,
+    GREY,
+    WHITE,
+    YELLOW,
+    color_gradient,
+    invert_color,
+)
 from ..utils.space_ops import angle_of_vector
 
 # TODO, this should probably reimplemented entirely, especially so as to

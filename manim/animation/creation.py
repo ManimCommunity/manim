@@ -72,8 +72,7 @@ __all__ = [
 
 
 import itertools as it
-from typing import (TYPE_CHECKING, Callable, Dict, Iterable, List, Optional,
-                    Tuple, Union)
+from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from colour import Color

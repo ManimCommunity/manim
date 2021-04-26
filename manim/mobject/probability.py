@@ -9,8 +9,16 @@ from ..mobject.mobject import Mobject
 from ..mobject.svg.brace import Brace
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.color import (BLUE, BLUE_E, DARK_GREY, GREEN_E, LIGHT_GREY,
-                           MAROON_B, YELLOW, color_gradient)
+from ..utils.color import (
+    BLUE,
+    BLUE_E,
+    DARK_GREY,
+    GREEN_E,
+    LIGHT_GREY,
+    MAROON_B,
+    YELLOW,
+    color_gradient,
+)
 from ..utils.iterables import tuplify
 
 EPSILON = 0.0001

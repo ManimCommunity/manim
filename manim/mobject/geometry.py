@@ -71,9 +71,14 @@ from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import fdiv
-from ..utils.space_ops import (angle_between_vectors, angle_of_vector,
-                               compass_directions, line_intersection,
-                               normalize, rotate_vector)
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    compass_directions,
+    line_intersection,
+    normalize,
+    rotate_vector,
+)
 
 
 class TipableVMobject(VMobject):

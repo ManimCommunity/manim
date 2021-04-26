@@ -21,14 +21,24 @@ from colour import Color
 from .. import config
 from ..constants import *
 from ..container import Container
-from ..utils.color import (BLACK, WHITE, YELLOW_C, Colors, color_gradient,
-                           interpolate_color)
+from ..utils.color import (
+    BLACK,
+    WHITE,
+    YELLOW_C,
+    Colors,
+    color_gradient,
+    interpolate_color,
+)
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
-from ..utils.space_ops import (angle_between_vectors, angle_of_vector,
-                               normalize, rotation_matrix,
-                               rotation_matrix_transpose)
+from ..utils.space_ops import (
+    angle_between_vectors,
+    angle_of_vector,
+    normalize,
+    rotation_matrix,
+    rotation_matrix_transpose,
+)
 
 # TODO: Explain array_attrs
 

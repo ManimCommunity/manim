@@ -176,8 +176,10 @@ from ...constants import *
 from ...mobject.opengl_geometry import OpenGLLine
 from ...mobject.svg.opengl_svg_mobject import OpenGLSVGMobject
 from ...mobject.svg.opengl_svg_path import OpenGLSVGPathMobject
-from ...mobject.types.opengl_vectorized_mobject import (OpenGLVectorizedPoint,
-                                                        OpenGLVGroup)
+from ...mobject.types.opengl_vectorized_mobject import (
+    OpenGLVectorizedPoint,
+    OpenGLVGroup,
+)
 from ...utils.color import BLACK
 from ...utils.strings import split_string_list_to_isolate_substrings
 from ...utils.tex_file_writing import tex_to_svg_file

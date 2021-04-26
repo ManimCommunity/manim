@@ -2,8 +2,7 @@ import math
 
 from ..constants import *
 from ..mobject.types.opengl_surface import OpenGLSurface
-from ..mobject.types.opengl_vectorized_mobject import (OpenGLVGroup,
-                                                       OpenGLVMobject)
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 
 
 class OpenGLSurfaceMesh(OpenGLVGroup):
