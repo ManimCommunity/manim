@@ -25,7 +25,12 @@ class AddTest(Scene):
         self.play(Add(square))
 
 
-# There is no RemoveTest because it would be all blank pixels.
+class RemoveTest(Scene):
+    def construct(self):
+        square = Square()
+        circle = Circle()
+        self.add(square, circle)
+        self.play(Remove(square))
 
 
 class DrawBorderThenFillTest(Scene):

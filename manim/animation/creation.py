@@ -232,24 +232,6 @@ class Add(Animation):
 
     """
 
-    def __init__(self, mobject: Union[Mobject, OpenGLMobject]) -> None:
-        super().__init__(mobject)
-
-    def begin(self) -> None:
-        pass
-
-    def finish(self) -> None:
-        pass
-
-    def clean_up_from_scene(self, scene: "Scene") -> None:
-        scene.add(self.mobject)
-
-    def update_mobjects(self, dt: float) -> None:
-        pass
-
-    def interpolate(self, alpha: float) -> None:
-        pass
-
 
 class Remove(Animation):
     """Removes a Mobject from the scene with no animated effect. This is functionally equivalent to :meth:`~.Scene.remove`
