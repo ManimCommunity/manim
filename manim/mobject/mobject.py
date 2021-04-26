@@ -2063,11 +2063,11 @@ class Mobject(Container):
             The number of columns in the grid.
         buff
             The gap between grid cells. To specify a different buffer in the horizontal and
-            vertical directions, a tuple of two values can be given - `(row, col)`. 
+            vertical directions, a tuple of two values can be given - `(row, col)`.
         cell_alignment
             The way each submobject is aligned in its grid cell.
         row_alignments
-            The vertical alignment for each row (top to bottom). Accepts the following characters: `"u"` - 
+            The vertical alignment for each row (top to bottom). Accepts the following characters: `"u"` -
             up, `"c"` - center, `"d"` - down.
         col_alignments
             The horizontal alignment for each column (left to right). Accepts the following characters `"l"` - left,
@@ -2076,7 +2076,7 @@ class Mobject(Container):
             Defines a list of heights for certain rows (top to bottom). If the list contains `None`, the corresponding row will fit its height automatically based
             on the highest element in that row.
         col_widths
-            Defines a list of widths for certain columns (left to right). If the list contains `None`, the 
+            Defines a list of widths for certain columns (left to right). If the list contains `None`, the
             corresponding column will fit its width automatically based on the widest element in that column.
         flow_order
             The order in which the grid gets filled with the submobjects. Can be one of the
