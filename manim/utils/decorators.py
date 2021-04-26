@@ -160,7 +160,7 @@ def deprecated(
                 replacement_ = f":{mapper[what]}:`~.{replacement}`"
             message_ = f"Use {replacement_} instead. {message}"
         deprecated = __deprecation_text_component(since, until, message_)
-        return f"The {what} {name} is {deprecated}"
+        return f"The {what} {name} has been {deprecated}"
 
     def deprecate_docs(func: Callable):
         """Adjust doc string to indicate the deprecation.
