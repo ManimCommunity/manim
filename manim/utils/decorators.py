@@ -42,11 +42,11 @@ def __deprecation_text_component(
     Parameters
     ----------
     since
-        Version or date since deprecation
+        The version or date since deprecation
     until
-        Version or date until removal of the deprecated callable
+        The version or date until removal of the deprecated callable
     message
-        Reason for why the callable has been deprecated
+        The reason for why the callable has been deprecated
 
     Returns
     -------
@@ -79,13 +79,13 @@ def deprecated(
     func
         The function to be decorated. Should not be set by the user.
     since
-        Version or date since deprecation.
+        The version or date since deprecation.
     until
-        Version or date until removal of the deprecated callable
+        The version or date until removal of the deprecated callable.
     replacement
         The identifier of the callable replacing the deprecated one.
     message
-        Reason for why the callable has been deprecated
+        The reason for why the callable has been deprecated.
 
     Returns
     -------
@@ -225,11 +225,11 @@ def deprecated_params(
         each one parameter to deprecate, or a single string in which the parameters
         names are separated by commas or spaces.
     since
-        Since when the parameters are deprecated.
+        The version or date since deprecation.
     until
-        Version or date until removal of the deprecated callable.
+        The version or date until removal of the deprecated callable.
     message
-        Reason for why the callable has been deprecated
+        The reason for why the callable has been deprecated.
     redirections
         A list of parameter redirections. Each redirection can be one of the following:
 
