@@ -54,7 +54,11 @@ def __deprecation_text_component(
         The deprecation message text component.
     """
     since = "" if since is None else f"since {since} "
-    until = "may be deleted soon" if until is None else f"will be deleted after {until}"
+    until = (
+        "may be deleted in a future version"
+        if until is None
+        else f"is expected to be deleted after {until}"
+    )
     return f"deprecated {since}and {until}. {message}"
 
 
