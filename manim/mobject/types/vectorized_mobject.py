@@ -21,13 +21,9 @@ import numpy as np
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
-from ...utils.bezier import (
-    bezier,
-    get_smooth_handle_points,
-    integer_interpolate,
-    interpolate,
-    partial_bezier_points,
-)
+from ...utils.bezier import (bezier, get_smooth_handle_points,
+                             integer_interpolate, interpolate,
+                             partial_bezier_points)
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place

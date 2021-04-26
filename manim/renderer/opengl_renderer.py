@@ -16,13 +16,9 @@ from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.simple_functions import clip
-from ..utils.space_ops import (
-    angle_of_vector,
-    quaternion_from_angle_axis,
-    quaternion_mult,
-    rotation_matrix_transpose,
-    rotation_matrix_transpose_from_quaternion,
-)
+from ..utils.space_ops import (angle_of_vector, quaternion_from_angle_axis,
+                               quaternion_mult, rotation_matrix_transpose,
+                               rotation_matrix_transpose_from_quaternion)
 from .opengl_renderer_window import Window
 
 

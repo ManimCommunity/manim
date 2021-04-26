@@ -8,15 +8,8 @@ import numpy as np
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
-from ...utils.color import (
-    BLACK,
-    WHITE,
-    YELLOW,
-    YELLOW_C,
-    color_gradient,
-    color_to_rgba,
-    rgba_to_color,
-)
+from ...utils.color import (BLACK, WHITE, YELLOW, YELLOW_C, color_gradient,
+                            color_to_rgba, rgba_to_color)
 from ...utils.iterables import stretch_array_to_length
 
 

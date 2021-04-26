@@ -18,12 +18,9 @@ from manim import __version__
 
 from .. import config, logger
 from ..constants import FFMPEG_BIN, GIF_FILE_EXTENSION
-from ..utils.file_ops import (
-    add_extension_if_not_present,
-    add_version_before_extension,
-    guarantee_existence,
-    modify_atime,
-)
+from ..utils.file_ops import (add_extension_if_not_present,
+                              add_version_before_extension,
+                              guarantee_existence, modify_atime)
 from ..utils.sounds import get_full_sound_file_path
 
 

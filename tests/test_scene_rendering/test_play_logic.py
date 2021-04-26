@@ -9,12 +9,8 @@ from numpy.core.defchararray import asarray
 from manim import *
 from manim import config
 
-from .simple_scenes import (
-    SceneWithMultipleCalls,
-    SceneWithNonStaticWait,
-    SceneWithStaticWait,
-    SquareToCircle,
-)
+from .simple_scenes import (SceneWithMultipleCalls, SceneWithNonStaticWait,
+                            SceneWithStaticWait, SquareToCircle)
 
 
 @pytest.mark.skipif(

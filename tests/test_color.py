@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from manim import BLACK, WHITE, Camera, Mobject, Scene, VMobject, config, tempconfig
+from manim import (BLACK, WHITE, Camera, Mobject, Scene, VMobject, config,
+                   tempconfig)
 
 
 def test_import_color():

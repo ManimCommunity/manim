@@ -3,23 +3,16 @@ import numpy as np
 from .. import logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.opengl_vectorized_mobject import (
-    OpenGLDashedVMobject,
-    OpenGLVGroup,
-    OpenGLVMobject,
-)
+from ..mobject.types.opengl_vectorized_mobject import (OpenGLDashedVMobject,
+                                                       OpenGLVGroup,
+                                                       OpenGLVMobject)
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import clip, fdiv
-from ..utils.space_ops import (
-    angle_between_vectors,
-    angle_of_vector,
-    compass_directions,
-    find_intersection,
-    normalize,
-    rotate_vector,
-    rotation_matrix_transpose,
-)
+from ..utils.space_ops import (angle_between_vectors, angle_of_vector,
+                               compass_directions, find_intersection,
+                               normalize, rotate_vector,
+                               rotation_matrix_transpose)
 
 DEFAULT_DOT_RADIUS = 0.08
 DEFAULT_SMALL_DOT_RADIUS = 0.04
