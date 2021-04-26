@@ -91,7 +91,7 @@ Example:
 
 See an example on list item 4.
 
-.. NOTE::
+.. note::
 
    When documenting varargs (args and kwargs), make sure to
    document them by listing the possible types of each value specified,
@@ -318,15 +318,16 @@ elements that are either a ``str`` or ``None``;
 ``(str, int)``; ``Tuple[:class:`int`, ...]`` for a tuple of variable
 length with only integers.
 
-.. NOTE::
+.. note::
    As a helper for tool for typesets, you can use ``typestring-parser`` which can 
    be accessed by first downloading it via ``pip`` - ``pip install typestring-parser`` and
    then using ``from typestring_parser import parse``.
 
    Example
-
-    >>> from typestring_parser import parse
-    >>>
+   .. testsetup::
+   
+    from typestring_parser import parse
+    
     >>> parse('int')
     <class 'int'>
     >>> parse('int or str')
