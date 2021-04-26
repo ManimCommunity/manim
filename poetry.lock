@@ -962,7 +962,6 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 bleach = "*"
-decorator = ">=5.0"
 defusedxml = "*"
 entrypoints = ">=0.2.2"
 jinja2 = ">=2.4"
