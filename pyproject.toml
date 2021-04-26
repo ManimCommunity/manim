@@ -38,7 +38,7 @@ rich = "^6.0"
 pycairo = "^1.19"
 manimpango = "^0.2.4"
 networkx = "^2.5"
-decorator = "<5.0.0"  # remove as soon as https://github.com/networkx/networkx/issues/4718 is resolved
+decorator = "^5.0.0"
 setuptools = "*"
 importlib-metadata = {version = "*", python = "<3.8"}
 grpcio =  { version = "1.33.*", optional = true }
@@ -50,7 +50,6 @@ moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "*"
-decorator = "^5.0"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
