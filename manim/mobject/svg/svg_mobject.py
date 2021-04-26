@@ -166,7 +166,7 @@ class SVGMobject(VMobject):
         is_defs = element.tagName == "defs"
 
         if element.tagName == "style":
-            pass  # TODO, handle the style tag
+            pass  # TODO, handle the style tag but it looks right
         elif element.tagName in ["g", "svg", "symbol", "defs"]:
             result += it.chain(
                 *[
