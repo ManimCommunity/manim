@@ -27,7 +27,7 @@ def __get_callable_info(callable: Callable) -> Tuple[str, str]:
     """
     what = type(callable).__name__
     name = callable.__qualname__
-    if what == "function" and name[0].isupper():  # TODO a bit hacky but works
+    if what == "function" and "." in name:
         what = "method"
     elif what == "type":
         what = "class"
