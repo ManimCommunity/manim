@@ -65,11 +65,11 @@ def _deprecation_text_component(
 
 
 def deprecated(
-    func: Optional[Callable] = None,
+    func: Callable = None,
     since: Optional[str] = None,
     until: Optional[str] = None,
     replacement: Optional[str] = None,
-    message: str = "",
+    message: Optional[str] = "",
 ) -> Callable:
     """Decorator to mark a callable as deprecated.
 
@@ -222,7 +222,7 @@ def deprecated_params(
     params: Optional[Union[str, Iterable[str]]] = None,
     since: Optional[str] = None,
     until: Optional[str] = None,
-    message: str = "",
+    message: Optional[str] = "",
     redirections: Optional[
         "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]"
     ] = None,
@@ -374,7 +374,9 @@ def deprecated_params(
         else:
             params.extend(inspect.getargspec(redirector).args)
             print(inspect.getargspec(redirector).args)
-    params = list(set(params))
+    # Keep ordering of params so that warning message is consistently the same
+    # This will also help pass unit testing
+    params = list(dict.fromkeys(params))
 
     # Make sure params only contains valid identifiers
     identifier = re.compile(r"^[^\d\W]\w*\Z", re.UNICODE)

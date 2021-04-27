@@ -166,9 +166,6 @@ class Top:
         def nested_func(self):
             pass
 
-        def weird_params(self, werid, prams):
-            pass
-
     class Bottom:
         def __init__(self):
             pass
@@ -179,6 +176,10 @@ class Top:
                 pass
 
             return nested_func
+
+    @deprecated_params(params="a, b, c")
+    def foo(self, **kwargs):
+        pass
 
 
 def test_deprecate_func_no_args(caplog):
@@ -237,4 +238,16 @@ def test_deprecate_nested_func(caplog):
     assert (
         msg
         == "The method Top.Bottom.normal_func.<locals>.nested_func has been deprecated and may be removed in a later version."
+    )
+
+
+def test_deprecate_func_params(caplog):
+    """Test the deprecation of method parameters (decorator with params argument)."""
+    t = Top()
+    t.foo(a=2, b=3, z=4)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version."
     )
