@@ -221,7 +221,9 @@ def deprecated_params(
     since: Optional[str] = None,
     until: Optional[str] = None,
     message: str = "",
-    redirections: Optional[Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]] = None,
+    redirections: Optional[
+        Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]
+    ] = None,
 ) -> Callable:
     """Decorator to mark parameters of a callable as deprecated.
 
