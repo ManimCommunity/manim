@@ -146,7 +146,7 @@ def deprecated(
     if func is None:
         return lambda func: deprecated(func, since, until, replacement, message)
 
-    what, name = __get_callable_info(func)
+    what, name = _get_callable_info(func)
 
     def warning_msg(for_docs: bool = False) -> str:
         """Generate the deprecation warning message.
@@ -161,14 +161,14 @@ def deprecated(
         str
             The deprecation message.
         """
-        message_ = message
+        msg = message
         if replacement is not None:
-            replacement_ = replacement
+            repl = replacement
             if for_docs:
                 mapper = {"class": "class", "method": "meth", "function": "func"}
-                replacement_ = f":{mapper[what]}:`~.{replacement}`"
-            message_ = f"Use {replacement_} instead. {message}"
-        deprecated = __deprecation_text_component(since, until, message_)
+                repl = f":{mapper[what]}:`~.{replacement}`"
+            msg = f"Use {repl} instead. {message}"
+        deprecated = _deprecation_text_component(since, until, msg)
         return f"The {what} {name} has been {deprecated}"
 
     def deprecate_docs(func: Callable):
@@ -387,12 +387,12 @@ def deprecated_params(
         str
             The deprecation message.
         """
-        what, name = __get_callable_info(func)
+        what, name = _get_callable_info(func)
         plural = len(used) > 1
         parameter_s = "s" if plural else ""
         used_ = ", ".join(used[:-1]) + " and " + used[-1] if plural else used[0]
         has_have_been = "have been" if plural else "has been"
-        deprecated = __deprecation_text_component(since, until, message)
+        deprecated = _deprecation_text_component(since, until, message)
         return f"The parameter{parameter_s} {used_} of {what} {name} {has_have_been} {deprecated}"
 
     def redirect_params(kwargs: dict, used: List[str]):
