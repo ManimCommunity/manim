@@ -125,7 +125,9 @@ class Polyhedron(VGroup):
             edges += zip(face, face[1:] + face[:1])
         return edges
 
-    def create_faces(self, face_coords: List[List[Union[List, np.ndarray]]]) -> "VGroup":
+    def create_faces(
+        self, face_coords: List[List[Union[List, np.ndarray]]]
+    ) -> "VGroup":
         """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
         for face in face_coords:
