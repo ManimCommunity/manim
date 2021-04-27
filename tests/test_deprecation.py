@@ -171,11 +171,23 @@ class Top:
 
 
 def test_deprecate_func_no_args(caplog):
-    """Test the deprecation of a function (decorator with no arguments)."""
+    """Test the deprecation of a method (decorator with no arguments)."""
     useless()
     assert len(caplog.record_tuples) == 1
     msg = _get_caplog_record_msg(caplog)
     assert (
         msg
         == "The method useless has been deprecated and may be removed in a later version."
+    )
+
+
+def test_deprecate_func_in_class_since_and_message(caplog):
+    """Test the deprecation of a method within a class (decorator with since and message arguments)."""
+    t = Top()
+    t.mid_func()
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The method Top.mid_func has been deprecated since 0.8.0 and may be removed in a later version. This method is useless."
     )
