@@ -390,9 +390,8 @@ class Mobject(Container):
             if not isinstance(mobject, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
 
-        filtered = list_update(mobjects, self.submobjects)
         self.remove(*mobjects)
-        self.submobjects = list(filtered) + self.submobjects
+        self.submobjects = list(set(mobjects)) + self.submobjects
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":

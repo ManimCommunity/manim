@@ -127,6 +127,10 @@ def test_vmob_add_to_back():
     a.add_to_back(b)
     a.add_to_back(b, b)
     assert len(a.submobjects) == 1
+    a.submobjects.clear()
+    a.add_to_back(b, b, b)
+    a.add_to_back(b, b)
+    assert len(a.submobjects) == 1
 
 
 def test_vdict_init():
