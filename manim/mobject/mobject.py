@@ -2071,7 +2071,7 @@ class Mobject(Container):
             up, `"c"` - center, `"d"` - down.
         col_alignments
             The horizontal alignment for each column (left to right). Accepts the following characters `"l"` - left,
-             `"c"` - center, `"r"` - right.
+            `"c"` - center, `"r"` - right.
         row_heights
             Defines a list of heights for certain rows (top to bottom). If the list contains `None`, the corresponding row will fit its height automatically based
             on the highest element in that row.
@@ -2091,13 +2091,9 @@ class Mobject(Container):
         -----
 
         .. note::
-            If either :code:`rows` or :code:`cols` is not defined, it is set to the length of either
-            :code:`row_alignments` / :code:`col_alignments` or :code:`row_heights` / :code:`col_widths` if
-            one of those is defined. If only one of :code:`rows` and :code:`cols` can be determined
-            like this, the other will be choosen big enough to fit all submobjects.
-            If neither :code:`cols` nor :code:`rows` is set implicitly, they will be choosen to be
-            about the same, tending towards :code:`cols > rows` (simply because videos are wider
-            then they are high).
+            If only one of :code:cols and :code:rows is set implicitly, the other one will be chosen big
+            enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
+            tending towards :code:cols > rows (simply because videos are wider than they are high).
 
         .. note::
             If both :code:`cell_alignment` and :code:`row_alignments` / :code:`col_alignments` are
