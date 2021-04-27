@@ -74,21 +74,21 @@ class ValueTracker(Mobject):
         """Get the current value of the ValueTracker. This value changes continuously when :attr:`animate` for the ValueTracker is called."""
         return self.points[0, 0]
 
-    def set_value(self, value: Union[float, int]):
+    def set_value(self, value: Union[float]):
         """Sets a new scalar value to the ValueTracker"""
         self.points[0, 0] = value
         return self
 
-    def increment_value(self, d_value: Union[float, int]):
+    def increment_value(self, d_value: Union[float]):
         """Increments (adds) a scalar value  to the ValueTracker"""
         self.set_value(self.get_value() + d_value)
 
-    def __iadd__(self, d_value: Union[float, int]):
+    def __iadd__(self, d_value: Union[float]):
         """adds ``+=`` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
         return self
 
-    def __isub__(self, d_value: Union[float, int]):
+    def __isub__(self, d_value: Union[float]):
         """adds ``-=`` syntax to decrement the value of the ValueTracker"""
         self.increment_value(-d_value)
         return self
