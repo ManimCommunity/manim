@@ -166,7 +166,7 @@ class Tetrahedron(Polyhedron):
                 self.add(obj)
     """
 
-    def __init__(self, edge_length: float = 1, **kwargs):
+    def __init__(self, edge_length: Union[float, int] = 1, **kwargs):
         unit = edge_length * np.sqrt(2) / 4
         Polyhedron.__init__(
             self,
@@ -202,7 +202,7 @@ class Octahedron(Polyhedron):
                 self.add(obj)
     """
 
-    def __init__(self, edge_length: float = 1, **kwargs):
+    def __init__(self, edge_length: Union[float, int] = 1, **kwargs):
         unit = edge_length * np.sqrt(2) / 2
         Polyhedron.__init__(
             self,
@@ -249,7 +249,7 @@ class Icosahedron(Polyhedron):
                 self.add(obj)
     """
 
-    def __init__(self, edge_length: float = 1, **kwargs):
+    def __init__(self, edge_length: Union[float, int] = 1, **kwargs):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * (1 / 2)
         Polyhedron.__init__(
@@ -315,7 +315,7 @@ class Dodecahedron(Polyhedron):
                 self.add(obj)
     """
 
-    def __init__(self, edge_length: float = 1, **kwargs):
+    def __init__(self, edge_length: Union[float, int] = 1, **kwargs):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * ((3 + np.sqrt(5)) / 4)
         unit_c = edge_length * (1 / 2)
