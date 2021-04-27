@@ -7,6 +7,7 @@ import re
 from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 from decorator import decorate, decorator
+import inspect
 
 from .. import logger
 
@@ -217,12 +218,12 @@ def deprecated(
 
 
 def deprecated_params(
-    params: Union[str, Iterable[str]] = "",
+    params: Optional[Union[str, Iterable[str]]] = None,
     since: Optional[str] = None,
     until: Optional[str] = None,
     message: str = "",
     redirections: Optional[
-        Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]
+        "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]"
     ] = None,
 ) -> Callable:
     """Decorator to mark parameters of a callable as deprecated.
@@ -344,10 +345,10 @@ def deprecated_params(
             return kwargs
 
         foo(buff=0)
-        foo(buff=(1,2))
         # WARNING  The parameter buff of function foo has been deprecated and may be deleted in a future version.
         # returns {"buff_x": 0, buff_y: 0}
 
+        foo(buff=(1,2))
         # WARNING  The parameter buff of function foo has been deprecated and may be deleted in a future version.
         # returns {"buff_x": 1, buff_y: 2}
 
@@ -356,6 +357,9 @@ def deprecated_params(
     # Check if decorator is used without parenthesis
     if callable(params):
         raise ValueError("deprecate_parameters requires arguments to be specified.")
+
+    if params is None:
+        params = []
 
     # Construct params list
     params = re.split("[,\s]+", params) if isinstance(params, str) else list(params)
@@ -367,7 +371,8 @@ def deprecated_params(
         if isinstance(redirector, tuple):
             params.append(redirector[0])
         else:
-            params.extend(redirector.__code__.co_varnames)
+            params.extend(inspect.getargspec(redirector).args)
+            print(inspect.getargspec(redirector).args)
     params = list(set(params))
 
     # Make sure params only contains valid identifiers
@@ -416,7 +421,7 @@ def deprecated_params(
                 if old_param in used:
                     kwargs[new_param] = kwargs.pop(old_param)
             else:
-                redirector_params = redirector.__code__.co_varnames
+                redirector_params = inspect.getargspec(redirector).args
                 redirector_args = {}
                 for redirector_param in redirector_params:
                     if redirector_param in used:
