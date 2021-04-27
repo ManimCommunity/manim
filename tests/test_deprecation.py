@@ -3,7 +3,7 @@ import warnings
 import pytest
 
 from manim import logger
-from manim.utils.deprecate import deprecated, deprecated_params
+from manim.utils.deprecation import deprecated, deprecated_params
 
 
 @deprecated
