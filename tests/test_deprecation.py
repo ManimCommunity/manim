@@ -1,4 +1,6 @@
-from .utils.deprecation import deprecate, deprecated_params
+
+
+from manim.utils.deprecation import deprecated, deprecated_params
 
 
 @deprecated
