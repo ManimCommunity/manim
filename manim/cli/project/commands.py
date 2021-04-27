@@ -86,9 +86,7 @@ def copy_template_files(project_dir=Path("."), template_name="default"):
         project_dir (Path, optional): [description]. Defaults to Path(".").
         template_name (str, optional): [description]. Defaults to "default".
     """
-    template_cfg_path = Path.resolve(
-        Path(__file__).parent.parent.parent / "_config/default.cfg"
-    )
+    template_cfg_path = Path.resolve(Path(__file__).parent / "templates/template.cfg")
     if not template_cfg_path.exists():
         raise FileNotFoundError(f"{template_cfg_path} does not exist")
 
@@ -108,6 +106,11 @@ def copy_template_files(project_dir=Path("."), template_name="default"):
 
 # select_resolution() called inside project command
 def select_resolution():
+    """prompts input of type click.Choice from user
+
+    Returns:
+        tuple: tuple containing height and width
+    """
     resolution_options = []
     for quality in QUALITIES.items():
         resolution_options.append(
@@ -166,7 +169,7 @@ def project(default_settings, **args):
                 else:
                     new_cfg[key] = click.prompt(f"\n{key}", default=value)
 
-            console.print(new_cfg)
+            console.print(f"\n{new_cfg}")
             if click.confirm("Do you want to continue?", default=True, abort=True):
                 copy_template_files(project_name, args["template_name"])
                 update_cfg(new_cfg, new_cfg_path)
@@ -202,7 +205,7 @@ def init():
     """Initialize a new project in the current working directory"""
     cfg = Path("manim.cfg")
     if cfg.exists():
-        console.print("\t[red]manim.cfg exists[/red]\n")
+        raise FileExistsError(f"\t{cfg} exists\n")
     else:
         copy_template_files()
 
