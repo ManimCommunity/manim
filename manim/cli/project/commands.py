@@ -1,14 +1,14 @@
 """Manim's project initialization and management subcommands.
 
 init -  The init subcommand is a quick and easy way to initialize a project
-        Ite copies 2 files and pastes them in the current working dir
+        It copies files from templates dir and pastes them in the current working dir
 
 new  -  The new command group has 2 commands. these commands handle project creation
         and scene creation or insertion
 
         project -   The project subcommand is used for project creation
                     This command is similar to init but different in a way
-                    that it asks for project name and template name.
+                    that it asks for project_name and template_name.
                     init command initializes a new project in the current dir
                     while project command creates a new folder and creates the
                     project there
@@ -19,7 +19,6 @@ new  -  The new command group has 2 commands. these commands handle project crea
 """
 
 import configparser
-import curses
 from pathlib import Path
 from shutil import copyfile
 
@@ -28,31 +27,48 @@ import click
 from ... import console
 from ...constants import CONTEXT_SETTINGS, EPILOG, QUALITIES
 
+# when -d flag is passed in 'project new' command CFG_DEFAULTS is passed to update_cfg() function
 CFG_DEFAULTS = {
-    "frame_rate": 60,
+    "frame_rate": 30,
     "background_color": "BLACK",
     "background_opacity": 1,
     "scene_names": "default",
-    "resolution": (1280, 720),
+    "resolution": (854, 480),
 }
 
-cfg_resolutions = []
+"""\
+    utility functions are helper functions that provide some core functionality
+    to do project management
+
+    functions:
+    1 - update_cfg:
+            used for updating manim.cfg file when -d flag is not provided in
+            the 'manim new project' command
+
+    2 - copy_template_files:
+            copies template file upon successful project creation.
+            it is used in both 'manim init' and 'manim project new' commands
+
+    3 - select_resolution:
+            when 'manim project new' command is issued without the -d flag.
+            this function does conversions of 'QUALITIES' constant in to a
+            workable format for the click.Choice prompt. after the prompt it
+            returns a tuple containing pixel width and height based on the
+            result from the prompt.
+"""
 
 
-def update_cfg(cfg, project_cfg_path):
-    """Updates the manim.cfg file in the newly created project
-    Parameters
-    ----------
-    cfg : :dictionary:
-        Look at `CFG_DEFAULTS`
-        dictionary of values that will be edited in the manim.cfg file
-    project_cfg_path : :Path:
-        path of the project manim.cfg file
+def update_cfg(cfg_dict, project_cfg_path):
+    """Updates the manim.cfg file after reading it from the project_cfg_path.
+
+    Args:
+        cfg (dict): values used to update manim.cfg found project_cfg_path
+        project_cfg_path (Path): Path of manim.cfg file
     """
     config = configparser.ConfigParser()
     config.read(project_cfg_path)
     cli_config = config["CLI"]
-    for key, value in cfg.items():
+    for key, value in cfg_dict.items():
         if key == "resolution":
             cli_config["pixel_height"] = str(value[0])
             cli_config["pixel_width"] = str(value[1])
@@ -64,34 +80,47 @@ def update_cfg(cfg, project_cfg_path):
 
 
 def copy_template_files(project_dir=Path("."), template_name="default"):
-    """Copies template files for the new project creation from the templates
-    Parameters
-    ----------
-    project_dir : class : Path
-        Directory where template files will be copied
-    template_name : :class:`str`, optional
-        if template_name is not given or is given but does not exist `default.py` will be used as template for main.py
+    """Copies template files from templates dir to project_dir.
+
+    Args:
+        project_dir (Path, optional): [description]. Defaults to Path(".").
+        template_name (str, optional): [description]. Defaults to "default".
     """
-    template_cfg_path = Path.resolve(Path(__file__).parent / "templates/template.cfg")
+    template_cfg_path = Path.resolve(
+        Path(__file__).parent.parent.parent / "_config/default.cfg"
+    )
+    if not template_cfg_path.exists():
+        raise FileNotFoundError(f"{template_cfg_path} does not exist")
+
     template_scene_path = Path.resolve(
         Path(__file__).parent / f"templates/{template_name}.py"
     )
-
     if not template_scene_path.exists():
         template_scene_path = Path.resolve(
             Path(__file__).parent / "templates/default.py"
         )
 
     copyfile(template_cfg_path, Path.resolve(project_dir / "manim.cfg"))
-    console.print("\n...copied [green]manim.cfg[/green]\n")
-
+    console.print("\n\t[green]copied[/green] [blue]manim.cfg[/blue]\n")
     copyfile(template_scene_path, Path.resolve(project_dir / "main.py"))
-    console.print("\n...copied [green]main.py[/green]\n")
+    console.print("\n\t[green]copied[/green] [blue]main.py[/blue]\n")
 
 
-def resolution_to_tuple(str):
-    resolution = str.split("x", 1)
-    return (resolution[0], resolution[1])
+# select_resolution() called inside project command
+def select_resolution():
+    resolution_options = []
+    for quality in QUALITIES.items():
+        resolution_options.append(
+            (quality[1]["pixel_height"], quality[1]["pixel_width"])
+        )
+    resolution_options.pop()
+    choice = click.prompt(
+        "\nSelect resolution:\n",
+        type=click.Choice([f"{i[0]}p" for i in resolution_options]),
+        show_default=False,
+        default="480p",
+    )
+    return [res for res in resolution_options if f"{res[0]}p" == choice][0]
 
 
 @click.command(
@@ -123,6 +152,7 @@ def project(default_settings, **args):
     else:
         project_name.mkdir()
         new_cfg = dict()
+        new_cfg_path = Path.resolve(project_name / "manim.cfg")
 
         if not default_settings:
             for key, value in CFG_DEFAULTS.items():
@@ -132,27 +162,33 @@ def project(default_settings, **args):
                     else:
                         new_cfg[key] = value
                 elif key == "resolution":
-                    resolution = click.prompt("\nResolution", default="1280x720")
-                    new_cfg[key] = resolution_to_tuple(resolution)
+                    new_cfg[key] = select_resolution()
                 else:
                     new_cfg[key] = click.prompt(f"\n{key}", default=value)
 
-            copy_template_files(project_name, args["template_name"])
-            update_cfg(new_cfg, Path.resolve(project_name / "manim.cfg"))
+            console.print(new_cfg)
+            if click.confirm("Do you want to continue?", default=True, abort=True):
+                copy_template_files(project_name, args["template_name"])
+                update_cfg(new_cfg, new_cfg_path)
         else:
             copy_template_files(project_name, args["template_name"])
-            update_cfg(CFG_DEFAULTS, Path.resolve(project_name / "manim.cfg"))
-            console.print(default_settings)
+            update_cfg(CFG_DEFAULTS, new_cfg_path)
 
 
 @click.command(
     context_settings=CONTEXT_SETTINGS,
-    no_args_is_help=False,
+    no_args_is_help=True,
     epilog=EPILOG,
-    help="Quickly setup a basic project",
+    help="Add a scene to an existing file or a new file",
 )
-@click.argument("scene_name", type=str, required=False)
-def scene():
+@click.argument("scene_name", type=str, required=True)
+@click.argument("template_name", type=str, required=False)
+@click.argument("file_name", type=Path, required=False)
+def scene(**args):
+    if args["template_name"]:
+        console.print(f"template name given{args['template_name']}")
+    else:
+        console.print("template name not given")
     pass
 
 
@@ -160,7 +196,7 @@ def scene():
     context_settings=CONTEXT_SETTINGS,
     no_args_is_help=False,
     epilog=EPILOG,
-    help="Quickly setup a basic project",
+    help="Quickly setup a project",
 )
 def init():
     """Initialize a new project in the current working directory"""
@@ -184,3 +220,4 @@ def new(ctx):
 
 
 new.add_command(project)
+new.add_command(scene)
