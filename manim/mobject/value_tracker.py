@@ -97,7 +97,7 @@ class ValueTracker(Mobject):
         return self
 
     def __ifloordiv__(self, d_value: Union[float, int]):
-        """Set the value of this value tracker to the floor division of the current value by ``d_value``. """
+        """Set the value of this value tracker to the floor division of the current value by ``d_value``."""
         self.set_value(self.get_value() // d_value)
         return self
 
