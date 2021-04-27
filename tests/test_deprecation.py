@@ -191,3 +191,14 @@ def test_deprecate_func_in_class_since_and_message(caplog):
         msg
         == "The method Top.mid_func has been deprecated since 0.8.0 and may be removed in a later version. This method is useless."
     )
+
+
+def test_deprecate_nested_class_until_and_replacement(caplog):
+    """Test the deprecation of a nested class (decorator with until and replacement arguments)."""
+    n = Top().Nested()
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use Top.NewNested instead."
+    )
