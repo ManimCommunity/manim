@@ -178,7 +178,7 @@ def project(default_settings, **args):
                 else:
                     new_cfg[key] = click.prompt(f"\n{key}", default=value)
 
-            console.print(f"\n{new_cfg}")
+            console.print("\n", new_cfg)
             if click.confirm("Do you want to continue?", default=True, abort=True):
                 copy_template_files(project_name, args["template_name"])
                 update_cfg(new_cfg, new_cfg_path)
