@@ -54,7 +54,7 @@ def _deprecation_text_component(
     str
         The deprecation message text component.
     """
-    since = "" if since is None else f"since {since} "
+    since = f"since {since} " if since else ""
     until = (
         "may be removed in a later version"
         if until is None
