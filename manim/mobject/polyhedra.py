@@ -134,7 +134,7 @@ class Polyhedron(VGroup):
         new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
 
-    def extract_face_coords(self):
+    def extract_face_coords(self) -> List[List[Union[np.ndarray]]]:
         """Extracts the coordinates of the vertices in the graph.
         Used for updating faces.
         """
