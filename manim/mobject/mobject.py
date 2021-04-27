@@ -383,15 +383,16 @@ class Mobject(Container):
         :meth:`add`
 
         """
+        if self in mobjects:
+            raise ValueError("A mobject shouldn't contain itself")
+
         for mobject in mobjects:
-            if self in mobjects:
-                raise ValueError("Mobject cannot contain self")
             if not isinstance(mobject, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
 
-        filtered = list_update(mobjects, self.submobjects)
         self.remove(*mobjects)
-        self.submobjects = list(filtered) + self.submobjects
+        # dict.fromkeys() removes duplicates while maintaining order
+        self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
