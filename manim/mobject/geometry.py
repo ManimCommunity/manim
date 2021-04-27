@@ -60,6 +60,7 @@ __all__ = [
 
 import math
 import warnings
+from typing import Sequence
 
 import numpy as np
 
@@ -74,7 +75,6 @@ from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
     compass_directions,
-    get_norm,
     line_intersection,
     normalize,
     rotate_vector,
@@ -251,7 +251,7 @@ class TipableVMobject(VMobject):
 
     def get_length(self):
         start, end = self.get_start_and_end()
-        return get_norm(start - end)
+        return np.linalg.norm(start - end)
 
 
 class Arc(TipableVMobject):
@@ -813,7 +813,27 @@ class Line(TipableVMobject):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def put_start_and_end_on(self, start, end):
+    def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
+        """Sets starts and end coordinates of a line.
+        Examples
+        --------
+        .. manim:: LineExample
+
+            class LineExample(Scene):
+                def construct(self):
+                    d = VGroup()
+                    for i in range(0,10):
+                        d.add(Dot())
+                    d.arrange_in_grid(buff=1)
+                    self.add(d)
+                    l= Line(d[0], d[1])
+                    self.add(l)
+                    self.wait()
+                    l.put_start_and_end_on(d[1].get_center(), d[2].get_center())
+                    self.wait()
+                    l.put_start_and_end_on(d[4].get_center(), d[7].get_center())
+                    self.wait()
+        """
         curr_start, curr_end = self.get_start_and_end()
         if np.all(curr_start == curr_end):
             # TODO, any problems with resetting
@@ -1160,8 +1180,9 @@ class Arrow(Line):
 
             >>> arrow = Arrow(np.array([-1, -1, 0]), np.array([1, 1, 0]), buff=0)
             >>> scaled_arrow = arrow.scale(2)
-            >>> scaled_arrow.get_start_and_end()
-            (array([-2., -2.,  0.]), array([2., 2., 0.]))
+            >>> np.round(scaled_arrow.get_start_and_end(), 8) + 0
+            array([[-2., -2.,  0.],
+                   [ 2.,  2.,  0.]])
             >>> arrow.tip.length == scaled_arrow.tip.length
             True
 
@@ -2028,7 +2049,7 @@ class ArrowTip(VMobject):
             0.35
 
         """
-        return get_norm(self.vector)
+        return np.linalg.norm(self.vector)
 
 
 class ArrowTriangleTip(ArrowTip, Triangle):
