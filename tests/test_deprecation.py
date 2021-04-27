@@ -138,3 +138,44 @@ def test_deprecate_class_all(caplog):
 def _get_caplog_record_msg(caplog):
     logger_name, level, message = caplog.record_tuples[0]
     return message
+
+
+class Top:
+    def __init__(self):
+        pass
+
+    @deprecated
+    def useless(self):
+        pass
+
+    @deprecated(since="0.8.0", message="This method is useless.")
+    def mid_func(self):
+        pass
+
+    @deprecated(until="1.4.0", replacement="Top.NewNested")
+    class Nested:
+        def __init__(self):
+            pass
+
+        @deprecated(since="1.0.0", until="12/25/2025")
+        def nested_func(self):
+            pass
+
+    class NewNested:
+        def __init__(self):
+            pass
+
+        def weird_params(self, werid, prams):
+            pass
+
+
+def test_deprecate_func_no_args(caplog):
+    """Test the deprecation of a function (decorator with no arguments)."""
+    t = Top()
+    t.useless()
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The method Top.useless has been deprecated and may be removed in a later version."
+    )
