@@ -1294,7 +1294,34 @@ class Vector(Arrow):
         Arrow.__init__(self, ORIGIN, direction, buff=buff, **kwargs)
 
     def coordinate_label(self, integer_labels=True, n_dim=2, color=WHITE):
-        # avoid circular imports
+        """A label based on the coordinates of the vector.
+
+        Parameters
+        ----------
+        integer_labels : :class:`bool`, optional
+            Whether or not to round the coordinates to integers.
+        n_dim : `class`:`int`, optional
+            The number of dimensions of the vector.
+        color : :class:`~.Colors`, optional
+            The color of the label.
+
+        Examples
+        --------
+
+        .. manim VectorCoordinateLabel
+            :save_last_frame:
+
+            class VectorCoordinateLabel(Scene):
+                def construct(self):
+                    plane = NumberPlane()
+
+                    vect_1 = Vector([1, 2])
+                    label_1 = vect1.coordinate_label()
+                    vect_2 = Vector([-3, -2])
+                    label_2 = vect2.coordinate_label(color=YELLOW)
+                    self.add(plane, vect_1, label_1, vect_2, label_2)
+        """
+        # avoiding circular imports
         from .matrix import Matrix
 
         vect = np.array(self.get_end())
