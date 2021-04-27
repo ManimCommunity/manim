@@ -391,6 +391,7 @@ class Mobject(Container):
                 raise TypeError("All submobjects must be of type Mobject")
 
         self.remove(*mobjects)
+        # dict.fromkeys() removes duplicates while maintaining order
         self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
         return self
 
