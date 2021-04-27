@@ -26,6 +26,12 @@ class Baz:
         pass
 
 
+@deprecated(since="0.7.0", until="0.9.0-rc2")
+class Qux:
+    def __init__(self):
+        pass
+
+
 def test_deprecate_class_no_args(caplog):
     """Test the deprecation of a class (decorator with no arguments)."""
     f = Foo()
@@ -56,4 +62,15 @@ def test_deprecate_class_until(caplog):
     assert (
         message
         == "The class Baz has been deprecated and is expected to be removed after 06/01/2021."
+    )
+
+
+def test_deprecate_class_since_and_until(caplog):
+    """Test the deprecation of a class (decorator with since and until arguments)."""
+    qx = Qux()
+    assert len(caplog.record_tuples) == 1
+    logger_name, level, message = caplog.record_tuples[0]
+    assert (
+        message
+        == "The class Qux has been deprecated since 0.7.0 and is expected to be removed after 0.9.0-rc2."
     )
