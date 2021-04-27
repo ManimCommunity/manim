@@ -32,13 +32,19 @@ class Qux:
         pass
 
 
+@deprecated(message="Use something else.")
+class Quux:
+    def __init__(self):
+        pass
+
+
 def test_deprecate_class_no_args(caplog):
     """Test the deprecation of a class (decorator with no arguments)."""
     f = Foo()
     assert len(caplog.record_tuples) == 1
-    logger_name, level, message = caplog.record_tuples[0]
+    msg = _get_caplog_record_msg(caplog)
     assert (
-        message
+        msg
         == "The class Foo has been deprecated and may be removed in a later version."
     )
 
@@ -47,9 +53,9 @@ def test_deprecate_class_since(caplog):
     """Test the deprecation of a class (decorator with since argument)."""
     b = Bar()
     assert len(caplog.record_tuples) == 1
-    logger_name, level, message = caplog.record_tuples[0]
+    msg = _get_caplog_record_msg(caplog)
     assert (
-        message
+        msg
         == "The class Bar has been deprecated since v0.6.0 and may be removed in a later version."
     )
 
@@ -58,9 +64,9 @@ def test_deprecate_class_until(caplog):
     """Test the deprecation of a class (decorator with until argument)."""
     bz = Baz()
     assert len(caplog.record_tuples) == 1
-    logger_name, level, message = caplog.record_tuples[0]
+    msg = _get_caplog_record_msg(caplog)
     assert (
-        message
+        msg
         == "The class Baz has been deprecated and is expected to be removed after 06/01/2021."
     )
 
@@ -69,8 +75,24 @@ def test_deprecate_class_since_and_until(caplog):
     """Test the deprecation of a class (decorator with since and until arguments)."""
     qx = Qux()
     assert len(caplog.record_tuples) == 1
-    logger_name, level, message = caplog.record_tuples[0]
+    msg = _get_caplog_record_msg(caplog)
     assert (
-        message
+        msg
         == "The class Qux has been deprecated since 0.7.0 and is expected to be removed after 0.9.0-rc2."
     )
+
+
+def test_deprecate_class_msg(caplog):
+    """Test the deprecation of a class (decorator with msg argument)."""
+    qu = Quux()
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The class Quux has been deprecated and may be removed in a later version. Use something else."
+    )
+
+
+def _get_caplog_record_msg(caplog):
+    logger_name, level, message = caplog.record_tuples[0]
+    return message
