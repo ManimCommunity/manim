@@ -1,7 +1,7 @@
 """General polyhedral class and platonic solids."""
 
 from copy import copy
-from typing import Dict, Hashable, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, Hashable, List, Tuple, Union
 
 import numpy as np
 
