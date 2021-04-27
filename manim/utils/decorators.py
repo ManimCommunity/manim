@@ -3,11 +3,11 @@
 __all__ = ["deprecated", "deprecated_params"]
 
 
+import inspect
 import re
 from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 from decorator import decorate, decorator
-import inspect
 
 from .. import logger
 
