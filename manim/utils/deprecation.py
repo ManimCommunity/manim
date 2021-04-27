@@ -28,7 +28,7 @@ def _get_callable_info(callable: Callable) -> Tuple[str, str]:
     """
     what = type(callable).__name__
     name = callable.__qualname__
-    if what == "function" and "." in name:
+    if what == "function":
         what = "method"
     elif what == "type":
         what = "class"
@@ -112,13 +112,13 @@ def deprecated(
                 pass
 
         foo()
-        # WARNING  The function foo has been deprecated and may be removed in a future version.
+        # WARNING  The function foo has been deprecated and may be removed in a later version.
 
         a = Bar()
-        # WARNING  The class Bar has been deprecated and may be removed in a future version.
+        # WARNING  The class Bar has been deprecated and may be removed in a later version.
 
         a.baz()
-        # WARNING  The method Bar.baz has been deprecated and may be removed in a future version.
+        # WARNING  The method Bar.baz has been deprecated and may be removed in a later version.
 
     You can specify additional information for a more precise warning::
 

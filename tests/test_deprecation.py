@@ -140,12 +140,13 @@ def _get_caplog_record_msg(caplog):
     return message
 
 
+@deprecated
+def useless(**kwargs):
+    pass
+
+
 class Top:
     def __init__(self):
-        pass
-
-    @deprecated
-    def useless(self):
         pass
 
     @deprecated(since="0.8.0", message="This method is useless.")
@@ -171,11 +172,10 @@ class Top:
 
 def test_deprecate_func_no_args(caplog):
     """Test the deprecation of a function (decorator with no arguments)."""
-    t = Top()
-    t.useless()
+    useless()
     assert len(caplog.record_tuples) == 1
     msg = _get_caplog_record_msg(caplog)
     assert (
         msg
-        == "The method Top.useless has been deprecated and may be removed in a later version."
+        == "The method useless has been deprecated and may be removed in a later version."
     )
