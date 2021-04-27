@@ -22,14 +22,14 @@ class Polyhedron(VGroup):
 
     Parameters
     ----------
-    vertex_coords:
+    vertex_coords
         A list of coordinates of the corresponding vertices in the polyhedron. Each coordinate will correspond to
         a vertex. The vertices are indexed with the usual indexing of Python.
-    faces_list:
+    faces_list
         A list of faces. Each face is a sublist containing the indicies of the vertices that form the corners of that face.
-    faces_config:
+    faces_config
         Configuration for the polygons representing the faces of the polyhedron.
-    graph_config:
+    graph_config
         Configuration for the graph containing the vertices and edges of the polyhedron.
 
     Examples
@@ -84,7 +84,7 @@ class Polyhedron(VGroup):
 
     def __init__(
         self,
-        vertex_coords: List[np.ndarray],
+        vertex_coords: List[Union[List,np.ndarray]],
         faces_list: List[List[Hashable]],
         faces_config: dict = {},
         graph_config: dict = {},
@@ -150,7 +150,7 @@ class Tetrahedron(Polyhedron):
 
     Parameters
     ----------
-    edge_length:
+    edge_length
         The length of an edge between any two vertices.
 
     Examples
@@ -186,7 +186,7 @@ class Octahedron(Polyhedron):
 
     Parameters
     ----------
-    edge_length:
+    edge_length
         The length of an edge between any two vertices.
 
     Examples
@@ -233,7 +233,7 @@ class Icosahedron(Polyhedron):
 
     Parameters
     ----------
-    edge_length:
+    edge_length
         The length of an edge between any two vertices.
 
     Examples
@@ -299,7 +299,7 @@ class Dodecahedron(Polyhedron):
 
     Parameters
     ----------
-    edge_length:
+    edge_length
         The length of an edge between any two vertices.
 
     Examples
