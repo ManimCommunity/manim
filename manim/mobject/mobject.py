@@ -2079,10 +2079,8 @@ class Mobject(Container):
             Defines a list of widths for certain columns (left to right). If the list contains `None`, the
             corresponding column will fit its width automatically based on the widest element in that column.
         flow_order
-            The order in which the grid gets filled with the submobjects. Can be one of the
-            following values: "rd", "dr", "ld", "dl", "ru", "ur", "lu", "ul". For example,
-            "dr" (down right) means: Fill the table column by column downwards, filling the
-            columns rigthwards. "u" and "l" stand for upwards and leftwards.
+            The order in which submobjects fill the grid. Can be one of the following values:
+            "rd", "dr", "ld", "dl", "ru", "ur", "lu", "ul". ("rd" -> fill rightwards then downwards)
 
         Returns
         -------
