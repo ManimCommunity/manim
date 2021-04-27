@@ -251,7 +251,7 @@ class VectorScene(Scene):
         direction="left",
         rotate=False,
         color=None,
-        label_scale_factor=LARGE_BUFF-0.2,
+        label_scale_factor=LARGE_BUFF - 0.2,
     ):
         """
         Returns naming labels for the passed vector.

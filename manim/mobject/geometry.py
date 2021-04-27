@@ -80,6 +80,7 @@ from ..utils.space_ops import (
     rotate_vector,
 )
 
+
 class TipableVMobject(VMobject):
     """
     Meant for shared functionality between Arc and Line.
@@ -1303,7 +1304,7 @@ class Vector(Arrow):
         vect = vect.reshape((n_dim, 1))
 
         label = Matrix(vect)
-        label.scale(LARGE_BUFF-0.2)
+        label.scale(LARGE_BUFF - 0.2)
 
         shift_dir = np.array(self.get_end())
         if shift_dir[0] >= 0:  # Pointing right
