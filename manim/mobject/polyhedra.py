@@ -11,6 +11,9 @@ from .mobject_update_utils import always
 from .three_dimensions import Dot3D
 from .types.vectorized_mobject import VGroup, VMobject
 
+if TYPE_CHECKING:
+    from .mobject import Mobject
+
 __all__ = ["Polyhedron", "Tetrahedron", "Octahedron", "Icosahedron", "Dodecahedron"]
 
 
@@ -122,7 +125,7 @@ class Polyhedron(VGroup):
             edges += zip(face, face[1:] + face[:1])
         return edges
 
-    def create_faces(self, face_coords: List[List[Union[List, np.ndarray]]]):
+    def create_faces(self, face_coords: List[List[Union[List, np.ndarray]]]) -> "VGroup":
         """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
         for face in face_coords:
