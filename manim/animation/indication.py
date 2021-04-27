@@ -742,7 +742,7 @@ class Circumscribe(Succession):
             radius = frame.width / 2
             frame.scale((radius + buff) / radius)
         else:
-            raise ValueError('shape should be either Rectangle or Circle.')
+            raise ValueError("shape should be either Rectangle or Circle.")
 
         if fade_in and fade_out:
             super().__init__(
