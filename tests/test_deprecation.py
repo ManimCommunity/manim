@@ -158,12 +158,12 @@ class Top:
         def __init__(self):
             pass
 
-        @deprecated(since="1.0.0", until="12/25/2025")
-        def nested_func(self):
-            pass
-
     class NewNested:
         def __init__(self):
+            pass
+
+        @deprecated(since="1.0.0", until="12/25/2025")
+        def nested_func(self):
             pass
 
         def weird_params(self, werid, prams):
@@ -201,4 +201,16 @@ def test_deprecate_nested_class_until_and_replacement(caplog):
     assert (
         msg
         == "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use Top.NewNested instead."
+    )
+
+
+def test_deprecate_nested_class_func_since_and_until(caplog):
+    """Test the deprecation of a method within a nested class (decorator with since and until arguments)."""
+    n = Top().NewNested()
+    n.nested_func()
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The method Top.NewNested.nested_func has been deprecated since 1.0.0 and is expected to be removed after 12/25/2025."
     )
