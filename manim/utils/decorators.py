@@ -72,7 +72,7 @@ def deprecated(
 ) -> Callable:
     """Decorator to mark a callable as deprecated.
 
-    The decorated callable will cause a warning when used. The doc string of the
+    The decorated callable will cause a warning when used. The docstring of the
     deprecated callable is adjusted to indicate that this callable is deprecated.
 
     Parameters
@@ -173,7 +173,7 @@ def deprecated(
         return f"The {what} {name} has been {deprecated}"
 
     def deprecate_docs(func: Callable):
-        """Adjust doc string to indicate the deprecation.
+        """Adjust docstring to indicate the deprecation.
 
         Parameters
         ----------
