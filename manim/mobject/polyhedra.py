@@ -86,8 +86,8 @@ class Polyhedron(VGroup):
         self,
         vertex_coords: List[Union[List, np.ndarray]],
         faces_list: List[List[int]],
-        faces_config: dict = {},
-        graph_config: dict = {},
+        faces_config: Dict[str, Union[str, int, float, bool]] = {},
+        graph_config: Dict[str, Union[str, int, float, bool]] = {},
     ):
         VGroup.__init__(self)
         self.faces_config = dict(
@@ -115,7 +115,7 @@ class Polyhedron(VGroup):
         self.add(self.faces, self.graph)
         self.add_updater(self.update_faces)
 
-    def get_edges(self, faces_list):
+    def get_edges(self, faces_list: List[List[Union[List, np.ndarray]]]):
         """Creates list of cyclic pairwise tuples."""
         edges = []
         for face in faces_list:
