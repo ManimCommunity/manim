@@ -98,6 +98,11 @@ def update_cfg(cfg_dict, project_cfg_path):
 
 
 def add_import_statement(file):
+    """Prepends an import statment to a file
+
+    Args:
+        file (Path): Path to file
+    """
     with open(file, "r+") as f:
         import_line = "from manim import *"
         content = f.read()
