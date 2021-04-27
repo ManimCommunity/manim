@@ -684,7 +684,8 @@ class Circumscribe(Succession):
     mobject
         The mobject to be circumscribed.
     shape
-        The shape with which to surrond the given mobject. Should be either "rectangle" or "circle"
+        The shape with which to surrond the given mobject. Should be either
+        :class:`~.Rectangle` or :class:`~.Circle`
     fade_in
         Whether to make the surrounding shape to fade in. It will be drawn otherwise.
     fade_out
@@ -707,20 +708,20 @@ class Circumscribe(Succession):
 
         class UsingCircumscribe(Scene):
             def construct(self):
-                lbl = Tex(r"Circum-\\\\scribe")
+                lbl = Tex(r"Circum-\\\\scribe").scale(2)
                 self.add(lbl)
                 self.play(Circumscribe(lbl))
-                self.play(Circumscribe(lbl, "circle"))
+                self.play(Circumscribe(lbl, Circle))
                 self.play(Circumscribe(lbl, fade_out=True))
                 self.play(Circumscribe(lbl, time_width=2))
-                self.play(Circumscribe(lbl, "circle", True))
+                self.play(Circumscribe(lbl, Circle, True))
 
     """
 
     def __init__(
         self,
         mobject: Mobject,
-        shape: Union[str, Type] = "rectangle",
+        shape: Type = Rectangle,
         fade_in=False,
         fade_out=False,
         time_width=0.3,
@@ -730,18 +731,18 @@ class Circumscribe(Succession):
         stroke_width=DEFAULT_STROKE_WIDTH,
         **kwargs
     ):
-        if shape in ("rectangle", "rectangular", Rectangle):
+        if shape is Rectangle:
             frame = SurroundingRectangle(
                 mobject, color, buff, stroke_width=stroke_width
             )
-        elif shape in ("circle", "circular", Circle):
+        elif shape is Circle:
             frame = Circle(color=color, stroke_width=stroke_width).surround(
                 mobject, buffer_factor=1
             )
             radius = frame.width / 2
             frame.scale((radius + buff) / radius)
         else:
-            raise ValueError('shape should be either "rectangle" or "circle".')
+            raise ValueError('shape should be either Rectangle or Circle.')
 
         if fade_in and fade_out:
             super().__init__(
