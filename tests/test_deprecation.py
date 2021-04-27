@@ -8,8 +8,6 @@ from manim.utils.deprecation import deprecated, deprecated_params
 
 @deprecated
 class Foo:
-    """This is a class to deprecate."""
-
     def __init__(self):
         pass
 
@@ -45,6 +43,17 @@ class Quuz:
 
 
 class ReplaceQuuz:
+    def __init__(self):
+        pass
+
+
+@deprecated(
+    since="0.7.0",
+    until="1.2.1",
+    replacement="ReplaceQuuz",
+    message="Don't use this please.",
+)
+class QuuzAll:
     def __init__(self):
         pass
 
@@ -112,6 +121,17 @@ def test_deprecate_class_replacement(caplog):
     assert (
         msg
         == "The class Quuz has been deprecated and may be removed in a later version. Use ReplaceQuuz instead."
+    )
+
+
+def test_deprecate_class_all(caplog):
+    """Test the deprecation of a class (decorator with all arguments)."""
+    qza = QuuzAll()
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use ReplaceQuuz instead. Don't use this please."
     )
 
 
