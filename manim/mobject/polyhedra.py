@@ -115,21 +115,21 @@ class Polyhedron(VGroup):
         self.add(self.faces, self.graph)
         self.add_updater(self.update_faces)
 
-    def get_edges(self, faces_list: List[List[Union[List, np.ndarray]]]):
+    def get_edges(self, faces_list: List[List[int]]):
         """Creates list of cyclic pairwise tuples."""
         edges = []
         for face in faces_list:
             edges += zip(face, face[1:] + face[:1])
         return edges
 
-    def create_faces(self, face_coords):
+    def create_faces(self, face_coords: List[List[Union[List, np.ndarray]]]):
         """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
         for face in face_coords:
             face_group.add(Polygon(*face, **self.faces_config))
         return face_group
 
-    def update_faces(self, m):
+    def update_faces(self, m: Mobject):
         face_coords = self.extract_face_coords()
         new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
