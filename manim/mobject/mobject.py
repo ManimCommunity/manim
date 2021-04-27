@@ -1847,15 +1847,15 @@ class Mobject(Container):
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
     def get_x(self, direction=ORIGIN) -> np.float64:
-        """Returns x coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns x coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(0, direction)
 
     def get_y(self, direction=ORIGIN) -> np.float64:
-        """Returns y coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns y coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(1, direction)
 
     def get_z(self, direction=ORIGIN) -> np.float64:
-        """Returns z coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns z coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
     def get_start(self):
@@ -1875,7 +1875,7 @@ class Mobject(Container):
             return np.array(self.points[-1])
 
     def get_start_and_end(self):
-        """Returns starting and ending point of a stroke as a ``tuple``. """
+        """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
@@ -1898,7 +1898,7 @@ class Mobject(Container):
         return z_index_group.get_center()
 
     def has_points(self) -> bool:
-        """Check if :class:`~.Mobject` contains points. """
+        """Check if :class:`~.Mobject` contains points."""
         return len(self.points) > 0
 
     def has_no_points(self) -> bool:
