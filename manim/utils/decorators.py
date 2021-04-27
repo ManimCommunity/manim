@@ -383,7 +383,7 @@ def deprecated_params(
         func
             The callable with deprecated parameters.
         used
-            The list of depecated parameters used in a call.
+            The list of deprecated parameters used in a call.
 
         Returns
         -------
