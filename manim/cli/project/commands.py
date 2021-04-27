@@ -16,6 +16,24 @@ new  -  The new command group has 2 commands. these commands handle project crea
         scene   -   The scene subcommand command is used for inserting new scenes.
                     scene command can create new files and insert new scenes in there.
                     It can also insert new scenes in an already existing python file.
+
+How To:
+        create project
+                    manim new project
+
+                    manim new project <project name>
+
+                    manim new project <project name> <template name>
+
+        Init project
+                    manim init
+
+        add or insert scene
+                    manim scene <scene name> : add <scene name> in main.py
+
+                    manim scene <scene name> <file name> : add scene in <file name>.
+                                                           if <file name> does not exist creates new <file name>
+                                                           and insert <scene name>.
 """
 
 import configparser
