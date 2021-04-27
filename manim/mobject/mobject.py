@@ -391,7 +391,9 @@ class Mobject(Container):
                 raise TypeError("All submobjects must be of type Mobject")
 
         self.remove(*mobjects)
-        self.submobjects = list(set(mobjects)) + self.submobjects
+        self.submobjects = (
+            list(sorted(set(mobjects), key=mobjects.index)) + self.submobjects
+        )
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
