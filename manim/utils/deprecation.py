@@ -56,7 +56,7 @@ def _deprecation_text_component(
     """
     since = "" if since is None else f"since {since} "
     until = (
-        "may be removed in a future version"
+        "may be removed in a later version"
         if until is None
         else f"is expected to be removed after {until}"
     )
