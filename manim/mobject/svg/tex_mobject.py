@@ -98,6 +98,20 @@ into manim's tex template by default, we add it manually:
             tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate).scale(3)
             self.add(tex)
 
+.. manim:: CustomLatexExample
+    :save_last_frame:
+
+    stix2 = TexTemplate()
+    stix2.add_to_preamble(r"\usepackage{stix2}", prepend= True)
+
+    def CustomMathTex(*tex_strings):
+        return MathTex(*tex_strings,tex_template=stix2)
+
+    class CustomLatexExample(Scene):
+        def construct(self):
+            tex  = CustomMathTex(r"dx dy = |r| dr d\phi").scale(3)
+            self.add(tex)
+
 Substrings and parts
 ++++++++++++++++++++
 The TeX mobject can accept multiple strings as arguments. Afterwards you can refer to the individual
