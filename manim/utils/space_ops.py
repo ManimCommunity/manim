@@ -8,6 +8,9 @@ __all__ = [
     "quaternion_conjugate",
     "rotate_vector",
     "thick_diagonal",
+    "rotation_matrix_transpose_from_quaternion",
+    "rotation_matrix_from_quaternion",
+    "rotation_matrix_transpose",
     "rotation_matrix",
     "rotation_about_z",
     "z_to_vector",
@@ -16,6 +19,7 @@ __all__ = [
     "angle_between_vectors",
     "project_along_vector",
     "normalize",
+    "normalize_along_axis",
     "cross",
     "get_unit_normal",
     "compass_directions",
@@ -27,6 +31,8 @@ __all__ = [
     "find_intersection",
     "line_intersection",
     "get_winding_number",
+    "shoelace",
+    "shoelace_direction",
     "cross2d",
     "earclip_triangulation",
 ]
@@ -63,6 +69,13 @@ def norm_squared(v: float) -> np.ndarray:
 
 
 def quaternion_mult(*quats: Sequence[float]) -> List[Union[float, np.ndarray]]:
+    """Gets the Hamilton product the quaternions provided.
+
+    Returns
+    -------
+    List[Union[float, np.ndarray]]
+        Returns a list of product of two quaternions.
+    """
     if config.renderer == "opengl":
         if len(quats) == 0:
             return [1, 0, 0, 0]
@@ -94,8 +107,24 @@ def quaternion_mult(*quats: Sequence[float]) -> List[Union[float, np.ndarray]]:
 
 
 def quaternion_from_angle_axis(
-    angle: int, axis: np.ndarray, axis_normalized=False
+    angle: float, axis: np.ndarray, axis_normalized=False
 ) -> np.ndarray:
+    """Gets a quaternion from an angle and an axis.
+
+    Parameters
+    ----------
+    angle : float
+        The angle for the quaternion.
+    axis : np.ndarray
+        The axis for the quaternion
+    axis_normalized : bool, optional
+        Checks whether the axis is normalized, by default False
+
+    Returns
+    -------
+    np.ndarray
+        Gives back a quaternion from the angle and axis
+    """
     if config.renderer == "opengl":
         if not axis_normalized:
             axis = normalize(axis)
@@ -105,6 +134,18 @@ def quaternion_from_angle_axis(
 
 
 def angle_axis_from_quaternion(quaternion: np.ndarray) -> Union[int, float]:
+    """Gets angle and axis from a quaternion.
+
+    Parameters
+    ----------
+    quaternion : np.ndarray
+        The quaternion from which we get the angle and axis.
+
+    Returns
+    -------
+    Union[int, float]
+        Gives the angle and axis
+    """
     axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
     angle = 2 * np.arccos(quaternion[0])
     if angle > TAU / 2:
@@ -113,12 +154,46 @@ def angle_axis_from_quaternion(quaternion: np.ndarray) -> Union[int, float]:
 
 
 def quaternion_conjugate(quaternion: np.ndarray) -> np.ndarray:
+    """Used for finding the conjugate of the quaternion
+
+    Parameters
+    ----------
+    quaternion : np.ndarray
+        The quaternion for which you want to find the conjugate for.
+
+    Returns
+    -------
+    np.ndarray
+        Gives back the conjugate of the quaternion.
+    """
     result = np.array(quaternion)
     result[1:] *= -1
     return result
 
 
 def rotate_vector(vector: np.ndarray, angle: int, axis=OUT) -> np.ndarray:
+    """Function for rotating a vector.
+
+    Parameters
+    ----------
+    vector : np.ndarray
+        The vector to be rotated.
+    angle : int
+        The angle to be rotated by.
+    axis : np.ndarray, optional
+        The axis to be rotated, by default OUT
+
+    Returns
+    -------
+    np.ndarray
+        The rotated vector with provided angle and axis.
+
+    Raises
+    ------
+    ValueError
+        If vector is not a dimension of 2 or 3.
+    """
+
     if len(vector) == 2:
         # Use complex numbers...because why not
         z = complex(*vector) * np.exp(complex(0, angle))
@@ -140,6 +215,19 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
 
 
 def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
+    """Converts the quaternion, quat, to an equivalent rotation matrix representation.
+
+    Parameters
+    ----------
+    quat : np.ndarray
+        The quaternion which is to be converted.
+
+    Returns
+    -------
+    List[np.ndarray]
+        Gives back the Rotation matrix representation, returned as a 3-by-3
+        matrix or 3-by-3-by-N multidimensional array.
+    """
     quat_inv = quaternion_conjugate(quat)
     return [
         quaternion_mult(quat, [0, *basis], quat_inv)[1:]
@@ -182,6 +270,18 @@ def rotation_matrix(angle: Union[int, float], axis: np.ndarray) -> np.ndarray:
 
 
 def rotation_about_z(angle: Union[int, float]) -> List[Union[int, float]]:
+    """Rotates an angle about z axis
+
+    Parameters
+    ----------
+    angle : Union[int, float]
+        The angle to be rotated.
+
+    Returns
+    -------
+    List[Union[int, float]]
+        Gives back the rotated angle.
+    """
     return [
         [np.cos(angle), -np.sin(angle), 0],
         [np.sin(angle), np.cos(angle), 0],
@@ -222,8 +322,17 @@ def angle_between(v1, v2):
 
 
 def angle_of_vector(vector: Sequence[float]) -> float:
-    """
-    Returns polar coordinate theta when vector is project on xy plane
+    """Returns polar coordinate theta when vector is project on xy plane.
+
+    Parameters
+    ----------
+    vector : Sequence[float]
+        The vector to find the angle for.
+
+    Returns
+    -------
+    float
+        The angle of the vector projected.
     """
     if config.renderer == "opengl":
         return np.angle(complex(*vector[:2]))
@@ -235,9 +344,20 @@ def angle_of_vector(vector: Sequence[float]) -> float:
 
 
 def angle_between_vectors(v1: Sequence[float], v2: Sequence[float]) -> float:
-    """
-    Returns the angle between two 3D vectors.
+    """Returns the angle between two 3D vectors.
     This angle will always be btw 0 and pi
+
+    Parameters
+    ----------
+    v1 : Sequence[float]
+        The first vector.
+    v2 : Sequence[float]
+        The second vector.
+
+    Returns
+    -------
+    float
+        The angle between the vectors.
     """
     if config["renderer"] == "opengl":
         diff = (angle_of_vector(v2) - angle_of_vector(v1)) % TAU
@@ -250,6 +370,20 @@ def angle_between_vectors(v1: Sequence[float], v2: Sequence[float]) -> float:
 
 
 def project_along_vector(point: float, vector: np.ndarray) -> np.ndarray:
+    """Projects a vector along a point.
+
+    Parameters
+    ----------
+    point : float
+        The point to be project from.
+    vector : np.ndarray
+        The vector which has to projected.
+
+    Returns
+    -------
+    np.ndarray
+        A dot product of the point and vector.
+    """
     matrix = np.identity(3) - np.outer(vector, vector)
     return np.dot(point, matrix.T)
 
@@ -265,9 +399,21 @@ def normalize(vect: np.ndarray, fall_back=None) -> np.ndarray:
             return np.zeros(len(vect))
 
 
-def normalize_along_axis(
-    array: np.ndarray, axis: np.ndarray, fall_back=None
-) -> np.ndarray:
+def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
+    """Normalizes an array with the provided axis.
+
+    Parameters
+    ----------
+    array : np.ndarray
+        The array which has to be normalized.
+    axis : np.ndarray
+        The axis to be normalized to.
+
+    Returns
+    -------
+    np.ndarray
+        Array which has been normalized according to the axis.
+    """
     norms = np.sqrt((array * array).sum(axis))
     norms[norms == 0] = 1
     buffed_norms = np.repeat(norms, array.shape[axis]).reshape(array.shape)
@@ -284,6 +430,22 @@ def cross(v1, v2):
 
 
 def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol=1e-6) -> np.ndarray:
+    """Gets the unit normal of the vectors.
+
+    Parameters
+    ----------
+    v1 : np.ndarray
+        The first vector.
+    v2 : np.ndarray
+        The second vector
+    tol : float, optional
+        [description], by default 1e-6
+
+    Returns
+    -------
+    np.ndarray
+        The normal of the two vectors.
+    """
     if config.renderer == "opengl":
         v1 = normalize(v1)
         v2 = normalize(v2)
@@ -305,6 +467,20 @@ def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol=1e-6) -> np.ndarray:
 
 
 def compass_directions(n=4, start_vect=RIGHT) -> np.ndarray:
+    """Finds the cardinal directions using tau.
+
+    Parameters
+    ----------
+    n : int, optional
+        The amount to be rotated, by default 4
+    start_vect : np.ndarray, optional
+        The directon for the angle to start with, by default RIGHT
+
+    Returns
+    -------
+    np.ndarray
+        The angle which has been rotated.
+    """
     angle = TAU / n
     return np.array([rotate_vector(start_vect, k * angle) for k in range(n)])
 
@@ -322,6 +498,18 @@ def complex_func_to_R3_func(complex_func):
 
 
 def center_of_mass(points: Sequence[float]) -> np.ndarray:
+    """Gets the center of mass of the points in space.
+
+    Parameters
+    ----------
+    points : Sequence[float]
+        The points to find the center of mass from.
+
+    Returns
+    -------
+    np.ndarray
+        The center of mass of the points.
+    """
     points = [np.array(point).astype("float") for point in points]
     return sum(points) / len(points)
 
@@ -329,14 +517,43 @@ def center_of_mass(points: Sequence[float]) -> np.ndarray:
 def midpoint(
     point1: Sequence[float], point2: Sequence[float]
 ) -> Union[float, np.ndarray]:
+    """Gets the midpoint of two points.
+
+    Parameters
+    ----------
+    point1 : Sequence[float]
+        The first point.
+    point2 : Sequence[float]
+        The second point.
+
+    Returns
+    -------
+    Union[float, np.ndarray]
+        The midpoint of the points
+    """
     return center_of_mass([point1, point2])
 
 
 def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndarray:
-    """
-    Returns intersection point of two lines,
-    each defined with a pair of vectors determining
-    the end points
+    """Returns intersection point of two lines, each defined with
+    a pair of vectors determining the end points.
+
+    Parameters
+    ----------
+    line1 : Sequence[float]
+        The first line.
+    line2 : Sequence[float]
+        The second line.
+
+    Returns
+    -------
+    np.ndarray
+        The intersection points of the two lines which are intersecting.
+
+    Raises
+    ------
+    ValueError
+        Error is produced if the two line don't intersect with each other
     """
     x_diff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     y_diff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
@@ -427,16 +644,22 @@ def cross2d(a: int, b: int) -> float:
 
 
 def earclip_triangulation(verts: tuple, ring_ends: list) -> list:
+    """Returns a list of indices giving a triangulation
+    of a polygon, potentially with holes.
+
+    Parameters
+    ----------
+    verts : tuple
+        verts is a numpy array of points.
+    ring_ends : list
+        ring_ends is a list of indices indicating where
+    the ends of new paths are.
+
+    Returns
+    -------
+    list
+        A list of indices giving a triangulation of a polygon.
     """
-    Returns a list of indices giving a triangulation
-    of a polygon, potentially with holes
-
-    - verts is a numpy array of points
-
-    - ring_ends is a list of indices indicating where
-    the ends of new paths are
-    """
-
     # First, connect all the rings so that the polygon
     # with holes is instead treated as a (very convex)
     # polygon with one edge.  Do this by drawing connections
