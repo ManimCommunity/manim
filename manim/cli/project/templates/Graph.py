@@ -1,6 +1,3 @@
-from manim import *
-
-
 class Graph(GraphScene):
     def __init__(self, **kwargs):
         GraphScene.__init__(

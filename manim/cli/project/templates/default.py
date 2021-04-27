@@ -1,6 +1,3 @@
-from manim import *
-
-
 class default(Scene):
     def construct(self):
         circle = Circle()  # create a circle

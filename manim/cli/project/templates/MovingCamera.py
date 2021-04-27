@@ -1,6 +1,3 @@
-from manim import *
-
-
 class MovingCamer(MovingCameraScene):
     def construct(self):
         text = Text("Hello World").set_color(BLUE)
