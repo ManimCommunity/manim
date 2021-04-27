@@ -1,4 +1,4 @@
-"""Function decorators."""
+"""Decorators for deprecating classes, functions and function parameters."""
 
 __all__ = ["deprecated", "deprecated_params"]
 
