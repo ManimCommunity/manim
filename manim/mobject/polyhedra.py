@@ -1,7 +1,7 @@
 """General polyhedral class and platonic solids."""
 
 from copy import copy
-from typing import Hashable, List, Tuple, Union
+from typing import Dict, Hashable, List, Tuple, Union
 
 import numpy as np
 
@@ -86,8 +86,8 @@ class Polyhedron(VGroup):
         self,
         vertex_coords: List[Union[List, np.ndarray]],
         faces_list: List[List[int]],
-        faces_config: dict[str, Union[str, int, float, bool]] = {},
-        graph_config: dict[str, Union[str, int, float, bool]] = {},
+        faces_config: Dict[str, Union[str, int, float, bool]] = {},
+        graph_config: Dict[str, Union[str, int, float, bool]] = {},
     ):
         VGroup.__init__(self)
         self.faces_config = dict(
