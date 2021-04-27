@@ -133,7 +133,7 @@ def quaternion_from_angle_axis(
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
-def angle_axis_from_quaternion(quaternion: np.ndarray) -> Union[int, float]:
+def angle_axis_from_quaternion(quaternion: np.ndarray) -> float:
     """Gets angle and axis from a quaternion.
 
     Parameters
@@ -143,7 +143,7 @@ def angle_axis_from_quaternion(quaternion: np.ndarray) -> Union[int, float]:
 
     Returns
     -------
-    Union[int, float]
+    float
         Gives the angle and axis
     """
     axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
@@ -243,7 +243,7 @@ def rotation_matrix_from_quaternion(quat: np.ndarray) -> np.ndarray:
     return np.transpose(rotation_matrix_transpose_from_quaternion(quat))
 
 
-def rotation_matrix_transpose(angle: Union[int, float], axis: np.ndarray) -> np.ndarray:
+def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
     if axis[0] == 0 and axis[1] == 0:
         # axis = [0, 0, z] case is common enough it's worth
         # having a shortcut
@@ -259,7 +259,7 @@ def rotation_matrix_transpose(angle: Union[int, float], axis: np.ndarray) -> np.
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle: Union[int, float], axis: np.ndarray) -> np.ndarray:
+def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
     """
     Rotation in R^3 about a specified axis of rotation.
     """
@@ -269,18 +269,18 @@ def rotation_matrix(angle: Union[int, float], axis: np.ndarray) -> np.ndarray:
     return reduce(np.dot, [z_to_axis, about_z, axis_to_z])
 
 
-def rotation_about_z(angle: Union[int, float]) -> List[Union[int, float]]:
-    """Rotates an angle about z axis
+def rotation_about_z(angle: float) -> List[float]:
+    """Returns a rotation matrix for a given angle.
 
     Parameters
     ----------
-    angle : Union[int, float]
-        The angle to be rotated.
+    angle : float
+        Angle for the rotation matrix.
 
     Returns
     -------
-    List[Union[int, float]]
-        Gives back the rotated angle.
+    List[float]
+        Gives back the rotated matrix.
     """
     return [
         [np.cos(angle), -np.sin(angle), 0],
@@ -344,7 +344,7 @@ def angle_of_vector(vector: Sequence[float]) -> float:
 
 
 def angle_between_vectors(v1: Sequence[float], v2: Sequence[float]) -> float:
-    """Returns the angle between two 3D vectors.
+    """Returns the angle between two vectors.
     This angle will always be btw 0 and pi
 
     Parameters
