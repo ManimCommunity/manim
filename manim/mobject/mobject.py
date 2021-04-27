@@ -383,9 +383,10 @@ class Mobject(Container):
         :meth:`add`
 
         """
+        if self in mobjects:
+            raise ValueError("Mobject cannot contain self")
+
         for mobject in mobjects:
-            if self in mobjects:
-                raise ValueError("Mobject cannot contain self")
             if not isinstance(mobject, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
 
