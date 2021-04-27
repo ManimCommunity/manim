@@ -79,6 +79,14 @@ def update_cfg(cfg_dict, project_cfg_path):
         config.write(conf)
 
 
+def add_import_statment(file=Path("main.py")):
+    with open(file, "r+") as f:
+        import_line = "from manim import *"
+        content = f.read()
+        f.seek(0, 0)
+        f.write(import_line.rstrip("\r\n") + "\n\n\n" + content)
+
+
 def copy_template_files(project_dir=Path("."), template_name="default"):
     """Copies template files from templates dir to project_dir.
 
@@ -102,6 +110,7 @@ def copy_template_files(project_dir=Path("."), template_name="default"):
     console.print("\n\t[green]copied[/green] [blue]manim.cfg[/blue]\n")
     copyfile(template_scene_path, Path.resolve(project_dir / "main.py"))
     console.print("\n\t[green]copied[/green] [blue]main.py[/blue]\n")
+    add_import_statment(Path.resolve(project_dir / "main.py"))
 
 
 # select_resolution() called inside project command
