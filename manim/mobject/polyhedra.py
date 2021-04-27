@@ -115,7 +115,7 @@ class Polyhedron(VGroup):
         self.add(self.faces, self.graph)
         self.add_updater(self.update_faces)
 
-    def get_edges(self, faces_list: List[List[int]]):
+    def get_edges(self, faces_list: List[List[int]]) -> List[Tuple[int, int]]:
         """Creates list of cyclic pairwise tuples."""
         edges = []
         for face in faces_list:
