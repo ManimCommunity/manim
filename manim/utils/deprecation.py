@@ -60,7 +60,7 @@ def _deprecation_text_component(
         if until is None
         else f"is expected to be removed after {until}"
     )
-    msg = "" if message == "" else " " + message
+    msg = " " + message if message else ""
     return f"deprecated {since}and {until}.{msg}"
 
 
