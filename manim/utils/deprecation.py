@@ -169,7 +169,7 @@ def deprecated(
             if for_docs:
                 mapper = {"class": "class", "method": "meth", "function": "func"}
                 repl = f":{mapper[what]}:`~.{replacement}`"
-            msg = f"Use {repl} instead. {message}"
+            msg = f"Use {repl} instead.{' ' + message if message else ''}"
         deprecated = _deprecation_text_component(since, until, msg)
         return f"The {what} {name} has been {deprecated}"
 

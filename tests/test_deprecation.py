@@ -38,6 +38,17 @@ class Quux:
         pass
 
 
+@deprecated(replacement="ReplaceQuuz")
+class Quuz:
+    def __init__(self):
+        pass
+
+
+class ReplaceQuuz:
+    def __init__(self):
+        pass
+
+
 def test_deprecate_class_no_args(caplog):
     """Test the deprecation of a class (decorator with no arguments)."""
     f = Foo()
@@ -90,6 +101,17 @@ def test_deprecate_class_msg(caplog):
     assert (
         msg
         == "The class Quux has been deprecated and may be removed in a later version. Use something else."
+    )
+
+
+def test_deprecate_class_replacement(caplog):
+    """Test the deprecation of a class (decorator with replacement argument)."""
+    qz = Quuz()
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The class Quuz has been deprecated and may be removed in a later version. Use ReplaceQuuz instead."
     )
 
 
