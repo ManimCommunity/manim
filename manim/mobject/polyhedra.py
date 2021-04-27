@@ -85,7 +85,7 @@ class Polyhedron(VGroup):
     def __init__(
         self,
         vertex_coords: List[Union[List, np.ndarray]],
-        faces_list: List[List[Hashable]],
+        faces_list: List[List[int]],
         faces_config: dict = {},
         graph_config: dict = {},
     ):
