@@ -79,10 +79,14 @@ def update_cfg(cfg_dict, project_cfg_path):
         config.write(conf)
 
 
-def add_import_statment(file=Path("main.py")):
+def add_class_name(file, template_name, class_name="Main", isNewFile=True):
     with open(file, "r+") as f:
-        import_line = "from manim import *"
+        import_line = ""
+        if isNewFile:
+            import_line += "from manim import *"
         content = f.read()
+
+        content = content.replace(f"{template_name}", class_name, 1)
         f.seek(0, 0)
         f.write(import_line.rstrip("\r\n") + "\n\n\n" + content)
 
@@ -110,7 +114,7 @@ def copy_template_files(project_dir=Path("."), template_name="default"):
     console.print("\n\t[green]copied[/green] [blue]manim.cfg[/blue]\n")
     copyfile(template_scene_path, Path.resolve(project_dir / "main.py"))
     console.print("\n\t[green]copied[/green] [blue]main.py[/blue]\n")
-    add_import_statment(Path.resolve(project_dir / "main.py"))
+    add_class_name(Path.resolve(project_dir / "main.py"), template_name)
 
 
 # select_resolution() called inside project command
@@ -157,6 +161,16 @@ def project(default_settings, **args):
     else:
         project_name = click.prompt("Project Name", type=Path)
 
+    if args["template_name"]:
+        template_name = args["template_name"]
+    else:
+        # in the future when implementing a full template system. Choices are going to be saved in some sort of config file for templates
+        template_name = click.prompt(
+            "Template",
+            type=click.Choice(["default", "Graph", "MovingCamera"], False),
+            default="default",
+        )
+
     if project_name.is_dir():
         console.print(
             f"\nFolder [red]{project_name}[/red] exists. Please type another name\n"
@@ -180,10 +194,10 @@ def project(default_settings, **args):
 
             console.print("\n", new_cfg)
             if click.confirm("Do you want to continue?", default=True, abort=True):
-                copy_template_files(project_name, args["template_name"])
+                copy_template_files(project_name, template_name)
                 update_cfg(new_cfg, new_cfg_path)
         else:
-            copy_template_files(project_name, args["template_name"])
+            copy_template_files(project_name, template_name)
             update_cfg(CFG_DEFAULTS, new_cfg_path)
 
 
