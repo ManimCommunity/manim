@@ -41,7 +41,7 @@ __all__ = [
 import itertools as it
 import math
 from functools import reduce
-from typing import Callable, List, Optional, Sequence, TypeVar, Union
+from typing import Callable, List, Optional, Sequence, TypeVar, Union, Tuple
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -388,7 +388,7 @@ def project_along_vector(point: float, vector: np.ndarray) -> np.ndarray:
     return np.dot(point, matrix.T)
 
 
-def normalize(vect: np.ndarray, fall_back=None) -> np.ndarray:
+def normalize(vect: Union[np.ndarray, Tuple[float]], fall_back=None) -> np.ndarray:
     norm = np.linalg.norm(vect)
     if norm > 0:
         return np.array(vect) / norm
