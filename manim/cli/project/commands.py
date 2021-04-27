@@ -84,7 +84,7 @@ def add_import_statement(file):
         import_line = "from manim import *"
         content = f.read()
         f.seek(0, 0)
-        f.write(import_line.rstrip("\r\n") + "\n\n\n" + content)
+        f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
 def copy_template_files(project_dir=Path("."), template_name="default"):
@@ -204,7 +204,7 @@ def project(default_settings, **args):
     help="Add a scene to an existing file or a new file",
 )
 @click.argument("scene_name", type=str, required=True)
-@click.argument("file_name", type=Path, required=False)
+@click.argument("file_name", type=str, required=False)
 def scene(**args):
     template_name = click.prompt(
         "template",
@@ -219,17 +219,19 @@ def scene(**args):
         scene = scene.replace(template_name, args["scene_name"], 1)
 
     if args["file_name"]:
-        if args["file_name"].is_file():
+        file_name = Path(args["file_name"] + ".py")
+
+        if file_name.is_file():
             # file exists so we are going to append new scene to that file
-            with open(args["file_name"], "a") as f:
+            with open(file_name, "a") as f:
                 f.write("\n\n\n" + scene)
             pass
         else:
-            # file does not exist so we are going to create a new file append the scene and prepend the import statement
-            with open(args["file_name"], "w") as f:
+            # file does not exist so we create a new file, append the scene and prepend the import statement
+            with open(file_name, "w") as f:
                 f.write("\n\n\n" + scene)
 
-            add_import_statement(args["file_name"])
+            add_import_statement(file_name)
     else:
         # file name is not provided so we assume it is main.py
         # if main.py does not exist we do not continue
