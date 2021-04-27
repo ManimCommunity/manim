@@ -217,11 +217,11 @@ def deprecated(
 
 
 def deprecated_params(
-    params: Union[str, Iterable[str]] = [],
+    params: Union[str, Iterable[str]] = "",
     since: Optional[str] = None,
     until: Optional[str] = None,
     message: str = "",
-    redirections: "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]" = [],
+    redirections: "Optional[Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]]" = None,
 ) -> Callable:
     """Decorator to mark parameters of a callable as deprecated.
 
@@ -359,6 +359,8 @@ def deprecated_params(
     params = re.split("[,\s]+", params) if isinstance(params, str) else list(params)
 
     # Add params which are only implicitly given via redirections
+    if redirections is None:
+        redirections = []
     for redirector in redirections:
         if isinstance(redirector, tuple):
             params.append(redirector[0])
