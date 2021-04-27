@@ -14,8 +14,8 @@ class Foo:
         pass
 
 
-def test_deprecate_class(caplog):
-    """Test the deprecation of a class."""
+def test_deprecate_class_no_args(caplog):
+    """Test the deprecation of a class (decorator with no arguments)."""
     f = Foo()
     assert len(caplog.record_tuples) == 1
     logger_name, level, message = caplog.record_tuples[0]
