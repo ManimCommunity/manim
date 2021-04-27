@@ -79,14 +79,10 @@ def update_cfg(cfg_dict, project_cfg_path):
         config.write(conf)
 
 
-def add_class_name(file, template_name, class_name="Main", isNewFile=True):
+def add_import_statement(file):
     with open(file, "r+") as f:
-        import_line = ""
-        if isNewFile:
-            import_line += "from manim import *"
+        import_line = "from manim import *"
         content = f.read()
-
-        content = content.replace(f"{template_name}", class_name, 1)
         f.seek(0, 0)
         f.write(import_line.rstrip("\r\n") + "\n\n\n" + content)
 
@@ -114,7 +110,7 @@ def copy_template_files(project_dir=Path("."), template_name="default"):
     console.print("\n\t[green]copied[/green] [blue]manim.cfg[/blue]\n")
     copyfile(template_scene_path, Path.resolve(project_dir / "main.py"))
     console.print("\n\t[green]copied[/green] [blue]main.py[/blue]\n")
-    add_class_name(Path.resolve(project_dir / "main.py"), template_name)
+    add_import_statement(Path.resolve(project_dir / "main.py"))
 
 
 # select_resolution() called inside project command
@@ -208,14 +204,41 @@ def project(default_settings, **args):
     help="Add a scene to an existing file or a new file",
 )
 @click.argument("scene_name", type=str, required=True)
-@click.argument("template_name", type=str, required=False)
 @click.argument("file_name", type=Path, required=False)
 def scene(**args):
-    if args["template_name"]:
-        console.print(f"template name given{args['template_name']}")
+    template_name = click.prompt(
+        "template",
+        type=click.Choice(["default", "Graph", "MovingCamera"], False),
+        default="default",
+    )
+    scene = ""
+    with open(
+        Path.resolve(Path(__file__).parent) / f"templates/{template_name}.py"
+    ) as f:
+        scene = f.read()
+        scene = scene.replace(template_name, args["scene_name"], 1)
+
+    if args["file_name"]:
+        if args["file_name"].is_file():
+            # file exists so we are going to append new scene to that file
+            with open(args["file_name"], "a") as f:
+                f.write("\n\n\n" + scene)
+            pass
+        else:
+            # file does not exist so we are going to create a new file append the scene and prepend the import statement
+            with open(args["file_name"], "w") as f:
+                f.write("\n\n\n" + scene)
+
+            add_import_statement(args["file_name"])
     else:
-        console.print("template name not given")
-    pass
+        # file name is not provided so we assume it is main.py
+        # if main.py does not exist we do not continue
+        if not Path("main.py").exists():
+            console.print("Missing files")
+            console.print("\n\t[red]Not a valid project directory[/red]\n")
+        else:
+            with open(Path("main.py"), "a") as f:
+                f.write("\n\n\n" + scene)
 
 
 @click.command(
