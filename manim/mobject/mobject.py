@@ -384,7 +384,7 @@ class Mobject(Container):
 
         """
         if self in mobjects:
-            raise ValueError("Mobjects shouldn't contain itself")
+            raise ValueError("A mobject shouldn't contain itself")
 
         for mobject in mobjects:
             if not isinstance(mobject, Mobject):
