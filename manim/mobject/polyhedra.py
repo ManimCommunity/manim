@@ -129,7 +129,7 @@ class Polyhedron(VGroup):
             face_group.add(Polygon(*face, **self.faces_config))
         return face_group
 
-    def update_faces(self, m):
+    def update_faces(self, m: "Mobject"):
         face_coords = self.extract_face_coords()
         new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
