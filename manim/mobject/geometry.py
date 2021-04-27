@@ -80,7 +80,6 @@ from ..utils.space_ops import (
     rotate_vector,
 )
 
-
 class TipableVMobject(VMobject):
     """
     Meant for shared functionality between Arc and Line.
@@ -1292,6 +1291,28 @@ class Vector(Arrow):
         if len(direction) == 2:
             direction = np.append(np.array(direction), 0)
         Arrow.__init__(self, ORIGIN, direction, buff=buff, **kwargs)
+
+    def coordinate_label(self, integer_labels=True, n_dim=2, color=WHITE):
+        # avoid circular imports
+        from .matrix import Matrix
+
+        vect = np.array(self.get_end())
+        if integer_labels:
+            vect = np.round(vect).astype(int)
+        vect = vect[:n_dim]
+        vect = vect.reshape((n_dim, 1))
+
+        label = Matrix(vect)
+        label.scale(LARGE_BUFF-0.2)
+
+        shift_dir = np.array(self.get_end())
+        if shift_dir[0] >= 0:  # Pointing right
+            shift_dir -= label.get_left() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * LEFT
+        else:  # Pointing left
+            shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
+        label.shift(shift_dir)
+        label.set_color(color)
+        return label
 
 
 class DoubleArrow(Arrow):
