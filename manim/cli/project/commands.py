@@ -54,6 +54,8 @@ CFG_DEFAULTS = {
     "resolution": (854, 480),
 }
 
+TEMPLATE_NAMES = ["Default", "Graph", "MovingCamera"]
+
 """\
     utility functions are helper functions that provide some core functionality
     to do project management
@@ -186,7 +188,7 @@ def project(default_settings, **args):
         # in the future when implementing a full template system. Choices are going to be saved in some sort of config file for templates
         template_name = click.prompt(
             "Template",
-            type=click.Choice(["default", "Graph", "MovingCamera"], False),
+            type=click.Choice(TEMPLATE_NAMES, False),
             default="default",
         )
 
@@ -231,7 +233,7 @@ def project(default_settings, **args):
 def scene(**args):
     template_name = click.prompt(
         "template",
-        type=click.Choice(["default", "Graph", "MovingCamera"], False),
+        type=click.Choice(TEMPLATE_NAMES, False),
         default="default",
     )
     scene = ""
