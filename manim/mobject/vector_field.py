@@ -302,7 +302,7 @@ class VectorField(VGroup):
         self.submob_movement_updater = None
         return self
 
-    def get_colored_background_image(self, sampling_rate: int = 5) -> str:
+    def get_colored_background_image(self, sampling_rate: int = 5) -> Image.Image:
         """Generate an image that displays the vector field.
 
         The color at each position is calculated by passing the positing through a
@@ -314,18 +314,18 @@ class VectorField(VGroup):
         Parameters
         ----------
         sampling_rate
-            The stepsize at which pixels get included in the image. Lower values give more accurate results, but may take a long time to compute.
+            The stepsize at which pixels get included in the image. Lower values give
+            more accurate results, but may take a long time to compute.
 
         Returns
         -------
-        str
-            The file path of the vector field image.
+        Image.Imgae
+            The vector field image.
         """
         if self.single_color:
             raise ValueError(
                 "There is no point in generating an image if the vector field uses a single color."
             )
-        # TODO: should return a file path
         ph = int(config["pixel_height"] / sampling_rate)
         pw = int(config["pixel_width"] / sampling_rate)
         fw = config["frame_width"]
@@ -340,7 +340,7 @@ class VectorField(VGroup):
         points_array[:, :, 0] = x_array
         points_array[:, :, 1] = y_array
         rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
-        return Image.fromarray((rgbs * 255).astype("uint8"))._dump()
+        return Image.fromarray((rgbs * 255).astype("uint8"))
 
 
 class ArrowVectorField(VectorField):
