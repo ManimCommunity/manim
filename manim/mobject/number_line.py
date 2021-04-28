@@ -1,7 +1,7 @@
 """Mobject representing a number line."""
 
 
-__all__ = ["NumberLine", "UnitInterval"]
+__all__ = ["NumberLine", "UnitInterval", "NumberLineOld"]
 
 
 import operator as op
@@ -296,9 +296,9 @@ class UnitInterval(NumberLine):
         )
 
 
-class OldNumberLine(Line):
+class NumberLineOld(Line):
     """
-    Exists for compatibility with GraphScene
+    Exists for compatibility with GraphScene.
     """
 
     def __init__(
