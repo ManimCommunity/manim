@@ -54,7 +54,16 @@ CFG_DEFAULTS = {
     "resolution": (854, 480),
 }
 
-TEMPLATE_NAMES = ["Default", "Graph", "MovingCamera"]
+
+def get_template_names():
+    """Gets template names from the templates directory
+
+    returns:
+            list of names of python files in templates direcotory
+    """
+    template_path = Path.resolve(Path(__file__).parent / "templates")
+    return [template_name.stem for template_name in template_path.glob("*.py")]
+
 
 """\
     utility functions are helper functions that provide some core functionality
@@ -188,7 +197,7 @@ def project(default_settings, **args):
         # in the future when implementing a full template system. Choices are going to be saved in some sort of config file for templates
         template_name = click.prompt(
             "Template",
-            type=click.Choice(TEMPLATE_NAMES, False),
+            type=click.Choice(get_template_names(), False),
             default="Default",
         )
 
@@ -233,7 +242,7 @@ def project(default_settings, **args):
 def scene(**args):
     template_name = click.prompt(
         "template",
-        type=click.Choice(TEMPLATE_NAMES, False),
+        type=click.Choice(get_template_names(), False),
         default="Default",
     )
     scene = ""
