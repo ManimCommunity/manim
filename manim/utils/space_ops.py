@@ -8,9 +8,6 @@ __all__ = [
     "quaternion_conjugate",
     "rotate_vector",
     "thick_diagonal",
-    "rotation_matrix_transpose_from_quaternion",
-    "rotation_matrix_from_quaternion",
-    "rotation_matrix_transpose",
     "rotation_matrix",
     "rotation_about_z",
     "z_to_vector",
@@ -31,8 +28,6 @@ __all__ = [
     "find_intersection",
     "line_intersection",
     "get_winding_number",
-    "shoelace",
-    "shoelace_direction",
     "cross2d",
     "earclip_triangulation",
 ]
@@ -70,6 +65,7 @@ def norm_squared(v: float) -> np.ndarray:
 
 def quaternion_mult(*quats: Sequence[float]) -> List[Union[float, np.ndarray]]:
     """Gets the Hamilton product the quaternions provided.
+    For more about the quaternion multiplication see: https://en.wikipedia.org/wiki/Quaternion
 
     Returns
     -------
@@ -107,15 +103,16 @@ def quaternion_mult(*quats: Sequence[float]) -> List[Union[float, np.ndarray]]:
 
 
 def quaternion_from_angle_axis(
-    angle: float, axis: np.ndarray, axis_normalized=False
+    angle: float, axis: np.ndarray, axis_normalized: bool = False
 ) -> np.ndarray:
     """Gets a quaternion from an angle and an axis.
+    For more information, check: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 
     Parameters
     ----------
-    angle : float
+    angle
         The angle for the quaternion.
-    axis : np.ndarray
+    axis
         The axis for the quaternion
     axis_normalized : bool, optional
         Checks whether the axis is normalized, by default False
@@ -138,7 +135,7 @@ def angle_axis_from_quaternion(quaternion: np.ndarray) -> float:
 
     Parameters
     ----------
-    quaternion : np.ndarray
+    quaternion
         The quaternion from which we get the angle and axis.
 
     Returns
@@ -158,7 +155,7 @@ def quaternion_conjugate(quaternion: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    quaternion : np.ndarray
+    quaternion
         The quaternion for which you want to find the conjugate for.
 
     Returns
@@ -171,16 +168,16 @@ def quaternion_conjugate(quaternion: np.ndarray) -> np.ndarray:
     return result
 
 
-def rotate_vector(vector: np.ndarray, angle: int, axis=OUT) -> np.ndarray:
+def rotate_vector(vector: np.ndarray, angle: int, axis: np.ndarray = OUT) -> np.ndarray:
     """Function for rotating a vector.
 
     Parameters
     ----------
-    vector : np.ndarray
+    vector
         The vector to be rotated.
-    angle : int
+    angle
         The angle to be rotated by.
-    axis : np.ndarray, optional
+    axis
         The axis to be rotated, by default OUT
 
     Returns
@@ -216,10 +213,11 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
 
 def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
     """Converts the quaternion, quat, to an equivalent rotation matrix representation.
+    See more about this here: https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html
 
     Parameters
     ----------
-    quat : np.ndarray
+    quat
         The quaternion which is to be converted.
 
     Returns
@@ -269,7 +267,7 @@ def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
     return reduce(np.dot, [z_to_axis, about_z, axis_to_z])
 
 
-def rotation_about_z(angle: float) -> List[float]:
+def rotation_about_z(angle: float) -> List[List[float]]:
     """Returns a rotation matrix for a given angle.
 
     Parameters
@@ -322,11 +320,11 @@ def angle_between(v1, v2):
 
 
 def angle_of_vector(vector: Sequence[float]) -> float:
-    """Returns polar coordinate theta when vector is project on xy plane.
+    """Returns polar coordinate theta when vector is projected on xy plane.
 
     Parameters
     ----------
-    vector : Sequence[float]
+    vector
         The vector to find the angle for.
 
     Returns
@@ -343,20 +341,20 @@ def angle_of_vector(vector: Sequence[float]) -> float:
         return np.angle(complex(*vector[:2]))
 
 
-def angle_between_vectors(v1: Sequence[float], v2: Sequence[float]) -> float:
+def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     """Returns the angle between two vectors.
     This angle will always be btw 0 and pi
 
     Parameters
     ----------
-    v1 : Sequence[float]
+    v1
         The first vector.
-    v2 : Sequence[float]
+    v2
         The second vector.
 
     Returns
     -------
-    float
+    np.ndarray
         The angle between the vectors.
     """
     if config["renderer"] == "opengl":
@@ -374,9 +372,9 @@ def project_along_vector(point: float, vector: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    point : float
+    point
         The point to be project from.
-    vector : np.ndarray
+    vector
         The vector which has to projected.
 
     Returns
@@ -404,9 +402,9 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    array : np.ndarray
+    array
         The array which has to be normalized.
-    axis : np.ndarray
+    axis
         The axis to be normalized to.
 
     Returns
@@ -429,16 +427,16 @@ def cross(v1, v2):
     return np.cross(v1, v2)
 
 
-def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol=1e-6) -> np.ndarray:
+def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol: float = 1e-6) -> np.ndarray:
     """Gets the unit normal of the vectors.
 
     Parameters
     ----------
-    v1 : np.ndarray
+    v1
         The first vector.
-    v2 : np.ndarray
+    v2
         The second vector
-    tol : float, optional
+    tol
         [description], by default 1e-6
 
     Returns
@@ -466,14 +464,14 @@ def get_unit_normal(v1: np.ndarray, v2: np.ndarray, tol=1e-6) -> np.ndarray:
 ###
 
 
-def compass_directions(n=4, start_vect=RIGHT) -> np.ndarray:
+def compass_directions(n: int = 4, start_vect: np.ndarray = RIGHT) -> np.ndarray:
     """Finds the cardinal directions using tau.
 
     Parameters
     ----------
-    n : int, optional
+    n
         The amount to be rotated, by default 4
-    start_vect : np.ndarray, optional
+    start_vect
         The directon for the angle to start with, by default RIGHT
 
     Returns
@@ -502,7 +500,7 @@ def center_of_mass(points: Sequence[float]) -> np.ndarray:
 
     Parameters
     ----------
-    points : Sequence[float]
+    points
         The points to find the center of mass from.
 
     Returns
@@ -521,9 +519,9 @@ def midpoint(
 
     Parameters
     ----------
-    point1 : Sequence[float]
+    point1
         The first point.
-    point2 : Sequence[float]
+    point2
         The second point.
 
     Returns
@@ -540,9 +538,9 @@ def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndar
 
     Parameters
     ----------
-    line1 : Sequence[float]
+    line1
         The first line.
-    line2 : Sequence[float]
+    line2
         The second line.
 
     Returns
@@ -643,15 +641,15 @@ def cross2d(a: int, b: int) -> float:
         return a[0] * b[1] - b[0] * a[1]
 
 
-def earclip_triangulation(verts: tuple, ring_ends: list) -> list:
+def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     """Returns a list of indices giving a triangulation
     of a polygon, potentially with holes.
 
     Parameters
     ----------
-    verts : tuple
+    verts
         verts is a numpy array of points.
-    ring_ends : list
+    ring_ends
         ring_ends is a list of indices indicating where
     the ends of new paths are.
 
