@@ -68,28 +68,24 @@ def test_manim_init_subcommand():
     command = ["init"]
     runner = CliRunner()
     runner.invoke(main, command, prog_name="manim")
-    expected_output = """\
-[CLI]
-frame_rate = 30
-pixel_height = 480
-pixel_width = 854
-background_color = BLACK
-background_opacity = 1
-scene_names = DefaultScene
-from manim import *
-class default(Scene):
-    def construct(self):
-        circle = Circle()  # create a circle
-        circle.set_fill(PINK, opacity=0.5)  # set color and transparency
 
-        square = Square()  # create a square
-        square.flip(RIGHT)  # flip horizontally
-        square.rotate(-3 * TAU / 8)  # rotate a certain amount
+    expected_manim_cfg = ""
+    expected_main_py = ""
 
-        self.play(Create(square))  # animate the creation of the square
-        self.play(Transform(square, circle))  # interpolate the square into the circle
-        self.play(FadeOut(square))  # fade out animation
-  """
+    with open(
+        Path.resolve(
+            Path(__file__).parent.parent / "manim/cli/project/templates/template.cfg"
+        )
+    ) as f:
+        expected_manim_cfg = f.read()
+
+    with open(
+        Path.resolve(
+            Path(__file__).parent.parent / "manim/cli/project/templates/default.py"
+        )
+    ) as f:
+        expected_main_py = f.read()
+
     manim_cfg_path = Path("manim.cfg")
     manim_cfg_content = ""
     main_py_path = Path("main.py")
@@ -99,9 +95,11 @@ class default(Scene):
 
     with open(main_py_path) as f:
         main_py_content = f.read()
-        print(manim_cfg_content + main_py_content)
 
     manim_cfg_path.unlink()
     main_py_path.unlink()
 
-    assert dedent(expected_output) == manim_cfg_content + main_py_content
+    assert (
+        dedent(expected_manim_cfg + "from manim import *\n" + expected_main_py)
+        == manim_cfg_content + main_py_content
+    )
