@@ -338,10 +338,44 @@ class ThreeDAxes(Axes):
 
 
 class NumberPlane(Axes):
+    """Creates a cartesian plane with background lines.
+
+    Parameters
+    ----------
+    x_range : Union[:class:`list`, :class:`numpy.ndarray`]
+        The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
+    y_range : Union[:class:`list`, :class:`numpy.ndarray`]
+        The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
+    x_length : :class:`float`
+        The length of the plane.
+    y_length :class:`float`
+        The height of the plane.
+    axis_config : :class:`dict`
+        Arguments to be passed to :class:`~.NumberLine` that influences `both` axes.
+    y_axis_config : :class:`dict`
+        Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    background_line_style : :class:`dict`
+        Arguments that influence the construction of the background lines of the plane.
+    faded_line_style : :class:`dict`
+        Similar to :attr:`background_line_style`, affects the construction of the scene's background lines.
+    faded_line_ratio : :class:`int`
+        Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes.
+    make_smooth_after_applying_functions
+        Currently non-functional.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Axes`
+
+    Notes
+    -----
+
+    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts based on
+         the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+    """
+
     def __init__(
         self,
-        x_range=(-6, 6, 1),
-        y_range=(-3, 3, 1),
+        x_range=np.array((-6, 6, 1)),
+        y_range=np.array((-3, 3, 1)),
         x_length=None,
         y_length=None,
         axis_config=None,
