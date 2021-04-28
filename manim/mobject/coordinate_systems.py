@@ -260,11 +260,43 @@ class Axes(VGroup, CoordinateSystem):
 
 
 class ThreeDAxes(Axes):
+    """A 3-dimensional set of axes.
+
+     Parameters
+    ----------
+    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+    z_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[z_min, z_max, z_step]` values of the z-axis.
+    x_length : Optional[:class:`float`]
+        The length of the x-axis.
+    y_length Optional[:class:`float`]
+        The length of the y-axis.
+    z_length : Optional[:class:`float`]
+        The length of the z-axis.
+    z_axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influence the z-axis.
+    z_normal : Union[:class:`list`, :class:`numpy.ndarray`]
+        The direction of the normal.
+    num_axis_pieces : :class:`int`
+        The number of pieces used to construct the axes.
+    light_source : Union[:class:`list`, :class:`numpy.ndarray`]
+        The direction of the light source.
+    depth
+        Currently non-functional.
+    gloss
+        Currently non-functional
+    kwargs : Any
+        Additional arguments to be passed to :class:`Axes`
+    """
+
     def __init__(
         self,
-        x_range=None,
-        y_range=None,
-        z_range=None,
+        x_range=np.array((-5.5, 5.5, 1)),
+        y_range=np.array((-5.5, 5.5, 1)),
+        z_range=np.array((-3.5, 3.5, 1)),
         x_length=config.frame_height + 2.5,
         y_length=config.frame_height + 2.5,
         z_length=config.frame_height - 1.5,
@@ -277,9 +309,6 @@ class ThreeDAxes(Axes):
         gloss=0.5,
         **kwargs,
     ):
-        x_range = np.array([-5.5, 5.5, 1]) if x_range is None else x_range
-        y_range = np.array([-5.5, 5.5, 1]) if y_range is None else y_range
-        z_range = np.array([-3.5, 3.5, 1]) if z_range is None else z_range
 
         Axes.__init__(
             self,
@@ -342,23 +371,23 @@ class NumberPlane(Axes):
 
     Parameters
     ----------
-    x_range : Union[:class:`list`, :class:`numpy.ndarray`]
+    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
         The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
-    y_range : Union[:class:`list`, :class:`numpy.ndarray`]
+    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
         The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
-    x_length : :class:`float`
+    x_length : Optional[:class:`float`]
         The length of the plane.
-    y_length :class:`float`
+    y_length Optional[:class:`float`]
         The height of the plane.
-    axis_config : :class:`dict`
+    axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influences `both` axes.
-    y_axis_config : :class:`dict`
+    y_axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
-    background_line_style : :class:`dict`
+    background_line_style : Optional[:class:`dict`]
         Arguments that influence the construction of the background lines of the plane.
-    faded_line_style : :class:`dict`
+    faded_line_style : Optional[:class:`dict`]
         Similar to :attr:`background_line_style`, affects the construction of the scene's background lines.
-    faded_line_ratio : :class:`int`
+    faded_line_ratio : Optional[:class:`int`]
         Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes.
     make_smooth_after_applying_functions
         Currently non-functional.
