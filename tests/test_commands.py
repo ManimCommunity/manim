@@ -103,3 +103,24 @@ def test_manim_init_subcommand():
         dedent(expected_manim_cfg + "from manim import *\n" + expected_main_py)
         == manim_cfg_content + main_py_content
     )
+
+
+def test_manim_new_command():
+    command = ["new"]
+    runner = CliRunner()
+    result = runner.invoke(main, command, prog_name="manim")
+    expected_output = """\
+Usage: manim new [OPTIONS] COMMAND [ARGS]...
+
+  Create Project or Scene.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Commands:
+  project  Initialize New Project
+  scene    Add a scene to an existing file or a new file
+
+  Made with <3 by Manim Community developers.
+"""
+    assert dedent(expected_output) == result.output
