@@ -74,7 +74,7 @@ class ValueTracker(Mobject):
         self.set_value(value)
 
     def get_value(self) -> float:
-        """Get the current value of this value tracker."""
+        """Get the current value of this ValueTracker."""
         return self.points[0, 0]
 
     def set_value(self, value: Union[float, int]):
@@ -92,7 +92,7 @@ class ValueTracker(Mobject):
         return bool(self.get_value())
 
     def __iadd__(self, d_value: Union[float, int]):
-        """Add ``d_value`` to the value of this value tracker."""
+        """Add ``d_value`` to the value of this ValueTracker."""
         self.increment_value(d_value)
         return self
 
