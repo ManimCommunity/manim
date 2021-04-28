@@ -1214,12 +1214,12 @@ class BackgroundColoredVMobjectDisplayer:
         Parameters
         ----------
         image
-            The background image or its file_name.
+            The background image or its file name.
 
         Returns
         -------
         np.ndarray
-            The pixel array of the given image (file)
+            The pixel array of the image.
         """
         image_key = str(image)
 
