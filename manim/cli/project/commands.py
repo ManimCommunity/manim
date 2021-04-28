@@ -241,7 +241,7 @@ def scene(**args):
         Path.resolve(Path(__file__).parent) / f"templates/{template_name}.py"
     ) as f:
         scene = f.read()
-        scene = scene.replace(template_name, args["scene_name"], 1)
+        scene = scene.replace(template_name + "Template", args["scene_name"], 1)
 
     if args["file_name"]:
         file_name = Path(args["file_name"] + ".py")
