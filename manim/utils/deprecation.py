@@ -28,7 +28,7 @@ def _get_callable_info(callable: Callable) -> Tuple[str, str]:
     """
     what = type(callable).__name__
     name = callable.__qualname__
-    if what == "function" and "." in name:
+    if what == "function":
         what = "method"
     elif what == "type":
         what = "class"
@@ -54,22 +54,22 @@ def _deprecation_text_component(
     str
         The deprecation message text component.
     """
-    since = "" if since is None else f"since {since} "
+    since = f"since {since} " if since else ""
     until = (
-        "may be removed in a future version"
-        if until is None
-        else f"is expected to be removed after {until}"
+        f"is expected to be removed after {until}"
+        if until
+        else "may be removed in a later version"
     )
-    msg = "" if message == "" else " " + message
+    msg = " " + message if message else ""
     return f"deprecated {since}and {until}.{msg}"
 
 
 def deprecated(
-    func: Optional[Callable] = None,
+    func: Callable = None,
     since: Optional[str] = None,
     until: Optional[str] = None,
     replacement: Optional[str] = None,
-    message: str = "",
+    message: Optional[str] = "",
 ) -> Callable:
     """Decorator to mark a callable as deprecated.
 
@@ -112,13 +112,13 @@ def deprecated(
                 pass
 
         foo()
-        # WARNING  The function foo has been deprecated and may be removed in a future version.
+        # WARNING  The function foo has been deprecated and may be removed in a later version.
 
         a = Bar()
-        # WARNING  The class Bar has been deprecated and may be removed in a future version.
+        # WARNING  The class Bar has been deprecated and may be removed in a later version.
 
         a.baz()
-        # WARNING  The method Bar.baz has been deprecated and may be removed in a future version.
+        # WARNING  The method Bar.baz has been deprecated and may be removed in a later version.
 
     You can specify additional information for a more precise warning::
 
@@ -169,7 +169,7 @@ def deprecated(
             if for_docs:
                 mapper = {"class": "class", "method": "meth", "function": "func"}
                 repl = f":{mapper[what]}:`~.{replacement}`"
-            msg = f"Use {repl} instead. {message}"
+            msg = f"Use {repl} instead.{' ' + message if message else ''}"
         deprecated = _deprecation_text_component(since, until, msg)
         return f"The {what} {name} has been {deprecated}"
 
@@ -222,7 +222,7 @@ def deprecated_params(
     params: Optional[Union[str, Iterable[str]]] = None,
     since: Optional[str] = None,
     until: Optional[str] = None,
-    message: str = "",
+    message: Optional[str] = "",
     redirections: Optional[
         "Iterable[Union[Tuple[str, str], Callable[..., dict[str, Any]]]]"
     ] = None,
@@ -374,7 +374,9 @@ def deprecated_params(
         else:
             params.extend(inspect.getargspec(redirector).args)
             print(inspect.getargspec(redirector).args)
-    params = list(set(params))
+    # Keep ordering of params so that warning message is consistently the same
+    # This will also help pass unit testing
+    params = list(dict.fromkeys(params))
 
     # Make sure params only contains valid identifiers
     identifier = re.compile(r"^[^\d\W]\w*\Z", re.UNICODE)
