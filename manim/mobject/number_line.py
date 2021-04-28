@@ -298,7 +298,7 @@ class UnitInterval(NumberLine):
 
 class NumberLineOld(Line):
     """
-    Exists for compatibility with GraphScene.
+    The old version of :class:`NumberLine`. Exists for compatibility with GraphScene.
     """
 
     def __init__(
