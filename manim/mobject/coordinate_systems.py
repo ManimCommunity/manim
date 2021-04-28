@@ -169,6 +169,28 @@ class CoordinateSystem:
 
 
 class Axes(VGroup, CoordinateSystem):
+    """Creates a set of axes.
+
+    Parameters
+    ----------
+    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+    x_length : Optional[:class:`float`]
+        The length of the x-axis.
+    y_length Optional[:class:`float`]
+        The length of the y-axis.
+    axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influences `both` axes.
+    x_axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
+    y_axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    kwargs : Any
+        Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`
+    """
+
     def __init__(
         self,
         x_range=None,
@@ -262,7 +284,7 @@ class Axes(VGroup, CoordinateSystem):
 class ThreeDAxes(Axes):
     """A 3-dimensional set of axes.
 
-     Parameters
+    Parameters
     ----------
     x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
         The :code:`[x_min, x_max, x_step]` values of the x-axis.
