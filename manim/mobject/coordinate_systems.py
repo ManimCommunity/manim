@@ -179,7 +179,7 @@ class Axes(VGroup, CoordinateSystem):
         The :code:`[y_min, y_max, y_step]` values of the y-axis.
     x_length : Optional[:class:`float`]
         The length of the x-axis.
-    y_length Optional[:class:`float`]
+    y_length : Optional[:class:`float`]
         The length of the y-axis.
     axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influences `both` axes.
@@ -294,7 +294,7 @@ class ThreeDAxes(Axes):
         The :code:`[z_min, z_max, z_step]` values of the z-axis.
     x_length : Optional[:class:`float`]
         The length of the x-axis.
-    y_length Optional[:class:`float`]
+    y_length : Optional[:class:`float`]
         The length of the y-axis.
     z_length : Optional[:class:`float`]
         The length of the z-axis.
@@ -399,7 +399,7 @@ class NumberPlane(Axes):
         The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
     x_length : Optional[:class:`float`]
         The length of the plane.
-    y_length Optional[:class:`float`]
+    y_length : Optional[:class:`float`]
         The height of the plane.
     axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influences `both` axes.
