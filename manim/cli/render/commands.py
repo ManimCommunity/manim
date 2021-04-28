@@ -174,5 +174,4 @@ def render(
         except Exception:
             logger.debug(f"Something went wrong: {warn_prompt}")
 
-
     return args
