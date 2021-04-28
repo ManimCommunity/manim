@@ -32,22 +32,22 @@ class ValueTracker(Mobject):
                 pointer = Vector(DOWN)
                 label = MathTex("x").add_updater(lambda m: m.next_to(pointer, UP))
 
-                pointer_tracker = ValueTracker(0)
+                tracker = ValueTracker(0)
                 pointer.add_updater(
                     lambda m: m.next_to(
-                                number_line.n2p(pointer_tracker.get_value()),
+                                number_line.n2p(tracker.get_value()),
                                 UP
                             )
                 )
                 self.add(number_line, pointer,label)
-                pointer_tracker += 1.5
+                tracker += 1.5
                 self.wait(1)
-                pointer_tracker -= 4
+                tracker -= 4
                 self.wait(0.5)
-                self.play(pointer_tracker.animate.set_value(5)),
+                self.play(tracker.animate.set_value(5)),
                 self.wait(0.5)
-                self.play(pointer_tracker.animate.set_value(3))
-                self.play(pointer_tracker.animate.increment_value(-2))
+                self.play(tracker.animate.set_value(3))
+                self.play(tracker.animate.increment_value(-2))
                 self.wait(0.5)
 
     .. note::
@@ -59,11 +59,11 @@ class ValueTracker(Mobject):
 
         class ValueTrackerExample(Scene):
             def construct(self):
-                pointer_tracker = ValueTracker(0)
-                label = Dot(radius=3).add_updater(lambda x : x.set_x(pointer_tracker.get_value()))
+                tracker = ValueTracker(0)
+                label = Dot(radius=3).add_updater(lambda x : x.set_x(tracker.get_value()))
                 self.add(label)
-                self.add(pointer_tracker)
-                pointer_tracker.add_updater(lambda mobject, dt: mobject.increment_value(dt))
+                self.add(tracker)
+                tracker.add_updater(lambda mobject, dt: mobject.increment_value(dt))
                 self.wait(2)
 
     """
