@@ -76,6 +76,19 @@ pixel_width = 854
 background_color = BLACK
 background_opacity = 1
 scene_names = DefaultScene
+from manim import *
+class default(Scene):
+    def construct(self):
+        circle = Circle()  # create a circle
+        circle.set_fill(PINK, opacity=0.5)  # set color and transparency
+
+        square = Square()  # create a square
+        square.flip(RIGHT)  # flip horizontally
+        square.rotate(-3 * TAU / 8)  # rotate a certain amount
+
+        self.play(Create(square))  # animate the creation of the square
+        self.play(Transform(square, circle))  # interpolate the square into the circle
+        self.play(FadeOut(square))  # fade out animation
   """
     manim_cfg_path = Path("manim.cfg")
     manim_cfg_content = ""
@@ -83,9 +96,12 @@ scene_names = DefaultScene
     main_py_content = ""
     with open(manim_cfg_path) as f:
         manim_cfg_content = f.read()
-        print(manim_cfg_content)
-        print(expected_output)
+
+    with open(main_py_path) as f:
+        main_py_content = f.read()
+        print(manim_cfg_content + main_py_content)
+
     manim_cfg_path.unlink()
     main_py_path.unlink()
 
-    assert dedent(expected_output) == manim_cfg_content
+    assert dedent(expected_output) == manim_cfg_content + main_py_content
