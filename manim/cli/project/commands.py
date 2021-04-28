@@ -50,7 +50,7 @@ CFG_DEFAULTS = {
     "frame_rate": 30,
     "background_color": "BLACK",
     "background_opacity": 1,
-    "scene_names": "default",
+    "scene_names": "Default",
     "resolution": (854, 480),
 }
 
@@ -112,12 +112,12 @@ def add_import_statement(file):
         f.write(import_line.rstrip("\r\n") + "\n" + content)
 
 
-def copy_template_files(project_dir=Path("."), template_name="default"):
+def copy_template_files(project_dir=Path("."), template_name="Default"):
     """Copies template files from templates dir to project_dir.
 
     Args:
         project_dir (Path, optional): [description]. Defaults to Path(".").
-        template_name (str, optional): [description]. Defaults to "default".
+        template_name (str, optional): [description]. Defaults to "Default".
     """
     template_cfg_path = Path.resolve(Path(__file__).parent / "templates/template.cfg")
     if not template_cfg_path.exists():
@@ -128,7 +128,7 @@ def copy_template_files(project_dir=Path("."), template_name="default"):
     )
     if not template_scene_path.exists():
         template_scene_path = Path.resolve(
-            Path(__file__).parent / "templates/default.py"
+            Path(__file__).parent / "templates/Default.py"
         )
 
     copyfile(template_cfg_path, Path.resolve(project_dir / "manim.cfg"))
@@ -189,7 +189,7 @@ def project(default_settings, **args):
         template_name = click.prompt(
             "Template",
             type=click.Choice(TEMPLATE_NAMES, False),
-            default="default",
+            default="Default",
         )
 
     if project_name.is_dir():
@@ -234,7 +234,7 @@ def scene(**args):
     template_name = click.prompt(
         "template",
         type=click.Choice(TEMPLATE_NAMES, False),
-        default="default",
+        default="Default",
     )
     scene = ""
     with open(
