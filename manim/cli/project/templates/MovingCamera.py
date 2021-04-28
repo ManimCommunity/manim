@@ -1,4 +1,4 @@
-class MovingCamera(MovingCameraScene):
+class MovingCameraTemplate(MovingCameraScene):
     def construct(self):
         text = Text("Hello World").set_color(BLUE)
         self.add(text)

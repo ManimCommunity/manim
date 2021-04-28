@@ -1,4 +1,4 @@
-class Graph(GraphScene):
+class GraphTemplate(GraphScene):
     def __init__(self, **kwargs):
         GraphScene.__init__(
             self,
