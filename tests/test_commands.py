@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 from textwrap import dedent
 
 from click.testing import CliRunner
@@ -61,3 +62,30 @@ Options:
   Made with <3 by Manim Community developers.
 """
     assert dedent(expected_output) == result.output
+
+
+def test_manim_init_subcommand():
+    command = ["init"]
+    runner = CliRunner()
+    runner.invoke(main, command, prog_name="manim")
+    expected_output = """\
+[CLI]
+frame_rate = 30
+pixel_height = 480
+pixel_width = 854
+background_color = BLACK
+background_opacity = 1
+scene_names = DefaultScene
+  """
+    manim_cfg_path = Path("manim.cfg")
+    manim_cfg_content = ""
+    main_py_path = Path("main.py")
+    main_py_content = ""
+    with open(manim_cfg_path) as f:
+        manim_cfg_content = f.read()
+        print(manim_cfg_content)
+        print(expected_output)
+    manim_cfg_path.unlink()
+    main_py_path.unlink()
+
+    assert dedent(expected_output) == manim_cfg_content
