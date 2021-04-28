@@ -324,6 +324,7 @@ length with only integers.
    then using ``from typestring_parser import parse``.
 
    Example:: py
+   .. testsetup::
 
     from typestring_parser import parse
     
