@@ -21,6 +21,56 @@ from ..utils.space_ops import normalize
 
 
 class NumberLine(Line):
+    """Creates a number line with tick marks.
+
+    Parameters
+    ----------
+    x_range : Union[:class:`list`, :class:`numpy.ndarray`]
+        The :code:`[x_min, x_max, x_step]` values to create the line.
+    length : :class:`float`
+        The length of the number line.
+    unit_size : class:`float`
+        The distance between each tick of the line.
+    include_ticks : :class:`bool`
+        Determines whether ticks are included.
+    tick_size : :class:`float`
+        The vertical length of each tick mark.
+    numbers_with_elongated_ticks : Union[:class:`list`, :class:`numpy.ndarray`]
+        A list of specific values with elongated ticks.
+    longer_tick_multiple : :class:`float`
+        Influences how many times larger elongated ticks are than regular ticks (2 = 2x).
+    color : :class:`~.Colors`
+        The color of the line.
+    rotation : :class:`float`
+        The angle (in radians) at which the line is rotated.
+    stroke_width : :class:`float`
+        The thickness of the line.
+    include_tip : :class:`bool`
+        Determines whether a tip is added to the end of the line.
+    tip_width : :class:`float`
+        The width of the tip.
+    tip_height : :class:`float`
+        The height of the tip.
+    include_numbers : :class:`bool`
+        Determines whether numbers are added to tick marks.
+    label_direction : Union[:class:`list`, :class:`numpy.ndarray`]
+        The specific position to which number mobjects are added on the line.
+    line_to_number_buff : :class:`float`
+        The distance between the line and the number mobject.
+    decimal_number_config : :class:`dict`
+        Arguments that can be passed to :class:`~.numbers.DecimalNumber` to influence number mobjects.
+    numbers_to_exclude : Union[:class:`list`, :class:`numpy.ndarray`]
+        An explicit list of numbers to not be added to the line
+    number_scale_value : :class:`float`
+        The size scaling factor for the number mobjects
+    kwargs : Any
+        Additional arguments to be passed to :class:`~.Line`
+
+    Returns
+    -------
+    The constructed number line.
+    """
+
     def __init__(
         self,
         x_range=None,  # must be first
