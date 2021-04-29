@@ -6,11 +6,11 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 from copy import deepcopy
 from typing import (
-    Dict,
-    List,
     TYPE_CHECKING,
     Callable,
+    Dict,
     Iterable,
+    List,
     Optional,
     Tuple,
     Type,
@@ -33,7 +33,9 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 class Animation:
     _overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
 
-    def __new__(cls, mobject: Optional[Mobject], *args, use_default:bool=False, **kwargs):
+    def __new__(
+        cls, mobject: Optional[Mobject], *args, use_default: bool = False, **kwargs
+    ):
         if (
             not use_default
             and cls in cls._overrides
