@@ -277,21 +277,6 @@ def scene(**args):
                 f.write("\n\n\n" + scene)
 
 
-@click.command(
-    context_settings=CONTEXT_SETTINGS,
-    no_args_is_help=False,
-    epilog=EPILOG,
-    help="Quickly setup a project",
-)
-def init():
-    """Initialize a new project in the current working directory"""
-    cfg = Path("manim.cfg")
-    if cfg.exists():
-        raise FileExistsError(f"\t{cfg} exists\n")
-    else:
-        copy_template_files()
-
-
 @click.group(
     context_settings=CONTEXT_SETTINGS,
     invoke_without_command=True,
