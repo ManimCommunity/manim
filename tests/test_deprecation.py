@@ -203,6 +203,16 @@ class Top:
     def quux(self, **kwargs):
         return kwargs
 
+    @deprecated_params(
+        redirections=[
+            lambda point2D=1: {"x": point2D[0], "y": point2D[1]}
+            if isinstance(point2D, tuple)
+            else {"x": point2D, "y": point2D}
+        ]
+    )
+    def quuz(self, **kwargs):
+        return kwargs
+
 
 def test_deprecate_func_no_args(caplog):
     """Test the deprecation of a method (decorator with no arguments)."""
@@ -324,3 +334,27 @@ def test_deprecate_func_param_redirect_many_to_one(caplog):
         == "The parameters point2D_x and point2D_y of method Top.quux have been deprecated and may be removed in a later version."
     )
     assert obj == {"point2D": (3, 5)}
+
+
+def test_deprecate_func_param_redirect_one_to_many(caplog):
+    """Test the deprecation of one method parameter and redirecting it to many."""
+    t = Top()
+    obj1 = t.quuz(point2D=0)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
+    )
+    assert obj1 == {"x": 0, "y": 0}
+
+    caplog.clear()
+
+    obj2 = t.quuz(point2D=(2, 3))
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
+    )
+    assert obj2 == {"x": 2, "y": 3}
