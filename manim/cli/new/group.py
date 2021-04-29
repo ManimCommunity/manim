@@ -70,9 +70,7 @@ def update_cfg(cfg_dict, project_cfg_path):
 
 @click.command(
     context_settings=CONTEXT_SETTINGS,
-    no_args_is_help=False,
     epilog=EPILOG,
-    help="Create new projects.",
 )
 @click.argument("project_name", type=Path, required=False)
 @click.argument("template_name", required=False)
@@ -85,29 +83,23 @@ def update_cfg(cfg_dict, project_cfg_path):
     nargs=1,
 )
 def project(default_settings, **args):
-    """Project subcommand creates a project inside of a 'new folder'. The name of the 'new folder' is passed as the first argument to the command.
+    """Creates new project.
 
-    Parameters
-    ----------
-        default_settings : :class:`bool`
-            Is True if -d or --default flag is passed.
-        **args : :class:`dict`
-            Dictionary of arguments passed to the 'project' command.
+    Project subcommand creates a project inside of the 'project_name'.
+
+    'project_name' is the argument passed to the command.
     """
     if args["project_name"]:
         project_name = args["project_name"]
     else:
         project_name = click.prompt("Project Name", type=Path)
 
-    if args["template_name"]:
-        template_name = args["template_name"]
-    else:
-        # in the future when implementing a full template system. Choices are going to be saved in some sort of config file for templates
-        template_name = click.prompt(
-            "Template",
-            type=click.Choice(get_template_names(), False),
-            default="Default",
-        )
+    # in the future when implementing a full template system. Choices are going to be saved in some sort of config file for templates
+    template_name = click.prompt(
+        "Template",
+        type=click.Choice(get_template_names(), False),
+        default="Default",
+    )
 
     if project_name.is_dir():
         console.print(
@@ -121,10 +113,7 @@ def project(default_settings, **args):
         if not default_settings:
             for key, value in CFG_DEFAULTS.items():
                 if key == "scene_names":
-                    if args["template_name"]:
-                        new_cfg[key] = args["template_name"]
-                    else:
-                        new_cfg[key] = value
+                    new_cfg[key] = template_name + "Template"
                 elif key == "resolution":
                     new_cfg[key] = select_resolution()
                 else:
@@ -143,17 +132,15 @@ def project(default_settings, **args):
     context_settings=CONTEXT_SETTINGS,
     no_args_is_help=True,
     epilog=EPILOG,
-    help="Insert a scene to an existing file or a new file",
 )
 @click.argument("scene_name", type=str, required=True)
 @click.argument("file_name", type=str, required=False)
 def scene(**args):
-    """Scene subcommand inserts new scenes. If file_name is not passed as the second argument, This command inserts new scene in main.py.
+    """Inserts a scene to an existing file or a new file
 
-    Parameters
-    ----------
-        **args : :class:`dict`
-            Dictionary of arguments passed to the scene command.
+    If 'file_name' is passed as the second argument, This command inserts or writes to 'file_name' depending on weather the 'file_name' exists or not.
+
+    If 'file_name' is not passed as the second argument, This command inserts new scene in main.py.
     """
     template_name = click.prompt(
         "template",
