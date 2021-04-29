@@ -142,6 +142,11 @@ def scene(**args):
 
     If 'file_name' is not passed as the second argument, This command inserts new scene in main.py.
     """
+    if not Path("main.py").exists():
+        console.print("Missing files")
+        console.print("\n\t[red]Not a valid project directory[/red]\n")
+        raise FileNotFoundError(f"{Path('main.py')} : Not a valid project direcotory.")
+
     template_name = click.prompt(
         "template",
         type=click.Choice(get_template_names(), False),
@@ -169,12 +174,8 @@ def scene(**args):
     else:
         # file name is not provided so we assume it is main.py
         # if main.py does not exist we do not continue
-        if not Path("main.py").exists():
-            console.print("Missing files")
-            console.print("\n\t[red]Not a valid project directory[/red]\n")
-        else:
-            with open(Path("main.py"), "a") as f:
-                f.write("\n\n\n" + scene)
+        with open(Path("main.py"), "a") as f:
+            f.write("\n\n\n" + scene)
 
 
 @click.group(
