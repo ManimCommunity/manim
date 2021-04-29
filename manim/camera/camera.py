@@ -6,8 +6,10 @@ __all__ = ["Camera", "BackgroundColoredVMobjectDisplayer"]
 import copy
 import itertools as it
 import operator as op
+import pathlib
 import time
 from functools import reduce
+from typing import Union
 
 import cairo
 import numpy as np
@@ -573,11 +575,9 @@ class Camera:
         """
         if len(vmobjects) == 0:
             return
-        batch_file_pairs = it.groupby(
-            vmobjects, lambda vm: vm.get_background_image_file()
-        )
-        for file_name, batch in batch_file_pairs:
-            if file_name:
+        batch_image_pairs = it.groupby(vmobjects, lambda vm: vm.get_background_image())
+        for image, batch in batch_image_pairs:
+            if image:
                 self.display_multiple_background_colored_vmobjects(batch, pixel_array)
             else:
                 self.display_multiple_non_background_colored_vmobjects(
@@ -1208,30 +1208,33 @@ class BackgroundColoredVMobjectDisplayer:
         mode = "RGBA" if pixel_array.shape[2] == 4 else "RGB"
         return self.resize_background_array(background_array, width, height, mode)
 
-    def get_background_array(self, file_name):
+    def get_background_array(self, image: Union[Image.Image, pathlib.Path, str]):
         """Gets the background array that has the passed file_name.
 
         Parameters
         ----------
-        file_name : str
-            The file_name of the background image.
+        image
+            The background image or its file name.
 
         Returns
         -------
         np.ndarray
-            The pixel array of the file whose file name is `file_name`
+            The pixel array of the image.
         """
-        if file_name in self.file_name_to_pixel_array_map:
-            return self.file_name_to_pixel_array_map[file_name]
-        full_path = get_full_raster_image_path(file_name)
-        image = Image.open(full_path)
+        image_key = str(image)
+
+        if image_key in self.file_name_to_pixel_array_map:
+            return self.file_name_to_pixel_array_map[image_key]
+        if isinstance(image, str):
+            full_path = get_full_raster_image_path(image)
+            image = Image.open(full_path)
         back_array = np.array(image)
 
         pixel_array = self.pixel_array
         if not np.all(pixel_array.shape == back_array.shape):
             back_array = self.resize_background_array_to_match(back_array, pixel_array)
 
-        self.file_name_to_pixel_array_map[file_name] = back_array
+        self.file_name_to_pixel_array_map[image_key] = back_array
         return back_array
 
     def display(self, *cvmobjects):
@@ -1247,12 +1250,10 @@ class BackgroundColoredVMobjectDisplayer:
         np.array
             The pixel array with the `cvmobjects` displayed.
         """
-        batch_image_file_pairs = it.groupby(
-            cvmobjects, lambda cv: cv.get_background_image_file()
-        )
+        batch_image_pairs = it.groupby(cvmobjects, lambda cv: cv.get_background_image())
         curr_array = None
-        for batch, image_file in batch_image_file_pairs:
-            background_array = self.get_background_array(image_file)
+        for image, batch in batch_image_pairs:
+            background_array = self.get_background_array(image)
             pixel_array = self.pixel_array
             self.camera.display_multiple_non_background_colored_vmobjects(
                 batch, pixel_array

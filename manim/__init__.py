@@ -42,6 +42,7 @@ from .mobject.mobject import *
 from .mobject.mobject_update_utils import *
 from .mobject.number_line import *
 from .mobject.numbers import *
+from .mobject.polyhedra import *
 from .mobject.probability import *
 from .mobject.shape_matchers import *
 from .mobject.svg.brace import *
