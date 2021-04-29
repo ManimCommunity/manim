@@ -64,7 +64,7 @@ class NumberLine(Line):
     number_scale_value : :class:`float`
         The size scaling factor for the number mobjects
     kwargs : Any
-        Additional arguments to be passed to :class:`~.Line`
+        Additional arguments to be passed to :class:`~.Line`.
 
     Returns
     -------
