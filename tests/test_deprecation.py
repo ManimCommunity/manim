@@ -189,6 +189,12 @@ class Top:
     def baz(self, **kwargs):
         return kwargs
 
+    @deprecated_params(
+        redirections=[lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}]
+    )
+    def qux(self, **kwargs):
+        return kwargs
+
 
 def test_deprecate_func_no_args(caplog):
     """Test the deprecation of a method (decorator with no arguments)."""
@@ -274,7 +280,7 @@ def test_deprecate_func_single_param_since_and_until(caplog):
 
 
 def test_deprecate_func_param_redirect_tuple(caplog):
-    """Test the deprecation of an old method parameter and redirecting it to a new one."""
+    """Test the deprecation of a method parameter and redirecting it to a new one using tuple."""
     t = Top()
     obj = t.baz(x=1, old_param=2)
     assert len(caplog.record_tuples) == 1
@@ -284,3 +290,16 @@ def test_deprecate_func_param_redirect_tuple(caplog):
         == "The parameter old_param of method Top.baz has been deprecated and may be removed in a later version."
     )
     assert obj == {"x": 1, "new_param": 2}
+
+
+def test_deprecate_func_param_redirect_lambda(caplog):
+    """Test the deprecation of a method parameter and redirecting it to a new one using lambda function."""
+    t = Top()
+    obj = t.qux(runtime_in_ms=500)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter runtime_in_ms of method Top.qux has been deprecated and may be removed in a later version."
+    )
+    assert obj == {"run_time": 0.5}
