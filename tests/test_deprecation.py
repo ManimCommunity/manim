@@ -177,7 +177,7 @@ class Top:
 
             return nested_func
 
-    @deprecated_params(params="a, b, c")
+    @deprecated_params(params="a, b, c", message="Use something else.")
     def foo(self, **kwargs):
         pass
 
@@ -281,7 +281,7 @@ def test_deprecate_func_params(caplog):
     msg = _get_caplog_record_msg(caplog)
     assert (
         msg
-        == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version."
+        == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version. Use something else."
     )
 
 
