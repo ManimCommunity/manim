@@ -325,6 +325,7 @@ length with only integers.
 
    Example::
    
+    .. highlight:: py
     from typestring_parser import parse
     
     >>> parse('int')
