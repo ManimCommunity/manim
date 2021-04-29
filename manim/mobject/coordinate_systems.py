@@ -224,27 +224,29 @@ class Axes(VGroup, CoordinateSystem):
         vertex_dot_style: Optional[dict] = None,
         **kwargs
     ) -> VDict:
-        """Draws a line graph connecting the vertices formed from zipping
-        x_values, y_values and z_values. Also adds :class:`~.Dot`s at the
-        vertices if add_vertex_dots is set to True.
+        """Draws a line graph.
+        
+        The graph connects the vertices formed from zipping
+        ``x_values``, ``y_values`` and ``z_values``. Also adds :class:`~.Dot`s at the
+        vertices if ``add_vertex_dots`` is set to ``True``.
 
         Parameters
         ----------
-        x_values : :class:`Iterable`
+        x_values
             Iterable of values along the x-axis.
-        y_values : :class:`Iterable`
+        y_values
             Iterable of values along the y-axis.
-        z_values : :class:`Iterable`, optional
+        z_values
             Iterable of values (zeros if z_values is None) along the z-axis.
-        line_color : :class:`Colors`
+        line_color
             Color for the line graph.
-        add_vertex_dots : :class:`bool`
+        add_vertex_dots
             Whether or not to add :class:`~.Dot` at each vertex.
-        vertex_dot_radius : :class:`float`
+        vertex_dot_radius
             Radius for the :class:`~.Dot` at each vertex.
-        vertex_dot_style : :class:`dict`
+        vertex_dot_style
             Style arguments to be passed into :class:`~.Dot` at each vertex.
-        kwargs : Any
+        kwargs
             Additional arguments to be passed into :class:`~.VMobject`.
 
         Examples
