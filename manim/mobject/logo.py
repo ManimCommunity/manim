@@ -2,6 +2,8 @@
 
 __all__ = ["ManimBanner"]
 
+from ..animation.animation import override_animation
+from ..animation.creation import Create
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.fading import FadeIn
 from ..animation.update import UpdateFromAlphaFunc
@@ -107,6 +109,7 @@ class ManimBanner(VGroup):
             self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
+    @override_animation(Create)
     def create(self, run_time: float = 2) -> AnimationGroup:
         """The creation animation for Manim's logo.
 

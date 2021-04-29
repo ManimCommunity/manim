@@ -1,11 +1,21 @@
 """Animate mobjects."""
 
 
-__all__ = ["Animation", "Wait"]
+__all__ = ["Animation", "Wait", "override_animation"]
 
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable, Iterable, Optional, Tuple, Union
+from typing import (
+    Dict,
+    List,
+    TYPE_CHECKING,
+    Callable,
+    Iterable,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+)
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -21,9 +31,18 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 
 
 class Animation:
+    _overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
+
+    def __new__(cls, mobject: Optional[Mobject], *args, **kwargs):
+        if cls in cls._overrides and type(mobject) in cls._overrides[cls]:
+            func = cls._overrides[cls][type(mobject)]
+            anim = func(mobject, *args, **kwargs)
+            return anim
+        return super().__new__(cls)
+
     def __init__(
         self,
-        mobject: Union[Mobject, None],
+        mobject: Optional[Mobject],
         # If lag_ratio is 0, the animation is applied to all submobjects
         # at the same time
         # If 1, it is applied to each successively.
@@ -269,3 +288,37 @@ class Wait(Animation):
 
     def interpolate(self, alpha: float) -> None:
         pass
+
+
+def _all_subclasses(cls):
+    return set(cls.__subclasses__()).union(
+        [s for c in cls.__subclasses__() for s in _all_subclasses(c)]
+    )
+
+
+def _setup():
+    i = 0
+    for mobjClass in _all_subclasses(Mobject):
+        for method_name in dir(mobjClass):
+            i += 1
+            method = getattr(mobjClass, method_name)
+            if hasattr(method, "_override_animation"):
+                animation_class = method._override_animation
+
+                if animation_class not in Animation._overrides:
+                    Animation._overrides[animation_class] = {}
+                Animation._overrides[animation_class][mobjClass] = method
+                print(
+                    f"{animation_class.__name__} is overridden for {mobjClass.__name__} in {method.__qualname__}."
+                )
+
+
+def override_animation(animationClass):
+    def decorator(func):
+        func._override_animation = animationClass
+        return func
+
+    return decorator
+
+
+override_animation.setup = _setup
