@@ -21,7 +21,6 @@ CFG_DEFAULTS = {
 }
 
 
-# select_resolution() called inside project command
 def select_resolution():
     """Prompts input of type click.Choice from user. Presents options from QUALITIES constant.
 
