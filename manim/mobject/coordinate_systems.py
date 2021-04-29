@@ -188,7 +188,7 @@ class Axes(VGroup, CoordinateSystem):
     y_axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
     kwargs : Any
-        Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`
+        Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`.
     """
 
     def __init__(
