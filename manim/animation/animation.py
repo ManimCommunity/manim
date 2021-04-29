@@ -33,8 +33,12 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 class Animation:
     _overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
 
-    def __new__(cls, mobject: Optional[Mobject], *args, **kwargs):
-        if cls in cls._overrides and type(mobject) in cls._overrides[cls]:
+    def __new__(cls, mobject: Optional[Mobject], *args, use_default:bool=False, **kwargs):
+        if (
+            not use_default
+            and cls in cls._overrides
+            and type(mobject) in cls._overrides[cls]
+        ):
             func = cls._overrides[cls][type(mobject)]
             anim = func(mobject, *args, **kwargs)
             return anim
@@ -290,10 +294,17 @@ class Wait(Animation):
         pass
 
 
-def _all_subclasses(cls):
-    return set(cls.__subclasses__()).union(
-        [s for c in cls.__subclasses__() for s in _all_subclasses(c)]
-    )
+def _all_subclasses(cls, root=True):
+    lst = cls.__subclasses__() + [
+        s for c in cls.__subclasses__() for s in _all_subclasses(c, False)
+    ]
+    if root:
+        lst = [cls] + lst
+        print(len(lst))
+        print(len(set(lst)))
+        return list(dict.fromkeys(lst))
+    else:
+        return lst
 
 
 def _setup():
