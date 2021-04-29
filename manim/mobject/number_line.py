@@ -68,7 +68,8 @@ class NumberLine(Line):
 
     Returns
     -------
-    The constructed number line.
+    NumberLine
+        The constructed number line.
     """
 
     def __init__(
