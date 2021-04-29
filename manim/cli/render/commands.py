@@ -16,6 +16,7 @@ import requests
 
 from ... import __version__, config, console, logger
 from ...constants import CONTEXT_SETTINGS, EPILOG
+from ...utils.exceptions import RerunSceneException
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
@@ -27,7 +28,7 @@ from .render_options import render_options
     context_settings=CONTEXT_SETTINGS,
     epilog=EPILOG,
 )
-@click.argument("file", type=Path, required=False)
+@click.argument("file", type=Path, required=True)
 @click.argument("scene_names", required=False, nargs=-1)
 @global_options
 @output_options
@@ -113,8 +114,15 @@ def render(
         for SceneClass in scene_classes_from_file(file):
             try:
                 renderer = OpenGLRenderer()
-                scene = SceneClass(renderer)
-                scene.render()
+                while True:
+                    scene_classes = scene_classes_from_file(file)
+                    SceneClass = scene_classes[0]
+                    scene = SceneClass(renderer)
+                    status = scene.render()
+                    if status:
+                        continue
+                    else:
+                        break
             except Exception:
                 console.print_exception()
     elif config.renderer == "webgl":
@@ -146,18 +154,8 @@ def render(
         try:
             req_info = requests.get(manim_info_url)
             req_info.raise_for_status()
-        except requests.exceptions.HTTPError:
-            logger.debug(f"HTTP Error: {warn_prompt}")
-        except requests.exceptions.ConnectionError:
-            logger.debug(f"Connection Error: {warn_prompt}")
-        except requests.exceptions.Timeout:
-            logger.debug(f"Timed Out: {warn_prompt}")
-        except Exception:
-            logger.debug(f"Something went wrong: {warn_prompt}")
 
-        try:
             stable = req_info.json()["info"]["version"]
-
             if stable != __version__:
                 console.print(
                     f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
@@ -165,8 +163,16 @@ def render(
                 console.print(
                     "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
                 )
+        except requests.exceptions.HTTPError:
+            logger.debug(f"HTTP Error: {warn_prompt}")
+        except requests.exceptions.ConnectionError:
+            logger.debug(f"Connection Error: {warn_prompt}")
+        except requests.exceptions.Timeout:
+            logger.debug(f"Timed Out: {warn_prompt}")
         except json.JSONDecodeError:
             logger.debug(warn_prompt)
             logger.debug(f"Error decoding JSON from {manim_info_url}")
+        except Exception:
+            logger.debug(f"Something went wrong: {warn_prompt}")
 
     return args

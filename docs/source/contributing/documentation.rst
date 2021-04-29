@@ -35,12 +35,12 @@ https://numpydoc.readthedocs.io/en/latest/format.html.
 This includes:
 
 1. The usage of ``Attributes`` to specify ALL ATTRIBUTES that a
-   class can have, their respective types and a brief (or long, if
+   class can have, their respective types, and a brief (or long, if
    needed) description. (See more on :ref:`_types`)
 
 Also, ``__init__`` parameters should be specified as ``Parameters`` **on
 the class docstring**, *rather than under* ``__init__``. Note that this
-can be omitted if the parameters and the attributes are the exact same
+can be omitted if the parameters and the attributes are the same
 (i.e., dataclass) - priority should be given to the ``Attributes``
 section, in this case, which must **always be present**, unless the
 class specifies no attributes at all. (See more on Parameters in number
@@ -80,7 +80,7 @@ Example:
         ):  # in-code typehints are optional for now
             ...
 
-2. The usage of ``Parameters`` on functions in order to specify how
+2. The usage of ``Parameters`` on functions to specify how
    every parameter works and what it does. This should be excluded if
    the function has no parameters. Note that you **should not** specify
    the default value of the parameter on the type. On the documentation
@@ -184,8 +184,8 @@ Example:
 
 .. _types:
 
-Types
------
+Reference to types in documentaion
+----------------------------------
 
 Always specify types with the correct **role** (see
 https://www.sphinx-doc.org/en/1.7/domains.html#python-roles) for the
@@ -220,7 +220,7 @@ different class in the same file.
    name (e.g. ``~manim.animations.Animation``) or simply use the
    shortened way (``~.Animation``). Note that, if there is ambiguity,
    then the full dotted name must be used where the actual class can't
-   be deduced. Also note the ``~`` before the path - this is so that it
+   be deduced. Also, note the ``~`` before the path - this is so that it
    displays just ``Animation`` instead of the full location in the
    rendering. It can be removed for disambiguation purposes only.
 
@@ -232,14 +232,14 @@ Example: ``:class:`~.Animation`​``, ``:meth:`~.VMobject.set_color`​``,
 
 Example: ``:class:`numpy.ndarray`​`` for a numpy ndarray.
 
-Type specifications
-~~~~~~~~~~~~~~~~~~~
+Reference type specifications
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**The following instructions refer to types of attributes, parameters
+**The following instructions refer to types of attributes, parameters,
 and return values.** When specifying a type mid-text, it does not
 necessarily have to be typeset. However, if it's a class name, a method,
 or an enum's attribute/variant, then it is recommended to be typeset at
-least on the first occurrence of the name, so that the users can quickly
+least on the first occurrence of the name so that the users can quickly
 jump to the related documentation.
 
 1. Class names should be wrapped in ``:class:`path_goes_here`​``. See
@@ -309,7 +309,7 @@ dictionary that maps a string to either an int or an instance of
    a list, ``Tuple[type_a, type_b, (...), type_n]`` for a tuple (if the
    elements are all different) or ``Tuple[type, ...]`` (if all elements
    have the same type). Each ``type_n`` on those representations
-   correspond to elements in the returned list/tuple, and must follow
+   corresponds to elements in the returned list/tuple and must follow
    the guidelines in the current section.
 
 Example: ``List[Optional[:class:`str`]]`` for a list that returns
@@ -317,3 +317,171 @@ elements that are either a ``str`` or ``None``;
 ``Tuple[:class:`str`, :class:`int`]`` for a tuple of type
 ``(str, int)``; ``Tuple[:class:`int`, ...]`` for a tuple of variable
 length with only integers.
+
+
+Adding type hints to functions and parameters
+---------------------------------------------
+
+.. warning::
+   This section is still a work in progress.
+
+If you've never used type hints before, this is a good place to get started:
+https://realpython.com/python-type-checking/#hello-types.
+
+When adding type hints to manim, there are some guidelines that should be followed:
+
+* Coordinates have the typehint ``Sequence[float]``, e.g.
+
+.. code:: py
+
+    def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
+        """Given an array of points, set them as corner of the Vmobject."""
+* ``**kwargs`` has no typehint
+
+* Mobjects have the typehint "Mobject", e.g.
+
+.. code:: py
+
+    def match_color(self, mobject: "Mobject"):
+        """Match the color with the color of another :class:`~.Mobject`."""
+        return self.set_color(mobject.get_color())
+* Colors have the typehint ``Color``, e.g.
+
+.. code:: py
+
+    def set_color(self, color: Color = YELLOW_C, family: bool = True):
+        """Condition is function which takes in one arguments, (x, y, z)."""
+* As ``float`` and ``Union[int, float]`` are the same, use only ``float``
+
+* For numpy arrays use the typehint ``np.ndarray``
+
+* Functions that does not return a value should get the type hint ``None``. (This annotations help catch the kinds of subtle bugs where you are trying to use a meaningless return value. )
+
+.. code:: py
+
+    def height(self, value) -> None:
+        self.scale_to_fit_height(value)
+* Parameters that are None by default should get the type hint ``Optional``
+
+.. code:: py
+
+    def rotate(
+        self,
+        angle,
+        axis=OUT,
+        about_point: Optional[Sequence[float]] = None,
+        **kwargs,
+    ):
+        pass
+
+
+* the .__init__() method always should have None as its return type.
+
+* functions and lambda functions should get the typehint ``Callable``
+
+.. code:: py
+
+    rate_func: Callable[[float], float] = lambda t: smooth(1 - t)
+
+*  numpy arrays can get type hints with ``np.ndarray``
+
+* assuming that typical path objects are either Paths or strs, one can use the typehint ``typing.Union[str, pathlib.Path]``
+
+
+
+Adding Blocks for Tip, Note, Important etc. (Admonitions)
+---------------------------------------------------------
+
+The following directives are called Admonitions. You
+can use them to point out additional or important
+information. Here are some examples:
+
+See also
+~~~~~~~~
+
+.. code-block:: rest
+
+   .. seealso::
+        Some ideas at :mod:`~.tex_mobject`, :class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`~.make_config_parser`
+
+.. seealso::
+    Some ideas at :mod:`~.tex_mobject`, :class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`~.make_config_parser`
+
+.. index:: reST directives; note
+
+
+
+Note
+~~~~
+
+.. code-block:: rest
+
+   .. note::
+      A note
+
+.. note::
+   A note
+
+Tip
+~~~
+
+.. code-block:: rest
+
+   .. tip::
+      A tip
+
+.. tip::
+   A tip
+
+You may also use the admonition **hint**, but this is very similar
+and **tip** is more commonly used in the documentation.
+
+Important
+~~~~~~~~~
+
+.. code-block:: rest
+
+   .. important::
+      Some important information which should be considered.
+
+.. important::
+   Some important information which should be considered.
+
+Warning
+~~~~~~~
+
+.. code-block:: rest
+
+   .. warning::
+      Some text pointing out something that people should be warned about.
+
+.. warning::
+   Some text pointing out something that people should be warned about.
+
+You may also use the admonitions **caution** or even **danger** if the
+severity of the warning must be stressed.
+
+Attention
+~~~~~~~~~
+
+.. code-block:: rest
+
+   .. attention::
+      A attention
+
+.. attention::
+   A attention
+
+You can find further information about Admonitions here: https://pradyunsg.me/furo/reference/admonitions/
+
+
+
+Missing Sections for typehints are:
+-----------------------------------
+* Tools for typehinting
+* Link to MyPy
+* Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy
+* Where to find the alias
+* When to use Object and when to use "Object".
+* The use of a TypeVar on the type hints for copy().
+* The definition and use of Protocols (like Sized, or Sequence, or Iterable...)

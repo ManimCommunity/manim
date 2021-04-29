@@ -249,7 +249,7 @@ class SVGMobject(VMobject):
             A float representing the attribute string value.
         """
         stripped_attr = "".join(
-            [char for char in attr if char in string.digits + "." + "-"]
+            [char for char in attr if char in string.digits + ".-e"]
         )
         return float(stripped_attr)
 

@@ -64,12 +64,12 @@ PR_LABELS = {
     "deprecation": "Deprecated classes and functions",
     "new feature": "New features",
     "enhancement": "Enhancements",
-    "bug": "Fixed bugs",
+    "bugfix": "Fixed bugs",
     "documentation": "Documentation-related changes",
     "testing": "Changes concerning the testing system",
     "infrastructure": "Changes to our development infrastructure",
     "maintenance": "Code quality improvements and similar refactors",
-    "reverts": "Changes that needed to be reverted again",
+    "revert": "Changes that needed to be reverted again",
     "unlabeled": "Unclassified changes",
 }
 
@@ -81,6 +81,7 @@ def get_authors_and_reviewers(lst, cur, github_repo, pr_nums):
     cur = set(re.findall(pat, this_repo.git.shortlog("-s", f"{lst}..{cur}"), re.M))
     pre = set(re.findall(pat, this_repo.git.shortlog("-s", lst), re.M))
 
+    cur.discard("pre-commit-ci[bot]")
     # Append '+' to new authors.
     authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
     authors.sort()
@@ -107,6 +108,10 @@ def get_pr_nums(lst, cur):
     commits = this_repo.git.log(
         "--oneline", "--no-merges", "--first-parent", f"{lst}..{cur}"
     )
+    split_commits = list(
+        filter(lambda x: "pre-commit autoupdate" not in x, commits.split("\n"))
+    )
+    commits = "\n".join(split_commits)
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
     prnums.extend(int(s) for s in issues)
 

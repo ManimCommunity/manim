@@ -194,8 +194,6 @@ __all__ = [
     "Tex",
     "BulletedList",
     "Title",
-    "TexMobject",
-    "TextMobject",
 ]
 
 
@@ -649,21 +647,3 @@ class Title(Tex):
                 underline.width = underline_width
             self.add(underline)
             self.underline = underline
-
-
-class TexMobject(MathTex):
-    def __init__(self, *tex_strings, **kwargs):
-        logger.warning(
-            "TexMobject has been deprecated (due to its confusing name) "
-            "in favour of MathTex. Please use MathTex instead!"
-        )
-        MathTex.__init__(self, *tex_strings, **kwargs)
-
-
-class TextMobject(Tex):
-    def __init__(self, *text_parts, **kwargs):
-        logger.warning(
-            "TextMobject has been deprecated (due to its confusing name) "
-            "in favour of Tex. Please use Tex instead!"
-        )
-        Tex.__init__(self, *text_parts, **kwargs)
