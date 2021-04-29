@@ -298,8 +298,8 @@ class UnitInterval(NumberLine):
 
 
 class NumberLineOld(Line):
-    """The old version of :class:`NumberLine`. 
-    
+    """The old version of :class:`NumberLine`.
+
     Exists for compatibility with :class:`~.GraphScene`.
     """
 
