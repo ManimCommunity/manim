@@ -14,8 +14,11 @@ import platform
 import subprocess as sp
 import time
 from pathlib import Path
+from shutil import copyfile
 
 from manim import __version__, config, logger
+
+from .. import console
 
 
 def add_extension_if_not_present(file_name, extension):
@@ -96,3 +99,63 @@ def open_media_file(file_writer):
             open_file(file_path, False)
 
             logger.info(f"Previewed File at: {file_path}")
+
+
+def get_template_names():
+    """Gets template names from the templates directory
+
+    returns:
+            list of names of python files in templates direcotory
+    """
+    template_path = Path.resolve(Path(__file__).parent.parent / "templates")
+    return [template_name.stem for template_name in template_path.glob("*.mtp")]
+
+
+def get_template_path():
+    """Returns the Path of templates directory.
+
+    Returns
+    -------
+        :class:`Path`
+            Path object to the templates directory.
+    """
+    return Path.resolve(Path(__file__).parent.parent / "templates")
+
+
+def add_import_statement(file):
+    """Prepends an import statment to a file
+
+    Args:
+        file (Path): Path to file
+    """
+    with open(file, "r+") as f:
+        import_line = "from manim import *"
+        content = f.read()
+        f.seek(0, 0)
+        f.write(import_line.rstrip("\r\n") + "\n" + content)
+
+
+def copy_template_files(project_dir=Path("."), template_name="Default"):
+    """Copies template files from templates dir to project_dir.
+
+    Args:
+        project_dir (Path, optional): [description]. Defaults to Path(".").
+        template_name (str, optional): [description]. Defaults to "Default".
+    """
+    template_cfg_path = Path.resolve(
+        Path(__file__).parent.parent / "templates/template.cfg"
+    )
+    template_scene_path = Path.resolve(
+        Path(__file__).parent.parent / f"templates/{template_name}.mtp"
+    )
+
+    if not template_cfg_path.exists():
+        raise FileNotFoundError(f"{template_cfg_path} : file does not exist")
+    if not template_scene_path.exists():
+        raise FileNotFoundError(f"{template_scene_path} : file does not exist")
+
+    copyfile(template_cfg_path, Path.resolve(project_dir / "manim.cfg"))
+    console.print("\n\t[green]copied[/green] [blue]manim.cfg[/blue]\n")
+    copyfile(template_scene_path, Path.resolve(project_dir / "main.py"))
+    console.print("\n\t[green]copied[/green] [blue]main.py[/blue]\n")
+    add_import_statement(Path.resolve(project_dir / "main.py"))
