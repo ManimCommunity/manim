@@ -185,6 +185,10 @@ class Top:
     def bar(self, **kwargs):
         pass
 
+    @deprecated_params(redirections=[("old_param", "new_param")])
+    def baz(self, **kwargs):
+        return kwargs
+
 
 def test_deprecate_func_no_args(caplog):
     """Test the deprecation of a method (decorator with no arguments)."""
@@ -267,3 +271,16 @@ def test_deprecate_func_single_param_since_and_until(caplog):
         msg
         == "The parameter a of method Top.bar has been deprecated since v0.2 and is expected to be removed after v0.4."
     )
+
+
+def test_deprecate_func_param_redirect_tuple(caplog):
+    """Test the deprecation of an old method parameter and redirecting it to a new one."""
+    t = Top()
+    obj = t.baz(x=1, old_param=2)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter old_param of method Top.baz has been deprecated and may be removed in a later version."
+    )
+    assert obj == {"x": 1, "new_param": 2}
