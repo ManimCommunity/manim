@@ -5,7 +5,7 @@ Example Gallery
 This gallery contains a collection of best practice code snippets
 together with their corresponding video/image output, illustrating
 different functionalities all across the library.
-These are all under the MIT licence, so feel free to copy & paste them to your projects.
+These are all under the MIT license, so feel free to copy & paste them to your projects.
 Enjoy this taste of Manim!
 
 .. tip::
@@ -175,7 +175,26 @@ Animations
             self.play(te.animate.set_color(RED), run_time=0.5)
             self.play(theta_tracker.animate.set_value(350))
 
+.. tip::
 
+   You can use multiple ValueTrackers simultaneously.
+
+.. manim:: MovingDots
+
+    class MovingDots(Scene):
+        def construct(self):
+            d1,d2=Dot(color=BLUE),Dot(color=GREEN)
+            dg=VGroup(d1,d2).arrange(RIGHT,buff=1)
+            l1=Line(d1.get_center(),d2.get_center()).set_color(RED)
+            x=ValueTracker(0)
+            y=ValueTracker(0)
+            d1.add_updater(lambda z: z.set_x(x.get_value()))
+            d2.add_updater(lambda z: z.set_y(y.get_value()))
+            l1.add_updater(lambda z: z.become(Line(d1.get_center(),d2.get_center())))
+            self.add(d1,d2,l1)
+            self.play(x.animate.set_value(5))
+            self.play(y.animate.set_value(4))
+            self.wait()
 
 .. manim:: MovingGroupToDestination
 
@@ -489,6 +508,7 @@ Special Camera Settings
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
+
 .. manim:: ThreeDCameraRotation
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
@@ -500,7 +520,7 @@ Special Camera Settings
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(circle,axes)
             self.begin_ambient_camera_rotation(rate=0.1)
-            self.wait(3)
+            self.wait()
             self.stop_ambient_camera_rotation()
             self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES)
             self.wait()
@@ -516,61 +536,40 @@ Special Camera Settings
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(circle,axes)
             self.begin_3dillusion_camera_rotation(rate=2)
-            self.wait(PI)
+            self.wait(PI/2)
             self.stop_3dillusion_camera_rotation()
 
-.. manim:: ThreeDFunctionPlot
-    :ref_classes: ThreeDScene ParametricSurface
+.. manim:: ThreeDSurfacePlot
+   :save_last_frame:
+   :ref_classes: ThreeDScene ParametricSurface
+   
+   class ThreeDSurfacePlot(ThreeDScene):
+       def construct(self):
+           resolution_fa = 42
+           self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
 
-    class ThreeDFunctionPlot(ThreeDScene):
-        def construct(self):
-            resolution_fa = 22
-            self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
+           def param_gauss(u, v):
+               x = u
+               y = v
+               d = np.sqrt(x * x + y * y)
+               sigma, mu = 0.4, 0.0
+               z = np.exp(-((d - mu) ** 2 / (2.0 * sigma ** 2)))
+               return np.array([x, y, z])
 
-            def param_plane(u, v):
-                x = u
-                y = v
-                z = 0
-                return np.array([x, y, z])
+           gauss_plane = ParametricSurface(
+               param_gauss,
+               resolution=(resolution_fa, resolution_fa),
+               v_min=-2,
+               v_max=+2,
+               u_min=-2,
+               u_max=+2,
+           )
 
-            plane = ParametricSurface(
-                param_plane,
-                resolution=(resolution_fa, resolution_fa),
-                v_min=-2,
-                v_max=+2,
-                u_min=-2,
-                u_max=+2,
-            )
-            plane.scale_about_point(2, ORIGIN)
-
-            def param_gauss(u, v):
-                x = u
-                y = v
-                d = np.sqrt(x * x + y * y)
-                sigma, mu = 0.4, 0.0
-                z = np.exp(-((d - mu) ** 2 / (2.0 * sigma ** 2)))
-                return np.array([x, y, z])
-
-            gauss_plane = ParametricSurface(
-                param_gauss,
-                resolution=(resolution_fa, resolution_fa),
-                v_min=-2,
-                v_max=+2,
-                u_min=-2,
-                u_max=+2,
-            )
-
-            gauss_plane.scale_about_point(2, ORIGIN)
-            gauss_plane.set_style(fill_opacity=1)
-            gauss_plane.set_style(stroke_color=GREEN)
-            gauss_plane.set_fill_by_checkerboard(GREEN, BLUE, opacity=0.1)
-
-            axes = ThreeDAxes()
-
-            self.add(axes)
-            self.play(Write(plane))
-            self.play(Transform(plane, gauss_plane))
-            self.wait()
+           gauss_plane.scale_about_point(2, ORIGIN)
+           gauss_plane.set_style(fill_opacity=1,stroke_color=GREEN)
+           gauss_plane.set_fill_by_checkerboard(ORANGE, BLUE, opacity=0.5)
+           axes = ThreeDAxes()
+           self.add(axes,gauss_plane)
 
 
 Advanced Projects
