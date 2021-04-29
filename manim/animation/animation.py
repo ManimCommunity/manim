@@ -31,17 +31,17 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 
 
 class Animation:
-    _overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
+    overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
 
     def __new__(
         cls, mobject: Optional[Mobject], *args, use_default: bool = False, **kwargs
     ):
         if (
             not use_default
-            and cls in cls._overrides
-            and type(mobject) in cls._overrides[cls]
+            and cls in cls.overrides
+            and type(mobject) in cls.overrides[cls]
         ):
-            func = cls._overrides[cls][type(mobject)]
+            func = cls.overrides[cls][type(mobject)]
             anim = func(mobject, *args, **kwargs)
             return anim
         return super().__new__(cls)
@@ -301,29 +301,35 @@ def _all_subclasses(cls, root=True):
         s for c in cls.__subclasses__() for s in _all_subclasses(c, False)
     ]
     if root:
-        lst = [cls] + lst
-        print(len(lst))
-        print(len(set(lst)))
-        return list(dict.fromkeys(lst))
+        return list(dict.fromkeys([cls] + lst))
     else:
         return lst
 
 
 def _setup():
+    overrides = {}
     i = 0
-    for mobjClass in _all_subclasses(Mobject):
-        for method_name in dir(mobjClass):
+    for mobject_class in _all_subclasses(Mobject):
+        for method_name in dir(mobject_class):
             i += 1
-            method = getattr(mobjClass, method_name)
+            method = getattr(mobject_class, method_name)
             if hasattr(method, "_override_animation"):
                 animation_class = method._override_animation
 
-                if animation_class not in Animation._overrides:
-                    Animation._overrides[animation_class] = {}
-                Animation._overrides[animation_class][mobjClass] = method
-                print(
-                    f"{animation_class.__name__} is overridden for {mobjClass.__name__} in {method.__qualname__}."
-                )
+                if animation_class not in overrides:
+                    overrides[animation_class] = {}
+                if mobject_class in overrides[animation_class]:
+                    msg = (
+                        f"The animation {animation_class.__name__} for "
+                        f"{mobject_class.__name__} is overridden by more than one method:"
+                        f" {overrides[animation_class][mobject_class].__qualname__} "
+                        f"and {method.__qualname__}. If one of these methods is "
+                        f"inherited make sure they are named equally."
+                    )
+                    logger.error(msg)
+                    raise RuntimeError(msg)
+                overrides[animation_class][mobject_class] = method
+    Animation._overrides = overrides
 
 
 def override_animation(animationClass):
