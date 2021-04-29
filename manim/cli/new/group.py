@@ -73,7 +73,6 @@ def update_cfg(cfg_dict, project_cfg_path):
     epilog=EPILOG,
 )
 @click.argument("project_name", type=Path, required=False)
-@click.argument("template_name", required=False)
 @click.option(
     "-d",
     "--default",
@@ -83,11 +82,9 @@ def update_cfg(cfg_dict, project_cfg_path):
     nargs=1,
 )
 def project(default_settings, **args):
-    """Creates new project.
+    """Creates a new project.
 
-    Project subcommand creates a project inside of the 'project_name'.
-
-    'project_name' is the argument passed to the command.
+    PROJECT_NAME is the name of the folder in which the new project will be initialized.
     """
     if args["project_name"]:
         project_name = args["project_name"]
@@ -136,11 +133,11 @@ def project(default_settings, **args):
 @click.argument("scene_name", type=str, required=True)
 @click.argument("file_name", type=str, required=False)
 def scene(**args):
-    """Inserts a scene to an existing file or a new file
+    """Inserts a SCENE to an existing FILE or a new FILE
 
-    If 'file_name' is passed as the second argument, This command inserts or writes to 'file_name' depending on weather the 'file_name' exists or not.
+    SCENE is the name of the scene that will be inserted.
 
-    If 'file_name' is not passed as the second argument, This command inserts a new scene in main.py.
+    FILE is the name of file in which the SCENE will be inserted.
     """
     if not Path("main.py").exists():
         raise FileNotFoundError(f"{Path('main.py')} : Not a valid project direcotory.")
