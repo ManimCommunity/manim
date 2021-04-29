@@ -15,12 +15,15 @@ from ...utils.file_ops import copy_template_files
 
 @click.command(
     context_settings=CONTEXT_SETTINGS,
-    no_args_is_help=False,
     epilog=EPILOG,
-    help="Sets up a project in current working directory with default settings.",
 )
 def init():
-    """The init subcommand is a quick and easy way to initialize a project. It copies files from templates directory and pastes them in the current working dir."""
+    """Sets up a project in currenct working directory.
+
+    It copies files from templates directory and pastes them in the current working dir.
+
+    The new project is set up with default settings.
+    """
     cfg = Path("manim.cfg")
     if cfg.exists():
         raise FileExistsError(f"\t{cfg} exists\n")
