@@ -195,6 +195,14 @@ class Top:
     def qux(self, **kwargs):
         return kwargs
 
+    @deprecated_params(
+        redirections=[
+            lambda point2D_x=1, point2D_y=1: {"point2D": (point2D_x, point2D_y)}
+        ]
+    )
+    def quux(self, **kwargs):
+        return kwargs
+
 
 def test_deprecate_func_no_args(caplog):
     """Test the deprecation of a method (decorator with no arguments)."""
@@ -303,3 +311,16 @@ def test_deprecate_func_param_redirect_lambda(caplog):
         == "The parameter runtime_in_ms of method Top.qux has been deprecated and may be removed in a later version."
     )
     assert obj == {"run_time": 0.5}
+
+
+def test_deprecate_func_param_redirect_many_to_one(caplog):
+    """Test the deprecation of multiple method parameters and redirecting them to one."""
+    t = Top()
+    obj = t.quux(point2D_x=3, point2D_y=5)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameters point2D_x and point2D_y of method Top.quux have been deprecated and may be removed in a later version."
+    )
+    assert obj == {"point2D": (3, 5)}
