@@ -230,7 +230,7 @@ class Axes(VGroup, CoordinateSystem):
                 update_dict_recursively(default_config, passed_config)
 
     def create_axis(self, range_terms, axis_config, length):
-        """Creates an axis and dynamically adjusts its position depending on the 0 value.
+        """Creates an axis and dynamically adjusts its position depending on where 0 is located on the line.
 
         Parameters
         ----------
