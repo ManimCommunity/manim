@@ -323,7 +323,8 @@ length with only integers.
    be accessed by first downloading it via ``pip`` - ``pip install typestring-parser`` and
    then using ``from typestring_parser import parse``.
 
-::
+.. code-block:: none
+
     .. highlight:: py
     from typestring_parser import parse
     
