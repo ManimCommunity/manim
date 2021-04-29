@@ -62,7 +62,7 @@ def get_template_names():
             list of names of python files in templates direcotory
     """
     template_path = Path.resolve(Path(__file__).parent / "templates")
-    return [template_name.stem for template_name in template_path.glob("*.py")]
+    return [template_name.stem for template_name in template_path.glob("*.mtp")]
 
 
 """\
@@ -133,11 +133,11 @@ def copy_template_files(project_dir=Path("."), template_name="Default"):
         raise FileNotFoundError(f"{template_cfg_path} does not exist")
 
     template_scene_path = Path.resolve(
-        Path(__file__).parent / f"templates/{template_name}.py"
+        Path(__file__).parent / f"templates/{template_name}.mtp"
     )
     if not template_scene_path.exists():
         template_scene_path = Path.resolve(
-            Path(__file__).parent / "templates/Default.py"
+            Path(__file__).parent / "templates/Default.mtp"
         )
 
     copyfile(template_cfg_path, Path.resolve(project_dir / "manim.cfg"))
@@ -247,7 +247,7 @@ def scene(**args):
     )
     scene = ""
     with open(
-        Path.resolve(Path(__file__).parent) / f"templates/{template_name}.py"
+        Path.resolve(Path(__file__).parent) / f"templates/{template_name}.mtp"
     ) as f:
         scene = f.read()
         scene = scene.replace(template_name + "Template", args["scene_name"], 1)
