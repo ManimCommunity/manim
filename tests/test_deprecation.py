@@ -181,6 +181,10 @@ class Top:
     def foo(self, **kwargs):
         pass
 
+    @deprecated_params(params="a", since="v0.2", until="v0.4")
+    def bar(self, **kwargs):
+        pass
+
 
 def test_deprecate_func_no_args(caplog):
     """Test the deprecation of a method (decorator with no arguments)."""
@@ -250,4 +254,16 @@ def test_deprecate_func_params(caplog):
     assert (
         msg
         == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version."
+    )
+
+
+def test_deprecate_func_params_single_since_and_until(caplog):
+    """Test the deprecation of a single method parameter (decorator with since and until arguments)."""
+    t = Top()
+    t.bar(a=1, b=2)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter a of method Top.bar has been deprecated since v0.2 and is expected to be removed after v0.4."
     )
