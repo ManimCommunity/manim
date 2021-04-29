@@ -20,6 +20,27 @@ information here will make it easier for newcomers to get started using
     All content of the docs is licensed under the MIT license. Especially for the examples
     you encounter: Feel free to use this code in your own projects!
 
+.. note::
+
+    As a quick reference, here are some often used modules, classes and methods:
+
+    Modules:
+    :mod:`~.moving_camera_scene`,
+    :mod:`~.tex_mobject`,
+    :mod:`~.geometry`,
+
+    Classes:
+    :class:`~.Mobject` ,
+    :class:`~.VMobject`,
+    :class:`~.ValueTracker`,
+    :class:`~.MathTex`,
+    :class:`~.Angle`,
+    :class:`~.Tex`,
+    :class:`~.Text`,
+
+    Methods:
+    :meth:`~.Mobject.add_updater`,
+
 
 .. toctree::
    :maxdepth: 2
@@ -32,6 +53,7 @@ information here will make it easier for newcomers to get started using
    reporting_bugs
    contributing
    conduct
+
 
 
 Navigation
