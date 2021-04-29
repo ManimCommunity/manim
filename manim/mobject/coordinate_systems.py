@@ -225,7 +225,7 @@ class Axes(VGroup, CoordinateSystem):
         **kwargs
     ) -> VDict:
         """Draws a line graph.
-        
+
         The graph connects the vertices formed from zipping
         ``x_values``, ``y_values`` and ``z_values``. Also adds :class:`~.Dot`s at the
         vertices if ``add_vertex_dots`` is set to ``True``.
