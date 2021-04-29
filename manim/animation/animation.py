@@ -34,7 +34,7 @@ class Animation:
     overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
 
     def __new__(
-        cls, mobject: Optional[Mobject], *args, use_default: bool = False, **kwargs
+        cls, mobject: Optional[Mobject]=None, *args, use_default: bool = False, **kwargs
     ):
         if (
             not use_default
@@ -306,7 +306,7 @@ def _all_subclasses(cls, root=True):
         return lst
 
 
-def _setup():
+def _setup(update_docs=False):
     overrides = {}
     i = 0
     for mobject_class in _all_subclasses(Mobject):
@@ -328,6 +328,10 @@ def _setup():
                     )
                     logger.error(msg)
                     raise RuntimeError(msg)
+
+                method.__doc__ = (
+                    f"{method.__doc__}\n\nNotes\n-----\n\n.. note::\n\n  Test"
+                )
                 overrides[animation_class][mobject_class] = method
     Animation._overrides = overrides
 

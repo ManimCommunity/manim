@@ -109,7 +109,7 @@ class ManimBanner(VGroup):
             self.anim.scale(scale_factor, **kwargs)
         return super().scale(scale_factor, **kwargs)
 
-    @override_animation(Create)
+    @override_animation(Create) 
     def create(self, run_time: float = 2) -> AnimationGroup:
         """The creation animation for Manim's logo.
 
