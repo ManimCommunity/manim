@@ -17,7 +17,7 @@ from ...utils.file_ops import copy_template_files
     context_settings=CONTEXT_SETTINGS,
     no_args_is_help=False,
     epilog=EPILOG,
-    help="Quickly setup a project",
+    help="Sets up a project in current working directory with default settings.",
 )
 def init():
     """The init subcommand is a quick and easy way to initialize a project. It copies files from templates directory and pastes them in the current working dir."""
