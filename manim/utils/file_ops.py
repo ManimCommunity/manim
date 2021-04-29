@@ -102,10 +102,11 @@ def open_media_file(file_writer):
 
 
 def get_template_names():
-    """Gets template names from the templates directory
+    """Returns template names from the templates directory.
 
-    returns:
-            list of names of python files in templates direcotory
+    Returns
+    -------
+        :class:`list`
     """
     template_path = Path.resolve(Path(__file__).parent.parent / "templates")
     return [template_name.stem for template_name in template_path.glob("*.mtp")]
@@ -117,16 +118,16 @@ def get_template_path():
     Returns
     -------
         :class:`Path`
-            Path object to the templates directory.
     """
     return Path.resolve(Path(__file__).parent.parent / "templates")
 
 
 def add_import_statement(file):
-    """Prepends an import statment to a file
+    """Prepends an import statment in a file
 
-    Args:
-        file (Path): Path to file
+    Parameters
+    ----------
+        file : :class:`Path`
     """
     with open(file, "r+") as f:
         import_line = "from manim import *"
@@ -138,9 +139,12 @@ def add_import_statement(file):
 def copy_template_files(project_dir=Path("."), template_name="Default"):
     """Copies template files from templates dir to project_dir.
 
-    Args:
-        project_dir (Path, optional): [description]. Defaults to Path(".").
-        template_name (str, optional): [description]. Defaults to "Default".
+    Parameters
+    ----------
+        project_dir : :class:`Path`
+            Path to project directory.
+        template_name : :class:`str`
+            Name of template.
     """
     template_cfg_path = Path.resolve(
         Path(__file__).parent.parent / "templates/template.cfg"
