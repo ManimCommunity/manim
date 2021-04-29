@@ -14,7 +14,7 @@ from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transfo
 from ..constants import *
 from ..mobject.coordinate_systems import Axes, NumberPlane
 from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
-from ..mobject.matrix import VECTOR_LABEL_SCALE_FACTOR, Matrix, vector_coordinate_label
+from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -172,7 +172,7 @@ class VectorScene(Scene):
             The arrow representing the vector.
 
         **kwargs
-            Any valid keyword arguments of :meth:`~.matrix.vector_coordinate_label`:
+            Any valid keyword arguments of :meth:`~.geometry.Vector.coordinate_label`:
 
             integer_labels : :class:`bool`
                 Whether or not to round the coordinates to integers. Default: ``True``.
@@ -186,7 +186,7 @@ class VectorScene(Scene):
         :class:`.Matrix`
             The column matrix representing the vector.
         """
-        coords = vector_coordinate_label(vector, **kwargs)
+        coords = vector.coordinate_label(**kwargs)
         self.play(Write(coords))
         return coords
 
@@ -251,7 +251,7 @@ class VectorScene(Scene):
         direction="left",
         rotate=False,
         color=None,
-        label_scale_factor=VECTOR_LABEL_SCALE_FACTOR,
+        label_scale_factor=LARGE_BUFF - 0.2,
     ):
         """
         Returns naming labels for the passed vector.
@@ -433,7 +433,7 @@ class VectorScene(Scene):
         else:
             arrow = Vector(vector)
             show_creation = True
-        array = vector_coordinate_label(arrow, integer_labels=integer_labels)
+        array = arrow.coordinate_label(integer_labels=integer_labels)
         x_line = Line(ORIGIN, vector[0] * RIGHT)
         y_line = Line(x_line.get_end(), arrow.get_end())
         x_line.set_color(X_COLOR)
