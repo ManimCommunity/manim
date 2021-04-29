@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import sys
-
 """Script to generate contributor and pull request lists.
 
 This script generates contributor and pull request lists for release
