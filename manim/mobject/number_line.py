@@ -60,9 +60,9 @@ class NumberLine(Line):
     decimal_number_config : :class:`dict`
         Arguments that can be passed to :class:`~.numbers.DecimalNumber` to influence number mobjects.
     numbers_to_exclude : Union[:class:`list`, :class:`numpy.ndarray`]
-        An explicit list of numbers to not be added to the line
+        An explicit list of numbers to not be added to the line.
     number_scale_value : :class:`float`
-        The size scaling factor for the number mobjects
+        The size scaling factor for the number mobjects.
     kwargs : Any
         Additional arguments to be passed to :class:`~.Line`.
 

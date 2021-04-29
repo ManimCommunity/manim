@@ -182,7 +182,7 @@ class Axes(VGroup, CoordinateSystem):
     y_length : Optional[:class:`float`]
         The length of the y-axis.
     axis_config : Optional[:class:`dict`]
-        Arguments to be passed to :class:`~.NumberLine` that influences `both` axes.
+        Arguments to be passed to :class:`~.NumberLine` that influences both axes.
     x_axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
     y_axis_config : Optional[:class:`dict`]
@@ -309,9 +309,9 @@ class ThreeDAxes(Axes):
     depth
         Currently non-functional.
     gloss
-        Currently non-functional
+        Currently non-functional.
     kwargs : Any
-        Additional arguments to be passed to :class:`Axes`
+        Additional arguments to be passed to :class:`Axes`.
     """
 
     def __init__(
@@ -398,11 +398,11 @@ class NumberPlane(Axes):
     y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
         The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
     x_length : Optional[:class:`float`]
-        The length of the plane.
+        The width of the plane.
     y_length : Optional[:class:`float`]
         The height of the plane.
     axis_config : Optional[:class:`dict`]
-        Arguments to be passed to :class:`~.NumberLine` that influences `both` axes.
+        Arguments to be passed to :class:`~.NumberLine` that influences both axes.
     y_axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
     background_line_style : Optional[:class:`dict`]
@@ -414,13 +414,10 @@ class NumberPlane(Axes):
     make_smooth_after_applying_functions
         Currently non-functional.
     kwargs : Any
-        Additional arguments to be passed to :class:`Axes`
+        Additional arguments to be passed to :class:`Axes`.
 
-    Notes
-    -----
-
-    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts based on
-         the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
+        on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
     """
 
     def __init__(
