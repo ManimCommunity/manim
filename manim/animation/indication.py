@@ -1,4 +1,29 @@
-"""Animations drawing attention to particular mobjects."""
+"""Animations drawing attention to particular mobjects.
+
+Examples
+--------
+
+.. manim:: Indications
+
+    class Indications(Scene):
+        def construct(self):
+            indications = [ApplyWave,Circumscribe,Flash,FocusOn,Indicate,ShowPassingFlash,Wiggle]
+            names = [Tex(i.__name__).scale(3) for i in indications]
+
+            self.add(names[0])
+            for i in range(len(names)):
+                if indications[i] is Flash:
+                    self.play(Flash(UP))
+                elif indications[i] is ShowPassingFlash:
+                    self.play(ShowPassingFlash(Underline(names[i])))
+                else:
+                    self.play(indications[i](names[i]))
+                self.play(AnimationGroup(
+                    FadeOutAndShift(names[i], UP*1.5),
+                    FadeInFrom(names[(i+1)%len(names)], DOWN*1.5),
+                ))
+
+"""
 
 __all__ = [
     "FocusOn",
@@ -15,45 +40,75 @@ __all__ = [
     "ApplyWave",
     "WiggleOutThenIn",
     "TurnInsideOut",
+    "Circumscribe",
+    "Wiggle",
 ]
 
 
-import typing
+from typing import Callable, Type, Union
 
 import numpy as np
+from colour import Color
 
 from .. import config
+from .._config import logger
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create, ShowPartial
-from ..animation.fading import FadeOut
+from ..animation.creation import Create, ShowPartial, Uncreate
+from ..animation.fading import FadeIn, FadeOut
 from ..animation.movement import Homotopy
 from ..animation.transform import Transform
 from ..constants import *
-from ..mobject.geometry import Circle, Dot, Line
+from ..mobject.geometry import Circle, Dot, Line, Rectangle
+from ..mobject.mobject import Mobject
 from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.bezier import interpolate
+from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
-from ..utils.rate_functions import there_and_back, wiggle
-
-if typing.TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
+from ..utils.rate_functions import smooth, there_and_back, wiggle
+from ..utils.space_ops import normalize
 
 
 class FocusOn(Transform):
+    """Shrink a spotlight to a position.
+
+    Parameters
+    ----------
+    focus_point
+        The point at which to shrink the spotlight. If it is a :class:`.~Mobject` its center will be used.
+    opacity
+        The opacity of the spotlight.
+    color
+        The color of the spotlight.
+    run_time
+        The duration of the animation.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.Succession` constructor
+
+    Examples
+    --------
+    .. manim:: UsingFocusOn
+
+        class UsingFocusOn(Scene):
+            def construct(self):
+                dot = Dot(color=YELLOW).shift(DOWN)
+                self.add(Tex("Focusing on the dot below:"), dot)
+                self.play(FocusOn(dot))
+                self.wait()
+    """
+
     def __init__(
         self,
-        focus_point: np.ndarray,
+        focus_point: Union[np.ndarray, Mobject],
         opacity: float = 0.2,
         color: str = GREY,
         run_time: float = 2,
-        remover: bool = True,
         **kwargs
     ) -> None:
         self.focus_point = focus_point
         self.color = color
         self.opacity = opacity
+        remover = True
         # Initialize with blank mobject, while create_target
         # and create_starting_mobject handle the meat
         super().__init__(VMobject(), run_time=run_time, remover=remover, **kwargs)
@@ -74,6 +129,32 @@ class FocusOn(Transform):
 
 
 class Indicate(Transform):
+    """Indicate a Mobject by temporaly resizing and recoloring it.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to indicate.
+    scale_factor
+        The factor by which the mobject will be temporally scaled
+    color
+        The color the mobject temporally takes.
+    rate_func
+        The function definig the animation progress at every point in time.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.Succession` constructor
+
+    Examples
+    --------
+    .. manim:: UsingIndicate
+
+        class UsingIndicate(Scene):
+            def construct(self):
+                tex = Tex("Indicate").scale(3)
+                self.play(Indicate(tex))
+                self.wait()
+    """
+
     def __init__(
         self,
         mobject: "Mobject",
@@ -96,14 +177,65 @@ class Indicate(Transform):
 
 
 class Flash(AnimationGroup):
+    """Send out lines in all directions.
+
+    Parameters
+    ----------
+    point
+        The center of the flash lines. If it is a :class:`.~Mobject` its center will be used.
+    line_length
+        The length of the flash lines.
+    num_lines
+        The number of flash lines.
+    flash_radius
+        The distance from `point` at which the flash lines start.
+    line_stroke_width
+        The stroke width of the flash lines.
+    color
+        The color of the flash lines.
+    time_width
+        The time width used for the flash lines. See :class:`.~ShowPassingFlash` for more details.
+    run_time
+        The duration of the animation.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.Succession` constructor
+
+    Examples
+    --------
+    .. manim:: UsingFlash
+
+        class UsingFlash(Scene):
+            def construct(self):
+                dot = Dot(color=YELLOW).shift(DOWN)
+                self.add(Tex("Flash the dot below:"), dot)
+                self.play(Flash(dot))
+                self.wait()
+
+    .. manim:: FlashOnCircle
+
+        class FlashOnCircle(Scene):
+            def construct(self):
+                radius = 2
+                circle = Circle(radius)
+                self.add(circle)
+                self.play(Flash(
+                    circle, line_length=1,
+                    num_lines=30, color=RED,
+                    flash_radius=radius+SMALL_BUFF,
+                    time_width=0.3, run_time=2,
+                    rate_func = rush_from
+                ))
+    """
+
     def __init__(
         self,
         point: np.ndarray,
         line_length: float = 0.2,
         num_lines: int = 12,
-        flash_radius: float = 0.3,
+        flash_radius: float = 0.1,
         line_stroke_width: int = 3,
         color: str = YELLOW,
+        time_width: float = 1,
         run_time: float = 1.0,
         **kwargs
     ) -> None:
@@ -113,33 +245,41 @@ class Flash(AnimationGroup):
         self.num_lines = num_lines
         self.flash_radius = flash_radius
         self.line_stroke_width = line_stroke_width
+        self.run_time = run_time
+        self.time_width = time_width
+        self.animation_config = kwargs
 
         self.lines = self.create_lines()
         animations = self.create_line_anims()
-        super().__init__(
-            *animations,
-            group=self.lines,
-            run_time=run_time,
-            **kwargs,
-        )
+        super().__init__(*animations, group=self.lines)
 
     def create_lines(self) -> VGroup:
         lines = VGroup()
         for angle in np.arange(0, TAU, TAU / self.num_lines):
             line = Line(ORIGIN, self.line_length * RIGHT)
-            line.shift((self.flash_radius - self.line_length) * RIGHT)
+            line.shift((self.flash_radius) * RIGHT)
             line.rotate(angle, about_point=ORIGIN)
             lines.add(line)
         lines.set_color(self.color)
-        lines.set_stroke(width=3)
+        lines.set_stroke(width=self.line_stroke_width)
         lines.add_updater(lambda l: l.move_to(self.point))
         return lines
 
-    def create_line_anims(self) -> typing.Iterable["ShowCreationThenDestruction"]:
-        return [ShowCreationThenDestruction(line) for line in self.lines]
+    def create_line_anims(self) -> typing.Iterable["ShowPassingFlash"]:
+        return [
+            ShowPassingFlash(
+                line,
+                time_width=self.time_width,
+                run_time=self.run_time,
+                **self.animation_config,
+            )
+            for line in self.lines
+        ]
 
 
 class CircleIndicate(Indicate):
+    """Deprecated. Use :class:`~.Circumscribe` instead."""
+
     def __init__(
         self,
         mobject: "Mobject",
@@ -150,6 +290,9 @@ class CircleIndicate(Indicate):
         remover: bool = True,
         **kwargs
     ) -> None:
+        logger.warning(
+            "ShowCreationThenDestructionAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         self.circle_config = circle_config
         circle = self.get_circle(mobject)
         super().__init__(circle, rate_func=rate_func, remover=remover, **kwargs)
@@ -167,15 +310,30 @@ class CircleIndicate(Indicate):
 class ShowPassingFlash(ShowPartial):
     """Show only a sliver of the VMobject each frame.
 
+    Parameters
+    ----------
+    mobject
+        The mobject whose stroke is animated.
+    time_width
+        The length of the sliver relative to the length of the stroke.
+
     Examples
     --------
-    .. manim:: ShowPassingFlashScene
+    .. manim:: TimeWidthValues
 
-        class ShowPassingFlashScene(Scene):
+        class TimeWidthValues(Scene):
             def construct(self):
-                p = RegularPolygon(5)
-                self.add(p)
-                self.play(ShowPassingFlash(p.copy().set_color(YELLOW)))
+                p = RegularPolygon(5, color=DARK_GRAY, stroke_width=6).scale(3)
+                lbl = VMobject()
+                self.add(p, lbl)
+                p = p.copy().set_color(BLUE)
+                for time_width in [0.2, 0.5, 1, 2]:
+                    lbl.become(Tex(r"\\texttt{time\\_width={{%.1f}}}"%time_width))
+                    self.play(ShowPassingFlash(
+                        p.copy().set_color(BLUE),
+                        run_time=2,
+                        time_width=time_width
+                    ))
 
     See Also
     --------
@@ -183,15 +341,9 @@ class ShowPassingFlash(ShowPartial):
 
     """
 
-    def __init__(
-        self,
-        mobject: "Mobject",
-        time_width: float = 0.1,
-        remover: bool = True,
-        **kwargs
-    ) -> None:
+    def __init__(self, mobject: "VMobject", time_width: float = 0.1, **kwargs) -> None:
         self.time_width = time_width
-        super().__init__(mobject, remover=remover, **kwargs)
+        super().__init__(mobject, remover=True, **kwargs)
 
     def _get_bounds(self, alpha: float) -> typing.Tuple[float]:
         tw = self.time_width
@@ -208,18 +360,29 @@ class ShowPassingFlash(ShowPartial):
 
 
 class ShowCreationThenDestruction(ShowPassingFlash):
+    """Deprecated. Use :class:`~.ShowPassingFlash` instead."""
+
     def __init__(
         self, mobject: "Mobject", time_width: float = 2.0, run_time: float = 1, **kwargs
     ) -> None:
+        logger.warning(
+            "ShowCreationThenDestruction has been deprecated in favor of ShowPassingFlash. Please use ShowPassingFlash instead!"
+        )
         super().__init__(mobject, time_width=time_width, run_time=run_time, **kwargs)
 
 
+# TODO Decide what to do with this class:
+#   Remove?
+#   Deprecate?
+#   Keep and add docs?
 class ShowCreationThenFadeOut(Succession):
     def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
 class AnimationOnSurroundingRectangle(AnimationGroup):
+    """Deprecated. Use :class:`~.Circumscribe` instead or build an Animation using :class:`~SurroundingRectangle`."""
+
     def __init__(
         self,
         mobject: "Mobject",
@@ -227,6 +390,9 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         surrounding_rectangle_config: typing.Dict[str, typing.Any] = {},
         **kwargs
     ) -> None:
+        logger.warning(
+            "AnimationOnSurroundingRectangle has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         # Callable which takes in a rectangle, and spits out some animation.  Could be
         # some animation class, could be something more
         self.rect_animation = rect_animation
@@ -247,59 +413,206 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
 
 
 class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
+    """Deprecated. Use :class:`~.Circumscribe` instead."""
+
     def __init__(
         self, mobject: "Mobject", rect_animation: Animation = ShowPassingFlash, **kwargs
     ) -> None:
+        logger.warning(
+            "ShowPassingFlashAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
+    """Deprecated. Use :class:`~.Circumscribe` instead."""
+
     def __init__(
         self,
         mobject: "Mobject",
         rect_animation: Animation = ShowCreationThenDestruction,
         **kwargs
     ) -> None:
+        logger.warning(
+            "ShowCreationThenDestructionAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
 class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
+    """Deprecated. Use :class:`~.Circumscribe` instead."""
+
     def __init__(
         self,
         mobject: "Mobject",
         rect_animation: Animation = ShowCreationThenFadeOut,
         **kwargs
     ) -> None:
+        logger.warning(
+            "ShowCreationThenFadeAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
+        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
 class ApplyWave(Homotopy):
+    """Send a wave through the Mobject distorting it temporarily.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be distorted.
+    direction
+        The direction in which the wave nudges points of the shape
+    amplitude
+        The distance points of the shape get shifted
+    wave_func
+        The function defining the shape of one wave flank.
+    time_width
+        The length of the wave relative to the width of the mobject.
+    ripples
+        The number of ripples of the wave
+    run_time
+        The duration of the animation.
+
+    Examples
+    --------
+
+    .. manim:: ApplyingWaves
+
+        class ApplyingWaves(Scene):
+            def construct(self):
+                tex = Tex("WaveWaveWaveWaveWave").scale(2)
+                self.play(ApplyWave(tex))
+                self.play(ApplyWave(
+                    tex,
+                    direction=RIGHT,
+                    time_width=0.5,
+                    amplitude=0.3
+                ))
+                self.play(ApplyWave(
+                    tex,
+                    rate_func=linear,
+                    ripples=4
+                ))
+
+    """
+
     def __init__(
         self,
         mobject: "Mobject",
         direction: np.ndarray = UP,
         amplitude: float = 0.2,
-        run_time: float = 1,
+        wave_func: Callable[[float], float] = smooth,
+        time_width: float = 1,
+        ripples: int = 1,
+        run_time: float = 2,
         **kwargs
     ) -> None:
-        self.direction = direction
-        self.amplitude = amplitude
-        left_x = mobject.get_left()[0]
-        right_x = mobject.get_right()[0]
-        vect = self.amplitude * self.direction
+        x_min = mobject.get_left()[0]
+        x_max = mobject.get_right()[0]
+        vect = amplitude * normalize(direction)
+
+        def wave(t):
+            # Creates a wave with n ripples from a simple rate_func
+            # This wave is build up as follows:
+            # The time is split into 2*ripples phases. In every phase the amplitude
+            # either rises to one or goes down to zero. Consecutive ripples will have
+            # their amplitudes in oppising directions (first ripple from 0 to 1 to 0,
+            # second from 0 to -1 to 0 and so on). This is how two ripples would be
+            # devided into phases:
+
+            #         ####|####        |            |
+            #       ##    |    ##      |            |
+            #     ##      |      ##    |            |
+            # ####        |        ####|####        |        ####
+            #             |            |    ##      |      ##
+            #             |            |      ##    |    ##
+            #             |            |        ####|####
+
+            # However, this looks weired in the middle between two ripples. Therefor the
+            # middle phases do acutally use only one appropriately scaled version of the
+            # rate like this:
+
+            # 1 / 4 Time  | 2 / 4 Time            | 1 / 4 Time
+            #         ####|######                 |
+            #       ##    |      ###              |
+            #     ##      |         ##            |
+            # ####        |           #           |        ####
+            #             |            ##         |      ##
+            #             |              ###      |    ##
+            #             |                 ######|####
+
+            # Mirrored looks better in the way the wave is used.
+            t = 1 - t
+
+            # Clamp input
+            if t >= 1 or t <= 0:
+                return 0
+
+            phases = ripples * 2
+            phase = int(t * phases)
+            if phase == 0:
+                # First rising ripple
+                return wave_func(t * phases)
+            elif phase == phases - 1:
+                # last ripple. Rising or falling depening on the number of ripples
+                # The (ripples % 2)-term is used to make this destinction.
+                t -= phase / phases  # Time relative to the phase
+                return (1 - wave_func(t * phases)) * (2 * (ripples % 2) - 1)
+            else:
+                # Longer phases:
+                phase = int((phase - 1) / 2)
+                t -= (2 * phase + 1) / phases
+
+                # Similar to last ripple:
+                return (1 - 2 * wave_func(t * ripples)) * (1 - 2 * ((phase) % 2))
 
         def homotopy(
             x: float, y: float, z: float, t: float
         ) -> typing.Tuple[float, float, float]:
-            alpha = (x - left_x) / (right_x - left_x)
-            power = np.exp(2.0 * (alpha - 0.5))
-            nudge = there_and_back(t ** power)
-            return np.array([x, y, z]) + nudge * vect
+            upper = interpolate(0, 1 + time_width, t)
+            lower = upper - time_width
+            relative_x = inverse_interpolate(x_min, x_max, x)
+            wave_phase = inverse_interpolate(lower, upper, relative_x)
+            nudge = wave(wave_phase) * vect
+            return np.array([x, y, z]) + nudge
 
         super().__init__(homotopy, mobject, run_time=run_time, **kwargs)
 
 
-class WiggleOutThenIn(Animation):
+class Wiggle(Animation):
+    """Wiggle a Mobject.
+
+    Parameters
+    ----------
+    mobject : Mobject
+        The mobject to wiggle.
+    scale_value
+        The factor by which the mobject will be temporarilly scaled.
+    rotation_angle
+        The wiggle angle.
+    n_wiggles
+        The number of wiggles.
+    scale_about_point
+        The point about which the mobject gets scaled.
+    rotate_about_point
+        The point around which the mobject gets rotated.
+    run_time
+        The duration of the animation
+
+    Examples
+    --------
+
+    .. manim:: ApplyingWaves
+
+        class ApplyingWaves(Scene):
+            def construct(self):
+                tex = Tex("Wiggle").scale(3)
+                self.play(Wiggle(tex))
+                self.wait()
+
+    """
+
     def __init__(
         self,
         mobject: "Mobject",
@@ -340,9 +653,117 @@ class WiggleOutThenIn(Animation):
         )
 
 
+class WiggleOutThenIn(Wiggle):
+    """Deprecated. Use :class:`~.Wiggle` instead."""
+
+    def __init__(*args, **kwargs):
+        logger.warning(
+            "WiggleOutThenIn has been deprecated in favor of Wiggle. Please use Wiggle instead!"
+        )
+        super().__init(*args, **kwargs)
+
+
 class TurnInsideOut(Transform):
+    """Deprecated. Use :code:`mobject.animate.become(mobject.copy().reverse_points())` instead if you have to."""
+
     def __init__(self, mobject: "Mobject", path_arc: float = TAU / 4, **kwargs) -> None:
+        logger.warning(
+            "TurnInsideOut has been deprecated. Please stop using TurnInsideOut!"
+        )
         super().__init__(mobject, path_arc=path_arc, **kwargs)
 
     def create_target(self) -> "Mobject":
         return self.mobject.copy().reverse_points()
+
+
+class Circumscribe(Succession):
+    """Draw a temporary line surrounding the mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be circumscribed.
+    shape
+        The shape with which to surrond the given mobject. Should be either
+        :class:`~.Rectangle` or :class:`~.Circle`
+    fade_in
+        Whether to make the surrounding shape to fade in. It will be drawn otherwise.
+    fade_out
+        Whether to make the surrounding shape to fade out. It will be undrawn otherwise.
+    time_width
+        The time_width of the drawing and undrawing. Gets ignored if either `fade_in` or `fade_out` is `True`.
+    buff
+        The distance between the surrounding shape and the given mobject.
+    color
+        The color of the surrounding shape.
+    run_time
+        The duration of the entire animation.
+    kwargs : Any
+        Additional arguments to be passed to the :class:`~.Succession` constructor
+
+    Examples
+    --------
+
+    .. manim:: UsingCircumscribe
+
+        class UsingCircumscribe(Scene):
+            def construct(self):
+                lbl = Tex(r"Circum-\\\\scribe").scale(2)
+                self.add(lbl)
+                self.play(Circumscribe(lbl))
+                self.play(Circumscribe(lbl, Circle))
+                self.play(Circumscribe(lbl, fade_out=True))
+                self.play(Circumscribe(lbl, time_width=2))
+                self.play(Circumscribe(lbl, Circle, True))
+
+    """
+
+    def __init__(
+        self,
+        mobject: Mobject,
+        shape: Type = Rectangle,
+        fade_in=False,
+        fade_out=False,
+        time_width=0.3,
+        buff: float = SMALL_BUFF,
+        color: Color = YELLOW,
+        run_time=1,
+        stroke_width=DEFAULT_STROKE_WIDTH,
+        **kwargs
+    ):
+        if shape is Rectangle:
+            frame = SurroundingRectangle(
+                mobject, color, buff, stroke_width=stroke_width
+            )
+        elif shape is Circle:
+            frame = Circle(color=color, stroke_width=stroke_width).surround(
+                mobject, buffer_factor=1
+            )
+            radius = frame.width / 2
+            frame.scale((radius + buff) / radius)
+        else:
+            raise ValueError("shape should be either Rectangle or Circle.")
+
+        if fade_in and fade_out:
+            super().__init__(
+                FadeIn(frame, run_time=run_time / 2),
+                FadeOut(frame, run_time=run_time / 2),
+                **kwargs,
+            )
+        elif fade_in:
+            frame.reverse_direction()
+            super().__init__(
+                FadeIn(frame, run_time=run_time / 2),
+                Uncreate(frame, run_time=run_time / 2),
+                **kwargs,
+            )
+        elif fade_out:
+            super().__init__(
+                Create(frame, run_time=run_time / 2),
+                FadeOut(frame, run_time=run_time / 2),
+                **kwargs,
+            )
+        else:
+            super().__init__(
+                ShowPassingFlash(frame, time_width, run_time=run_time), **kwargs
+            )
