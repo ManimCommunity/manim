@@ -1293,16 +1293,18 @@ class Vector(Arrow):
             direction = np.append(np.array(direction), 0)
         Arrow.__init__(self, ORIGIN, direction, buff=buff, **kwargs)
 
-    def coordinate_label(self, integer_labels=True, n_dim=2, color=WHITE):
-        """A label based on the coordinates of the vector.
+    def coordinate_label(
+        self, integer_labels: bool = True, n_dim: int = 2, color: str = WHITE
+    ):
+        """Creates a label based on the coordinates of the vector.
 
         Parameters
         ----------
-        integer_labels : :class:`bool`, optional
+        integer_labels
             Whether or not to round the coordinates to integers.
-        n_dim : `class`:`int`, optional
+        n_dim
             The number of dimensions of the vector.
-        color : :class:`~.Colors`, optional
+        color
             The color of the label.
 
         Examples
@@ -1316,10 +1318,11 @@ class Vector(Arrow):
                     plane = NumberPlane()
 
                     vect_1 = Vector([1, 2])
-                    label_1 = vect1.coordinate_label()
                     vect_2 = Vector([-3, -2])
+                    label_1 = vect1.coordinate_label()
                     label_2 = vect2.coordinate_label(color=YELLOW)
-                    self.add(plane, vect_1, label_1, vect_2, label_2)
+
+                    self.add(plane, vect_1, vect_2, label_1, label_2)
         """
         # avoiding circular imports
         from .matrix import Matrix
