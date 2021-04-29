@@ -33,8 +33,9 @@ from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
+    angle_between_vectors,
     angle_of_vector,
-    get_norm,
+    normalize,
     rotation_matrix,
     rotation_matrix_transpose,
 )
@@ -382,15 +383,16 @@ class Mobject(Container):
         :meth:`add`
 
         """
+        if self in mobjects:
+            raise ValueError("A mobject shouldn't contain itself")
+
         for mobject in mobjects:
-            if self in mobjects:
-                raise ValueError("Mobject cannot contain self")
             if not isinstance(mobject, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
 
-        filtered = list_update(mobjects, self.submobjects)
         self.remove(*mobjects)
-        self.submobjects = list(filtered) + self.submobjects
+        # dict.fromkeys() removes duplicates while maintaining order
+        self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
@@ -1528,13 +1530,19 @@ class Mobject(Container):
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
+        axis = (
+            normalize(np.cross(curr_vect, target_vect))
+            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
-            get_norm(target_vect) / get_norm(curr_vect),
+            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
         )
         self.rotate(
-            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+            angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
+            axis=axis,
         )
         self.shift(start - curr_start)
         return self
@@ -1637,7 +1645,7 @@ class Mobject(Container):
             center = self.get_center()
 
         for mob in self.family_members_with_points():
-            t = get_norm(mob.get_center() - center) / radius
+            t = np.linalg.norm(mob.get_center() - center) / radius
             t = min(t, 1)
             mob_color = interpolate_color(inner_color, outer_color, t)
             mob.set_color(mob_color, family=False)
@@ -1840,15 +1848,15 @@ class Mobject(Container):
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
     def get_x(self, direction=ORIGIN) -> np.float64:
-        """Returns x coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns x coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(0, direction)
 
     def get_y(self, direction=ORIGIN) -> np.float64:
-        """Returns y coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns y coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(1, direction)
 
     def get_z(self, direction=ORIGIN) -> np.float64:
-        """Returns z coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns z coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
     def get_start(self):
@@ -1868,7 +1876,7 @@ class Mobject(Container):
             return np.array(self.points[-1])
 
     def get_start_and_end(self):
-        """Returns starting and ending point of a stroke as a ``tuple``. """
+        """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
@@ -1891,7 +1899,7 @@ class Mobject(Container):
         return z_index_group.get_center()
 
     def has_points(self) -> bool:
-        """Check if :class:`~.Mobject` contains points. """
+        """Check if :class:`~.Mobject` contains points."""
         return len(self.points) > 0
 
     def has_no_points(self) -> bool:
