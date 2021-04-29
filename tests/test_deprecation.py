@@ -257,7 +257,7 @@ def test_deprecate_func_params(caplog):
     )
 
 
-def test_deprecate_func_params_single_since_and_until(caplog):
+def test_deprecate_func_single_param_since_and_until(caplog):
     """Test the deprecation of a single method parameter (decorator with since and until arguments)."""
     t = Top()
     t.bar(a=1, b=2)
