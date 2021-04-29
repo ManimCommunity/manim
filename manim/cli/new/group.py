@@ -140,11 +140,9 @@ def scene(**args):
 
     If 'file_name' is passed as the second argument, This command inserts or writes to 'file_name' depending on weather the 'file_name' exists or not.
 
-    If 'file_name' is not passed as the second argument, This command inserts new scene in main.py.
+    If 'file_name' is not passed as the second argument, This command inserts a new scene in main.py.
     """
     if not Path("main.py").exists():
-        console.print("Missing files")
-        console.print("\n\t[red]Not a valid project directory[/red]\n")
         raise FileNotFoundError(f"{Path('main.py')} : Not a valid project direcotory.")
 
     template_name = click.prompt(
