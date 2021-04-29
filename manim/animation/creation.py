@@ -121,7 +121,7 @@ class ShowPartial(Animation):
         raise NotImplementedError("Please use Create or ShowPassingFlash")
 
 
-class Create(ShowPartial):  
+class Create(ShowPartial):
     """Incrementally show a VMobject.
 
     Parameters

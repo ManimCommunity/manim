@@ -34,7 +34,11 @@ class Animation:
     overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
 
     def __new__(
-        cls, mobject: Optional[Mobject]=None, *args, use_default: bool = False, **kwargs
+        cls,
+        mobject: Optional[Mobject] = None,
+        *args,
+        use_default: bool = False,
+        **kwargs,
     ):
         if (
             not use_default
