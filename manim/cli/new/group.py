@@ -73,7 +73,7 @@ def update_cfg(cfg_dict, project_cfg_path):
     context_settings=CONTEXT_SETTINGS,
     no_args_is_help=False,
     epilog=EPILOG,
-    help="Initialize New Project",
+    help="Create new projects.",
 )
 @click.argument("project_name", type=Path, required=False)
 @click.argument("template_name", required=False)
@@ -82,7 +82,7 @@ def update_cfg(cfg_dict, project_cfg_path):
     "--default",
     "default_settings",
     is_flag=True,
-    help="Default settings for Project Initialization",
+    help="Default settings for project creation.",
     nargs=1,
 )
 def project(default_settings, **args):
@@ -149,6 +149,13 @@ def project(default_settings, **args):
 @click.argument("scene_name", type=str, required=True)
 @click.argument("file_name", type=str, required=False)
 def scene(**args):
+    """Scene subcommand inserts new scenes. If file_name is not passed as the second argument, This command inserts new scene in main.py.
+
+    Parameters
+    ----------
+        **args : :class:`dict`
+            Dictionary of arguments passed to the scene command.
+    """
     template_name = click.prompt(
         "template",
         type=click.Choice(get_template_names(), False),
