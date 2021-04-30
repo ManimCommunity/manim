@@ -37,13 +37,13 @@ class OpenGLBrace(OpenGLSVGPathMobject):
 
     See Also
     --------
-    :class:`BraceBetweenPoints`
+    :class:`OpenGLBraceBetweenPoints`
 
     Examples
     --------
-    .. manim:: BraceExample
+    .. manim:: OpenGLBraceExample
 
-        class BraceExample(Scene):
+        class OpenGLBraceExample(Scene):
             def construct(self):
                 circle = OpenGLCircle()
                 brace = OpenGLBrace(circle, direction=RIGHT)
@@ -206,9 +206,9 @@ class OpenGLBraceBetweenPoints(OpenGLBrace):
 
     Examples
     --------
-        .. manim:: BraceBPExample
+        .. manim:: OpenGLBraceBPExample
 
-            class BraceBPExample(Scene):
+            class OpenGLBraceBPExample(Scene):
                 def construct(self):
                     p1 = [0,0,0]
                     p2 = [1,2,0]
