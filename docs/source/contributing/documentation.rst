@@ -171,7 +171,7 @@ Example:
 
 See an example on list item 4.
 
-.. NOTE::
+.. note::
 
    When documenting varargs (args and kwargs), make sure to
    document them by listing the possible types of each value specified,
@@ -220,7 +220,7 @@ See an example on list item 4.
 
        # python code here
 
-.. NOTE::
+.. note::
    Also, if this is a video- or animation-related change, please
    try to add an example GIF or video if possible for demonstration
    purposes.
