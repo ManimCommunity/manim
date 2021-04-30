@@ -72,7 +72,7 @@ class SquareToCircle(Scene):
 In order to view the output of this scene, save the code in a file called `example.py`. Then, run the following in a terminal window:
 
 ```sh
-manim -p -ql example.py SquareToCircle 
+manim -p -ql example.py SquareToCircle
 ```
 
 You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
@@ -159,19 +159,28 @@ Most developers on the project use [Poetry](https://python-poetry.org/docs/) for
 
 ## How to Cite Manim
 
-We acknowledge the importance of good software to support research, and we note that research becomes more valuable when it is communicated effectively.
-To demonstrate the value of Manim, we ask that you cite Manim in your work. 
-Currently, the best way to cite Manim is to reference the [Manim home page](https://www.manim.community) using this BibTeX file:
+We acknowledge the importance of good software to support research, and we note
+that research becomes more valuable when it is communicated effectively. To
+demonstrate the value of Manim, we ask that you cite Manim in your work.
+Currently, the best way to cite Manim is to reference the
+[Manim home page](https://www.manim.community) using this BibTeX entry (the
+entry is for release `v0.6.0`, but can be adapted easily):
 
 ```
-@Manual{Manim:2021:0.5.0,
+@Manual{Manim:v0.6.0,
   key =          {Manim},
   author =       {{The Manim Community Developers}},
-  title =        {{Manim} {M}athematical {A}nimation {F}ramework ({V}ersion v0.5.0)},
+  title =        {{Manim} {M}athematical {A}nimation {F}ramework ({V}ersion v0.6.0)},
   note =         {\url{https://www.manim.community}},
   year =         2021,
 }
 ```
+
+This should render a reference that looks more or less like this:
+
+42. The Manim Community Developers,
+    [Manim Mathematical Animation Framework (Version v0.6.0)](https://www.manim.community).
+    2021.
 
 ## Code of Conduct
 
