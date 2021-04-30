@@ -322,6 +322,9 @@ length with only integers.
 Adding type hints to functions and parameters
 ---------------------------------------------
 
+.. warning::
+   This section is still a work in progress.
+
 If you've never used type hints before, this is a good place to get started:
 https://realpython.com/python-type-checking/#hello-types.
 
@@ -333,6 +336,7 @@ When adding type hints to manim, there are some guidelines that should be follow
 
     def set_points_as_corners(self, points: Sequence[float]) -> "VMobject":
         """Given an array of points, set them as corner of the Vmobject."""
+
 * ``**kwargs`` has no typehint
 
 * Mobjects have the typehint "Mobject", e.g.
@@ -342,12 +346,14 @@ When adding type hints to manim, there are some guidelines that should be follow
     def match_color(self, mobject: "Mobject"):
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
+
 * Colors have the typehint ``Color``, e.g.
 
 .. code:: py
 
     def set_color(self, color: Color = YELLOW_C, family: bool = True):
         """Condition is function which takes in one arguments, (x, y, z)."""
+
 * As ``float`` and ``Union[int, float]`` are the same, use only ``float``
 
 * For numpy arrays use the typehint ``np.ndarray``
@@ -358,6 +364,7 @@ When adding type hints to manim, there are some guidelines that should be follow
 
     def height(self, value) -> None:
         self.scale_to_fit_height(value)
+
 * Parameters that are None by default should get the type hint ``Optional``
 
 .. code:: py
@@ -382,8 +389,99 @@ When adding type hints to manim, there are some guidelines that should be follow
 
 *  numpy arrays can get type hints with ``np.ndarray``
 
-Missing Sections
-----------------
+* assuming that typical path objects are either Paths or strs, one can use the typehint ``typing.Union[str, pathlib.Path]``
+
+
+
+Adding Blocks for Tip, Note, Important etc. (Admonitions)
+---------------------------------------------------------
+
+The following directives are called Admonitions. You
+can use them to point out additional or important
+information. Here are some examples:
+
+See also
+~~~~~~~~
+
+.. code-block:: rest
+
+   .. seealso::
+        Some ideas at :mod:`~.tex_mobject`, :class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`~.make_config_parser`
+
+.. seealso::
+    Some ideas at :mod:`~.tex_mobject`, :class:`~.Mobject`, :meth:`~.Mobject.add_updater`, :attr:`~.Mobject.depth`, :func:`~.make_config_parser`
+
+.. index:: reST directives; note
+
+
+
+Note
+~~~~
+
+.. code-block:: rest
+
+   .. note::
+      A note
+
+.. note::
+   A note
+
+Tip
+~~~
+
+.. code-block:: rest
+
+   .. tip::
+      A tip
+
+.. tip::
+   A tip
+
+You may also use the admonition **hint**, but this is very similar
+and **tip** is more commonly used in the documentation.
+
+Important
+~~~~~~~~~
+
+.. code-block:: rest
+
+   .. important::
+      Some important information which should be considered.
+
+.. important::
+   Some important information which should be considered.
+
+Warning
+~~~~~~~
+
+.. code-block:: rest
+
+   .. warning::
+      Some text pointing out something that people should be warned about.
+
+.. warning::
+   Some text pointing out something that people should be warned about.
+
+You may also use the admonitions **caution** or even **danger** if the
+severity of the warning must be stressed.
+
+Attention
+~~~~~~~~~
+
+.. code-block:: rest
+
+   .. attention::
+      A attention
+
+.. attention::
+   A attention
+
+You can find further information about Admonitions here: https://pradyunsg.me/furo/reference/admonitions/
+
+
+
+Missing Sections for typehints are:
+-----------------------------------
 * Tools for typehinting
 * Link to MyPy
 * Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy

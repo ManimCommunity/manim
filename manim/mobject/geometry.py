@@ -1293,6 +1293,58 @@ class Vector(Arrow):
             direction = np.append(np.array(direction), 0)
         Arrow.__init__(self, ORIGIN, direction, buff=buff, **kwargs)
 
+    def coordinate_label(
+        self, integer_labels: bool = True, n_dim: int = 2, color: str = WHITE
+    ):
+        """Creates a label based on the coordinates of the vector.
+
+        Parameters
+        ----------
+        integer_labels
+            Whether or not to round the coordinates to integers.
+        n_dim
+            The number of dimensions of the vector.
+        color
+            The color of the label.
+
+        Examples
+        --------
+
+        .. manim VectorCoordinateLabel
+            :save_last_frame:
+
+            class VectorCoordinateLabel(Scene):
+                def construct(self):
+                    plane = NumberPlane()
+
+                    vect_1 = Vector([1, 2])
+                    vect_2 = Vector([-3, -2])
+                    label_1 = vect1.coordinate_label()
+                    label_2 = vect2.coordinate_label(color=YELLOW)
+
+                    self.add(plane, vect_1, vect_2, label_1, label_2)
+        """
+        # avoiding circular imports
+        from .matrix import Matrix
+
+        vect = np.array(self.get_end())
+        if integer_labels:
+            vect = np.round(vect).astype(int)
+        vect = vect[:n_dim]
+        vect = vect.reshape((n_dim, 1))
+
+        label = Matrix(vect)
+        label.scale(LARGE_BUFF - 0.2)
+
+        shift_dir = np.array(self.get_end())
+        if shift_dir[0] >= 0:  # Pointing right
+            shift_dir -= label.get_left() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * LEFT
+        else:  # Pointing left
+            shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
+        label.shift(shift_dir)
+        label.set_color(color)
+        return label
+
 
 class DoubleArrow(Arrow):
     """An arrow with tips on both ends.
