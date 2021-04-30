@@ -30,7 +30,7 @@ class OpenGLBrace(OpenGLSVGPathMobject):
 
     Parameters
     ----------
-    mobject : :class:`~.Mobject`
+    mobject : :class:`~.OpenGLMobject`
         The mobject adjacent to which the brace is placed.
     direction : Optional[Union[:class:`list`, :class:`numpy.array`]]
         The direction from which the brace faces the mobject.
@@ -45,8 +45,8 @@ class OpenGLBrace(OpenGLSVGPathMobject):
 
         class BraceExample(Scene):
             def construct(self):
-                circle = Circle()
-                brace = Brace(circle, direction=RIGHT)
+                circle = OpenGLCircle()
+                brace = OpenGLBrace(circle, direction=RIGHT)
                 self.play(Create(circle))
                 self.play(Create(brace))
                 self.wait(2)
