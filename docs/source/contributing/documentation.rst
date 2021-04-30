@@ -57,11 +57,13 @@ When you want to add/edit examples, they can be found in the ``docs/source/`` di
 
         class Formula1(Scene):
             def construct(self):
-                t = MathTex(r"\int_a^b f'(x) dx = f(b)- f(a)")
+                t = MathTex(r"\int_a^b f'(x) dx = f(b) - f(a)")
                 self.add(t)
                 self.wait(1)
 
-In the building process of the docs, all ``rst`` files are scanned, and the manim directive (``.. manim::``) blocks are identified as scenes, that will be run by the current version of manim.
+In the building process of the docs, all ``rst`` files are scanned, and the 
+manim directive (``.. manim::``) blocks are identified as scenes that will be run 
+by the current version of manim.
 Here is the syntax:
 
 * ``.. manim:: [SCENE_NAME]`` has no indentation and ``SCENE_NAME`` refers to the name of the class below.
@@ -76,9 +78,13 @@ has the same name: ``class Formula1(Scene)``.
 
 .. note::
 
-   Sometimes, when you reload an example in your browser, it has still the old website somewhere in its cache. If this is the case, delete the website cache, or open a new ``incognito tab``
-   in your browser, then the latest docs should be shown. 
-   **Only for locally built documentation:** If this still doesn't work, you may need to delete the contents of ``docs/source/references``.
+   Sometimes, when you reload an example in your browser, it has still the old
+   website somewhere in its cache. If this is the case, delete the website cache,
+   or open a new incognito tab in your browser, then the latest docs
+   should be shown. 
+   **Only for locally built documentation:** If this still doesn't work, you may need
+   to delete the contents of ``docs/source/references`` before rebuilding
+   the documentation.
 
 Formatting and Running Tests
 ----------------------------
