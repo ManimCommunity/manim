@@ -1,10 +1,6 @@
 import pytest
 
-from manim import (
-    Animation,
-    Mobject,
-    override_animation,
-)
+from manim import Animation, Mobject, override_animation
 from manim.utils.exceptions import MultiAnimationOverrideException
 
 
