@@ -2,13 +2,9 @@ import pytest
 
 from manim import (
     Animation,
-    FadeIn,
-    FadeInFrom,
-    FadeInFromLarge,
     Mobject,
     override_animation,
 )
-from manim.constants import RIGHT
 from manim.utils.exceptions import MultiAnimationOverrideException
 
 
