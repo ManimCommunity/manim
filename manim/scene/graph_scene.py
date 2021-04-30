@@ -48,14 +48,14 @@ __all__ = ["GraphScene"]
 
 import itertools as it
 
-from .. import config
+from .. import config, logger
 from ..animation.creation import Create, DrawBorderThenFill, Write
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.functions import ParametricFunction
 from ..mobject.geometry import Line, Rectangle, RegularPolygon
-from ..mobject.number_line import NumberLine
+from ..mobject.number_line import NumberLineOld
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
@@ -79,6 +79,10 @@ from ..utils.space_ops import angle_of_vector
 
 
 class GraphScene(Scene):
+    """
+    Deprecated - GraphScene
+    """
+
     def __init__(
         self,
         x_min=-1,
@@ -112,6 +116,10 @@ class GraphScene(Scene):
         y_axis_config=None,
         **kwargs,
     ):
+        logger.warning(
+            "GraphScene has been deprecated and will be removed in a future release. "
+            "Use Axes instead."
+        )
         self.x_min = x_min
         self.x_max = x_max
         self.x_axis_width = x_axis_width
@@ -185,7 +193,7 @@ class GraphScene(Scene):
             **self.x_axis_config,
         )
 
-        x_axis = NumberLine(**self.x_axis_config)
+        x_axis = NumberLineOld(**self.x_axis_config)
         x_shift = x_axis.number_to_point(
             0 if self.x_min <= 0 <= self.x_max else self.x_min
         )
@@ -228,7 +236,7 @@ class GraphScene(Scene):
             **self.y_axis_config,
         )
 
-        y_axis = NumberLine(**self.y_axis_config)
+        y_axis = NumberLineOld(**self.y_axis_config)
         y_shift = y_axis.number_to_point(
             0 if self.y_min <= 0 <= self.y_max else self.y_min
         )
