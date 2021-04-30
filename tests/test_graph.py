@@ -13,20 +13,20 @@ def test_graph_creation():
 
 def test_graph_add_vertices():
     G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-    G.add_vertex(4)
+    G.add_vertices(4)
     assert str(G) == "Graph on 4 vertices and 2 edges"
-    G.add_vertex(5, label=Text("5"))
+    G.add_vertices(5, labels={5: Text("5")})
     assert str(G) == "Graph on 5 vertices and 2 edges"
     assert 5 in G._labels
     assert 5 in G._vertex_config
-    G.add_vertices([6, 7, 8])
+    G.add_vertices(6, 7, 8)
     assert len(G.vertices) == 8
     assert len(G._graph.nodes()) == 8
 
 
 def test_graph_remove_vertices():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3), (3, 4), (4, 5)])
-    removed_mobjects = G.remove_vertex(3)
+    removed_mobjects = G.remove_vertices(3)
     assert len(removed_mobjects) == 3
     assert str(G) == "Graph on 4 vertices and 2 edges"
     assert list(G.vertices.keys()) == [1, 2, 4, 5]
@@ -40,13 +40,13 @@ def test_graph_remove_vertices():
 
 def test_graph_add_edges():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3)])
-    added_mobjects = G.add_edge((1, 3))
+    added_mobjects = G.add_edges((1, 3))
     assert str(added_mobjects.submobjects) == "[Line]"
     assert str(G) == "Graph on 5 vertices and 3 edges"
     assert set(G.vertices.keys()) == set([1, 2, 3, 4, 5])
     assert set(G.edges.keys()) == set([(1, 2), (2, 3), (1, 3)])
 
-    added_mobjects = G.add_edge((1, 42))
+    added_mobjects = G.add_edges((1, 42))
     assert str(added_mobjects.submobjects) == "[Dot, Line]"
     assert str(G) == "Graph on 6 vertices and 4 edges"
     assert set(G.vertices.keys()) == set([1, 2, 3, 4, 5, 42])
@@ -65,8 +65,8 @@ def test_graph_add_edges():
 
 def test_graph_remove_edges():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3), (3, 4), (4, 5), (1, 5)])
-    removed_mobjects = G.remove_edge((1, 2))
-    assert str(removed_mobjects) == "Line"
+    removed_mobjects = G.remove_edges((1, 2))
+    assert str(removed_mobjects.submobjects) == "[Line]"
     assert str(G) == "Graph on 5 vertices and 4 edges"
     assert set(G.edges.keys()) == set([(2, 3), (3, 4), (4, 5), (1, 5)])
     assert set(G._graph.edges()) == set(G.edges.keys())
