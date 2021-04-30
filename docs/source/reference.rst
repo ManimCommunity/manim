@@ -81,6 +81,7 @@ Animations
    ~animation.indication
    ~animation.movement
    ~animation.numbers
+   ~animation.override_animation
    ~animation.rotation
    ~animation.transform
    ~animation.transform_matching_parts

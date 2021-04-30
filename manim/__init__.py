@@ -102,4 +102,4 @@ else:
 from .plugins import *
 
 # Needs to be called after all Animation- and Mobject-subclasses are initiated:
-override_animation.setup(update_docs=True)
+setup_animation_overriding(update_docs=True)

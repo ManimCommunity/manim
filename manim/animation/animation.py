@@ -31,6 +31,7 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 
 
 class Animation:
+    # is set via override_animation.setup
     overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
 
     def __new__(
