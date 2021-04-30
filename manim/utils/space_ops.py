@@ -35,7 +35,7 @@ __all__ = [
 import itertools as it
 import math
 from functools import reduce
-from typing import Callable, List, Optional, Sequence, TypeVar, Union, Tuple
+from typing import Callable, List, Optional, Sequence, Tuple, TypeVar, Union
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
