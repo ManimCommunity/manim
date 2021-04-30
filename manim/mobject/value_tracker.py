@@ -77,7 +77,7 @@ class ValueTracker(Mobject):
         """Get the current value of this ValueTracker."""
         return self.points[0, 0]
 
-    def set_value(self, value: Union[float, int]):
+    def set_value(self, value: float):
         """Sets a new scalar value to the ValueTracker"""
         self.points[0, 0] = value
         return self
