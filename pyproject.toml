@@ -7,6 +7,7 @@ license="MIT"
 readme="README.md"
 repository="https://github.com/manimcommunity/manim"
 documentation="https://docs.manim.community/"
+homepage="https://www.manim.community/"
 classifiers= [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
@@ -70,6 +71,12 @@ gitpython = "^3"
 pygithub = "^1"
 flake8 = "^3.9.0"
 isort = "^5.8.0"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"
+"Changelog" = "https://docs.manim.community/en/stable/changelog.html"
+"Twitter" = "https://twitter.com/manim_community"
+"Discord" = "https://discord.gg/mMRrZQW"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
