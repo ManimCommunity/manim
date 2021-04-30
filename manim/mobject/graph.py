@@ -460,7 +460,7 @@ class Graph(VMobject):
     def __repr__(self: "Graph") -> str:
         return f"Graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
-    def add_vertex(
+    def _add_vertex(
         self,
         vertex: Hashable,
         position: Optional[np.ndarray] = None,
@@ -537,19 +537,10 @@ class Graph(VMobject):
 
         return self.vertices[vertex]
 
-    @override_animate(add_vertex)
-    def _add_vertex_animation(self, *args, anim_args=None, **kwargs):
-        if anim_args is None:
-            anim_args = {}
-
-        animation = anim_args.pop("animation", Create)
-
-        vertex_mobject = self.add_vertex(*args, **kwargs)
-        return animation(vertex_mobject, **anim_args)
 
     def add_vertices(
         self: "Graph",
-        vertices: List[Hashable],
+        *vertices: List[Hashable],
         positions: Optional[dict] = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
@@ -617,7 +608,7 @@ class Graph(VMobject):
         }
 
         return [
-            self.add_vertex(
+            self._add_vertex(
                 v,
                 position=positions[v],
                 label=labels[v],
@@ -639,7 +630,7 @@ class Graph(VMobject):
         vertex_mobjects = self.add_vertices(*args, **kwargs)
         return AnimationGroup(*[animation(v, **anim_args) for v in vertex_mobjects])
 
-    def remove_vertex(self, vertex):
+    def _remove_vertex(self, vertex):
         """Remove a vertex (as well as all incident edges) from the graph.
 
         Parameters
@@ -653,18 +644,6 @@ class Graph(VMobject):
 
         Group
             A mobject containing all removed objects.
-
-        Examples
-        --------
-        ::
-
-            >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-            >>> removed = G.remove_vertex(2); removed
-            Group
-            >>> removed.submobjects
-            [Line, Line, Dot]
-            >>> G
-            Graph on 2 vertices and 0 edges
 
         """
         if vertex not in self.vertices:
@@ -686,16 +665,6 @@ class Graph(VMobject):
 
         self.remove(*to_remove)
         return Group(*to_remove)
-
-    @override_animate(remove_vertex)
-    def _remove_vertex_animation(self, vertex, anim_args=None):
-        if anim_args is None:
-            anim_args = {}
-
-        animation = anim_args.pop("animation", Uncreate)
-
-        mobjects = self.remove_vertex(vertex)
-        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
 
     def remove_vertices(self, *vertices):
         """Remove several vertices from the graph.
@@ -721,7 +690,7 @@ class Graph(VMobject):
         """
         mobjects = []
         for v in vertices:
-            mobjects.extend(self.remove_vertex(v).submobjects)
+            mobjects.extend(self._remove_vertex(v).submobjects)
         return Group(*mobjects)
 
     @override_animate(remove_vertices)
@@ -734,7 +703,7 @@ class Graph(VMobject):
         mobjects = self.remove_vertices(*vertices)
         return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
 
-    def add_edge(
+    def _add_edge(
         self,
         edge: Tuple[Hashable, Hashable],
         edge_type: Type["Mobject"] = Line,
@@ -766,7 +735,7 @@ class Graph(VMobject):
         added_mobjects = []
         for v in edge:
             if v not in self.vertices:
-                added_mobjects.append(self.add_vertex(v))
+                added_mobjects.append(self._add_vertex(v))
         u, v = edge
 
         self._graph.add_edge(u, v)
@@ -784,15 +753,6 @@ class Graph(VMobject):
         self.add(edge_mobject)
         added_mobjects.append(edge_mobject)
         return Group(*added_mobjects)
-
-    @override_animate(add_edge)
-    def _add_edge_animation(self, *args, anim_args=None, **kwargs):
-        if anim_args is None:
-            anim_args = {}
-        animation = anim_args.pop("animation", Create)
-
-        mobjects = self.add_edge(*args, **kwargs)
-        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
 
     def add_edges(
         self,
@@ -836,7 +796,7 @@ class Graph(VMobject):
 
         added_mobjects = sum(
             [
-                self.add_edge(
+                self._add_edge(
                     edge, edge_type=edge_type, edge_config=edge_config[edge]
                 ).submobjects
                 for edge in edges
@@ -854,7 +814,7 @@ class Graph(VMobject):
         mobjects = self.add_edges(*args, **kwargs)
         return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
 
-    def remove_edge(self, edge: Tuple[Hashable]):
+    def _remove_edge(self, edge: Tuple[Hashable]):
         """Remove an edge from the graph.
 
         Parameters
@@ -869,16 +829,6 @@ class Graph(VMobject):
         Mobject
             The removed edge.
 
-        Examples
-        --------
-
-        ::
-
-            >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-            >>> G.remove_edge((2, 3))
-            Line
-            >>> G
-            Graph on 3 vertices and 1 edges
         """
         if edge not in self.edges:
             edge = edge[::-1]
@@ -892,16 +842,6 @@ class Graph(VMobject):
 
         self.remove(edge_mobject)
         return edge_mobject
-
-    @override_animate(remove_edge)
-    def _remove_edge_animation(self, edge, anim_args=None):
-        if anim_args is None:
-            anim_args = {}
-
-        animation = anim_args.pop("animation", Uncreate)
-
-        mobject = self.remove_edge(edge)
-        return animation(mobject, **anim_args)
 
     def remove_edges(self, *edges: List[Tuple[Hashable]]):
         """Remove several edges from the graph.
@@ -917,7 +857,7 @@ class Graph(VMobject):
             A group containing all removed edges.
 
         """
-        edge_mobjects = [self.remove_edge(edge) for edge in edges]
+        edge_mobjects = [self._remove_edge(edge) for edge in edges]
         return Group(*edge_mobjects)
 
     @override_animate(remove_edges)
@@ -927,7 +867,7 @@ class Graph(VMobject):
 
         animation = anim_args.pop("animation", Uncreate)
 
-        mobjects = self.remove_edges()
+        mobjects = self.remove_edges(*edges)
         return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
 
     @staticmethod
