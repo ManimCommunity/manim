@@ -16,7 +16,6 @@ __all__ = [
     "angle_between_vectors",
     "project_along_vector",
     "normalize",
-    "normalize_along_axis",
     "cross",
     "get_unit_normal",
     "compass_directions",
