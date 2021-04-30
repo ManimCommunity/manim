@@ -64,13 +64,3 @@ information here will make it easier for newcomers to get started using
    reporting_bugs
    contributing
    conduct
-
-
-
-How to cite Manim
-=================
-
-The community maintained version of Manim is -- and will remain -- fully
-free to use. We are
-
-
