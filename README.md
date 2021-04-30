@@ -157,6 +157,22 @@ Contributions to Manim are always welcome. In particular, there is a dire need f
 
 Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more about `poetry` and how to use it at its [documentation](https://docs.manim.community/en/stable/installation/for_dev.html).
 
+## How to Cite Manim
+
+We acknowledge the importance of good software to support research, and we note that research becomes more valuable when it is communicated effectively.
+To demonstrate the value of Manim, we ask that you cite Manim in your work. 
+Currently, the best way to cite Manim is to reference the [Manim home page](https://www.manim.community) using this BibTeX file:
+
+```
+@Manual{Manim:2021:0.5.0,
+  key =          {Manim},
+  author =       {{The Manim Community Developers}},
+  title =        {{Manim} {M}athematical {A}nimation {F}ramework ({V}ersion v0.5.0)},
+  note =         {\url{https://www.manim.community}},
+  year =         2021,
+}
+```
+
 ## Code of Conduct
 
 Our full code of conduct, and how we enforce it, can be read on [our website](https://docs.manim.community/en/stable/conduct.html).
