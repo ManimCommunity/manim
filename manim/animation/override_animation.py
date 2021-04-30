@@ -3,6 +3,7 @@
 
 __all__ = ["override_animation"]
 
+from manim.utils.exceptions import MultiAnimationOverrideException
 from typing import Type
 
 from .. import logger
@@ -39,13 +40,13 @@ def _setup(update_docs: bool = False):
                         f"inherited make sure they are named equally."
                     )
                     logger.error(msg)
-                    raise RuntimeError(msg)
+                    raise MultiAnimationOverrideException()
 
-                method.__doc__ = (
-                    f"{method.__doc__}\n\nNotes\n-----\n\n.. note::\n\n  Test"
-                )
+                # method.__doc__ = (
+                #     f"{method.__doc__}\n\nNotes\n-----\n\n.. note::\n\n  Test"
+                # )
                 overrides[animation_class][mobject_class] = method
-    Animation._overrides = overrides
+    Animation.overrides = overrides
 
 
 def override_animation(animationClass):
