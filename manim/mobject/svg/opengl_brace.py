@@ -187,7 +187,7 @@ class OpenGLBraceText(OpenGLBraceLabel):
 
 
 class OpenGLBraceBetweenPoints(OpenGLBrace):
-    """Similar to Brace, but instead of taking a mobject it uses 2
+    """Similar to OpenGLBrace, but instead of taking a mobject it uses 2
     points to place the brace.
 
     A fitting direction for the brace is
