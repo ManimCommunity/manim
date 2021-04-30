@@ -590,13 +590,7 @@ class PolarPlane(NumberPlane):
         radius_max=None,
         **kwargs,
     ):
-        if azimuth_units in [
-            "PI radians",
-            "TAU radians",
-            "degrees",
-            "gradians",
-            None
-        ]:
+        if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
         else:
             raise ValueError(
@@ -750,8 +744,8 @@ class PolarPlane(NumberPlane):
         elif self.azimuth_units == None:
             a_tex = [
                 MathTex(f'{i["label"]:g}')
-                    .scale(self.azimuth_scale)
-                    .next_to(
+                .scale(self.azimuth_scale)
+                .next_to(
                     i["point"],
                     direction=i["point"],
                     aligned_edge=i["point"],
