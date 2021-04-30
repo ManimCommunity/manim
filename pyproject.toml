@@ -7,7 +7,7 @@ license="MIT"
 readme="README.md"
 repository="https://github.com/manimcommunity/manim"
 documentation="https://docs.manim.community/"
-homepage="https://manim.community/"
+homepage="https://www.manim.community/"
 classifiers= [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
