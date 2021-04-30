@@ -3,10 +3,11 @@
 
 __all__ = ["override_animation"]
 
+from typing import Type
+
+from .. import logger
 from ..animation.animation import Animation
 from ..mobject.mobject import Mobject
-from typing import Type
-from .. import logger
 
 
 def _all_subclasses(cls: Type, root: bool = True):
