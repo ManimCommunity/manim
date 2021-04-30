@@ -323,10 +323,10 @@ length with only integers.
    be accessed by first downloading it via ``pip`` - ``pip install typestring-parser`` and
    then using ``from typestring_parser import parse``.
 
-    .. doctest::
-    .. highlight:: py
+.. doctest::
+    .. highlight:: python
+
     from typestring_parser import parse
-    
     >>> parse('int')
     <class 'int'>
     >>> parse('int or str')
