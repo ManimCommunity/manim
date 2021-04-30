@@ -2118,7 +2118,10 @@ class Mobject(Container):
                 def construct(self):
                     #Add some numbered boxes:
                     np.random.seed(3)
-                    boxes = VGroup(*[Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5)) for i in range(22)])
+                    boxes = VGroup(*[
+                        Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5))
+                        for i in range(22)
+                    ])
                     self.add(boxes)
 
                     boxes.arrange_in_grid(
