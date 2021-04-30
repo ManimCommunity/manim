@@ -2074,7 +2074,7 @@ class Mobject(Container):
             The horizontal alignment for each column (left to right). Accepts the following characters ``"l"`` - left,
             ``"c"`` - center, ``"r"`` - right.
         row_heights
-            Defines a list of heights for certain rows (top to bottom). If the list contains 
+            Defines a list of heights for certain rows (top to bottom). If the list contains
             ``None``, the corresponding row will fit its height automatically based
             on the highest element in that row.
         col_widths
