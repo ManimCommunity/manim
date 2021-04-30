@@ -22,7 +22,7 @@ In early 2021, Grant merged the shaders branch back into master, making it the d
 The old version is still available as the branch ``cairo-backend``.
 
 The three versions of Manim
-****************************
+***************************
 
 There are currently three main versions of manim. They are as follows:
 
@@ -41,7 +41,7 @@ If you would like to use a version with full OpenGL support or render recent 3Bl
 If you would like to render old 3Blue1Brown projects (2019 and before), you should use ManimCairo.
 
 Notes on installation, documentation, and use
-********************************************
+*********************************************
 If you are a beginner, it is very important that you only use the documentation for your desired version. 
 Trying to install or learn manim using documentation or guides made for different versions will likely fail and only lead to more confusion. 
 As many tutorials and guides on the internet are outdated, we do not recommend you follow them. 
