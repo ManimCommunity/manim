@@ -633,7 +633,7 @@ def shoelace_direction(x_y: np.ndarray) -> str:
     return "CW" if area > 0 else "CCW"
 
 
-def cross2d(a: int, b: int) -> float:
+def cross2d(a, b):
     if len(a.shape) == 2:
         return a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
     else:
