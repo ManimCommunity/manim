@@ -16,6 +16,8 @@ from queue import Queue
 
 import numpy as np
 from tqdm import tqdm
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
@@ -31,6 +33,17 @@ from ..utils.family_ops import restructure_list_to_exclude_certain_family_member
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
+
+
+class RerunSceneHandler(FileSystemEventHandler):
+    """A class to handle rerunning a Scene after the input file is modified."""
+
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def on_modified(self, event):
+        self.queue.put(("rerun_file", [], {}))
 
 
 class Scene(Container):
@@ -85,6 +98,7 @@ class Scene(Container):
         self.duration = None
         self.last_t = None
         self.queue = Queue()
+        self.skip_animation_preview = False
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -911,7 +925,7 @@ class Scene(Container):
         )
         for t in self.time_progression:
             self.update_to_time(t)
-            if not skip_rendering:
+            if not skip_rendering and not self.skip_animation_preview:
                 self.renderer.render(self, t, self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
@@ -972,15 +986,26 @@ class Scene(Container):
             args=(shell, local_namespace),
         )
         keyboard_thread.start()
+
         self.interact(shell, keyboard_thread)
 
-    def interact(self, shell=None, keyboard_thread=None):
+    def interact(self, shell, keyboard_thread):
+        event_handler = RerunSceneHandler(self.queue)
+        file_observer = Observer()
+        file_observer.schedule(event_handler, config["input_file"], recursive=True)
+        file_observer.start()
+
         self.quit_interaction = False
         keyboard_thread_needs_join = True
         while not (self.renderer.window.is_closing or self.quit_interaction):
             if not self.queue.empty():
                 tup = self.queue.get_nowait()
                 if tup[0].startswith("rerun"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard"):
+                        shell.pt_app.app.exit(exception=EOFError)
+                    keyboard_thread.join()
+
                     kwargs = tup[2]
                     if "from_animation_number" in kwargs:
                         config["from_animation_number"] = kwargs[
