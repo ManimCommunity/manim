@@ -10,8 +10,12 @@ from manim.utils.exceptions import MultiAnimationOverrideException
 
 class AnimA1(Animation):
     pass
+
+
 class AnimA2(Animation):
     pass
+
+
 class AnimA3(Animation):
     pass
 
@@ -22,6 +26,7 @@ class AnimB1(AnimA1):
 
 class AnimC1(AnimB1):
     pass
+
 
 class AnimX(Animation):
     pass
