@@ -55,7 +55,7 @@ def get_norm(vect):
     return np.linalg.norm(vect)
 
 
-def norm_squared(v: float) -> np.ndarray:
+def norm_squared(v: float) -> float:
     return np.linalg.dot(v, v)
 
 
