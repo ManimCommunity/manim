@@ -54,7 +54,7 @@ def setup_animation_overriding(update_docs: bool = False):
     ------
     MultiAnimationOverrideException
         If one class defines multiple overrides for a single ``Animation``.
-    
+
     """
     overrides = {}
     for mobject_class in _all_subclasses(Mobject):
@@ -90,7 +90,7 @@ def override_animation(
 
     Should only be used to decorate methods of classes derived from :class:`~.Mobject`.
     ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined
-    them. They don't override subclasses of the ``Animation`` they override.   
+    them. They don't override subclasses of the ``Animation`` they override.
 
     Parameters
     ----------
@@ -107,7 +107,7 @@ def override_animation(
     To enable the animation overriding, :func:`setup_animation_overriding` has to be
     called after the class has been fully initiated. This is automatically done for
     mobject imported from manim.
-    
+
     Examples
     --------
 
@@ -117,14 +117,15 @@ def override_animation(
             @override_animation(FadeIn)
             def fade_in(self, **kwargs):
                 return Create(self, **kwargs)
-    
+
         setup_animation_overriding()
 
         class OverrideAnimationExample(Scene):
             def construct(self):
                 self.play(FadeIn(MySquare()))
-                
+
     """
+
     def decorator(func):
         func._override_animation = animationClass
         return func
