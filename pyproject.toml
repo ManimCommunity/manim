@@ -43,7 +43,7 @@ setuptools = "*"
 importlib-metadata = {version = "*", python = "<3.8"}
 grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
-watchdog = { version = "*", optional = true }
+watchdog = "*"
 jupyterlab = { version = "^3.0", optional = true }
 moderngl = "^5.6.3"
 moderngl-window = "^2.3.0"
@@ -52,7 +52,7 @@ cloup = "^0.7.0"
 requests = "*"
 
 [tool.poetry.extras]
-webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
+webgl_renderer = ["grpcio","grpcio-tools"]
 jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
