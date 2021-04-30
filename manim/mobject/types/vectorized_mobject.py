@@ -550,8 +550,9 @@ class VMobject(Mobject):
     def add_line_to(self, point: np.ndarray) -> "VMobject":
         """Add a straight line from the last point of VMobject to the given point.
 
-        Parameters :
-        ------------
+        Parameters
+        ----------
+
         point : np.ndarray
             end of the straight line.
         """
@@ -725,10 +726,10 @@ class VMobject(Mobject):
         handles closer to their anchors, apply the function then push them out
         again.
 
-        Paramters
-        ---------
-        factor : float
-            factor used for scaling.
+        Parameters
+        ----------
+        factor
+            The factor used for scaling.
 
         Returns
         -------
@@ -1153,10 +1154,10 @@ class VMobject(Mobject):
     def insert_n_curves(self, n: int) -> "VMobject":
         """Inserts n curves to the bezier curves of the vmobject.
 
-        Paramters
-        ---------
-        n : int
-            Number of curves to insert
+        Parameters
+        ----------
+        n
+            Number of curves to insert.
 
         Returns
         -------
@@ -1315,12 +1316,13 @@ class VMobject(Mobject):
         """Returns the subcurve of the VMobject between the interval [a, b].
         The curve is a VMobject itself.
 
-        Parameters :
-        ------------
-        a : float
-            lower-bound
-        b : float
-            upper-boud
+        Parameters
+        ----------
+
+        a
+            The lower bound.
+        b
+            The upper bound.
 
         Returns
         -------

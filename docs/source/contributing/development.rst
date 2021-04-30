@@ -194,22 +194,23 @@ Our pipeline consists of a series of different tests that ensure
 that manim still works as intended and that the code you added
 sticks to our coding conventions.
 
-- *Code style*: We use the code style imposed
+- **Code style**: We use the code style imposed
   by `Black <https://black.readthedocs.io/en/stable/>`_, `isort <https://pycqa.github.io/isort/>`_
   and `flake8 <https://flake8.pycqa.org/en/latest/>`_. The GitHub pipeline
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
-  fix your code formating automatically by running ``black <file or directory>`` and ``isort <file or directory>``. 
-  To fix code style problems, run ``flake8 <file or directory>`` for a style report, and then fix the problems manually that were detected by ``flake8 ``.
+  fix your code formatting automatically by running ``black <file or directory>`` and ``isort <file or directory>``. 
+  To fix code style problems, run ``flake8 <file or directory>`` for a style report, and then fix the problems
+  manually that were detected by ``flake8``.
 
-- *Tests*: The pipeline runs manim's test suite on different operating systems
+- **Tests**: The pipeline runs manim's test suite on different operating systems
   (the latest versions of Ubuntu, MacOS, and Windows) for different versions of Python.
   The test suite consists of two different kinds of tests: integration tests
   and doctests. You can run them locally by executing ``poetry run pytest``
   and ``poetry run pytest --doctest-modules manim``, respectively, from the
   root directory of your cloned fork.
 
-- *Documentation*: We also build a version of the documentation corresponding
+- **Documentation**: We also build a version of the documentation corresponding
   to your pull request. Make sure not to introduce any Sphinx errors, and have
   a look at the built HTML files to see whether the formatting of the documentation
   you added looks as you intended. You can build the documentation locally
@@ -249,8 +250,8 @@ Further useful guidelines
 
 
 You can find examples for the ``docs`` in several places:
-the :doc:`Example Gallery<examples>`, :doc:`Tutorials<tutorials>`,
-and :doc:`Reference Classes<reference>`.
+the :doc:`Example Gallery <../examples>`, :doc:`Tutorials <../tutorials>`,
+and :doc:`Reference Classes <../reference>`.
 
 In case you are contributing, please have a look at this flowchart:
 
