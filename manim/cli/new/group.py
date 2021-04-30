@@ -133,7 +133,7 @@ def project(default_settings, **args):
 @click.argument("scene_name", type=str, required=True)
 @click.argument("file_name", type=str, required=False)
 def scene(**args):
-    """Inserts a SCENE to an existing FILE or a new FILE
+    """Inserts a SCENE to an existing FILE or creates a new FILE.
 
     SCENE is the name of the scene that will be inserted.
 
