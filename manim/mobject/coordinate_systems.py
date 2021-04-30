@@ -12,7 +12,7 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, Dot, DashedLine, Line
+from ..mobject.geometry import Arrow, DashedLine, Dot, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VDict, VGroup, VMobject
@@ -290,7 +290,7 @@ class Axes(VGroup, CoordinateSystem):
         add_vertex_dots: bool = True,
         vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
         vertex_dot_style: Optional[dict] = None,
-        **kwargs
+        **kwargs,
     ) -> VDict:
         """Draws a line graph.
 
