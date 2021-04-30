@@ -3,8 +3,9 @@
 
 __all__ = ["override_animation"]
 
-from manim.utils.exceptions import MultiAnimationOverrideException
 from typing import Type
+
+from manim.utils.exceptions import MultiAnimationOverrideException
 
 from .. import logger
 from ..animation.animation import Animation
