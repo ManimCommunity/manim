@@ -537,7 +537,6 @@ class Graph(VMobject):
 
         return self.vertices[vertex]
 
-
     def add_vertices(
         self: "Graph",
         *vertices: List[Hashable],
