@@ -2,7 +2,7 @@
 
 __all__ = ["ManimBanner"]
 
-from ..animation.animation import override_animation
+from ..animation.override_animation import override_animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.fading import FadeIn
