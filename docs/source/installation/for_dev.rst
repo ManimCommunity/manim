@@ -12,8 +12,8 @@ steps to clone your fork.
 
    If you have installed a non-developer version of manim, please uninstall
    it. This is to avoid any accidental usage of the non-developer version
-   when developing and testing on your local copy of the repository. This
-   warning doesn't apply for users who use `poetry
+   when developing and testing your local copy of the repository. This
+   warning doesn't apply to users who use `poetry
    <https://python-poetry.org>`_ (chapter below.)
 
 For Developers with Poetry (Recommended)
@@ -57,7 +57,7 @@ Please follow the instructions under :ref:`installing-manim` to install all
 dependencies (e.g. ``LaTeX``, ``ffmpeg``, etc.). Afterwards, proceed with the
 installation with Poetry.
 
-.. important:: Windows Users can skip the steps to install Pycairo.
+.. important:: Windows users can skip the steps to install Pycairo.
 
 
 .. _install-manim-poetry:
@@ -72,9 +72,9 @@ Installing Manim using Poetry
          poetry install
 
     .. note:: The first time running this command, poetry will create and
-              enter a virtual environment rooted at the current directory.
+              enter a virtual environment rooted in the current directory.
     
-    For more information you can visit the `poetry documentation
+    For more information, you can visit the `poetry documentation
     <https://python-poetry.org/docs/managing-environments/>`_.
 
 #. If you exit the virtual environment, you can reactivate the
@@ -113,7 +113,8 @@ command ``pytest`` to run the tests.
 Code Formatting and Linting Using Poetry
 ****************************************
 
-Once you are done with :ref:`install-manim-poetry`, you can run the code formatter ``black`` by activating entering the virtual environment:
+Once you are done with :ref:`install-manim-poetry`, you can run the code formatter ``black`` 
+by activating entering the virtual environment:
 
 .. code-block:: bash
 
@@ -126,13 +127,15 @@ Or alternatively, without entering the virtual environment:
 
    poetry run black manim
 
-For example, if you have written some new example and want to format it and see lint information use the commands below.
+For example, if you have written some new example and want to format it and see 
+lint information use the commands below.
 
 .. code-block:: bash
 
     poetry run black example_scenes
 
-Similarly, you can see linting information for a given file, or directory, by the ``black`` command with ``pylint``.
+Similarly, you can see linting information for a given file, or directory, 
+by the ``black`` command with ``pylint``.
 
 
 For Developers with pip

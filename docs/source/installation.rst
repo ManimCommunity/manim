@@ -26,6 +26,7 @@ Installing dependencies
 
 .. toctree::
 
+   installation/versions
    installation/win
    installation/mac
    installation/linux

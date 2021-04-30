@@ -74,44 +74,43 @@ from ..utils.bezier import bezier
 from ..utils.simple_functions import sigmoid
 
 
-def linear(t: typing.Union[np.ndarray, float]) -> typing.Union[np.ndarray, float]:
+def linear(t: float) -> float:
     return t
 
 
-def smooth(t: float, inflection: float = 10.0) -> np.ndarray:
+def smooth(t: float, inflection: float = 10.0) -> float:
     error = sigmoid(-inflection / 2)
-    return np.clip(
-        (sigmoid(inflection * (t - 0.5)) - error) / (1 - 2 * error),
-        0,
+    return min(
+        max((sigmoid(inflection * (t - 0.5)) - error) / (1 - 2 * error), 0),
         1,
     )
 
 
-def rush_into(t: float, inflection: float = 10.0) -> np.ndarray:
+def rush_into(t: float, inflection: float = 10.0) -> float:
     return 2 * smooth(t / 2.0, inflection)
 
 
-def rush_from(t: float, inflection: float = 10.0) -> np.ndarray:
+def rush_from(t: float, inflection: float = 10.0) -> float:
     return 2 * smooth(t / 2.0 + 0.5, inflection) - 1
 
 
-def slow_into(t: np.ndarray) -> np.ndarray:
+def slow_into(t: float) -> float:
     return np.sqrt(1 - (1 - t) * (1 - t))
 
 
-def double_smooth(t: float) -> np.ndarray:
+def double_smooth(t: float) -> float:
     if t < 0.5:
         return 0.5 * smooth(2 * t)
     else:
         return 0.5 * (1 + smooth(2 * t - 1))
 
 
-def there_and_back(t: float, inflection: float = 10.0) -> np.ndarray:
+def there_and_back(t: float, inflection: float = 10.0) -> float:
     new_t = 2 * t if t < 0.5 else 2 * (1 - t)
     return smooth(new_t, inflection)
 
 
-def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> np.ndarray:
+def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> float:
     a = 1.0 / pause_ratio
     if t < 0.5 - pause_ratio / 2:
         return smooth(a * t)
@@ -121,29 +120,31 @@ def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> np.ndar
         return smooth(a - a * t)
 
 
-def running_start(t: float, pull_factor: float = -0.5) -> typing.Iterable:
+def running_start(
+    t: float, pull_factor: float = -0.5
+) -> typing.Iterable:  # what is func return type?
     return bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)
 
 
 def not_quite_there(
-    func: typing.Callable[[float, typing.Optional[float]], np.ndarray] = smooth,
+    func: typing.Callable[[float], float] = smooth,
     proportion: float = 0.7,
-) -> typing.Callable[[float], np.ndarray]:
+) -> typing.Callable[[float], float]:
     def result(t):
         return proportion * func(t)
 
     return result
 
 
-def wiggle(t: float, wiggles: float = 2) -> np.ndarray:
+def wiggle(t: float, wiggles: float = 2) -> float:
     return there_and_back(t) * np.sin(wiggles * np.pi * t)
 
 
 def squish_rate_func(
-    func: typing.Callable[[float], typing.Any],
+    func: typing.Callable[[float], float],
     a: float = 0.4,
     b: float = 0.6,
-) -> typing.Callable[[float], typing.Any]:  # what is func return type?
+) -> typing.Callable[[float], float]:
     def result(t):
         if a == b:
             return a
@@ -168,21 +169,21 @@ def lingering(t: float) -> float:
     return squish_rate_func(lambda t: t, 0, 0.8)(t)
 
 
-def exponential_decay(t: np.ndarray, half_life: float = 0.1) -> np.ndarray:
+def exponential_decay(t: float, half_life: float = 0.1) -> float:
     # The half-life should be rather small to minimize
     # the cut-off error at the end
     return 1 - np.exp(-t / half_life)
 
 
-def ease_in_sine(t: np.ndarray) -> float:
+def ease_in_sine(t: float) -> float:
     return 1 - np.cos((t * np.pi) / 2)
 
 
-def ease_out_sine(t: np.ndarray) -> float:
+def ease_out_sine(t: float) -> float:
     return np.sin((t * np.pi) / 2)
 
 
-def ease_in_out_sine(t: np.ndarray) -> float:
+def ease_in_out_sine(t: float) -> float:
     return -(np.cos(np.pi * t) - 1) / 2
 
 

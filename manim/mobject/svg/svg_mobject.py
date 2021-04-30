@@ -40,9 +40,7 @@ class SVGMobject(VMobject):
 
         class Sample(Scene):
             def construct(self):
-                self.play(
-                    FadeIn(SVGMobject("manim-logo-sidebar.svg"))
-                )
+                self.play(FadeIn(SVGMobject("manim-logo-sidebar.svg")))
     Parameters
     --------
     file_name : :class:`str`
@@ -251,7 +249,7 @@ class SVGMobject(VMobject):
             A float representing the attribute string value.
         """
         stripped_attr = "".join(
-            [char for char in attr if char in string.digits + "." + "-"]
+            [char for char in attr if char in string.digits + ".-e"]
         )
         return float(stripped_attr)
 

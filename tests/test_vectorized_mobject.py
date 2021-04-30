@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from manim import Line, Mobject, VDict, VGroup, VMobject
+from manim import Circle, Line, Mobject, Square, VDict, VGroup, VMobject
 
 
 def test_vmobject_point_from_propotion():
@@ -19,6 +19,13 @@ def test_vmobject_point_from_propotion():
     # Total length of 6, so halfway along the object
     # would be at length 3, which lands in the first, long line.
     assert np.all(obj.point_from_proportion(0.5) == np.array([3, 0, 0]))
+
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        obj.point_from_proportion(2)
+
+    obj.clear_points()
+    with pytest.raises(Exception, match="with no points"):
+        obj.point_from_proportion(0)
 
 
 def test_vgroup_init():
@@ -120,6 +127,18 @@ def test_vmob_add_to_back():
     a.add_to_back(b)
     a.add_to_back(b, b)
     assert len(a.submobjects) == 1
+    a.submobjects.clear()
+    a.add_to_back(b, b, b)
+    a.add_to_back(b, b)
+    assert len(a.submobjects) == 1
+    a.submobjects.clear()
+
+    # Make sure the ordering has not changed
+    o1, o2, o3 = Square(), Line(), Circle()
+    a.add_to_back(o1, o2, o3)
+    assert a.submobjects.pop() == o3
+    assert a.submobjects.pop() == o2
+    assert a.submobjects.pop() == o1
 
 
 def test_vdict_init():
