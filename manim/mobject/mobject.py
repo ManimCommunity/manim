@@ -62,7 +62,7 @@ class Mobject(Container):
 
         .. seealso::
 
-        :class:`~.VMobject`
+            :class:`~.VMobject`
 
     """
 
@@ -383,15 +383,16 @@ class Mobject(Container):
         :meth:`add`
 
         """
+        if self in mobjects:
+            raise ValueError("A mobject shouldn't contain itself")
+
         for mobject in mobjects:
-            if self in mobjects:
-                raise ValueError("Mobject cannot contain self")
             if not isinstance(mobject, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
 
-        filtered = list_update(mobjects, self.submobjects)
         self.remove(*mobjects)
-        self.submobjects = list(filtered) + self.submobjects
+        # dict.fromkeys() removes duplicates while maintaining order
+        self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
@@ -1026,21 +1027,23 @@ class Mobject(Container):
             return self
 
     def scale(self, scale_factor: float, **kwargs) -> "Mobject":
-        """Scale the size by a factor.
+        r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
 
         Parameters
         ----------
         scale_factor
-            The scaling factor. Values 0 < |`scale_factor`| < 1 will shrink the mobject, 1 < |`scale_factor`| will increase it's size. A `scale_factor`<0 resuls in  additionally flipping by 180°.
-        kwargs :
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
+            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore, if :math:`\alpha < 0`,
+            the mobject is also flipped.
+        kwargs
             Additional keyword arguments passed to :meth:`apply_points_function_about_point`.
 
         Returns
         -------
-        :class:`Mobject`
-            ``self``
+        Mobject
+            The scaled mobject.
 
         See also
         --------
@@ -2362,7 +2365,7 @@ class Mobject(Container):
 
 
 class Group(Mobject):
-    """Groups together multiple :class:`~.Mobject`s."""
+    """Groups together multiple :class:`Mobjects <.Mobject>`."""
 
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)

@@ -91,8 +91,8 @@ class ValueTracker(Mobject):
         """Return whether the value of this value tracker evaluates as true."""
         return bool(self.get_value())
 
-    def __iadd__(self, d_value: Union[float, int]):
-        """Add ``d_value`` to the value of this ValueTracker."""
+    def __iadd__(self, d_value: float):
+        """adds ``+=`` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
         return self
 
@@ -116,7 +116,7 @@ class ValueTracker(Mobject):
         self.set_value(self.get_value() ** d_value)
         return self
 
-    def __isub__(self, d_value: Union[float, int]):
+    def __isub__(self, d_value: float):
         """adds ``-=`` syntax to decrement the value of the ValueTracker"""
         self.increment_value(-d_value)
         return self
