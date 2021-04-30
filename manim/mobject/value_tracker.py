@@ -3,8 +3,6 @@
 __all__ = ["ValueTracker", "ExponentialValueTracker", "ComplexValueTracker"]
 
 
-from typing import Union
-
 import numpy as np
 
 from ..mobject.mobject import Mobject
@@ -30,23 +28,39 @@ class ValueTracker(Mobject):
                 pointer = Vector(DOWN)
                 label = MathTex("x").add_updater(lambda m: m.next_to(pointer, UP))
 
-                pointer_value = ValueTracker(0)
+                pointer_tracker = ValueTracker(0)
                 pointer.add_updater(
                     lambda m: m.next_to(
-                                number_line.n2p(pointer_value.get_value()),
+                                number_line.n2p(pointer_tracker.get_value()),
                                 UP
                             )
                 )
                 self.add(number_line, pointer,label)
-                pointer_value += 1.5
+                pointer_tracker += 1.5
                 self.wait(1)
-                pointer_value -= 4
+                pointer_tracker -= 4
                 self.wait(0.5)
-                self.play(pointer_value.animate.set_value(5)),
+                self.play(pointer_tracker.animate.set_value(5)),
                 self.wait(0.5)
-                self.play(pointer_value.animate.set_value(3))
-                self.play(pointer_value.animate.increment_value(-2))
+                self.play(pointer_tracker.animate.set_value(3))
+                self.play(pointer_tracker.animate.increment_value(-2))
                 self.wait(0.5)
+
+    .. note::
+
+        You can also link ValueTrackers to updaters. In this case, you have to make sure that the ValueTracker is added to the scene by ``add``
+
+    .. manim:: ValueTrackerExample
+
+        class ValueTrackerExample(Scene):
+            def construct(self):
+                pointer_tracker = ValueTracker(0)
+                label = Dot(radius=3).add_updater(lambda x : x.set_x(pointer_tracker.get_value()))
+                self.add(label)
+                self.add(pointer_tracker)
+                pointer_tracker.add_updater(lambda mobject, dt: mobject.increment_value(dt))
+                self.wait(2)
+
     """
 
     def __init__(self, value=0, **kwargs):
@@ -58,21 +72,21 @@ class ValueTracker(Mobject):
         """Get the current value of the ValueTracker. This value changes continuously when :attr:`animate` for the ValueTracker is called."""
         return self.points[0, 0]
 
-    def set_value(self, value: Union[float, int]):
+    def set_value(self, value: float):
         """Sets a new scalar value to the ValueTracker"""
         self.points[0, 0] = value
         return self
 
-    def increment_value(self, d_value: Union[float, int]):
+    def increment_value(self, d_value: float):
         """Increments (adds) a scalar value  to the ValueTracker"""
         self.set_value(self.get_value() + d_value)
 
-    def __iadd__(self, d_value: Union[float, int]):
+    def __iadd__(self, d_value: float):
         """adds ``+=`` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
         return self
 
-    def __isub__(self, d_value: Union[float, int]):
+    def __isub__(self, d_value: float):
         """adds ``-=`` syntax to decrement the value of the ValueTracker"""
         self.increment_value(-d_value)
         return self
