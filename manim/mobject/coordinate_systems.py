@@ -227,7 +227,7 @@ class Axes(VGroup, CoordinateSystem):
         """Draws a line graph.
 
         The graph connects the vertices formed from zipping
-        ``x_values``, ``y_values`` and ``z_values``. Also adds :class:`~.Dot`_s at the
+        ``x_values``, ``y_values`` and ``z_values``. Also adds :class:`Dots <.Dot>` at the
         vertices if ``add_vertex_dots`` is set to ``True``.
 
         Parameters
