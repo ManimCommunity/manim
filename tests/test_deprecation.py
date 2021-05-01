@@ -177,9 +177,41 @@ class Top:
 
             return nested_func
 
-    @deprecated_params(params="a, b, c")
+    @deprecated_params(params="a, b, c", message="Use something else.")
     def foo(self, **kwargs):
         pass
+
+    @deprecated_params(params="a", since="v0.2", until="v0.4")
+    def bar(self, **kwargs):
+        pass
+
+    @deprecated_params(redirections=[("old_param", "new_param")])
+    def baz(self, **kwargs):
+        return kwargs
+
+    @deprecated_params(
+        redirections=[lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}]
+    )
+    def qux(self, **kwargs):
+        return kwargs
+
+    @deprecated_params(
+        redirections=[
+            lambda point2D_x=1, point2D_y=1: {"point2D": (point2D_x, point2D_y)}
+        ]
+    )
+    def quux(self, **kwargs):
+        return kwargs
+
+    @deprecated_params(
+        redirections=[
+            lambda point2D=1: {"x": point2D[0], "y": point2D[1]}
+            if isinstance(point2D, tuple)
+            else {"x": point2D, "y": point2D}
+        ]
+    )
+    def quuz(self, **kwargs):
+        return kwargs
 
 
 def test_deprecate_func_no_args(caplog):
@@ -249,5 +281,80 @@ def test_deprecate_func_params(caplog):
     msg = _get_caplog_record_msg(caplog)
     assert (
         msg
-        == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version."
+        == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version. Use something else."
     )
+
+
+def test_deprecate_func_single_param_since_and_until(caplog):
+    """Test the deprecation of a single method parameter (decorator with since and until arguments)."""
+    t = Top()
+    t.bar(a=1, b=2)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter a of method Top.bar has been deprecated since v0.2 and is expected to be removed after v0.4."
+    )
+
+
+def test_deprecate_func_param_redirect_tuple(caplog):
+    """Test the deprecation of a method parameter and redirecting it to a new one using tuple."""
+    t = Top()
+    obj = t.baz(x=1, old_param=2)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter old_param of method Top.baz has been deprecated and may be removed in a later version."
+    )
+    assert obj == {"x": 1, "new_param": 2}
+
+
+def test_deprecate_func_param_redirect_lambda(caplog):
+    """Test the deprecation of a method parameter and redirecting it to a new one using lambda function."""
+    t = Top()
+    obj = t.qux(runtime_in_ms=500)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter runtime_in_ms of method Top.qux has been deprecated and may be removed in a later version."
+    )
+    assert obj == {"run_time": 0.5}
+
+
+def test_deprecate_func_param_redirect_many_to_one(caplog):
+    """Test the deprecation of multiple method parameters and redirecting them to one."""
+    t = Top()
+    obj = t.quux(point2D_x=3, point2D_y=5)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameters point2D_x and point2D_y of method Top.quux have been deprecated and may be removed in a later version."
+    )
+    assert obj == {"point2D": (3, 5)}
+
+
+def test_deprecate_func_param_redirect_one_to_many(caplog):
+    """Test the deprecation of one method parameter and redirecting it to many."""
+    t = Top()
+    obj1 = t.quuz(point2D=0)
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
+    )
+    assert obj1 == {"x": 0, "y": 0}
+
+    caplog.clear()
+
+    obj2 = t.quuz(point2D=(2, 3))
+    assert len(caplog.record_tuples) == 1
+    msg = _get_caplog_record_msg(caplog)
+    assert (
+        msg
+        == "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
+    )
+    assert obj2 == {"x": 2, "y": 3}
