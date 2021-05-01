@@ -70,6 +70,7 @@ PR_LABELS = {
     "infrastructure": "Changes to our development infrastructure",
     "maintenance": "Code quality improvements and similar refactors",
     "revert": "Changes that needed to be reverted again",
+    "release": "New releases",
     "unlabeled": "Unclassified changes",
 }
 
