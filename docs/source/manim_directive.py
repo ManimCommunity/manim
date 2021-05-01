@@ -212,20 +212,19 @@ class ManimDirective(Directive):
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
         config.assets_dir = Path("_static")
-        if save_last_frame:
-            config.format = None
-        if save_as_gif:
-            config.format = "gif"
 
         config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
             f'config["pixel_width"] = {pixel_width}',
             f'config["save_last_frame"] = {save_last_frame}',
-            f'config["format"] = "{config.format}"',
             f'config["write_to_movie"] = {not save_last_frame}',
             f'config["output_file"] = r"{output_file}"',
         ]
+        if save_last_frame:
+            config_code.append('config["format"] = None')
+        if save_as_gif:
+            config_code.append('config["format"] = "gif"')
 
         user_code = self.content
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
