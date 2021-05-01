@@ -2602,7 +2602,10 @@ class _AnimationBuilder:
         def update_target(*method_args, **method_kwargs):
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
-                    self.mobject, *method_args, **method_kwargs
+                    self.mobject,
+                    *method_args,
+                    anim_args=self.anim_args,
+                    **method_kwargs,
                 )
             else:
                 method(*method_args, **method_kwargs)
@@ -2664,8 +2667,10 @@ def override_animate(method):
                 self.content = None
 
             @override_animate(clear_content)
-            def _clear_content_animation(self):
-                anim = Uncreate(self.content)
+            def _clear_content_animation(self, anim_args=None):
+                if anim_args is None:
+                    anim_args = {}
+                anim = Uncreate(self.content, **anim_args)
                 self.clear_content()
                 return anim
 
