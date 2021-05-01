@@ -47,6 +47,39 @@ Mobjects
    ~mobject.types.point_cloud_mobject
    ~mobject.types.vectorized_mobject
 
+.. inheritance-diagram::
+   manim.mobject.changing
+   manim.mobject.coordinate_systems
+   manim.mobject.frame
+   manim.mobject.functions
+   manim.mobject.geometry
+   manim.mobject.graph
+   manim.mobject.logo
+   manim.mobject.matrix
+   manim.mobject.mobject
+   manim.mobject.mobject_update_utils
+   manim.mobject.number_line
+   manim.mobject.numbers
+   manim.mobject.probability
+   manim.mobject.shape_matchers
+   manim.mobject.three_d_utils
+   manim.mobject.three_dimensions
+   manim.mobject.value_tracker
+   manim.mobject.vector_field
+   manim.mobject.svg.brace
+   manim.mobject.svg.code_mobject
+   manim.mobject.svg.style_utils
+   manim.mobject.svg.svg_path
+   manim.mobject.svg.svg_mobject
+   manim.mobject.svg.tex_mobject
+   manim.mobject.svg.text_mobject
+   manim.mobject.types.image_mobject
+   manim.mobject.types.point_cloud_mobject
+   manim.mobject.types.vectorized_mobject
+   :parts: 1
+   :top-classes: manim.mobject.mobject.Mobject
+
+
 
 ******
 Scenes
@@ -64,6 +97,20 @@ Scenes
    ~scene.three_d_scene
    ~scene.vector_space_scene
    ~scene.zoomed_scene
+
+
+.. inheritance-diagram::
+   manim.scene.graph_scene
+   manim.scene.moving_camera_scene
+   manim.scene.reconfigurable_scene
+   manim.scene.sample_space_scene
+   manim.scene.scene
+   manim.scene.scene_file_writer
+   manim.scene.three_d_scene
+   manim.scene.vector_space_scene
+   manim.scene.zoomed_scene
+   :parts: 1
+   :top-classes: manim.scene.scene.Scene, manim.scene.scene.RerunSceneHandler
 
 
 **********
@@ -86,6 +133,22 @@ Animations
    ~animation.transform_matching_parts
    ~animation.update
 
+.. inheritance-diagram::
+   manim.animation.animation
+   manim.animation.composition
+   manim.animation.creation
+   manim.animation.fading
+   manim.animation.growing
+   manim.animation.indication
+   manim.animation.movement
+   manim.animation.numbers
+   manim.animation.rotation
+   manim.animation.transform
+   manim.animation.transform_matching_parts
+   manim.animation.update
+   :parts: 1
+   :top-classes: manim.animation.animation.Animation
+
 
 *******
 Cameras
@@ -100,6 +163,15 @@ Cameras
    ~camera.multi_camera
    ~camera.three_d_camera
 
+
+.. inheritance-diagram::
+   manim.camera.camera
+   manim.camera.mapping_camera
+   manim.camera.moving_camera
+   manim.camera.multi_camera
+   manim.camera.three_d_camera
+   :parts: 1
+   :top-classes: manim.camera.camera.Camera, manim.mobject.mobject.Mobject
 
 *************
 Configuration
@@ -146,37 +218,4 @@ Other modules
    :toctree: reference
 
    constants
-   container
-
-
-.. inheritance-diagram::
-   manim.mobject.changing
-   manim.mobject.coordinate_systems
-   manim.mobject.frame
-   manim.mobject.functions
-   manim.mobject.geometry
-   manim.mobject.graph
-   manim.mobject.logo
-   manim.mobject.matrix
-   manim.mobject.mobject
-   manim.mobject.mobject_update_utils
-   manim.mobject.number_line
-   manim.mobject.numbers
-   manim.mobject.probability
-   manim.mobject.shape_matchers
-   manim.mobject.three_d_utils
-   manim.mobject.three_dimensions
-   manim.mobject.value_tracker
-   manim.mobject.vector_field
-   manim.mobject.svg.brace
-   manim.mobject.svg.code_mobject
-   manim.mobject.svg.style_utils
-   manim.mobject.svg.svg_path
-   manim.mobject.svg.svg_mobject
-   manim.mobject.svg.tex_mobject
-   manim.mobject.svg.text_mobject
-   manim.mobject.types.image_mobject
-   manim.mobject.types.point_cloud_mobject
-   manim.mobject.types.vectorized_mobject
-   :parts: 1
-   :top-classes: manim.mobject.mobject.Mobject      
+   container   
