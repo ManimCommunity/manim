@@ -919,12 +919,10 @@ class PolarPlane(NumberPlane):
 
     def get_coordinate_labels(self, r_vals, a_vals, **kwargs):
         if r_vals is None:
-            r_vals = [
-                r for r in self.get_x_axis().default_numbers_to_display() if r >= 0
-            ]
+            r_vals = [r for r in self.get_x_axis().get_tick_range() if r >= 0]
         if a_vals is None:
             a_vals = np.arange(0, 1, self.azimuth_frequency)
-        r_mobs = self.get_x_axis().get_number_mobjects(*r_vals)
+        r_mobs = self.get_x_axis().add_numbers(r_vals)
         if self.azimuth_direction == "CCW":
             d = 1
         elif self.azimuth_direction == "CW":
