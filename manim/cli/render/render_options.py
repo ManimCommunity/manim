@@ -51,9 +51,8 @@ render_options = option_group(
         help="Render all scenes in the input file.",
     ),
     option(
-        "-f",
         "--format",
-        type=click.Choice(["png", "pngs", "gif", "mp4"], case_sensitive=False),
+        type=click.Choice(["png", "gif", "mp4"], case_sensitive=False),
     ),
     option("-s", "--save_last_frame", is_flag=True),
     option(

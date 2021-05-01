@@ -82,7 +82,7 @@ def open_file(file_path, in_browser=False):
 def open_media_file(file_writer):
     file_paths = []
 
-    if config["format"] == "png":
+    if config["save_last_frame"]:
         file_paths.append(file_writer.image_file_path)
     if config["write_to_movie"] and not config["format"] == "gif":
         file_paths.append(file_writer.movie_file_path)

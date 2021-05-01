@@ -663,7 +663,7 @@ class ManimConfig(MutableMapping):
                 if attr is not None:
                     self[key] = attr
 
-        if self["format"] == "png":
+        if self["save_last_frame"]:
             self["write_to_movie"] = False
 
         # Handle the -n flag.
@@ -846,7 +846,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def format(self):
-        """File format; "png", "pngs", "gif", "mp4", or "mov"."""
+        """File format; "png", "gif", "mp4", or "mov"."""
         return self._d["format"]
 
     @format.setter
@@ -855,7 +855,7 @@ class ManimConfig(MutableMapping):
         self._set_from_list(
             "format",
             val,
-            [None, "png", "pngs", "gif", "mp4", "mov"],
+            [None, "png", "gif", "mp4", "mov"],
         )
 
     ffmpeg_loglevel = property(

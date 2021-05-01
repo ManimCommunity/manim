@@ -129,11 +129,11 @@ def test_frame_size(tmp_path):
 def test_temporary_dry_run():
     """Test that tempconfig correctly restores after setting dry_run."""
     assert config["write_to_movie"]
-    assert not config["format"]
+    assert not config["save_last_frame"]
 
     with tempconfig({"dry_run": True}):
         assert not config["write_to_movie"]
-        assert not config["format"]
+        assert not config["save_last_frame"]
 
     assert config["write_to_movie"]
-    assert not config["format"]
+    assert not config["save_last_frame"]

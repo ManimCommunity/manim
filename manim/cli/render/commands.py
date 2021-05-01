@@ -86,14 +86,13 @@ def render(
         args["format"] = "gif"
 
     if args["save_pngs"]:
-        logger.warning("--save_pngs is deprecated, please use --format=pngs instead!")
-        args["format"] = "pngs"
-
-    if args["save_last_frame"]:
-        logger.warning(
-            "--save_last_frame is deprecated, please use --format=png instead!"
-        )
+        logger.warning("--save_pngs is deprecated, please use --format=png instead!")
         args["format"] = "png"
+
+    if args["show_in_file_browser"]:
+        logger.warning(
+            "The short form of show_in_file_browser is deprecated and will be moved to support --format."
+        )
 
     class ClickArgs:
         def __init__(self, args):

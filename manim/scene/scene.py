@@ -212,7 +212,7 @@ class Scene(Container):
         if (
             self.renderer.num_plays
             or config["format"] == "png"
-            or config["format"] == "pngs"
+            or config["save_last_frame"]
         ):
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
