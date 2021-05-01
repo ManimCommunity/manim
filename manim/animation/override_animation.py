@@ -84,7 +84,7 @@ def setup_animation_overriding(update_docs: bool = False):
 
 
 def override_animation(
-    animationClass: Type[Animation],
+    animation_class: Type[Animation],
 ) -> Callable[[Callable], Callable]:
     """Decorator used to mark methods as overrides for specific :class:`~.Animation` types.
 
@@ -94,7 +94,7 @@ def override_animation(
 
     Parameters
     ----------
-    animationClass
+    animation_class
         The animation to be overridden.
 
     Returns
@@ -127,7 +127,7 @@ def override_animation(
     """
 
     def decorator(func):
-        func._override_animation = animationClass
+        func._override_animation = animation_class
         return func
 
     return decorator
