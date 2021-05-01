@@ -104,7 +104,7 @@ render_options = option_group(
         help="The path to the WebGL frontend.",
     ),
     option(
-        "-i",
+        "-g",
         "--save_pngs",
         is_flag=True,
         default=None,
