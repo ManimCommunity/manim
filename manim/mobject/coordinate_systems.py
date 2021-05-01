@@ -328,8 +328,8 @@ class Axes(VGroup, CoordinateSystem):
                     plane = NumberPlane(
                         x_range = (0, 7),
                         y_range = (0, 5),
-                        x_length = 7
-                        axis_config={"include_numbers": True}
+                        x_length = 7,
+                        axis_config={"include_numbers": True},
                     )
                     plane.center()
                     line_graph = plane.get_line_graph(
