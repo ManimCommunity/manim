@@ -72,7 +72,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 104 pull requests were merged for this release.
+A total of 107 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -81,15 +81,15 @@ Breaking changes
    `VectorField` is renamed to `ArrowVectorField` and a new class `VectorField` is added as a superclass for `ArrowVectorField` and `StreamLines`. Also the class `AnimatedStreamLines` is removed. It's functionality is moved to `StreamLines`. Added a lot of new options when working with vector fields. `ShowPassingFlashWithThinningStrokeWidth` was moved to the indication module.
 
 * `#1161 <https://github.com/ManimCommunity/manim/pull/1161>`__: Upgrades to CoordinateSystem and graphing.
-   Breaking changes were introduced to :class:`Axes`, :class:`ThreeDAxes`, :class:`NumberPlane` and :class:`NumberLine`
-   All the above now use lists to construct their ranges as opposed to explicitly defining these values --> `x_range`  :  `[x_min, x_max, x_step]`. There were also many upgrades to these classes which improves their functionality and ease of use.
+   Breaking changes were introduced to :class:`Axes`, :class:`~.ThreeDAxes`, :class:`~.NumberPlane` and :class:`~.NumberLine`
+   All the above now use lists to construct their ranges as opposed to explicitly defining these values. `x_range` has replaced `x_min`, `x_max` and defining the step is much easier with `x_step` --> ``x_range``  :  ``[x_min, x_max, x_step]``. There were also many upgrades to these classes which improve their functionality and appearance.
 
-   Furthermore, `~.GraphScene` has been deprecated and we encourage use of the above functions instead. It can still be used because :class:`NumberLineOld` was introduced to accommodate these changes.
+   ``NumberLineOld`` was introduced to continue support for :class:`GraphScene`, although we are moving away from GraphScene and intend to deprecate it in a future release.
 
 * `#1013 <https://github.com/ManimCommunity/manim/pull/1013>`__: Refactored the Command Line Interface to use Click instead of Argparse
    This change breaks the CLI API to organize the structure of Manim Community's commands, options, and arguments.
 
-   To be more in line with POSIX compliant CLI conventions, options for commands are given _**BEFORE**_ their arguments.
+   To be more in line with POSIX compliant CLI conventions, options for commands are given *BEFORE* their arguments.
    In Argparse: ``manim basic.py -p -ql``
    With Click: ``manim -p -ql basic.py``
 
@@ -120,8 +120,8 @@ New features
 * `#1386 <https://github.com/ManimCommunity/manim/pull/1386>`__: Implement utility methods for adding/removing vertices and edges of graphs; allow custom mobjects as vertices
 
 
-* `#1385 <https://github.com/ManimCommunity/manim/pull/1385>`__: Added :meth:`~.CoordinateSystem.get_line_graph` for plotting a line graph
-   Added :meth:`~.CoordinateSystem.get_line_graph` that returns a line graph from lists of points along x, y and z (optional) axes.
+* `#1385 <https://github.com/ManimCommunity/manim/pull/1385>`__: Added :meth:`~.Axes.get_line_graph` for plotting a line graph
+   Added :meth:`~.Axes.get_line_graph` that returns a line graph from lists of points along x, y and z (optional) axes.
 
 * `#1381 <https://github.com/ManimCommunity/manim/pull/1381>`__: Hot reloading for the OpenGL renderer
    Rerun scene when the input file is modified
@@ -144,7 +144,7 @@ Enhancements
 * `#1398 <https://github.com/ManimCommunity/manim/pull/1398>`__: Fix and enhance `Mobject.arrange_in_grid`
    `arrange_in_grid` now actually arranges submobjects in a grid. Added new parameters `buff`, `cell_alignment`, `row_alignments`, `col_alignments`, `row_heights`, `col_widths`, `flow_order`.
 
-* `#1407 <https://github.com/ManimCommunity/manim/pull/1407>`__: Fix bug in :meth:`vector_coordinate_label` and move it to :class:`~.geometry.py`
+* `#1407 <https://github.com/ManimCommunity/manim/pull/1407>`__: Fix bug and rename :meth:`vector_coordinate_label` to :meth:`~.Vector.coordinate_label` and move it to :class:`geometry.py`
 
 
 * `#1380 <https://github.com/ManimCommunity/manim/pull/1380>`__: Allow image objects as background images
@@ -207,7 +207,7 @@ Enhancements
 * `#1122 <https://github.com/ManimCommunity/manim/pull/1122>`__: Support for specifying the interpolation algorithms for individual ImageMobjects
 
 
-* `#1283 <https://github.com/ManimCommunity/manim/pull/1283>`__: Set default value of keyword ``random_seed`` in Scene to None (was 0 and fixed before)
+* `#1283 <https://github.com/ManimCommunity/manim/pull/1283>`__: Set default value of keyword ``random_seed`` in :class:`~.Scene` to ``None`` (was 0 and fixed before)
 
 
 * `#1220 <https://github.com/ManimCommunity/manim/pull/1220>`__: Added sanity checks to :meth:`~.Mobject.add_to_back` for Mobjects
@@ -217,7 +217,7 @@ Enhancements
    - Filters out incoming duplicate submobjects if at least one instance of that submobject exists in the list
 
 * `#1249 <https://github.com/ManimCommunity/manim/pull/1249>`__: Set corners of :class:`~.Rectangle` in counterclockwise direction
-   Set the corners of `Rectangle` in counterclockwise direction to be consistent with other geometry `Mobject`s. `Transform`ations between `Rectangle` and other geometry `Mobject`s look better now.
+   This is consistent with other geometric `Mobject`s. `Transform`ations between `Rectangle` and other geometry `Mobject`s look better now.
 
 * `#1248 <https://github.com/ManimCommunity/manim/pull/1248>`__: Add Copy function to TexTemplate
 
@@ -252,6 +252,10 @@ Fixed bugs
 
 Documentation-related changes
 -----------------------------
+
+* `#1430 <https://github.com/ManimCommunity/manim/pull/1430>`__: Un-deprecated GraphScene (will be deprecated later), fixed an old-style call to NumberPlane
+   - More work is required in order to fully replace `GraphScene` via `Axes`, thus `GraphScene` is not deprecated yet.
+   - Fixed one example in which the old `NumberPlane` syntax was used.
 
 * `#1425 <https://github.com/ManimCommunity/manim/pull/1425>`__: Added a "How to Cite Manim" section to the Readme
 
@@ -367,6 +371,9 @@ Changes concerning the testing system
 Changes to our development infrastructure
 -----------------------------------------
 
+* `#1435 <https://github.com/ManimCommunity/manim/pull/1435>`__: CI: Update poetry cache when new version is released
+   Fix `test_version` failure in CI when using cached poetry venv
+
 * `#1427 <https://github.com/ManimCommunity/manim/pull/1427>`__: Add URL's to pyproject.toml
 
 
@@ -434,6 +441,12 @@ Code quality improvements and similar refactors
 * `#1178 <https://github.com/ManimCommunity/manim/pull/1178>`__: Format Imports using Isort
 
 
-* `#1233 <https://github.com/ManimCommunity/manim/pull/1233>`__: Fix deprecation warning for --use_opengl_renderer and --use_webgl_renderer
+* `#1233 <https://github.com/ManimCommunity/manim/pull/1233>`__: Fix deprecation warning for ``--use_opengl_renderer`` and ``--use_webgl_renderer``
+
+
+Unclassified changes
+--------------------
+
+* `#1434 <https://github.com/ManimCommunity/manim/pull/1434>`__: Prepare v0.6.0
 
 
