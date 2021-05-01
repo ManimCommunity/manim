@@ -159,6 +159,7 @@ def get_summary(body):
     "additional",
     nargs=-1,
     required=False,
+    type=int,
 )
 @click.option(
     "-o", "--outfile", type=str, help="Path and file name of the changelog output."
