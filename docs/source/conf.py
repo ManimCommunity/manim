@@ -61,40 +61,6 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
 ]
 
-inheritance_graph_attrs = dict(
-    concentrate=True,
-    sep=1,
-    splines="ortho",
-    dpi=300,  # breaks image map, repair using imageMapResizer.js
-)
-
-inheritance_node_attrs = dict(
-    # color="transparent",
-    penwidth=0,
-    fillcolor='"#383838"',
-    fontcolor='"#e07a5f"',
-    # style='"rounded"',
-)
-
-inheritance_edge_attrs = dict(
-    color='"#d0d0d0"',
-    penwidth=1,
-    arrowsize=1,
-    # style="'setlinewidth(1)'",
-)
-
-html_js_files = [
-    "imageMapResizer.min.js",
-]
-
-# inheritance_node_attrs = dict(
-#     rankdir="LR",
-#     fontsize=8,
-# )
-
-# graphviz_output_format = "svg"
-
-
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
 
@@ -174,3 +140,38 @@ extlinks = {
 ogp_image = "https://www.manim.community/logo.png"
 ogp_site_name = "Manim Community | Documentation"
 ogp_site_url = "https://docs.manim.community/"
+
+
+# inheritance_graph settings
+inheritance_graph_attrs = dict(
+    concentrate=True,
+    size='""',
+    # ratio="compress",
+    # sep=0,
+    splines="ortho",
+    dpi=150,  # breaks image map, repair using imageMapResizer.js
+    nodesep=0.1,
+    ranksep=0.2,
+)
+
+inheritance_node_attrs = dict(
+    # color="transparent",
+    penwidth=0,
+    fillcolor='"#383838"',
+    fontcolor='"#e07a5f"',
+    shape="box",
+    width=0.1,
+    height=0.1,
+    margin=0.1
+    # style='"rounded"',
+)
+
+inheritance_edge_attrs = dict(
+    color='"#d0d0d0"',
+    penwidth=1,
+    # arrowsize=1,
+)
+
+html_js_files = [
+    "imageMapResizer.min.js",
+]
