@@ -843,15 +843,20 @@ class PolarPlane(NumberPlane):
             if azimuth_line_frequency is None
             else azimuth_line_frequency
         )
+
+        x_min = (-config["frame_x_radius"] if (radius_max is None) else -radius_max)
+        x_max = (config["frame_x_radius"] if (radius_max is None) else radius_max)
+        x_line_frequency = (self.azimuth_frequency * TAU)
+
+        y_min = (-config["frame_y_radius"] if (radius_max is None) else -radius_max)
+        y_max = (config["frame_y_radius"] if (radius_max is None) else radius_max)
+        y_line_frequency = radius_line_frequency
+
         super().__init__(
-            color=color,
-            x_line_frequency=self.azimuth_frequency * TAU,
-            y_line_frequency=radius_line_frequency,
+            x_range=(x_min, x_max, x_line_frequency),
+            y_range=(y_min, y_max, y_line_frequency),
             x_axis_config=radius_config,
-            x_min=None if (radius_max is None) else -radius_max,
-            x_max=radius_max,
-            y_min=-config["frame_x_radius"] if (radius_max is None) else -radius_max,
-            y_max=config["frame_x_radius"] if (radius_max is None) else radius_max,
+            color=color,
             **kwargs,
         )
         self.azimuth_offset = azimuth_offset
