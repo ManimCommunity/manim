@@ -52,8 +52,8 @@ class CoordinateSystem:
                 1.0,
             ]
 
-        self.x_range = np.array(x_range)
-        self.y_range = np.array(y_range)
+        self.x_range = x_range
+        self.y_range = y_range
         self.x_length = x_length
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
@@ -325,7 +325,12 @@ class Axes(VGroup, CoordinateSystem):
 
             class LineGraphExample(Scene):
                 def construct(self):
-                    plane = NumberPlane(x_min=0, x_max=7, y_min=0, y_max=5, axis_config={"width": 7, "include_numbers": True})
+                    plane = NumberPlane(
+                        x_range = (0, 7),
+                        y_range = (0, 5),
+                        x_length = 7,
+                        axis_config={"include_numbers": True},
+                    )
                     plane.center()
                     line_graph = plane.get_line_graph(
                         x_values = [0, 1.5, 2, 2.8, 4, 6.25],
@@ -398,9 +403,9 @@ class ThreeDAxes(Axes):
 
     def __init__(
         self,
-        x_range=np.array((-5.5, 5.5, 1)),
-        y_range=np.array((-5.5, 5.5, 1)),
-        z_range=np.array((-3.5, 3.5, 1)),
+        x_range=(-6, 6, 1),
+        y_range=(-5, 5, 1),
+        z_range=(-4, 4, 1),
         x_length=config.frame_height + 2.5,
         y_length=config.frame_height + 2.5,
         z_length=config.frame_height - 1.5,
@@ -504,8 +509,8 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range=np.array((-6, 6, 1)),
-        y_range=np.array((-3, 3, 1)),
+        x_range=(-config["frame_x_radius"], config["frame_x_radius"], 1),
+        y_range=(-config["frame_y_radius"], config["frame_y_radius"], 1),
         x_length=None,
         y_length=None,
         axis_config=None,
@@ -645,16 +650,19 @@ class NumberPlane(Axes):
         step = (1 / ratio_faded_lines) * freq
         lines1 = VGroup()
         lines2 = VGroup()
-        inputs = np.arange(
-            axis_perpendicular_to.x_min, axis_perpendicular_to.x_max + step, step
+        unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
+        ranges = (
+            np.arange(0, axis_perpendicular_to.x_max, step),
+            np.arange(0, axis_perpendicular_to.x_min, -step),
         )
-        for k, x in enumerate(inputs):
-            new_line = line.copy()
-            new_line.shift(axis_perpendicular_to.n2p(x) - axis_perpendicular_to.n2p(0))
-            if k % ratio_faded_lines == 0:
-                lines1.add(new_line)
-            else:
-                lines2.add(new_line)
+        for inputs in ranges:
+            for k, x in enumerate(inputs):
+                new_line = line.copy()
+                new_line.shift(unit_vector_axis_perp_to * x)
+                if k % ratio_faded_lines == 0:
+                    lines1.add(new_line)
+                else:
+                    lines2.add(new_line)
         return lines1, lines2
 
     def get_center_point(self):
