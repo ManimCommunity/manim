@@ -66,14 +66,17 @@ class AmbientCameraMoveTest(ThreeDScene):
         self.wait()
 
 
-class FixedInFrameMObjectTest(ThreeDScene):
-    def construct(self):
-        axes = ThreeDAxes()
-        self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
-        circ = Circle()
-        self.add_fixed_in_frame_mobjects(circ)
-        circ.to_corner(UL)
-        self.add(axes)
+# TODO: bring test back after introducing testing tolerance
+#  to account for OS-specific differences in numerics.
+
+# class FixedInFrameMObjectTest(ThreeDScene):
+#     def construct(self):
+#         axes = ThreeDAxes()
+#         self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+#         circ = Circle()
+#         self.add_fixed_in_frame_mobjects(circ)
+#         circ.to_corner(UL)
+#         self.add(axes)
 
 
 class MovingVerticesTest(ThreeDScene):
