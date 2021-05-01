@@ -255,7 +255,7 @@ class CairoRenderer:
         the number of animations that need to be played, and
         raises an EndSceneEarlyException if they don't correspond.
         """
-        if config["save_last_frame"]:
+        if config["format"] == "png":
             self.skip_animations = True
         if config["from_animation_number"]:
             if self.num_plays < config["from_animation_number"]:
@@ -275,6 +275,6 @@ class CairoRenderer:
         else:
             self.update_frame(scene)
 
-        if config["save_last_frame"]:
+        if config["format"] == "png":
             self.update_frame(scene)
             self.file_writer.save_final_image(self.camera.get_image())

@@ -22,7 +22,7 @@ ease_of_access_options = option_group(
         "default media player.",
     ),
     option(
-        "-f",
+        "-fb",
         "--show_in_file_browser",
         is_flag=True,
         help="Show the output file in the file browser.",

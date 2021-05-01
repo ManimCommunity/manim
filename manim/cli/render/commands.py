@@ -25,7 +25,7 @@ from .render_options import render_options
 
 
 @cloup.command(
-    context_settings=CONTEXT_SETTINGS,
+    context_settings=None,
     epilog=EPILOG,
 )
 @click.argument("file", type=Path, required=True)
@@ -34,9 +34,7 @@ from .render_options import render_options
 @output_options
 @render_options
 @ease_of_access_options
-@click.pass_context
 def render(
-    ctx,
     **args,
 ):
     """Render SCENE(S) from the input FILE.
@@ -71,17 +69,31 @@ def render(
         logger.warning(
             "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!"
         )
-        renderer = "opengl"
+        args["renderer"] = "opengl"
 
     if args["use_webgl_renderer"]:
         logger.warning(
             "--use_webgl_renderer is deprecated, please use --renderer=webgl instead!"
         )
-        renderer = "webgl"
+        args["renderer"] = "webgl"
 
     if args["use_webgl_renderer"] and args["use_opengl_renderer"]:
         logger.warning("You may select only one renderer!")
         sys.exit()
+
+    if args["save_as_gif"]:
+        logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
+        args["format"] = "gif"
+
+    if args["save_pngs"]:
+        logger.warning("--save_pngs is deprecated, please use --format=pngs instead!")
+        args["format"] = "pngs"
+
+    if args["save_last_frame"]:
+        logger.warning(
+            "--save_last_frame is deprecated, please use --format=png instead!"
+        )
+        args["format"] = "png"
 
     class ClickArgs:
         def __init__(self, args):

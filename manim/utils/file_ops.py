@@ -82,11 +82,11 @@ def open_file(file_path, in_browser=False):
 def open_media_file(file_writer):
     file_paths = []
 
-    if config["save_last_frame"]:
+    if config["format"] == "png":
         file_paths.append(file_writer.image_file_path)
-    if config["write_to_movie"] and not config["save_as_gif"]:
+    if config["write_to_movie"] and not config["format"] == "gif":
         file_paths.append(file_writer.movie_file_path)
-    if config["save_as_gif"]:
+    if config["format"] == "gif":
         file_paths.append(file_writer.gif_file_path)
 
     for file_path in file_paths:
