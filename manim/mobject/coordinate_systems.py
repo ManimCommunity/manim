@@ -326,9 +326,10 @@ class Axes(VGroup, CoordinateSystem):
             class LineGraphExample(Scene):
                 def construct(self):
                     plane = NumberPlane(
-                        x_range=(0, 7),
-                        y_range=(0, 5),
-                        axis_config={"width": 7, "include_numbers": True}
+                        x_range = (0, 7),
+                        y_range = (0, 5),
+                        x_length = 7
+                        axis_config={"include_numbers": True}
                     )
                     plane.center()
                     line_graph = plane.get_line_graph(
