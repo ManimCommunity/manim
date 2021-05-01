@@ -13,9 +13,11 @@ __all__ = [
 
 import itertools as it
 import sys
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence, Union
 
 import colour
+import numpy as np
+from PIL.Image import Image
 
 from ...constants import *
 from ...mobject.mobject import Mobject
@@ -30,7 +32,7 @@ from ...utils.bezier import (
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
-from ...utils.space_ops import get_norm, rotate_vector, shoelace_direction
+from ...utils.space_ops import rotate_vector, shoelace_direction
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -66,7 +68,7 @@ class VMobject(Mobject):
         close_new_points=False,
         pre_function_handle_to_anchor_scale_factor=0.01,
         make_smooth_after_applying_functions=False,
-        background_image_file=None,
+        background_image=None,
         shade_in_3d=False,
         # This is within a pixel
         # TODO, do we care about accounting for
@@ -90,7 +92,7 @@ class VMobject(Mobject):
             pre_function_handle_to_anchor_scale_factor
         )
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
-        self.background_image_file = background_image_file
+        self.background_image = background_image
         self.shade_in_3d = shade_in_3d
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
@@ -226,7 +228,7 @@ class VMobject(Mobject):
         background_stroke_opacity=None,
         sheen_factor=None,
         sheen_direction=None,
-        background_image_file=None,
+        background_image=None,
         family=True,
     ):
         self.set_fill(color=fill_color, opacity=fill_opacity, family=family)
@@ -248,8 +250,8 @@ class VMobject(Mobject):
                 direction=sheen_direction,
                 family=family,
             )
-        if background_image_file:
-            self.color_using_background_image(background_image_file)
+        if background_image:
+            self.color_using_background_image(background_image)
         return self
 
     def get_style(self, simple=False):
@@ -271,7 +273,7 @@ class VMobject(Mobject):
             ret["background_stroke_opacity"] = self.get_stroke_opacity(background=True)
             ret["sheen_factor"] = self.get_sheen_factor()
             ret["sheen_direction"] = self.get_sheen_direction()
-            ret["background_image_file"] = self.get_background_image_file()
+            ret["background_image"] = self.get_background_image()
 
         return ret
 
@@ -428,18 +430,18 @@ class VMobject(Mobject):
             offset = np.dot(bases, direction)
             return (c - offset, c + offset)
 
-    def color_using_background_image(self, background_image_file):
-        self.background_image_file = background_image_file
+    def color_using_background_image(self, background_image: Union[Image.Image, str]):
+        self.background_image = background_image
         self.set_color(WHITE)
         for submob in self.submobjects:
-            submob.color_using_background_image(background_image_file)
+            submob.color_using_background_image(background_image)
         return self
 
-    def get_background_image_file(self):
-        return self.background_image_file
+    def get_background_image(self) -> Union[Image.Image, str]:
+        return self.background_image
 
-    def match_background_image_file(self, vmobject):
-        self.color_using_background_image(vmobject.get_background_image_file())
+    def match_background_image(self, vmobject):
+        self.color_using_background_image(vmobject.get_background_image())
         return self
 
     def set_shade_in_3d(self, value=True, z_index_as_group=False):
@@ -548,8 +550,9 @@ class VMobject(Mobject):
     def add_line_to(self, point: np.ndarray) -> "VMobject":
         """Add a straight line from the last point of VMobject to the given point.
 
-        Parameters :
-        ------------
+        Parameters
+        ----------
+
         point : np.ndarray
             end of the straight line.
         """
@@ -723,10 +726,10 @@ class VMobject(Mobject):
         handles closer to their anchors, apply the function then push them out
         again.
 
-        Paramters
-        ---------
-        factor : float
-            factor used for scaling.
+        Parameters
+        ----------
+        factor
+            The factor used for scaling.
 
         Returns
         -------
@@ -922,7 +925,7 @@ class VMobject(Mobject):
 
         points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(get_norm, 1, diffs)
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
 
         length = np.sum(norms)
 
@@ -1151,10 +1154,10 @@ class VMobject(Mobject):
     def insert_n_curves(self, n: int) -> "VMobject":
         """Inserts n curves to the bezier curves of the vmobject.
 
-        Paramters
-        ---------
-        n : int
-            Number of curves to insert
+        Parameters
+        ----------
+        n
+            Number of curves to insert.
 
         Returns
         -------
@@ -1313,12 +1316,13 @@ class VMobject(Mobject):
         """Returns the subcurve of the VMobject between the interval [a, b].
         The curve is a VMobject itself.
 
-        Parameters :
-        ------------
-        a : float
-            lower-bound
-        b : float
-            upper-boud
+        Parameters
+        ----------
+
+        a
+            The lower bound.
+        b
+            The upper bound.
 
         Returns
         -------
