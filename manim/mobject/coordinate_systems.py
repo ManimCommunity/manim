@@ -52,8 +52,8 @@ class CoordinateSystem:
                 1.0,
             ]
 
-        self.x_range = np.array(x_range)
-        self.y_range = np.array(y_range)
+        self.x_range = x_range
+        self.y_range = y_range
         self.x_length = x_length
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
@@ -325,7 +325,11 @@ class Axes(VGroup, CoordinateSystem):
 
             class LineGraphExample(Scene):
                 def construct(self):
-                    plane = NumberPlane(x_min=0, x_max=7, y_min=0, y_max=5, axis_config={"width": 7, "include_numbers": True})
+                    plane = NumberPlane(
+                        x_range=(0, 7),
+                        y_range=(0, 5),
+                        axis_config={"width": 7, "include_numbers": True}
+                    )
                     plane.center()
                     line_graph = plane.get_line_graph(
                         x_values = [0, 1.5, 2, 2.8, 4, 6.25],
@@ -398,9 +402,9 @@ class ThreeDAxes(Axes):
 
     def __init__(
         self,
-        x_range=np.array((-5.5, 5.5, 1)),
-        y_range=np.array((-5.5, 5.5, 1)),
-        z_range=np.array((-3.5, 3.5, 1)),
+        x_range=(-5.5, 5.5, 1),
+        y_range=(-5.5, 5.5, 1),
+        z_range=(-3.5, 3.5, 1),
         x_length=config.frame_height + 2.5,
         y_length=config.frame_height + 2.5,
         z_length=config.frame_height - 1.5,
@@ -504,8 +508,8 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range=np.array((-6, 6, 1)),
-        y_range=np.array((-3, 3, 1)),
+        x_range=(-6, 6, 1),
+        y_range=(-3, 3, 1),
         x_length=None,
         y_length=None,
         axis_config=None,
