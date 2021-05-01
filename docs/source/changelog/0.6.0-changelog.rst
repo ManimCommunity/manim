@@ -81,10 +81,10 @@ Breaking changes
    `VectorField` is renamed to `ArrowVectorField` and a new class `VectorField` is added as a superclass for `ArrowVectorField` and `StreamLines`. Also the class `AnimatedStreamLines` is removed. It's functionality is moved to `StreamLines`. Added a lot of new options when working with vector fields. `ShowPassingFlashWithThinningStrokeWidth` was moved to the indication module.
 
 * `#1161 <https://github.com/ManimCommunity/manim/pull/1161>`__: Upgrades to CoordinateSystem and graphing.
-   Breaking changes were introduced to :class:`Axes`, :class:`~.ThreeDAxes`, :class:`~.NumberPlane` and :class:`~.NumberLine`
+   Breaking changes were introduced to :class:`~.Axes`, :class:`~.ThreeDAxes`, :class:`~.NumberPlane` and :class:`~.NumberLine`
    All the above now use lists to construct their ranges as opposed to explicitly defining these values. `x_range` has replaced `x_min`, `x_max` and defining the step is much easier with `x_step` --> ``x_range``  :  ``[x_min, x_max, x_step]``. There were also many upgrades to these classes which improve their functionality and appearance.
 
-   ``NumberLineOld`` was introduced to continue support for :class:`GraphScene`, although we are moving away from GraphScene and intend to deprecate it in a future release.
+   ``NumberLineOld`` was introduced to continue support for :class:`~.GraphScene`, although we are moving away from GraphScene and intend to deprecate it in a future release.
 
 * `#1013 <https://github.com/ManimCommunity/manim/pull/1013>`__: Refactored the Command Line Interface to use Click instead of Argparse
    This change breaks the CLI API to organize the structure of Manim Community's commands, options, and arguments.
@@ -105,13 +105,13 @@ Breaking changes
 Deprecated classes and functions
 --------------------------------
 
-* `#1354 <https://github.com/ManimCommunity/manim/pull/1354>`__: Refactored and deprecated a few functions in space_ops.py
+* `#1354 <https://github.com/ManimCommunity/manim/pull/1354>`__: Refactored a few functions in space_ops.py, deprecated :func:`~.angle_between`
 
 
 * `#1370 <https://github.com/ManimCommunity/manim/pull/1370>`__: Remove TexMobject and TextMobject
-   Deleted TexMobject and TextMobject
+   TexMobject and TextMobject have been deprecated for a while, they are now fully removed. Use Tex or MathTex instead.
 
-* `#1349 <https://github.com/ManimCommunity/manim/pull/1349>`__: Removed the deprecated Small Dot
+* `#1349 <https://github.com/ManimCommunity/manim/pull/1349>`__: Removed the deprecated ``SmallDot`` mobject
 
 
 New features
@@ -126,17 +126,23 @@ New features
 * `#1381 <https://github.com/ManimCommunity/manim/pull/1381>`__: Hot reloading for the OpenGL renderer
    Rerun scene when the input file is modified
 
-* `#1383 <https://github.com/ManimCommunity/manim/pull/1383>`__: Overhaul of the `animation.indication` module interfaces
+* `#1383 <https://github.com/ManimCommunity/manim/pull/1383>`__: Overhaul of the :mod:`~.animation.indication` module interfaces
+   - Added class `Circumscribe` combining functionality of `CircleIndicate`, `AnimationOnSurroundingRectangle`, `ShowPassingFlashAround`, `ShowCreationThenDestructionAround`, `ShowCreationThenFadeAround`, which have all been deprecated.
+   - Changes to `Flash`: `flash_radius` parameter now defines inner radius of the animation. Added new parameter `time_width`.
+   - `ShowCreationThenDestruction` has been deprecated in favor of `ShowPassingFlash`
+   - Changes to `ApplyWave`: New implementation giving more flexibility with new parameters `wave_func`, `time_width` and`ripples`
+   - Renamed `WiggleOutThenIn` to `Wiggle` (`WiggleOutThenIn` has been deprecated)
+   - Added documentation and examples to all the above
+   - Other minor enhancements and bug-fixes
 
-
-* `#1348 <https://github.com/ManimCommunity/manim/pull/1348>`__: Added :class:`Polyhedron`, and platonic solids :class:`Tetrahedron`, :class:`Octahedron`, :class:`Icosahedron` and :class:`Dodecahedron`
+* `#1348 <https://github.com/ManimCommunity/manim/pull/1348>`__: Added :class:`~.Polyhedron`, and platonic solids :class:`~.Tetrahedron`, :class:`~.Octahedron`, :class:`~.Icosahedron` and :class:`~.Dodecahedron`
 
 
 * `#1285 <https://github.com/ManimCommunity/manim/pull/1285>`__: Add :meth:`~.Scene.interactive_embed` for OpenGL rendering
    :meth:`~.Scene.interactive_embed` allows interaction with Scene via mouse and keyboard as well as dynamic commands via an iPython terminal.
 
 * `#1261 <https://github.com/ManimCommunity/manim/pull/1261>`__: Render image automatically if no animation is played in a scene
-
+   - If no animations in scene and asked to preview/render a video, preview/render an image instead of raising a confusing error.
 
 Enhancements
 ------------
@@ -154,9 +160,7 @@ Enhancements
    The parameter `path_arc` of :class:`~.Transform` now works with the `.animate` syntax
 
 * `#1364 <https://github.com/ManimCommunity/manim/pull/1364>`__: Added :meth:`~.Mobject.match_points`
-   - Added :func:`~.Mobject.become_points`, which transforms the points, positions and submobjects of a Mobject to match that of the other while keeping style unchanged.
-   - Added example in docs.
-   - Added test.
+   - Added :func:`~.Mobject.match_points`, which transforms the points, positions and submobjects of a Mobject to match that of the other while keeping style unchanged.
 
 * `#1363 <https://github.com/ManimCommunity/manim/pull/1363>`__: Change of TeX complier and output file format
 
@@ -168,13 +172,13 @@ Enhancements
 
 
 * `#1340 <https://github.com/ManimCommunity/manim/pull/1340>`__: Add OpenGL support to the new transform animations
-   Made `FadeTransform`, `FadeTransformPieces`, `TransformMatchingShapes` and`TransformMatchingTex` compatible with OpenGL
+   Made `FadeTransform`, `FadeTransformPieces`, `TransformMatchingShapes` and `TransformMatchingTex` compatible with OpenGL rendering.
 
 * `#1343 <https://github.com/ManimCommunity/manim/pull/1343>`__: Make TexTemplate() simple, but keep Tex()'s default template
    TexTemplate() now returns a simple tex template.
 
-* `#1321 <https://github.com/ManimCommunity/manim/pull/1321>`__: Add OpenGL support to `~.AnimationGroup`
-   Make `~.AnimationGroup` compatible with OpenGL.
+* `#1321 <https://github.com/ManimCommunity/manim/pull/1321>`__: Add OpenGL support to :class:`~.AnimationGroup`
+
 
 * `#1302 <https://github.com/ManimCommunity/manim/pull/1302>`__: Raise appropriate errors in :meth:`~.VMobject.point_from_proportion`
    - Raise an error if the ``alpha`` argument is not between 0 and 1.
@@ -186,20 +190,20 @@ Enhancements
 * `#1320 <https://github.com/ManimCommunity/manim/pull/1320>`__: Add `jpeg` extension to the default image extensions
 
 
-* `#1234 <https://github.com/ManimCommunity/manim/pull/1234>`__: New :class:`~.Mobject` method, :meth:`~.Mobject.get_midpoint`
-   Easily get the middle point of a line of an :class:`~.Mobject` with :meth:`~.Mobject.get_midpoint`. (still needs to be adjusted)
+* `#1234 <https://github.com/ManimCommunity/manim/pull/1234>`__: Added new method :meth:`~.Mobject.get_midpoint`
+   Implemented :meth:`~.Mobject.get_midpoint` to return the point that is the middle of the stroke line of an mobject.
 
 * `#1237 <https://github.com/ManimCommunity/manim/pull/1237>`__: Notify user if they are using an outdated version of Manim
 
 
-* `#1308 <https://github.com/ManimCommunity/manim/pull/1308>`__: Improved ManimBanner animations
+* `#1308 <https://github.com/ManimCommunity/manim/pull/1308>`__: Improved :class:`~.ManimBanner` animations
 
 
 * `#1275 <https://github.com/ManimCommunity/manim/pull/1275>`__: Add SVG <line> element support to :class:`~.SVGMobject`
 
 
-* `#1238 <https://github.com/ManimCommunity/manim/pull/1238>`__: Add parameter `about_point` for `rotate`
-   `about_point` parameter for `rotate`
+* `#1238 <https://github.com/ManimCommunity/manim/pull/1238>`__: Add parameter ``about_point`` for :meth:`~.Mobject.rotate`
+
 
 * `#1260 <https://github.com/ManimCommunity/manim/pull/1260>`__: Change Brace from Tex to SVG (#1258)
 
@@ -217,7 +221,7 @@ Enhancements
    - Filters out incoming duplicate submobjects if at least one instance of that submobject exists in the list
 
 * `#1249 <https://github.com/ManimCommunity/manim/pull/1249>`__: Set corners of :class:`~.Rectangle` in counterclockwise direction
-   This is consistent with other geometric `Mobject`s. `Transform`ations between `Rectangle` and other geometry `Mobject`s look better now.
+   This improves the look of transformations between rectangles and other simple mobjects.
 
 * `#1248 <https://github.com/ManimCommunity/manim/pull/1248>`__: Add Copy function to TexTemplate
 
@@ -332,7 +336,7 @@ Documentation-related changes
 * `#1232 <https://github.com/ManimCommunity/manim/pull/1232>`__: Further docstrings and examples for :class:`~.Mobject`
 
 
-* `#1291 <https://github.com/ManimCommunity/manim/pull/1291>`__: Grammar fixes to README.md
+* `#1291 <https://github.com/ManimCommunity/manim/pull/1291>`__: Grammar improvements in README.md
 
 
 * `#1269 <https://github.com/ManimCommunity/manim/pull/1269>`__: Add documentation about :meth:`~.set_color_by_tex`
@@ -444,8 +448,8 @@ Code quality improvements and similar refactors
 * `#1233 <https://github.com/ManimCommunity/manim/pull/1233>`__: Fix deprecation warning for ``--use_opengl_renderer`` and ``--use_webgl_renderer``
 
 
-Unclassified changes
---------------------
+New releases
+------------
 
 * `#1434 <https://github.com/ManimCommunity/manim/pull/1434>`__: Prepare v0.6.0
 
