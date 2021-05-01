@@ -3,6 +3,7 @@
 __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlane"]
 
 
+import math
 import numbers
 from typing import Iterable, Optional
 
@@ -11,7 +12,7 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, Dot, Line
+from ..mobject.geometry import Arrow, DashedLine, Dot, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VDict, VGroup, VMobject
@@ -28,12 +29,34 @@ class CoordinateSystem:
     Abstract class for Axes and NumberPlane
     """
 
-    def __init__(self, x_min=None, x_max=None, y_min=None, y_max=None, dim=2):
-        self.dimension = dim
-        self.x_min = -config["frame_x_radius"] if x_min is None else x_min
-        self.x_max = config["frame_x_radius"] if x_max is None else x_max
-        self.y_min = -config["frame_y_radius"] if y_min is None else y_min
-        self.y_max = config["frame_y_radius"] if y_max is None else y_max
+    def __init__(
+        self,
+        x_range=None,
+        y_range=None,
+        x_length=None,
+        y_length=None,
+        dimension=2,
+    ):
+        self.dimension = dimension
+
+        if x_range is None:
+            x_range = [
+                round(-config["frame_x_radius"]),
+                round(config["frame_x_radius"]),
+                1.0,
+            ]
+        if y_range is None:
+            y_range = [
+                round(-config["frame_y_radius"]),
+                round(config["frame_y_radius"]),
+                1.0,
+            ]
+
+        self.x_range = np.array(x_range)
+        self.y_range = np.array(y_range)
+        self.x_length = x_length
+        self.y_length = y_length
+        self.num_sampled_graph_points_per_tick = 10
 
     def coords_to_point(self, *coords):
         raise NotImplementedError()
@@ -64,17 +87,19 @@ class CoordinateSystem:
     def get_z_axis(self):
         return self.get_axis(2)
 
-    def get_x_axis_label(self, label_tex, edge=RIGHT, direction=DL, **kwargs):
+    def get_x_axis_label(
+        self, label_tex, edge=RIGHT, direction=UP * 4 + RIGHT, **kwargs
+    ):
         return self.get_axis_label(
             label_tex, self.get_x_axis(), edge, direction, **kwargs
         )
 
-    def get_y_axis_label(self, label_tex, edge=UP, direction=DR, **kwargs):
+    def get_y_axis_label(self, label_tex, edge=UP, direction=UP + RIGHT * 2, **kwargs):
         return self.get_axis_label(
             label_tex, self.get_y_axis(), edge, direction, **kwargs
         )
 
-    def get_axis_label(self, label_tex, axis, edge, direction, buff=MED_SMALL_BUFF):
+    def get_axis_label(self, label_tex, axis, edge, direction, buff=SMALL_BUFF):
         label = MathTex(label_tex)
         label.next_to(axis.get_edge_center(edge), direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
@@ -87,14 +112,33 @@ class CoordinateSystem:
         )
         return self.axis_labels
 
+    def get_line_from_axis_to_point(
+        self, index, point, line_func=DashedLine, color=LIGHT_GREY, stroke_width=2
+    ):
+        axis = self.get_axis(index)
+        line = line_func(axis.get_projection(point), point)
+        line.set_stroke(color, stroke_width)
+        return line
+
+    def get_vertical_line(self, point, **kwargs):
+        return self.get_line_from_axis_to_point(0, point, **kwargs)
+
+    def get_horizontal_line(self, point, **kwargs):
+        return self.get_line_from_axis_to_point(1, point, **kwargs)
+
+    # graphing
+
     def get_graph(self, function, **kwargs):
-        x_min = kwargs.pop("x_min", self.x_min)
-        x_max = kwargs.pop("x_max", self.x_max)
+        t_range = self.x_range
+
+        if len(t_range) == 3:
+            # if t_range has a defined step size, increase the number of sample points per tick
+            t_range[2] /= self.num_sampled_graph_points_per_tick
+        # For axes, the third coordinate of x_range indicates
+        # tick frequency.  But for functions, it indicates a
+        # sample frequency
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)),
-            t_min=x_min,
-            t_max=x_max,
-            **kwargs,
+            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
         )
         graph.underlying_function = function
         return graph
@@ -116,8 +160,8 @@ class CoordinateSystem:
                     0
                 ],
                 target=x,
-                lower_bound=self.x_min,
-                upper_bound=self.x_max,
+                lower_bound=self.x_range[0],
+                upper_bound=self.x_range[1],
             )
             if alpha is not None:
                 return graph.point_from_proportion(alpha)
@@ -126,49 +170,59 @@ class CoordinateSystem:
 
 
 class Axes(VGroup, CoordinateSystem):
+    """Creates a set of axes.
+
+    Parameters
+    ----------
+    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+    x_length : Optional[:class:`float`]
+        The length of the x-axis.
+    y_length : Optional[:class:`float`]
+        The length of the y-axis.
+    axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influences both axes.
+    x_axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
+    y_axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    kwargs : Any
+        Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`.
+    """
+
     def __init__(
         self,
-        x_min=None,
-        x_max=None,
-        y_min=None,
-        y_max=None,
+        x_range=None,
+        y_range=None,
+        x_length=round(config.frame_width) - 2,
+        y_length=round(config.frame_height) - 2,
         axis_config=None,
         x_axis_config=None,
         y_axis_config=None,
-        center_point=ORIGIN,
-        **kwargs
+        **kwargs,
     ):
-        CoordinateSystem.__init__(
-            self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max
-        )
         VGroup.__init__(self, **kwargs)
+        CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
-        self.axis_config = {
-            "color": LIGHT_GREY,
-            "include_tip": True,
-            "exclude_zero_from_default_numbers": True,
-        }
-        self.x_axis_config = {"x_min": self.x_min, "x_max": self.x_max}
-        self.y_axis_config = {
-            "x_min": self.y_min,
-            "x_max": self.y_max,
-            "label_direction": LEFT,
-            "rotation": 90 * DEGREES,
-        }
+        self.axis_config = {"include_tip": True, "numbers_to_exclude": [0]}
+        self.x_axis_config = {}
+        self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
         self.update_default_configs(
             (self.axis_config, self.x_axis_config, self.y_axis_config),
             (axis_config, x_axis_config, y_axis_config),
         )
-        self.center_point = center_point
-        self.x_axis = self.create_axis(self.x_axis_config)
-        self.y_axis = self.create_axis(self.y_axis_config)
+        self.x_axis = self.create_axis(self.x_range, self.x_axis_config, self.x_length)
+        self.y_axis = self.create_axis(self.y_range, self.y_axis_config, self.y_length)
+
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
         # NumberPlane below
-        self.axes = VGroup(self.x_axis, self.y_axis, dim=self.dim)
+        self.axes = VGroup(self.x_axis, self.y_axis)
         self.add(*self.axes)
-        self.shift(self.center_point)
+        self.center()
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
@@ -176,8 +230,31 @@ class Axes(VGroup, CoordinateSystem):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
-    def create_axis(self, axis_config):
-        return NumberLine(**merge_dicts_recursively(self.axis_config, axis_config))
+    def create_axis(self, range_terms, axis_config, length):
+        """Creates an axis and dynamically adjusts its position depending on where 0 is located on the line.
+
+        Parameters
+        ----------
+        range_terms : Union[:class:`list`, :class:`numpy.ndarray`]
+            The range of the the axis : `(x_min, x_max, x_step)`.
+        axis_config : :class:`dict`
+            Additional parameters that are passed to :class:`NumberLine`.
+        length : :class:`float`
+            The length of the axis.
+        """
+        new_config = merge_dicts_recursively(self.axis_config, axis_config)
+        new_config["length"] = length
+        axis = NumberLine(range_terms, **new_config)
+
+        # without the if/elif, graph does not exist when min > 0 or max < 0
+        # shifts the axis so that 0 is centered
+        if range_terms[0] > 0:
+            axis.shift(-axis.number_to_point(range_terms[0]))
+        elif range_terms[1] < 0:
+            axis.shift(-axis.number_to_point(range_terms[1]))
+        else:
+            axis.shift(-axis.number_to_point(0))
+        return axis
 
     def coords_to_point(self, *coords):
         origin = self.x_axis.number_to_point(0)
@@ -186,31 +263,22 @@ class Axes(VGroup, CoordinateSystem):
             result += axis.number_to_point(coord) - origin
         return result
 
-    def c2p(self, *coords):
-        return self.coords_to_point(*coords)
-
     def point_to_coords(self, point):
         return tuple([axis.point_to_number(point) for axis in self.get_axes()])
-
-    def p2c(self, point):
-        return self.point_to_coords(point)
 
     def get_axes(self):
         return self.axes
 
-    def get_coordinate_labels(self, x_vals=None, y_vals=None):
-        if x_vals is None:
-            x_vals = []
-        if y_vals is None:
-            y_vals = []
-        x_mobs = self.get_x_axis().get_number_mobjects(*x_vals)
-        y_mobs = self.get_y_axis().get_number_mobjects(*y_vals)
-
-        self.coordinate_labels = VGroup(x_mobs, y_mobs)
+    def get_coordinate_labels(self, x_values=None, y_values=None, **kwargs):
+        axes = self.get_axes()
+        self.coordinate_labels = VGroup()
+        for axis, values in zip(axes, [x_values, y_values]):
+            labels = axis.add_numbers(values, **kwargs)
+            self.coordinate_labels.add(labels)
         return self.coordinate_labels
 
-    def add_coordinates(self, x_vals=None, y_vals=None):
-        self.add(self.get_coordinate_labels(x_vals, y_vals))
+    def add_coordinates(self, x_values=None, y_values=None):
+        self.add(self.get_coordinate_labels(x_values, y_values))
         return self
 
     def get_line_graph(
@@ -222,7 +290,7 @@ class Axes(VGroup, CoordinateSystem):
         add_vertex_dots: bool = True,
         vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
         vertex_dot_style: Optional[dict] = None,
-        **kwargs
+        **kwargs,
     ) -> VDict:
         """Draws a line graph.
 
@@ -296,37 +364,86 @@ class Axes(VGroup, CoordinateSystem):
 
 
 class ThreeDAxes(Axes):
+    """A 3-dimensional set of axes.
+
+    Parameters
+    ----------
+    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[x_min, x_max, x_step]` values of the x-axis.
+    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[y_min, y_max, y_step]` values of the y-axis.
+    z_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[z_min, z_max, z_step]` values of the z-axis.
+    x_length : Optional[:class:`float`]
+        The length of the x-axis.
+    y_length : Optional[:class:`float`]
+        The length of the y-axis.
+    z_length : Optional[:class:`float`]
+        The length of the z-axis.
+    z_axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influence the z-axis.
+    z_normal : Union[:class:`list`, :class:`numpy.ndarray`]
+        The direction of the normal.
+    num_axis_pieces : :class:`int`
+        The number of pieces used to construct the axes.
+    light_source : Union[:class:`list`, :class:`numpy.ndarray`]
+        The direction of the light source.
+    depth
+        Currently non-functional.
+    gloss
+        Currently non-functional.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Axes`.
+    """
+
     def __init__(
         self,
-        x_min=-5.5,
-        x_max=5.5,
-        y_min=-5.5,
-        y_max=5.5,
-        z_min=-3.5,
-        z_max=3.5,
+        x_range=np.array((-5.5, 5.5, 1)),
+        y_range=np.array((-5.5, 5.5, 1)),
+        z_range=np.array((-3.5, 3.5, 1)),
+        x_length=config.frame_height + 2.5,
+        y_length=config.frame_height + 2.5,
+        z_length=config.frame_height - 1.5,
         z_axis_config=None,
         z_normal=DOWN,
         num_axis_pieces=20,
         light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
-        **kwargs
+        # opengl stuff (?)
+        depth=None,
+        gloss=0.5,
+        **kwargs,
     ):
+
         Axes.__init__(
-            self, x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, **kwargs
+            self,
+            x_range=x_range,
+            x_length=x_length,
+            y_range=y_range,
+            y_length=y_length,
+            **kwargs,
         )
-        self.z_min = z_min
-        self.z_max = z_max
-        self.z_axis_config = {"x_min": self.z_min, "x_max": self.z_max}
+
+        self.z_range = z_range
+        self.z_length = z_length
+
+        self.z_axis_config = {}
         self.update_default_configs((self.z_axis_config,), (z_axis_config,))
+
         self.z_normal = z_normal
         self.num_axis_pieces = num_axis_pieces
+
         self.light_source = light_source
+
         self.dimension = 3
-        z_axis = self.z_axis = self.create_axis(self.z_axis_config)
-        z_axis.shift(self.center_point)
-        z_axis.rotate_about_zero(-np.pi / 2, UP)
+
+        z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
+        z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
+        z_axis.shift(self.x_axis.n2p(0))
+
         self.axes.add(z_axis)
         self.add(z_axis)
+        self.z_axis = z_axis
 
         self.add_3d_pieces()
         self.set_axis_shading()
@@ -354,18 +471,53 @@ class ThreeDAxes(Axes):
 
 
 class NumberPlane(Axes):
+    """Creates a cartesian plane with background lines.
+
+    Parameters
+    ----------
+    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
+    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
+    x_length : Optional[:class:`float`]
+        The width of the plane.
+    y_length : Optional[:class:`float`]
+        The height of the plane.
+    axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influences both axes.
+    y_axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    background_line_style : Optional[:class:`dict`]
+        Arguments that influence the construction of the background lines of the plane.
+    faded_line_style : Optional[:class:`dict`]
+        Similar to :attr:`background_line_style`, affects the construction of the scene's background lines.
+    faded_line_ratio : Optional[:class:`int`]
+        Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes.
+    make_smooth_after_applying_functions
+        Currently non-functional.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Axes`.
+
+    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
+        on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+    """
+
     def __init__(
         self,
+        x_range=np.array((-6, 6, 1)),
+        y_range=np.array((-3, 3, 1)),
+        x_length=None,
+        y_length=None,
         axis_config=None,
         y_axis_config=None,
         background_line_style=None,
         faded_line_style=None,
-        x_line_frequency=1,
-        y_line_frequency=1,
         faded_line_ratio=1,
         make_smooth_after_applying_functions=True,
-        **kwargs
+        **kwargs,
     ):
+
+        # configs
         self.axis_config = {
             "stroke_color": WHITE,
             "stroke_width": 2,
@@ -373,7 +525,7 @@ class NumberPlane(Axes):
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DR,
-            "number_scale_val": 0.5,
+            "number_scale_value": 0.5,
         }
         self.y_axis_config = {"label_direction": DR}
         self.background_line_style = {
@@ -389,16 +541,27 @@ class NumberPlane(Axes):
 
         # Defaults to a faded version of line_config
         self.faded_line_style = faded_line_style
-        self.x_line_frequency = x_line_frequency
-        self.y_line_frequency = y_line_frequency
         self.faded_line_ratio = faded_line_ratio
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
 
+        # init
+
         super().__init__(
+            x_range=x_range,
+            y_range=y_range,
+            x_length=x_length,
+            y_length=y_length,
             axis_config=self.axis_config,
             y_axis_config=self.y_axis_config,
             **kwargs,
         )
+
+        # dynamically adjusts x_length and y_length so that the unit_size is one by default
+        if x_length is None:
+            x_length = self.x_range[1] - self.x_range[0]
+        if y_length is None:
+            y_length = self.y_range[1] - self.y_range[0]
+
         self.init_background_lines()
 
     def init_background_lines(self):
@@ -434,19 +597,17 @@ class NumberPlane(Axes):
         """
         x_axis = self.get_x_axis()
         y_axis = self.get_y_axis()
-        x_freq = self.x_line_frequency
-        y_freq = self.y_line_frequency
 
         x_lines1, x_lines2 = self.get_lines_parallel_to_axis(
             x_axis,
             y_axis,
-            x_freq,
+            self.x_axis.x_step,
             self.faded_line_ratio,
         )
         y_lines1, y_lines2 = self.get_lines_parallel_to_axis(
             y_axis,
             x_axis,
-            y_freq,
+            self.y_axis.x_step,
             self.faded_line_ratio,
         )
         lines1 = VGroup(*x_lines1, *y_lines1)
@@ -477,25 +638,23 @@ class NumberPlane(Axes):
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
             The first (i.e the non-faded lines parallel to `axis_parallel_to`) and second (i.e the faded lines parallel to `axis_parallel_to`) sets of lines, respectively.
         """
+
         line = Line(axis_parallel_to.get_start(), axis_parallel_to.get_end())
         if ratio_faded_lines == 0:  # don't show faded lines
             ratio_faded_lines = 1  # i.e. set ratio to 1
         step = (1 / ratio_faded_lines) * freq
         lines1 = VGroup()
         lines2 = VGroup()
-        unit_vector_axis_perp_to = axis_perpendicular_to.get_unit_vector()
-        ranges = (
-            np.arange(0, axis_perpendicular_to.x_max, step),
-            np.arange(0, axis_perpendicular_to.x_min, -step),
+        inputs = np.arange(
+            axis_perpendicular_to.x_min, axis_perpendicular_to.x_max + step, step
         )
-        for inputs in ranges:
-            for k, x in enumerate(inputs):
-                new_line = line.copy()
-                new_line.shift(unit_vector_axis_perp_to * x)
-                if k % ratio_faded_lines == 0:
-                    lines1.add(new_line)
-                else:
-                    lines2.add(new_line)
+        for k, x in enumerate(inputs):
+            new_line = line.copy()
+            new_line.shift(axis_perpendicular_to.n2p(x) - axis_perpendicular_to.n2p(0))
+            if k % ratio_faded_lines == 0:
+                lines1.add(new_line)
+            else:
+                lines2.add(new_line)
         return lines1, lines2
 
     def get_center_point(self):
@@ -525,11 +684,9 @@ class NumberPlane(Axes):
 
 
 class ComplexPlane(NumberPlane):
-    def __init__(self, color=BLUE, x_line_frequency=1, y_line_frequency=1, **kwargs):
+    def __init__(self, color=BLUE, **kwargs):
         super().__init__(
             color=color,
-            x_line_frequency=x_line_frequency,
-            y_line_frequency=y_line_frequency,
             **kwargs,
         )
 
@@ -548,8 +705,8 @@ class ComplexPlane(NumberPlane):
         return self.point_to_number(point)
 
     def get_default_coordinate_values(self):
-        x_numbers = self.get_x_axis().default_numbers_to_display()
-        y_numbers = self.get_y_axis().default_numbers_to_display()
+        x_numbers = self.get_x_axis().get_tick_range()
+        y_numbers = self.get_y_axis().get_tick_range()
         y_numbers = [complex(0, y) for y in y_numbers if y != 0]
         return [*x_numbers, *y_numbers]
 
@@ -563,10 +720,7 @@ class ComplexPlane(NumberPlane):
             if abs(z.imag) > abs(z.real):
                 axis = self.get_y_axis()
                 value = z.imag
-                kwargs = merge_dicts_recursively(
-                    kwargs,
-                    {"number_config": {"unit": "i"}},
-                )
+                kwargs["unit"] = "i"
             else:
                 axis = self.get_x_axis()
                 value = z.real
