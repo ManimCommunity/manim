@@ -105,7 +105,7 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "babel"
-version = "2.9.0"
+version = "2.9.1"
 description = "Internationalization utilities"
 category = "main"
 optional = false
@@ -1302,7 +1302,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "pyjwt"
-version = "2.0.1"
+version = "2.1.0"
 description = "JSON Web Token implementation in Python"
 category = "dev"
 optional = false
@@ -1439,7 +1439,7 @@ python-versions = "*"
 
 [[package]]
 name = "pywinpty"
-version = "1.0.0"
+version = "1.0.1"
 description = "Pseudo terminal support for Windows from Python."
 category = "main"
 optional = true
@@ -1826,7 +1826,7 @@ name = "watchdog"
 version = "2.0.3"
 description = "Filesystem events monitoring"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.extras]
@@ -1870,12 +1870,13 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 
 [extras]
 jupyterlab = ["jupyterlab"]
-webgl_renderer = ["grpcio", "grpcio-tools", "watchdog"]
+webgl_renderer = ["grpcio", "grpcio-tools"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
 content-hash = "d6b6e71ae3befe322ac2114fd893c2f74041e0a1d6c481384ca9676be344101b"
+
 
 [metadata.files]
 alabaster = [
@@ -1931,8 +1932,8 @@ attrs = [
     {file = "attrs-20.3.0.tar.gz", hash = "sha256:832aa3cde19744e49938b91fea06d69ecb9e649c93ba974535d08ad92164f700"},
 ]
 babel = [
-    {file = "Babel-2.9.0-py2.py3-none-any.whl", hash = "sha256:9d35c22fcc79893c3ecc85ac4a56cde1ecf3f19c540bba0922308a6c06ca6fa5"},
-    {file = "Babel-2.9.0.tar.gz", hash = "sha256:da031ab54472314f210b0adcff1588ee5d1d1d0ba4dbd07b94dba82bde791e05"},
+    {file = "Babel-2.9.1-py2.py3-none-any.whl", hash = "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9"},
+    {file = "Babel-2.9.1.tar.gz", hash = "sha256:bc0c176f9f6a994582230df350aa6e05ba2ebe4b3ac317eab29d9be5d2768da0"},
 ]
 backcall = [
     {file = "backcall-0.2.0-py2.py3-none-any.whl", hash = "sha256:fbbce6a29f263178a1f7915c1940bde0ec2b2a967566fe1c65c1dfb7422bd255"},

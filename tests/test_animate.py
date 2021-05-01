@@ -38,9 +38,11 @@ def test_overridden_animate():
             self.remove(self.line)
 
         @override_animate(remove_line)
-        def _remove_line_animation(self):
+        def _remove_line_animation(self, anim_args=None):
+            if anim_args is None:
+                anim_args = {}
             self.remove_line()
-            return Uncreate(self.line)
+            return Uncreate(self.line, **anim_args)
 
     dots_with_line = DotsWithLine()
     anim = dots_with_line.animate.remove_line().build()
@@ -61,9 +63,11 @@ def test_chaining_overridden_animate():
             self.remove(self.line)
 
         @override_animate(remove_line)
-        def _remove_line_animation(self):
+        def _remove_line_animation(self, anim_args=None):
+            if anim_args is None:
+                anim_args = {}
             self.remove_line()
-            return Uncreate(self.line)
+            return Uncreate(self.line, **anim_args)
 
     with pytest.raises(
         NotImplementedError, match="not supported for overridden animations"
