@@ -83,7 +83,7 @@ def test_t_values_with_cached_data(using_temp_config):
 
 def test_t_values_save_last_frame(using_temp_config):
     """Test that there is only one t value handled when only saving the last frame"""
-    config.save_last_frame = True
+    config.format = "png"
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.render()
