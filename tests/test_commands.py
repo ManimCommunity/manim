@@ -73,16 +73,12 @@ def test_manim_init_subcommand():
     expected_main_py = ""
 
     with open(
-        Path.resolve(
-            Path(__file__).parent.parent / "manim/cli/project/templates/template.cfg"
-        )
+        Path.resolve(Path(__file__).parent.parent / "manim/templates/template.cfg")
     ) as f:
         expected_manim_cfg = f.read()
 
     with open(
-        Path.resolve(
-            Path(__file__).parent.parent / "manim/cli/project/templates/default.py"
-        )
+        Path.resolve(Path(__file__).parent.parent / "manim/templates/Default.mtp")
     ) as f:
         expected_main_py = f.read()
 
@@ -112,14 +108,14 @@ def test_manim_new_command():
     expected_output = """\
 Usage: manim new [OPTIONS] COMMAND [ARGS]...
 
-  Create Project or Scene.
+  Create a new project or insert a new scene.
 
 Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  project  Initialize New Project
-  scene    Add a scene to an existing file or a new file
+  project  Creates a new project.
+  scene    Inserts a SCENE to an existing FILE or creates a new FILE.
 
   Made with <3 by Manim Community developers.
 """
