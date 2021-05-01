@@ -918,8 +918,10 @@ class PolarPlane(NumberPlane):
         return self.point_to_polar(point)
 
     def get_coordinate_labels(self, r_vals, a_vals, **kwargs):
-        if r_vals is None:
-            r_vals = [r for r in self.get_x_axis().get_tick_range() if r >= 0]
+        # This doesn't work at the moment, so just ignore radius labels for now.
+        # if r_vals is None:
+        #     r_vals = [r for r in self.get_x_axis().get_tick_range() if r >= 0]
+        r_vals = []
         if a_vals is None:
             a_vals = np.arange(0, 1, self.azimuth_frequency)
         r_mobs = self.get_x_axis().add_numbers(r_vals)
