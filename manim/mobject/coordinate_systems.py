@@ -982,7 +982,7 @@ class PolarPlane(NumberPlane):
                 )
                 for i in a_points
             ]
-        elif self.azimuth_units == None:
+        elif self.azimuth_units is None:
             a_tex = [
                 MathTex(f'{i["label"]:g}')
                 .scale(self.azimuth_scale)
