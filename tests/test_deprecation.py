@@ -58,6 +58,9 @@ class QuuzAll:
         pass
 
 
+doc_admonition = "\n\n.. admonition:: Deprecated\n  :class: attention\n\n  "
+
+
 def test_deprecate_class_no_args(caplog):
     """Test the deprecation of a class (decorator with no arguments)."""
     f = Foo()
@@ -67,6 +70,7 @@ def test_deprecate_class_no_args(caplog):
         msg
         == "The class Foo has been deprecated and may be removed in a later version."
     )
+    assert f.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_class_since(caplog):
