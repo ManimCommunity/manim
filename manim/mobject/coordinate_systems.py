@@ -712,13 +712,15 @@ class PolarPlane(Axes):
     Parameters
     ----------
     azimuth_step : :class:`float`, optional
-        The number of faded lines in the azimuth. If ``None`` is specified then it will use the default
+        The number of divisions in the azimuth. If ``None`` is specified then it will use the default
         specified by ``azimuth_units``:
 
         - ``"PI radians"`` or ``"TAU radians"``: 20
         - ``"degrees"``: 36
         - ``"gradians"``: 40
         - ``None``: 1
+
+        A non-integer value will result in a partial division at the end of the circle.
 
     radius_step : :class:`float`, optional
         The step of faded lines in the radius.
