@@ -123,6 +123,7 @@ Utilities
    ~utils.bezier
    ~utils.color
    ~utils.config_ops
+   ~utils.deprecation
    ~utils.hashing
    ~utils.ipython_magic
    ~utils.images
