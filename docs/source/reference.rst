@@ -148,7 +148,7 @@ Animations
    manim.animation.update
    :parts: 1
    :top-classes: manim.animation.animation.Animation
-
+ 
 
 *******
 Cameras
