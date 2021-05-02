@@ -324,8 +324,9 @@ length with only integers.
    then using ``from typestring_parser import parse``.
 
 .. doctest::
-
-    >>>from typestring_parser import parse
+    :options: +SKIP
+    
+    >>> from typestring_parser import parse
     >>> parse("int")
     <class 'int'>
     >>> parse("int or str")
