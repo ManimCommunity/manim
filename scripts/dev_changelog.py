@@ -76,22 +76,23 @@ PR_LABELS = {
 
 
 def get_authors_and_reviewers(lst, cur, github_repo, pr_nums):
-    pat = r"^.*\t(.*)$"
+    lst_commit = github_repo.get_commit(sha=this_repo.git.rev_list("-1", lst))
+    lst_date = lst_commit.commit.author.date
 
-    # authors, in current release and previous to current release.
-    cur = set(re.findall(pat, this_repo.git.shortlog("-s", f"{lst}..{cur}"), re.M))
-    pre = set(re.findall(pat, this_repo.git.shortlog("-s", lst), re.M))
-
-    cur.discard("pre-commit-ci[bot]")
-    # Append '+' to new authors.
-    authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
-    authors.sort()
-
+    authors = []
     reviewers = []
-    for num in tqdm(pr_nums, desc="Fetching reviewer comments"):
+    for num in tqdm(pr_nums, desc="Fetching authors and reviewers"):
         pr = github_repo.get_pull(num)
-        reviewers.extend(rev.user.name for rev in pr.get_reviews())
-    reviewers = sorted(set(rev for rev in reviewers if rev is not None))
+        author_name = pr.user.name if pr.user.name is not None else pr.user.login
+        if github_repo.get_commits(author=pr.user, until=lst_date).totalCount == 0:
+            author_name += " +"
+        authors.append(author_name)
+        reviewers.extend(
+            rev.user.name if rev.user.name is not None else rev.user.login
+            for rev in pr.get_reviews()
+        )
+    authors = sorted(set(authors))
+    reviewers = sorted(set(reviewers))
 
     return {"authors": authors, "reviewers": reviewers}
 
