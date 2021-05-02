@@ -707,37 +707,74 @@ class NumberPlane(Axes):
 
 
 class PolarPlane(Axes):
-    """Creates a cartesian plane with background lines.
+    r"""Creates a polar plane with background lines.
 
     Parameters
     ----------
-    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
-        The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
-    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
-        The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
-    x_length : Optional[:class:`float`]
-        The width of the plane.
-    y_length : Optional[:class:`float`]
-        The height of the plane.
-    axis_config : Optional[:class:`dict`]
-        Arguments to be passed to :class:`~.NumberLine` that influences both axes.
-    y_axis_config : Optional[:class:`dict`]
-        Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
-    background_line_style : Optional[:class:`dict`]
-        Arguments that influence the construction of the background lines of the plane.
-    faded_line_style : Optional[:class:`dict`]
-        Similar to :attr:`background_line_style`, affects the construction of the scene's background lines.
-    faded_line_ratio : Optional[:class:`int`]
-        Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes.
-    make_smooth_after_applying_functions
-        Currently non-functional.
-    kwargs : Any
-        Additional arguments to be passed to :class:`Axes`.
+    azimuth_step : :class:`float`, optional
+        The number of faded lines in the azimuth. If ``None`` is specified then it will use the default
+        specified by ``azimuth_units``:
 
-    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
-        on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+        - ``"PI radians"`` or ``"TAU radians"``: 20
+        - ``"degrees"``: 36
+        - ``"gradians"``: 40
+        - ``None``: 1
+
+    radius_step : :class:`float`, optional
+        The step of faded lines in the radius.
+
+    radius_max : :class:`float`, optional
+        The maximum value of the radius.
+
+    azimuth_units : Optional[:class:`str`], optional
+        Specifies a default labelling system for the azimuth. Choices are:
+
+        - ``"PI radians"``: Fractional labels in the interval :math:`\left[0, 2\pi\right]` with :math:`\pi` as a constant.
+        - ``"TAU radians"``: Fractional labels in the interval :math:`\left[0, \tau\right]` (where :math:`\tau = 2\pi`) with :math:`\tau` as a constant.
+        - ``"degrees"``: Decimal labels in the interval :math:`\left[0, 360\right]` with a degree (:math:`^{\circ}`) symbol.
+        - ``"gradians"``: Decimal lables in the interval :math:`\left[0, 400\right]` with a superscript "g" (:math:`^{g}`).
+        - ``None``: Decimal labels in the interval :math:`\left[0, 1\right]`.
+
+        .. manim:: PolarPlaneUnits
+            :ref_classes: PolarPlane
+
+            polarplot_pi = PolarPlane(azimuth_units="PI radians", size=5).add_coordinates()
+            polarplot_tau = PolarPlane(azimuth_units="TAU radians", size=5).add_coordinates()
+            polarplot_degrees = PolarPlane(azimuth_units="degrees", size=5).add_coordinates()
+            polarplot_gradians = PolarPlane(azimuth_units="gradians", size=5).add_coordinates()
+
+            class PolarPlaneUnits(Scene):
+                def construct(self):
+                    self.add(polarplot_pi)
+                    self.wait(2)
+                    self.play(FadeOutAndShift(polarplot_pi, LEFT))
+                    self.play(FadeInFrom(polarplot_tau, RIGHT))
+                    self.wait(2)
+                    self.play(FadeOutAndShift(polarplot_tau, LEFT))
+                    self.play(FadeInFrom(polarplot_degrees, RIGHT))
+                    self.wait(2)
+                    self.play(FadeOutAndShift(polarplot_degrees, LEFT))
+                    self.play(FadeInFrom(polarplot_gradians, RIGHT))
+                    self.wait(2)
+
+    azimuth_offset : :class:`float`, optional
+        The angle offset of the azimuth, expressed in radians.
+
+    azimuth_direction : :class:`str`, optional
+        The direction of the azimuth.
+
+        - ``"CW"``: Clockwise.
+        - ``"CCW"``: Anti-clockwise.
+
+    azimuth_label_buff : :class:`int`, optional
+        The buffer for the azimuth labels.
+
+    azimuth_label_scale : :class:`int`, optional
+        The scale of the azimuth labels.
+
+    radius_config: :class:`dict`, optional
+        The axis config for the radius.
     """
-
     def __init__(
         self,
         radius_max=config["frame_y_radius"],
@@ -855,15 +892,16 @@ class PolarPlane(Axes):
         )
 
     def get_lines(self):
-        """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
+        """Generate all the lines and circles, faded and not faded.
 
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
-            The first (i.e the non faded lines) and second (i.e the faded lines) sets of lines, respectively.
+            The first (i.e the non faded lines andd circles) and second (i.e the faded lines and circles) sets of lines and circles, respectively.
         """
         center = self.get_center_point()
         ratio_faded_lines = self.faded_line_ratio
+        offset = self.azimuth_offset
 
         if ratio_faded_lines == 0:  # don't show faded lines
             ratio_faded_lines = 1  # i.e. set ratio to 1
@@ -890,7 +928,7 @@ class PolarPlane(Axes):
 
         for k, x in enumerate(ainput):
             new_line = line.copy()
-            new_line.rotate(x, about_point=center)
+            new_line.rotate(x + offset, about_point=center)
             if k % ratio_faded_lines == 0:
                 rlines1.add(new_line)
             else:
@@ -925,27 +963,27 @@ class PolarPlane(Axes):
                 mob.insert_n_curves(num_inserted_curves - num_curves)
         return self
 
-        def polar_to_point(self, radius, azimuth):
-            r"""Gets a point from polar coordinates.
+    def polar_to_point(self, radius, azimuth):
+        r"""Gets a point from polar coordinates.
 
-            Parameters
-            ----------
-            radius : :class:`float`
-                The coordinate radius (:math:`r`).
+        Parameters
+        ----------
+        radius : :class:`float`
+            The coordinate radius (:math:`r`).
 
-            azimuth : :class:`float`
-                The coordinate azimuth (:math:`\theta`).
+        azimuth : :class:`float`
+            The coordinate azimuth (:math:`\theta`).
 
-            Returns
-            -------
-            :class:`numpy.ndarray`
-                The point.
-            """
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The point.
+        """
 
         return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
 
     def pr2pt(self, radius, azimuth):
-        """Abbreviation for ``polar_to_point``"""
+        """Abbreviation for :meth:`polar_to_point`"""
         return self.polar_to_point(radius, azimuth)
 
     def point_to_polar(self, point):
@@ -965,7 +1003,7 @@ class PolarPlane(Axes):
         return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
 
     def pt2pr(self, point):
-        """Abbreviation for ``point_to_polar``"""
+        """Abbreviation for :meth:`point_to_polar`"""
         return self.point_to_polar(point)
 
     def get_coordinate_labels(self, r_vals, a_vals, **kwargs):
