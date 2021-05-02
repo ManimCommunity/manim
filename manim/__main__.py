@@ -7,7 +7,7 @@ from . import __version__, console
 from .cli.cfg.commands import cfg
 from .cli.plugins.commands import plugins
 from .cli.render.commands import render
-from .constants import CONTEXT_SETTINGS, EPILOG
+from .constants import EPILOG
 
 
 def exit_early(ctx, param, value):
@@ -22,7 +22,6 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     cls=DefaultGroup,
     default="render",
     no_args_is_help=True,
-    context_settings=CONTEXT_SETTINGS,
     help="Animation engine for explanatory math videos",
     epilog=EPILOG,
 )
