@@ -85,9 +85,7 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     for num in tqdm(pr_nums, desc="Processing PRs"):
         pr = github_repo.get_pull(num)
         authors.add(pr.user)
-        reviewers = reviewers.union(
-            rev.user for rev in pr.get_reviews()
-        )
+        reviewers = reviewers.union(rev.user for rev in pr.get_reviews())
         pr_labels = [label.name for label in pr.labels]
         for label in PR_LABELS.keys():
             if label in pr_labels:
@@ -113,7 +111,7 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     return {
         "authors": sorted(author_names),
         "reviewers": sorted(reviewer_names),
-        "PRs": pr_by_labels
+        "PRs": pr_by_labels,
     }
 
 
@@ -139,7 +137,6 @@ def get_pr_nums(lst, cur):
 
     print(prnums)
     return prnums
-
 
 
 def get_summary(body):
@@ -189,9 +186,7 @@ def main(token, prior, tag, additional, outfile):
         pr_nums = pr_nums + list(additional)
 
     # document authors
-    contributions = process_pullrequests(
-        lst_release, cur_release, github_repo, pr_nums
-    )
+    contributions = process_pullrequests(lst_release, cur_release, github_repo, pr_nums)
     authors = contributions["authors"]
     reviewers = contributions["reviewers"]
 
