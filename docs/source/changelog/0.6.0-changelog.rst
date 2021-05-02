@@ -82,7 +82,7 @@ Breaking changes
 ----------------
 
 * `#1347 <https://github.com/ManimCommunity/manim/pull/1347>`__: Restructure vector_field module and add documentation
-   `VectorField` is renamed to `ArrowVectorField` and a new class `VectorField` is added as a superclass for `ArrowVectorField` and `StreamLines`. Also the class `AnimatedStreamLines` is removed. It's functionality is moved to `StreamLines`. Added a lot of new options when working with vector fields. `ShowPassingFlashWithThinningStrokeWidth` was moved to the indication module.
+   :class`~.VectorField` is renamed to :class:`~.ArrowVectorField` and a new class :class:`~.VectorField` is added as a superclass for :class:`~.ArrowVectorField` and :class:`~.StreamLines`. :class:`~.AnimatedStreamLines` is removed. It's functionality is moved to :class:`~.StreamLines`. Added a lot of new options when working with vector fields. :class:`~.ShowPassingFlashWithThinningStrokeWidth` was moved to the indication module.
 
 * `#1161 <https://github.com/ManimCommunity/manim/pull/1161>`__: Upgrades to CoordinateSystem and graphing.
    Breaking changes were introduced to :class:`~.Axes`, :class:`~.ThreeDAxes`, :class:`~.NumberPlane` and :class:`~.NumberLine`
@@ -125,9 +125,6 @@ Deprecated classes and functions
 
 
 * `#1259 <https://github.com/ManimCommunity/manim/pull/1259>`__: Removed deprecated CairoText class
-   - Removed `CairoText` class from `manim.mobject.text_mobject`
-    - Removed `'CairoText'` from `__all__`
-    - Removed reference to `CairoText` in docstring
 
 New features
 ------------
@@ -476,5 +473,4 @@ New releases
 ------------
 
 * `#1434 <https://github.com/ManimCommunity/manim/pull/1434>`__: Prepare v0.6.0
-
 
