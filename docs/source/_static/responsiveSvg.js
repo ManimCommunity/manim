@@ -18,14 +18,16 @@ window.addEventListener("load", function () {
             colors = {
                 text: "#e07a5f",
                 box: "#383838",
-                edge: "#d0d0d0"
+                edge: "#d0d0d0",
+                background: "#131416"
             };
         } else {
             // Light
             colors = {
                 text: "#e07a5f",
                 box: "#fff",
-                edge: "#413c3c"
+                edge: "#413c3c",
+                background: "#f1ece9"
             };
             additions = `
             .node polygon {
@@ -35,6 +37,10 @@ window.addEventListener("load", function () {
         }
         for (let style of styleElements) {
             style.innerHTML = `
+                svg {
+                    background-color: ${colors.background};
+                }
+
                 .node text {
                     fill: ${colors.text};
                 }
