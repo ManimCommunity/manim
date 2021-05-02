@@ -1,5 +1,5 @@
 ******
-master
+v0.6.0
 ******
 
 :Date: May 02, 2021
@@ -76,7 +76,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 110 pull requests were merged for this release.
+A total of 111 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -100,10 +100,10 @@ Breaking changes
    Although this is primarily a refactor and most of the common options are still there, some options have been added/removed. Use the ``manim`` command's ``-h``, ``--help`` option, or simply run the command without providing options/arguments to view the help page with the full list of subcommands/options/arguments.
 
    - Added a ``--fps``/``--frame_rate`` option which allows for custom fps that don't have to be integer (i.e. 29.97, 23.98, etc.). Users no longer have to specify the FPS from within a config file. Additionally, the ``--webgl_renderer_fps`` option has been removed. Use ``--fps`` or ``--frame_rate`` instead.
-   - Added a ``--renderer`` option which you can use to select your choice of renderer (e.g. ``--renderer=opengl``). There are currently *THREE* renderers to choose from! 
+   - Added a ``--renderer`` option which you can use to select your choice of renderer (e.g. ``--renderer=opengl``). There are currently *THREE* renderers to choose from!
    - Removed the ``--background_color`` option. Reassigned the ``--background_color`` option's shorthand ``-c`` to ``--config_file``.
    - Removed the ``--leave_progress_bars`` option. Use ``--progress_bars=leave`` instead.
-   - Removed the deprecated render quality flags, in particular: ``-l``, ``-m``, ``-h``, ``-k``. 
+   - Removed the deprecated render quality flags, in particular: ``-l``, ``-m``, ``-h``, ``-k``.
    - Removed the ``--sound`` option. It lost support long ago with the removal of SoX.
 
 Deprecated classes and functions
@@ -162,7 +162,7 @@ Enhancements
 * `#1398 <https://github.com/ManimCommunity/manim/pull/1398>`__: Fix and enhance `Mobject.arrange_in_grid`
    `arrange_in_grid` now actually arranges submobjects in a grid. Added new parameters `buff`, `cell_alignment`, `row_alignments`, `col_alignments`, `row_heights`, `col_widths`, `flow_order`.
 
-* `#1407 <https://github.com/ManimCommunity/manim/pull/1407>`__: Fix bug and rename :meth:`vector_coordinate_label` to :meth:`~.Vector.coordinate_label` and move it to :class:`geometry.py` 
+* `#1407 <https://github.com/ManimCommunity/manim/pull/1407>`__: Fix bug and rename :meth:`vector_coordinate_label` to :meth:`~.Vector.coordinate_label` and move it to :class:`geometry.py`
 
 
 * `#1380 <https://github.com/ManimCommunity/manim/pull/1380>`__: Allow image objects as background images
@@ -387,6 +387,9 @@ Changes concerning the testing system
 Changes to our development infrastructure
 -----------------------------------------
 
+* `#1436 <https://github.com/ManimCommunity/manim/pull/1436>`__: Cache poetry venv with `pyproject.toml` hash in key
+   Cache poetry venv with `pyproject.toml` hash in key
+
 * `#1435 <https://github.com/ManimCommunity/manim/pull/1435>`__: CI: Update poetry cache when new version is released
    Fix `test_version` failure in CI when using cached poetry venv
 
@@ -460,7 +463,7 @@ Code quality improvements and similar refactors
 * `#1233 <https://github.com/ManimCommunity/manim/pull/1233>`__: Fix deprecation warning for ``--use_opengl_renderer`` and ``--use_webgl_renderer``
 
 
-* `#1282 <https://github.com/ManimCommunity/manim/pull/1282>`__: Fix typing hints in vectorized_mobject.py based on mypy 
+* `#1282 <https://github.com/ManimCommunity/manim/pull/1282>`__: Fix typing hints in vectorized_mobject.py based on mypy
 
 
 New releases
