@@ -325,7 +325,7 @@ length with only integers.
 
 .. doctest::
 
-    >>>from typestring_parser import parse
+    >>> from typestring_parser import parse
     >>> parse('int')
     <class 'int'>
     >>> parse('int or str')
