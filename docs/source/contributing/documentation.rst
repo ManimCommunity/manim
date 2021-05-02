@@ -319,7 +319,8 @@ elements that are either a ``str`` or ``None``;
 length with only integers.
 
 .. note::
-   As a helper for tool for typesets, you can use ``typestring-parser``: https://github.com/Dominik1123/typestring-parser 
+   As a helper for tool for typesets, you can use `typestring-parser
+   <https://github.com/Dominik1123/typestring-parser>`_ 
    which can be accessed by first installing it via ``pip`` - ``pip install typestring-parser`` and
    then using ``from typestring_parser import parse``.
 
