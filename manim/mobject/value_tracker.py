@@ -82,7 +82,7 @@ class ValueTracker(Mobject):
         self.points[0, 0] = value
         return self
 
-    def increment_value(self, d_value: float]):
+    def increment_value(self, d_value: float):
         """Increments (adds) a scalar value  to the ValueTracker"""
         self.set_value(self.get_value() + d_value)
         return self
