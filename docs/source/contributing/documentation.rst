@@ -326,13 +326,13 @@ length with only integers.
 .. doctest::
 
     >>> from typestring_parser import parse
-    >>> parse('int')
+    >>> parse("int")
     <class 'int'>
-    >>> parse('int or str')
+    >>> parse("int or str")
     typing.Union[int, str]
-    >>> parse('list of str or str')
+    >>> parse("list of str or str")
     typing.Union[typing.List[str], str]
-    >>> parse('list of (int, str)')
+    >>> parse("list of (int, str)")
     typing.List[typing.Tuple[int, str]]
 
 
