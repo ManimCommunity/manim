@@ -777,6 +777,7 @@ class PolarPlane(Axes):
     radius_config: :class:`dict`, optional
         The axis config for the radius.
     """
+
     def __init__(
         self,
         radius_max=config["frame_y_radius"],
@@ -864,7 +865,7 @@ class PolarPlane(Axes):
             **kwargs,
         )
 
-        #dynamically adjusts size so that the unit_size is one by default
+        # dynamically adjusts size so that the unit_size is one by default
         if size is None:
             size = 0
 
