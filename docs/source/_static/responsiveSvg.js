@@ -59,6 +59,3 @@ window.addEventListener("load", function () {
     setColorScheme(colorSchemeQuery);
     colorSchemeQuery.addEventListener("change", setColorScheme);
 });
-
-
-//drop-shadow(0 .1rem .5rem #0002)
