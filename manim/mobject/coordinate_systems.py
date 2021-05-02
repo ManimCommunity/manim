@@ -19,7 +19,7 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, DashedLine, Dot, Line, Circle
+from ..mobject.geometry import Arrow, Circle, DashedLine, Dot, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import VDict, VGroup, VMobject
@@ -777,6 +777,7 @@ class PolarPlane(Axes):
     radius_config: :class:`dict`, optional
         The axis config for the radius.
     """
+
     def __init__(
         self,
         radius_max=config["frame_y_radius"],
@@ -864,7 +865,7 @@ class PolarPlane(Axes):
             **kwargs,
         )
 
-        #dynamically adjusts size so that the unit_size is one by default
+        # dynamically adjusts size so that the unit_size is one by default
         if size is None:
             size = 0
 
