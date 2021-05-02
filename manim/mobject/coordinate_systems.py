@@ -722,6 +722,9 @@ class PolarPlane(Axes):
 
         A non-integer value will result in a partial division at the end of the circle.
 
+    size : :class:`float`, optional
+        The diameter of the plane.
+
     radius_step : :class:`float`, optional
         The step of faded lines in the radius.
 
