@@ -1,18 +1,11 @@
 """Mobjects that represent coordinate systems."""
 
-__all__ = [
-    "CoordinateSystem",
-    "Axes",
-    "ThreeDAxes",
-    "NumberPlane",
-    "PolarPlane",
-    "ComplexPlane",
-]
+__all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "PolarPlane", "ComplexPlane"]
 
 import fractions as fr
 import math
 import numbers
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional
 
 import numpy as np
 
@@ -705,6 +698,195 @@ class NumberPlane(Axes):
                 mob.insert_n_curves(num_inserted_curves - num_curves)
         return self
 
+class PolarPlane(Axes):
+    """Creates a cartesian plane with background lines.
+
+    Parameters
+    ----------
+    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
+    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+        The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
+    x_length : Optional[:class:`float`]
+        The width of the plane.
+    y_length : Optional[:class:`float`]
+        The height of the plane.
+    axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influences both axes.
+    y_axis_config : Optional[:class:`dict`]
+        Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    background_line_style : Optional[:class:`dict`]
+        Arguments that influence the construction of the background lines of the plane.
+    faded_line_style : Optional[:class:`dict`]
+        Similar to :attr:`background_line_style`, affects the construction of the scene's background lines.
+    faded_line_ratio : Optional[:class:`int`]
+        Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes.
+    make_smooth_after_applying_functions
+        Currently non-functional.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Axes`.
+
+    .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
+        on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+    """
+
+    def __init__(
+            self,
+            x_range=(-config["frame_y_radius"], config["frame_y_radius"], 1),
+            y_range=(-config["frame_y_radius"], config["frame_y_radius"], 1),
+            a_step=10,
+            x_length=None,
+            y_length=None,
+            axis_config=None,
+            y_axis_config=None,
+            background_line_style=None,
+            faded_line_style=None,
+            faded_line_ratio=2,
+            make_smooth_after_applying_functions=True,
+            **kwargs,
+    ):
+
+        # configs
+        self.axis_config = {
+            "stroke_color": WHITE,
+            "stroke_width": 2,
+            "include_ticks": False,
+            "include_tip": False,
+            "line_to_number_buff": SMALL_BUFF,
+            "label_direction": DR,
+            "number_scale_value": 0.5,
+        }
+        self.y_axis_config = {}
+        self.background_line_style = {
+            "stroke_color": BLUE_D,
+            "stroke_width": 2,
+            "stroke_opacity": 1,
+        }
+
+        self.update_default_configs(
+            (self.axis_config, self.y_axis_config, self.background_line_style),
+            (axis_config, y_axis_config, background_line_style),
+        )
+
+        # Defaults to a faded version of line_config
+        self.faded_line_style = faded_line_style
+        self.faded_line_ratio = faded_line_ratio
+        self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
+        self.a_step = a_step
+
+        # init
+
+        super().__init__(
+            x_range=x_range,
+            y_range=y_range,
+            x_length=x_length,
+            y_length=y_length,
+            axis_config=self.axis_config,
+            y_axis_config=self.y_axis_config,
+            **kwargs,
+        )
+
+        # dynamically adjusts x_length and y_length so that the unit_size is one by default
+        if x_length is None:
+            x_length = self.x_range[1] - self.x_range[0]
+        if y_length is None:
+            y_length = self.y_range[1] - self.y_range[0]
+
+        self.init_background_lines()
+
+    def init_background_lines(self):
+        """Will init all the lines of NumberPlanes (faded or not)"""
+        if self.faded_line_style is None:
+            style = dict(self.background_line_style)
+            # For anything numerical, like stroke_width
+            # and stroke_opacity, chop it in half
+            for key in style:
+                if isinstance(style[key], numbers.Number):
+                    style[key] *= 0.5
+            self.faded_line_style = style
+
+        self.background_lines, self.faded_lines = self.get_lines()
+        self.background_lines.set_style(
+            **self.background_line_style,
+        )
+        self.faded_lines.set_style(
+            **self.faded_line_style,
+        )
+        self.add_to_back(
+            self.faded_lines,
+            self.background_lines,
+        )
+
+    def get_lines(self):
+        """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
+
+        Returns
+        -------
+        Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
+            The first (i.e the non faded lines) and second (i.e the faded lines) sets of lines, respectively.
+        """
+        center = self.get_center_point()
+        ratio_faded_lines = self.faded_line_ratio
+
+        if ratio_faded_lines == 0:  # don't show faded lines
+           ratio_faded_lines = 1  # i.e. set ratio to 1
+        step = (1 / ratio_faded_lines) * (TAU * (1 / self.a_step))
+        rlines1 = VGroup()
+        rlines2 = VGroup()
+        alines1 = VGroup()
+        alines2 = VGroup()
+
+        rinput = np.arange(0, self.x_axis.x_max, step)
+        ainput = np.arange(0, TAU, step)
+
+        unit_vector = self.x_axis.get_unit_vector()[0];
+
+        for k, x in enumerate(rinput):
+            new_line = Circle(radius=x * unit_vector)
+            if k % ratio_faded_lines == 0:
+                alines1.add(new_line)
+            else:
+                alines2.add(new_line)
+
+        line = Line(center, self.get_x_axis().get_end())
+
+        for k, x in enumerate(ainput):
+            new_line = line.copy()
+            new_line.rotate(x, about_point=center)
+            if k % ratio_faded_lines == 0:
+                rlines1.add(new_line)
+            else:
+                rlines2.add(new_line)
+
+        lines1 = VGroup(*rlines1, *alines1)
+        lines2 = VGroup(*rlines2, *alines2)
+        return lines1, lines2
+
+    def get_center_point(self):
+        return self.coords_to_point(0, 0)
+
+    def get_x_unit_size(self):
+        return self.get_x_axis().get_unit_size()
+
+    def get_y_unit_size(self):
+        return self.get_x_axis().get_unit_size()
+
+    def get_axes(self):
+        return self.axes
+
+    def get_vector(self, coords, **kwargs):
+        kwargs["buff"] = 0
+        return Arrow(
+            self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
+        )
+
+    def prepare_for_nonlinear_transform(self, num_inserted_curves=50):
+        for mob in self.family_members_with_points():
+            num_curves = mob.get_num_curves()
+            if num_inserted_curves > num_curves:
+                mob.insert_n_curves(num_inserted_curves - num_curves)
+        return self
+
 
 class PolarPlane(Axes):
     r"""Creates a polar plane with background lines.
@@ -1182,3 +1364,4 @@ class ComplexPlane(NumberPlane):
     def add_coordinates(self, *numbers):
         self.add(self.get_coordinate_labels(*numbers))
         return self
+
