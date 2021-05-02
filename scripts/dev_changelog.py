@@ -75,26 +75,46 @@ PR_LABELS = {
 }
 
 
-def get_authors_and_reviewers(lst, cur, github_repo, pr_nums):
+def process_pullrequests(lst, cur, github_repo, pr_nums):
     lst_commit = github_repo.get_commit(sha=this_repo.git.rev_list("-1", lst))
     lst_date = lst_commit.commit.author.date
 
-    authors = []
-    reviewers = []
-    for num in tqdm(pr_nums, desc="Fetching authors and reviewers"):
+    authors = set()
+    reviewers = set()
+    pr_by_labels = defaultdict(list)
+    for num in tqdm(pr_nums, desc="Processing PRs"):
         pr = github_repo.get_pull(num)
-        author_name = pr.user.name if pr.user.name is not None else pr.user.login
-        if github_repo.get_commits(author=pr.user, until=lst_date).totalCount == 0:
-            author_name += " +"
-        authors.append(author_name)
-        reviewers.extend(
-            rev.user.name if rev.user.name is not None else rev.user.login
-            for rev in pr.get_reviews()
+        authors.add(pr.user)
+        reviewers = reviewers.union(
+            rev.user for rev in pr.get_reviews()
         )
-    authors = sorted(set(authors))
-    reviewers = sorted(set(reviewers))
+        pr_labels = [label.name for label in pr.labels]
+        for label in PR_LABELS.keys():
+            if label in pr_labels:
+                pr_by_labels[label].append(pr)
+                break  # ensure that PR is only added in one category
+        else:
+            pr_by_labels["unlabeled"].append(pr)
 
-    return {"authors": authors, "reviewers": reviewers}
+    # identify first-time contributors:
+    author_names = []
+    for author in authors:
+        name = author.name if author.name is not None else author.login
+        if github_repo.get_commits(author=author, until=lst_date).totalCount == 0:
+            name += " +"
+        author_names.append(name)
+
+    reviewer_names = []
+    for reviewer in reviewers:
+        reviewer_names.append(
+            reviewer.name if reviewer.name is not None else reviewer.login
+        )
+
+    return {
+        "authors": sorted(author_names),
+        "reviewers": sorted(reviewer_names),
+        "PRs": pr_by_labels
+    }
 
 
 def get_pr_nums(lst, cur):
@@ -120,26 +140,6 @@ def get_pr_nums(lst, cur):
     print(prnums)
     return prnums
 
-
-def sort_by_labels(github_repo, pr_nums):
-    """Sorts PR into groups based on labels.
-
-    This implementation sorts based on importance into a singular group. If a
-    PR uses multiple labels, it is sorted under one label.
-
-    """
-    pr_by_labels = defaultdict(list)
-    for num in tqdm(pr_nums, desc="Sorting by labels"):
-        pr = github_repo.get_pull(num)
-        pr_labels = [label.name for label in pr.labels]
-        for label in PR_LABELS.keys():
-            if label in pr_labels:
-                pr_by_labels[label].append(pr)
-                break  # ensure that PR is only added in one category
-        else:
-            pr_by_labels["unlabeled"].append(pr)
-
-    return pr_by_labels
 
 
 def get_summary(body):
@@ -189,11 +189,11 @@ def main(token, prior, tag, additional, outfile):
         pr_nums = pr_nums + list(additional)
 
     # document authors
-    contributors = get_authors_and_reviewers(
+    contributions = process_pullrequests(
         lst_release, cur_release, github_repo, pr_nums
     )
-    authors = contributors["authors"]
-    reviewers = contributors["reviewers"]
+    authors = contributions["authors"]
+    reviewers = contributions["reviewers"]
 
     if not outfile:
         outfile = (
@@ -249,7 +249,7 @@ def main(token, prior, tag, additional, outfile):
             f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
         )
 
-        pr_by_labels = sort_by_labels(github_repo, pr_nums)
+        pr_by_labels = contributions["PRs"]
         for label in PR_LABELS.keys():
             pr_of_label = pr_by_labels[label]
 
