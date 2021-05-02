@@ -85,12 +85,12 @@ class MobjectTest(Scene):
         mesh = get_plane_mesh(self.renderer.context)
         self.add(mesh)
 
-        # def update_mesh(mesh, dt):
-        #     mesh.model_matrix = np.matmul(
-        #         opengl.rotation_matrix(z=dt), mesh.model_matrix
-        #     )
+        def update_mesh(mesh, dt):
+            mesh.model_matrix = np.matmul(
+                opengl.rotation_matrix(z=dt), mesh.model_matrix
+            )
 
-        # mesh.add_updater(update_mesh)
+        mesh.add_updater(update_mesh)
 
         self.interactive_embed()
 
