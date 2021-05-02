@@ -97,7 +97,7 @@ class SceneFileWriter(object):
                     default_name, config["movie_file_extension"]
                 ),
             )
-            if config["save_as_gif"]:
+            if config["format"] == "gif":
                 self.gif_file_path = os.path.join(
                     movie_dir,
                     add_extension_if_not_present(default_name, GIF_FILE_EXTENSION),
@@ -287,7 +287,7 @@ class SceneFileWriter(object):
             frame = frame_or_renderer
             if config["write_to_movie"]:
                 self.writing_process.stdin.write(frame.tobytes())
-            if config["save_pngs"]:
+            if config["format"] == "png":
                 path, extension = os.path.splitext(self.image_file_path)
                 Image.fromarray(frame).save(f"{path}{self.frame_count}{extension}")
                 self.frame_count += 1
@@ -474,10 +474,10 @@ class SceneFileWriter(object):
             "-nostdin",
         ]
 
-        if config["write_to_movie"] and not config["save_as_gif"]:
+        if config["write_to_movie"] and not config["format"] == "gif":
             commands += ["-c", "copy", movie_file_path]
 
-        if config["save_as_gif"]:
+        if config["format"] == "gif":
             if not config["output_file"]:
                 self.gif_file_path = str(
                     add_version_before_extension(self.gif_file_path)
