@@ -146,34 +146,20 @@ ogp_site_url = "https://docs.manim.community/"
 inheritance_graph_attrs = dict(
     concentrate=True,
     size='""',
-    # ratio="compress",
-    # sep=0,
     splines="ortho",
-    # dpi=150,  # breaks image map, repair using imageMapResizer.js
     nodesep=0.1,
     ranksep=0.2,
 )
 
 inheritance_node_attrs = dict(
-    # color="transparent",
-    penwidth=0,
-    # fillcolor='"#383838"',
-    # fontcolor='"#e07a5f"',
-    shape="box",
-    width=0.05,
-    height=0.05,
-    margin=0.05
-    # style='"rounded"',
+    penwidth=0, shape="box", width=0.05, height=0.05, margin=0.05
 )
 
 inheritance_edge_attrs = dict(
-    # color='"#d0d0d0"',
     penwidth=1,
-    # arrowsize=1,
 )
 
 html_js_files = [
-    "imageMapResizer.min.js",
     "responsiveSvg.js",
 ]
 
