@@ -76,7 +76,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 111 pull requests were merged for this release.
+A total of 112 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -108,6 +108,12 @@ Breaking changes
 
 Deprecated classes and functions
 --------------------------------
+
+* `#1431 <https://github.com/ManimCommunity/manim/pull/1431>`__: Fix CLI bugs
+   - Fixed conflict with ``-f`` which was previously assigned to both ``--show_in_file_browser`` and ``--format`` by removing ``-f`` from ``--format``. A warning is issued that ``-f`` will soon move to ``--format``.
+   - Added back in flags to render the files as gif/last frame. Deprecated them in favor of ``--format``.
+   - Fixed the broken ``--output_file``/``-o`` option.
+   - Fixed an issue where the ``-qh`` quality option was interpreted as ``-q`` ``-h``, prompting the help page.
 
 * `#1354 <https://github.com/ManimCommunity/manim/pull/1354>`__: Refactored a few functions in space_ops.py, deprecated :func:`~.angle_between`
 
