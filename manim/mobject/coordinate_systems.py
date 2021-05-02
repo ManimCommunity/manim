@@ -698,6 +698,7 @@ class NumberPlane(Axes):
                 mob.insert_n_curves(num_inserted_curves - num_curves)
         return self
 
+
 class PolarPlane(Axes):
     """Creates a cartesian plane with background lines.
 
@@ -731,66 +732,95 @@ class PolarPlane(Axes):
     """
 
     def __init__(
-            self,
-            x_range=(-config["frame_y_radius"], config["frame_y_radius"], 1),
-            y_range=(-config["frame_y_radius"], config["frame_y_radius"], 1),
-            a_step=10,
-            x_length=None,
-            y_length=None,
-            axis_config=None,
-            y_axis_config=None,
-            background_line_style=None,
-            faded_line_style=None,
-            faded_line_ratio=2,
-            make_smooth_after_applying_functions=True,
-            **kwargs,
+        self,
+        radius_max=config["frame_y_radius"],
+        size=None,
+        radius_step=1,
+        azimuth_step=None,
+        azimuth_units="PI radians",
+        azimuth_offset=0,
+        azimuth_direction="CCW",
+        azimuth_label_buff=SMALL_BUFF,
+        azimuth_label_scale=0.5,
+        radius_config=None,
+        background_line_style=None,
+        faded_line_style=None,
+        faded_line_ratio=1,
+        make_smooth_after_applying_functions=True,
+        **kwargs,
     ):
 
+        # error catching
+        if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
+            self.azimuth_units = azimuth_units
+        else:
+            raise ValueError(
+                "Invalid azimuth units. Expected one of: PI radians, TAU radians, degrees, gradians or None."
+            )
+
+        if azimuth_direction in ["CW", "CCW"]:
+            self.azimuth_direction = azimuth_direction
+        else:
+            raise ValueError("Invalid azimuth units. Expected one of: CW, CCW.")
+
         # configs
-        self.axis_config = {
+        self.radius_config = {
             "stroke_color": WHITE,
             "stroke_width": 2,
             "include_ticks": False,
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
-            "label_direction": DR,
+            "label_direction": DL,
             "number_scale_value": 0.5,
         }
-        self.y_axis_config = {}
+
         self.background_line_style = {
             "stroke_color": BLUE_D,
             "stroke_width": 2,
             "stroke_opacity": 1,
         }
 
+        self.azimuth_step = (
+            (
+                {
+                    "PI radians": 20,
+                    "TAU radians": 20,
+                    "degrees": 36,
+                    "gradians": 40,
+                    None: 1,
+                }[azimuth_units]
+            )
+            if azimuth_step is None
+            else azimuth_step
+        )
+
         self.update_default_configs(
-            (self.axis_config, self.y_axis_config, self.background_line_style),
-            (axis_config, y_axis_config, background_line_style),
+            (self.radius_config, self.background_line_style),
+            (radius_config, background_line_style),
         )
 
         # Defaults to a faded version of line_config
         self.faded_line_style = faded_line_style
         self.faded_line_ratio = faded_line_ratio
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
-        self.a_step = a_step
+        self.azimuth_offset = azimuth_offset
+        self.azimuth_label_buff = azimuth_label_buff
+        self.azimuth_label_scale = azimuth_label_scale
 
         # init
 
         super().__init__(
-            x_range=x_range,
-            y_range=y_range,
-            x_length=x_length,
-            y_length=y_length,
-            axis_config=self.axis_config,
-            y_axis_config=self.y_axis_config,
+            x_range=np.array((-radius_max, radius_max, radius_step)),
+            y_range=np.array((-radius_max, radius_max, radius_step)),
+            x_length=size,
+            y_length=size,
+            axis_config=self.radius_config,
             **kwargs,
         )
 
-        # dynamically adjusts x_length and y_length so that the unit_size is one by default
-        if x_length is None:
-            x_length = self.x_range[1] - self.x_range[0]
-        if y_length is None:
-            y_length = self.y_range[1] - self.y_range[0]
+        #dynamically adjusts size so that the unit_size is one by default
+        if size is None:
+            size = 0
 
         self.init_background_lines()
 
@@ -829,17 +859,18 @@ class PolarPlane(Axes):
         ratio_faded_lines = self.faded_line_ratio
 
         if ratio_faded_lines == 0:  # don't show faded lines
-           ratio_faded_lines = 1  # i.e. set ratio to 1
-        step = (1 / ratio_faded_lines) * (TAU * (1 / self.a_step))
+            ratio_faded_lines = 1  # i.e. set ratio to 1
+        rstep = (1 / ratio_faded_lines) * self.x_axis.x_step
+        astep = (1 / ratio_faded_lines) * (TAU * (1 / self.azimuth_step))
         rlines1 = VGroup()
         rlines2 = VGroup()
         alines1 = VGroup()
         alines2 = VGroup()
 
-        rinput = np.arange(0, self.x_axis.x_max, step)
-        ainput = np.arange(0, TAU, step)
+        rinput = np.arange(0, self.x_axis.x_max, rstep)
+        ainput = np.arange(0, TAU, astep)
 
-        unit_vector = self.x_axis.get_unit_vector()[0];
+        unit_vector = self.x_axis.get_unit_vector()[0]
 
         for k, x in enumerate(rinput):
             new_line = Circle(radius=x * unit_vector)
@@ -1315,6 +1346,170 @@ class PolarPlane(Axes):
                 + r"}"
             )
 
+        def polar_to_point(self, radius, azimuth):
+            r"""Gets a point from polar coordinates.
+
+            Parameters
+            ----------
+            radius : :class:`float`
+                The coordinate radius (:math:`r`).
+
+            azimuth : :class:`float`
+                The coordinate azimuth (:math:`\theta`).
+
+            Returns
+            -------
+            :class:`numpy.ndarray`
+                The point.
+            """
+
+        return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
+
+    def pr2pt(self, radius, azimuth):
+        """Abbreviation for ``polar_to_point``"""
+        return self.polar_to_point(radius, azimuth)
+
+    def point_to_polar(self, point):
+        r"""Gets polar coordinates from a point.
+
+        Parameters
+        ----------
+        point : :class:`numpy.ndarray`
+            The point.
+
+        Returns
+        -------
+        Tuple[:class:`float`, :class:`float`]
+            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
+        """
+        x, y = self.point_to_coords(point)
+        return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
+
+    def pt2pr(self, point):
+        """Abbreviation for ``point_to_polar``"""
+        return self.point_to_polar(point)
+
+    def get_coordinate_labels(self, r_vals, a_vals, **kwargs):
+        if r_vals is None:
+            r_vals = [r for r in self.get_x_axis().get_tick_range() if r >= 0]
+        if a_vals is None:
+            a_vals = np.arange(0, 1, 1 / self.azimuth_step)
+        r_mobs = self.get_x_axis().add_numbers(r_vals)
+        if self.azimuth_direction == "CCW":
+            d = 1
+        elif self.azimuth_direction == "CW":
+            d = -1
+        else:
+            raise ValueError("Invalid azimuth direction. Expected one of: CW, CCW")
+        a_points = [
+            {
+                "label": i,
+                "point": np.array(
+                    [
+                        self.get_right()[0]
+                        * np.cos(d * (i * TAU) + self.azimuth_offset),
+                        self.get_right()[0]
+                        * np.sin(d * (i * TAU) + self.azimuth_offset),
+                        0,
+                    ]
+                ),
+            }
+            for i in a_vals
+        ]
+        if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
+            a_tex = [
+                self.get_radian_label(i["label"])
+                .scale(self.azimuth_label_scale)
+                .next_to(
+                    i["point"],
+                    direction=i["point"],
+                    aligned_edge=i["point"],
+                    buff=self.azimuth_label_buff,
+                )
+                for i in a_points
+            ]
+        elif self.azimuth_units == "degrees":
+            a_tex = [
+                MathTex(f'{360 * i["label"]:g}' + r"^{\circ}")
+                .scale(self.azimuth_label_scale)
+                .next_to(
+                    i["point"],
+                    direction=i["point"],
+                    aligned_edge=i["point"],
+                    buff=self.azimuth_label_buff,
+                )
+                for i in a_points
+            ]
+        elif self.azimuth_units == "gradians":
+            a_tex = [
+                MathTex(f'{400 * i["label"]:g}' + r"^{g}")
+                .scale(self.azimuth_label_scale)
+                .next_to(
+                    i["point"],
+                    direction=i["point"],
+                    aligned_edge=i["point"],
+                    buff=self.azimuth_label_buff,
+                )
+                for i in a_points
+            ]
+        elif self.azimuth_units is None:
+            a_tex = [
+                MathTex(f'{i["label"]:g}')
+                .scale(self.azimuth_label_scale)
+                .next_to(
+                    i["point"],
+                    direction=i["point"],
+                    aligned_edge=i["point"],
+                    buff=self.azimuth_label_buff,
+                )
+                for i in a_points
+            ]
+        a_mobs = VGroup(*a_tex)
+        self.coordinate_labels = VGroup(r_mobs, a_mobs)
+        return self.coordinate_labels
+
+    def add_coordinates(self, r_vals=None, a_vals=None):
+        r"""Gets polar coordinates from a point.
+
+        Parameters
+        ----------
+        point : :class:`numpy.ndarray`
+            The point.
+
+        Returns
+        -------
+        Tuple[:class:`float`, :class:`float`]
+            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
+        """
+        self.add(self.get_coordinate_labels(r_vals, a_vals))
+        return self
+
+    def get_radian_label(self, number):
+        constant_label = {"PI radians": r"\pi", "TAU radians": r"\tau"}[
+            self.azimuth_units
+        ]
+        division = number * {"PI radians": 2, "TAU radians": 1}[self.azimuth_units]
+        frac = fr.Fraction(division).limit_denominator(max_denominator=100)
+        if frac.numerator == 0 & frac.denominator == 0:
+            return MathTex(r"0")
+        elif frac.numerator == 1 and frac.denominator == 1:
+            return MathTex(constant_label)
+        elif frac.numerator == 1:
+            return MathTex(
+                r"\tfrac{" + constant_label + r"}{" + str(frac.denominator) + "}"
+            )
+        elif frac.denominator == 1:
+            return MathTex(str(frac.numerator) + constant_label)
+        else:
+            return MathTex(
+                r"\tfrac{"
+                + str(frac.numerator)
+                + constant_label
+                + r"}{"
+                + str(frac.denominator)
+                + r"}"
+            )
+
 
 class ComplexPlane(NumberPlane):
     def __init__(self, color=BLUE, **kwargs):
@@ -1364,4 +1559,3 @@ class ComplexPlane(NumberPlane):
     def add_coordinates(self, *numbers):
         self.add(self.get_coordinate_labels(*numbers))
         return self
-
