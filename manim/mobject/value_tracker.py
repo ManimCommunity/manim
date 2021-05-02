@@ -96,22 +96,22 @@ class ValueTracker(Mobject):
         self.increment_value(d_value)
         return self
 
-    def __ifloordiv__(self, d_value: Union[float, int]):
+    def __ifloordiv__(self, d_value: flaot):
         """Set the value of this value tracker to the floor division of the current value by ``d_value``."""
         self.set_value(self.get_value() // d_value)
         return self
 
-    def __imod__(self, d_value: Union[float, int]):
+    def __imod__(self, d_value: flaot):
         """Set the value of this value tracker to the current value modulo ``d_value``."""
         self.set_value(self.get_value() % d_value)
         return self
 
-    def __imul__(self, d_value: Union[float, int]):
+    def __imul__(self, d_value: flaot):
         """Set the value of this value tracker to the product of the current value and ``d_value``."""
         self.set_value(self.get_value() * d_value)
         return self
 
-    def __ipow__(self, d_value: Union[float, int]):
+    def __ipow__(self, d_value: flaot):
         """Set the value of this value tracker to the current value raised to the power of ``d_value``."""
         self.set_value(self.get_value() ** d_value)
         return self
@@ -121,7 +121,7 @@ class ValueTracker(Mobject):
         self.increment_value(-d_value)
         return self
 
-    def __itruediv__(self, d_value: Union[float, int]):
+    def __itruediv__(self, d_value: flaot):
         """Sets the value of this value tracker to the current value divided by ``d_value``."""
         self.set_value(self.get_value() / d_value)
         return self
