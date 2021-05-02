@@ -14,7 +14,7 @@ class Window(PygletWindow):
 
     def __init__(self, renderer, size=None, **kwargs):
         if size is None:
-            size = (config["pixel_width"], config["pixel_height"])
+            size = (854, 480)
         super().__init__(size=size)
 
         self.title = f"Manim Community {__version__}"
