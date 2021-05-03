@@ -2273,7 +2273,8 @@ class Angle(Arc, Elbow):
     quadrant : Sequence[:class:`int`]
         A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
         The first value indicates whether to anchor the arc on the first line closer to the end point (1)
-        or start point (-1), and the second value functions similarly for the end (1) or start (-1) of the second line.
+        or start point (-1), and the second value functions similarly for the 
+        end (1) or start (-1) of the second line.
         Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
     other_angle :
         Toggles between the two possible angles defined by two points and an arc center. If set to
