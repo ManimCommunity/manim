@@ -322,14 +322,14 @@ class Text(SVGMobject):
 
         class TextItalicAndBoldExample(Scene):
             def construct(self):
-                text0 = Text('Hello world', slant=ITALIC)
-                text1 = Text('Hello world', t2s={'world':ITALIC})
-                text2 = Text('Hello world', weight=BOLD)
-                text3 = Text('Hello world', t2w={'world':BOLD})
-                self.add(text0,text1, text2,text3)
-                for i,mobj in enumerate(self.mobjects):
-                    mobj.shift(DOWN*(i-1))
+                text0 = Text('Hello world', t2c={'world':YELLOW})
+                text1 = Text('Hello world', slant=ITALIC)
+                text2 = Text('Hello world', t2s={'world':ITALIC})
+                text3 = Text('Hello world', weight=BOLD)
+                text4 = Text('Hello world', t2w={'world':BOLD})
 
+                self.add(text0,text1,text2,text3,text4)
+                Group(*self.mobjects).arrange(DOWN, buff=.8)
 
     .. manim:: TextMoreCustomization
             :save_last_frame:
@@ -518,7 +518,9 @@ class Text(SVGMobject):
                 submobjects_char_index += 1
         return chars
 
-    def find_indexes(self, word: str, text: str):
+    def find_indexes(self, word: str, text: str, change_color=False):
+        if change_color is True:
+            text = "".join(text.split())
         """Internally used function. Finds the indexes of ``text`` in ``word``."""
         temp = re.match(r"\[([0-9\-]{0,}):([0-9\-]{0,})\]", word)
         if temp:
@@ -556,8 +558,12 @@ class Text(SVGMobject):
     def set_color_by_t2c(self, t2c=None):
         """Internally used function. Sets colour for specified strings."""
         t2c = t2c if t2c else self.t2c
+        print(t2c.items())
         for word, color in list(t2c.items()):
-            for start, end in self.find_indexes(word, self.original_text):
+            for start, end in self.find_indexes(
+                word, self.original_text, change_color=True
+            ):
+
                 self.chars[start:end].set_color(color)
 
     def set_color_by_t2g(self, t2g=None):
