@@ -7,11 +7,10 @@ __all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
 import re
 from typing import List
 
-from manim import logger
-
 from ... import config
 from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
+from ...utils.deprecation import deprecated
 
 
 def string_to_numbers(num_string: str) -> List[float]:
@@ -253,12 +252,7 @@ class SVGPathMobject(VMobject):
         return self
 
 
+@deprecated(until="v0.7.0", replacement="SVGPathMobject")
 class VMobjectFromSVGPathstring(SVGPathMobject):
-    """Pure alias of SVGPathMobject, retained for backwards compatibility"""
-
     def __init__(self, *args, **kwargs):
-        logger.warning(
-            "VMobjectFromSVGPathstring has been deprecated in favour "
-            "of SVGPathMobject. Please use SVGPathMobject instead."
-        )
         SVGPathMobject.__init__(self, *args, **kwargs)
