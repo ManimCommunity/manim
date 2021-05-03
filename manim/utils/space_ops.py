@@ -43,13 +43,11 @@ from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
 from ..utils.iterables import adjacent_pairs
 from ..utils.simple_functions import fdiv
+from ..utils.deprecation import deprecated
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.linalg.norm")
 def get_norm(vect):
-    logger.warning(
-        "get_norm has been deprecated and will be removed in a future release."
-        "Use np.linalg.norm instead."
-    )
     return np.linalg.norm(vect)
 
 
@@ -210,11 +208,8 @@ def z_to_vector(vector):
     return np.dot(rotation_about_z(theta), phi_down)
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="angle_between_vectors")
 def angle_between(v1, v2):
-    logger.warning(
-        "angle_between has been deprecated and will be removed in a future release."
-        "Use angle_between_vectors instead."
-    )
     return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
 
 
@@ -270,11 +265,8 @@ def normalize_along_axis(array, axis, fall_back=None):
     return array
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.cross")
 def cross(v1, v2):
-    logger.warning(
-        "cross has been deprecated and will be removed in a future release."
-        "Use np.cross instead."
-    )
     return np.cross(v1, v2)
 
 

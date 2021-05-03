@@ -15,6 +15,7 @@ from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..utils.rate_functions import smooth
+from ..utils.deprecation import deprecated
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
@@ -138,15 +139,8 @@ class Animation:
         alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
 
+    @deprecated(until="v0.6.0", replacement="interpolate")
     def update(self, alpha: float) -> None:
-        """
-        This method shouldn't exist, but it's here to
-        keep many old scenes from breaking
-        """
-        logger.warning(
-            "animation.update() has been deprecated. "
-            "Please use animation.interpolate() instead."
-        )
         self.interpolate(alpha)
 
     def interpolate_mobject(self, alpha: float) -> None:

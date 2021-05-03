@@ -77,8 +77,6 @@ from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Optional, Tupl
 import numpy as np
 from colour import Color
 
-from .. import logger
-
 if TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
 
@@ -163,8 +161,6 @@ class Create(ShowPartial):
 
 @deprecated(since="0.5.0", until="0.7.0", replacement="Create")
 class ShowCreation(Create):
-    """Deprecated. Use :class:`~.Create` instead."""
-
     def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
