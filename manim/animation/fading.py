@@ -74,7 +74,6 @@ class _Fade(Transform):
             else:
                 shift = ORIGIN
         self.shift_vector = shift
-        print(self.shift_vector)
         self.scale_factor = scale
         super().__init__(mobject, **kwargs)
 
