@@ -207,6 +207,17 @@ class PGroup(PMobject):
 
 
 class PointCloudDot(Mobject1D):
+    """A disc made of a cloud of Dots
+    Example
+    --------
+    .. manim:: PointCloudDotExample
+
+        class PointCloudDotExample(Scene):
+            def construct(self):
+                dots = PointCloudDot(color=RED)
+                self.add(dots)
+    """
+
     def __init__(
         self,
         center=ORIGIN,
