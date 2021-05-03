@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "manim"
-version = "0.5.0"
+version = "0.6.0"
 description = "Animation engine for explanatory math videos."
 authors = ["The Manim Community Developers","3b1b <grant@3blue1brown.com>"]
 license="MIT"
 readme="README.md"
 repository="https://github.com/manimcommunity/manim"
 documentation="https://docs.manim.community/"
+homepage="https://www.manim.community/"
 classifiers= [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
@@ -25,7 +26,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-click = "*"
+click = "^7.1"
 click-default-group = "*"
 colour = "*"
 numpy = "^1.9"
@@ -43,7 +44,7 @@ setuptools = "*"
 importlib-metadata = {version = "*", python = "<3.8"}
 grpcio =  { version = "1.33.*", optional = true }
 grpcio-tools = { version = "1.33.*", optional = true }
-watchdog = { version = "*", optional = true }
+watchdog = "*"
 jupyterlab = { version = "^3.0", optional = true }
 moderngl = "^5.6.3"
 moderngl-window = "^2.3.0"
@@ -52,7 +53,7 @@ cloup = "^0.7.0"
 requests = "*"
 
 [tool.poetry.extras]
-webgl_renderer = ["grpcio","grpcio-tools","watchdog"]
+webgl_renderer = ["grpcio","grpcio-tools"]
 jupyterlab = ["jupyterlab"]
 
 [tool.poetry.dev-dependencies]
@@ -70,6 +71,12 @@ gitpython = "^3"
 pygithub = "^1"
 flake8 = "^3.9.0"
 isort = "^5.8.0"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"
+"Changelog" = "https://docs.manim.community/en/stable/changelog.html"
+"Twitter" = "https://twitter.com/manim_community"
+"Discord" = "https://discord.gg/mMRrZQW"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"

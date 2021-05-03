@@ -66,14 +66,33 @@ class AmbientCameraMoveTest(ThreeDScene):
         self.wait()
 
 
-class FixedInFrameMObjectTest(ThreeDScene):
+# TODO: bring test back after introducing testing tolerance
+#  to account for OS-specific differences in numerics.
+
+# class FixedInFrameMObjectTest(ThreeDScene):
+#     def construct(self):
+#         axes = ThreeDAxes()
+#         self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+#         circ = Circle()
+#         self.add_fixed_in_frame_mobjects(circ)
+#         circ.to_corner(UL)
+#         self.add(axes)
+
+
+class MovingVerticesTest(ThreeDScene):
     def construct(self):
-        axes = ThreeDAxes()
-        self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
-        circ = Circle()
-        self.add_fixed_in_frame_mobjects(circ)
-        circ.to_corner(UL)
-        self.add(axes)
+        self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+        vertices = [1, 2, 3, 4]
+        edges = [(1, 2), (2, 3), (3, 4), (1, 3), (1, 4)]
+        g = Graph(vertices, edges)
+        self.add(g)
+        self.play(
+            g[1].animate.move_to([1, 1, 1]),
+            g[2].animate.move_to([-1, 1, 2]),
+            g[3].animate.move_to([1, -1, -1]),
+            g[4].animate.move_to([-1, -1, 0]),
+        )
+        self.wait()
 
 
 MODULE_NAME = "threed"
