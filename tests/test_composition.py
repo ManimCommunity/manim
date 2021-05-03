@@ -1,6 +1,6 @@
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, Succession
-from manim.animation.fading import FadeIn, FadeIn, FadeOut
+from manim.animation.fading import FadeIn, FadeOut
 from manim.constants import DOWN, UP
 from manim.mobject.geometry import Circle, Line, Square
 
