@@ -110,6 +110,7 @@ def test_deprecate_class_since_and_until(caplog):
         msg
         == "The class Qux has been deprecated since 0.7.0 and is expected to be removed after 0.9.0-rc2."
     )
+    assert qx.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_class_msg(caplog):
@@ -121,6 +122,7 @@ def test_deprecate_class_msg(caplog):
         msg
         == "The class Quux has been deprecated and may be removed in a later version. Use something else."
     )
+    assert qu.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_class_replacement(caplog):
@@ -132,6 +134,8 @@ def test_deprecate_class_replacement(caplog):
         msg
         == "The class Quuz has been deprecated and may be removed in a later version. Use ReplaceQuuz instead."
     )
+    doc_msg = "The class Quuz has been deprecated and may be removed in a later version. Use :class:`~.ReplaceQuuz` instead."
+    assert qz.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
 def test_deprecate_class_all(caplog):
@@ -143,6 +147,8 @@ def test_deprecate_class_all(caplog):
         msg
         == "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use ReplaceQuuz instead. Don't use this please."
     )
+    doc_msg = "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use :class:`~.ReplaceQuuz` instead. Don't use this please."
+    assert qza.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
 def _get_caplog_record_msg(caplog):
