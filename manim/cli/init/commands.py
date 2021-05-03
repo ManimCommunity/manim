@@ -18,7 +18,7 @@ from ...utils.file_ops import copy_template_files
     epilog=EPILOG,
 )
 def init():
-    """Sets up a project in current working directory.
+    """Sets up a project in current working directory with default settings.
 
     It copies files from templates directory and pastes them in the current working dir.
 
