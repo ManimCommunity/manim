@@ -211,6 +211,7 @@ class PointCloudDot(Mobject1D):
     Example
     --------
     .. manim:: PointCloudDotExample
+        :save_last_frame:
 
         class PointCloudDotExample(Scene):
             def construct(self):
