@@ -183,7 +183,7 @@ def deprecated(
         """
         warning = warning_msg(True)
         s = "" if since is None else since
-        doc_string = func.__docs__ or ""
+        doc_string = func.__doc__ or ""
         func.__doc__ = f"Deprecated.\n\n{doc_string}\n\n.. admonition:: Deprecated\n  :class: attention\n\n  {warning}"
 
     def deprecate(func: Callable, *args, **kwargs):
