@@ -167,6 +167,8 @@ class Top:
 
     @deprecated(since="0.8.0", message="This method is useless.")
     def mid_func(self):
+        """Middle function in Top."""
+
         pass
 
     @deprecated(until="1.4.0", replacement="Top.NewNested")
@@ -180,6 +182,8 @@ class Top:
 
         @deprecated(since="1.0.0", until="12/25/2025")
         def nested_func(self):
+            """Nested function in Top.NewNested."""
+
             pass
 
     class Bottom:
@@ -239,6 +243,7 @@ def test_deprecate_func_no_args(caplog):
         msg
         == "The method useless has been deprecated and may be removed in a later version."
     )
+    assert useless.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_func_in_class_since_and_message(caplog):
@@ -251,6 +256,7 @@ def test_deprecate_func_in_class_since_and_message(caplog):
         msg
         == "The method Top.mid_func has been deprecated since 0.8.0 and may be removed in a later version. This method is useless."
     )
+    assert t.mid_func.__doc__ == f"Middle function in Top.{doc_admonition}{msg}"
 
 
 def test_deprecate_nested_class_until_and_replacement(caplog):
