@@ -47,7 +47,7 @@ Mobjects
    ~mobject.types.point_cloud_mobject
    ~mobject.types.vectorized_mobject
 
-Mobjects Inheritance Graph
+**Mobject** Inheritance Graph
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. inheritance-diagram::
@@ -101,7 +101,7 @@ Scenes
    ~scene.vector_space_scene
    ~scene.zoomed_scene
 
-Scenes Inheritance Graph
+**Scene** Inheritance Graph
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. inheritance-diagram::
@@ -138,7 +138,7 @@ Animations
    ~animation.transform_matching_parts
    ~animation.update
 
-Animations Inheritance Graph
+**Animation** Inheritance Graph
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. inheritance-diagram::
@@ -171,7 +171,7 @@ Cameras
    ~camera.multi_camera
    ~camera.three_d_camera
 
-Cameras Inheritance Graph
+**Camera** Inheritance Graph
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. inheritance-diagram::
