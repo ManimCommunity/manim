@@ -8,24 +8,42 @@ import copy
 import inspect
 import platform
 import random
+import string
+import threading
 import types
+import warnings
+from queue import Queue
 
 import numpy as np
 from tqdm import tqdm
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
-from ..mobject.opengl_mobject import OpenGLPoint
+from ..mobject.mobject import Mobject, _AnimationBuilder
+from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
-from ..utils.exceptions import EndSceneEarlyException
+from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
+
+
+class RerunSceneHandler(FileSystemEventHandler):
+    """A class to handle rerunning a Scene after the input file is modified."""
+
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def on_modified(self, event):
+        self.queue.put(("rerun_file", [], {}))
 
 
 class Scene(Container):
@@ -79,6 +97,8 @@ class Scene(Container):
         self.time_progression = None
         self.duration = None
         self.last_t = None
+        self.queue = Queue()
+        self.skip_animation_preview = False
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -179,12 +199,21 @@ class Scene(Container):
             self.construct()
         except EndSceneEarlyException:
             pass
+        except RerunSceneException as e:
+            self.remove(*self.mobjects)
+            self.renderer.clear_screen()
+            self.renderer.num_plays = 0
+            return True
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
         # Show info only if animations are rendered or to get image
-        if self.renderer.num_plays or config["save_last_frame"] or config["save_pngs"]:
+        if (
+            self.renderer.num_plays
+            or config["format"] == "png"
+            or config["save_last_frame"]
+        ):
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
             )
@@ -801,7 +830,7 @@ class Scene(Container):
         self.renderer.play(self, *args, **kwargs)
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
-        self.play(Wait(duration=duration, stop_condition=stop_condition))
+        self.play(Wait(run_time=duration, stop_condition=stop_condition))
 
     def wait_until(self, stop_condition, max_time=60):
         """
@@ -900,7 +929,7 @@ class Scene(Container):
         )
         for t in self.time_progression:
             self.update_to_time(t)
-            if not skip_rendering:
+            if not skip_rendering and not self.skip_animation_preview:
                 self.renderer.render(self, t, self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
@@ -915,13 +944,104 @@ class Scene(Container):
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
-    def interact(self):
+    def interactive_embed(self):
+        """
+        Like embed(), but allows for screen interaction.
+        """
+
+        def ipython(shell, namespace):
+            import manim
+            import manim.opengl
+
+            def load_module_into_namespace(module, namespace):
+                for name in dir(module):
+                    namespace[name] = getattr(module, name)
+
+            load_module_into_namespace(manim, namespace)
+            load_module_into_namespace(manim.opengl, namespace)
+
+            def embedded_rerun(*args, **kwargs):
+                self.queue.put(("rerun_keyboard", args, kwargs))
+                shell.exiter()
+
+            namespace["rerun"] = embedded_rerun
+
+            shell(local_ns=namespace)
+            self.queue.put(("exit", [], {}))
+
+        def get_embedded_method(method_name):
+            return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
+
+        local_namespace = inspect.currentframe().f_back.f_locals
+        for method in ("play", "wait", "add", "remove"):
+            embedded_method = get_embedded_method(method)
+            # Allow for calling scene methods without prepending 'self.'.
+            local_namespace[method] = embedded_method
+
+        from IPython.terminal.embed import InteractiveShellEmbed
+        from traitlets.config import Config
+
+        cfg = Config()
+        cfg.TerminalInteractiveShell.confirm_exit = False
+        shell = InteractiveShellEmbed(config=cfg)
+
+        keyboard_thread = threading.Thread(
+            target=ipython,
+            args=(shell, local_namespace),
+        )
+        keyboard_thread.start()
+
+        self.interact(shell, keyboard_thread)
+
+    def interact(self, shell, keyboard_thread):
+        event_handler = RerunSceneHandler(self.queue)
+        file_observer = Observer()
+        file_observer.schedule(event_handler, config["input_file"], recursive=True)
+        file_observer.start()
+
         self.quit_interaction = False
+        keyboard_thread_needs_join = True
         while not (self.renderer.window.is_closing or self.quit_interaction):
-            self.renderer.animation_start_time = 0
-            dt = 1 / config["frame_rate"]
-            self.renderer.render(self, dt, self.moving_mobjects)
-            self.update_mobjects(dt)
+            if not self.queue.empty():
+                tup = self.queue.get_nowait()
+                if tup[0].startswith("rerun"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard"):
+                        shell.pt_app.app.exit(exception=EOFError)
+                    keyboard_thread.join()
+
+                    kwargs = tup[2]
+                    if "from_animation_number" in kwargs:
+                        config["from_animation_number"] = kwargs[
+                            "from_animation_number"
+                        ]
+                    # # TODO: This option only makes sense if interactive_embed() is run at the
+                    # # end of a scene by default.
+                    # if "upto_animation_number" in kwargs:
+                    #     config["upto_animation_number"] = kwargs[
+                    #         "upto_animation_number"
+                    #     ]
+
+                    keyboard_thread.join()
+                    raise RerunSceneException
+                elif tup[0].startswith("exit"):
+                    keyboard_thread.join()
+                    keyboard_thread_needs_join = False
+                    break
+                else:
+                    method, args, kwargs = tup
+                    getattr(self, method)(*args, **kwargs)
+            else:
+                self.renderer.animation_start_time = 0
+                dt = 1 / config["frame_rate"]
+                self.renderer.render(self, dt, self.moving_mobjects)
+                self.update_mobjects(dt)
+
+        # Join the keyboard thread if necessary.
+        if shell is not None and keyboard_thread_needs_join:
+            shell.pt_app.app.exit(exception=EOFError)
+            keyboard_thread.join()
+
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
 

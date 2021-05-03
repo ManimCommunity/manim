@@ -29,6 +29,7 @@ Mobjects
    ~mobject.mobject_update_utils
    ~mobject.number_line
    ~mobject.numbers
+   ~mobject.polyhedra
    ~mobject.probability
    ~mobject.shape_matchers
    ~mobject.three_d_utils

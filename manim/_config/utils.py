@@ -25,6 +25,7 @@ import numpy as np
 
 from .. import constants
 from ..utils.tex import TexTemplate, TexTemplateFromFile
+from ..utils.tex_templates import TexTemplateLibrary
 from .logger_utils import set_file_logger
 
 
@@ -243,6 +244,7 @@ class ManimConfig(MutableMapping):
         "custom_folders",
         "disable_caching",
         "ffmpeg_loglevel",
+        "format",
         "flush_cache",
         "frame_height",
         "frame_rate",
@@ -260,6 +262,7 @@ class ManimConfig(MutableMapping):
         "media_dir",
         "movie_file_extension",
         "notify_outdated_version",
+        "output_file",
         "partial_movie_dir",
         "pixel_height",
         "pixel_width",
@@ -625,6 +628,7 @@ class ManimConfig(MutableMapping):
             "save_as_gif",
             "write_all",
             "disable_caching",
+            "format",
             "flush_cache",
             "progress_bar",
             "transparent",
@@ -659,7 +663,6 @@ class ManimConfig(MutableMapping):
                 if attr is not None:
                     self[key] = attr
 
-        # The -s (--save_last_frame) flag invalidates -w (--write_to_movie).
         if self["save_last_frame"]:
             self["write_to_movie"] = False
 
@@ -840,6 +843,20 @@ class ManimConfig(MutableMapping):
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
         logging.getLogger("manim").setLevel(val)
+
+    @property
+    def format(self):
+        """File format; "png", "gif", "mp4", or "mov"."""
+        return self._d["format"]
+
+    @format.setter
+    def format(self, val: str) -> None:
+        """File format the renderer will output."""
+        self._set_from_list(
+            "format",
+            val,
+            [None, "png", "gif", "mp4", "mov"],
+        )
 
     ffmpeg_loglevel = property(
         lambda self: self._d["ffmpeg_loglevel"],
@@ -1341,7 +1358,7 @@ class ManimConfig(MutableMapping):
             if fn:
                 self._tex_template = TexTemplateFromFile(filename=fn)
             else:
-                self._tex_template = TexTemplate()
+                self._tex_template = TexTemplateLibrary.default.copy()
         return self._tex_template
 
     @tex_template.setter

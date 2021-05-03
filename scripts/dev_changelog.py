@@ -64,34 +64,55 @@ PR_LABELS = {
     "deprecation": "Deprecated classes and functions",
     "new feature": "New features",
     "enhancement": "Enhancements",
-    "bug": "Fixed bugs",
+    "bugfix": "Fixed bugs",
     "documentation": "Documentation-related changes",
     "testing": "Changes concerning the testing system",
     "infrastructure": "Changes to our development infrastructure",
     "maintenance": "Code quality improvements and similar refactors",
-    "reverts": "Changes that needed to be reverted again",
+    "revert": "Changes that needed to be reverted again",
+    "release": "New releases",
     "unlabeled": "Unclassified changes",
 }
 
 
-def get_authors_and_reviewers(lst, cur, github_repo, pr_nums):
-    pat = r"^.*\t(.*)$"
+def process_pullrequests(lst, cur, github_repo, pr_nums):
+    lst_commit = github_repo.get_commit(sha=this_repo.git.rev_list("-1", lst))
+    lst_date = lst_commit.commit.author.date
 
-    # authors, in current release and previous to current release.
-    cur = set(re.findall(pat, this_repo.git.shortlog("-s", f"{lst}..{cur}"), re.M))
-    pre = set(re.findall(pat, this_repo.git.shortlog("-s", lst), re.M))
-
-    # Append '+' to new authors.
-    authors = [s + " +" for s in cur - pre] + [s for s in cur & pre]
-    authors.sort()
-
-    reviewers = []
-    for num in tqdm(pr_nums, desc="Fetching reviewer comments"):
+    authors = set()
+    reviewers = set()
+    pr_by_labels = defaultdict(list)
+    for num in tqdm(pr_nums, desc="Processing PRs"):
         pr = github_repo.get_pull(num)
-        reviewers.extend(rev.user.name for rev in pr.get_reviews())
-    reviewers = sorted(set(rev for rev in reviewers if rev is not None))
+        authors.add(pr.user)
+        reviewers = reviewers.union(rev.user for rev in pr.get_reviews())
+        pr_labels = [label.name for label in pr.labels]
+        for label in PR_LABELS.keys():
+            if label in pr_labels:
+                pr_by_labels[label].append(pr)
+                break  # ensure that PR is only added in one category
+        else:
+            pr_by_labels["unlabeled"].append(pr)
 
-    return {"authors": authors, "reviewers": reviewers}
+    # identify first-time contributors:
+    author_names = []
+    for author in authors:
+        name = author.name if author.name is not None else author.login
+        if github_repo.get_commits(author=author, until=lst_date).totalCount == 0:
+            name += " +"
+        author_names.append(name)
+
+    reviewer_names = []
+    for reviewer in reviewers:
+        reviewer_names.append(
+            reviewer.name if reviewer.name is not None else reviewer.login
+        )
+
+    return {
+        "authors": sorted(author_names),
+        "reviewers": sorted(reviewer_names),
+        "PRs": pr_by_labels,
+    }
 
 
 def get_pr_nums(lst, cur):
@@ -107,32 +128,15 @@ def get_pr_nums(lst, cur):
     commits = this_repo.git.log(
         "--oneline", "--no-merges", "--first-parent", f"{lst}..{cur}"
     )
+    split_commits = list(
+        filter(lambda x: "pre-commit autoupdate" not in x, commits.split("\n"))
+    )
+    commits = "\n".join(split_commits)
     issues = re.findall(r"^.*\(\#(\d+)\)$", commits, re.M)
     prnums.extend(int(s) for s in issues)
 
     print(prnums)
     return prnums
-
-
-def sort_by_labels(github_repo, pr_nums):
-    """Sorts PR into groups based on labels.
-
-    This implementation sorts based on importance into a singular group. If a
-    PR uses multiple labels, it is sorted under one label.
-
-    """
-    pr_by_labels = defaultdict(list)
-    for num in tqdm(pr_nums, desc="Sorting by labels"):
-        pr = github_repo.get_pull(num)
-        pr_labels = [label.name for label in pr.labels]
-        for label in PR_LABELS.keys():
-            if label in pr_labels:
-                pr_by_labels[label].append(pr)
-                break  # ensure that PR is only added in one category
-        else:
-            pr_by_labels["unlabeled"].append(pr)
-
-    return pr_by_labels
 
 
 def get_summary(body):
@@ -154,6 +158,7 @@ def get_summary(body):
     "additional",
     nargs=-1,
     required=False,
+    type=int,
 )
 @click.option(
     "-o", "--outfile", type=str, help="Path and file name of the changelog output."
@@ -181,11 +186,9 @@ def main(token, prior, tag, additional, outfile):
         pr_nums = pr_nums + list(additional)
 
     # document authors
-    contributors = get_authors_and_reviewers(
-        lst_release, cur_release, github_repo, pr_nums
-    )
-    authors = contributors["authors"]
-    reviewers = contributors["reviewers"]
+    contributions = process_pullrequests(lst_release, cur_release, github_repo, pr_nums)
+    authors = contributions["authors"]
+    reviewers = contributions["reviewers"]
 
     if not outfile:
         outfile = (
@@ -241,7 +244,7 @@ def main(token, prior, tag, additional, outfile):
             f"A total of {len(pr_nums)} pull requests were merged for this release.\n\n"
         )
 
-        pr_by_labels = sort_by_labels(github_repo, pr_nums)
+        pr_by_labels = contributions["PRs"]
         for label in PR_LABELS.keys():
             pr_of_label = pr_by_labels[label]
 

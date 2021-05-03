@@ -10,8 +10,8 @@ For first-time contributors
 
 
 #. Fork the project. Go to https://github.com/ManimCommunity/manim and
-   click the "fork" button to create your own copy of the project. You will
-   need a GitHub account. This will allow you to make a "pull request" (PR)
+   click the "fork" button to create a copy of the project for you to work on. You will
+   need a GitHub account. This will allow you to make a "Pull Request" (PR)
    to the ManimCommunity repo later on.
 
 #. Clone your fork to your local computer:
@@ -48,7 +48,7 @@ For first-time contributors
 
 #. Install Manim:
  
-   - See our :doc:`instructions for developers<installation/for_dev>` for
+   - See our :doc:`instructions for developers<../installation/for_dev>` for
      details and continue here afterwards.
 
 #. Install Pre-Commit:
@@ -57,7 +57,7 @@ For first-time contributors
 
       poetry run pre-commit install
    
-   This will ensure during development that each of your commits are properly
+   This will ensure during development that each of your commits is properly
    formatted against our linter and formatters, ``black``, ``flake8``, and
    ``isort``.
 
@@ -87,7 +87,7 @@ Develop your contribution
 #. Write some awesome code!
 
    You're ready to make changes in your local repository's branch.
-   You can add local files you've changed with in the current directory with
+   You can add local files you've changed within the current directory with
    ``git add .``, or add specific files with
 
    .. code-block:: shell
@@ -137,12 +137,12 @@ Polishing Changes and Submitting a Pull Request
 As soon as you are ready to share your local changes with the community
 so that they can be discussed, go through the following steps to open a
 pull request. A pull request signifies to the ManimCommunity organization,
-"Here's some changes I wrote; I think it's worthwhile for you to maintain
+"Here are some changes I wrote; I think it's worthwhile for you to maintain
 them."
 
 .. NOTE::
 
-   You do not need to have everything (code / documentation / tests) complete
+   You do not need to have everything (code/documentation/tests) complete
    to open a pull request (PR). If the PR is still under development, please
    mark it as a draft. Community developers will still be able to review the
    changes, discuss yet-to-be-implemented changes, and offer advice; however,
@@ -194,24 +194,26 @@ Our pipeline consists of a series of different tests that ensure
 that manim still works as intended and that the code you added
 sticks to our coding conventions.
 
-- *Code style*: We use the code style imposed
-  by `Black <https://black.readthedocs.io/en/stable/>`_. The pipeline
+- **Code style**: We use the code style imposed
+  by `Black <https://black.readthedocs.io/en/stable/>`_, `isort <https://pycqa.github.io/isort/>`_
+  and `flake8 <https://flake8.pycqa.org/en/latest/>`_. The GitHub pipeline
   makes sure that the (Python) files changed in your pull request
   also adhere to this code style. If this step of the pipeline fails,
-  fix your code style by running ``black <file or directory>`` to
-  automatically format your files.
+  fix your code formatting automatically by running ``black <file or directory>`` and ``isort <file or directory>``. 
+  To fix code style problems, run ``flake8 <file or directory>`` for a style report, and then fix the problems
+  manually that were detected by ``flake8``.
 
-- *Tests*: The pipeline runs manim's test suite on different operating systems
+- **Tests**: The pipeline runs manim's test suite on different operating systems
   (the latest versions of Ubuntu, MacOS, and Windows) for different versions of Python.
   The test suite consists of two different kinds of tests: integration tests
   and doctests. You can run them locally by executing ``poetry run pytest``
   and ``poetry run pytest --doctest-modules manim``, respectively, from the
   root directory of your cloned fork.
 
-- *Documentation*: We also build a version of the documentation corresponding
+- **Documentation**: We also build a version of the documentation corresponding
   to your pull request. Make sure not to introduce any Sphinx errors, and have
   a look at the built HTML files to see whether the formatting of the documentation
-  you added looks like you intended. You can build the documentation locally
+  you added looks as you intended. You can build the documentation locally
   by running ``make html`` from the ``docs`` directory.
 
 Finally, if the pipeline passes and you are satisfied with your changes: wait for
@@ -223,8 +225,7 @@ wants to merge your changes! Once approved, your changes may be merged!
 Further useful guidelines
 =========================
 
-#. When submitting a PR, please make special note of whether your proposed
-   changes will result in breaking changes.
+#. When submitting a PR, please mention explicitly if it includes breaking changes.
 
 #. When submitting a PR, make sure that your proposed changes are as general as
    possible, and ready to be taken advantage of by all of manim's users. In
@@ -234,8 +235,8 @@ Further useful guidelines
 #. If you are a maintainer, please label issues and PRs appropriately and
    frequently.
 
-#. When opening a new issue, if there are old issues that are related, link
-   them in your new issue (even if the old ones are closed).
+#. When opening a new issue, if there are old issues that are related, add a link
+   to them in your new issue (even if the old ones are closed).
 
 #. When submitting a code review, it is highly recommended that you adhere to
    `these general guidelines <https://conventionalcomments.org/>`_. 
@@ -249,8 +250,8 @@ Further useful guidelines
 
 
 You can find examples for the ``docs`` in several places:
-the :doc:`Example Gallery<examples>`, :doc:`Tutorials<tutorials>`,
-and :doc:`Reference Classes<reference>`.
+the :doc:`Example Gallery <../examples>`, :doc:`Tutorials <../tutorials>`,
+and :doc:`Reference Classes <../reference>`.
 
 In case you are contributing, please have a look at this flowchart:
 
