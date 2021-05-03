@@ -182,9 +182,8 @@ def deprecated(
             The callable whose docstring to adjust.
         """
         warning = warning_msg(True)
-        s = "" if since is None else since
         doc_string = func.__doc__ or ""
-        func.__doc__ = f"Deprecated.\n\n{doc_string}\n\n.. admonition:: Deprecated\n  :class: attention\n\n  {warning}"
+        func.__doc__ = f"{doc_string}\n\n.. admonition:: Deprecated\n  :class: attention\n\n  {warning}"
 
     def deprecate(func: Callable, *args, **kwargs):
         """The actual decorator used to extend the callables behavior.

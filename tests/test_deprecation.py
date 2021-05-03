@@ -14,12 +14,16 @@ class Foo:
 
 @deprecated(since="v0.6.0")
 class Bar:
+    """The Bar class."""
+
     def __init__(self):
         pass
 
 
 @deprecated(until="06/01/2021")
 class Baz:
+    """The Baz class."""
+
     def __init__(self):
         pass
 
@@ -58,6 +62,9 @@ class QuuzAll:
         pass
 
 
+doc_admonition = "\n\n.. admonition:: Deprecated\n  :class: attention\n\n  "
+
+
 def test_deprecate_class_no_args(caplog):
     """Test the deprecation of a class (decorator with no arguments)."""
     f = Foo()
@@ -67,6 +74,7 @@ def test_deprecate_class_no_args(caplog):
         msg
         == "The class Foo has been deprecated and may be removed in a later version."
     )
+    assert f.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_class_since(caplog):
@@ -78,6 +86,7 @@ def test_deprecate_class_since(caplog):
         msg
         == "The class Bar has been deprecated since v0.6.0 and may be removed in a later version."
     )
+    assert b.__doc__ == f"The Bar class.{doc_admonition}{msg}"
 
 
 def test_deprecate_class_until(caplog):
@@ -89,6 +98,7 @@ def test_deprecate_class_until(caplog):
         msg
         == "The class Baz has been deprecated and is expected to be removed after 06/01/2021."
     )
+    assert bz.__doc__ == f"The Baz class.{doc_admonition}{msg}"
 
 
 def test_deprecate_class_since_and_until(caplog):
@@ -100,6 +110,7 @@ def test_deprecate_class_since_and_until(caplog):
         msg
         == "The class Qux has been deprecated since 0.7.0 and is expected to be removed after 0.9.0-rc2."
     )
+    assert qx.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_class_msg(caplog):
@@ -111,6 +122,7 @@ def test_deprecate_class_msg(caplog):
         msg
         == "The class Quux has been deprecated and may be removed in a later version. Use something else."
     )
+    assert qu.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_class_replacement(caplog):
@@ -122,6 +134,8 @@ def test_deprecate_class_replacement(caplog):
         msg
         == "The class Quuz has been deprecated and may be removed in a later version. Use ReplaceQuuz instead."
     )
+    doc_msg = "The class Quuz has been deprecated and may be removed in a later version. Use :class:`~.ReplaceQuuz` instead."
+    assert qz.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
 def test_deprecate_class_all(caplog):
@@ -133,6 +147,8 @@ def test_deprecate_class_all(caplog):
         msg
         == "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use ReplaceQuuz instead. Don't use this please."
     )
+    doc_msg = "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use :class:`~.ReplaceQuuz` instead. Don't use this please."
+    assert qza.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
 def _get_caplog_record_msg(caplog):
@@ -151,6 +167,8 @@ class Top:
 
     @deprecated(since="0.8.0", message="This method is useless.")
     def mid_func(self):
+        """Middle function in Top."""
+
         pass
 
     @deprecated(until="1.4.0", replacement="Top.NewNested")
@@ -164,6 +182,8 @@ class Top:
 
         @deprecated(since="1.0.0", until="12/25/2025")
         def nested_func(self):
+            """Nested function in Top.NewNested."""
+
             pass
 
     class Bottom:
@@ -223,6 +243,7 @@ def test_deprecate_func_no_args(caplog):
         msg
         == "The method useless has been deprecated and may be removed in a later version."
     )
+    assert useless.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_func_in_class_since_and_message(caplog):
@@ -235,6 +256,7 @@ def test_deprecate_func_in_class_since_and_message(caplog):
         msg
         == "The method Top.mid_func has been deprecated since 0.8.0 and may be removed in a later version. This method is useless."
     )
+    assert t.mid_func.__doc__ == f"Middle function in Top.{doc_admonition}{msg}"
 
 
 def test_deprecate_nested_class_until_and_replacement(caplog):
@@ -246,6 +268,8 @@ def test_deprecate_nested_class_until_and_replacement(caplog):
         msg
         == "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use Top.NewNested instead."
     )
+    doc_msg = "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use :class:`~.Top.NewNested` instead."
+    assert n.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
 def test_deprecate_nested_class_func_since_and_until(caplog):
@@ -257,6 +281,10 @@ def test_deprecate_nested_class_func_since_and_until(caplog):
     assert (
         msg
         == "The method Top.NewNested.nested_func has been deprecated since 1.0.0 and is expected to be removed after 12/25/2025."
+    )
+    assert (
+        n.nested_func.__doc__
+        == f"Nested function in Top.NewNested.{doc_admonition}{msg}"
     )
 
 
@@ -271,6 +299,7 @@ def test_deprecate_nested_func(caplog):
         msg
         == "The method Top.Bottom.normal_func.<locals>.nested_func has been deprecated and may be removed in a later version."
     )
+    assert ans.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_func_params(caplog):
