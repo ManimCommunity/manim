@@ -218,7 +218,7 @@ class PointCloudDot(Mobject1D):
                 cloud_1 = PointCloudDot(color=RED)
                 cloud_2 = PointCloudDot(stroke_width=4, radius=1)
                 cloud_3 = PointCloudDot(density=15)
-        
+
                 group = Group(cloud_1, cloud_2, cloud_3).arrange()
                 self.add(group)
     """
