@@ -450,12 +450,12 @@ Special Camera Settings
 
             frame_text.next_to(frame, DOWN)
 
-            self.play(Create(frame), FadeIn(frame_text, shift=Up))
+            self.play(Create(frame), FadeIn(frame_text, shift=UP))
             self.activate_zooming()
 
             self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera)
             zoomed_camera_text.next_to(zoomed_display_frame, DOWN)
-            self.play(FadeIn(zoomed_camera_text, shift=Up))
+            self.play(FadeIn(zoomed_camera_text, shift=UP))
             # Scale in        x   y  z
             scale_factor = [0.5, 1.5, 0]
             self.play(
