@@ -159,7 +159,7 @@ class Create(ShowPartial):
         return (0, alpha)
 
 
-@deprecated(since="0.5.0", until="0.7.0", replacement="Create")
+@deprecated(since="v0.5.0", until="v0.7.0", replacement="Create")
 class ShowCreation(Create):
     def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
