@@ -14,8 +14,8 @@ from .. import logger
 from ..mobject import mobject, opengl_mobject
 from ..mobject.mobject import Mobject
 from ..mobject.opengl_mobject import OpenGLMobject
-from ..utils.rate_functions import smooth
 from ..utils.deprecation import deprecated
+from ..utils.rate_functions import smooth
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
