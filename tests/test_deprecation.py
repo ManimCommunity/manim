@@ -14,12 +14,16 @@ class Foo:
 
 @deprecated(since="v0.6.0")
 class Bar:
+    """The Bar class."""
+
     def __init__(self):
         pass
 
 
 @deprecated(until="06/01/2021")
 class Baz:
+    """The Baz class."""
+
     def __init__(self):
         pass
 
@@ -82,6 +86,7 @@ def test_deprecate_class_since(caplog):
         msg
         == "The class Bar has been deprecated since v0.6.0 and may be removed in a later version."
     )
+    assert b.__doc__ == f"The Bar class.{doc_admonition}{msg}"
 
 
 def test_deprecate_class_until(caplog):
@@ -93,6 +98,7 @@ def test_deprecate_class_until(caplog):
         msg
         == "The class Baz has been deprecated and is expected to be removed after 06/01/2021."
     )
+    assert bz.__doc__ == f"The Baz class.{doc_admonition}{msg}"
 
 
 def test_deprecate_class_since_and_until(caplog):
