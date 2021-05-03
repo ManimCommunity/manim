@@ -2502,18 +2502,12 @@ class RightAngle(Angle):
                     RightAngle(line1, line2, length=0.5, quadrant=(-1,1), stroke_width=8),
                     RightAngle(line1, line2, length=0.7, quadrant=(-1,-1), color=RED),
                 ]
-                line_list = VGroup( *[VGroup() for k in range(4)] )
-                for k in range(4):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( rightangles[k] )
-                line_list.arrange_in_grid(buff=1.5)
-                self.add(
-                    line_list
-                )
-
+                plots = VGroup()
+                for rightangle in rightangles:
+                    plot=VGroup(line1.copy(),line2.copy(), rightangle)
+                    plots.add(plot)
+                plots.arrange(buff=1.5)
+                self.add(plots)
     """
 
     def __init__(self, line1, line2, length=None, **kwargs):
