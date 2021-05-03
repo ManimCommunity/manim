@@ -19,8 +19,8 @@ Examples
                 else:
                     self.play(indications[i](names[i]))
                 self.play(AnimationGroup(
-                    FadeOutAndShift(names[i], UP*1.5),
-                    FadeInFrom(names[(i+1)%len(names)], DOWN*1.5),
+                    FadeOut(names[i], shift=UP*1.5),
+                    FadeIn(names[(i+1)%len(names)], shift=UP*1.5),
                 ))
 
 """

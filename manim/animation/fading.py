@@ -140,7 +140,7 @@ class FadeInFrom(FadeIn):
     def __init__(
         self, mobject: "Mobject", direction: np.ndarray = DOWN, **kwargs
     ) -> None:
-        super().__init__(mobject, shift=direction, **kwargs)
+        super().__init__(mobject, shift=-direction, **kwargs)
 
 
 @deprecated(
