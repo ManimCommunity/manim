@@ -47,6 +47,9 @@ Mobjects
    ~mobject.types.point_cloud_mobject
    ~mobject.types.vectorized_mobject
 
+Mobjects Inheritance Graph
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. inheritance-diagram::
    manim.mobject.changing
    manim.mobject.coordinate_systems
@@ -98,6 +101,8 @@ Scenes
    ~scene.vector_space_scene
    ~scene.zoomed_scene
 
+Scenes Inheritance Graph
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. inheritance-diagram::
    manim.scene.graph_scene
@@ -133,6 +138,9 @@ Animations
    ~animation.transform_matching_parts
    ~animation.update
 
+Animations Inheritance Graph
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. inheritance-diagram::
    manim.animation.animation
    manim.animation.composition
@@ -163,6 +171,8 @@ Cameras
    ~camera.multi_camera
    ~camera.three_d_camera
 
+Cameras Inheritance Graph
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. inheritance-diagram::
    manim.camera.camera
