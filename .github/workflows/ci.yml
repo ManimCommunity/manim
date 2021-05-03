@@ -39,14 +39,13 @@ jobs:
         run: |
           export PATH="$HOME/.poetry/bin:$PATH"
           echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
-          echo "::set-output name=version::$(poetry version -s)"
           echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
 
       - name: Setup Poetry cache
         uses: actions/cache@v2
         with:
           path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
-          key: ${{ runner.os }}-poetry-${{ steps.cache-vars.outputs.version }}-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
 
       - name: Install and cache ffmpeg (all OS)
         uses: FedericoCarboni/setup-ffmpeg@v1
