@@ -13,10 +13,13 @@ __all__ = [
     "get_smooth_cubic_bezier_handle_points",
     "diag_to_matrix",
     "is_closed",
+    "bez_params_from_point",
+    "point_lies_on_bezier",
 ]
 
 
 import typing
+from functools import reduce
 
 import numpy as np
 from scipy import linalg
@@ -369,3 +372,63 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
 
 def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:
     return np.allclose(points[0], points[-1])
+
+
+def bez_params_from_point(point, control_points):
+    assert all(np.shape(point) == np.shape(c_p) for c_p in control_points)
+
+    roots = []
+    for i in range(len(point)):
+        p = point[i]
+        # For now, we only deal with quadratic or cubic.
+        if len(control_points) == 3:
+            p0, p1, p2 = control_points
+            p0 = p0[i]
+            p1 = p1[i]
+            p2 = p2[i]
+            bezier_polynom = np.polynomial.Polynomial(
+                [p0 - (2 * p1) + p2, 2 * (p1 - p0), p0 - p][::-1]
+            )
+        elif len(control_points) == 4:
+            p0, p1, p2, p3 = control_points
+            p0 = p0[i]
+            p1 = p1[i]
+            p2 = p2[i]
+            p3 = p3[i]
+            bezier_polynom = np.polynomial.Polynomial(
+                [
+                    p3 - 3 * p2 + 3 * p1 - p0,  # t**3
+                    3 * (p0 - (2 * p1) + p2),  # t**2
+                    3 * (p1 - p0),  # t
+                    p0 - p,  # Constant
+                ][::-1]
+            )
+
+        if len(bezier_polynom.roots()) > 0:
+            roots.append(bezier_polynom.roots())
+
+    # Of the roots found, remove all imaginary ones, and
+    # round all roots to the number of decimal places of CLOSED_THRESHOLD
+    # Then, get the common roots for the solved bezier equations in all the
+    # supplied dimensions.
+    roots = reduce(
+        np.intersect1d,
+        [
+            [
+                np.around(j, int(np.log10(1 / CLOSED_THRESHOLD))).tolist()
+                for j in i
+                if j.imag == 0
+            ]
+            for i in roots
+        ],
+    )
+    return roots
+
+
+def point_lies_on_bezier(point, control_points):
+    # Method taken from
+    # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
+
+    roots = bez_params_from_point(point, control_points)
+
+    return True if len(roots) > 0 else False
