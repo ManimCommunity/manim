@@ -1,56 +1,16 @@
-# """Fading in and out of view.
+"""Fading in and out of view.
 
-# .. manim:: Example
-#     :hide_source:
+.. manim:: Fading
 
-#     class Example(Scene):
-#         def construct(self):
-#             s1 = Square().set_color(BLUE)
-#             s2 = Square().set_color(BLUE)
-#             s3 = Square().set_color(BLUE)
-#             s4 = Square().set_color(BLUE)
-#             s5 = Square().set_color(BLUE)
-#             s6 = Square().set_color(RED)
-#             s7 = Square().set_color(RED)
-#             s8 = Square().set_color(RED)
-#             VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.9).shift(UP)
-#             VGroup(s5, s6, s7, s8).set_x(0).arrange(buff=1.9).shift(2 * DOWN)
-#             t1 = Text("FadeIn").scale(0.5).next_to(s1, UP)
-#             t2 = Text("FadeInFromPoint").scale(0.5).next_to(s2, UP)
-#             t3 = Text("FadeInFrom").scale(0.5).next_to(s3, UP)
-#             t4 = Text("VFadeIn").scale(0.5).next_to(s4, UP)
-#             t5 = Text("FadeInFromLarge").scale(0.4).next_to(s5, UP)
-#             t6 = Text("FadeOut").scale(0.45).next_to(s6, UP)
-#             t7 = Text("FadeOutAndShift").scale(0.45).next_to(s7, UP)
-#             t8 = Text("VFadeOut").scale(0.45).next_to(s8, UP)
+    class Fading(Scene):
+    def construct(self):
+        tex_in = Tex("Fade", "In").scale(3)
+        tex_out = Tex("Fade", "Out").scale(3)
+        self.play(FadeIn(tex_in, shift=DOWN, scale=0.66))
+        self.play(ReplacementTransform(tex_in, tex_out))
+        self.play(FadeOut(tex_out, shift=DOWN * 2, scale=1.5))
 
-#             objs = [ManimBanner().scale(0.25) for _ in range(1, 9)]
-#             objs[0].move_to(s1.get_center())
-#             objs[1].move_to(s2.get_center())
-#             objs[2].move_to(s3.get_center())
-#             objs[3].move_to(s4.get_center())
-#             objs[4].move_to(s5.get_center())
-#             objs[5].move_to(s6.get_center())
-#             objs[6].move_to(s7.get_center())
-#             objs[7].move_to(s8.get_center())
-#             self.add(s1, s2, s3, s4, s5, s6, s7, s8, t1, t2, t3, t4, t5, t6, t7, t8)
-#             self.add(*objs)
-
-#             self.play(
-#                 FadeIn(objs[0]),
-#                 FadeInFromPoint(objs[1], s2.get_center()),
-#                 FadeInFrom(objs[2], LEFT*0.2),
-#                 VFadeIn(objs[3]),
-#                 FadeInFromLarge(objs[4]),
-#             )
-#             self.wait(0.3)
-#             self.play(
-#                 FadeOut(objs[5]),
-#                 FadeOutAndShift(objs[6], DOWN),
-#                 VFadeOut(objs[7])
-#             )
-
-# """
+"""
 
 
 __all__ = [
