@@ -72,9 +72,7 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
-import os
 import shutil
-from os.path import relpath
 from pathlib import Path
 from typing import List
 
@@ -187,17 +185,12 @@ class ManimDirective(Directive):
         state_machine = self.state_machine
         document = state_machine.document
 
-        source_file_name = document.attributes["source"]
-        source_rel_name = relpath(source_file_name, setup.confdir)
-        source_rel_dir = os.path.dirname(source_rel_name)
-        while source_rel_dir.startswith(os.path.sep):
-            source_rel_dir = source_rel_dir[1:]
-
-        dest_dir = os.path.abspath(
-            os.path.join(setup.app.builder.outdir, source_rel_dir)
-        )
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
+        source_file_name = Path(document.attributes["source"])
+        source_rel_name = source_file_name.relative_to(setup.confdir)
+        source_rel_dir = source_rel_name.parents[0]
+        dest_dir = Path(setup.app.builder.outdir, source_rel_dir).absolute()
+        if not dest_dir.exists():
+            dest_dir.mkdir(parents=True, exist_ok=True)
 
         source_block = [
             ".. code-block:: python",
@@ -207,7 +200,7 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block)
 
-        config.media_dir = Path(setup.confdir) / "media"
+        config.media_dir = (Path(setup.confdir) / "media").absolute()
         config.images_dir = "{media_dir}/images"
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
@@ -244,7 +237,7 @@ class ManimDirective(Directive):
         if not (save_as_gif or save_last_frame):
             filename = f"{output_file}.mp4"
             filesrc = config.get_dir("video_dir") / filename
-            destfile = os.path.join(dest_dir, filename)
+            destfile = Path(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
@@ -254,12 +247,11 @@ class ManimDirective(Directive):
             filesrc = config.get_dir("images_dir") / filename
         else:
             raise ValueError("Invalid combination of render flags received.")
-
         rendered_template = jinja2.Template(TEMPLATE).render(
             clsname=clsname,
             clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
-            filesrc_rel=os.path.relpath(filesrc, setup.confdir),
+            filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),
             output_file=output_file,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
