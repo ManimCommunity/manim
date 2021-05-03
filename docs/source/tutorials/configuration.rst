@@ -81,7 +81,7 @@ Usually, manim is run from the command-line by executing
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName
+   manim <file.py> SceneName
 
 This asks manim to search for a Scene class called :code:`SceneName` inside the
 file <file.py> and render it.  One can also specify the render quality by using
@@ -90,7 +90,7 @@ high, and 4k quality, respectively.
 
 .. code-block:: bash
 
-   $ manim -ql <file.py> SceneName 
+   manim -ql <file.py> SceneName 
 
 These flags set the values of the config options ``config.pixel_width``,
 ``config.pixel_height``, ``config.frame_rate``, and ``config.quality``.
@@ -110,7 +110,7 @@ instead of the whole video, you can execute
 
 .. code-block:: bash
 
-   $ manim -sqh <file.py> SceneName 
+   manim -sqh <file.py> SceneName 
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
@@ -120,7 +120,7 @@ open the file after it is rendered.
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
+   manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
 
 .. tip:: There are many more command-line flags that manim accepts.  All the
 	 possible flags are shown by executing ``manim -h``.  A complete list
@@ -162,14 +162,14 @@ Now, executing the following command
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -c WHITE <file.py> SceneName 
+   manim -o myscene -i -c WHITE <file.py> SceneName 
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName
+   manim <file.py> SceneName
 
 .. tip:: The names of the configuration options admissible in config files are
          exactly the same as the **long names** of the corresponding command
@@ -187,7 +187,7 @@ file being rendered, and **not** in the directory of execution.  For example,
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -c WHITE <path/to/file.py> SceneName
+   manim -o myscene -i -c WHITE <path/to/file.py> SceneName
 
 will use the config file found in ``path/to/file.py``, if any.  It will **not**
 use the config file found in the current working directory, even if it exists.
