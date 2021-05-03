@@ -116,7 +116,7 @@ This includes:
 
 1. The usage of ``Attributes`` to specify ALL ATTRIBUTES that a
    class can have, their respective types, and a brief (or long, if
-   needed) description. (See more on :ref:`_types`)
+   needed) description. (See more on :ref:`types<types>`)
 
 Also, ``__init__`` parameters should be specified as ``Parameters`` **on
 the class docstring**, *rather than under* ``__init__``. Note that this
