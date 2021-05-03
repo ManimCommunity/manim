@@ -215,8 +215,12 @@ class PointCloudDot(Mobject1D):
 
         class PointCloudDotExample(Scene):
             def construct(self):
-                dots = PointCloudDot(color=RED)
-                self.add(dots)
+                cloud_1 = PointCloudDot(color=RED)
+                cloud_2 = PointCloudDot(stroke_width=4, radius=1)
+                cloud_3 = PointCloudDot(density=15)
+        
+                group = Group(cloud_1, cloud_2, cloud_3).arrange()
+                self.add(group)
     """
 
     def __init__(
