@@ -558,7 +558,6 @@ class Text(SVGMobject):
     def set_color_by_t2c(self, t2c=None):
         """Internally used function. Sets colour for specified strings."""
         t2c = t2c if t2c else self.t2c
-        print(t2c.items())
         for word, color in list(t2c.items()):
             for start, end in self.find_indexes(
                 word, self.original_text, change_color=True
