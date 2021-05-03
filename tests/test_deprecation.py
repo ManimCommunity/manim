@@ -241,7 +241,7 @@ def test_deprecate_func_no_args(caplog):
     msg = _get_caplog_record_msg(caplog)
     assert (
         msg
-        == "The method useless has been deprecated and may be removed in a later version."
+        == "The function useless has been deprecated and may be removed in a later version."
     )
     assert useless.__doc__ == f"{doc_admonition}{msg}"
 

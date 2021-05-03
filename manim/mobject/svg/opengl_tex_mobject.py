@@ -171,7 +171,7 @@ __all__ = [
 import operator as op
 from functools import reduce
 
-from ... import config, logger
+from ... import config
 from ...constants import *
 from ...mobject.opengl_geometry import OpenGLLine
 from ...mobject.svg.opengl_svg_mobject import OpenGLSVGMobject

@@ -255,4 +255,4 @@ class SVGPathMobject(VMobject):
 @deprecated(until="v0.7.0", replacement="SVGPathMobject")
 class VMobjectFromSVGPathstring(SVGPathMobject):
     def __init__(self, *args, **kwargs):
-        SVGPathMobject.__init__(self, *args, **kwargs)
+        super().__init__(self, *args, **kwargs)
