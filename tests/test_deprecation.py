@@ -299,6 +299,7 @@ def test_deprecate_nested_func(caplog):
         msg
         == "The method Top.Bottom.normal_func.<locals>.nested_func has been deprecated and may be removed in a later version."
     )
+    assert ans.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_func_params(caplog):
