@@ -268,6 +268,8 @@ def test_deprecate_nested_class_until_and_replacement(caplog):
         msg
         == "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use Top.NewNested instead."
     )
+    doc_msg = "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use :class:`~.Top.NewNested` instead."
+    assert n.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
 def test_deprecate_nested_class_func_since_and_until(caplog):
@@ -279,6 +281,10 @@ def test_deprecate_nested_class_func_since_and_until(caplog):
     assert (
         msg
         == "The method Top.NewNested.nested_func has been deprecated since 1.0.0 and is expected to be removed after 12/25/2025."
+    )
+    assert (
+        n.nested_func.__doc__
+        == f"Nested function in Top.NewNested.{doc_admonition}{msg}"
     )
 
 
