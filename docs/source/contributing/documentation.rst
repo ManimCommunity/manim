@@ -266,8 +266,8 @@ Example:
 
 .. _types:
 
-Reference to types in documentaion
-----------------------------------
+Reference to types in documentation
+-----------------------------------
 
 Always specify types with the correct **role** (see
 https://www.sphinx-doc.org/en/1.7/domains.html#python-roles) for the
