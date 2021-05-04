@@ -258,10 +258,6 @@ class OpenGLRenderer:
         shader_wrapper_list = mobject.get_shader_wrapper_list()
 
         # Convert ShaderWrappers to Meshes.
-        view_matrix = self.scene.camera.get_view_matrix()
-        projection_matrix_unformatted = opengl.orthographic_projection_matrix(
-            format=False
-        )
         for shader_wrapper in shader_wrapper_list:
             shader = Shader(self.context, shader_wrapper.shader_folder)
 
@@ -279,7 +275,7 @@ class OpenGLRenderer:
                 except KeyError:
                     pass
             try:
-                shader.set_uniform("u_view_matrix", view_matrix)
+                shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
                 shader.set_uniform(
                     "u_projection_matrix", opengl.orthographic_projection_matrix()
                 )
@@ -354,10 +350,13 @@ class OpenGLRenderer:
 
             view_matrix = scene.camera.get_view_matrix()
             for mesh in scene.meshes:
-                mesh.shader.set_uniform("u_view_matrix", view_matrix)
-                mesh.shader.set_uniform(
-                    "u_projection_matrix", opengl.perspective_projection_matrix()
-                )
+                try:
+                    mesh.shader.set_uniform("u_view_matrix", view_matrix)
+                    mesh.shader.set_uniform(
+                        "u_projection_matrix", opengl.perspective_projection_matrix()
+                    )
+                except:
+                    pass
                 mesh.render()
 
             # shader = MyShader(self.context, name="design_3")

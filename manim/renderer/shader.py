@@ -1,16 +1,34 @@
-from pathlib import Path
-import numpy as np
-import moderngl
-from ..utils import opengl
-from .. import config, logger
-import re
-import os
-from ..utils.simple_functions import get_parameters
 import itertools as it
+import os
+import re
+from pathlib import Path
+
+import moderngl
+import numpy as np
+
+from .. import config, logger
+from ..utils import opengl
+from ..utils.simple_functions import get_parameters
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache = {}
 file_path_to_code_map = {}
+
+
+def get_shader_code_from_file(file_path):
+    if file_path in file_path_to_code_map:
+        return file_path_to_code_map[file_path]
+    with open(file_path, "r") as f:
+        source = f.read()
+        include_lines = re.findall(r"^#include .*\.glsl$", source, flags=re.MULTILINE)
+        for line in include_lines:
+            include_path = line.split()[1]
+            included_code = get_shader_code_from_file(
+                os.path.join(file_path.parent / include_path)
+            )
+            source = source.replace(line, included_code)
+        file_path_to_code_map[file_path] = source
+        return source
 
 
 class Mesh:
@@ -140,67 +158,98 @@ class FullScreenQuad(Mesh):
     def __init__(
         self,
         context,
-        fragment_shader_source,
+        fragment_shader_source=None,
+        fragment_shader_name=None,
         output_color_variable="frag_color",
     ):
-        # Define frag_color.
-        fragment_shader_lines = fragment_shader_source.split("\n")
-        first_non_whitespace_line_index = 0
-        while re.match(
-            r"^\s*$",
-            fragment_shader_lines[first_non_whitespace_line_index],
-        ):
-            first_non_whitespace_line_index += 1
-        match = re.match(
-            r"^(\s*)([^\s].*)$",
-            fragment_shader_lines[first_non_whitespace_line_index],
-        )
-        if match.groups()[1].startswith("#version"):
-            fragment_shader_lines.insert(
-                first_non_whitespace_line_index + 1,
-                f"{match.groups()[0]}out vec4 {output_color_variable};",
+        if fragment_shader_name is not None:
+            # Use the name.
+            shader_file_path = SHADER_FOLDER / f"{fragment_shader_name}.frag"
+            fragment_shader_source = get_shader_code_from_file(shader_file_path)
+
+            shader = Shader(
+                context,
+                source=dict(
+                    vertex_shader=f"""
+                    #version 330
+
+                    in vec4 in_vert;
+                    uniform mat4 u_model_view_matrix;
+                    uniform mat4 u_projection_matrix;
+
+                    void main() {{
+                        vec4 camera_space_vertex = u_model_view_matrix * in_vert;
+                        vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
+                        gl_Position = clip_space_vertex;
+                    }}
+                    """,
+                    fragment_shader=fragment_shader_source,
+                ),
+            )
+        elif fragment_shader_source is not None:
+            # Define frag_color.
+            fragment_shader_lines = fragment_shader_source.split("\n")
+            first_non_whitespace_line_index = 0
+            while re.match(
+                r"^\s*$",
+                fragment_shader_lines[first_non_whitespace_line_index],
+            ):
+                first_non_whitespace_line_index += 1
+            match = re.match(
+                r"^(\s*)([^\s].*)$",
+                fragment_shader_lines[first_non_whitespace_line_index],
+            )
+            if match.groups()[1].startswith("#version"):
+                fragment_shader_lines.insert(
+                    first_non_whitespace_line_index + 1,
+                    f"{match.groups()[0]}out vec4 {output_color_variable};",
+                )
+            else:
+                fragment_shader_lines.insert(
+                    first_non_whitespace_line_index,
+                    f"{match.groups()[0]}out vec4 {output_color_variable};",
+                )
+            fragment_shader_source = "\n".join(fragment_shader_lines)
+
+            attribute_variables = re.findall(
+                r"^\s*in (\w+) (\w+);$", fragment_shader_source, flags=re.MULTILINE
+            )
+            input_source = "\n".join(
+                [
+                    f"in {tup[0]} {tup[1].replace('v','in')};"
+                    for tup in attribute_variables
+                ]
+            )
+            output_source = "\n".join(
+                [f"out {tup[0]} {tup[1]};" for tup in attribute_variables]
+            )
+            assignment_source = "\n".join(
+                [
+                    f"{tup[1]} = {tup[1].replace('v', 'in')};"
+                    for tup in attribute_variables
+                ]
+            )
+            shader = Shader(
+                context,
+                source=dict(
+                    vertex_shader=f"""
+                    #version 330
+
+                    in vec4 in_vert;
+                    uniform mat4 u_model_view_matrix;
+                    uniform mat4 u_projection_matrix;
+
+                    void main() {{
+                        vec4 camera_space_vertex = u_model_view_matrix * in_vert;
+                        vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
+                        gl_Position = clip_space_vertex;
+                    }}
+                    """,
+                    fragment_shader=fragment_shader_source,
+                ),
             )
         else:
-            fragment_shader_lines.insert(
-                first_non_whitespace_line_index,
-                f"{match.groups()[0]}out vec4 {output_color_variable};",
-            )
-        fragment_shader_source = "\n".join(fragment_shader_lines)
-
-        attribute_variables = re.findall(
-            r"^\s*in (\w+) (\w+);$", fragment_shader_source, flags=re.MULTILINE
-        )
-        input_source = "\n".join(
-            [f"in {tup[0]} {tup[1].replace('v','in')};" for tup in attribute_variables]
-        )
-        output_source = "\n".join(
-            [f"out {tup[0]} {tup[1]};" for tup in attribute_variables]
-        )
-        assignment_source = "\n".join(
-            [f"{tup[1]} = {tup[1].replace('v', 'in')};" for tup in attribute_variables]
-        )
-        shader = Shader(
-            context,
-            source=dict(
-                vertex_shader=f"""
-                #version 330
-
-                in vec4 in_vert;
-                {input_source}
-                {output_source}
-                uniform mat4 u_model_view_matrix;
-                uniform mat4 u_projection_matrix;
-
-                void main() {{
-                    {assignment_source}
-                    vec4 camera_space_vertex = u_model_view_matrix * in_vert;
-                    vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
-                    gl_Position = clip_space_vertex;
-                }}
-                """,
-                fragment_shader=fragment_shader_source,
-            ),
-        )
+            raise Exception("Must either pass shader name or shader source.")
         shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
         shader.set_uniform(
             "u_projection_matrix", opengl.orthographic_projection_matrix()
@@ -250,7 +299,7 @@ class Shader:
             shader_folder = SHADER_FOLDER / name
             for shader_file in os.listdir(shader_folder):
                 shader_file_path = shader_folder / shader_file
-                shader_source = self.get_shader_code_from_file(shader_file_path)
+                shader_source = get_shader_code_from_file(shader_file_path)
                 source_dict[source_dict_key[shader_file_path.stem]] = shader_source
             self.shader_program = context.program(**source_dict)
 
@@ -260,23 +309,6 @@ class Shader:
 
     def set_uniform(self, name, value):
         self.shader_program[name] = value
-
-    def get_shader_code_from_file(self, file_path):
-        if file_path in file_path_to_code_map:
-            return file_path_to_code_map[file_path]
-        with open(file_path, "r") as f:
-            source = f.read()
-            include_lines = re.findall(
-                r"^#include .*\.glsl$", source, flags=re.MULTILINE
-            )
-            for line in include_lines:
-                include_path = line.split()[1]
-                included_code = self.get_shader_code_from_file(
-                    os.path.join(file_path.parent / include_path)
-                )
-                source = source.replace(line, included_code)
-            file_path_to_code_map[file_path] = source
-            return source
 
 
 # Return projection of a onto b.

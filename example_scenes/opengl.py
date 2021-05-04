@@ -95,7 +95,27 @@ class MobjectTest(Scene):
         self.interactive_embed()
 
 
-class FullscreenQuadTest(Scene):
+class FullScreenQuadTest2(Scene):
+    def construct(self):
+        surface = FullScreenQuad(self.renderer.context, fragment_shader_name="design_3")
+        surface.shader.set_uniform("u_resolution", (854.0, 480.0, 0.0))
+        surface.shader.set_uniform("u_time", 0)
+        self.add(surface)
+
+        t = 0
+
+        def update_surface(surface, dt):
+            nonlocal t
+            t += dt
+            surface.shader.set_uniform("u_time", t / 2)
+
+        surface.add_updater(update_surface)
+
+        # self.wait()
+        self.interactive_embed()
+
+
+class FullScreenQuadTest(Scene):
     def construct(self):
         surface = FullScreenQuad(
             self.renderer.context,
@@ -149,83 +169,49 @@ class FullscreenQuadTest(Scene):
         surface.add_updater(update_surface)
         self.add(surface)
         # self.wait(5)
-        self.embed_2()
+        self.interactive_embed()
 
 
 class Test2(Scene):
     def construct(self):
-        attributes = np.zeros(
-            6,
-            dtype=[
-                ("in_red", np.float32, (1,)),
-                ("in_green", np.float32, (1,)),
-                ("in_blue", np.float32, (1,)),
-            ],
-        )
-        attributes["in_red"] = np.array(
-            [
-                [0],
-                [0],
-                [0],
-                [0],
-                [0],
-                [0],
-            ]
-        )
-        attributes["in_green"] = np.array(
-            [
-                [0],
-                [0],
-                [0],
-                [0],
-                [0],
-                [0],
-            ]
-        )
-        attributes["in_blue"] = np.array(
-            [
-                [0],
-                [0],
-                [0],
-                [0],
-                [0],
-                [0],
-            ]
-        )
-
         surface = FullScreenQuad(
             self.renderer.context,
             """
             #version 330
 
-            in float v_red;
-            in float v_green;
-            in float v_blue;
-            out vec4 frag_color;
+            uniform float v_red;
+            uniform float v_green;
+            uniform float v_blue;
 
             void main() {
               frag_color = vec4(v_red, v_green, v_blue, 1);
             }
             """,
-            attributes,
         )
+        surface.shader.set_uniform("v_red", 0)
+        surface.shader.set_uniform("v_green", 0)
+        surface.shader.set_uniform("v_blue", 0)
 
         increase = True
+        val = 0.5
+        surface.shader.set_uniform("v_red", val)
+        surface.shader.set_uniform("v_green", val)
+        surface.shader.set_uniform("v_blue", val)
 
         def update_surface(mesh, dt):
             nonlocal increase
+            nonlocal val
             if increase:
-                mesh.attributes["in_red"][:, 0] += dt
-                mesh.attributes["in_green"][:, 0] += dt
-                mesh.attributes["in_blue"][:, 0] += dt
+                val += dt
             else:
-                mesh.attributes["in_red"][:, 0] -= dt
-                mesh.attributes["in_green"][:, 0] -= dt
-                mesh.attributes["in_blue"][:, 0] -= dt
-            if mesh.attributes["in_red"][0][0] >= 1:
+                val -= dt
+            if val >= 1:
                 increase = False
-            elif mesh.attributes["in_red"][0][0] <= 0:
+            elif val <= 0:
                 increase = True
+            surface.shader.set_uniform("v_red", val)
+            surface.shader.set_uniform("v_green", val)
+            surface.shader.set_uniform("v_blue", val)
 
         surface.add_updater(update_surface)
 
@@ -308,6 +294,38 @@ class ShaderExample(Scene):
 
         self.wait(5)
         # self.embed_2()
+
+
+class ShaderExample2(Scene):
+    def construct(self):
+        shader = Shader(self.renderer.context, "manim_coords")
+        shader.set_uniform("u_color", (0.0, 1.0, 0.0, 1.0))
+
+        view_matrix = self.camera.get_view_matrix()
+        shader.set_uniform("u_model_view_matrix", view_matrix)
+        shader.set_uniform(
+            "u_projection_matrix", opengl.perspective_projection_matrix()
+        )
+        attributes = np.zeros(
+            6,
+            dtype=[
+                ("in_vert", np.float32, (4,)),
+            ],
+        )
+        attributes["in_vert"] = np.array(
+            [
+                [-1, -1, 0, 1],
+                [-1, 1, 0, 1],
+                [1, 1, 0, 1],
+                [-1, -1, 0, 1],
+                [1, -1, 0, 1],
+                [1, 1, 0, 1],
+            ]
+        )
+        mesh = Mesh(shader, attributes)
+        self.add(mesh)
+
+        self.wait(5)
 
 
 class InteractiveDevelopment(Scene):
