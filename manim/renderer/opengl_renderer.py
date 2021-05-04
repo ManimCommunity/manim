@@ -297,6 +297,7 @@ class OpenGLRenderer:
                 shader,
                 shader_wrapper.vert_data,
                 indices=shader_wrapper.vert_indices,
+                use_depth_test=shader_wrapper.depth_test,
             )
             mesh.render()
 
