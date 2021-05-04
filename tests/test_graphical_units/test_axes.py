@@ -6,29 +6,17 @@ from ..utils.GraphicalUnitTester import GraphicalUnitTester
 from ..utils.testing_utils import get_scenes_to_test
 
 
-class AxesTest(GraphScene):
+class AxesTest(Scene):
     def construct(self):
-        self.x_min = -5
-        self.x_max = 5
-        self.y_min = -3
-        self.y_max = 3
-        self.x_axis_config = {
-            "add_start": 0.5,
-            "add_end": 0.5,
-            "include_tip": True,
-        }
-        self.y_axis_config = {
-            "add_start": 0.25,
-            "add_end": 0.5,
-            "include_tip": True,
-        }
-        self.x_axis_visibility = True
-        self.y_axis_visibility = True
-        self.y_label_position = UP
-        self.x_label_position = RIGHT
-        self.graph_origin = ORIGIN
-        self.axes_color = WHITE
-        self.setup_axes(animate=True)
+        graph = Axes(
+            x_range=[-10, 10, 1],
+            y_range=[-10, 10, 1],
+            x_length=6,
+            y_length=6,
+            color=WHITE,
+        )
+        labels = graph.get_axis_labels()
+        self.add(graph, labels)
 
 
 MODULE_NAME = "plot"

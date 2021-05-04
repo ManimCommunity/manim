@@ -5,13 +5,16 @@ __all__ = [
 ]
 
 from copy import copy
-from typing import Hashable, List, Tuple, Union
+from typing import Hashable, List, Optional, Tuple, Type, Union
 
 import networkx as nx
 import numpy as np
 
+from ..animation.composition import AnimationGroup
+from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
+from .mobject import Group, Mobject, override_animate
 from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 
@@ -201,6 +204,10 @@ class Graph(VMobject):
         the class specified via ``vertex_type``, or a dictionary whose keys
         are the vertices, and whose values are dictionaries containing keyword
         arguments for the mobject related to the corresponding vertex.
+    vertex_mobjects
+        A dictionary whose keys are the vertices, and whose values are
+        mobjects to be used as vertices. Passing vertices here overrides
+        all other configuration options for a vertex.
     edge_type
         The mobject class used for displaying edges in the scene.
     edge_config
@@ -348,14 +355,15 @@ class Graph(VMobject):
         layout: Union[str, dict] = "spring",
         layout_scale: float = 2,
         layout_config: Union[dict, None] = None,
-        vertex_type: "Mobject" = Dot,
+        vertex_type: Type["Mobject"] = Dot,
         vertex_config: Union[dict, None] = None,
-        edge_type: "Mobject" = Line,
+        vertex_mobjects: Optional[dict] = None,
+        edge_type: Type["Mobject"] = Line,
         partitions: Union[List[List[Hashable]], None] = None,
         root_vertex: Union[Hashable, None] = None,
         edge_config: Union[dict, None] = None,
     ) -> None:
-        VMobject.__init__(self)
+        super().__init__()
 
         nx_graph = nx.Graph()
         nx_graph.add_nodes_from(vertices)
@@ -384,6 +392,9 @@ class Graph(VMobject):
         if self._labels and vertex_type is Dot:
             vertex_type = LabeledDot
 
+        if vertex_mobjects is None:
+            vertex_mobjects = {}
+
         # build vertex_config
         if vertex_config is None:
             vertex_config = {}
@@ -395,10 +406,12 @@ class Graph(VMobject):
         self._vertex_config = {
             v: vertex_config.get(v, copy(default_vertex_config)) for v in vertices
         }
+        self.default_vertex_config = default_vertex_config
         for v, label in self._labels.items():
             self._vertex_config[v]["label"] = label
 
         self.vertices = {v: vertex_type(**self._vertex_config[v]) for v in vertices}
+        self.vertices.update(vertex_mobjects)
         for v in self.vertices:
             self[v].move_to(self._layout[v])
 
@@ -421,6 +434,7 @@ class Graph(VMobject):
             else:
                 self._edge_config[e] = copy(default_edge_config)
 
+        self.default_edge_config = default_edge_config
         self.edges = {
             (u, v): edge_type(
                 self[u].get_center(),
@@ -445,6 +459,415 @@ class Graph(VMobject):
 
     def __repr__(self: "Graph") -> str:
         return f"Graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+
+    def _add_vertex(
+        self,
+        vertex: Hashable,
+        position: Optional[np.ndarray] = None,
+        label: bool = False,
+        label_fill_color: str = BLACK,
+        vertex_type: Type["Mobject"] = Dot,
+        vertex_config: Optional[dict] = None,
+        vertex_mobject: Optional[dict] = None,
+    ) -> "Mobject":
+        """Add a vertex to the graph.
+
+        Parameters
+        ----------
+
+        vertex
+            A hashable vertex identifier.
+        position
+            The coordinates where the new vertex should be added. If ``None``, the center
+            of the graph is used.
+        label
+            Controls whether or not the vertex is labeled. If ``False`` (the default),
+            the vertex is not labeled; if ``True`` it is labeled using its
+            names (as specified in ``vertex``) via :class:`~.MathTex`. Alternatively,
+            any :class:`~.Mobject` can be passed to be used as the label.
+        label_fill_color
+            Sets the fill color of the default labels generated when ``labels``
+            is set to ``True``. Has no effect for other values of ``label``.
+        vertex_type
+            The mobject class used for displaying vertices in the scene.
+        vertex_config
+            A dictionary containing keyword arguments to be passed to
+            the class specified via ``vertex_type``.
+        vertex_mobject
+            The mobject to be used as the vertex. Overrides all other
+            vertex customization options.
+        """
+        if position is None:
+            position = self.get_center()
+
+        if vertex_config is None:
+            vertex_config = {}
+
+        if vertex in self.vertices:
+            raise ValueError(
+                f"Vertex identifier '{vertex}' is already used for a vertex in this graph."
+            )
+
+        self._graph.add_node(vertex)
+        self._layout[vertex] = position
+
+        if isinstance(label, Mobject):
+            self._labels[vertex] = label
+        elif label is True:
+            self._labels[vertex] = MathTex(vertex, fill_color=label_fill_color)
+
+        base_vertex_config = copy(self.default_vertex_config)
+        base_vertex_config.update(vertex_config)
+        vertex_config = base_vertex_config
+
+        if vertex in self._labels:
+            vertex_config["label"] = self._labels[vertex]
+            if vertex_type is Dot:
+                vertex_type = LabeledDot
+
+        self._vertex_config[vertex] = vertex_config
+
+        if vertex_mobject is None:
+            self.vertices[vertex] = vertex_type(**vertex_config)
+        else:
+            self.vertices[vertex] = vertex_mobject
+
+        self.vertices[vertex].move_to(position)
+        self.add(self.vertices[vertex])
+
+        return self.vertices[vertex]
+
+    def add_vertices(
+        self: "Graph",
+        *vertices: List[Hashable],
+        positions: Optional[dict] = None,
+        labels: bool = False,
+        label_fill_color: str = BLACK,
+        vertex_type: Type["Mobject"] = Dot,
+        vertex_config: Optional[dict] = None,
+        vertex_mobjects: Optional[dict] = None,
+    ):
+        """Add a list of vertices to the graph.
+
+        Parameters
+        ----------
+
+        vertices
+            A list of hashable vertex identifiers.
+        positions
+            A dictionary specifying the coordinates where the new vertices should be added.
+            If ``None``, all vertices are created at the center of the graph.
+        labels
+            Controls whether or not the vertex is labeled. If ``False`` (the default),
+            the vertex is not labeled; if ``True`` it is labeled using its
+            names (as specified in ``vertex``) via :class:`~.MathTex`. Alternatively,
+            any :class:`~.Mobject` can be passed to be used as the label.
+        label_fill_color
+            Sets the fill color of the default labels generated when ``labels``
+            is set to ``True``. Has no effect for other values of ``labels``.
+        vertex_type
+            The mobject class used for displaying vertices in the scene.
+        vertex_config
+            A dictionary containing keyword arguments to be passed to
+            the class specified via ``vertex_type``.
+        vertex_mobjects
+            A dictionary whose keys are the vertex identifiers, and whose
+            values are mobjects that should be used as vertices. Overrides
+            all other vertex customization options.
+        """
+        if positions is None:
+            positions = {}
+        if vertex_mobjects is None:
+            vertex_mobjects = {}
+
+        graph_center = self.get_center()
+        base_positions = {v: graph_center for v in vertices}
+        base_positions.update(positions)
+        positions = base_positions
+
+        if isinstance(labels, bool):
+            labels = {v: labels for v in vertices}
+        else:
+            assert isinstance(labels, dict)
+            base_labels = {v: False for v in vertices}
+            base_labels.update(labels)
+            labels = base_labels
+
+        if vertex_config is None:
+            vertex_config = copy(self.default_vertex_config)
+
+        assert isinstance(vertex_config, dict)
+        base_vertex_config = copy(self.default_vertex_config)
+        base_vertex_config.update(
+            {key: val for key, val in vertex_config.items() if key not in vertices}
+        )
+        vertex_config = {
+            v: (vertex_config[v] if v in vertex_config else copy(base_vertex_config))
+            for v in vertices
+        }
+
+        return [
+            self._add_vertex(
+                v,
+                position=positions[v],
+                label=labels[v],
+                label_fill_color=label_fill_color,
+                vertex_type=vertex_type,
+                vertex_config=vertex_config[v],
+                vertex_mobject=vertex_mobjects[v] if v in vertex_mobjects else None,
+            )
+            for v in vertices
+        ]
+
+    @override_animate(add_vertices)
+    def _add_vertices_animation(self, *args, anim_args=None, **kwargs):
+        if anim_args is None:
+            anim_args = {}
+
+        animation = anim_args.pop("animation", Create)
+
+        vertex_mobjects = self.add_vertices(*args, **kwargs)
+        return AnimationGroup(*[animation(v, **anim_args) for v in vertex_mobjects])
+
+    def _remove_vertex(self, vertex):
+        """Remove a vertex (as well as all incident edges) from the graph.
+
+        Parameters
+        ----------
+
+        vertex
+            The identifier of a vertex to be removed.
+
+        Returns
+        -------
+
+        Group
+            A mobject containing all removed objects.
+
+        """
+        if vertex not in self.vertices:
+            raise ValueError(
+                f"The graph does not contain a vertex with identifier '{vertex}'"
+            )
+
+        self._graph.remove_node(vertex)
+        self._layout.pop(vertex)
+        if vertex in self._labels:
+            self._labels.pop(vertex)
+        self._vertex_config.pop(vertex)
+
+        edge_tuples = [e for e in self.edges if vertex in e]
+        for e in edge_tuples:
+            self._edge_config.pop(e)
+        to_remove = [self.edges.pop(e) for e in edge_tuples]
+        to_remove.append(self.vertices.pop(vertex))
+
+        self.remove(*to_remove)
+        return Group(*to_remove)
+
+    def remove_vertices(self, *vertices):
+        """Remove several vertices from the graph.
+
+        Parameters
+        ----------
+
+        vertices
+            A list of vertices to be removed from the graph.
+
+        Examples
+        --------
+        ::
+
+            >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
+            >>> removed = G.remove_vertices(2, 3); removed
+            Group
+            >>> removed.submobjects
+            [Line, Line, Dot, Dot]
+            >>> G
+            Graph on 1 vertices and 0 edges
+
+        """
+        mobjects = []
+        for v in vertices:
+            mobjects.extend(self._remove_vertex(v).submobjects)
+        return Group(*mobjects)
+
+    @override_animate(remove_vertices)
+    def _remove_vertices_animation(self, *vertices, anim_args=None):
+        if anim_args is None:
+            anim_args = {}
+
+        animation = anim_args.pop("animation", Uncreate)
+
+        mobjects = self.remove_vertices(*vertices)
+        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+
+    def _add_edge(
+        self,
+        edge: Tuple[Hashable, Hashable],
+        edge_type: Type["Mobject"] = Line,
+        edge_config: Optional[dict] = None,
+    ):
+        """Add a new edge to the graph.
+
+        Parameters
+        ----------
+
+        edge
+            The edge (as a tuple of vertex identifiers) to be added. If a non-existing
+            vertex is passed, a new vertex with default settings will be created. Create
+            new vertices yourself beforehand to customize them.
+        edge_type
+            The mobject class used for displaying edges in the scene.
+        edge_config
+            A dictionary containing keyword arguments to be passed
+            to the class specified via ``edge_type``.
+
+        Returns
+        -------
+        Group
+            A group containing all newly added vertices and edges.
+
+        """
+        if edge_config is None:
+            edge_config = self.default_edge_config.copy()
+        added_mobjects = []
+        for v in edge:
+            if v not in self.vertices:
+                added_mobjects.append(self._add_vertex(v))
+        u, v = edge
+
+        self._graph.add_edge(u, v)
+
+        base_edge_config = self.default_edge_config.copy()
+        base_edge_config.update(edge_config)
+        edge_config = base_edge_config
+        self._edge_config[(u, v)] = edge_config
+
+        edge_mobject = edge_type(
+            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
+        )
+        self.edges[(u, v)] = edge_mobject
+
+        self.add(edge_mobject)
+        added_mobjects.append(edge_mobject)
+        return Group(*added_mobjects)
+
+    def add_edges(
+        self,
+        *edges: List[Tuple[Hashable, Hashable]],
+        edge_type: Type["Mobject"] = Line,
+        edge_config: Optional[dict] = None,
+    ):
+        """Add new edges to the graph.
+
+        Parameters
+        ----------
+
+        edges
+            The edge (as a tuple of vertex identifiers) to be added. If a non-existing
+            vertex is passed, a new vertex with default settings will be created. Create
+            new vertices yourself beforehand to customize them.
+        edge_type
+            The mobject class used for displaying edges in the scene.
+        edge_config
+            A dictionary either containing keyword arguments to be passed
+            to the class specified via ``edge_type``, or a dictionary
+            whose keys are the edge tuples, and whose values are dictionaries
+            containing keyword arguments to be passed for the construction
+            of the corresponding edge.
+
+        Returns
+        -------
+        Group
+            A group containing all newly added vertices and edges.
+
+        """
+        if edge_config is None:
+            edge_config = {}
+        non_edge_settings = {k: v for (k, v) in edge_config.items() if k not in edges}
+        base_edge_config = self.default_edge_config.copy()
+        base_edge_config.update(non_edge_settings)
+        base_edge_config = {e: base_edge_config.copy() for e in edges}
+        for e in edges:
+            base_edge_config[e].update(edge_config.get(e, {}))
+        edge_config = base_edge_config
+
+        added_mobjects = sum(
+            [
+                self._add_edge(
+                    edge, edge_type=edge_type, edge_config=edge_config[edge]
+                ).submobjects
+                for edge in edges
+            ],
+            [],
+        )
+        return Group(*added_mobjects)
+
+    @override_animate(add_edges)
+    def _add_edges_animation(self, *args, anim_args=None, **kwargs):
+        if anim_args is None:
+            anim_args = {}
+        animation = anim_args.pop("animation", Create)
+
+        mobjects = self.add_edges(*args, **kwargs)
+        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
+
+    def _remove_edge(self, edge: Tuple[Hashable]):
+        """Remove an edge from the graph.
+
+        Parameters
+        ----------
+
+        edge
+            The edge (i.e., a tuple of vertex identifiers) to be removed from the graph.
+
+        Returns
+        -------
+
+        Mobject
+            The removed edge.
+
+        """
+        if edge not in self.edges:
+            edge = edge[::-1]
+            if edge not in self.edges:
+                raise ValueError(f"The graph does not contain a edge '{edge}'")
+
+        edge_mobject = self.edges.pop(edge)
+
+        self._graph.remove_edge(*edge)
+        self._edge_config.pop(edge, None)
+
+        self.remove(edge_mobject)
+        return edge_mobject
+
+    def remove_edges(self, *edges: List[Tuple[Hashable]]):
+        """Remove several edges from the graph.
+
+        Parameters
+        ----------
+        edges
+            A list of edges to be removed from the graph.
+
+        Returns
+        -------
+        Group
+            A group containing all removed edges.
+
+        """
+        edge_mobjects = [self._remove_edge(edge) for edge in edges]
+        return Group(*edge_mobjects)
+
+    @override_animate(remove_edges)
+    def _remove_edges_animation(self, *edges, anim_args=None):
+        if anim_args is None:
+            anim_args = {}
+
+        animation = anim_args.pop("animation", Uncreate)
+
+        mobjects = self.remove_edges(*edges)
+        return AnimationGroup(*[animation(mobj, **anim_args) for mobj in mobjects])
 
     @staticmethod
     def from_networkx(nxgraph: nx.classes.graph.Graph, **kwargs) -> "Graph":
