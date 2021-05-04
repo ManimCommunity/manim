@@ -246,6 +246,32 @@ class CoordinateSystem:
             else:
                 return None
 
+    def angle_of_tangent(self, x: float, graph: ParametricFunction, dx: float = 0.01):
+        """Returns the angle to the x axis of the tangent
+        to the plotted curve at a particular x-value.
+
+        Parameters
+        ----------
+        x
+            The x-value at which the tangent must touch the curve.
+
+        graph
+            The :class:`~.ParametricFunction` for which to calculate the tangent.
+
+        dx
+            The small change in `x` with which a small change in `y`
+            will be compared in order to obtain the tangent.
+
+        Returns
+        -------
+        :class:`float`
+            The angle of the tangent with the x axis.
+        """
+        vect = self.input_to_graph_point(x + dx, graph) - self.input_to_graph_point(
+            x, graph
+        )
+        return angle_of_vector(vect)
+
 
 class Axes(VGroup, CoordinateSystem):
     """Creates a set of axes.
