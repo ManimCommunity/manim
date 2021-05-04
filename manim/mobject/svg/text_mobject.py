@@ -328,7 +328,7 @@ class Text(SVGMobject):
                 text3 = Text('Hello world', weight=BOLD)
                 text4 = Text('Hello world', t2w={'world':BOLD})
 
-                self.add(text0,text1,text2,text3,text4)
+                self.add(text0, text1, text2, text3, text4)
                 Group(*self.mobjects).arrange(DOWN, buff=.8)
 
     .. manim:: TextMoreCustomization
@@ -556,7 +556,7 @@ class Text(SVGMobject):
     #         self.t2w = kwargs.pop("text2weight")
 
     def set_color_by_t2c(self, t2c=None):
-        """Internally used function. Sets colour for specified strings."""
+        """Internally used function. Sets color for specified strings."""
         t2c = t2c if t2c else self.t2c
         for word, color in list(t2c.items()):
             for start, end in self.find_indexes(
