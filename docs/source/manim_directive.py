@@ -72,10 +72,10 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+from manim._config import logger
 import shutil
-import time
-from os.path import relpath
 from pathlib import Path
+from timeit import timeit
 from typing import List
 
 import jinja2
@@ -86,6 +86,7 @@ from docutils.statemachine import StringList
 from manim import QUALITIES
 
 classnamedict = {}
+run_times = []
 
 
 class skip_manim_node(nodes.Admonition, nodes.Element):
@@ -207,7 +208,6 @@ class ManimDirective(Directive):
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
         config.assets_dir = Path("_static")
-        config.verbosity = "WARNING"
         config.progress_bar = "none"
 
         config_code = [
@@ -235,10 +235,11 @@ class ManimDirective(Directive):
             *user_code,
             f"{clsname}().render()",
         ]
-        start = time.time()
-        exec("\n".join(code), globals())
-        duration = time.time() - start
-        print(f"{clsname.rjust(32)}: {('%.2f'%duration).rjust(5)} s")
+        config.verbosity = "WARNING"
+        run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+        config.verbosity = "INFO"
+        logger.info(f"{clsname.rjust(32)}: {('%.2f'%run_time).rjust(5)} s")
+        run_times.append((clsname, run_time))
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
