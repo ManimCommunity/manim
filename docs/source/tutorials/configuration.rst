@@ -338,50 +338,116 @@ highest precedence is:
 A list of all config options
 ****************************
 
-.. code::
+.. testcode::
+   :hide:
 
-   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity',
-   'bottom', 'custom_folders', 'disable_caching', 'dry_run',
-   'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate',
-   'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
-   'from_animation_number', 'images_dir', 'input_file', 'left_side',
-   'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
-   'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
-   'pixel_height', 'pixel_width', 'plugins', 'png_mode', 'preview',
-   'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
-   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
+   from manim._config import ManimConfig
+   from inspect import getmembers
+   print(sorted([n for n, _ in getmembers(ManimConfig, lambda v: isinstance(v, property))]))
+
+.. testoutput::
+   :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
+
+   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity', 'bottom',
+   'custom_folders', 'disable_caching', 'dry_run', 'ffmpeg_loglevel', 'flush_cache',
+   'frame_height', 'frame_rate', 'frame_size', 'frame_width', 'frame_x_radius',
+   'frame_y_radius', 'from_animation_number', 'images_dir', 'input_file',
+   'leave_progress_bars', 'left_side', 'log_dir', 'log_to_file',
+   'max_files_cached', 'media_dir', 'media_width', 'movie_file_extension', 'output_file',
+   'partial_movie_dir', 'pixel_height', 'pixel_width', 'plugins', 'png_mode', 
+   'preview', 'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
+   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'streaming_dir', 'tex_dir', 
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
-   'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
-   'verbosity', 'video_dir', 'webgl_renderer_path', 'write_all',
+   'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer', 'verbosity', 
+   'video_dir', 'webgl_renderer_path', 'webgl_updater_fps', 'write_all', 
    'write_to_movie']
 
 
 A list of all CLI flags
 ***********************
 
-.. code::
+.. testcode::
+   :hide:
 
-   manim -h
+   import subprocess
+   import os
+   is_windows = os.name == 'nt'
+   result = subprocess.run(['manim', '-h'], shell=is_windows, stdout=subprocess.PIPE)
+   print(result.stdout.decode('utf-8'))
 
-   Usage: manim [OPTIONS] COMMAND [ARGS]...
+.. testoutput::
+   :options: +ELLIPSIS, +NORMALIZE_WHITESPACE
+   
+   Manim Community v...
+   usage: manim file [flags] [scene [scene ...]]
+          manim {cfg,init,plugins} [opts]
 
-     Animation engine for explanatory math videos
+   Animation engine for explanatory math videos
 
-   Options:
-     --version   Show the version and exit.
-     -h, --help  Show this message and exit.
+   positional arguments:
+     file                  Path to file holding the python code for the scene
+     scene_names           Name of the Scene class you want to see
 
-   Commands:
-     render*  Render SCENE(S) from the input FILE.
-     cfg      Manages Manim configuration files.
-     plugins  Manages Manim plugins.
+   optional arguments:
+     -h, --help            show this help message and exit
+     -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                           Specify the name of the output file, if it should be different from the scene class name
+     -p, --preview         Automatically open the saved file once its done
+     -f, --show_in_file_browser
+                           Show the output file in the File Browser
+     --sound               Play a success/failure sound
+     --leave_progress_bars
+                           Leave progress bars displayed in terminal
+     -a, --write_all       Write all the scenes from a file
+     -w, --write_to_movie  Render the scene as a movie file (this is on by default)
+     -s, --save_last_frame
+                           Save the last frame only (no movie file is generated)
+     -g, --save_pngs       Save each frame as a png
+     -i, --save_as_gif     Save the video as gif
+     --disable_caching     Disable caching (will generate partial-movie-files anyway)
+     --flush_cache         Remove all cached partial-movie-files
+     --log_to_file         Log terminal output to file
+     -c BACKGROUND_COLOR, --background_color BACKGROUND_COLOR
+                           Specify background color
+     --media_dir MEDIA_DIR
+                           Directory to store media (including video files)
+     --log_dir LOG_DIR     Directory to store log files
+     --tex_template TEX_TEMPLATE
+                           Specify a custom TeX template file
+     --dry_run             Do a dry run (render scenes but generate no output files)
+     -t, --transparent     Render a scene with an alpha channel
+     -q {k,p,h,m,l}, --quality {k,p,h,m,l}
+                           Render at specific quality, short form of the --*_quality flags
+     --low_quality         Render at low quality
+     --medium_quality      Render at medium quality
+     --high_quality        Render at high quality
+     --production_quality  Render at default production quality
+     --fourk_quality       Render at 4K quality
+     -l                    DEPRECATED: USE -ql or --quality l
+     -m                    DEPRECATED: USE -qm or --quality m
+     -e                    DEPRECATED: USE -qh or --quality h
+     -k                    DEPRECATED: USE -qk or --quality k
+     -r RESOLUTION, --resolution RESOLUTION
+                           Resolution, passed as "height,width". Overrides the -l, -m, -e, and -k flags, if present
+     -n FROM_ANIMATION_NUMBER, --from_animation_number FROM_ANIMATION_NUMBER
+                           Start rendering at the specified animation index, instead of the first animation. If you pass in two comma separated values, e.g. '3,6', it will end
+                           the rendering at the second value
+     --use_opengl_renderer
+                              Render animations using the OpenGL renderer
+     --use_webgl_renderer     Render animations using the WebGL frontend
+     --webgl_renderer_path WEBGL_RENDERER_PATH
+                           Path to the WebGL frontend
+     --webgl_updater_fps WEBGL_UPDATER_FPS
+                           Frame rate to use when generating keyframe data for animations that use updaters while using the WebGL frontend
+     --config_file CONFIG_FILE
+                           Specify the configuration file
+     --custom_folders      Use the folders defined in the [custom_folders] section of the config file to define the output folder structure
+     --livestream          Run in streaming mode
+     --use-ipython         Use IPython for streaming
+     -v {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --verbosity {DEBUG,INFO,WARNING,ERROR,CRITICAL}
+                           Verbosity level. Also changes the ffmpeg log level unless the latter is specified in the config
+     --version             Print the current version of Manim you are using
+     --progress_bar True/False
+                           Display the progress bar
 
-     Made with <3 by Manim Community developers.
-     
-Each of the subcommands has its own help page which can be 
-
-.. code::
-
-   manim render -h
-   manim cfg -h
-   manim plugins -h
+   Made with <3 by the ManimCommunity devs

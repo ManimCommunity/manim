@@ -55,6 +55,7 @@ requests = "*"
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools"]
 jupyterlab = ["jupyterlab"]
+livestreaming = ["ipython"]
 
 [tool.poetry.dev-dependencies]
 pytest-cov = "*"

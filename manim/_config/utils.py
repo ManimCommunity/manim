@@ -541,6 +541,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "renderer",
             "webgl_renderer_path",
+            "streaming_dir",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -579,6 +580,23 @@ class ManimConfig(MutableMapping):
         val = parser["jupyter"].get("media_width")
         if val:
             setattr(self, "media_width", val)
+
+        streaming_config = {
+            opt: parser["streaming"].get(opt, fallback="", raw=True)
+            for opt in [
+                "streaming_client",
+                "streaming_protocol",
+                "streaming_ip",
+                "streaming_port",
+            ]
+        }
+        url = parser["streaming"].get("streaming_url", fallback="", raw=True)
+        sdp_name = parser["streaming"].get("sdp_name", fallback="", raw=True)
+        streaming_config["streaming_url"] = url.format(**streaming_config)
+        streaming_config["sdp_path"] = os.path.join(
+            self.get_dir("streaming_dir"), sdp_name.format(**streaming_config)
+        )
+        self.streaming_config = streaming_config
 
         return self
 
@@ -1252,6 +1270,7 @@ class ManimConfig(MutableMapping):
             "input_file",
             "output_file",
             "partial_movie_dir",
+            "streaming_dir",
         ]
         if key not in dirs:
             raise KeyError(
@@ -1324,6 +1343,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["partial_movie_dir"],
         lambda self, val: self._set_dir("partial_movie_dir", val),
         doc="Directory to place partial movie files (no flag).  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    streaming_dir = property(
+        lambda self: self._d["streaming_dir"],
+        lambda self, val: self._set_dir("streaming_dir", val),
+        doc="Directory to have streamed files.  See :meth:`ManimConfig.get_dir`.",
     )
 
     custom_folders = property(
