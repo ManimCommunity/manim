@@ -72,11 +72,11 @@ def get_plane_mesh(context):
     return Mesh(shader, attributes)
 
 
-class MobjectTest(Scene):
+class ThreeDMobjectTest(Scene):
     def construct(self):
         # config["background_color"] = "#333333"
 
-        s = OpenGLSquare().shift(2 * RIGHT)
+        s = OpenGLSquare(fill_opacity=0.5).shift(2 * RIGHT)
         self.add(s)
 
         sp = OpenGLSphere().shift(2 * LEFT)
@@ -95,7 +95,7 @@ class MobjectTest(Scene):
         self.interactive_embed()
 
 
-class FullScreenQuadTest2(Scene):
+class NamedFullScreenQuad(Scene):
     def construct(self):
         surface = FullScreenQuad(self.renderer.context, fragment_shader_name="design_3")
         surface.shader.set_uniform("u_resolution", (854.0, 480.0, 0.0))
@@ -115,7 +115,7 @@ class FullScreenQuadTest2(Scene):
         self.interactive_embed()
 
 
-class FullScreenQuadTest(Scene):
+class InlineFullScreenQuad(Scene):
     def construct(self):
         surface = FullScreenQuad(
             self.renderer.context,
@@ -172,7 +172,7 @@ class FullScreenQuadTest(Scene):
         self.interactive_embed()
 
 
-class Test2(Scene):
+class SimpleInlineFullScreenQuad(Scene):
     def construct(self):
         surface = FullScreenQuad(
             self.renderer.context,
@@ -219,7 +219,7 @@ class Test2(Scene):
         self.wait(5)
 
 
-class ShaderExample(Scene):
+class InlineShaderExample(Scene):
     def construct(self):
         config["background_color"] = "#333333"
 
@@ -296,7 +296,7 @@ class ShaderExample(Scene):
         # self.embed_2()
 
 
-class ShaderExample2(Scene):
+class NamedShaderExample(Scene):
     def construct(self):
         shader = Shader(self.renderer.context, "manim_coords")
         shader.set_uniform("u_color", (0.0, 1.0, 0.0, 1.0))

@@ -11,10 +11,10 @@ from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
-from .. import logger
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..scene.scene_file_writer import SceneFileWriter
+from ..utils import opengl
 from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_of_vector,
@@ -24,8 +24,7 @@ from ..utils.space_ops import (
     rotation_matrix_transpose_from_quaternion,
 )
 from .opengl_renderer_window import Window
-from .shader import *
-from .shader_wrapper import ShaderWrapper
+from .shader import Mesh, Shader
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -358,9 +357,6 @@ class OpenGLRenderer:
                 except:
                     pass
                 mesh.render()
-
-            # shader = MyShader(self.context, name="design_3")
-            # shader.render()
 
             self.animation_elapsed_time = time.time() - self.animation_start_time
 

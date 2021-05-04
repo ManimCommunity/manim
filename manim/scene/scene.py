@@ -1178,14 +1178,7 @@ class Scene(Container):
     def on_mouse_scroll(self, point, offset):
         factor = 1 + np.arctan(-2.1 * offset[1])
         self.camera.scale(factor, about_point=self.camera_target)
-
-        # transform = self.camera.inverse_rotation_matrix
-        # shift = np.dot(np.transpose(transform), offset)
-        # if SHIFT_VALUE in self.renderer.pressed_keys:
-        #     self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
-        # else:
-        #     self.camera.shift(20.0 * shift)
-        self.on_mouse_scroll_2(point, offset)
+        self.mouse_scroll_orbit_controls(point, offset)
 
     def on_key_press(self, symbol, modifiers):
         try:
@@ -1215,9 +1208,9 @@ class Scene(Container):
             total_shift_vector = horizontal_shift_vector + vertical_shift_vector
             self.camera.shift(1.1 * total_shift_vector)
 
-        self.on_mouse_drag_2(point, d_point, buttons, modifiers)
+        self.mouse_drag_orbit_controls(point, d_point, buttons, modifiers)
 
-    def on_mouse_scroll_2(self, point, offset):
+    def mouse_scroll_orbit_controls(self, point, offset):
         camera_to_target = self.camera_target - self.camera.get_position()
         camera_to_target *= np.sign(offset[1])
         shift_vector = 0.01 * camera_to_target
@@ -1225,7 +1218,7 @@ class Scene(Container):
             opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
         )
 
-    def on_mouse_drag_2(self, point, d_point, buttons, modifiers):
+    def mouse_drag_orbit_controls(self, point, d_point, buttons, modifiers):
         # Left click drag.
         if buttons == 1:
             # Translate to target the origin and rotate around the z axis.
