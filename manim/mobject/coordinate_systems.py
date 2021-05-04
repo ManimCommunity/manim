@@ -212,7 +212,24 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    def input_to_graph_point(self, x, graph):
+    def input_to_graph_point(self, x: float, graph: ParametricFunction) -> np.ndarray:
+        """This method returns a coordinate on the curve
+        given an x_value and a the graph-curve for which
+        the corresponding y value should be found.
+
+        Parameters
+        ----------
+        x
+            The x-value for which to find the y value.
+
+        graph
+            The :class:`~.ParametricFunction` object on which
+            the x and y value lie.
+
+        Returns
+        -------
+        The array of the coordinates on the graph.
+        """
         if hasattr(graph, "underlying_function"):
             return self.coords_to_point(x, graph.underlying_function(x))
         else:
