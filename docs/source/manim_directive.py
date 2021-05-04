@@ -72,6 +72,7 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+import re
 import shutil
 from pathlib import Path
 from timeit import timeit
@@ -86,7 +87,19 @@ from manim import QUALITIES
 from manim._config import logger
 
 classnamedict = {}
-run_times = []
+i = 0
+
+
+def write_rendering_stats(scene_name, run_time, file_name):
+    line = ",".join(
+        [
+            re.sub("^reference\/", "", file_name),
+            scene_name,
+            "%.3f" % run_time,
+        ]
+    )
+    with open("../rendering_times.csv", "a") as file:
+        file.write(line + "\n")
 
 
 class skip_manim_node(nodes.Admonition, nodes.Element):
@@ -209,6 +222,7 @@ class ManimDirective(Directive):
         output_file = f"{clsname}-{classnamedict[clsname]}"
         config.assets_dir = Path("_static")
         config.progress_bar = "none"
+        config.verbosity = "WARNING"
 
         config_code = [
             f'config["frame_rate"] = {frame_rate}',
@@ -235,11 +249,30 @@ class ManimDirective(Directive):
             *user_code,
             f"{clsname}().render()",
         ]
-        config.verbosity = "WARNING"
         run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
-        config.verbosity = "INFO"
-        logger.info(f"{clsname.rjust(32)}: {('%.2f'%run_time).rjust(5)} s")
-        run_times.append((clsname, run_time))
+
+        # write_rendering_stats(
+        #     clsname,
+        #     run_time,
+        #     self.state.document.setting.env.docname,
+        # )
+
+        # Open a file with access mode 'a'
+        write_rendering_stats(
+            clsname,
+            run_time,
+            self.state.document.settings.env.docname,
+        )
+        # print(
+        #     f"{clsname},{('%.3f'%run_time)},{self.state.document.settings.env.docname}\n"
+        # )
+        # with open("../rendering_times.csv", "a") as file:
+
+        #     file.write(
+        #         f"{clsname},{('%.3f'%run_time)},{self.state.document.settings.env.docname}\n"
+        #     )
+        #     # print(dir(self))
+        #     print(self.state.document.settings.env.docname)
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):

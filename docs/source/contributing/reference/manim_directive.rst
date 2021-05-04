@@ -1,4 +1,4 @@
-manim\_directive
+﻿manim\_directive
 ================
 
 .. currentmodule:: manim_directive
@@ -33,6 +33,7 @@ manim\_directive
    .. autofunction:: process_name_list
    .. autofunction:: setup
    .. autofunction:: visit
+   .. autofunction:: write_rendering_stats
    
    
 
