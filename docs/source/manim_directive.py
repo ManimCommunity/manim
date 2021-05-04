@@ -72,7 +72,6 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
-from manim._config import logger
 import shutil
 from pathlib import Path
 from timeit import timeit
@@ -84,6 +83,7 @@ from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import StringList
 
 from manim import QUALITIES
+from manim._config import logger
 
 classnamedict = {}
 run_times = []
