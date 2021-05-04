@@ -2,10 +2,9 @@
 
 __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlane"]
 
-
 import math
 import numbers
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 
@@ -15,7 +14,7 @@ from ..mobject.functions import ParametricFunction
 from ..mobject.geometry import Arrow, DashedLine, Dot, Line
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import VDict, VGroup, VMobject
+from ..mobject.types.vectorized_mobject import Mobject, VDict, VGroup, VMobject
 from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE, YELLOW, Colors
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
@@ -111,6 +110,68 @@ class CoordinateSystem:
             self.get_y_axis_label(y_label_tex),
         )
         return self.axis_labels
+
+    def get_graph_label(
+        self,
+        graph: ParametricFunction,
+        label: Union[int, float, str, Mobject] = "f(x)",
+        x_val: Optional[float] = None,
+        direction: Sequence[float] = RIGHT,
+        buff: float = MED_SMALL_BUFF,
+        color: Optional[str] = None,
+        dot: bool = False,
+        dot_config: Optional[dict] = None,
+    ):
+        """Creates a properly positioned label for the passed graph,
+        styled with parameters and an optional dot.
+
+        Parameters
+        ----------
+        graph
+            The curve of the function plotted.
+        label
+            The label for the function's curve. Written with :class:`MathTex` if not specified otherwise.
+        x_val
+            The x_value with which the label should be aligned.
+        direction
+            The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``
+        buff
+            The buffer space between the curve and the label
+        color
+            The color of the label.
+        dot
+            Adds a dot at the given point on the graph.
+        dot_config
+            Additional parameters to be passed to :class:`~.Dot`.
+
+        Returns
+        -------
+        The label.
+        """
+
+        if isinstance(label, float) or isinstance(label, int) or isinstance(label, str):
+            label = MathTex(label)
+
+        color = color or graph.get_color()
+        label.set_color(color)
+
+        if x_val is None:
+            # Search from right to left
+            for x in np.linspace(self.x_range[1], self.x_range[0], 100):
+                point = self.input_to_graph_point(x, graph)
+                if point[1] < config["frame_y_radius"]:
+                    break
+        else:
+            point = self.input_to_graph_point(x_val, graph)
+
+        label.next_to(point, direction, buff=buff)
+        label.shift_onto_screen()
+
+        base_dot_config = {"radius": 0.06, "color": color}
+        merge_dicts_recursively(base_dot_config, dot_config)
+        if dot:
+            label.add(Dot(point=point, **dot_config))
+        return label
 
     def get_line_from_axis_to_point(
         self, index, point, line_func=DashedLine, color=LIGHT_GREY, stroke_width=2
