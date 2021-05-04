@@ -74,6 +74,7 @@ directive:
 """
 import os
 import shutil
+import time
 from os.path import relpath
 from pathlib import Path
 from typing import List
@@ -212,6 +213,8 @@ class ManimDirective(Directive):
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
         config.assets_dir = Path("_static")
+        config.verbosity = "WARNING"
+        config.progress_bar = "none"
 
         config_code = [
             f'config["frame_rate"] = {frame_rate}',
@@ -235,7 +238,10 @@ class ManimDirective(Directive):
             *user_code,
             f"{clsname}().render()",
         ]
+        start = time.time()
         exec("\n".join(code), globals())
+        duration = time.time() - start
+        print(f"{clsname.rjust(32)}: {('%.2f'%duration).rjust(5)} s")
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
