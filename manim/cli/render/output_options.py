@@ -6,7 +6,7 @@ output_options = option_group(
     option(
         "-o",
         "--output_file",
-        multiple=True,
+        type=str,
         help="Specify the filename(s) of the rendered scene(s).",
     ),
     option(
