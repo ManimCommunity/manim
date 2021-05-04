@@ -487,59 +487,6 @@ class GraphScene(Scene):
 
         return self.get_graph(deriv, **kwargs)
 
-    def get_graph_label(
-        self,
-        graph,
-        label="f(x)",
-        x_val=None,
-        direction=RIGHT,
-        buff=MED_SMALL_BUFF,
-        color=None,
-    ):
-        """This method returns a properly positioned label for the passed graph,
-        styled with the passed parameters.
-
-        Parameters
-        ----------
-        graph : :class:`~.ParametricFunction`
-            The curve of the function plotted.
-
-        label : Optional[:class:`str`]
-            The label for the function's curve.
-
-        x_val : Optional[:class:`float`]
-            The x_value with which the label should be aligned.
-
-        direction : Sequence[:class:`float`]
-            The cartesian position, relative to the curve that the label will be at.
-            e.g LEFT, RIGHT
-
-        buff : Optional[:class:`float`]
-            The buffer space between the curve and the label
-
-        color : Optional[:class:`str`]
-            The color of the label.
-
-        Returns
-        -------
-        :class:`~.MathTex`
-            The LaTeX of the passed 'label' parameter
-
-        """
-        label = MathTex(label)
-        color = color or graph.get_color()
-        label.set_color(color)
-        if x_val is None:
-            # Search from right to left
-            for x in np.linspace(self.x_max, self.x_min, 100):
-                point = self.input_to_graph_point(x, graph)
-                if point[1] < config["frame_y_radius"]:
-                    break
-            x_val = x
-        label.next_to(self.input_to_graph_point(x_val, graph), direction, buff=buff)
-        label.shift_onto_screen()
-        return label
-
     def get_riemann_rectangles(
         self,
         graph,
