@@ -36,9 +36,13 @@ def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_cac
 
 
 def test_when_animation_is_cached(using_temp_config):
-    scene = SquareToCircle()
-    # Render twice to create a cache.
-    scene.render()
+    for _ in range(3):
+        # Renders several times to generate a cache.
+        # THis is run three times because in some edgy cases and some OS, a same scene can produce
+        # a finite number of different hash. In this case, the scene wouldn't be detected as cached, making the test fail.
+        scene = SquareToCircle()
+        scene.render()
+
     pmf = scene.renderer.file_writer.partial_movie_files
     scene = SquareToCircle()
     scene.update_to_time = Mock()
