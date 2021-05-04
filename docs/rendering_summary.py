@@ -1,6 +1,5 @@
 import itertools as it
 
-
 print("\nRendering Summary\n-----------------\n")
 with open("rendering_times.csv") as file:
     data = [line.split(",") for line in file.read().splitlines()]
