@@ -278,7 +278,7 @@ class OpenGLRenderer:
                 shader.set_uniform(
                     "u_projection_matrix", opengl.orthographic_projection_matrix()
                 )
-            except:
+            except KeyError:
                 pass
 
             # Set depth test.
@@ -354,7 +354,7 @@ class OpenGLRenderer:
                     mesh.shader.set_uniform(
                         "u_projection_matrix", opengl.perspective_projection_matrix()
                     )
-                except:
+                except KeyError:
                     pass
                 mesh.render()
 

@@ -52,7 +52,7 @@ class Mesh:
             self.shader.set_uniform(
                 "u_model_matrix", opengl.matrix_to_shader_input(self.model_matrix)
             )
-        except:
+        except KeyError:
             pass
 
         if self.use_depth_test:
@@ -235,7 +235,7 @@ class FullScreenQuad(Mesh):
         shader = Shader(
             context,
             source=dict(
-                vertex_shader=f"""
+                vertex_shader="""
                 #version 330
 
                 in vec4 in_vert;

@@ -11,7 +11,6 @@ import random
 import string
 import sys
 import threading
-import time
 import types
 import warnings
 from queue import Queue
