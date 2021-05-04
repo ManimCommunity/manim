@@ -257,7 +257,13 @@ class Axes(VGroup, CoordinateSystem):
         return axis
 
     def coords_to_point(self, *coords):
-        origin = self.x_axis.number_to_point(0)
+        if self.x_range[0] > 0:
+            x_origin = self.x_range[0]
+        elif self.x_range[1] < 0:
+            x_origin = self.x_range[1]
+        else:
+            x_origin = 0
+        origin = self.x_axis.number_to_point(x_origin)
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
@@ -444,7 +450,12 @@ class ThreeDAxes(Axes):
         z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
-        z_axis.shift(self.x_axis.n2p(0))
+        if x_range[0] > 0:
+            z_axis.shift(self.x_axis.n2p(x_range[0]))
+        elif x_range[1] < 0:
+            z_axis.shift(self.x_axis.n2p(x_range[1]))
+        else:
+            z_axis.shift(self.x_axis.n2p(0))
 
         self.axes.add(z_axis)
         self.add(z_axis)
