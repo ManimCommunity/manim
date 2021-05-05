@@ -863,8 +863,9 @@ class Line(TipableVMobject):
             >>> line.get_projection(np.array([0, 1, 0]))
             array([0., 0., 0.])
         """
-        unit_vect = self.get_unit_vector()
         start = self.get_start()
+        end = self.get_end()
+        unit_vect = normalize(end - start)
         return start + np.dot(point - start, unit_vect) * unit_vect
 
     def get_slope(self):
