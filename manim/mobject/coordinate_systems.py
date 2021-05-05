@@ -213,7 +213,7 @@ class CoordinateSystem:
         buff: float = MED_SMALL_BUFF,
         color: Optional[str] = None,
         dot: bool = False,
-        dot_config=None,
+        dot_config: dict = None,
     ):
         """Creates a properly positioned label for the passed graph,
         styled with parameters and an optional dot.
@@ -244,9 +244,6 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-
-        dot_config = dot_config if dot_config is not None else {}
-
         if isinstance(label, float) or isinstance(label, int) or isinstance(label, str):
             label = MathTex(label)
 
@@ -265,8 +262,6 @@ class CoordinateSystem:
         label.next_to(point, direction, buff=buff)
         label.shift_onto_screen()
 
-        base_dot_config = {"radius": 0.06, "color": color}
-        merge_dicts_recursively(base_dot_config, dot_config)
         if dot:
             label.add(Dot(point=point, **dot_config))
         return label
