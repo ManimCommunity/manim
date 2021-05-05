@@ -261,7 +261,9 @@ class CoordinateSystem:
             label.add(Dot(point=point, **dot_config))
         return label
 
-    def angle_of_tangent(self, x: float, graph: ParametricFunction, dx: float = 0.01):
+    def angle_of_tangent(
+        self, x: float, graph: ParametricFunction, dx: float = 1e-8
+    ) -> float:
         """Returns the angle to the x axis of the tangent
         to the plotted curve at a particular x-value.
 
@@ -279,13 +281,11 @@ class CoordinateSystem:
 
         Returns
         -------
-        :class:`float`
-            The angle of the tangent with the x axis.
+        The angle of the tangent with the x axis.
         """
-        vect = self.input_to_graph_point(x + dx, graph) - self.input_to_graph_point(
-            x, graph
-        )
-        return angle_of_vector(vect)
+        p0 = self.input_to_graph_point(x, graph)
+        p1 = self.input_to_graph_point(x + dx, graph)
+        return angle_of_vector(p1 - p0)
 
     def get_riemann_rectangles(
         self,
@@ -395,6 +395,51 @@ class CoordinateSystem:
             )
 
         return rectangles
+
+    def slope_of_tangent(self, x: float, graph: ParametricFunction, **kwargs) -> float:
+        """Returns the slope of the tangent to the plotted curve
+        at a particular x-value.
+
+        Parameters
+        ----------
+        x
+            The x-value at which the tangent must touch the curve.
+
+        graph
+            The :class:`~.ParametricFunction` for which to calculate the tangent.
+
+        dx
+            The small change in x with which a small change in y
+            will be compared in order to obtain the tangent.
+
+        Returns
+        -------
+        The slope of the tangent with the x axis.
+        """
+        return np.tan(self.angle_of_tangent(x, graph, **kwargs))
+
+    def get_derivative_graph(self, graph: ParametricFunction, color=GREEN, **kwargs):
+        """Returns the curve of the derivative of the passed
+        graph.
+
+        Parameters
+        ----------
+        graph
+            The graph for which the derivative will be found.
+
+        **kwargs
+            Any valid keyword argument of :class:`~.ParametricFunction`
+
+        Returns
+        -------
+        The curve of the derivative.
+        """
+
+        def deriv(x):
+            return self.slope_of_tangent(x, graph)
+
+        kwargs["color"] = color
+        return self.get_graph(deriv, **kwargs)
 
 
 class Axes(VGroup, CoordinateSystem):
