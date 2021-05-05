@@ -116,15 +116,20 @@ class CoordinateSystem:
         )
 
     def get_axis_label(self, label_tex, axis, edge, direction, buff=SMALL_BUFF):
-        label = MathTex(label_tex)
+        if (
+            isinstance(label_tex, float)
+            or isinstance(label_tex, int)
+            or isinstance(label_tex, str)
+        ):
+            label = MathTex(label_tex)
         label.next_to(axis.get_edge_center(edge), direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
 
-    def get_axis_labels(self, x_label_tex="x", y_label_tex="y"):
+    def get_axis_labels(self, x_label="x", y_label="y"):
         self.axis_labels = VGroup(
-            self.get_x_axis_label(x_label_tex),
-            self.get_y_axis_label(y_label_tex),
+            self.get_x_axis_label(x_label),
+            self.get_y_axis_label(y_label),
         )
         return self.axis_labels
 
