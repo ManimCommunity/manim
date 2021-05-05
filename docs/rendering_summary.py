@@ -9,6 +9,7 @@ with open("rendering_times.csv") as file:
         key = key.ljust(max_file_length + 1, ".")
         group = list(group)
         if len(group) == 1:
+            row = group[0]
             print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
             continue
         time_sum = sum([float(row[2]) for row in group])
