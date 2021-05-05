@@ -168,9 +168,7 @@ class CoordinateSystem:
         return graph
 
     def input_to_graph_point(self, x: float, graph: ParametricFunction) -> np.ndarray:
-        """This method returns a coordinate on the curve for a
-        given x_value and the graph-curve for which
-        the corresponding y value should be found.
+        """Returns the y-coordinate for a given curve and x-value.
 
         Parameters
         ----------
@@ -179,11 +177,11 @@ class CoordinateSystem:
 
         graph
             The :class:`~.ParametricFunction` object on which
-            the x and y value lie.
+            the x and y-value lie.
 
         Returns
         -------
-        The array of the coordinates on the graph.
+        The coordinates of the corresponding y-value.
         """
         if hasattr(graph, "underlying_function"):
             return self.coords_to_point(x, graph.underlying_function(x))
