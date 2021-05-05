@@ -4,7 +4,7 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 
 
 import numbers
-from typing import Iterable, Optional, Sequence, Tuple, Union
+from typing import Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -193,8 +193,8 @@ class Axes(VGroup, CoordinateSystem):
 
     def __init__(
         self,
-        x_range: Optional[Union[Sequence[int], np.ndarray]] = None,
-        y_range: Optional[Union[Sequence[int], np.ndarray]] = None,
+        x_range: Optional[Union[List[int], np.ndarray]] = None,
+        y_range: Optional[Union[List[int], np.ndarray]] = None,
         x_length: Optional[float] = round(config.frame_width) - 2,
         y_length: Optional[float] = round(config.frame_height) - 2,
         axis_config: Optional[dict] = None,
@@ -249,7 +249,7 @@ class Axes(VGroup, CoordinateSystem):
         Returns
         -------
         :class:`NumberLine`
-            Returns a Number Line with the provided x and y axis range.
+            Returns a number line with the provided x and y axis range.
         """
         new_config = merge_dicts_recursively(self.axis_config, axis_config)
         new_config["length"] = length
@@ -266,7 +266,8 @@ class Axes(VGroup, CoordinateSystem):
         return axis
 
     def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
-        """Returns back a point with respect to the origin from the given coordinates.
+        """Transforms the vector formed from ``coords`` formed by the :class:`Axes`
+        into the corresponding vector with respect to the default basis.
 
         Returns
         -------
@@ -285,12 +286,12 @@ class Axes(VGroup, CoordinateSystem):
         Parameters
         ----------
         point
-            The point for finding the coordinates.
+            The point whose coordinates will be found.
 
         Returns
         -------
         Tuple
-            The coordinates of the points.
+            The coordinates of the point.
         """
         return tuple([axis.point_to_number(point) for axis in self.get_axes()])
 
@@ -300,7 +301,7 @@ class Axes(VGroup, CoordinateSystem):
         Returns
         -------
         :class:`~.VGroup`
-            Returns a pair of axes.
+            A pair of axes.
         """
         return self.axes
 
@@ -322,7 +323,7 @@ class Axes(VGroup, CoordinateSystem):
         Returns
         -------
         VDict
-            Returns the labels for the x and y values.
+            Labels for the x and y values.
         """
         axes = self.get_axes()
         self.coordinate_labels = VGroup()
@@ -578,12 +579,12 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Union[Sequence[int], np.ndarray]] = (
+        x_range: Optional[Union[List[int], np.ndarray]] = (
             -config["frame_x_radius"],
             config["frame_x_radius"],
             1,
         ),
-        y_range: Optional[Union[Sequence[int], np.ndarray]] = (
+        y_range: Optional[Union[List[int], np.ndarray]] = (
             -config["frame_y_radius"],
             config["frame_y_radius"],
             1,
@@ -594,7 +595,7 @@ class NumberPlane(Axes):
         y_axis_config: Optional[dict] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
-        faded_line_ratio: Optional[int] = 1,
+        faded_line_ratio: Optional[float] = 1,
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
@@ -747,12 +748,12 @@ class NumberPlane(Axes):
         return lines1, lines2
 
     def get_center_point(self) -> np.ndarray:
-        """Gets the center point from coordinates.
+        """Gets the origin of :class:`NumberPlane`.
 
         Returns
         -------
         np.ndarray
-            Returns the center point.
+            The center point.
         """
         return self.coords_to_point(0, 0)
 
@@ -765,6 +766,7 @@ class NumberPlane(Axes):
         return self.get_x_axis().get_unit_size()
 
     def get_axes(self) -> VGroup:
+        # Method Already defined at Axes.get_axes so we could remove this a later PR.
         """Gets the pair of axes.
 
         Returns
