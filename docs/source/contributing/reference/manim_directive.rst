@@ -33,7 +33,6 @@
    .. autofunction:: process_name_list
    .. autofunction:: setup
    .. autofunction:: visit
-   .. autofunction:: write_rendering_stats
    
    
 

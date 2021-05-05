@@ -1,9 +1,14 @@
 import itertools as it
+import sys
 
-print("\nRendering Summary\n-----------------\n")
 with open("rendering_times.csv") as file:
     data = [line.split(",") for line in file.read().splitlines()]
-    # print(data)
+
+    if len(data) == 0:
+        sys.exit()
+
+    print("\nRendering Summary\n-----------------\n")
+
     max_file_length = max([len(row[0]) for row in data])
     for key, group in it.groupby(data, key=lambda row: row[0]):
         key = key.ljust(max_file_length + 1, ".")

@@ -89,7 +89,7 @@ from manim._config import logger
 classnamedict = {}
 
 
-def write_rendering_stats(scene_name, run_time, file_name):
+def _write_rendering_stats(scene_name, run_time, file_name):
     line = ",".join(
         [
             re.sub("^reference\/", "", file_name),
@@ -250,7 +250,7 @@ class ManimDirective(Directive):
         ]
         run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
 
-        write_rendering_stats(
+        _write_rendering_stats(
             clsname,
             run_time,
             self.state.document.settings.env.docname,

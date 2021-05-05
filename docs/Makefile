@@ -27,6 +27,7 @@ cleanall: clean
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 
 html: Makefile 
+	@rm -f rendering_times.csv
 	@(cd source; $(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O))
 	@python rendering_summary.py
 
