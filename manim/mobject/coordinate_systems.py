@@ -193,8 +193,8 @@ class Axes(VGroup, CoordinateSystem):
 
     def __init__(
         self,
-        x_range: Optional[Union[List[int], np.ndarray]] = None,
-        y_range: Optional[Union[List[int], np.ndarray]] = None,
+        x_range: Optional[Union[List[float], np.ndarray]] = None,
+        y_range: Optional[Union[List[float], np.ndarray]] = None,
         x_length: Optional[float] = round(config.frame_width) - 2,
         y_length: Optional[float] = round(config.frame_height) - 2,
         axis_config: Optional[dict] = None,
@@ -231,7 +231,7 @@ class Axes(VGroup, CoordinateSystem):
 
     def create_axis(
         self,
-        range_terms: Union[Sequence[int], np.ndarray],
+        range_terms: Union[List[float], np.ndarray],
         axis_config: dict,
         length: float,
     ) -> NumberLine:
@@ -272,7 +272,8 @@ class Axes(VGroup, CoordinateSystem):
         Returns
         -------
         np.ndarray
-            A point formed by the coordinates
+            A point that results from a change of basis from the coordinate system
+            defined by the :class:`Axes` to that of ``manim``'s default coordinate system
         """
         origin = self.x_axis.number_to_point(0)
         result = np.array(origin)
@@ -281,7 +282,8 @@ class Axes(VGroup, CoordinateSystem):
         return result
 
     def point_to_coords(self, point: float) -> Tuple:
-        """Returns back the coordinates of a particular point.
+        """Transforms the coordinates of the point which are with respect to ``manim``'s default
+        basis into the coordinates of that point with respect to the basis defined by :class:`Axes`.
 
         Parameters
         ----------
@@ -291,7 +293,7 @@ class Axes(VGroup, CoordinateSystem):
         Returns
         -------
         Tuple
-            The coordinates of the point.
+            Coordinates of the point with respect to :class:`Axes`'s basis
         """
         return tuple([axis.point_to_number(point) for axis in self.get_axes()])
 
@@ -471,9 +473,9 @@ class ThreeDAxes(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Union[Sequence[int], np.ndarray]] = (-6, 6, 1),
-        y_range: Optional[Union[Sequence[int], np.ndarray]] = (-5, 5, 1),
-        z_range: Optional[Union[Sequence[int], np.ndarray]] = (-4, 4, 1),
+        x_range: Optional[Union[List[float], np.ndarray]] = (-6, 6, 1),
+        y_range: Optional[Union[List[float], np.ndarray]] = (-5, 5, 1),
+        z_range: Optional[Union[List[float], np.ndarray]] = (-4, 4, 1),
         x_length: Optional[float] = config.frame_height + 2.5,
         y_length: Optional[float] = config.frame_height + 2.5,
         z_length: Optional[float] = config.frame_height - 1.5,
@@ -579,12 +581,12 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Union[List[int], np.ndarray]] = (
+        x_range: Optional[Union[List[float], np.ndarray]] = (
             -config["frame_x_radius"],
             config["frame_x_radius"],
             1,
         ),
-        y_range: Optional[Union[List[int], np.ndarray]] = (
+        y_range: Optional[Union[List[float], np.ndarray]] = (
             -config["frame_y_radius"],
             config["frame_y_radius"],
             1,
@@ -758,11 +760,9 @@ class NumberPlane(Axes):
         return self.coords_to_point(0, 0)
 
     def get_x_unit_size(self):
-        # not yet implemented ?
         return self.get_x_axis().get_unit_size()
 
     def get_y_unit_size(self):
-        # not yet implemented ?
         return self.get_x_axis().get_unit_size()
 
     def get_axes(self) -> VGroup:
@@ -772,7 +772,7 @@ class NumberPlane(Axes):
         Returns
         -------
         :class:`~.VGroup`
-            Returns axes.
+            Axes
         """
         return self.axes
 
