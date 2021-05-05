@@ -87,7 +87,6 @@ from manim import QUALITIES
 from manim._config import logger
 
 classnamedict = {}
-i = 0
 
 
 def write_rendering_stats(scene_name, run_time, file_name):
@@ -251,28 +250,11 @@ class ManimDirective(Directive):
         ]
         run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
 
-        # write_rendering_stats(
-        #     clsname,
-        #     run_time,
-        #     self.state.document.setting.env.docname,
-        # )
-
-        # Open a file with access mode 'a'
         write_rendering_stats(
             clsname,
             run_time,
             self.state.document.settings.env.docname,
         )
-        # print(
-        #     f"{clsname},{('%.3f'%run_time)},{self.state.document.settings.env.docname}\n"
-        # )
-        # with open("../rendering_times.csv", "a") as file:
-
-        #     file.write(
-        #         f"{clsname},{('%.3f'%run_time)},{self.state.document.settings.env.docname}\n"
-        #     )
-        #     # print(dir(self))
-        #     print(self.state.document.settings.env.docname)
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
