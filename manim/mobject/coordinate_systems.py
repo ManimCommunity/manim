@@ -213,7 +213,7 @@ class CoordinateSystem:
         buff: float = MED_SMALL_BUFF,
         color: Optional[str] = None,
         dot: bool = False,
-        dot_config: Optional[dict] = None,
+        dot_config=None,
     ):
         """Creates a properly positioned label for the passed graph,
         styled with parameters and an optional dot.
@@ -241,6 +241,11 @@ class CoordinateSystem:
         -------
         The label.
         """
+
+        if dot_config is None:
+            dot_config = {}
+
+        dot_config = dot_config if dot_config is not None else {}
 
         if isinstance(label, float) or isinstance(label, int) or isinstance(label, str):
             label = MathTex(label)
