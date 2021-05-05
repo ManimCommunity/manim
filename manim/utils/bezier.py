@@ -374,7 +374,34 @@ def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:
     return np.allclose(points[0], points[-1])
 
 
-def bez_params_from_point(point, control_points):
+def bez_params_from_point(
+    point: typing.Iterable[typing.Union[float, int]],
+    control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
+) -> list[float]:
+    """Obtains the parameter corresponding to a given point
+    for a given bezier curve.
+
+    Parameters
+    ----------
+    point (typing.Iterable[float])
+        The Cartesian Coordinates of the point whose parameter
+        should be obtained.
+
+    control_points (typing.Iterable[typing.Iterable[float]])
+        The Cartesian Coordinates of the ordered control
+        points of the bezier curve on which the point may
+        or may not lie.
+
+    Returns
+    -------
+        list[float]
+            List containing possible parameters for the given point on
+            the given bezier curve.
+            This usually only contains one or zero elements, but if the
+            point is, say, at the beginning/end of a closed loop, may return
+            a list with more than 1 value, corresponding to the beginning and
+            end etc. of the loop.
+    """
     assert all(np.shape(point) == np.shape(c_p) for c_p in control_points)
 
     roots = []
@@ -411,21 +438,45 @@ def bez_params_from_point(point, control_points):
     # round all roots to the number of decimal places of CLOSED_THRESHOLD
     # Then, get the common roots for the solved bezier equations in all the
     # supplied dimensions.
-    roots = reduce(
-        np.intersect1d,
-        [
+    roots = [
+        r.real
+        for r in reduce(
+            np.intersect1d,
             [
-                np.around(j, int(np.log10(1 / CLOSED_THRESHOLD))).tolist()
-                for j in i
-                if j.imag == 0
-            ]
-            for i in roots
-        ],
-    )
+                [
+                    np.around(j, int(np.log10(1 / CLOSED_THRESHOLD))).tolist()
+                    for j in i
+                    if j.imag == 0
+                ]
+                for i in roots
+            ],
+        )
+    ]
     return roots
 
 
-def point_lies_on_bezier(point, control_points):
+def point_lies_on_bezier(
+    point: typing.Iterable[typing.Union[float, int]],
+    control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
+) -> bool:
+    """Checks if a given point lies on the bezier curves with the given control points.
+
+    Parameters
+    ----------
+    point (typing.Iterable[float])
+        The Cartesian Coordinates of the point to check.
+
+    control_points (typing.Iterable[typing.Iterable[float]])
+        The Cartesian Coordinates of the ordered control
+        points of the bezier curve on which the point may
+        or may not lie.
+
+
+    Returns
+    -------
+    bool
+        ``True`` if the point lies on the curve, ``False`` if not.
+    """
     # Method taken from
     # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
 

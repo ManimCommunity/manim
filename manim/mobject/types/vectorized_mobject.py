@@ -953,7 +953,7 @@ class VMobject(Mobject):
 
         curve = self.get_nth_curve_function(n)
 
-        length = self.get_nth_curve_length(n,sample_points)
+        length = self.get_nth_curve_length(n, sample_points)
 
         return curve, length
 
@@ -1049,14 +1049,17 @@ class VMobject(Mobject):
 
             current_length += length
 
-    def proportion_from_point(self,point:np.ndarray,) -> float:
-        """Gets the proportion along the path of the :class:`VMobject` given the
-        position of particular point is.
+    def proportion_from_point(
+        self,
+        point: typing.Iterable[typing.Union[float, int]],
+    ) -> float:
+        """Returns the proportion along the path of the :class:`VMobject`
+        a particular given point is at.
 
         Parameters
         ----------
-        point
-            The cartesian coordinates of the point which may or may not lie on the :class:`VMobject`
+        point (typing.Iterable[float])
+            The Cartesian coordinates of the point which may or may not lie on the :class:`VMobject`
 
         Returns
         -------
@@ -1079,14 +1082,14 @@ class VMobject(Mobject):
             control_points = self.get_nth_curve_points(n)
             length = self.get_nth_curve_length(n)
             if point_lies_on_bezier(point, control_points):
-                t = max(bez_params_from_point(point,control_points))
-                total_length+= length*t
+                t = max(bez_params_from_point(point, control_points))
+                total_length += length * t
                 break
             else:
-                total_length+=length
+                total_length += length
         else:
             raise ValueError(f"Point {point} does not lie on this curve.")
-        alpha = total_length/vmob_length
+        alpha = total_length / vmob_length
 
         return alpha
 
