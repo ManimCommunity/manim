@@ -11,11 +11,28 @@ import numpy as np
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, DashedLine, Dot, Line
+from ..mobject.geometry import Arrow, DashedLine, Dot, Line, Rectangle
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import Mobject, VDict, VGroup, VMobject
-from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE, YELLOW, Colors
+from ..mobject.types.vectorized_mobject import (
+    Mobject,
+    VDict,
+    VectorizedPoint,
+    VGroup,
+    VMobject,
+)
+from ..utils.color import (
+    BLACK,
+    BLUE,
+    BLUE_D,
+    GREEN,
+    LIGHT_GREY,
+    WHITE,
+    YELLOW,
+    Colors,
+    color_gradient,
+    invert_color,
+)
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
@@ -111,6 +128,79 @@ class CoordinateSystem:
         )
         return self.axis_labels
 
+    def get_line_from_axis_to_point(
+        self, index, point, line_func=DashedLine, color=LIGHT_GREY, stroke_width=2
+    ):
+        axis = self.get_axis(index)
+        line = line_func(axis.get_projection(point), point)
+        line.set_stroke(color, stroke_width)
+        return line
+
+    def get_vertical_line(self, point, **kwargs):
+        return self.get_line_from_axis_to_point(0, point, **kwargs)
+
+    def get_horizontal_line(self, point, **kwargs):
+        return self.get_line_from_axis_to_point(1, point, **kwargs)
+
+    # graphing
+
+    def get_graph(self, function, **kwargs):
+        t_range = self.x_range
+
+        if len(t_range) == 3:
+            # if t_range has a defined step size, increase the number of sample points per tick
+            t_range[2] /= self.num_sampled_graph_points_per_tick
+        # For axes, the third coordinate of x_range indicates
+        # tick frequency.  But for functions, it indicates a
+        # sample frequency
+        graph = ParametricFunction(
+            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
+        )
+        graph.underlying_function = function
+        return graph
+
+    def get_parametric_curve(self, function, **kwargs):
+        dim = self.dimension
+        graph = ParametricFunction(
+            lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
+        )
+        graph.underlying_function = function
+        return graph
+
+    def input_to_graph_point(self, x: float, graph: ParametricFunction) -> np.ndarray:
+        """This method returns a coordinate on the curve for a
+        given x_value and the graph-curve for which
+        the corresponding y value should be found.
+
+        Parameters
+        ----------
+        x
+            The x-value for which to find the y value.
+
+        graph
+            The :class:`~.ParametricFunction` object on which
+            the x and y value lie.
+
+        Returns
+        -------
+        The array of the coordinates on the graph.
+        """
+        if hasattr(graph, "underlying_function"):
+            return self.coords_to_point(x, graph.underlying_function(x))
+        else:
+            alpha = binary_search(
+                function=lambda a: self.point_to_coords(graph.point_from_proportion(a))[
+                    0
+                ],
+                target=x,
+                lower_bound=self.x_range[0],
+                upper_bound=self.x_range[1],
+            )
+            if alpha is not None:
+                return graph.point_from_proportion(alpha)
+            else:
+                return None
+
     def get_graph_label(
         self,
         graph: ParametricFunction,
@@ -173,79 +263,6 @@ class CoordinateSystem:
             label.add(Dot(point=point, **dot_config))
         return label
 
-    def get_line_from_axis_to_point(
-        self, index, point, line_func=DashedLine, color=LIGHT_GREY, stroke_width=2
-    ):
-        axis = self.get_axis(index)
-        line = line_func(axis.get_projection(point), point)
-        line.set_stroke(color, stroke_width)
-        return line
-
-    def get_vertical_line(self, point, **kwargs):
-        return self.get_line_from_axis_to_point(0, point, **kwargs)
-
-    def get_horizontal_line(self, point, **kwargs):
-        return self.get_line_from_axis_to_point(1, point, **kwargs)
-
-    # graphing
-
-    def get_graph(self, function, **kwargs):
-        t_range = self.x_range
-
-        if len(t_range) == 3:
-            # if t_range has a defined step size, increase the number of sample points per tick
-            t_range[2] /= self.num_sampled_graph_points_per_tick
-        # For axes, the third coordinate of x_range indicates
-        # tick frequency.  But for functions, it indicates a
-        # sample frequency
-        graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
-        )
-        graph.underlying_function = function
-        return graph
-
-    def get_parametric_curve(self, function, **kwargs):
-        dim = self.dimension
-        graph = ParametricFunction(
-            lambda t: self.coords_to_point(*function(t)[:dim]), **kwargs
-        )
-        graph.underlying_function = function
-        return graph
-
-    def input_to_graph_point(self, x: float, graph: ParametricFunction) -> np.ndarray:
-        """This method returns a coordinate on the curve
-        given an x_value and a the graph-curve for which
-        the corresponding y value should be found.
-
-        Parameters
-        ----------
-        x
-            The x-value for which to find the y value.
-
-        graph
-            The :class:`~.ParametricFunction` object on which
-            the x and y value lie.
-
-        Returns
-        -------
-        The array of the coordinates on the graph.
-        """
-        if hasattr(graph, "underlying_function"):
-            return self.coords_to_point(x, graph.underlying_function(x))
-        else:
-            alpha = binary_search(
-                function=lambda a: self.point_to_coords(graph.point_from_proportion(a))[
-                    0
-                ],
-                target=x,
-                lower_bound=self.x_range[0],
-                upper_bound=self.x_range[1],
-            )
-            if alpha is not None:
-                return graph.point_from_proportion(alpha)
-            else:
-                return None
-
     def angle_of_tangent(self, x: float, graph: ParametricFunction, dx: float = 0.01):
         """Returns the angle to the x axis of the tangent
         to the plotted curve at a particular x-value.
@@ -271,6 +288,115 @@ class CoordinateSystem:
             x, graph
         )
         return angle_of_vector(vect)
+
+    def get_riemann_rectangles(
+        self,
+        graph: ParametricFunction,
+        x_range: Iterable[float] = None,
+        dx: Optional[float] = 0.1,
+        input_sample_type: str = "left",
+        stroke_width: float = 1,
+        stroke_color: str = BLACK,
+        fill_opacity: float = 1,
+        colors: Iterable[str] = (BLUE, GREEN),
+        show_signed_area: bool = True,
+        width_scale_factor=1.001,
+    ) -> VGroup:
+        """This method returns the VGroup() of the Riemann Rectangles for
+        a particular curve.
+
+        Parameters
+        ----------
+        graph
+            The graph whose area needs to be approximated
+            by the Riemann Rectangles.
+
+        x_range
+            The minimum and maximum x-values of the rectangles. ``x_range = x_min, x_max``
+
+        dx
+            The change in x-value that separates each rectangle
+
+        input_sample_type
+            Can be any of ``"left"``, ``"right"`` or ``"center"``. Refers to where
+            the sample point for the height of each Riemann Rectangle
+            will be inside the segments of the partition.
+
+        stroke_width
+            The stroke_width of the border of the rectangles.
+
+        stroke_color
+            The hex colour of the rectangle's border.
+
+        fill_opacity
+            The opacity of the rectangles.
+
+        colors
+            The hex colors of the rectangles. Creates a balanced gradient if multiple colors are passed.
+
+        show_signed_area
+            Indicates negative area when the curve dips below the x-axis by inverting its color.
+
+        Returns
+        -------
+        A VGroup containing the Riemann Rectangles.
+        """
+        # setting up x_range, overwrite user's third input
+        x_range = [*x_range[:2], dx]
+
+        # TODO: remove when the pr gets merged
+        def origin_shift(y_range):
+            if y_range[0] > 0:
+                return y_range[0]
+            elif y_range[1] < 0:
+                return y_range[1]
+            else:
+                return 0
+
+        y_point = origin_shift(self.y_range)
+
+        rectangles = VGroup()
+        x_range = np.arange(*x_range)
+
+        colors = color_gradient(colors, len(x_range))
+        for x, color in zip(x_range, colors):
+            if input_sample_type == "left":
+                sample_input = x
+            elif input_sample_type == "right":
+                sample_input = x + dx
+            elif input_sample_type == "center":
+                sample_input = x + 0.5 * dx
+            else:
+                raise ValueError("Invalid input sample type")
+            graph_point = self.input_to_graph_point(sample_input, graph)
+
+            points = VGroup(
+                *list(
+                    map(
+                        VectorizedPoint,
+                        [
+                            self.coords_to_point(x, y_point),
+                            self.coords_to_point(x + width_scale_factor * dx, y_point),
+                            graph_point,
+                        ],
+                    )
+                )
+            )
+
+            rect = Rectangle().replace(points, stretch=True)
+            rectangles.add(rect)
+
+            # checks if the rectangle is under the x-axis
+            if self.p2c(graph_point)[1] < y_point and show_signed_area:
+                color = invert_color(color)
+            rect.set_style(
+                fill_color=color,
+                fill_opacity=fill_opacity,
+                stroke_color=stroke_color,
+                stroke_width=stroke_width,
+            )
+
+        return rectangles
 
 
 class Axes(VGroup, CoordinateSystem):
