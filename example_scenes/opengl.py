@@ -107,7 +107,7 @@ class NamedFullScreenQuad(Scene):
         def update_surface(surface, dt):
             nonlocal t
             t += dt
-            surface.shader.set_uniform("u_time", t / 2)
+            surface.shader.set_uniform("u_time", t / 4)
 
         surface.add_updater(update_surface)
 

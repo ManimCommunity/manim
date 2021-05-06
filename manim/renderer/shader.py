@@ -1,5 +1,6 @@
 import os
 import re
+import textwrap
 from pathlib import Path
 
 import moderngl
@@ -19,13 +20,15 @@ def get_shader_code_from_file(file_path):
         return file_path_to_code_map[file_path]
     with open(file_path, "r") as f:
         source = f.read()
-        include_lines = re.findall(r"^#include .*\.glsl$", source, flags=re.MULTILINE)
-        for line in include_lines:
-            include_path = line.split()[1]
+        include_lines = re.finditer(
+            r"^#include (?P<include_path>.*\.glsl)$", source, flags=re.MULTILINE
+        )
+        for match in include_lines:
+            include_path = match.group("include_path")
             included_code = get_shader_code_from_file(
                 os.path.join(file_path.parent / include_path)
             )
-            source = source.replace(line, included_code)
+            source = source.replace(match.group(0), included_code)
         file_path_to_code_map[file_path] = source
         return source
 
@@ -209,26 +212,16 @@ class FullScreenQuad(Mesh):
             shader_file_path = SHADER_FOLDER / f"{fragment_shader_name}.frag"
             fragment_shader_source = get_shader_code_from_file(shader_file_path)
         elif fragment_shader_source is not None:
-            # Find the start of the shader.
+            fragment_shader_source = textwrap.dedent(fragment_shader_source.lstrip())
             fragment_shader_lines = fragment_shader_source.split("\n")
-            first_non_whitespace_line_index = 0
-            while re.match(
-                r"^\s*$",
-                fragment_shader_lines[first_non_whitespace_line_index],
-            ):
-                first_non_whitespace_line_index += 1
-            match = re.match(
-                r"^(\s*)([^\s].*)$",
-                fragment_shader_lines[first_non_whitespace_line_index],
-            )
 
             # If the first line is a version string, insert after it.
-            insertion_index = first_non_whitespace_line_index
-            if match.groups()[1].startswith("#version"):
+            insertion_index = 0
+            if fragment_shader_lines[0].startswith("#version"):
                 insertion_index += 1
             fragment_shader_lines.insert(
                 insertion_index,
-                f"{match.groups()[0]}out vec4 {output_color_variable};",
+                f"out vec4 {output_color_variable};",
             )
             fragment_shader_source = "\n".join(fragment_shader_lines)
 

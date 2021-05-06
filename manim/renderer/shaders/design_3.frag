@@ -16,7 +16,7 @@ vec2 rotate(vec2 p,float a){
 
 float map(vec3 p){
     for( int i = 0; i<8; ++i){
-        float t = u_time*0.2;
+        float t = u_time*0.1;
         p.xz =rotate(p.xz,t);
         p.xy =rotate(p.xy,t*1.89);
         p.xz = abs(p.xz);
