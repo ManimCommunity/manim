@@ -123,8 +123,8 @@ class CoordinateSystem:
             or isinstance(label_tex, int)
             or isinstance(label_tex, str)
         ):
-            label = MathTex(label_tex)
-        return label
+            label_tex = MathTex(label_tex)
+        return label_tex
 
     def get_axis_label(self, label_tex, axis, edge, direction, buff=SMALL_BUFF):
         label = self.create_label_tex(label_tex)
@@ -298,8 +298,8 @@ class CoordinateSystem:
         Parameters
         ----------
         graph
-            The graph whose area needs to be approximated
-            by the Riemann Rectangles.
+            The graph whose area will be approximated
+            by Riemann Rectangles.
 
         x_range
             The minimum and maximum x-values of the rectangles. ``x_range = x_min, x_max``
@@ -604,6 +604,88 @@ class CoordinateSystem:
                 for x in np.linspace(x_range[0], x_range[1], num_lines)
             ]
         )
+
+    def get_T_label(
+        self,
+        x_val: float,
+        graph: ParametricFunction,
+        label: Optional[Union[int, float, str, Mobject]] = None,
+        label_color: str = WHITE,
+        triangle_size=MED_SMALL_BUFF,
+        triangle_color: str = WHITE,
+        line_color: str = YELLOW,
+        line_func: Line = Line,
+    ) -> VGroup:
+        """Creates a labelled triangle marker with a vertical line from the x-axis
+        to a curve at a given x-value.
+
+
+        Parameters
+        ----------
+        x_val
+            The position along the curve at which the label, line and triangle will be constructed.
+
+        graph
+            The :class:`~.ParametricFunction` for which to construct the label.
+
+        label
+            The label of the vertical line and triangle.
+
+        label_color
+            The color of the label.
+
+        triangle_size
+            The size of the triangle.
+
+        triangle_color
+            The color of the triangle.
+
+        label_color
+            The color of the label.
+
+        line_func
+            The function used to construct the vertical line.
+
+        line_color
+            The color of the vertical line.
+
+        Examples
+        -------
+        .. manim:: T_labelExample
+            :save_last_frame:
+
+            class T_labelExample(Scene):
+                def construct(self):
+                    # defines the axes and linear function
+                    axes = Axes(x_range=[-1, 10], y_range=[-1, 10], x_length=9, y_length=6)
+                    func = axes.get_graph(lambda x: x, color=BLUE)
+                    # creates the T_label
+                    t_label = axes.get_T_label(x_val=4, graph=func, label=Tex("x-value"))
+                    self.add(axes, func, t_label)
+
+        Returns
+        -------
+        A :class:`VGroup` of the label, triangle and vertical line mobjects.
+        """
+
+        T_label_group = VGroup()
+        triangle = RegularPolygon(n=3, start_angle=np.pi / 2, stroke_width=0).set_fill(
+            color=triangle_color, opacity=1
+        )
+        triangle.height = triangle_size
+        triangle.move_to(self.coords_to_point(x_val, 0), UP)
+        if label is not None:
+            t_label = self.create_label_tex(label).set_color(label_color)
+            t_label.next_to(triangle, DOWN)
+            T_label_group.add(t_label)
+
+        v_line = self.get_vertical_line(
+            self.i2gp(x_val, graph), color=line_color, line_func=line_func
+        )
+
+        T_label_group.add(triangle, v_line)
+
+        return T_label_group
 
 
 class Axes(VGroup, CoordinateSystem):
