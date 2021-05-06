@@ -362,7 +362,7 @@ class Axes(VGroup, CoordinateSystem):
 
         return line_graph
 
-    def origin_shift(self, axis_range:List[float]):
+    def origin_shift(self, axis_range: List[float]):
         """Shifts graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
