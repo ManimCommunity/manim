@@ -115,9 +115,9 @@ class CoordinateSystem:
             label_tex, self.get_y_axis(), edge, direction, **kwargs
         )
 
-    # move to a util_file, or mobject??
-
-    def create_label_tex(self, label_tex):
+    # move to a util_file, or Mobject()??
+    @staticmethod
+    def create_label_tex(label_tex):
         if (
             isinstance(label_tex, float)
             or isinstance(label_tex, int)
