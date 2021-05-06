@@ -4,14 +4,14 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 
 import math
 import numbers
-from typing import Iterable, Optional, Sequence, Union
+from typing import Iterable, List, Optional, Sequence, Union
 
 import numpy as np
 
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, DashedLine, Dot, Line, Rectangle
+from ..mobject.geometry import Arrow, DashedLine, Dot, Line, Rectangle, RegularPolygon
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import (
@@ -210,6 +210,12 @@ class CoordinateSystem:
                 return graph.point_from_proportion(alpha)
             else:
                 return None
+
+    def i2gp(self, x, graph):
+        """
+        Alias for input_to_graph_point
+        """
+        return self.input_to_graph_point(x, graph)
 
     def get_graph_label(
         self,
@@ -505,7 +511,6 @@ class CoordinateSystem:
         secant_line_length
             The length of the secant line.
 
-
         Returns
         -------
         :class:`~.VGroup`
@@ -565,6 +570,40 @@ class CoordinateSystem:
             )
             group.add(group.secant_line)
         return group
+
+    def get_vertical_lines_to_graph(
+        self,
+        graph: ParametricFunction,
+        x_range: List[float] = None,
+        num_lines: int = 20,
+        **kwargs,
+    ) -> VGroup:
+        """Obtains multiple lines from the x-axis to the curve.
+
+        Parameters
+        ----------
+        graph
+            The graph on which the line should extend to.
+
+        x_range
+            A list containing the lower and and upper bounds of the lines. ``x_range = [x_min, x_max]``
+
+        num_lines
+            The number of lines (evenly spaced) that are needed.
+
+        Returns
+        -------
+        The :class:`~.VGroup` of the evenly spaced lines.
+        """
+
+        x_range = x_range if x_range is not None else self.x_range
+
+        return VGroup(
+            *[
+                self.get_vertical_line(self.i2gp(x, graph), **kwargs)
+                for x in np.linspace(x_range[0], x_range[1], num_lines)
+            ]
+        )
 
 
 class Axes(VGroup, CoordinateSystem):
