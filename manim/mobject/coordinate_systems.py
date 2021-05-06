@@ -482,7 +482,7 @@ class ThreeDAxes(Axes):
         z_axis_config: Optional[dict] = None,
         z_normal: Sequence[float] = DOWN,
         num_axis_pieces: int = 20,
-        light_source: Union[Sequence[float], np.ndarray] = 9 * DOWN
+        light_source: Sequence[float] = 9 * DOWN
         + 7 * LEFT
         + 10 * OUT,
         # opengl stuff (?)
