@@ -115,13 +115,19 @@ class CoordinateSystem:
             label_tex, self.get_y_axis(), edge, direction, **kwargs
         )
 
-    def get_axis_label(self, label_tex, axis, edge, direction, buff=SMALL_BUFF):
+    # move to a util_file, or mobject??
+
+    def create_label_tex(self, label_tex):
         if (
             isinstance(label_tex, float)
             or isinstance(label_tex, int)
             or isinstance(label_tex, str)
         ):
             label = MathTex(label_tex)
+        return label
+
+    def get_axis_label(self, label_tex, axis, edge, direction, buff=SMALL_BUFF):
+        label = self.create_label_tex(label_tex)
         label.next_to(axis.get_edge_center(edge), direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
@@ -245,9 +251,7 @@ class CoordinateSystem:
 
         if dot_config is None:
             dot_config = {}
-        if isinstance(label, float) or isinstance(label, int) or isinstance(label, str):
-            label = MathTex(label)
-
+        label = self.create_label_tex(label)
         color = color or graph.get_color()
         label.set_color(color)
 
@@ -448,6 +452,119 @@ class CoordinateSystem:
 
         kwargs["color"] = color
         return self.get_graph(deriv, **kwargs)
+
+    def get_secant_slope_group(
+        self,
+        x: float,
+        graph: ParametricFunction,
+        dx: float = None,
+        dx_line_color: str = YELLOW,
+        df_line_color: str = None,
+        dx_label: str = None,
+        df_label: str = None,
+        include_secant_line: bool = True,
+        secant_line_color: str = GREEN,
+        secant_line_length: float = 10,
+    ) -> VGroup:
+        """This method returns a VGroup of (two lines
+        representing `dx` and `df`, the labels for `dx` and
+        `df`, and the secant to the curve at a
+        particular x-value.
+
+        Parameters
+        ----------
+        x
+            The x value at which the secant enters, and intersects
+            the graph for the first time.
+
+        graph
+            The curve/graph for which the secant mustbe found.
+
+        dx
+            The change in x after which the secant exits.
+
+        dx_line_color
+            The line color for the line that indicates the change in x.
+
+        df_line_color
+            The line color for the line that indicates the change in y.
+
+        dx_label
+            The label for the change in `x`.
+
+        df_label
+            The label for the change in `y`.
+
+        include_secant_line
+            Whether or not to include the secant line in the graph,
+            or just have the df and dx lines and labels.
+
+        secant_line_color
+            The color of the secant line.
+
+        secant_line_length
+            The length of the secant line.
+
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A group containing the elements `dx_line`, `df_line`, and
+            if applicable also `dx_label`, `df_label`, `secant_line`.
+
+        """
+        group = VGroup()
+
+        dx = dx or float(self.x_range[1] - self.x_range[0]) / 10
+        dx_line_color = dx_line_color
+        df_line_color = df_line_color or graph.get_color()
+
+        p1 = self.input_to_graph_point(x, graph)
+        p2 = self.input_to_graph_point(x + dx, graph)
+        interim_point = p2[0] * RIGHT + p1[1] * UP
+
+        group.dx_line = Line(p1, interim_point, color=dx_line_color)
+        group.df_line = Line(interim_point, p2, color=df_line_color)
+        group.add(group.dx_line, group.df_line)
+
+        labels = VGroup()
+        if dx_label is not None:
+            group.dx_label = self.create_label_tex(dx_label)
+            labels.add(group.dx_label)
+            group.add(group.dx_label)
+        if df_label is not None:
+            group.df_label = self.create_label_tex(df_label)
+            labels.add(group.df_label)
+            group.add(group.df_label)
+
+        if len(labels) > 0:
+            max_width = 0.8 * group.dx_line.width
+            max_height = 0.8 * group.df_line.height
+            if labels.width > max_width:
+                labels.width = max_width
+            if labels.height > max_height:
+                labels.height = max_height
+
+        if dx_label is not None:
+            group.dx_label.next_to(
+                group.dx_line, np.sign(dx) * DOWN, buff=group.dx_label.height / 2
+            )
+            group.dx_label.set_color(group.dx_line.get_color())
+
+        if df_label is not None:
+            group.df_label.next_to(
+                group.df_line, np.sign(dx) * RIGHT, buff=group.df_label.height / 2
+            )
+            group.df_label.set_color(group.df_line.get_color())
+
+        if include_secant_line:
+            secant_line_color = secant_line_color
+            group.secant_line = Line(p1, p2, color=secant_line_color)
+            group.secant_line.scale_in_place(
+                secant_line_length / group.secant_line.get_length()
+            )
+            group.add(group.secant_line)
+        return group
 
 
 class Axes(VGroup, CoordinateSystem):
