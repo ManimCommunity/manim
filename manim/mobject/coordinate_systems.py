@@ -480,7 +480,7 @@ class ThreeDAxes(Axes):
         y_length: Optional[float] = config.frame_height + 2.5,
         z_length: Optional[float] = config.frame_height - 1.5,
         z_axis_config: Optional[dict] = None,
-        z_normal: Union[Sequence[float], np.ndarray] = DOWN,
+        z_normal: Sequence[float] = DOWN,
         num_axis_pieces: int = 20,
         light_source: Union[Sequence[float], np.ndarray] = 9 * DOWN
         + 7 * LEFT
