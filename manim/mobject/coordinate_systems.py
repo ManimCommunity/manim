@@ -5,7 +5,7 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 
 import math
 import numbers
-from typing import Iterable, Optional, List
+from typing import Iterable, List, Optional
 
 import numpy as np
 
