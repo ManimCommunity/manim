@@ -24,12 +24,12 @@ from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
     bezier,
+    bezier_params_from_point,
     get_smooth_handle_points,
     integer_interpolate,
     interpolate,
     partial_bezier_points,
     point_lies_on_bezier,
-    bezier_params_from_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
