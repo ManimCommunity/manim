@@ -13,7 +13,7 @@ __all__ = [
     "get_smooth_cubic_bezier_handle_points",
     "diag_to_matrix",
     "is_closed",
-    "bez_params_from_point",
+    "bezier_params_from_point",
     "point_lies_on_bezier",
 ]
 
@@ -374,20 +374,19 @@ def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:
     return np.allclose(points[0], points[-1])
 
 
-def bez_params_from_point(
+def bezier_params_from_point(
     point: typing.Iterable[typing.Union[float, int]],
     control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
-) -> list[float]:
+) -> typing.List[float]:
     """Obtains the parameter corresponding to a given point
     for a given bezier curve.
 
     Parameters
     ----------
-    point (typing.Iterable[float])
+    point
         The Cartesian Coordinates of the point whose parameter
         should be obtained.
-
-    control_points (typing.Iterable[typing.Iterable[float]])
+    control_points
         The Cartesian Coordinates of the ordered control
         points of the bezier curve on which the point may
         or may not lie.
@@ -401,8 +400,16 @@ def bez_params_from_point(
             point is, say, at the beginning/end of a closed loop, may return
             a list with more than 1 value, corresponding to the beginning and
             end etc. of the loop.
+
+    Raises
+    ------
+    :class:`ValueError`
+        When ``point`` and the control points have different shapes.
     """
-    assert all(np.shape(point) == np.shape(c_p) for c_p in control_points)
+    if not all(np.shape(point) == np.shape(c_p) for c_p in control_points):
+        raise ValueError(
+            f"Point {point} and Control Points {control_points} have different shapes."
+        )
 
     roots = []
     for i in range(len(point)):
@@ -431,8 +438,9 @@ def bez_params_from_point(
                 ][::-1]
             )
 
-        if len(bezier_polynom.roots()) > 0:
-            roots.append(bezier_polynom.roots())
+        polynom_roots = bezier_polynom.roots()
+        if len(polynom_roots) > 0:
+            roots.append(polynom_roots)
 
     # Of the roots found, remove all imaginary ones, and
     # round all roots to the number of decimal places of CLOSED_THRESHOLD
@@ -463,23 +471,21 @@ def point_lies_on_bezier(
 
     Parameters
     ----------
-    point (typing.Iterable[float])
+    point
         The Cartesian Coordinates of the point to check.
-
-    control_points (typing.Iterable[typing.Iterable[float]])
+    control_points
         The Cartesian Coordinates of the ordered control
         points of the bezier curve on which the point may
         or may not lie.
 
-
     Returns
     -------
     bool
-        ``True`` if the point lies on the curve, ``False`` if not.
+        Whether the point lies on the curve.
     """
     # Method taken from
     # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
 
-    roots = bez_params_from_point(point, control_points)
+    roots = bezier_params_from_point(point, control_points)
 
-    return True if len(roots) > 0 else False
+    return len(roots) > 0

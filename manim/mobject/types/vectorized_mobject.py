@@ -29,7 +29,7 @@ from ...utils.bezier import (
     interpolate,
     partial_bezier_points,
     point_lies_on_bezier,
-    bez_params_from_point,
+    bezier_params_from_point,
 )
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
@@ -918,16 +918,7 @@ class VMobject(Mobject):
             The length of the nth curve.
         """
 
-        if sample_points is None:
-            sample_points = 10
-
-        curve = self.get_nth_curve_function(n)
-
-        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
-        diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
-
-        length = np.sum(norms)
+        _, length = self.get_nth_curve_function_with_length(n, sample_points)
 
         return length
 
@@ -951,9 +942,16 @@ class VMobject(Mobject):
             The length of the nth curve.
         """
 
+        if sample_points is None:
+            sample_points = 10
+
         curve = self.get_nth_curve_function(n)
 
-        length = self.get_nth_curve_length(n, sample_points)
+        points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
+        diffs = points[1:] - points[:-1]
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
+
+        length = np.sum(norms)
 
         return curve, length
 
@@ -1058,7 +1056,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        point (typing.Iterable[float])
+        point
             The Cartesian coordinates of the point which may or may not lie on the :class:`VMobject`
 
         Returns
@@ -1075,21 +1073,21 @@ class VMobject(Mobject):
         """
         self.throw_error_if_no_points()
 
-        nc = self.get_num_curves()
-        vmob_length = sum(self.get_nth_curve_length(i) for i in range(nc))
-        total_length = 0
-        for n in range(nc):
+        num_curves = self.get_num_curves()
+        total_length = self.get_arc_length()
+        target_length = 0
+        for n in range(num_curves):
             control_points = self.get_nth_curve_points(n)
             length = self.get_nth_curve_length(n)
             if point_lies_on_bezier(point, control_points):
-                t = max(bez_params_from_point(point, control_points))
-                total_length += length * t
+                t = max(bezier_params_from_point(point, control_points))
+                target_length += length * t
                 break
-            else:
-                total_length += length
+            target_length += length
         else:
             raise ValueError(f"Point {point} does not lie on this curve.")
-        alpha = total_length / vmob_length
+
+        alpha = target_length / total_length
 
         return alpha
 
