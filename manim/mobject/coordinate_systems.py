@@ -366,7 +366,7 @@ class Axes(VGroup, CoordinateSystem):
         """Shifts graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
-        ----------   
+        ----------
         axis_range
             The range of the axis : ``(x_min, x_max, x_step)``.
         """
