@@ -498,6 +498,7 @@ class GraphScene(Scene):
     ):
         """This method returns a properly positioned label for the passed graph,
         styled with the passed parameters.
+
         Parameters
         ----------
         graph : :class:`~.ParametricFunction`
@@ -523,6 +524,7 @@ class GraphScene(Scene):
         -------
         :class:`~.MathTex`
             The LaTeX of the passed 'label' parameter
+
         """
         label = MathTex(label)
         color = color or graph.get_color()
