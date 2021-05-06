@@ -361,7 +361,9 @@ class VMobject(Mobject):
             width = self.background_stroke_width
         else:
             width = self.stroke_width
-        return max(0, int(width))
+            if isinstance(width, str):
+                width = int(width)
+        return max(0, width)
 
     def get_stroke_opacity(self, background=False):
         return self.get_stroke_opacities(background)[0]
