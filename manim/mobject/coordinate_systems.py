@@ -156,7 +156,7 @@ class CoordinateSystem:
     # graphing
 
     def get_graph(self, function, **kwargs):
-        t_range = self.x_range
+        t_range = self.x_range.copy()
 
         if len(t_range) == 3:
             # if t_range has a defined step size, increase the number of sample points per tick
@@ -213,7 +213,7 @@ class CoordinateSystem:
 
     def i2gp(self, x, graph):
         """
-        Alias for input_to_graph_point
+        Alias for input_to_graph_point.
         """
         return self.input_to_graph_point(x, graph)
 
@@ -242,7 +242,7 @@ class CoordinateSystem:
         direction
             The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``
         buff
-            The buffer space between the curve and the label
+            The buffer space between the curve and the label.
         color
             The color of the label.
         dot
@@ -252,7 +252,7 @@ class CoordinateSystem:
 
         Returns
         -------
-        The label.
+        The positioned label.
         """
 
         if dot_config is None:
@@ -302,10 +302,10 @@ class CoordinateSystem:
             by Riemann Rectangles.
 
         x_range
-            The minimum and maximum x-values of the rectangles. ``x_range = x_min, x_max``
+            The minimum and maximum x-values of the rectangles. ``x_range = x_min, x_max``.
 
         dx
-            The change in x-value that separates each rectangle
+            The change in x-value that separates each rectangle.
 
         input_sample_type
             Can be any of ``"left"``, ``"right"`` or ``"center"``. Refers to where
@@ -379,6 +379,8 @@ class CoordinateSystem:
             # checks if the rectangle is under the x-axis
             if self.p2c(graph_point)[1] < y_point and show_signed_area:
                 color = invert_color(color)
+
+            # note: implement option to blend smoothly?
             rect.set_style(
                 fill_color=color,
                 fill_opacity=fill_opacity,
@@ -391,7 +393,7 @@ class CoordinateSystem:
     def angle_of_tangent(
         self, x: float, graph: ParametricFunction, dx: float = 1e-8
     ) -> float:
-        """Returns the angle to the x axis of the tangent
+        """Returns the angle to the x-axis of the tangent
         to the plotted curve at a particular x-value.
 
         Parameters
@@ -436,7 +438,9 @@ class CoordinateSystem:
         """
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
-    def get_derivative_graph(self, graph: ParametricFunction, color=GREEN, **kwargs):
+    def get_derivative_graph(
+        self, graph: ParametricFunction, color=GREEN, **kwargs
+    ) -> ParametricFunction:
         """Returns the curve of the derivative of the passed
         graph.
 
@@ -456,8 +460,7 @@ class CoordinateSystem:
         def deriv(x):
             return self.slope_of_tangent(x, graph)
 
-        kwargs["color"] = color
-        return self.get_graph(deriv, **kwargs)
+        return self.get_graph(deriv, color=color ** kwargs)
 
     def get_secant_slope_group(
         self,
@@ -465,41 +468,38 @@ class CoordinateSystem:
         graph: ParametricFunction,
         dx: float = None,
         dx_line_color: str = YELLOW,
-        df_line_color: str = None,
+        dy_line_color: str = None,
         dx_label: str = None,
-        df_label: str = None,
+        dy_label: str = None,
         include_secant_line: bool = True,
         secant_line_color: str = GREEN,
         secant_line_length: float = 10,
     ) -> VGroup:
-        """This method returns a VGroup of (two lines
-        representing `dx` and `df`, the labels for `dx` and
-        `df`, and the secant to the curve at a
-        particular x-value.
+        """Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and
+         the secant to the curve at a particular x-value.
 
         Parameters
         ----------
         x
-            The x value at which the secant enters, and intersects
-            the graph for the first time.
+            The x-value at which the secant intersects the graph for the first time.
 
         graph
-            The curve/graph for which the secant mustbe found.
+            The curve for which the secant will be found.
 
         dx
-            The change in x after which the secant exits.
+            The change in `x` after which the secant exits.
 
         dx_line_color
-            The line color for the line that indicates the change in x.
+            The color of the line that indicates the change in `x`.
 
-        df_line_color
-            The line color for the line that indicates the change in y.
+        dy_line_color
+            The color of the line that indicates the change in `y`.
 
         dx_label
-            The label for the change in `x`.
+            The label for the `dx` line.
 
-        df_label
-            The label for the change in `y`.
+        dy_label
+            The label for the `dy` line.
 
         include_secant_line
             Whether or not to include the secant line in the graph,
@@ -522,14 +522,14 @@ class CoordinateSystem:
 
         dx = dx or float(self.x_range[1] - self.x_range[0]) / 10
         dx_line_color = dx_line_color
-        df_line_color = df_line_color or graph.get_color()
+        dy_line_color = dy_line_color or graph.get_color()
 
         p1 = self.input_to_graph_point(x, graph)
         p2 = self.input_to_graph_point(x + dx, graph)
         interim_point = p2[0] * RIGHT + p1[1] * UP
 
         group.dx_line = Line(p1, interim_point, color=dx_line_color)
-        group.df_line = Line(interim_point, p2, color=df_line_color)
+        group.df_line = Line(interim_point, p2, color=dy_line_color)
         group.add(group.dx_line, group.df_line)
 
         labels = VGroup()
@@ -537,8 +537,8 @@ class CoordinateSystem:
             group.dx_label = self.create_label_tex(dx_label)
             labels.add(group.dx_label)
             group.add(group.dx_label)
-        if df_label is not None:
-            group.df_label = self.create_label_tex(df_label)
+        if dy_label is not None:
+            group.df_label = self.create_label_tex(dy_label)
             labels.add(group.df_label)
             group.add(group.df_label)
 
@@ -556,7 +556,7 @@ class CoordinateSystem:
             )
             group.dx_label.set_color(group.dx_line.get_color())
 
-        if df_label is not None:
+        if dy_label is not None:
             group.df_label.next_to(
                 group.df_line, np.sign(dx) * RIGHT, buff=group.df_label.height / 2
             )
@@ -586,10 +586,10 @@ class CoordinateSystem:
             The graph on which the line should extend to.
 
         x_range
-            A list containing the lower and and upper bounds of the lines. ``x_range = [x_min, x_max]``
+            A list containing the lower and and upper bounds of the lines ->``x_range = [x_min, x_max]``.
 
         num_lines
-            The number of lines (evenly spaced) that are needed.
+            The number of evenly spaced lines.
 
         Returns
         -------
@@ -611,7 +611,7 @@ class CoordinateSystem:
         graph: ParametricFunction,
         label: Optional[Union[int, float, str, Mobject]] = None,
         label_color: str = WHITE,
-        triangle_size=MED_SMALL_BUFF,
+        triangle_size: float = MED_SMALL_BUFF,
         triangle_color: str = WHITE,
         line_color: str = YELLOW,
         line_func: Line = Line,
