@@ -317,7 +317,7 @@ def _log_rendering_times(*args):
                 )
                 for row in group:
                     print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
-    print("")
+        print("")
     except IOError:
         pass
 
