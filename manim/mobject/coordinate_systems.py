@@ -182,12 +182,13 @@ class CoordinateSystem:
 
         graph
             The :class:`~.ParametricFunction` object on which
-            the x and y-value lie.
+            the x-value and y-value lie.
 
         Returns
         -------
         The coordinates of the corresponding y-value.
         """
+
         if hasattr(graph, "underlying_function"):
             return self.coords_to_point(x, graph.underlying_function(x))
         else:
@@ -266,31 +267,7 @@ class CoordinateSystem:
             label.add(Dot(point=point, **dot_config))
         return label
 
-    def angle_of_tangent(
-        self, x: float, graph: ParametricFunction, dx: float = 1e-8
-    ) -> float:
-        """Returns the angle to the x axis of the tangent
-        to the plotted curve at a particular x-value.
-
-        Parameters
-        ----------
-        x
-            The x-value at which the tangent must touch the curve.
-
-        graph
-            The :class:`~.ParametricFunction` for which to calculate the tangent.
-
-        dx
-            The small change in `x` with which a small change in `y`
-            will be compared in order to obtain the tangent.
-
-        Returns
-        -------
-        The angle of the tangent with the x axis.
-        """
-        p0 = self.input_to_graph_point(x, graph)
-        p1 = self.input_to_graph_point(x + dx, graph)
-        return angle_of_vector(p1 - p0)
+    # calculus
 
     def get_riemann_rectangles(
         self,
@@ -400,6 +377,32 @@ class CoordinateSystem:
             )
 
         return rectangles
+
+    def angle_of_tangent(
+        self, x: float, graph: ParametricFunction, dx: float = 1e-8
+    ) -> float:
+        """Returns the angle to the x axis of the tangent
+        to the plotted curve at a particular x-value.
+
+        Parameters
+        ----------
+        x
+            The x-value at which the tangent must touch the curve.
+
+        graph
+            The :class:`~.ParametricFunction` for which to calculate the tangent.
+
+        dx
+            The small change in `x` with which a small change in `y`
+            will be compared in order to obtain the tangent.
+
+        Returns
+        -------
+        The angle of the tangent with the x axis.
+        """
+        p0 = self.input_to_graph_point(x, graph)
+        p1 = self.input_to_graph_point(x + dx, graph)
+        return angle_of_vector(p1 - p0)
 
     def slope_of_tangent(self, x: float, graph: ParametricFunction, **kwargs) -> float:
         """Returns the slope of the tangent to the plotted curve
@@ -606,8 +609,8 @@ class Axes(VGroup, CoordinateSystem):
                     plane = NumberPlane(
                         x_range = (0, 7),
                         y_range = (0, 5),
-                        x_length = 7
-                        axis_config={"include_numbers": True}
+                        x_length = 7,
+                        axis_config={"include_numbers": True},
                     )
                     plane.center()
                     line_graph = plane.get_line_graph(
