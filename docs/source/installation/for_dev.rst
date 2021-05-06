@@ -107,7 +107,7 @@ command ``pytest`` to run the tests.
 .. important:: 
 
    You should always run the test suite before making a PR. See
-   :doc:`contributing` for details.
+   :doc:`../contributing` for details.
 
 
 Code Formatting and Linting Using Poetry
@@ -145,5 +145,5 @@ For Developers with pip
 
    python3 -m pip install .
 
-Please see :doc:`contributing` for more details about contributing to Manim.
+Please see :doc:`../contributing` for more details about contributing to Manim.
 Since `pip` doesn't implement editable installations from our pyproject.toml
