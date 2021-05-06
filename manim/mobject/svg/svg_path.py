@@ -18,7 +18,7 @@ from ...mobject.types.vectorized_mobject import VMobject
 def correct_out_of_range_radii(rx, ry, x1p, y1p):
     """Correction of out-of-range radii.
 
-    See (https://www.w3.org/TR/SVG11/implnote.html#ArcCorrectionOutOfRangeRadii)
+    See: https://www.w3.org/TR/SVG11/implnote.html#ArcCorrectionOutOfRangeRadii
     """
     # Step 1: Ensure radii are non-zero (taken care of in elliptical_arc_to_cubic_bezier).
     # Step 2: Ensure radii are positive. If rx or ry have negative signs, these are dropped;
@@ -36,6 +36,11 @@ def correct_out_of_range_radii(rx, ry, x1p, y1p):
 
 
 def vector_angle(ux, uy, vx, vy):
+    """ Calculate the dot product angle between two vectors.
+
+    This clamps the argument to the arc cosine due to roundoff errors
+    from some SVG files.
+    """
     sign = -1 if ux * vy - uy * vx < 0 else 1
     ua = sqrt(ux * ux + uy * uy)
     va = sqrt(vx * vx + vy * vy)
@@ -48,9 +53,7 @@ def vector_angle(ux, uy, vx, vy):
 def get_elliptical_arc_center_parameters(x1, y1, rx, ry, phi, fA, fS, x2, y2):
     """Conversion from endpoint to center parameterization.
 
-    See (https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter)
-
-    Returns cy, cy, theta1, dtheta
+    See: https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter
     """
     cos_phi = cos(phi)
     sin_phi = sin(phi)
@@ -101,14 +104,16 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
 
     See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
     """
-    ## Out of range parameters (https://www.w3.org/TR/SVG11/implnote.html#ArcOutOfRangeParameters)
+    ## Out of range parameters
+    # See: https://www.w3.org/TR/SVG11/implnote.html#ArcOutOfRangeParameters
     # If rx or ry are 0 then this arc is treated as a
     # straight line segment (a "lineto") joining the endpoints.
     if not rx or not ry:
         return [x1, y1, x2, y2, x2, y2]
+
     # phi is taken mod 360 degrees and set to radians for subsequent calculations.
-    phi = phi % 360
-    phi = radians(phi)
+    phi = radians(phi % 360)
+
     # Any nonzero value for either of the flags fA or fS is taken to mean the value 1.
     fA = 1 if fA else 0
     fS = 1 if fS else 0
@@ -118,21 +123,27 @@ def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
         x1, y1, rx, ry, phi, fA, fS, x2, y2
     )
 
-    # 360/10=36 degrees sweep limit to minimize errors from approximations.
-    sweep_limit = 36
+    # For a given arc we should "chop" it up into segments if it is too big
+    # to help miminze cubic bezier curve approximation errors.
+    # If dtheta is a multiple of 90 degrees, set the limit to 90 degrees,
+    # otherwise 360/10=36 degrees is a decent sweep limit.
+    if degrees(dtheta) % 90 == 0:
+        sweep_limit = 90
+    else:
+        sweep_limit = 36
+
     segments = int(ceil(abs(degrees(dtheta)) / sweep_limit))
-    # segments = 1
     segment = dtheta / float(segments)
     current_angle = theta1
     start_x = x1
     start_y = y1
     cos_phi = cos(phi)
     sin_phi = sin(phi)
-    bezier_points = []
     alpha = sin(segment) * (sqrt(4 + 3 * pow(tan(segment / 2.0), 2)) - 1) / 3.0
+    bezier_points = []
 
-    # Calculate the cubic bezier points.
-    # See the box on page 18 of http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
+    # Calculate the cubic bezier points from elliptical arc parametric equations.
+    # See: (the box on page 18) http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
     for idx in range(segments):
         next_angle = current_angle + segment
 
@@ -361,8 +372,28 @@ class SVGPathMobject(VMobject):
         # this call to "string to numbers" where problems like parsing 0.5.6 lie
         numbers = string_to_numbers(coord_string)
 
+        # arcs are weirdest, handle them first.
+        if command == "A":
+            # We have to handle offsets here because ellipses are complicated.
+            if is_relative:
+                numbers[5] += start_point[0]
+                numbers[6] += start_point[1]
+
+            # If the endpoints (x1, y1) and (x2, y2) are identical, then this
+            # is equivalent to omitting the elliptical arc segment entirely.
+            # for more information of where this math came from visit:
+            #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+            if start_point[0] == numbers[5] and start_point[1] == numbers[6]:
+                return
+
+            result = np.array(
+                elliptical_arc_to_cubic_bezier(*start_point[:2], *numbers)
+            )
+
+            return result
+
         # H and V expect a sequence of single coords, not coord pairs like the rest of the commands.
-        if command == "H":
+        elif command == "H":
             result = np.zeros((len(numbers), self.dim))
             result[:, 0] = numbers
             if not is_relative:
@@ -373,18 +404,6 @@ class SVGPathMobject(VMobject):
             result[:, 1] = numbers
             if not is_relative:
                 result[:, 0] = start_point[0]
-
-        elif command == "A":
-            # If the endpoints (x1, y1) and (x2, y2) are identical, then this
-            # is equivalent to omitting the elliptical arc segment entirely.
-            # for more information of where this math came from visit:
-            #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
-            if numbers[:2] == numbers[-2:]:
-                return
-
-            result = np.array(
-                elliptical_arc_to_cubic_bezier(*start_point[:2], *numbers)
-            )
 
         else:
             num_points = len(numbers) // 2
@@ -402,7 +421,7 @@ class SVGPathMobject(VMobject):
         if command in ["Q", "S"]:
             entries = 2
         # Only cubic curves expect three points.
-        elif command in ["A", "C"]:
+        elif command == "C":
             entries = 3
 
         offset = start_point
