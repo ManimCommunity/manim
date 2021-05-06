@@ -327,8 +327,8 @@ class Text(SVGMobject):
                 text2 = Text('Hello world', t2s={'world':ITALIC})
                 text3 = Text('Hello world', weight=BOLD)
                 text4 = Text('Hello world', t2w={'world':BOLD})
-
-                self.add(text0, text1, text2, text3, text4)
+                text5 = Text("Visit us at docs.manim.community",t2c={'docs.manim.community':YELLOW}, disable_ligatures=True).scale(1.3).shift(DOWN)
+                self.add(text0, text1, text2, text3, text4,text5)
                 Group(*self.mobjects).arrange(DOWN, buff=.8)
 
     .. manim:: TextMoreCustomization
@@ -518,9 +518,7 @@ class Text(SVGMobject):
                 submobjects_char_index += 1
         return chars
 
-    def find_indexes(self, word: str, text: str, change_color=False):
-        if change_color is True:
-            text = "".join(text.split())
+    def find_indexes(self, word: str, text: str):
         """Internally used function. Finds the indexes of ``text`` in ``word``."""
         temp = re.match(r"\[([0-9\-]{0,}):([0-9\-]{0,})\]", word)
         if temp:
@@ -559,9 +557,7 @@ class Text(SVGMobject):
         """Internally used function. Sets color for specified strings."""
         t2c = t2c if t2c else self.t2c
         for word, color in list(t2c.items()):
-            for start, end in self.find_indexes(
-                word, self.original_text, change_color=True
-            ):
+            for start, end in self.find_indexes(word, self.original_text):
 
                 self.chars[start:end].set_color(color)
 
