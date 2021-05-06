@@ -79,7 +79,7 @@ import shutil
 import sys
 from pathlib import Path
 from timeit import timeit
-from typing import List
+from typing import Callable, List
 
 import jinja2
 from docutils import nodes
@@ -240,11 +240,11 @@ class ManimDirective(Directive):
         ]
         run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
 
-        # _write_rendering_stats(
-        #     clsname,
-        #     run_time,
-        #     self.state.document.settings.env.docname,
-        # )
+        _write_rendering_stats(
+            clsname,
+            run_time,
+            self.state.document.settings.env.docname,
+        )
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
@@ -281,46 +281,46 @@ class ManimDirective(Directive):
 rendering_times_file_path = "../rendering_times.csv"
 
 
-# def _write_rendering_stats(scene_name, run_time, file_name):
-#     line = ",".join(
-#         [
-#             re.sub("^(reference\/)|(manim\.)", "", file_name),
-#             scene_name,
-#             "%.3f" % run_time,
-#         ]
-#     )
-#     with open(rendering_times_file_path, "a") as file:
-#         file.write(line + "\n")
+def _write_rendering_stats(scene_name, run_time, file_name):
+    line = ",".join(
+        [
+            re.sub("^(reference\/)|(manim\.)", "", file_name),
+            scene_name,
+            "%.3f" % run_time,
+        ]
+    )
+    with open(rendering_times_file_path, "a") as file:
+        file.write(line + "\n")
 
 
-# def _log_rendering_times(*args):
-#     with open(rendering_times_file_path) as file:
-#         data = [line.split(",") for line in file.read().splitlines()]
+def _log_rendering_times(*args):
+    with open(rendering_times_file_path) as file:
+        data = [line.split(",") for line in file.read().splitlines()]
 
-#         if len(data) == 0:
-#             sys.exit()
+        if len(data) == 0:
+            sys.exit()
 
-#         print("\nRendering Summary\n-----------------\n")
+        print("\nRendering Summary\n-----------------\n")
 
-#         max_file_length = max([len(row[0]) for row in data])
-#         for key, group in it.groupby(data, key=lambda row: row[0]):
-#             key = key.ljust(max_file_length + 1, ".")
-#             group = list(group)
-#             if len(group) == 1:
-#                 row = group[0]
-#                 print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
-#                 continue
-#             time_sum = sum([float(row[2]) for row in group])
-#             print(f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES")
-#             for row in group:
-#                 print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+        max_file_length = max([len(row[0]) for row in data])
+        for key, group in it.groupby(data, key=lambda row: row[0]):
+            key = key.ljust(max_file_length + 1, ".")
+            group = list(group)
+            if len(group) == 1:
+                row = group[0]
+                print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
+                continue
+            time_sum = sum([float(row[2]) for row in group])
+            print(f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES")
+            for row in group:
+                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
 
 
-# def _delete_rendering_times(*args):
-#     try:
-#         os.remove(rendering_times_file_path)
-#     except OSError:
-#         pass
+def _delete_rendering_times(*args):
+    try:
+        os.remove(rendering_times_file_path)
+    except OSError:
+        pass
 
 
 def setup(app):
@@ -334,11 +334,11 @@ def setup(app):
 
     app.add_directive("manim", ManimDirective)
 
-    # app.connect("builder-inited", _delete_rendering_times)
-    # app.connect("html-collect-pages", _log_rendering_times)
+    app.connect("builder-inited", _delete_rendering_times)
+    app.connect("html-collect-pages", _log_rendering_times)
 
-    # app.connect("builder-inited", lambda *args: print("LOG!"))
-    # app.connect("html-collect-pages", lambda *args: print("START!"))
+    app.connect("builder-inited", lambda *args: print("LOG!"))
+    app.connect("html-collect-pages", lambda *args: print("START!"))
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
     return metadata
