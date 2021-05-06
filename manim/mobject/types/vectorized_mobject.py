@@ -246,9 +246,7 @@ class VMobject(Mobject):
         )
         if sheen_factor:
             self.set_sheen(
-                factor=sheen_factor,
-                direction=sheen_direction,
-                family=family,
+                factor=sheen_factor, direction=sheen_direction, family=family
             )
         if background_image:
             self.color_using_background_image(background_image)
@@ -311,17 +309,10 @@ class VMobject(Mobject):
 
     def fade(self, darkness=0.5, family=True):
         factor = 1.0 - darkness
-        self.set_fill(
-            opacity=factor * self.get_fill_opacity(),
-            family=False,
-        )
-        self.set_stroke(
-            opacity=factor * self.get_stroke_opacity(),
-            family=False,
-        )
+        self.set_fill(opacity=factor * self.get_fill_opacity(), family=False)
+        self.set_stroke(opacity=factor * self.get_stroke_opacity(), family=False)
         self.set_background_stroke(
-            opacity=factor * self.get_stroke_opacity(background=True),
-            family=False,
+            opacity=factor * self.get_stroke_opacity(background=True), family=False
         )
         super().fade(darkness, family)
         return self
@@ -370,7 +361,7 @@ class VMobject(Mobject):
             width = self.background_stroke_width
         else:
             width = self.stroke_width
-        return max(0, width)
+        return max(0, int(width))
 
     def get_stroke_opacity(self, background=False):
         return self.get_stroke_opacities(background)[0]
@@ -1069,14 +1060,7 @@ class VMobject(Mobject):
         if self.points.shape[0] == 1:
             return self.points
         return np.array(
-            list(
-                it.chain(
-                    *zip(
-                        self.get_start_anchors(),
-                        self.get_end_anchors(),
-                    )
-                )
-            )
+            list(it.chain(*zip(self.get_start_anchors(), self.get_end_anchors())))
         )
 
     def get_points_defining_boundary(self):
