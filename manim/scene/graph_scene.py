@@ -502,17 +502,23 @@ class GraphScene(Scene):
         ----------
         graph : :class:`~.ParametricFunction`
             The curve of the function plotted.
+
         label : Optional[:class:`str`]
             The label for the function's curve.
+
         x_val : Optional[:class:`float`]
             The x_value with which the label should be aligned.
+
         direction : Sequence[:class:`float`]
             The cartesian position, relative to the curve that the label will be at.
             e.g LEFT, RIGHT
+
         buff : Optional[:class:`float`]
             The buffer space between the curve and the label
+
         color : Optional[:class:`str`]
             The color of the label.
+
         Returns
         -------
         :class:`~.MathTex`
