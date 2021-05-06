@@ -23,7 +23,6 @@ from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
-    bez_params_from_point,
     bezier,
     get_smooth_handle_points,
     integer_interpolate,
