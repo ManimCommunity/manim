@@ -72,6 +72,7 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+import csv
 import itertools as it
 import os
 import re
@@ -282,22 +283,20 @@ rendering_times_file_path = "../rendering_times.csv"
 
 
 def _write_rendering_stats(scene_name, run_time, file_name):
-    line = ",".join(
-        [
-            re.sub("^(reference\/)|(manim\.)", "", file_name),
-            scene_name,
-            "%.3f" % run_time,
-        ]
-    )
     with open(rendering_times_file_path, "a") as file:
-        file.write(line + "\n")
+        csv.writer(file).writerow(
+            [
+                re.sub("^(reference\/)|(manim\.)", "", file_name),
+                scene_name,
+                "%.3f" % run_time,
+            ]
+        )
 
 
 def _log_rendering_times(*args):
     try:
         with open(rendering_times_file_path) as file:
-            data = [line.split(",") for line in file.read().splitlines()]
-
+            data = list(csv.reader(file))
             if len(data) == 0:
                 sys.exit()
 
