@@ -26,10 +26,5 @@ cleanall: clean
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 
-html: Makefile 
-	@rm -f rendering_times.csv
-	@(cd source; $(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O))
-	@python rendering_summary.py
-
 %: Makefile
 	@(cd source; $(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O))

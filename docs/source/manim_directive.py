@@ -72,8 +72,11 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+import itertools as it
+import os
 import re
 import shutil
+import sys
 from pathlib import Path
 from timeit import timeit
 from typing import List
@@ -84,21 +87,8 @@ from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import StringList
 
 from manim import QUALITIES
-from manim._config import logger
 
 classnamedict = {}
-
-
-def _write_rendering_stats(scene_name, run_time, file_name):
-    line = ",".join(
-        [
-            re.sub("^reference\/", "", file_name),
-            scene_name,
-            "%.3f" % run_time,
-        ]
-    )
-    with open("../rendering_times.csv", "a") as file:
-        file.write(line + "\n")
 
 
 class skip_manim_node(nodes.Admonition, nodes.Element):
@@ -288,6 +278,51 @@ class ManimDirective(Directive):
         return []
 
 
+rendering_times_file_path = "../rendering_times.csv"
+
+
+def _write_rendering_stats(scene_name, run_time, file_name):
+    line = ",".join(
+        [
+            re.sub("^(reference\/)|(manim.)", "", file_name),
+            scene_name,
+            "%.3f" % run_time,
+        ]
+    )
+    with open(rendering_times_file_path, "a") as file:
+        file.write(line + "\n")
+
+
+def _log_rendering_times(*args):
+    with open(rendering_times_file_path) as file:
+        data = [line.split(",") for line in file.read().splitlines()]
+
+        if len(data) == 0:
+            sys.exit()
+
+        print("\nRendering Summary\n-----------------\n")
+
+        max_file_length = max([len(row[0]) for row in data])
+        for key, group in it.groupby(data, key=lambda row: row[0]):
+            key = key.ljust(max_file_length + 1, ".")
+            group = list(group)
+            if len(group) == 1:
+                row = group[0]
+                print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
+                continue
+            time_sum = sum([float(row[2]) for row in group])
+            print(f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES")
+            for row in group:
+                print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+
+
+def _delete_rendering_times(*args):
+    try:
+        os.remove(rendering_times_file_path)
+    except OSError:
+        pass
+
+
 def setup(app):
     import manim
 
@@ -298,6 +333,9 @@ def setup(app):
     setup.confdir = app.confdir
 
     app.add_directive("manim", ManimDirective)
+
+    app.connect("html-collect-pages", _log_rendering_times)
+    app.connect("builder-inited", _delete_rendering_times)
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
     return metadata
