@@ -182,7 +182,7 @@ class Shader:
                 "geom": "geometry_shader",
             }
             shader_folder = SHADER_FOLDER / name
-            for shader_file in os.listdir(shader_folder):
+            for shader_file in shader_folder.iterdir():
                 shader_file_path = shader_folder / shader_file
                 shader_source = get_shader_code_from_file(shader_file_path)
                 source_dict[source_dict_key[shader_file_path.stem]] = shader_source
