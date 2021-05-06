@@ -362,13 +362,13 @@ class Axes(VGroup, CoordinateSystem):
 
         return line_graph
 
-    def origin_shift(self, axis_range):
+    def origin_shift(self, axis_range:List[float]):
         """Shifts graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
         ----------
-        axis_range : Union[:class:`list`, :class:`numpy.ndarray`]
-            The range of the axis : `(x_min, x_max, x_step)`.
+        axis_range
+            The range of the axis : ``(x_min, x_max, x_step)``.
         """
         if axis_range[0] > 0:
             return axis_range[0]
