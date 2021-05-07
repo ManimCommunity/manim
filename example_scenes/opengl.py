@@ -1,11 +1,331 @@
 import os
 from pathlib import Path
 
+import manim.utils.opengl as opengl
+import manim.utils.space_ops as space_ops
 from manim import *
 from manim.opengl import *
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.
+
+
+def get_plane_mesh(context):
+    shader = Shader(context, name="vertex_colors")
+    attributes = np.zeros(
+        18,
+        dtype=[
+            ("in_vert", np.float32, (4,)),
+            ("in_color", np.float32, (4,)),
+        ],
+    )
+    attributes["in_vert"] = np.array(
+        [
+            # xy plane
+            [-1, -1, 0, 1],
+            [-1, 1, 0, 1],
+            [1, 1, 0, 1],
+            [-1, -1, 0, 1],
+            [1, -1, 0, 1],
+            [1, 1, 0, 1],
+            # yz plane
+            [0, -1, -1, 1],
+            [0, -1, 1, 1],
+            [0, 1, 1, 1],
+            [0, -1, -1, 1],
+            [0, 1, -1, 1],
+            [0, 1, 1, 1],
+            # xz plane
+            [-1, 0, -1, 1],
+            [-1, 0, 1, 1],
+            [1, 0, 1, 1],
+            [-1, 0, -1, 1],
+            [1, 0, -1, 1],
+            [1, 0, 1, 1],
+        ]
+    )
+    attributes["in_color"] = np.array(
+        [
+            # xy plane
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            [1, 0, 0, 1],
+            # yz plane
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            [0, 1, 0, 1],
+            # xz plane
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+        ]
+    )
+    return Mesh(shader, attributes)
+
+
+class ThreeDMobjectTest(Scene):
+    def construct(self):
+        # config["background_color"] = "#333333"
+
+        s = OpenGLSquare(fill_opacity=0.5).shift(2 * RIGHT)
+        self.add(s)
+
+        sp = OpenGLSphere().shift(2 * LEFT)
+        self.add(sp)
+
+        mesh = get_plane_mesh(self.renderer.context)
+        self.add(mesh)
+
+        def update_mesh(mesh, dt):
+            mesh.model_matrix = np.matmul(
+                opengl.rotation_matrix(z=dt), mesh.model_matrix
+            )
+
+        mesh.add_updater(update_mesh)
+
+        self.interactive_embed()
+
+
+class NamedFullScreenQuad(Scene):
+    def construct(self):
+        surface = FullScreenQuad(self.renderer.context, fragment_shader_name="design_3")
+        surface.shader.set_uniform("u_resolution", (854.0, 480.0, 0.0))
+        surface.shader.set_uniform("u_time", 0)
+        self.add(surface)
+
+        t = 0
+
+        def update_surface(surface, dt):
+            nonlocal t
+            t += dt
+            surface.shader.set_uniform("u_time", t / 4)
+
+        surface.add_updater(update_surface)
+
+        # self.wait()
+        self.interactive_embed()
+
+
+class InlineFullScreenQuad(Scene):
+    def construct(self):
+        surface = FullScreenQuad(
+            self.renderer.context,
+            """
+            #version 330
+
+
+            #define TWO_PI 6.28318530718
+
+            uniform vec2 u_resolution;
+            uniform float u_time;
+
+            //  Function from Iñigo Quiles
+            //  https://www.shadertoy.com/view/MsS3Wc
+            vec3 hsb2rgb( in vec3 c ){
+                vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                                         6.0)-3.0)-1.0,
+                                 0.0,
+                                 1.0 );
+                rgb = rgb*rgb*(3.0-2.0*rgb);
+                return c.z * mix( vec3(1.0), rgb, c.y);
+            }
+
+            void main(){
+                vec2 st = gl_FragCoord.xy/u_resolution;
+                vec3 color = vec3(0.0);
+
+                // Use polar coordinates instead of cartesian
+                vec2 toCenter = vec2(0.5)-st;
+                float angle = atan(toCenter.y,toCenter.x);
+                angle += u_time;
+                float radius = length(toCenter)*2.0;
+
+                // Map the angle (-PI to PI) to the Hue (from 0 to 1)
+                // and the Saturation to the radius
+                color = hsb2rgb(vec3((angle/TWO_PI)+0.5,radius,1.0));
+
+                gl_FragColor = vec4(color,1.0);
+            }
+            """,
+            output_color_variable="gl_FragColor",
+        )
+        surface.shader.set_uniform("u_resolution", (854.0, 480.0))
+        shader_time = 0
+
+        def update_surface(surface):
+            nonlocal shader_time
+            surface.shader.set_uniform("u_time", shader_time)
+            shader_time += 1 / 60.0
+
+        surface.add_updater(update_surface)
+        self.add(surface)
+        # self.wait(5)
+        self.interactive_embed()
+
+
+class SimpleInlineFullScreenQuad(Scene):
+    def construct(self):
+        surface = FullScreenQuad(
+            self.renderer.context,
+            """
+            #version 330
+
+            uniform float v_red;
+            uniform float v_green;
+            uniform float v_blue;
+
+            void main() {
+              frag_color = vec4(v_red, v_green, v_blue, 1);
+            }
+            """,
+        )
+        surface.shader.set_uniform("v_red", 0)
+        surface.shader.set_uniform("v_green", 0)
+        surface.shader.set_uniform("v_blue", 0)
+
+        increase = True
+        val = 0.5
+        surface.shader.set_uniform("v_red", val)
+        surface.shader.set_uniform("v_green", val)
+        surface.shader.set_uniform("v_blue", val)
+
+        def update_surface(mesh, dt):
+            nonlocal increase
+            nonlocal val
+            if increase:
+                val += dt
+            else:
+                val -= dt
+            if val >= 1:
+                increase = False
+            elif val <= 0:
+                increase = True
+            surface.shader.set_uniform("v_red", val)
+            surface.shader.set_uniform("v_green", val)
+            surface.shader.set_uniform("v_blue", val)
+
+        surface.add_updater(update_surface)
+
+        self.add(surface)
+        self.wait(5)
+
+
+class InlineShaderExample(Scene):
+    def construct(self):
+        config["background_color"] = "#333333"
+
+        c = OpenGLCircle(fill_opacity=0.7).shift(UL)
+        self.add(c)
+
+        shader = Shader(
+            self.renderer.context,
+            source=dict(
+                vertex_shader="""
+                #version 330
+
+                in vec4 in_vert;
+                in vec4 in_color;
+                out vec4 v_color;
+                uniform mat4 u_model_view_matrix;
+                uniform mat4 u_projection_matrix;
+
+                void main() {
+                    v_color = in_color;
+                    vec4 camera_space_vertex = u_model_view_matrix * in_vert;
+                    vec4 clip_space_vertex = u_projection_matrix * camera_space_vertex;
+                    gl_Position = clip_space_vertex;
+                }
+            """,
+                fragment_shader="""
+            #version 330
+
+            in vec4 v_color;
+            out vec4 frag_color;
+
+            void main() {
+              frag_color = v_color;
+            }
+            """,
+            ),
+        )
+        shader.set_uniform("u_model_view_matrix", opengl.view_matrix())
+        shader.set_uniform(
+            "u_projection_matrix", opengl.orthographic_projection_matrix()
+        )
+
+        attributes = np.zeros(
+            6,
+            dtype=[
+                ("in_vert", np.float32, (4,)),
+                ("in_color", np.float32, (4,)),
+            ],
+        )
+        attributes["in_vert"] = np.array(
+            [
+                [-1, -1, 0, 1],
+                [-1, 1, 0, 1],
+                [1, 1, 0, 1],
+                [-1, -1, 0, 1],
+                [1, -1, 0, 1],
+                [1, 1, 0, 1],
+            ]
+        )
+        attributes["in_color"] = np.array(
+            [
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+            ]
+        )
+        mesh = Mesh(shader, attributes)
+        self.add(mesh)
+
+        self.wait(5)
+        # self.embed_2()
+
+
+class NamedShaderExample(Scene):
+    def construct(self):
+        shader = Shader(self.renderer.context, "manim_coords")
+        shader.set_uniform("u_color", (0.0, 1.0, 0.0, 1.0))
+
+        view_matrix = self.camera.get_view_matrix()
+        shader.set_uniform("u_model_view_matrix", view_matrix)
+        shader.set_uniform(
+            "u_projection_matrix", opengl.perspective_projection_matrix()
+        )
+        attributes = np.zeros(
+            6,
+            dtype=[
+                ("in_vert", np.float32, (4,)),
+            ],
+        )
+        attributes["in_vert"] = np.array(
+            [
+                [-1, -1, 0, 1],
+                [-1, 1, 0, 1],
+                [1, 1, 0, 1],
+                [-1, -1, 0, 1],
+                [1, -1, 0, 1],
+                [1, 1, 0, 1],
+            ]
+        )
+        mesh = Mesh(shader, attributes)
+        self.add(mesh)
+
+        self.wait(5)
 
 
 class InteractiveDevelopment(Scene):
