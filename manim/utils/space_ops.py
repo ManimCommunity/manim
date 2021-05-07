@@ -255,7 +255,9 @@ def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle: float, axis: np.ndarray, homogeneous: bool = False) -> np.ndarray:
+def rotation_matrix(
+    angle: float, axis: np.ndarray, homogeneous: bool = False
+) -> np.ndarray:
     """
     Rotation in R^3 about a specified axis of rotation.
     """
