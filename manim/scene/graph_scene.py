@@ -45,8 +45,9 @@ Examples
 
 __all__ = ["GraphScene"]
 
-
 import itertools as it
+
+import numpy as np
 
 from .. import config, logger
 from ..animation.creation import Create, DrawBorderThenFill, Write
