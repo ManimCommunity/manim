@@ -1,5 +1,6 @@
 import itertools as it
 import operator as op
+import typing
 from functools import reduce, wraps
 from typing import Optional
 

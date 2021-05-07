@@ -7,6 +7,8 @@ __all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
 import re
 from typing import List
 
+import numpy as np
+
 from manim import logger
 
 from ... import config

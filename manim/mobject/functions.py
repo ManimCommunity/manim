@@ -3,7 +3,7 @@
 __all__ = ["ParametricFunction", "FunctionGraph"]
 
 
-import math
+import numpy as np
 
 from .. import config
 from ..constants import *

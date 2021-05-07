@@ -211,7 +211,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.n_components = n_components
         self.anchors_span_full_range = anchors_span_full_range
         self.arc_center = arc_center
-        OpenGLVMobject.__init__(self, **kwargs)
+        super().__init__(self, **kwargs)
 
     def init_points(self):
         self.set_points(
