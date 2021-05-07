@@ -1,6 +1,6 @@
 #version 330
 
-#INSERT camera_uniform_declarations.glsl
+#include ../include/camera_uniform_declarations.glsl
 
 in vec2 uv_coords;
 in vec2 uv_b2;
@@ -79,7 +79,7 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
 }
 
 
-#INSERT quadratic_bezier_distance.glsl
+#include ../include/quadratic_bezier_distance.glsl
 
 
 void main() {
