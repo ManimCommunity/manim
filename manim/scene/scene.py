@@ -8,8 +8,6 @@ import copy
 import inspect
 import platform
 import random
-import string
-import sys
 import threading
 import types
 import warnings
@@ -25,8 +23,7 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..container import Container
-from ..mobject.mobject import Mobject, _AnimationBuilder
-from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
+from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.shader import Mesh
 from ..utils import opengl, space_ops

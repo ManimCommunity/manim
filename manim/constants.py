@@ -7,6 +7,75 @@ import typing
 import numpy as np
 from PIL import Image
 
+__all__ = [
+    "NOT_SETTING_FONT_MSG",
+    "SCENE_NOT_FOUND_MESSAGE",
+    "CHOOSE_NUMBER_MESSAGE",
+    "INVALID_NUMBER_MESSAGE",
+    "NO_SCENE_MESSAGE",
+    "NORMAL",
+    "ITALIC",
+    "OBLIQUE",
+    "BOLD",
+    "THIN",
+    "ULTRALIGHT",
+    "LIGHT",
+    "SEMILIGHT",
+    "BOOK",
+    "MEDIUM",
+    "SEMIBOLD",
+    "ULTRABOLD",
+    "HEAVY",
+    "ULTRAHEAVY",
+    "RESAMPLING_ALGORITHMS",
+    "ORIGIN",
+    "UP",
+    "DOWN",
+    "RIGHT",
+    "LEFT",
+    "IN",
+    "OUT",
+    "X_AXIS",
+    "Y_AXIS",
+    "Z_AXIS",
+    "UL",
+    "UR",
+    "DL",
+    "DR",
+    "START_X",
+    "START_Y",
+    "DEFAULT_DOT_RADIUS",
+    "DEFAULT_SMALL_DOT_RADIUS",
+    "DEFAULT_DASH_LENGTH",
+    "DEFAULT_ARROW_TIP_LENGTH",
+    "SMALL_BUFF",
+    "MED_SMALL_BUFF",
+    "MED_LARGE_BUFF",
+    "LARGE_BUFF",
+    "DEFAULT_MOBJECT_TO_EDGE_BUFFER",
+    "DEFAULT_MOBJECT_TO_MOBJECT_BUFFER",
+    "DEFAULT_POINTWISE_FUNCTION_RUN_TIME",
+    "DEFAULT_WAIT_TIME",
+    "DEFAULT_POINT_DENSITY_2D",
+    "DEFAULT_POINT_DENSITY_1D",
+    "DEFAULT_STROKE_WIDTH",
+    "PI",
+    "TAU",
+    "DEGREES",
+    "FFMPEG_BIN",
+    "GIF_FILE_EXTENSION",
+    "FFMPEG_VERBOSITY_MAP",
+    "VERBOSITY_CHOICES",
+    "WEBGL_RENDERER_INFO",
+    "QUALITIES",
+    "DEFAULT_QUALITY",
+    "DEFAULT_QUALITY_SHORT",
+    "EPILOG",
+    "HELP_OPTIONS",
+    "CONTEXT_SETTINGS",
+    "SHIFT_VALUE",
+    "CTRL_VALUE",
+]
 # Messages
 NOT_SETTING_FONT_MSG: str = """
 You haven't set font.
@@ -26,7 +95,7 @@ NO_SCENE_MESSAGE: str = """
    There are no scenes inside that module
 """
 
-# Cairo and Pango stuff
+# Pango stuff
 NORMAL: str = "NORMAL"
 ITALIC: str = "ITALIC"
 OBLIQUE: str = "OBLIQUE"

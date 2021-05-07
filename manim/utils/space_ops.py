@@ -43,7 +43,6 @@ from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
 from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
 
 
 @deprecated(since="v0.6.0", until="v0.8.0", replacement="np.linalg.norm")

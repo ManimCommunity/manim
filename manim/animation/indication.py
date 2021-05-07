@@ -45,7 +45,7 @@ __all__ = [
     "Wiggle",
 ]
 
-
+import typing
 from typing import Callable, Type, Union
 
 import numpy as np
