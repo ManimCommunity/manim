@@ -5,8 +5,8 @@ __all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
 
 
 import re
-from typing import List
 from math import *
+from typing import List
 
 from manim import logger
 
@@ -36,7 +36,7 @@ def correct_out_of_range_radii(rx, ry, x1p, y1p):
 
 
 def vector_angle(ux, uy, vx, vy):
-    """ Calculate the dot product angle between two vectors.
+    """Calculate the dot product angle between two vectors.
 
     This clamps the argument to the arc cosine due to roundoff errors
     from some SVG files.
@@ -100,7 +100,7 @@ def get_elliptical_arc_center_parameters(x1, y1, rx, ry, phi, fA, fS, x2, y2):
 
 
 def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
-    """ Generate cubic bezier points to approximate SVG elliptical arc.
+    """Generate cubic bezier points to approximate SVG elliptical arc.
 
     See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
     """
