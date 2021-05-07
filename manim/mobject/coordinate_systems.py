@@ -188,7 +188,7 @@ class CoordinateSystem:
             The x-value for which the coordinates of corresponding point on the :attr:`graph` are to be found.
 
         graph
-            The :class:`~.ParametricFunction` object on which the x-value and y-value lie.
+            The :class:`~.ParametricFunction` on which the x-value and y-value lie.
 
         Returns
         -------
@@ -214,7 +214,7 @@ class CoordinateSystem:
 
     def i2gp(self, x, graph):
         """
-        Alias for input_to_graph_point.
+        Alias for :meth:`input_to_graph_point`.
         """
         return self.input_to_graph_point(x, graph)
 
@@ -292,7 +292,6 @@ class CoordinateSystem:
         fill_opacity: float = 1,
         colors: Iterable[Color] = (BLUE, GREEN),
         show_signed_area: bool = True,
-        width_scale_factor: float = 1.001,
     ) -> VGroup:
         """This method returns the :class:`~.VGroup` of the Riemann Rectangles for
         a particular curve.
@@ -327,8 +326,6 @@ class CoordinateSystem:
 
         show_signed_area
             Indicates negative area when the curve dips below the x-axis by inverting its color.
-
-        width_scale_factor
 
         Returns
         -------
@@ -374,7 +371,7 @@ class CoordinateSystem:
                         VectorizedPoint,
                         [
                             self.coords_to_point(x, y_point),
-                            self.coords_to_point(x + width_scale_factor * dx, y_point),
+                            self.coords_to_point(x + 1.001 * dx, y_point),
                             graph_point,
                         ],
                     )
@@ -440,15 +437,12 @@ class CoordinateSystem:
         graph
             The :class:`~.ParametricFunction` for which to calculate the tangent.
 
-        dx
-            The small change in x with which a small change in y
-            will be compared in order to obtain the tangent.
-
         Returns
         -------
         :class:`float`
             The slope of the tangent with the x axis.
         """
+
         return np.tan(self.angle_of_tangent(x, graph, **kwargs))
 
     def get_derivative_graph(
@@ -470,7 +464,7 @@ class CoordinateSystem:
 
         Returns
         -------
-        :class:`ParametricFunction`
+        :class:`~.ParametricFunction`
             The curve of the derivative.
         """
 
@@ -603,7 +597,7 @@ class CoordinateSystem:
             The graph on which the line should extend to.
 
         x_range
-            A list containing the lower and and upper bounds of the lines -> :code:``x_range = [x_min, x_max]``.
+            A list containing the lower and and upper bounds of the lines -> ``x_range = [x_min, x_max]``.
 
         num_lines
             The number of evenly spaced lines.
