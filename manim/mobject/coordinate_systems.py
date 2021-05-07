@@ -118,7 +118,19 @@ class CoordinateSystem:
 
     # move to a util_file, or Mobject()??
     @staticmethod
-    def create_label_tex(label_tex):
+    def create_label_tex(label_tex) -> "Mobject":
+        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
+
+        Parameters
+        ----------
+        label_tex : The label to be compared against the above types.
+
+        Returns
+        -------
+        :class:`~.Mobject`
+            The label.
+        """
+
         if (
             isinstance(label_tex, float)
             or isinstance(label_tex, int)
@@ -127,13 +139,65 @@ class CoordinateSystem:
             label_tex = MathTex(label_tex)
         return label_tex
 
-    def get_axis_label(self, label_tex, axis, edge, direction, buff=SMALL_BUFF):
-        label = self.create_label_tex(label_tex)
+    def get_axis_label(
+        self,
+        label: Union[float, str, Mobject],
+        axis: "Mobject",
+        edge: Sequence[float],
+        direction: Sequence[float],
+        buff: float = SMALL_BUFF,
+    ) -> "Mobject":
+        """Gets the label for an axis.
+
+        Parameters
+        ----------
+        label
+            The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
+        axis
+            The axis to which the label will be added.
+        edge
+            The edge of the axes to which the label will be added. ``RIGHT`` adds to the right side of the axis
+        direction
+            Allows for further positioning of the label.
+        buff
+            The distance of the label from the line.
+
+        Returns
+        -------
+        :class:`~.Mobject`
+            The positioned label along the given axis.
+        """
+
+        label = self.create_label_tex(label)
         label.next_to(axis.get_edge_center(edge), direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
 
-    def get_axis_labels(self, x_label="x", y_label="y"):
+    def get_axis_labels(
+        self,
+        x_label: Union[float, str, Mobject] = "x",
+        y_label: Union[float, str, Mobject] = "y",
+    ) -> "VGroup":
+        """Defines labels for the x_axis and y_axis of the graph.
+
+        Parameters
+        ----------
+        x_label
+            The label for the x_axis
+        y_label
+            The label for the y_axis
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.Vgroup` of the labels for the x_axis and y_axis.
+
+        See Also
+        --------
+        :class:`get_x_axis_label`
+        :class:`get_y_axis_label`
+        """
+
         self.axis_labels = VGroup(
             self.get_x_axis_label(x_label),
             self.get_y_axis_label(y_label),
@@ -141,22 +205,98 @@ class CoordinateSystem:
         return self.axis_labels
 
     def get_line_from_axis_to_point(
-        self, index, point, line_func=DashedLine, color=LIGHT_GREY, stroke_width=2
-    ):
+        self,
+        index: int,
+        point: Sequence[float],
+        line_func: Line = DashedLine,
+        color: Color = LIGHT_GREY,
+        stroke_width: float = 2,
+    ) -> Line:
+        """Returns a straight line from a given axis to a point in the scene.
+
+        Parameters
+        ----------
+        index
+            Specifies the axis from which to draw the line. `0 = x_axis`, `1 = y_axis`
+        point
+            The point to which the line will be drawn.
+        line_func
+            The function of the :class:`~.Line` mobject used to construct the line.
+        color
+            The color of the line.
+        stroke_width
+            The stroke width of the line.
+
+        Returns
+        -------
+        :class:`~.Line`
+            The line from an axis to a point.
+
+        See Also
+        --------
+        :class:`get_vertical_line`
+        :class:`get_horizontal_line`
+        """
         axis = self.get_axis(index)
         line = line_func(axis.get_projection(point), point)
         line.set_stroke(color, stroke_width)
         return line
 
-    def get_vertical_line(self, point, **kwargs):
+    def get_vertical_line(self, point: Sequence[float], **kwargs) -> Line:
+        """A vertical line from the x-axis to a given point in the scene.
+
+        Parameters
+        ----------
+        point
+            The point to which the vertical line will be drawn.
+
+        kwargs
+            Additional parameters to be passed to :class:`get_line_from_axis_to_point`
+
+        Returns
+        -------
+        :class:`Line`
+            A vertical line from the x-axis to the point.
+        """
+
         return self.get_line_from_axis_to_point(0, point, **kwargs)
 
-    def get_horizontal_line(self, point, **kwargs):
+    def get_horizontal_line(self, point: Sequence[float], **kwargs) -> Line:
+        """A horizontal line from the y-axis to a given point in the scene.
+
+        Parameters
+        ----------
+        point
+            The point to which the horizontal line will be drawn.
+
+        kwargs
+            Additional parameters to be passed to :class:`get_line_from_axis_to_point`
+
+        Returns
+        -------
+        :class:`Line`
+            A horizontal line from the y-axis to the point.
+        """
+
         return self.get_line_from_axis_to_point(1, point, **kwargs)
 
     # graphing
 
-    def get_graph(self, function, **kwargs):
+    def get_graph(self, function: "ParametricFunction", **kwargs):
+        """Generates a curve based on a function.
+
+        Parameters
+        ----------
+        function
+            The function used to construct the :class:`~.ParametricFunction`.
+        kwargs
+            Additional parameters to be passed to :class:`~.ParametricFunction`.
+
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The curve.
+        """
         t_range = [*self.x_range]
 
         if len(t_range) == 3:
@@ -221,7 +361,7 @@ class CoordinateSystem:
     def get_graph_label(
         self,
         graph: "ParametricFunction",
-        label: Union[int, float, str, Mobject] = "f(x)",
+        label: Union[float, str, Mobject] = "f(x)",
         x_val: Optional[float] = None,
         direction: Sequence[float] = RIGHT,
         buff: float = MED_SMALL_BUFF,
