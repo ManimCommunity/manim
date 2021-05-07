@@ -16,6 +16,7 @@ class FocusOnTest(Scene):
 class IndicateTest(Scene):
     def construct(self):
         square = Square()
+        self.add(square)
         self.play(Indicate(square))
 
 
@@ -23,59 +24,43 @@ class FlashTest(Scene):
     def construct(self):
         square = Square()
         self.add(square)
-        self.play(Flash(square))
+        self.play(Flash(ORIGIN))
 
 
-class CircleIndicateTest(Scene):
+class CircumscribeTest(Scene):
     def construct(self):
         square = Square()
         self.add(square)
-        self.play(CircleIndicate(square))
+        self.play(Circumscribe(square))
+        self.wait()
 
 
 class ShowPassingFlashTest(Scene):
     def construct(self):
         square = Square()
         self.add(square)
-        self.play(ShowPassingFlash(square))
-
-
-class ShowCreationThenDestructionTest(Scene):
-    def construct(self):
-        square = Square()
-        self.play(ShowCreationThenDestruction(square))
+        self.play(ShowPassingFlash(square.copy()))
 
 
 class ShowCreationThenFadeOutTest(Scene):
     def construct(self):
         square = Square()
-        self.play(ShowCreationThenFadeOut(square))
-
-
-class ShowPassingFlashAroundTest(Scene):
-    def construct(self):
-        circle = Circle()
-        self.play(ShowPassingFlashAround(circle))
+        self.add(square)
+        self.play(ShowCreationThenFadeOut(square.copy()))
 
 
 class ApplyWaveTest(Scene):
     def construct(self):
         square = Square()
+        self.add(square)
         self.play(ApplyWave(square))
 
 
-class WiggleOutThenInTest(Scene):
+class WiggleTest(Scene):
     def construct(self):
         square = Square()
         self.add(square)
-        self.play(WiggleOutThenIn(square))
-
-
-class TurnInsideOutTest(Scene):
-    def construct(self):
-        square = Square()
-        self.add(square)
-        self.play(TurnInsideOut(square))
+        self.play(Wiggle(square))
 
 
 MODULE_NAME = "indication"

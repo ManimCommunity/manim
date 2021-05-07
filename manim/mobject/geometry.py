@@ -852,6 +852,21 @@ class Line(TipableVMobject):
     def get_angle(self):
         return angle_of_vector(self.get_vector())
 
+    def get_projection(self, point):
+        """Return the projection of a point onto the line.
+
+        Examples
+        --------
+        ::
+            >>> import numpy as np
+            >>> line = Line(LEFT, RIGHT)
+            >>> line.get_projection(np.array([0, 1, 0]))
+            array([0., 0., 0.])
+        """
+        unit_vect = self.get_unit_vector()
+        start = self.get_start()
+        return start + np.dot(point - start, unit_vect) * unit_vect
+
     def get_slope(self):
         return np.tan(self.get_angle())
 
@@ -1292,6 +1307,58 @@ class Vector(Arrow):
         if len(direction) == 2:
             direction = np.append(np.array(direction), 0)
         Arrow.__init__(self, ORIGIN, direction, buff=buff, **kwargs)
+
+    def coordinate_label(
+        self, integer_labels: bool = True, n_dim: int = 2, color: str = WHITE
+    ):
+        """Creates a label based on the coordinates of the vector.
+
+        Parameters
+        ----------
+        integer_labels
+            Whether or not to round the coordinates to integers.
+        n_dim
+            The number of dimensions of the vector.
+        color
+            The color of the label.
+
+        Examples
+        --------
+
+        .. manim VectorCoordinateLabel
+            :save_last_frame:
+
+            class VectorCoordinateLabel(Scene):
+                def construct(self):
+                    plane = NumberPlane()
+
+                    vect_1 = Vector([1, 2])
+                    vect_2 = Vector([-3, -2])
+                    label_1 = vect1.coordinate_label()
+                    label_2 = vect2.coordinate_label(color=YELLOW)
+
+                    self.add(plane, vect_1, vect_2, label_1, label_2)
+        """
+        # avoiding circular imports
+        from .matrix import Matrix
+
+        vect = np.array(self.get_end())
+        if integer_labels:
+            vect = np.round(vect).astype(int)
+        vect = vect[:n_dim]
+        vect = vect.reshape((n_dim, 1))
+
+        label = Matrix(vect)
+        label.scale(LARGE_BUFF - 0.2)
+
+        shift_dir = np.array(self.get_end())
+        if shift_dir[0] >= 0:  # Pointing right
+            shift_dir -= label.get_left() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * LEFT
+        else:  # Pointing left
+            shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
+        label.shift(shift_dir)
+        label.set_color(color)
+        return label
 
 
 class DoubleArrow(Arrow):
@@ -2245,17 +2312,12 @@ class Angle(Arc, Elbow):
                     Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.04, other_angle=True),
                     Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.08),
                 ]
-                line_list = VGroup( *[VGroup() for k in range(4)] )
-                for k in range(4):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( rightarcangles[k] )
-                line_list.arrange_in_grid(buff=1.5)
-                self.add(
-                    line_list
-                )
+                plots = VGroup()
+                for angle in rightarcangles:
+                    plot=VGroup(line1.copy(),line2.copy(), angle)
+                    plots.add(plot)
+                plots.arrange(buff=1.5)
+                self.add(plots)
 
     .. manim:: AngleExample
         :save_last_frame:
@@ -2274,17 +2336,13 @@ class Angle(Arc, Elbow):
                     Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
                     Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
                 ]
-                line_list = VGroup( *[VGroup() for k in range(8)] )
-                for k in range(8):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( angles[k] )
-                line_list.arrange_in_grid(n_rows=2, n_cols=4, buff=1.5)
-                self.add(
-                    line_list
-                )
+                plots = VGroup()
+                for angle in angles:
+                    plot=VGroup(line1.copy(),line2.copy(), angle)
+                    plots.add(VGroup(plot,SurroundingRectangle(plot, buff=0.3)))
+                plots.arrange_in_grid(rows=2,buff=1)
+                self.add(plots)
+
     .. manim:: FilledAngle
         :save_last_frame:
 
@@ -2435,18 +2493,12 @@ class RightAngle(Angle):
                     RightAngle(line1, line2, length=0.5, quadrant=(-1,1), stroke_width=8),
                     RightAngle(line1, line2, length=0.7, quadrant=(-1,-1), color=RED),
                 ]
-                line_list = VGroup( *[VGroup() for k in range(4)] )
-                for k in range(4):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( rightangles[k] )
-                line_list.arrange_in_grid(buff=1.5)
-                self.add(
-                    line_list
-                )
-
+                plots = VGroup()
+                for rightangle in rightangles:
+                    plot=VGroup(line1.copy(),line2.copy(), rightangle)
+                    plots.add(plot)
+                plots.arrange(buff=1.5)
+                self.add(plots)
     """
 
     def __init__(self, line1, line2, length=None, **kwargs):

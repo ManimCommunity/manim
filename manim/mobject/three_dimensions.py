@@ -540,7 +540,7 @@ class Line3D(Cylinder):
     def set_start_and_end_attrs(self, start, end, **kwargs):
         """Sets the start and end points of the line.
 
-        If either ``start`` or ``end`` are :class:`~.Mobject`s, this gives their centers.
+        If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`, this gives their centers.
         """
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
