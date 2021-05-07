@@ -43,7 +43,6 @@ from mapbox_earcut import triangulate_float32 as earcut
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
 from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
 
 
 def get_norm(vect):
@@ -256,14 +255,20 @@ def rotation_matrix_transpose(angle: float, axis: np.ndarray) -> np.ndarray:
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle: float, axis: np.ndarray) -> np.ndarray:
+def rotation_matrix(angle: float, axis: np.ndarray, homogeneous: bool = False) -> np.ndarray:
     """
     Rotation in R^3 about a specified axis of rotation.
     """
     about_z = rotation_about_z(angle)
     z_to_axis = z_to_vector(axis)
     axis_to_z = np.linalg.inv(z_to_axis)
-    return reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    inhomogeneous_rotation_matrix = reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    if not homogeneous:
+        return inhomogeneous_rotation_matrix
+    else:
+        rotation_matrix = np.eye(4)
+        rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
+        return rotation_matrix
 
 
 def rotation_about_z(angle: float) -> List[List[float]]:
