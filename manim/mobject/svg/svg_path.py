@@ -8,6 +8,8 @@ import re
 from math import *
 from typing import List
 
+import numpy as np
+
 from manim import logger
 
 from ... import config
