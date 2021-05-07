@@ -1,6 +1,6 @@
 #version 330
 
-#INSERT camera_uniform_declarations.glsl
+#include ../include/camera_uniform_declarations.glsl
 
 in vec4 color;
 in float fill_all;  // Either 0 or 1e
@@ -19,7 +19,7 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
     return dist;
 }
 
-#INSERT quadratic_bezier_distance.glsl
+#include ../include/quadratic_bezier_distance.glsl
 
 
 float sdf(){
