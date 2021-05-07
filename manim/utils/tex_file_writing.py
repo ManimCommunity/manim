@@ -171,23 +171,27 @@ def compile_tex(tex_file, tex_compiler, output_format):
                 )
             with open(log_file, "r") as f:
                 log = f.readlines()
-                error_pos = [index for index, line in enumerate(log) if line.startswith("!")]
+                error_pos = [
+                    index for index, line in enumerate(log) if line.startswith("!")
+                ]
                 if error_pos:
                     with open(tex_file, "r") as g:
                         tex = g.readlines()
                         logger.error(f"LaTeX compilation error! LaTeX reports:")
                         for log_index in error_pos:
                             index_line = log_index
-                            CONTENT = f"{log[log_index][2:]}Here is the tex content:\n\n"
+                            CONTENT = (
+                                f"{log[log_index][2:]}Here is the tex content:\n\n"
+                            )
 
                             # Find where the line of the error is indicated in the log file
                             while not log[index_line].startswith("l."):
                                 index_line += 1
 
                             # Find the index of the errored line in the tex file
-                            tex_index = int(log[index_line]
-                                            .split(" ")[0]
-                                            .split(".")[1]) - 1
+                            tex_index = (
+                                int(log[index_line].split(" ")[0].split(".")[1]) - 1
+                            )
 
                             # Seek the environment scope that contains the error
                             environment = tex_index
