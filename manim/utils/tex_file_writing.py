@@ -177,7 +177,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
                 if error_pos:
                     with open(tex_file, "r") as g:
                         tex = g.readlines()
-                        logger.error(f"LaTeX compilation error! LaTeX reports:")
+                        logger.error("LaTeX compilation error! LaTeX reports:")
                         for log_index in error_pos:
                             index_line = log_index
                             CONTENT = (
