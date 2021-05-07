@@ -11,12 +11,12 @@ format.
 """
 import configparser
 import copy
-from functools import wraps
 import json
 import logging
 import os
 import typing
-from typing import TYPE_CHECKING, Callable, Any
+from functools import wraps
+from typing import TYPE_CHECKING, Any, Callable
 
 from rich import color, errors
 from rich import print as printf

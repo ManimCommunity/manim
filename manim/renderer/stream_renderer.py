@@ -1,7 +1,6 @@
-from manim.renderer.cairo_renderer import CairoRenderer
 from manim._config import config, logger
+from manim.renderer.cairo_renderer import CairoRenderer
 from manim.scene.stream_file_writer import StreamFileWriter
-
 from manim.utils.hashing import get_hash_from_play_call
 
 

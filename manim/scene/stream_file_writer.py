@@ -1,13 +1,12 @@
-from abc import ABCMeta
-
 import os
 import subprocess
+from abc import ABCMeta
 
 from .. import config, logger
 from ..constants import FFMPEG_BIN
+from ..utils.file_ops import guarantee_existence
 from .scene import Scene
 from .scene_file_writer import SceneFileWriter
-from ..utils.file_ops import guarantee_existence
 
 
 class StreamFileWriter(SceneFileWriter):
@@ -40,7 +39,9 @@ class StreamFileWriter(SceneFileWriter):
         class. This is insignificant to the base class which has its own ways
         of acquiring this path.
         """
-        self.partial_movie_files = list(filter(lambda item: item is not None, self.partial_movie_files))
+        self.partial_movie_files = list(
+            filter(lambda item: item is not None, self.partial_movie_files)
+        )
         return self.partial_movie_files[self.renderer.num_plays]
 
     def end_animation(self, allow_write=False):

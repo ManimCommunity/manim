@@ -343,7 +343,10 @@ A list of all config options
 
    from manim._config import ManimConfig
    from inspect import getmembers
-   print(sorted([n for n, _ in getmembers(ManimConfig, lambda v: isinstance(v, property))]))
+
+   print(
+       sorted([n for n, _ in getmembers(ManimConfig, lambda v: isinstance(v, property))])
+   )
 
 .. testoutput::
    :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
@@ -371,9 +374,10 @@ A list of all CLI flags
 
    import subprocess
    import os
-   is_windows = os.name == 'nt'
-   result = subprocess.run(['manim', '-h'], shell=is_windows, stdout=subprocess.PIPE)
-   print(result.stdout.decode('utf-8'))
+
+   is_windows = os.name == "nt"
+   result = subprocess.run(["manim", "-h"], shell=is_windows, stdout=subprocess.PIPE)
+   print(result.stdout.decode("utf-8"))
 
 .. testoutput::
    :options: +ELLIPSIS, +NORMALIZE_WHITESPACE

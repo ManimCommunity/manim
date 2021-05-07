@@ -5,10 +5,9 @@ import readline
 import rlcompleter
 import subprocess
 
-from manim._config import config, logger, console
+from manim._config import config, console, logger
 from manim._config.logger_utils import disable_logging
 from manim.scene.streaming_scene import get_streamer, play_scene
-
 
 __all__ = ["livestream", "stream"]
 
@@ -124,6 +123,7 @@ def livestream(use_ipython=False):
 
     if use_ipython:
         from IPython import start_ipython
+
         import manim
 
         console.print(info)

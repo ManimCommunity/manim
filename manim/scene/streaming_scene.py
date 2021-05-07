@@ -1,10 +1,10 @@
+import math
+
 from .. import config
 from ..mobject.frame import FullScreenRectangle as Frame
 from ..renderer.stream_renderer import StreamCairoRenderer
 from ..utils.simple_functions import get_parameters
 from .scene import Scene
-
-import math
 
 
 class Stream:
