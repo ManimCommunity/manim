@@ -2337,7 +2337,7 @@ class Mobject(Container):
 
         .. manim:: ShuffleSumobjectsExample
 
-            class ShuffleSumobjectsExample(Scene):
+            class ShuffleSubmobjectsExample(Scene):
                 def construct(self):
                     s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
                     s2= s.copy()
