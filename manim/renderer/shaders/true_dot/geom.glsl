@@ -18,7 +18,7 @@ out float radius;
 out vec2 center;
 out vec2 point;
 
-#INSERT get_gl_Position.glsl
+#include ../include/get_gl_Position.glsl
 
 void main() {
     color = v_color[0];

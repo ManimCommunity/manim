@@ -3,7 +3,6 @@ import itertools as it
 import random
 import sys
 from functools import wraps
-from typing import List, Union
 
 import moderngl
 import numpy as np
