@@ -4,6 +4,8 @@ __all__ = ["DecimalNumber", "Integer", "Variable"]
 
 import uuid
 
+import numpy as np
+
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject

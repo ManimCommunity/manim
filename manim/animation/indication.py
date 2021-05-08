@@ -45,7 +45,7 @@ __all__ = [
     "Wiggle",
 ]
 
-
+import typing
 from typing import Callable, Type, Union
 
 import numpy as np
@@ -684,7 +684,7 @@ class WiggleOutThenIn(Wiggle):
         logger.warning(
             "WiggleOutThenIn has been deprecated in favor of Wiggle. Please use Wiggle instead!"
         )
-        super().__init(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class TurnInsideOut(Transform):
