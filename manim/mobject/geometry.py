@@ -2370,8 +2370,8 @@ class Angle(Arc, Elbow):
 
     def __init__(
         self,
-        line1: "Line",
-        line2: "Line",
+        line1: Line,
+        line2: Line,
         radius: float = None,
         quadrant=(1, 1),
         other_angle: bool = False,
