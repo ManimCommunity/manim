@@ -27,8 +27,6 @@ from scipy import linalg
 from ..utils.simple_functions import choose
 from ..utils.space_ops import cross2d, find_intersection
 
-CLOSED_THRESHOLD: float = 0.001
-
 
 def bezier(
     points: np.ndarray,
@@ -377,6 +375,7 @@ def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:
 def bezier_params_from_point(
     point: typing.Iterable[typing.Union[float, int]],
     control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
+    round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
 ) -> typing.List[float]:
     """Obtains the parameter corresponding to a given point
     for a given bezier curve.
@@ -390,6 +389,9 @@ def bezier_params_from_point(
         The Cartesian Coordinates of the ordered control
         points of the bezier curve on which the point may
         or may not lie.
+    round_to
+        A float whose number of decimal places all values
+        such as coordinates of points will be rounded.
 
     Returns
     -------
@@ -442,30 +444,17 @@ def bezier_params_from_point(
         if len(polynom_roots) > 0:
             roots.append(polynom_roots)
 
-    # Of the roots found, remove all imaginary ones, and
-    # round all roots to the number of decimal places of CLOSED_THRESHOLD
-    # Then, get the common roots for the solved bezier equations in all the
-    # supplied dimensions.
-    roots = [
-        r.real
-        for r in reduce(
-            np.intersect1d,
-            [
-                [
-                    np.around(j, int(np.log10(1 / CLOSED_THRESHOLD))).tolist()
-                    for j in i
-                    if j.imag == 0
-                ]
-                for i in roots
-            ],
-        )
-    ]
+    roots = np.around(roots, int(np.log10(1 / round_to)))
+    roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
+    roots = reduce(np.intersect1d, roots)  # Get common roots.
+    roots = np.array([r.real for r in roots]).tolist()
     return roots
 
 
 def point_lies_on_bezier(
     point: typing.Iterable[typing.Union[float, int]],
     control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
+    round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
 ) -> bool:
     """Checks if a given point lies on the bezier curves with the given control points.
 
@@ -477,6 +466,9 @@ def point_lies_on_bezier(
         The Cartesian Coordinates of the ordered control
         points of the bezier curve on which the point may
         or may not lie.
+    round_to
+        A float whose number of decimal places all values
+        such as coordinates of points will be rounded.
 
     Returns
     -------
