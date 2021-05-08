@@ -1,6 +1,6 @@
 import pytest
 
-from manim import Animation, Mobject, override_animation, setup_animation_overriding
+from manim import Animation, Mobject, override_animation
 from manim.utils.exceptions import MultiAnimationOverrideException
 
 
@@ -55,7 +55,6 @@ class MobjectX(Mobject):
 
 
 def test_mobject_inheritance():
-    setup_animation_overriding()
     mob = Mobject()
     a = MobjectA()
     b = MobjectB()
@@ -78,13 +77,12 @@ def test_arguments():
 
 
 def test_multi_animation_override_exception():
-    class MobjectB2(MobjectA):
-        @override_animation(AnimationA1)
-        def anim_a1_different_name(self):
-            return None
-
     with pytest.raises(MultiAnimationOverrideException):
-        setup_animation_overriding()
+
+        class MobjectB2(MobjectA):
+            @override_animation(AnimationA1)
+            def anim_a1_different_name(self):
+                pass
 
 
 def test_animation_inheritance():

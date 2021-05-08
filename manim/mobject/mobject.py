@@ -14,7 +14,18 @@ import warnings
 from functools import reduce
 from math import ceil
 from pathlib import Path
-from typing import Callable, Iterable, List, Optional, Sequence, Tuple, TypeVar, Union
+from typing import (
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 from colour import Color
@@ -65,6 +76,13 @@ class Mobject(Container):
             :class:`~.VMobject`
 
     """
+
+    animation_overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
+
+    def __init_subclass__(cls):
+        from ..animation.override_animation import _setup_animation_overriding
+
+        _setup_animation_overriding(cls, Mobject.animation_overrides)
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
         self.color = Color(color)

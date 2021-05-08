@@ -31,9 +31,6 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 
 
 class Animation:
-    # is set via override_animation.setup
-    overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
-
     def __new__(
         cls,
         mobject: Optional[Mobject] = None,
@@ -41,12 +38,9 @@ class Animation:
         use_default: bool = False,
         **kwargs,
     ):
-        if (
-            not use_default
-            and cls in cls.overrides
-            and type(mobject) in cls.overrides[cls]
-        ):
-            func = cls.overrides[cls][type(mobject)]
+        overrides = Mobject.animation_overrides
+        if not use_default and cls in overrides and type(mobject) in overrides[cls]:
+            func = overrides[cls][type(mobject)]
             anim = func(mobject, *args, **kwargs)
             return anim
         return super().__new__(cls)
