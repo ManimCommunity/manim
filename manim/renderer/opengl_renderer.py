@@ -11,10 +11,10 @@ from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
 
-from .. import logger
 from ..constants import *
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
 from ..scene.scene_file_writer import SceneFileWriter
+from ..utils import opengl
 from ..utils.simple_functions import clip
 from ..utils.space_ops import (
     angle_of_vector,
@@ -24,6 +24,7 @@ from ..utils.space_ops import (
     rotation_matrix_transpose_from_quaternion,
 )
 from .opengl_renderer_window import Window
+from .shader import Mesh, Shader
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -63,7 +64,18 @@ class OpenGLCamera(OpenGLMobject):
             self.light_source_position = light_source_position
         self.light_source = OpenGLPoint(self.light_source_position)
 
+        self.model_matrix = opengl.translation_matrix(0, 0, 11)
+
         super().__init__(**kwargs)
+
+    def get_position(self):
+        return self.model_matrix[:, 3][:3]
+
+    def get_view_matrix(self, format=True):
+        if format:
+            return opengl.matrix_to_shader_input(np.linalg.inv(self.model_matrix))
+        else:
+            return np.linalg.inv(self.model_matrix)
 
     def init_data(self):
         super().init_data()
@@ -81,6 +93,7 @@ class OpenGLCamera(OpenGLMobject):
         self.set_height(config["frame_height"])
         self.set_width(config["frame_width"])
         self.set_euler_angles(0, 0, 0)
+        self.model_matrix = opengl.translation_matrix(0, 0, 11)
         return self
 
     def refresh_rotation_matrix(self):
@@ -134,7 +147,7 @@ class OpenGLCamera(OpenGLMobject):
 
     def increment_phi(self, dphi):
         phi = self.data["euler_angles"][1]
-        new_phi = clip(phi + dphi, 0, PI)
+        new_phi = clip(phi + dphi, -PI / 2, PI / 2)
         self.data["euler_angles"][1] = new_phi
         self.refresh_rotation_matrix()
         return self
@@ -189,9 +202,6 @@ class OpenGLRenderer:
         self.camera = OpenGLCamera()
         self.pressed_keys = set()
 
-        # Initialize shader map.
-        self.id_to_shader_program = {}
-
         # Initialize texture map.
         self.path_to_texture_id = {}
 
@@ -220,12 +230,6 @@ class OpenGLRenderer:
                 moderngl.ONE,
             )
 
-    def update_depth_test(self, context, shader_wrapper):
-        if shader_wrapper.depth_test:
-            self.context.enable(moderngl.DEPTH_TEST)
-        else:
-            self.context.disable(moderngl.DEPTH_TEST)
-
     def get_pixel_shape(self):
         return self.frame_buffer_object.viewport[2:4]
 
@@ -249,73 +253,48 @@ class OpenGLRenderer:
             "focal_distance": camera.get_focal_distance(),
         }
 
-    def render_mobjects(self, mobs):
-        for mob in mobs:
-            shader_wrapper_list = mob.get_shader_wrapper_list()
-            render_group_list = map(
-                lambda shader_wrapper: self.get_render_group(
-                    self.context, shader_wrapper
-                ),
-                shader_wrapper_list,
-            )
-            for render_group in render_group_list:
-                self.render_render_group(render_group)
+    def render_mobject(self, mobject):
+        shader_wrapper_list = mobject.get_shader_wrapper_list()
 
-    def render_render_group(self, render_group):
-        shader_wrapper = render_group["shader_wrapper"]
-        self.set_shader_uniforms(render_group["prog"], render_group["shader_wrapper"])
-        self.update_depth_test(self.context, shader_wrapper)
-        render_group["vao"].render(int(shader_wrapper.render_primitive))
+        # Convert ShaderWrappers to Meshes.
+        for shader_wrapper in shader_wrapper_list:
+            shader = Shader(self.context, shader_wrapper.shader_folder)
 
-        if render_group["single_use"]:
-            for key in ["vbo", "ibo", "vao"]:
-                if render_group[key] is not None:
-                    render_group[key].release()
+            # Set textures.
+            for name, path in shader_wrapper.texture_paths.items():
+                tid = self.get_texture_id(path)
+                shader.shader_program[name].value = tid
 
-    def get_render_group(self, context, shader_wrapper, single_use=True):
-        # Data buffers
-        vertex_buffer_object = self.context.buffer(shader_wrapper.vert_data.tobytes())
-        if shader_wrapper.vert_indices is None:
-            index_buffer_object = None
-        else:
-            vert_index_data = shader_wrapper.vert_indices.astype("i4").tobytes()
-            if vert_index_data:
-                index_buffer_object = self.context.buffer(vert_index_data)
+            # Set uniforms.
+            for name, value in it.chain(
+                shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
+            ):
+                try:
+                    shader.set_uniform(name, value)
+                except KeyError:
+                    pass
+            try:
+                shader.set_uniform("u_view_matrix", self.scene.camera.get_view_matrix())
+                shader.set_uniform(
+                    "u_projection_matrix", opengl.orthographic_projection_matrix()
+                )
+            except KeyError:
+                pass
+
+            # Set depth test.
+            if shader_wrapper.depth_test:
+                self.context.enable(moderngl.DEPTH_TEST)
             else:
-                index_buffer_object = None
+                self.context.disable(moderngl.DEPTH_TEST)
 
-        # Program and vertex array
-        shader_program, vert_format = self.get_shader_program(
-            self.context, shader_wrapper
-        )
-        vertex_array_object = self.context.vertex_array(
-            program=shader_program,
-            content=[
-                (vertex_buffer_object, vert_format, *shader_wrapper.vert_attributes)
-            ],
-            index_buffer=index_buffer_object,
-        )
-        return {
-            "vbo": vertex_buffer_object,
-            "ibo": index_buffer_object,
-            "vao": vertex_array_object,
-            "prog": shader_program,
-            "shader_wrapper": shader_wrapper,
-            "single_use": single_use,
-        }
-
-    def get_shader_program(self, context, shader_wrapper):
-        sid = shader_wrapper.get_program_id()
-        if sid not in self.id_to_shader_program:
-            # Create shader program for the first time, then cache
-            # in self.id_to_shader_program.
-            program_code = shader_wrapper.get_program_code()
-            program = self.context.program(**program_code)
-            vert_format = moderngl.detect_format(
-                program, shader_wrapper.vert_attributes
+            # Render.
+            mesh = Mesh(
+                shader,
+                shader_wrapper.vert_data,
+                indices=shader_wrapper.vert_indices,
+                use_depth_test=shader_wrapper.depth_test,
             )
-            self.id_to_shader_program[sid] = (program, vert_format)
-        return self.id_to_shader_program[sid]
+            mesh.render()
 
     def get_texture_id(self, path):
         if path not in self.path_to_texture_id:
@@ -330,27 +309,6 @@ class OpenGLRenderer:
             texture.use(location=tid)
             self.path_to_texture_id[path] = tid
         return self.path_to_texture_id[path]
-
-    def set_shader_uniforms(self, shader, shader_wrapper):
-        # perspective_uniforms = {
-        #     "frame_shape": (14.222222222222221, 8.0),
-        #     "anti_alias_width": 0.016666666666666666,
-        #     "camera_center": (0.0, 0.0, 0.0),
-        #     "camera_rotation": (1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0),
-        #     "light_source_position": (-10.0, 10.0, 10.0),
-        #     "focal_distance": 16.0,
-        # }
-
-        for name, path in shader_wrapper.texture_paths.items():
-            tid = self.get_texture_id(path)
-            shader[name].value = tid
-        for name, value in it.chain(
-            shader_wrapper.uniforms.items(), self.perspective_uniforms.items()
-        ):
-            try:
-                shader[name].value = value
-            except KeyError:
-                pass
 
     def update_skipping_status(self):
         """
@@ -385,7 +343,21 @@ class OpenGLRenderer:
         def update_frame():
             self.frame_buffer_object.clear(*window_background_color)
             self.refresh_perspective_uniforms(scene.camera)
-            self.render_mobjects(scene.mobjects)
+
+            for mobject in scene.mobjects:
+                self.render_mobject(mobject)
+
+            view_matrix = scene.camera.get_view_matrix()
+            for mesh in scene.meshes:
+                try:
+                    mesh.shader.set_uniform("u_view_matrix", view_matrix)
+                    mesh.shader.set_uniform(
+                        "u_projection_matrix", opengl.perspective_projection_matrix()
+                    )
+                except KeyError:
+                    pass
+                mesh.render()
+
             self.animation_elapsed_time = time.time() - self.animation_start_time
 
         window_background_color = color_to_rgba(config["background_color"])

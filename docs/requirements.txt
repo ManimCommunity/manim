@@ -1,4 +1,4 @@
-Sphinx==3.1.2
+sphinx==3.5.3
 furo
 recommonmark>=0.5.0
 sphinx-copybutton
