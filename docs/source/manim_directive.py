@@ -279,7 +279,7 @@ class ManimDirective(Directive):
         return []
 
 
-rendering_times_file_path = "../rendering_times.csv"
+rendering_times_file_path = Path("../rendering_times.csv")
 
 
 def _write_rendering_stats(scene_name, run_time, file_name):
@@ -294,7 +294,7 @@ def _write_rendering_stats(scene_name, run_time, file_name):
 
 
 def _log_rendering_times(*args):
-    try:
+    if rendering_times_file_path.exists():
         with open(rendering_times_file_path) as file:
             data = list(csv.reader(file))
             if len(data) == 0:
@@ -317,15 +317,11 @@ def _log_rendering_times(*args):
                 for row in group:
                     print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
         print("")
-    except IOError:
-        pass
 
 
 def _delete_rendering_times(*args):
-    try:
+    if rendering_times_file_path.exists():
         os.remove(rendering_times_file_path)
-    except OSError:
-        pass
 
 
 def setup(app):
