@@ -42,7 +42,6 @@ from mapbox_earcut import triangulate_float32 as earcut
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
 from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
 
 
 def get_norm(vect):
