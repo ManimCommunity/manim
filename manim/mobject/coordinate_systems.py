@@ -282,22 +282,34 @@ class CoordinateSystem:
 
     # graphing
 
-    def get_graph(self, function: "ParametricFunction", **kwargs):
+    def get_graph(
+        self,
+        function: "ParametricFunction",
+        t_range: Optional[List[float]] = None,
+        **kwargs,
+    ):
         """Generates a curve based on a function.
 
         Parameters
         ----------
         function
             The function used to construct the :class:`~.ParametricFunction`.
+
+        t_range
+            The range of the curve along the axes. ``t_range = [t_min, t_max]``
+
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
 
         Returns
         -------
         :class:`~.ParametricFunction`
-            The curve.
+            The plotted curve.
         """
-        t_range = [*self.x_range]
+
+        if t_range is None:
+            t_range = self.x_range
+        t_range = np.array(t_range)
 
         if len(t_range) == 3:
             # if t_range has a defined step size, increase the number of sample points per tick
