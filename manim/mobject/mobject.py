@@ -2335,7 +2335,7 @@ class Mobject(Container):
         Examples
         --------
 
-        .. manim:: ShuffleSumobjectsExample
+        .. manim:: ShuffleSubmobjectsExample
 
             class ShuffleSubmobjectsExample(Scene):
                 def construct(self):
