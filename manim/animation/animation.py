@@ -1,16 +1,14 @@
 """Animate mobjects."""
 
 
-__all__ = ["Animation", "Wait"]
+__all__ = ["Animation", "Wait", "override_animation"]
 
 
 from copy import deepcopy
 from typing import (
     TYPE_CHECKING,
     Callable,
-    Dict,
     Iterable,
-    List,
     Optional,
     Tuple,
     Type,
@@ -35,14 +33,14 @@ class Animation:
         cls,
         mobject: Optional[Mobject] = None,
         *args,
-        use_default: bool = False,
+        use_override: bool = True,
         **kwargs,
     ):
-        overrides = Mobject.animation_overrides
-        if not use_default and cls in overrides and type(mobject) in overrides[cls]:
-            func = overrides[cls][type(mobject)]
-            anim = func(mobject, *args, **kwargs)
-            return anim
+        if isinstance(mobject, Mobject) and use_override:
+            func = mobject.get_animation_override(cls)
+            if func is not None:
+                anim = func(mobject, *args, **kwargs)
+                return anim
         return super().__new__(cls)
 
     def __init__(
@@ -293,3 +291,45 @@ class Wait(Animation):
 
     def interpolate(self, alpha: float) -> None:
         pass
+
+
+def override_animation(
+    animation_class: Type["Animation"],
+) -> Callable[[Callable], Callable]:
+    """Decorator used to mark methods as overrides for specific :class:`~.Animation` types.
+
+    Should only be used to decorate methods of classes derived from :class:`~.Mobject`.
+    ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined
+    them. They don't override subclasses of the ``Animation`` they override.
+
+    Parameters
+    ----------
+    animation_class
+        The animation to be overridden.
+
+    Returns
+    -------
+    Callable[[Callable], Callable]
+        The actual decorator. This marks the method as overriding an animation.
+
+    Examples
+    --------
+
+    .. manim:: OverrideAnimationExample
+
+        class MySquare(Square):
+            @override_animation(FadeIn)
+            def _fade_in_override(self, **kwargs):
+                return Create(self, **kwargs)
+
+        class OverrideAnimationExample(Scene):
+            def construct(self):
+                self.play(FadeIn(MySquare()))
+
+    """
+
+    def decorator(func):
+        func._override_animation = animation_class
+        return func
+
+    return decorator
