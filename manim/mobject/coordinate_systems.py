@@ -324,7 +324,7 @@ class CoordinateSystem:
         # tick frequency.  But for functions, it indicates a
         # sample frequency
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)), t_range=x_range, **kwargs
+            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
         )
         graph.underlying_function = function
         return graph
