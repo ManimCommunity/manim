@@ -1,0 +1,59 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="12cm" height="5.25cm" viewBox="0 0 1200 525" version="1.1"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Example arcs02 - arc options in paths</title>
+  <desc>Pictures showing the result of setting
+        large-arc-flag and sweep-flag to the four
+        possible combinations of 0 and 1.</desc>
+  <g font-family="Verdana" >
+    <defs>
+      <g id="baseEllipses" font-size="20" >
+        <ellipse cx="125" cy="125" rx="100" ry="50"
+                 fill="none" stroke="#888888" stroke-width="2" />
+        <ellipse cx="225" cy="75" rx="100" ry="50"
+                 fill="none" stroke="#888888" stroke-width="2" />
+        <text x="35" y="70">Arc start</text>
+        <text x="225" y="145">Arc end</text>
+      </g>
+    </defs>
+    <rect x="1" y="1" width="1198" height="523"
+          fill="none" stroke="blue" stroke-width="1" />
+
+    <g font-size="30" >
+      <g transform="translate(0,0)">
+        <use xlink:href="#baseEllipses"/>
+      </g>
+      <g transform="translate(400,0)">
+        <text x="50" y="210">large-arc-flag=0</text>
+        <text x="50" y="250">sweep-flag=0</text>
+        <use xlink:href="#baseEllipses"/>
+        <path d="M 125,75 a100,50 0 0,0 100,50"
+              fill="none" stroke="red" stroke-width="6" />
+      </g>
+      <g transform="translate(800,0)">
+        <text x="50" y="210">large-arc-flag=0</text>
+        <text x="50" y="250">sweep-flag=1</text>
+        <use xlink:href="#baseEllipses"/>
+        <path d="M 125,75 a100,50 0 0,1 100,50"
+              fill="none" stroke="red" stroke-width="6" />
+      </g>
+      <g transform="translate(400,250)">
+        <text x="50" y="210">large-arc-flag=1</text>
+        <text x="50" y="250">sweep-flag=0</text>
+        <use xlink:href="#baseEllipses"/>
+        <path d="M 125,75 a100,50 0 1,0 100,50"
+              fill="none" stroke="red" stroke-width="6" />
+      </g>
+      <g transform="translate(800,250)">
+        <text x="50" y="210">large-arc-flag=1</text>
+        <text x="50" y="250">sweep-flag=1</text>
+        <use xlink:href="#baseEllipses"/>
+        <path d="M 125,75 a100,50 0 1,1 100,50"
+              fill="none" stroke="red" stroke-width="6" />
+      </g>
+    </g>
+  </g>
+</svg>
+
