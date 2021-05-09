@@ -15,6 +15,7 @@ from functools import reduce
 from math import ceil
 from pathlib import Path
 from typing import (
+    TYPE_CHECKING,
     Callable,
     Dict,
     Iterable,
@@ -25,7 +26,6 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    TYPE_CHECKING,
 )
 
 import numpy as np
