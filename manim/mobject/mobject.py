@@ -2110,6 +2110,15 @@ class Mobject(Container):
 
         Examples
         --------
+        .. manim:: ExampleBoxes
+            :save_last_frame:
+
+            class ExampleBoxes(Scene):
+                def construct(self):
+                    boxes=VGroup(*[Square() for s in range(0,6)])
+                    boxes.arrange_in_grid(rows=2, buff=0.1)
+                    self.add(boxes)
+
 
         .. manim:: ArrangeInGrid
             :save_last_frame:
