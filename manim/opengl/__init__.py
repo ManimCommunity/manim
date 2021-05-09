@@ -6,3 +6,4 @@ from ..mobject.svg.opengl_tex_mobject import *
 from ..mobject.svg.opengl_text_mobject import *
 from ..mobject.types.opengl_surface import *
 from ..mobject.types.opengl_vectorized_mobject import *
+from ..renderer.shader import *

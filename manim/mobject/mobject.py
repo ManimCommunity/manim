@@ -35,7 +35,6 @@ from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
     angle_between_vectors,
-    angle_of_vector,
     normalize,
     rotation_matrix,
     rotation_matrix_transpose,
@@ -1508,7 +1507,6 @@ class Mobject(Container):
     def replace(self, mobject, dim_to_match=0, stretch=False):
         if not mobject.get_num_points() and not mobject.submobjects:
             raise Warning("Attempting to replace mobject with no points")
-            return self
         if stretch:
             self.stretch_to_fit_width(mobject.width)
             self.stretch_to_fit_height(mobject.height)
@@ -2112,6 +2110,15 @@ class Mobject(Container):
 
         Examples
         --------
+        .. manim:: ExampleBoxes
+            :save_last_frame:
+
+            class ExampleBoxes(Scene):
+                def construct(self):
+                    boxes=VGroup(*[Square() for s in range(0,6)])
+                    boxes.arrange_in_grid(rows=2, buff=0.1)
+                    self.add(boxes)
+
 
         .. manim:: ArrangeInGrid
             :save_last_frame:
@@ -2337,9 +2344,9 @@ class Mobject(Container):
         Examples
         --------
 
-        .. manim:: SuffleSumobjectsExample
+        .. manim:: ShuffleSubmobjectsExample
 
-            class SuffleSumobjectsExample(Scene):
+            class ShuffleSubmobjectsExample(Scene):
                 def construct(self):
                     s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
                     s2= s.copy()

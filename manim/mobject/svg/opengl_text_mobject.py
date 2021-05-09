@@ -49,14 +49,10 @@ import copy
 import hashlib
 import os
 import re
-import sys
 import typing
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Dict
-from xml.sax.saxutils import escape
 
-import cairo
 import manimpango
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
@@ -138,7 +134,6 @@ class OpenGLParagraph(OpenGLVGroup):
     def __init__(self, *text, line_spacing=-1, alignment=None, **config):
         self.line_spacing = line_spacing
         self.alignment = alignment
-        OpenGLVGroup.__init__(self, **config)
 
         lines_str = "\n".join(list(text))
         self.lines_text = OpenGLText(lines_str, line_spacing=line_spacing, **config)
@@ -400,11 +395,11 @@ class OpenGLText(OpenGLSVGMobject):
         font: str = "",
         slant: str = NORMAL,
         weight: str = NORMAL,
-        t2c: Dict[str, str] = None,
-        t2f: Dict[str, str] = None,
-        t2g: Dict[str, tuple] = None,
-        t2s: Dict[str, str] = None,
-        t2w: Dict[str, str] = None,
+        t2c: typing.Dict[str, str] = None,
+        t2f: typing.Dict[str, str] = None,
+        t2g: typing.Dict[str, tuple] = None,
+        t2s: typing.Dict[str, str] = None,
+        t2w: typing.Dict[str, str] = None,
         gradient: tuple = None,
         tab_width: int = 4,
         # Mobject
