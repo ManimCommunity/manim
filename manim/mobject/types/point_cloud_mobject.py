@@ -221,7 +221,24 @@ class PointCloudDot(Mobject1D):
 
                 group = Group(cloud_1, cloud_2, cloud_3).arrange()
                 self.add(group)
+                
+    .. manim:: PointCloudDotExample2
+
+        class PointCloudDotExample2(Scene):
+            def construct(self):
+                plane = ComplexPlane()
+                cloud = PointCloudDot(color=RED)
+                self.add(
+                    plane, cloud
+                )
+                self.wait()
+                self.play(
+                    cloud.animate.apply_complex_function(lambda z: np.exp(z))
+                )
     """
+    
+
+
 
     def __init__(
         self,
