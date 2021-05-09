@@ -50,8 +50,7 @@ def _setup_animation_overriding(
                     f" and {method.__qualname__}. If one of these methods is "
                     f"inherited make sure they are named equally."
                 )
-                logger.error(msg)
-                raise MultiAnimationOverrideException()
+                raise MultiAnimationOverrideException(msg)
 
             # TODO: Update docs.
             # method.__doc__ = (
