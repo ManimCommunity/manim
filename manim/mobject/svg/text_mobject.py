@@ -55,6 +55,7 @@ from pathlib import Path
 from typing import Dict
 
 import manimpango
+import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
