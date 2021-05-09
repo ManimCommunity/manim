@@ -3,16 +3,18 @@
 
 __all__ = ["override_animation", "_setup_animation_overriding"]
 
-from typing import Callable, Dict, List, Type
+from typing import Callable, Dict, List, Type, TYPE_CHECKING
 
-from .. import logger
 from ..mobject.mobject import Mobject
 from ..utils.exceptions import MultiAnimationOverrideException
 
+if TYPE_CHECKING:
+    from ..animation.animation import Animation
+
 
 def _setup_animation_overriding(
-    mobject_class: "Type(Mobject)",
-    overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]",
+    mobject_class: Type[Mobject],
+    overrides: Dict[Type["Animation"], List[Dict[Type[Mobject], str]]],
 ):
     """Sets up :class:`~.Animation` overrides for a :class:`~.Mobject` subclass.
 
@@ -59,7 +61,7 @@ def _setup_animation_overriding(
 
 
 def override_animation(
-    animation_class: "Type[Animation]",
+    animation_class: Type["Animation"],
 ) -> Callable[[Callable], Callable]:
     """Decorator used to mark methods as overrides for specific :class:`~.Animation` types.
 

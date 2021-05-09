@@ -25,6 +25,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    TYPE_CHECKING,
 )
 
 import numpy as np
@@ -56,6 +57,9 @@ from ..utils.space_ops import (
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
 T = TypeVar("T", bound="Mobject")
 
+if TYPE_CHECKING:
+    from ..animation.animation import Animation
+
 
 class Mobject(Container):
     """Mathematical Object: base class for objects that can be displayed on screen.
@@ -77,7 +81,7 @@ class Mobject(Container):
 
     """
 
-    animation_overrides: "Dict[Type[Animation], List[Dict[Type[Mobject], str]]]" = {}
+    animation_overrides: Dict[Type["Animation"], List[Dict[Type["Mobject"], str]]] = {}
 
     def __init_subclass__(cls):
         from ..animation.override_animation import _setup_animation_overriding
