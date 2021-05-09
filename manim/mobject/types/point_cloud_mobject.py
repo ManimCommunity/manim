@@ -221,7 +221,7 @@ class PointCloudDot(Mobject1D):
 
                 group = Group(cloud_1, cloud_2, cloud_3).arrange()
                 self.add(group)
-                
+
     .. manim:: PointCloudDotExample2
 
         class PointCloudDotExample2(Scene):
@@ -236,9 +236,6 @@ class PointCloudDot(Mobject1D):
                     cloud.animate.apply_complex_function(lambda z: np.exp(z))
                 )
     """
-    
-
-
 
     def __init__(
         self,
