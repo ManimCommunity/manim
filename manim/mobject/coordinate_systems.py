@@ -56,18 +56,24 @@ class CoordinateSystem:
     ):
         self.dimension = dimension
 
+        default_step = 1.0
         if x_range is None:
             x_range = [
                 round(-config["frame_x_radius"]),
                 round(config["frame_x_radius"]),
-                1.0,
+                default_step,
             ]
+        elif len(x_range) == 2:
+            x_range = [*x_range, default_step]
+
         if y_range is None:
             y_range = [
                 round(-config["frame_y_radius"]),
                 round(config["frame_y_radius"]),
-                1.0,
+                default_step,
             ]
+        elif len(y_range) == 2:
+            y_range = [*y_range, default_step]
 
         self.x_range = x_range
         self.y_range = y_range
@@ -311,7 +317,7 @@ class CoordinateSystem:
         if x_range is not None:
             t_range[: len(x_range)] = x_range
 
-        if x_range is None or len(x_range) < 3:
+        if x_range is None or len(x_range) < 3 and len(t_range) == 3:
             # if t_range has a defined step size, increase the number of sample points per tick
             t_range[2] /= self.num_sampled_graph_points_per_tick
         # For axes, the third coordinate of x_range indicates
