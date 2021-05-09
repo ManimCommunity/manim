@@ -436,7 +436,7 @@ class CoordinateSystem:
     def get_riemann_rectangles(
         self,
         graph: "ParametricFunction",
-        x_range: List[float] = None,
+        x_range: Optional[Union[List[float], np.ndarray]] = None,
         dx: Optional[float] = 0.1,
         input_sample_type: str = "left",
         stroke_width: float = 1,
