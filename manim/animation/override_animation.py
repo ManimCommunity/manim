@@ -6,7 +6,7 @@ __all__ = ["override_animation", "_setup_animation_overriding"]
 from typing import Callable, Dict, List, Type
 
 from .. import logger
-from ..mobject import Mobject
+from ..mobject.mobject import Mobject
 from ..utils.exceptions import MultiAnimationOverrideException
 
 
