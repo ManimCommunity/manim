@@ -141,7 +141,7 @@ class CoordinateSystem:
 
     def get_axis_label(
         self,
-        label: Union[float, str, Mobject],
+        label: Union[float, str, "Mobject"],
         axis: "Mobject",
         edge: Sequence[float],
         direction: Sequence[float],
@@ -175,8 +175,8 @@ class CoordinateSystem:
 
     def get_axis_labels(
         self,
-        x_label: Union[float, str, Mobject] = "x",
-        y_label: Union[float, str, Mobject] = "y",
+        x_label: Union[float, str, "Mobject"] = "x",
+        y_label: Union[float, str, "Mobject"] = "y",
     ) -> "VGroup":
         """Defines labels for the x_axis and y_axis of the graph.
 
@@ -285,7 +285,7 @@ class CoordinateSystem:
     def get_graph(
         self,
         function: "ParametricFunction",
-        t_range: Optional[List[float]] = None,
+        x_range: Optional[List[float]] = None,
         **kwargs,
     ):
         """Generates a curve based on a function.
@@ -295,8 +295,8 @@ class CoordinateSystem:
         function
             The function used to construct the :class:`~.ParametricFunction`.
 
-        t_range
-            The range of the curve along the axes. ``t_range = [t_min, t_max]``
+        x_range
+            The range of the curve along the axes. ``x_range = [x_min, x_max]``
 
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
@@ -307,18 +307,18 @@ class CoordinateSystem:
             The plotted curve.
         """
 
-        if t_range is None:
-            t_range = self.x_range
-        t_range = np.array(t_range)
+        t_range = np.array(self.x_range, dtype=float)
+        if x_range is not None:
+            t_range[: len(x_range)] = x_range
 
-        if len(t_range) == 3:
+        if x_range is None or len(x_range) < 3:
             # if t_range has a defined step size, increase the number of sample points per tick
             t_range[2] /= self.num_sampled_graph_points_per_tick
         # For axes, the third coordinate of x_range indicates
         # tick frequency.  But for functions, it indicates a
         # sample frequency
         graph = ParametricFunction(
-            lambda t: self.coords_to_point(t, function(t)), t_range=t_range, **kwargs
+            lambda t: self.coords_to_point(t, function(t)), t_range=x_range, **kwargs
         )
         graph.underlying_function = function
         return graph
@@ -373,7 +373,7 @@ class CoordinateSystem:
     def get_graph_label(
         self,
         graph: "ParametricFunction",
-        label: Union[float, str, Mobject] = "f(x)",
+        label: Union[float, str, "Mobject"] = "f(x)",
         x_val: Optional[float] = None,
         direction: Sequence[float] = RIGHT,
         buff: float = MED_SMALL_BUFF,
