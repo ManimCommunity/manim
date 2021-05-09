@@ -45,7 +45,7 @@ class AbstractImageMobject(Mobject):
     def get_pixel_array(self):
         raise NotImplementedError()
 
-    def set_color(self):
+    def set_color(self, color, alpha=None, family=True):
         # Likely to be implemented in subclasses, but no obligation
         pass
 
