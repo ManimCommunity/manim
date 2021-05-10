@@ -559,7 +559,6 @@ class Text(SVGMobject):
         t2c = t2c if t2c else self.t2c
         for word, color in list(t2c.items()):
             for start, end in self.find_indexes(word, self.original_text):
-
                 self.chars[start:end].set_color(color)
 
     def set_color_by_t2g(self, t2g=None):
