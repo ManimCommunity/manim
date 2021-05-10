@@ -628,12 +628,13 @@ class Title(Tex):
         :save_last_frame:
 
         import manim
+
         class TitleExample(Scene):
             def construct(self):
                 banner = ManimBanner()
-                self.play(banner.expand())
-                ti=Title(f"Manim version {manim.__version__}")
-                self.add(banner, ti)
+                title = Title(f"Manim version {manim.__version__}")
+                self.add(banner, title)
+
     """
 
     def __init__(
