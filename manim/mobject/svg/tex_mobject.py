@@ -621,6 +621,20 @@ class BulletedList(Tex):
 
 
 class Title(Tex):
+    """
+    Example
+    --------
+    .. manim:: TitleExample
+        :save_last_frame:
+
+        class TitleExample(Scene):
+            def construct(self):
+                banner = ManimBanner()
+                self.play(banner.expand())
+                ti=Title(f"manim version {manim.__version__}").set_color(WHITE)
+                self.add(banner, ti)
+    """
+
     def __init__(
         self,
         *text_parts,
