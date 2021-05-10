@@ -82,6 +82,8 @@ class Mobject(Container):
 
     """
 
+    animation_overrides = {}
+
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
