@@ -622,7 +622,7 @@ class BulletedList(Tex):
 
 class Title(Tex):
     """
-    Example
+    Examples
     --------
     .. manim:: TitleExample
         :save_last_frame:
