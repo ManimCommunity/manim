@@ -133,8 +133,10 @@ class Mobject(Container):
     @classmethod
     def _add_intrinsic_animation_overrides(cls):
         for method_name in dir(cls):
-            if method_name.startswith("__"):  # Preventing attribute errors
+            # Ignore dunder methods
+            if method_name.startswith("__"):
                 continue
+
             method = getattr(cls, method_name)
             if hasattr(method, "_override_animation"):
                 animation_class = method._override_animation
