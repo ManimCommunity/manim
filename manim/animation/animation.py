@@ -29,7 +29,7 @@ class Animation:
         **kwargs,
     ):
         if isinstance(mobject, Mobject) and use_override:
-            func = mobject.get_animation_override(cls)
+            func = mobject.animation_override_for(cls)
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
