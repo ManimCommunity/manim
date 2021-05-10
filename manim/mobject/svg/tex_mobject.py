@@ -627,7 +627,7 @@ class Title(Tex):
     .. manim:: TitleExample
         :save_last_frame:
 
-        import manim 
+        import manim
         class TitleExample(Scene):
             def construct(self):
                 banner = ManimBanner()
