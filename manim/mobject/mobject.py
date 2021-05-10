@@ -144,7 +144,6 @@ class Mobject(Container):
 
     @classmethod
     def add_animation_override(cls, animation_class, override_func):
-        print(cls.animation_overrides)
         if animation_class not in cls.animation_overrides:
             cls.animation_overrides[animation_class] = override_func
         else:
