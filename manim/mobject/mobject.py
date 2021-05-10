@@ -127,6 +127,7 @@ class Mobject(Container):
     def animation_override_for(cls, animation_class):
         if animation_class in cls.animation_overrides:
             return cls.animation_overrides[animation_class]
+
         return None
 
     @classmethod
