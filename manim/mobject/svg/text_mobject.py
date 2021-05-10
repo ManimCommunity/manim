@@ -329,7 +329,7 @@ class Text(SVGMobject):
                 text4 = Text("Hello world", t2w={'world':BOLD})
                 text5 = Text("Hello world", t2c={'o':YELLOW}, disable_ligatures=True)
                 text6 = Text("Visit us at docs.manim.community",
-                    t2c={"docs.manim.community": YELLOW}, 
+                    t2c={"docs.manim.community": YELLOW},
                     disable_ligatures=True)
                 text6.scale(1.3).shift(DOWN)
                 self.add(text1, text2, text3, text4, text5 , text6)
