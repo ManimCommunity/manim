@@ -4,7 +4,7 @@ for the non-standard ones
 
 .. manim:: RateFuncExample
     :save_last_frame:
-    
+
     class RateFuncExample(Scene):
         def construct(self):
             x = VGroup()
