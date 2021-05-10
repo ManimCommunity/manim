@@ -2,8 +2,9 @@
 Please find a standard list at https://easings.net/. Here is a picture
 for the non-standard ones
 
-.. manim:: AngleExample
+.. manim:: RateFuncExample
     :save_last_frame:
+    
     class RateFuncExample(Scene):
         def construct(self):
             x = VGroup()
