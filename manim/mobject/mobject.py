@@ -82,15 +82,13 @@ class Mobject(Container):
 
     """
 
-    animation_overrides: Dict[
-        Type["Animation"], Callable[["Mobject"], "Animation"]
-    ] = {}
-
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
 
-        cls.animation_overrides = {}
+        cls.animation_overrides: Dict[
+            Type["Animation"], Callable[["Mobject"], "Animation"]
+        ] = {}
         cls._add_intrinsic_animation_overrides()
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
