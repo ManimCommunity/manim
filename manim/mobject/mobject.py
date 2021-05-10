@@ -86,7 +86,10 @@ class Mobject(Container):
         Type["Animation"], Callable[["Mobject"], "Animation"]
     ] = {}
 
-    def __init_subclass__(cls):
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
         cls.animation_overrides = {}
         cls._add_intrinsic_animation_overrides()
 
