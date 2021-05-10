@@ -631,7 +631,7 @@ class Title(Tex):
             def construct(self):
                 banner = ManimBanner()
                 self.play(banner.expand())
-                ti=Title(f"manim version {manim.__version__}").set_color(WHITE)
+                ti=Title(f"manim version {manim.__version__}")
                 self.add(banner, ti)
     """
 
