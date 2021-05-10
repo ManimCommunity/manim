@@ -301,6 +301,10 @@ def override_animation(
     ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined
     them. They don't override subclasses of the ``Animation`` they override.
 
+    See Also
+    --------
+    :meth:`~.Mobject.add_animation_override`
+
     Parameters
     ----------
     animation_class
