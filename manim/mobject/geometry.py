@@ -63,7 +63,7 @@ __all__ = [
 
 import math
 import warnings
-from typing import Sequence, Optional
+from typing import Optional, Sequence
 
 import numpy as np
 
@@ -78,9 +78,9 @@ from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
     compass_directions,
-    regular_vertices,
     line_intersection,
     normalize,
+    regular_vertices,
     rotate_vector,
 )
 
