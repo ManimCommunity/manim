@@ -28,9 +28,9 @@ def _get_callable_info(callable: Callable) -> Tuple[str, str]:
     """
     what = type(callable).__name__
     name = callable.__qualname__
-    if what == "function":
+    if what == "function" and "." in name:
         what = "method"
-    elif what == "type":
+    elif what != "function":
         what = "class"
     return (what, name)
 
@@ -208,7 +208,7 @@ def deprecated(
         logger.warning(warning_msg())
         return func(*args, **kwargs)
 
-    if type(func) == type:
+    if type(func).__name__ != "function":
         deprecate_docs(func)
         func.__init__ = decorate(func.__init__, deprecate)
         return func

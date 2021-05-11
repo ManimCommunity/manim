@@ -76,8 +76,6 @@ from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Optional, Tupl
 import numpy as np
 from colour import Color
 
-from .. import logger
-
 if TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
 
