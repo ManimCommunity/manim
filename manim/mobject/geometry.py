@@ -1441,7 +1441,7 @@ class Polygram(VMobject):
         The groups of vertices making up the :class:`Polygram`.
 
         The first vertex in each group is repeated to close the shape.
-        Must define 3-dimensions: ``[x, y, z]``
+        Must define 3-dimensions: ``[x,y,z]``
     color
         The color of the :class:`Polygram`.
     kwargs
