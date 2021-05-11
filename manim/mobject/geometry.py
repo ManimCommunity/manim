@@ -60,7 +60,7 @@ __all__ = [
 
 import math
 import warnings
-from typing import Sequence, Type
+from typing import Sequence
 
 import numpy as np
 
