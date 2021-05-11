@@ -450,6 +450,7 @@ class CoordinateSystem:
         fill_opacity: float = 1,
         colors: Iterable[Color] = (BLUE, GREEN),
         show_signed_area: bool = True,
+        width_scale_factor: float = 1.001,
     ) -> VGroup:
         """This method returns the :class:`~.VGroup` of the Riemann Rectangles for
         a particular curve.
@@ -460,7 +461,7 @@ class CoordinateSystem:
             The graph whose area will be approximated by Riemann rectangles.
 
         x_range
-            The minimum and maximum x-values of the rectangles. :code:``x_range = x_min, x_max``.
+            The minimum and maximum x-values of the rectangles. ``x_range = [x_min, x_max]``.
 
         dx
             The change in x-value that separates each rectangle.
@@ -484,6 +485,9 @@ class CoordinateSystem:
 
         show_signed_area
             Indicates negative area when the curve dips below the x-axis by inverting its color.
+
+        width_scale_factor
+            The factor by which the width of the rectangles is scaled.
 
         Returns
         -------
@@ -529,7 +533,7 @@ class CoordinateSystem:
                         VectorizedPoint,
                         [
                             self.coords_to_point(x, y_point),
-                            self.coords_to_point(x + 1.001 * dx, y_point),
+                            self.coords_to_point(x + width_scale_factor * dx, y_point),
                             graph_point,
                         ],
                     )
