@@ -413,29 +413,25 @@ def bezier_params_from_point(
             f"Point {point} and Control Points {control_points} have different shapes."
         )
     control_points = np.array(control_points)
+    n = len(control_points) - 1
 
     roots = []
     for dim, coord in enumerate(point):
         control_coords = c_c = control_points[:, dim]
-
-        # For now, we only deal with quadratic or cubic.
-
-        if len(control_points) == 3:
-            bezier_polynom = np.polynomial.Polynomial(
-                [c_c[0] - (2 * c_c[1]) + c_c[2], 2 * (c_c[1] - c_c[0]), c_c[0] - coord][
-                    ::-1
-                ]
-            )
-        elif len(control_points) == 4:
-            bezier_polynom = np.polynomial.Polynomial(
-                [
-                    c_c[3] - 3 * c_c[2] + 3 * c_c[1] - c_c[0],  # t**3
-                    3 * (c_c[0] - (2 * c_c[1]) + c_c[2]),  # t**2
-                    3 * (c_c[1] - c_c[0]),  # t
-                    c_c[0] - coord,  # Constant
-                ][::-1]
-            )
-
+        terms = []
+        for k in range(n, -1, -1):
+            outercoeff = choose(n, k)
+            term = []
+            negative = 1
+            for l in range(k, -1, -1):
+                innercoeff = choose(k, l) * negative
+                subterm = (
+                    innercoeff * c_c[l] if k > 0 else ((innercoeff * c_c[l]) - coord)
+                )
+                term.append(subterm)
+                negative = -1 if negative > 0 else 1
+            terms.append(outercoeff * sum(np.array(term)))
+        bezier_polynom = np.polynomial.Polynomial(terms[::-1])
         polynom_roots = bezier_polynom.roots()
         if len(polynom_roots) > 0:
             roots.append(polynom_roots)
