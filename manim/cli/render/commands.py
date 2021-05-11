@@ -16,6 +16,7 @@ import requests
 
 from ... import __version__, config, console, logger
 from ...constants import CONTEXT_SETTINGS, EPILOG
+from ...utils.lockfile import LockMediaDir
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
@@ -118,71 +119,74 @@ def render(
 
     config.digest_args(click_args)
     file = args["file"]
-    if config.renderer == "opengl":
-        from manim.renderer.opengl_renderer import OpenGLRenderer
 
-        for SceneClass in scene_classes_from_file(file):
+    with LockMediaDir(config.media_dir, not args["no_lock_media_dir"]):
+        console.print(f"Manim Community [green]v{__version__}[/green]\n")
+        if config.renderer == "opengl":
+            from manim.renderer.opengl_renderer import OpenGLRenderer
+
+            for SceneClass in scene_classes_from_file(file):
+                try:
+                    renderer = OpenGLRenderer()
+                    while True:
+                        scene_classes = scene_classes_from_file(file)
+                        SceneClass = scene_classes[0]
+                        scene = SceneClass(renderer)
+                        status = scene.render()
+                        if status:
+                            continue
+                        else:
+                            break
+                except Exception:
+                    console.print_exception()
+        elif config.renderer == "webgl":
             try:
-                renderer = OpenGLRenderer()
-                while True:
-                    scene_classes = scene_classes_from_file(file)
-                    SceneClass = scene_classes[0]
-                    scene = SceneClass(renderer)
-                    status = scene.render()
-                    if status:
-                        continue
-                    else:
-                        break
-            except Exception:
-                console.print_exception()
-    elif config.renderer == "webgl":
-        try:
-            from manim.grpc.impl import frame_server_impl
+                from manim.grpc.impl import frame_server_impl
 
-            server = frame_server_impl.get(file)
-            server.start()
-            server.wait_for_termination()
-        except ModuleNotFoundError:
-            console.print(
-                "Dependencies for the WebGL render are missing. Run "
-                "pip install manim[webgl_renderer] to install them."
-            )
-            console.print_exception()
-    else:
-        for SceneClass in scene_classes_from_file(file):
+                server = frame_server_impl.get(file)
+                server.start()
+                server.wait_for_termination()
+            except ModuleNotFoundError:
+                console.print(
+                    "Dependencies for the WebGL render are missing. Run "
+                    "pip install manim[webgl_renderer] to install them."
+                )
+                console.print_exception()
+        else:
+            for SceneClass in scene_classes_from_file(file):
+                try:
+                    scene = SceneClass()
+                    scene.render()
+                except Exception:
+                    console.print_exception()
+
+        if config.notify_outdated_version:
+            manim_info_url = "https://pypi.org/pypi/manim/json"
+            warn_prompt = "Cannot check if latest release of manim is installed"
+            req_info = {}
+
             try:
-                scene = SceneClass()
-                scene.render()
+                req_info = requests.get(manim_info_url)
+                req_info.raise_for_status()
+
+                stable = req_info.json()["info"]["version"]
+                if stable != __version__:
+                    console.print(
+                        f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
+                    )
+                    console.print(
+                        "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
+                    )
+            except requests.exceptions.HTTPError:
+                logger.debug(f"HTTP Error: {warn_prompt}")
+            except requests.exceptions.ConnectionError:
+                logger.debug(f"Connection Error: {warn_prompt}")
+            except requests.exceptions.Timeout:
+                logger.debug(f"Timed Out: {warn_prompt}")
+            except json.JSONDecodeError:
+                logger.debug(warn_prompt)
+                logger.debug(f"Error decoding JSON from {manim_info_url}")
             except Exception:
-                console.print_exception()
+                logger.debug(f"Something went wrong: {warn_prompt}")
 
-    if config.notify_outdated_version:
-        manim_info_url = "https://pypi.org/pypi/manim/json"
-        warn_prompt = "Cannot check if latest release of manim is installed"
-        req_info = {}
-
-        try:
-            req_info = requests.get(manim_info_url)
-            req_info.raise_for_status()
-
-            stable = req_info.json()["info"]["version"]
-            if stable != __version__:
-                console.print(
-                    f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
-                )
-                console.print(
-                    "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
-                )
-        except requests.exceptions.HTTPError:
-            logger.debug(f"HTTP Error: {warn_prompt}")
-        except requests.exceptions.ConnectionError:
-            logger.debug(f"Connection Error: {warn_prompt}")
-        except requests.exceptions.Timeout:
-            logger.debug(f"Timed Out: {warn_prompt}")
-        except json.JSONDecodeError:
-            logger.debug(warn_prompt)
-            logger.debug(f"Error decoding JSON from {manim_info_url}")
-        except Exception:
-            logger.debug(f"Something went wrong: {warn_prompt}")
-
-    return args
+        return args

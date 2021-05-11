@@ -36,4 +36,10 @@ global_options = option_group(
         default=None,
         help="Display warnings for outdated installation.",
     ),
+    option(
+        "--no_lock_media_dir",
+        is_flag=True,
+        default=False,
+        help="Allow two or more instances of Manim to run on same Media Directory.",
+    ),
 )

@@ -12,12 +12,10 @@ from .cli.render.commands import render
 from .constants import EPILOG
 
 
-def exit_early(ctx, param, value):
+def show_version(ctx, param, value):
     if value:
+        console.print(f"Manim Community [green]v{__version__}[/green]\n")
         sys.exit()
-
-
-console.print(f"Manim Community [green]v{__version__}[/green]\n")
 
 
 @click.group(
@@ -31,7 +29,7 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     "--version",
     is_flag=True,
     help="Show version and exit.",
-    callback=exit_early,
+    callback=show_version,
     is_eager=True,
     expose_value=False,
 )
