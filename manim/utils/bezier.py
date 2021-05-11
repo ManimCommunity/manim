@@ -419,14 +419,16 @@ def bezier_params_from_point(
     for dim, coord in enumerate(point):
         control_coords = c_c = control_points[:, dim]
         terms = []
-        for k in range(n, -1, -1):
-            outercoeff = choose(n, k)
+        for term_power in range(n, -1, -1):
+            outercoeff = choose(n, term_power)
             term = []
             negative = 1
-            for l in range(k, -1, -1):
-                innercoeff = choose(k, l) * negative
+            for subterm_num in range(term_power, -1, -1):
+                innercoeff = choose(term_power, subterm_num) * negative
                 subterm = (
-                    innercoeff * c_c[l] if k > 0 else ((innercoeff * c_c[l]) - coord)
+                    innercoeff * c_c[subterm_num]
+                    if term_power > 0
+                    else ((innercoeff * c_c[subterm_num]) - coord)
                 )
                 term.append(subterm)
                 negative = -1 if negative > 0 else 1
