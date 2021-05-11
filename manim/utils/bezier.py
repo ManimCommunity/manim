@@ -412,31 +412,27 @@ def bezier_params_from_point(
         raise ValueError(
             f"Point {point} and Control Points {control_points} have different shapes."
         )
+    control_points = np.array(control_points)
 
     roots = []
-    for i in range(len(point)):
-        p = point[i]
+    for dim, coord in enumerate(point):
+        control_coords = c_c = control_points[:, dim]
+
         # For now, we only deal with quadratic or cubic.
+
         if len(control_points) == 3:
-            p0, p1, p2 = control_points
-            p0 = p0[i]
-            p1 = p1[i]
-            p2 = p2[i]
             bezier_polynom = np.polynomial.Polynomial(
-                [p0 - (2 * p1) + p2, 2 * (p1 - p0), p0 - p][::-1]
+                [c_c[0] - (2 * c_c[1]) + c_c[2], 2 * (c_c[1] - c_c[0]), c_c[0] - coord][
+                    ::-1
+                ]
             )
         elif len(control_points) == 4:
-            p0, p1, p2, p3 = control_points
-            p0 = p0[i]
-            p1 = p1[i]
-            p2 = p2[i]
-            p3 = p3[i]
             bezier_polynom = np.polynomial.Polynomial(
                 [
-                    p3 - 3 * p2 + 3 * p1 - p0,  # t**3
-                    3 * (p0 - (2 * p1) + p2),  # t**2
-                    3 * (p1 - p0),  # t
-                    p0 - p,  # Constant
+                    c_c[3] - 3 * c_c[2] + 3 * c_c[1] - c_c[0],  # t**3
+                    3 * (c_c[0] - (2 * c_c[1]) + c_c[2]),  # t**2
+                    3 * (c_c[1] - c_c[0]),  # t
+                    c_c[0] - coord,  # Constant
                 ][::-1]
             )
 
