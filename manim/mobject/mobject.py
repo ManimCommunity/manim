@@ -31,7 +31,7 @@ from typing import (
 import numpy as np
 from colour import Color
 
-from manim.animation.animation import override_animation
+from ..animation.animation import override_animation
 
 from .. import config
 from ..constants import *
