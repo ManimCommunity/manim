@@ -213,7 +213,6 @@ def deprecated(
         func.__init__ = decorate(func.__init__, deprecate)
         return func
 
-    print(type(func))
     func = decorate(func, deprecate)
     deprecate_docs(func)
     return func
