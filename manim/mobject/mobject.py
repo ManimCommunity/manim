@@ -31,9 +31,8 @@ from typing import (
 import numpy as np
 from colour import Color
 
-from ..animation.animation import override_animation
-
 from .. import config
+from ..animation.animation import override_animation
 from ..constants import *
 from ..container import Container
 from ..utils.color import (
