@@ -6,7 +6,6 @@ __all__ = ["Mobject", "Group", "override_animate"]
 
 import copy
 import itertools as it
-from manim.animation.animation import override_animation
 import operator as op
 import random
 import sys
@@ -31,6 +30,8 @@ from typing import (
 
 import numpy as np
 from colour import Color
+
+from manim.animation.animation import override_animation
 
 from .. import config
 from ..constants import *
