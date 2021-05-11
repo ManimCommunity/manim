@@ -1437,14 +1437,14 @@ class Polygram(VMobject):
 
     Parameters
     ----------
-    *vertex_groups
+    vertex_groups
         The groups of vertices making up the :class:`Polygram`.
 
         The first vertex in each group is repeated to close the shape.
         Must define 3-dimensions: ``[x, y, z]``
     color
         The color of the :class:`Polygram`.
-    **kwargs
+    kwargs
         Forwarded to the parent constructor.
 
     Examples
@@ -1455,7 +1455,6 @@ class Polygram(VMobject):
             def construct(self):
                 hexagram = Polygram(
                     [[0, 2, 0], [-np.sqrt(3), -1, 0], [np.sqrt(3), -1, 0]],
-
                     [[-np.sqrt(3), 1, 0], [0, -2, 0], [np.sqrt(3), 1, 0]],
                 )
                 self.add(hexagram)
@@ -1611,9 +1610,9 @@ class Polygon(Polygram):
 
     Parameters
     ----------
-    *vertices
+    vertices
         The vertices of the :class:`Polygon`.
-    **kwargs
+    kwargs
         Forwarded to the parent constructor.
 
     Examples
@@ -1652,14 +1651,14 @@ class RegularPolygram(Polygram):
         The density of the :class:`RegularPolygram`.
 
         Can be thought of as how many vertices to hop
-        to draw a line between them. Every ``density``th
+        to draw a line between them. Every ``density``-th
         vertex is connected.
     radius
         The radius of the vertices.
     start_angle
         The angle the vertices start at; the rotation of
         the :class:`RegularPolygram`.
-    **kwargs
+    kwargs
         Forwarded to the parent constructor.
 
     Examples
@@ -1779,10 +1778,39 @@ class Star(Polygon):
     density
         The density of the :class:`Star`.
 
-        Only used if `inner_radius` is unspecified.
+        Only used if ``inner_radius`` is unspecified.
     start_angle
         The angle the vertices start at; the rotation of
         the :class:`Star`.
+    kwargs
+        Forwardeds to the parent constructor.
+
+    Raises
+    ------
+    :exc:`ValueError`
+        If ``inner_radius`` is unspecified and ``density``
+        is not in the range ``[1, n/2)``.
+
+    Examples
+    --------
+    .. manim:: StarExample
+        :save_last_frame:
+
+        class StarExample(Scene):
+            def construct(self):
+                star = Star(outer_radius=2)
+                self.add(star)
+
+    .. manim:: DifferentDensitiesExample
+        :save_last_frame:
+
+        class DifferentDensitiesExample(Scene):
+            def construct(self):
+                density_2 = Star(7, outer_radius=2, density=2, color=RED)
+                density_3 = Star(7, outer_radius=2, density=3, color=PURPLE)
+
+                self.add(VGroup(density_2, density_3).arrange(RIGHT))
+
     """
 
     def __init__(

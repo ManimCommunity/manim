@@ -169,15 +169,17 @@ class PolygramTest(Scene):
     def construct(self):
         hexagram = Polygram(
             [[0, 2, 0], [-np.sqrt(3), -1, 0], [np.sqrt(3), -1, 0]],
-
             [[-np.sqrt(3), 1, 0], [0, -2, 0], [np.sqrt(3), 1, 0]],
         )
         self.add(hexagram)
 
+
 class RegularPolygramTest(Scene):
     def construct(self):
         pentagram = RegularPolygram(5, radius=2)
-        self.add(pentagram)
+        octagram = RegularPolygram(8, radius=2)
+        self.add(VGroup(pentagram, octagram).arrange(RIGHT))
+
 
 class StarTest(Scene):
     def construct(self):
