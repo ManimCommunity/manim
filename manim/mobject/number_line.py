@@ -94,15 +94,21 @@ class NumberLine(Line):
         include_numbers=False,
         label_direction=DOWN,
         line_to_number_buff=MED_SMALL_BUFF,
-        decimal_number_config={"num_decimal_places": 0, "font_size": 24},
-        numbers_to_exclude=[],
+        decimal_number_config=None,
+        numbers_to_exclude=None,
+        numbers_to_include=None,
         # temp, because DecimalNumber() needs to be updated
         number_scale_value=0.75,
         **kwargs
     ):
+        if decimal_number_config is None:
+            decimal_number_config = {"num_decimal_places": 0, "font_size": 24}
+        if numbers_to_exclude is None:
+            numbers_to_exclude = []
+
         if x_range is None:
             x_range = [-config["frame_x_radius"], config["frame_x_radius"], 1.0]
-        if len(x_range) == 2:
+        elif len(x_range) == 2:
             # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
             x_range = [*x_range, 1]
 
@@ -128,6 +134,7 @@ class NumberLine(Line):
         self.line_to_number_buff = line_to_number_buff
         self.decimal_number_config = decimal_number_config
         self.numbers_to_exclude = numbers_to_exclude
+        self.numbers_to_include = numbers_to_include
         self.number_scale_value = number_scale_value
 
         super().__init__(
@@ -154,7 +161,9 @@ class NumberLine(Line):
 
         self.rotate(self.rotation)
         if self.include_numbers:
-            self.add_numbers(excluding=self.numbers_to_exclude)
+            self.add_numbers(
+                x_values=self.numbers_to_include, excluding=self.numbers_to_exclude
+            )
 
     def rotate_about_zero(self, angle, axis=OUT, **kwargs):
         return self.rotate_about_number(0, angle, axis, **kwargs)
