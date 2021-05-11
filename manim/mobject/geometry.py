@@ -60,7 +60,7 @@ __all__ = [
 
 import math
 import warnings
-from typing import Sequence
+from typing import Sequence, Optional
 
 import numpy as np
 
@@ -75,6 +75,7 @@ from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
     compass_directions,
+    regular_vertices,
     line_intersection,
     normalize,
     rotate_vector,
@@ -106,7 +107,7 @@ class TipableVMobject(VMobject):
         tip_length=DEFAULT_ARROW_TIP_LENGTH,
         normal_vector=OUT,
         tip_style={},
-        **kwargs
+        **kwargs,
     ):
         self.tip_length = tip_length
         self.normal_vector = normal_vector
@@ -265,7 +266,7 @@ class Arc(TipableVMobject):
         num_components=9,
         anchors_span_full_range=True,
         arc_center=ORIGIN,
-        **kwargs
+        **kwargs,
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
@@ -425,7 +426,7 @@ class Circle(Arc):
         color=RED,
         close_new_points=True,
         anchors_span_full_range=False,
-        **kwargs
+        **kwargs,
     ):
         Arc.__init__(
             self,
@@ -435,7 +436,7 @@ class Circle(Arc):
             color=color,
             close_new_points=close_new_points,
             anchors_span_full_range=anchors_span_full_range,
-            **kwargs
+            **kwargs,
         )
 
     def surround(self, mobject, dim_to_match=0, stretch=False, buffer_factor=1.2):
@@ -559,7 +560,7 @@ class Dot(Circle):
         stroke_width=0,
         fill_opacity=1.0,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         Circle.__init__(
             self,
@@ -568,7 +569,7 @@ class Dot(Circle):
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -583,7 +584,7 @@ class AnnotationDot(Dot):
         stroke_width=5,
         stroke_color=WHITE,
         fill_color=BLUE,
-        **kwargs
+        **kwargs,
     ):
         Dot.__init__(
             self,
@@ -591,7 +592,7 @@ class AnnotationDot(Dot):
             stroke_width=stroke_width,
             stroke_color=stroke_color,
             fill_color=fill_color,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -688,7 +689,7 @@ class AnnularSector(Arc):
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
-        **kwargs
+        **kwargs,
     ):
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
@@ -699,7 +700,7 @@ class AnnularSector(Arc):
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
     def generate_points(self):
@@ -735,7 +736,7 @@ class Annulus(Circle):
         stroke_width=0,
         color=WHITE,
         mark_paths_closed=False,
-        **kwargs
+        **kwargs,
     ):
         self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
@@ -745,7 +746,7 @@ class Annulus(Circle):
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
     def generate_points(self):
@@ -928,7 +929,7 @@ class DashedLine(Line):
         dash_length=DEFAULT_DASH_LENGTH,
         dash_spacing=None,
         positive_space_ratio=0.5,
-        **kwargs
+        **kwargs,
     ):
         self.dash_length = dash_length
         self.dash_spacing = (dash_spacing,)
@@ -1167,7 +1168,7 @@ class Arrow(Line):
         max_tip_length_to_length_ratio=0.25,
         max_stroke_width_to_length_ratio=5,
         preserve_tip_size_when_scaling=True,
-        **kwargs
+        **kwargs,
     ):
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
@@ -1428,17 +1429,189 @@ class CubicBezier(VMobject):
         self.set_points([start_anchor, start_handle, end_handle, end_anchor])
 
 
-class Polygon(VMobject):
-    """A shape created by defining its vertices.
+class Polygram(VMobject):
+    """A generalized :class:`Polygon`, allowing for disconnected sets of edges.
 
     Parameters
     ----------
-    vertices : :class:`list`
-        The vertices of the mobject. The first one is repeated to close the shape. Must define 3-dimensions: ``[x,y,z]``
-    color : :class:`~.Colors`, optional
-        The color of the polygon.
-    kwargs : Any
-        Additional arguments to be passed to :class:`.~VMobject`
+    *vertex_groups
+        The groups of vertices making up the :class:`Polygram`.
+
+        The first vertex in each group is repeated to close the shape.
+        Must define 3-dimensions: ``[x, y, z]``
+    color
+        The color of the :class:`Polygram`.
+    **kwargs
+        Forwarded to the parent constructor.
+
+    Examples
+    --------
+    .. manim:: PolygramExample
+
+        class PolygramExample(Scene):
+            def construct(self):
+                hexagram = Polygram(
+                    [[0, 2, 0], [-np.sqrt(3), -1, 0], [np.sqrt(3), -1, 0]],
+
+                    [[-np.sqrt(3), 1, 0], [0, -2, 0], [np.sqrt(3), 1, 0]],
+                )
+                self.add(hexagram)
+
+                self.play(MoveAlongPath(Dot(), hexagram), run_time=5, rate_func=linear)
+
+
+    """
+
+    def __init__(self, *vertex_groups: Sequence[Sequence[float]], color=BLUE, **kwargs):
+        super().__init__(color=color, **kwargs)
+
+        for vertices in np.array(vertex_groups):
+            self.start_new_path(vertices[0])
+            self.add_points_as_corners([*vertices[1:], vertices[0]])
+
+    def get_vertices(self) -> np.ndarray:
+        """Gets the vertices of the :class:`Polygram`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The vertices of the :class:`Polygram`.
+
+        Examples
+        --------
+        ::
+
+            >>> sq = Square()
+            >>> sq.get_vertices()
+            array([[ 1.,  1.,  0.],
+                   [-1.,  1.,  0.],
+                   [-1., -1.,  0.],
+                   [ 1., -1.,  0.]])
+        """
+
+        return self.get_start_anchors()
+
+    def get_vertex_groups(self) -> np.ndarray:
+        """Gets the vertex groups of the :class:`Polygram`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The vertex groups of the :class:`Polygram`.
+
+        Examples
+        --------
+        ::
+
+            >>> poly = Polygram([ORIGIN, RIGHT, UP], [LEFT, LEFT + UP, 2 * LEFT])
+            >>> poly.get_vertex_groups()
+            array([[[ 0.,  0.,  0.],
+                    [ 1.,  0.,  0.],
+                    [ 0.,  1.,  0.]],
+
+                   [[-1.,  0.,  0.],
+                    [-1.,  1.,  0.],
+                    [-2.,  0.,  0.]]])
+        """
+
+        vertex_groups = []
+
+        group = []
+        for start, end in zip(self.get_start_anchors(), self.get_end_anchors()):
+            group.append(start)
+
+            if self.consider_points_equals(end, group[0]):
+                vertex_groups.append(group)
+                group = []
+
+        return np.array(vertex_groups)
+
+    def round_corners(self, radius: float = 0.5):
+        """Rounds off the corners of the :class:`Polygram`.
+
+        Parameters
+        ----------
+        radius
+            The curvature of the corners of the :class:`Polygram`.
+
+        Examples
+        --------
+
+        .. manim:: PolygramRoundCorners
+            :save_as_gif:
+
+            class PolygramRoundCorners(Scene):
+                def construct(self):
+                    points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
+                    parallelogram = Polygram(points, stroke_color=LIGHT_PINK)
+                    rounded_1 = parallelogram.copy().round_corners(radius=0.5)
+                    rounded_2 = parallelogram.copy().round_corners(radius=1.5)
+
+                    self.play(Transform(parallelogram, rounded_1))
+                    self.wait(0.5)
+                    self.play(Transform(parallelogram, rounded_2))
+                    self.wait(0.5)
+
+        See Also
+        --------
+        :class:`RoundedRectangle`
+        """
+
+        new_points = []
+
+        for vertices in self.get_vertex_groups():
+            arcs = []
+            for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
+                vect1 = v2 - v1
+                vect2 = v3 - v2
+                unit_vect1 = normalize(vect1)
+                unit_vect2 = normalize(vect2)
+
+                angle = angle_between_vectors(vect1, vect2)
+                # Negative radius gives concave curves
+                angle *= np.sign(radius)
+
+                # Distance between vertex and start of the arc
+                cut_off_length = radius * np.tan(angle / 2)
+
+                # Determines counterclockwise vs. clockwise
+                sign = np.sign(np.cross(vect1, vect2)[2])
+
+                arc = ArcBetweenPoints(
+                    v2 - unit_vect1 * cut_off_length,
+                    v2 + unit_vect2 * cut_off_length,
+                    angle=sign * angle,
+                )
+                arcs.append(arc)
+
+            # To ensure that we loop through starting with last
+            arcs = [arcs[-1], *arcs[:-1]]
+            for arc1, arc2 in adjacent_pairs(arcs):
+                new_points.extend(arc1.get_points())
+
+                line = Line(arc1.get_end(), arc2.get_start())
+
+                # Make sure anchors are evenly distributed
+                len_ratio = line.get_length() / arc1.get_arc_length()
+
+                line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
+
+                new_points.extend(line.get_points())
+
+        self.set_points(new_points)
+
+        return self
+
+
+class Polygon(Polygram):
+    """A shape consisting of one closed loop of vertices.
+
+    Parameters
+    ----------
+    *vertices
+        The vertices of the :class:`Polygon`.
+    **kwargs
+        Forwarded to the parent constructor.
 
     Examples
     --------
@@ -1461,110 +1634,108 @@ class Polygon(VMobject):
                 self.add(isosceles, square_and_triangles)
     """
 
-    def __init__(self, *vertices, color=BLUE, **kwargs):
-        VMobject.__init__(self, color=color, **kwargs)
-        # There are actually four corners, and the first one is repeated twice to form the four vertices.
-        self.set_points_as_corners([*vertices, vertices[0]])
-
-    def get_vertices(self):
-        """Gets the vertices of the polygon.
-
-        Examples
-        --------
-        ::
-
-            >>> sq = Square()
-            >>> points = sq.get_vertices()
-            >>> points
-            array([[ 1.,  1.,  0.],
-                   [-1.,  1.,  0.],
-                   [-1., -1.,  0.],
-                   [ 1., -1.,  0.]])
-
-        Returns
-        -------
-        :class:`numpy.ndarray`
-            Returns a list of the coordinates of polygon's vertices.
-        """
-
-        return self.get_start_anchors()
-
-    def round_corners(self, radius=0.5):
-        """Rounds off the corners of the polygon.
-
-        Parameters
-        ----------
-        radius : :class:`float`, optional
-            The curvature of the corners of the polygon.
-
-        Examples
-        --------
-
-        .. manim:: PolygonRoundCorners
-            :save_as_gif:
-
-            class PolygonRoundCorners(Scene):
-                def construct(self):
-                    points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
-                    parallelogram = Polygon(*points, stroke_color=LIGHT_PINK)
-                    rounded_1 = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=0.5)
-                    rounded_2 = Polygon(*points, stroke_color=LIGHT_PINK).round_corners(radius=1.5)
-
-                    self.play(Transform(parallelogram, rounded_1))
-                    self.wait(0.5)
-                    self.play(Transform(parallelogram, rounded_2))
-                    self.wait(0.5)
-
-        See Also
-        --------
-        :class:`RoundedRectangle`
-        """
-
-        vertices = self.get_vertices()
-        arcs = []
-        for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
-            vect1 = v2 - v1
-            vect2 = v3 - v2
-            unit_vect1 = normalize(vect1)
-            unit_vect2 = normalize(vect2)
-            angle = angle_between_vectors(vect1, vect2)
-            # Negative radius gives concave curves
-            angle *= np.sign(radius)
-            # Distance between vertex and start of the arc
-            cut_off_length = radius * np.tan(angle / 2)
-            # Determines counterclockwise vs. clockwise
-            sign = np.sign(np.cross(vect1, vect2)[2])
-            arc = ArcBetweenPoints(
-                v2 - unit_vect1 * cut_off_length,
-                v2 + unit_vect2 * cut_off_length,
-                angle=sign * angle,
-            )
-            arcs.append(arc)
-
-        self.clear_points()
-        # To ensure that we loop through starting with last
-        arcs = [arcs[-1], *arcs[:-1]]
-        for arc1, arc2 in adjacent_pairs(arcs):
-            self.append_points(arc1.points)
-            line = Line(arc1.get_end(), arc2.get_start())
-            # Make sure anchors are evenly distributed
-            len_ratio = line.get_length() / arc1.get_arc_length()
-            line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
-            self.append_points(line.get_points())
-        return self
+    def __init__(self, *vertices: Sequence[float], **kwargs):
+        super().__init__(vertices, **kwargs)
 
 
-class RegularPolygon(Polygon):
-    """An n-sided regular polygon.
+class RegularPolygram(Polygram):
+    """A :class:`Polygram` with regularly spaced vertices.
 
     Parameters
     ----------
-    n : :class:`int`
-        The number of sides of the polygon.
-    start_angle : Optional[:class:`float`]
-        The angle at which the polygon is rotated.
-    kwargs : Any
-        Additional arguments to be passed to :class:`Polygon`
+    num_vertices
+        The number of vertices.
+    density
+        The density of the :class:`RegularPolygram`.
+
+        Can be thought of as how many vertices to hop
+        to draw a line between them. Every ``density``th
+        vertex is connected.
+    radius
+        The radius of the vertices.
+    start_angle
+        The angle the vertices start at; the rotation of
+        the :class:`RegularPolygram`.
+    **kwargs
+        Forwarded to the parent constructor.
+
+    Examples
+    --------
+    .. manim:: RegularPolygramExample
+        :save_last_frame:
+
+        class RegularPolygramExample(Scene):
+            def construct(self):
+                pentagram = RegularPolygram(5, radius=2)
+                self.add(pentagram)
+    """
+
+    def __init__(
+        self,
+        num_vertices: int,
+        *,
+        density: int = 2,
+        radius: float = 1,
+        start_angle: Optional[float] = None,
+        **kwargs,
+    ):
+        # Regular polygrams can be expressed by the number of their vertices
+        # and their density. This relation can be expressed as its Schläfl
+        # symbol: {num_vertices/density}.
+        #
+        # For instance, a pentagon can be expressed as {5/1} or just {5}.
+        # A pentagram, however, can be expressed as {5/2}.
+        # A hexagram *would* be expressed as {6/2}, except that 6 and 2
+        # are not coprime, and it can be simplified to 2{3}, which corresponds
+        # to the fact that a hexagram is actually made up of 2 triangles.
+        #
+        # See https://en.wikipedia.org/wiki/Polygram_(geometry)#Generalized_regular_polygons
+        # for more information.
+
+        num_gons = np.gcd(num_vertices, density)
+        num_vertices //= num_gons
+        density //= num_gons
+
+        # Utility function for generating the individual
+        # polygon vertices.
+        def gen_polygon_vertices(start_angle):
+            reg_vertices, start_angle = regular_vertices(
+                num_vertices, radius=radius, start_angle=start_angle
+            )
+
+            vertices = []
+            i = 0
+            while True:
+                vertices.append(reg_vertices[i])
+
+                i += density
+                i %= num_vertices
+                if i == 0:
+                    break
+
+            return vertices, start_angle
+
+        first_group, self.start_angle = gen_polygon_vertices(start_angle)
+        vertex_groups = [first_group]
+
+        for i in range(1, num_gons):
+            start_angle = self.start_angle + (i / num_gons) * TAU / num_vertices
+            group, _ = gen_polygon_vertices(start_angle)
+
+            vertex_groups.append(group)
+
+        super().__init__(*vertex_groups, **kwargs)
+
+
+class RegularPolygon(RegularPolygram):
+    """An n-sided regular :class:`Polygon`.
+
+    Parameters
+    ----------
+    n
+        The number of sides of the :class:`RegularPolygon`.
+    kwargs
+        Forwarded to the parent constructor.
 
     Examples
     --------
@@ -1582,16 +1753,76 @@ class RegularPolygon(Polygon):
                 self.add(poly_group)
     """
 
-    def __init__(self, n=6, start_angle=None, **kwargs):
-        self.start_angle = start_angle
-        if self.start_angle is None:
-            if n % 2 == 0:
-                self.start_angle = 0
-            else:
-                self.start_angle = 90 * DEGREES
-        start_vect = rotate_vector(RIGHT, self.start_angle)
-        vertices = compass_directions(n, start_vect)
-        Polygon.__init__(self, *vertices, **kwargs)
+    def __init__(self, n: int = 6, **kwargs):
+        super().__init__(n, density=1, **kwargs)
+
+
+class Star(Polygon):
+    """A regular polygram without the intersecting lines.
+
+    Parameters
+    ----------
+    n
+        How many points on the :class:`Star`.
+    outer_radius
+        The radius of the outer vertices.
+    inner_radius
+        The radius of the inner vertices.
+
+        If unspecified, the inner radius will be
+        calculated such that the edges of the :class:`Star`
+        perfectly follow the edges of its :class:`RegularPolygram`
+        counterpart.
+    density
+        The density of the :class:`Star`.
+
+        Only used if `inner_radius` is unspecified.
+    start_angle
+        The angle the vertices start at; the rotation of
+        the :class:`Star`.
+    """
+
+    def __init__(
+        self,
+        n: int = 5,
+        *,
+        outer_radius: float = 1,
+        inner_radius: Optional[float] = None,
+        density: int = 2,
+        start_angle: Optional[float] = TAU / 4,
+        **kwargs,
+    ):
+        inner_angle = TAU / (2 * n)
+
+        if inner_radius is None:
+            # See https://math.stackexchange.com/a/2136292 for an
+            # overview of how to calculate the inner radius of a
+            # perfect star.
+
+            if density <= 0 or density >= n / 2:
+                raise ValueError(
+                    f"Incompatible density {density} for number of points {n}"
+                )
+
+            outer_angle = TAU * density / n
+            inverse_x = 1 - np.tan(inner_angle) * (
+                (np.cos(outer_angle) - 1) / np.sin(outer_angle)
+            )
+
+            inner_radius = outer_radius / (np.cos(inner_angle) * inverse_x)
+
+        outer_vertices, self.start_angle = regular_vertices(
+            n, radius=outer_radius, start_angle=start_angle
+        )
+        inner_vertices, _ = regular_vertices(
+            n, radius=inner_radius, start_angle=self.start_angle + inner_angle
+        )
+
+        vertices = []
+        for pair in zip(outer_vertices, inner_vertices):
+            vertices.extend(pair)
+
+        super().__init__(*vertices, **kwargs)
 
 
 class ArcPolygon(VMobject):
@@ -1898,7 +2129,7 @@ class Rectangle(Polygon):
         width=4.0,
         mark_paths_closed=True,
         close_new_points=True,
-        **kwargs
+        **kwargs,
     ):
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
@@ -2128,14 +2359,14 @@ class ArrowTriangleTip(ArrowTip, Triangle):
         stroke_width=3,
         length=DEFAULT_ARROW_TIP_LENGTH,
         start_angle=PI,
-        **kwargs
+        **kwargs,
     ):
         Triangle.__init__(
             self,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             start_angle=start_angle,
-            **kwargs
+            **kwargs,
         )
         self.width = length
         self.stretch_to_fit_height(length)
@@ -2162,7 +2393,7 @@ class ArrowCircleTip(ArrowTip, Circle):
         stroke_width=3,
         length=DEFAULT_ARROW_TIP_LENGTH,
         start_angle=PI,
-        **kwargs
+        **kwargs,
     ):
         self.start_angle = start_angle
         Circle.__init__(
@@ -2190,7 +2421,7 @@ class ArrowSquareTip(ArrowTip, Square):
         stroke_width=3,
         length=DEFAULT_ARROW_TIP_LENGTH,
         start_angle=PI,
-        **kwargs
+        **kwargs,
     ):
         self.start_angle = start_angle
         Square.__init__(
@@ -2198,7 +2429,7 @@ class ArrowSquareTip(ArrowTip, Square):
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
             side_length=length,
-            **kwargs
+            **kwargs,
         )
         self.width = length
         self.stretch_to_fit_height(length)
@@ -2379,7 +2610,7 @@ class Angle(Arc, Elbow):
         dot_distance=0.55,
         dot_color=WHITE,
         elbow=False,
-        **kwargs
+        **kwargs,
     ):
         self.quadrant = quadrant
         self.dot_distance = dot_distance
@@ -2438,7 +2669,7 @@ class Angle(Arc, Elbow):
                 angle=angle_fin,
                 start_angle=start_angle,
                 arc_center=inter,
-                **kwargs
+                **kwargs,
             )
             if dot:
                 if dot_radius is None:
