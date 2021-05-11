@@ -1451,6 +1451,8 @@ class Polygram(VMobject):
     --------
     .. manim:: PolygramExample
 
+        import numpy as np
+
         class PolygramExample(Scene):
             def construct(self):
                 hexagram = Polygram(
@@ -1540,19 +1542,18 @@ class Polygram(VMobject):
         --------
 
         .. manim:: PolygramRoundCorners
-            :save_as_gif:
+            :save_last_frame:
 
             class PolygramRoundCorners(Scene):
                 def construct(self):
-                    points = [[-4, -2, 0], [-2, 2, 0], [4, 2, 0], [2, -2, 0]]
-                    parallelogram = Polygram(points, stroke_color=LIGHT_PINK)
-                    rounded_1 = parallelogram.copy().round_corners(radius=0.5)
-                    rounded_2 = parallelogram.copy().round_corners(radius=1.5)
+                    square = Polygram([[1, 1, 0], [-1, 1, 0], [-1, -1, 0], [1, -1, 0]])
 
-                    self.play(Transform(parallelogram, rounded_1))
-                    self.wait(0.5)
-                    self.play(Transform(parallelogram, rounded_2))
-                    self.wait(0.5)
+                    shapes = VGroup(square)
+                    shapes.add(square.copy().round_corners(radius=0.25))
+                    shapes.add(square.copy().round_corners(radius=0.5))
+
+                    shapes.arrange(RIGHT)
+                    self.add(shapes)
 
         See Also
         --------
