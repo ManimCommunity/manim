@@ -59,6 +59,7 @@ docs/build/
 docs/source/_autosummary/
 docs/source/reference/
 docs/source/_build/
+docs/rendering_times.csv
 
 # PyBuilder
 target/
