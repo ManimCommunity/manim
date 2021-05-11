@@ -10,11 +10,10 @@ from typing import List
 
 import numpy as np
 
-from manim import logger
-
 from ... import config
 from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
+from ...utils.deprecation import deprecated
 
 
 def correct_out_of_range_radii(rx, ry, x1p, y1p):
@@ -444,12 +443,7 @@ class SVGPathMobject(VMobject):
         return self
 
 
+@deprecated(until="v0.7.0", replacement="SVGPathMobject")
 class VMobjectFromSVGPathstring(SVGPathMobject):
-    """Pure alias of SVGPathMobject, retained for backwards compatibility"""
-
     def __init__(self, *args, **kwargs):
-        logger.warning(
-            "VMobjectFromSVGPathstring has been deprecated in favour "
-            "of SVGPathMobject. Please use SVGPathMobject instead."
-        )
-        SVGPathMobject.__init__(self, *args, **kwargs)
+        super().__init__(self, *args, **kwargs)
