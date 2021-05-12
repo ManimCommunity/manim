@@ -1,0 +1,3 @@
+<svg width="100" height="100">
+  <path d="M 0 50 L 10 50 A 30 20, 0, 0 0, 90 50 L 100 50" style="stroke:black; fill:yellow" />
+</svg>

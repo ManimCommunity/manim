@@ -76,8 +76,6 @@ from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Optional, Tupl
 import numpy as np
 from colour import Color
 
-from .. import logger
-
 if TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
 
@@ -87,6 +85,7 @@ from ..mobject.mobject import Group, Mobject
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
+from ..utils.deprecation import deprecated
 from ..utils.rate_functions import double_smooth, linear, smooth
 
 

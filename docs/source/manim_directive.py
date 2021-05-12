@@ -72,9 +72,15 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+import csv
+import itertools as it
+import os
+import re
 import shutil
+import sys
 from pathlib import Path
-from typing import List
+from timeit import timeit
+from typing import Callable, List
 
 import jinja2
 from docutils import nodes
@@ -205,6 +211,8 @@ class ManimDirective(Directive):
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
         config.assets_dir = Path("_static")
+        config.progress_bar = "none"
+        config.verbosity = "WARNING"
 
         config_code = [
             f'config["frame_rate"] = {frame_rate}',
@@ -231,7 +239,13 @@ class ManimDirective(Directive):
             *user_code,
             f"{clsname}().render()",
         ]
-        exec("\n".join(code), globals())
+        run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+
+        _write_rendering_stats(
+            clsname,
+            run_time,
+            self.state.document.settings.env.docname,
+        )
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
@@ -265,6 +279,51 @@ class ManimDirective(Directive):
         return []
 
 
+rendering_times_file_path = Path("../rendering_times.csv")
+
+
+def _write_rendering_stats(scene_name, run_time, file_name):
+    with open(rendering_times_file_path, "a") as file:
+        csv.writer(file).writerow(
+            [
+                re.sub("^(reference\/)|(manim\.)", "", file_name),
+                scene_name,
+                "%.3f" % run_time,
+            ]
+        )
+
+
+def _log_rendering_times(*args):
+    if rendering_times_file_path.exists():
+        with open(rendering_times_file_path) as file:
+            data = list(csv.reader(file))
+            if len(data) == 0:
+                sys.exit()
+
+            print("\nRendering Summary\n-----------------\n")
+
+            max_file_length = max([len(row[0]) for row in data])
+            for key, group in it.groupby(data, key=lambda row: row[0]):
+                key = key.ljust(max_file_length + 1, ".")
+                group = list(group)
+                if len(group) == 1:
+                    row = group[0]
+                    print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
+                    continue
+                time_sum = sum([float(row[2]) for row in group])
+                print(
+                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES"
+                )
+                for row in group:
+                    print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+        print("")
+
+
+def _delete_rendering_times(*args):
+    if rendering_times_file_path.exists():
+        os.remove(rendering_times_file_path)
+
+
 def setup(app):
     import manim
 
@@ -275,6 +334,9 @@ def setup(app):
     setup.confdir = app.confdir
 
     app.add_directive("manim", ManimDirective)
+
+    app.connect("builder-inited", _delete_rendering_times)
+    app.connect("build-finished", _log_rendering_times)
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
     return metadata
