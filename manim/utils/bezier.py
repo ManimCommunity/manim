@@ -376,7 +376,7 @@ def proportions_along_bezier_curve_for_point(
     point: typing.Iterable[typing.Union[float, int]],
     control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
     round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
-) -> typing.List[float]:
+) -> np.ndarray:
     """Obtains the proportion along the bezier curve corresponding to a given point
     given the bezier curve's control points.
 
