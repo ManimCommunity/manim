@@ -51,6 +51,7 @@ class Brace(SVGPathMobject):
 
     .. manim:: ArcBraceExample
         :save_last_frame:
+        :ref_methods: Mobject.apply_complex_function
 
         class ArcBraceExample(Scene):
             def construct(self):
