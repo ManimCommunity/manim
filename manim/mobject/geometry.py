@@ -202,7 +202,11 @@ class TipableVMobject(metaclass=MetaVMobject):
 
     def pop_tips(self):
         start, end = self.get_start_and_end()
-        result = VGroup()
+        if config.renderer == "opengl":
+            from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
+            result = OpenGLVGroup()
+        else:
+            result = VGroup()
         if self.has_tip():
             result.add(self.tip)
             self.remove(self.tip)
@@ -217,7 +221,11 @@ class TipableVMobject(metaclass=MetaVMobject):
         Returns a VGroup (collection of VMobjects) containing
         the TipableVMObject instance's tips.
         """
-        result = VGroup()
+        if config.renderer == "opengl":
+            from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
+            result = OpenGLVGroup()
+        else:
+            result = VGroup()
         if hasattr(self, "tip"):
             result.add(self.tip)
         if hasattr(self, "start_tip"):
