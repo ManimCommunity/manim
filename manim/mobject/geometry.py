@@ -2424,8 +2424,8 @@ class Angle(metaclass=MetaVMobject):
                 norm = l1.get_length()
                 a1 = Angle(l1, l2, other_angle=True, radius=norm - 0.5).set_color(GREEN)
                 a2 = Angle(l1, l2, other_angle=True, radius=norm).set_color(GREEN)
-                q1 = a1.get_points() #  save all coordinates of points of angle a1
-                q2 = a2.reverse_direction().get_points()  #  save all coordinates of points of angle a1 (in reversed direction)
+                q1 = a1.angle_mobject.get_points() #  save all coordinates of points of angle a1
+                q2 = a2.angle_mobject.reverse_direction().get_points()  #  save all coordinates of points of angle a1 (in reversed direction)
                 pnts = np.concatenate([q1, q2, q1[0].reshape(1, 3)])  # adds points and ensures that path starts and ends at same point
                 mfill = VMobject().set_color(ORANGE)
                 mfill.set_points_as_corners(pnts).set_fill(GREEN, opacity=1)
