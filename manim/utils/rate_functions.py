@@ -2,8 +2,46 @@
 Please find a standard list at https://easings.net/. Here is a picture
 for the non-standard ones
 
-.. image:: /_static/non_standard_rate_funcs.png
-    :alt: Non-standard rate functions
+.. manim:: RateFuncExample
+    :save_last_frame:
+
+    class RateFuncExample(Scene):
+        def construct(self):
+            x = VGroup()
+            for k, v in rate_functions.__dict__.items():
+                if "function" in str(v):
+                    if (
+                        not k.startswith("__")
+                        and not k.startswith("sqrt")
+                        and not k.startswith("bezier")
+                    ):
+                        try:
+                            rate_func = v
+                            plot = (
+                                ParametricFunction(
+                                    lambda x: [x, rate_func(x), 0],
+                                    t_min=0,
+                                    t_max=1,
+                                    use_smoothing=False,
+                                    color=YELLOW,
+                                )
+                                .stretch_to_fit_width(1.5)
+                                .stretch_to_fit_height(1)
+                            )
+                            plot_bg = SurroundingRectangle(plot).set_color(WHITE)
+                            plot_title = (
+                                Text(rate_func.__name__, weight=BOLD)
+                                .scale(0.5)
+                                .next_to(plot_bg, UP, buff=0.1)
+                            )
+                            x.add(VGroup(plot_bg, plot, plot_title))
+                        except: # because functions `not_quite_there`, `function squish_rate_func` are not working.
+                            pass
+            x.arrange_in_grid(cols=8)
+            x.height = config.frame_height
+            x.width = config.frame_width
+            x.move_to(ORIGIN).scale(0.95)
+            self.add(x)
 
 
 There are primarily 3 kinds of standard easing functions:
