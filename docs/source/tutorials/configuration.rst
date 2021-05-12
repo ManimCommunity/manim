@@ -5,7 +5,7 @@ Manim provides an extensive configuration system that allows it to adapt to
 many different use cases.  There are many configuration options that can be
 configured at different times during the scene rendering process.  Each option
 can be configured programmatically via `the ManimConfig class`_, or at the time
-of command invocation via `command line arguments`_, or at the time the library
+of command invocation via `command-line arguments`_, or at the time the library
 is first imported via `the config files`_.
 
 
@@ -74,14 +74,14 @@ rendered in our documentation with a reference frame.
             self.add(Text(str(pixel_height)).next_to(d2, RIGHT))
 
 
-Command line arguments
+Command-line arguments
 **********************
 
-Usually, manim is ran from the command line by executing
+Usually, manim is run from the command-line by executing
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName
+   manim <file.py> SceneName
 
 This asks manim to search for a Scene class called :code:`SceneName` inside the
 file <file.py> and render it.  One can also specify the render quality by using
@@ -90,7 +90,7 @@ high, and 4k quality, respectively.
 
 .. code-block:: bash
 
-   $ manim -ql <file.py> SceneName 
+   manim -ql <file.py> SceneName 
 
 These flags set the values of the config options ``config.pixel_width``,
 ``config.pixel_height``, ``config.frame_rate``, and ``config.quality``.
@@ -99,7 +99,7 @@ Another frequent flag is ``-p`` ("preview"), which makes manim show the rendered
 right after it's done rendering.
 
 .. note:: The ``-p`` flag does not change any properties of the global
-          ``config`` dict.  The ``-p`` flag is only a command line convenience.
+          ``config`` dict.  The ``-p`` flag is only a command-line convenience.
 
 
 Examples
@@ -110,7 +110,7 @@ instead of the whole video, you can execute
 
 .. code-block:: bash
 
-   $ manim -sqh <file.py> SceneName 
+   manim -sqh <file.py> SceneName 
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
@@ -120,9 +120,9 @@ open the file after it is rendered.
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
+   manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
 
-.. tip:: There are many more command line flags that manim accepts.  All the
+.. tip:: There are many more command-line flags that manim accepts.  All the
 	 possible flags are shown by executing ``manim -h``.  A complete list
 	 of CLI flags is at the end of this document.
 
@@ -130,7 +130,7 @@ open the file after it is rendered.
 The config files
 ****************
 
-As the last example shows, executing manim from the command line may involve
+As the last example shows, executing manim from the command-line may involve
 using many flags at the same time.  This may become a nuisance if you must
 execute the same script many times in a short time period, for example when
 making small incremental tweaks to your scene script.  For this purpose, manim
@@ -162,14 +162,14 @@ Now, executing the following command
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -c WHITE <file.py> SceneName 
+   manim -o myscene -i -c WHITE <file.py> SceneName 
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName
+   manim <file.py> SceneName
 
 .. tip:: The names of the configuration options admissible in config files are
          exactly the same as the **long names** of the corresponding command
@@ -187,7 +187,7 @@ file being rendered, and **not** in the directory of execution.  For example,
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -c WHITE <path/to/file.py> SceneName
+   manim -o myscene -i -c WHITE <path/to/file.py> SceneName
 
 will use the config file found in ``path/to/file.py``, if any.  It will **not**
 use the config file found in the current working directory, even if it exists.
@@ -262,7 +262,7 @@ using any config files and executing
 
    manim -o myscene -c WHITE <file.py> SceneName
 
-Any command line flags have precedence over any config file.  For example,
+Any command-line flags have precedence over any config file.  For example,
 using the previous two config files and executing :code:`manim -c RED
 <file.py> SceneName` is equivalent to not using any config files and
 executing
@@ -272,7 +272,7 @@ executing
    manim -o myscene -c RED <file.py> SceneName
 
 There is also a **library-wide** config file that determines manim's default
-behavior, and applies to every user of the library.  It has the least
+behavior and applies to every user of the library.  It has the least
 precedence, so any config options in the user-wide and any folder-wide files
 will override the library-wide file.  This is referred to as the *cascading*
 config file system.
@@ -312,7 +312,7 @@ these steps:
    :meth:`ManimConfig.digest_parser`.
 7. Both ``logger`` and ``config`` are exposed to the user.
 
-If manim is being invoked from the command line, all of the previous steps
+If manim is being invoked from the command-line, all of the previous steps
 happen, and are complemented by:
 
 8. The CLI flags are parsed and fed into ``config`` via
@@ -325,7 +325,7 @@ happen, and are complemented by:
 11. The rest of the CLI flags are processed.
 
 To summarize, the order of precedence for configuration options, from lowest to
-highest precedence, is:
+highest precedence is:
 
 1. Library-wide config file,
 2. user-wide config file, if it exists,
@@ -378,7 +378,7 @@ A list of all CLI flags
 
      Made with <3 by Manim Community developers.
      
-Each of the subcommands has their own help page which can be 
+Each of the subcommands has its own help page which can be 
 
 .. code::
 

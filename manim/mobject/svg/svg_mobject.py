@@ -13,9 +13,9 @@ from typing import Dict, List
 from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
-from manim import logger
+import numpy as np
 
-from ... import config
+from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
@@ -249,7 +249,7 @@ class SVGMobject(VMobject):
             A float representing the attribute string value.
         """
         stripped_attr = "".join(
-            [char for char in attr if char in string.digits + "." + "-"]
+            [char for char in attr if char in string.digits + ".-e"]
         )
         return float(stripped_attr)
 

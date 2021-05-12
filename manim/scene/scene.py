@@ -8,10 +8,15 @@ import copy
 import inspect
 import platform
 import random
+import threading
 import types
+import warnings
+from queue import Queue
 
 import numpy as np
 from tqdm import tqdm
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
@@ -20,12 +25,25 @@ from ..constants import *
 from ..container import Container
 from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
-from ..utils.exceptions import EndSceneEarlyException
+from ..renderer.shader import Mesh
+from ..utils import opengl, space_ops
+from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.space_ops import rotate_vector
+
+
+class RerunSceneHandler(FileSystemEventHandler):
+    """A class to handle rerunning a Scene after the input file is modified."""
+
+    def __init__(self, queue):
+        super().__init__()
+        self.queue = queue
+
+    def on_modified(self, event):
+        self.queue.put(("rerun_file", [], {}))
 
 
 class Scene(Container):
@@ -79,6 +97,10 @@ class Scene(Container):
         self.time_progression = None
         self.duration = None
         self.last_t = None
+        self.queue = Queue()
+        self.skip_animation_preview = False
+        self.meshes = []
+        self.camera_target = ORIGIN
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -179,12 +201,21 @@ class Scene(Container):
             self.construct()
         except EndSceneEarlyException:
             pass
+        except RerunSceneException as e:
+            self.remove(*self.mobjects)
+            self.renderer.clear_screen()
+            self.renderer.num_plays = 0
+            return True
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
 
         # Show info only if animations are rendered or to get image
-        if self.renderer.num_plays or config["save_last_frame"] or config["save_pngs"]:
+        if (
+            self.renderer.num_plays
+            or config["format"] == "png"
+            or config["save_last_frame"]
+        ):
             logger.info(
                 f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations"
             )
@@ -276,6 +307,10 @@ class Scene(Container):
         for mobject in self.mobjects:
             mobject.update(dt)
 
+    def update_meshes(self, dt):
+        for mesh in self.meshes:
+            mesh.update(dt)
+
     def should_update_mobjects(self):
         """
         Returns True if any mobject in Scene is being updated
@@ -347,9 +382,17 @@ class Scene(Container):
 
         """
         if config.renderer == "opengl":
-            new_mobjects = mobjects
+            new_mobjects = []
+            new_meshes = []
+            for mobject_or_mesh in mobjects:
+                if isinstance(mobject_or_mesh, Mesh):
+                    new_meshes.append(mobject_or_mesh)
+                else:
+                    new_mobjects.append(mobject_or_mesh)
             self.remove(*new_mobjects)
             self.mobjects += new_mobjects
+            self.remove(*new_meshes)
+            self.meshes += new_meshes
         else:
             mobjects = [*mobjects, *self.foreground_mobjects]
             self.restructure_mobjects(to_remove=mobjects)
@@ -384,9 +427,18 @@ class Scene(Container):
             The mobjects to remove.
         """
         if config.renderer == "opengl":
-            mobjects_to_remove = mobjects
+            mobjects_to_remove = []
+            meshes_to_remove = set()
+            for mobject_or_mesh in mobjects:
+                if isinstance(mobject_or_mesh, Mesh):
+                    meshes_to_remove.add(mobject_or_mesh)
+                else:
+                    mobjects_to_remove.append(mobject_or_mesh)
             self.mobjects = restructure_list_to_exclude_certain_family_members(
                 self.mobjects, mobjects_to_remove
+            )
+            self.meshes = list(
+                filter(lambda mesh: mesh not in set(meshes_to_remove), self.meshes)
             )
             return self
         else:
@@ -900,7 +952,7 @@ class Scene(Container):
         )
         for t in self.time_progression:
             self.update_to_time(t)
-            if not skip_rendering:
+            if not skip_rendering and not self.skip_animation_preview:
                 self.renderer.render(self, t, self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
@@ -915,13 +967,105 @@ class Scene(Container):
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
 
-    def interact(self):
+    def interactive_embed(self):
+        """
+        Like embed(), but allows for screen interaction.
+        """
+
+        def ipython(shell, namespace):
+            import manim
+            import manim.opengl
+
+            def load_module_into_namespace(module, namespace):
+                for name in dir(module):
+                    namespace[name] = getattr(module, name)
+
+            load_module_into_namespace(manim, namespace)
+            load_module_into_namespace(manim.opengl, namespace)
+
+            def embedded_rerun(*args, **kwargs):
+                self.queue.put(("rerun_keyboard", args, kwargs))
+                shell.exiter()
+
+            namespace["rerun"] = embedded_rerun
+
+            shell(local_ns=namespace)
+            self.queue.put(("exit_keyboard", [], {}))
+
+        def get_embedded_method(method_name):
+            return lambda *args, **kwargs: self.queue.put((method_name, args, kwargs))
+
+        local_namespace = inspect.currentframe().f_back.f_locals
+        for method in ("play", "wait", "add", "remove"):
+            embedded_method = get_embedded_method(method)
+            # Allow for calling scene methods without prepending 'self.'.
+            local_namespace[method] = embedded_method
+
+        from IPython.terminal.embed import InteractiveShellEmbed
+        from traitlets.config import Config
+
+        cfg = Config()
+        cfg.TerminalInteractiveShell.confirm_exit = False
+        shell = InteractiveShellEmbed(config=cfg)
+
+        keyboard_thread = threading.Thread(
+            target=ipython,
+            args=(shell, local_namespace),
+        )
+        keyboard_thread.start()
+
+        self.interact(shell, keyboard_thread)
+
+    def interact(self, shell, keyboard_thread):
+        event_handler = RerunSceneHandler(self.queue)
+        file_observer = Observer()
+        file_observer.schedule(event_handler, config["input_file"], recursive=True)
+        file_observer.start()
+
         self.quit_interaction = False
+        keyboard_thread_needs_join = True
         while not (self.renderer.window.is_closing or self.quit_interaction):
-            self.renderer.animation_start_time = 0
-            dt = 1 / config["frame_rate"]
-            self.renderer.render(self, dt, self.moving_mobjects)
-            self.update_mobjects(dt)
+            if not self.queue.empty():
+                tup = self.queue.get_nowait()
+                if tup[0].startswith("rerun"):
+                    # Intentionally skip calling join() on the file thread to save time.
+                    if not tup[0].endswith("keyboard"):
+                        shell.pt_app.app.exit(exception=EOFError)
+                    keyboard_thread.join()
+
+                    kwargs = tup[2]
+                    if "from_animation_number" in kwargs:
+                        config["from_animation_number"] = kwargs[
+                            "from_animation_number"
+                        ]
+                    # # TODO: This option only makes sense if interactive_embed() is run at the
+                    # # end of a scene by default.
+                    # if "upto_animation_number" in kwargs:
+                    #     config["upto_animation_number"] = kwargs[
+                    #         "upto_animation_number"
+                    #     ]
+
+                    keyboard_thread.join()
+                    raise RerunSceneException
+                elif tup[0].startswith("exit"):
+                    keyboard_thread.join()
+                    keyboard_thread_needs_join = False
+                    break
+                else:
+                    method, args, kwargs = tup
+                    getattr(self, method)(*args, **kwargs)
+            else:
+                self.renderer.animation_start_time = 0
+                dt = 1 / config["frame_rate"]
+                self.renderer.render(self, dt, self.moving_mobjects)
+                self.update_mobjects(dt)
+                self.update_meshes(dt)
+
+        # Join the keyboard thread if necessary.
+        if shell is not None and keyboard_thread_needs_join:
+            shell.pt_app.app.exit(exception=EOFError)
+            keyboard_thread.join()
+
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
 
@@ -975,6 +1119,7 @@ class Scene(Container):
             alpha = t / animation.run_time
             animation.interpolate(alpha)
         self.update_mobjects(dt)
+        self.update_meshes(dt)
 
     def add_sound(self, sound_file, time_offset=0, gain=None, **kwargs):
         """
@@ -1027,16 +1172,9 @@ class Scene(Container):
             self.camera.shift(shift)
 
     def on_mouse_scroll(self, point, offset):
-        if CTRL_VALUE in self.renderer.pressed_keys:
-            factor = 1 + np.arctan(-20 * offset[1])
-            self.camera.scale(factor, about_point=point)
-
-        transform = self.camera.inverse_rotation_matrix
-        shift = np.dot(np.transpose(transform), offset)
-        if SHIFT_VALUE in self.renderer.pressed_keys:
-            self.camera.shift(20.0 * np.array(rotate_vector(shift, PI / 2)))
-        else:
-            self.camera.shift(20.0 * shift)
+        factor = 1 + np.arctan(-2.1 * offset[1])
+        self.camera.scale(factor, about_point=self.camera_target)
+        self.mouse_scroll_orbit_controls(point, offset)
 
     def on_key_press(self, symbol, modifiers):
         try:
@@ -1047,6 +1185,7 @@ class Scene(Container):
 
         if char == "r":
             self.camera.to_default_state()
+            self.camera_target = np.array([0, 0, 0], dtype=np.float32)
         elif char == "q":
             self.quit_interaction = True
 
@@ -1055,5 +1194,90 @@ class Scene(Container):
 
     def on_mouse_drag(self, point, d_point, buttons, modifiers):
         self.mouse_drag_point.move_to(point)
-        self.camera.increment_theta(-d_point[0])
-        self.camera.increment_phi(d_point[1])
+        if buttons == 1:
+            self.camera.increment_theta(-d_point[0])
+            self.camera.increment_phi(d_point[1])
+        elif buttons == 4:
+            camera_x_axis = self.camera.model_matrix[:3, 0]
+            horizontal_shift_vector = -d_point[0] * camera_x_axis
+            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
+            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+            self.camera.shift(1.1 * total_shift_vector)
+
+        self.mouse_drag_orbit_controls(point, d_point, buttons, modifiers)
+
+    def mouse_scroll_orbit_controls(self, point, offset):
+        camera_to_target = self.camera_target - self.camera.get_position()
+        camera_to_target *= np.sign(offset[1])
+        shift_vector = 0.01 * camera_to_target
+        self.camera.model_matrix = (
+            opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
+        )
+
+    def mouse_drag_orbit_controls(self, point, d_point, buttons, modifiers):
+        # Left click drag.
+        if buttons == 1:
+            # Translate to target the origin and rotate around the z axis.
+            self.camera.model_matrix = (
+                opengl.rotation_matrix(z=-d_point[0])
+                @ opengl.translation_matrix(*-self.camera_target)
+                @ self.camera.model_matrix
+            )
+
+            # Rotation off of the z axis.
+            camera_position = self.camera.get_position()
+            camera_y_axis = self.camera.model_matrix[:3, 1]
+            axis_of_rotation = space_ops.normalize(
+                np.cross(camera_y_axis, camera_position)
+            )
+            rotation_matrix = space_ops.rotation_matrix(
+                d_point[1], axis_of_rotation, homogeneous=True
+            )
+
+            maximum_polar_angle = PI / 2
+            minimum_polar_angle = -PI / 2
+
+            potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
+            potential_camera_location = potential_camera_model_matrix[:3, 3]
+            potential_camera_y_axis = potential_camera_model_matrix[:3, 1]
+            sign = (
+                np.sign(potential_camera_y_axis[2])
+                if potential_camera_y_axis[2] != 0
+                else 1
+            )
+            potential_polar_angle = sign * np.arccos(
+                potential_camera_location[2] / np.linalg.norm(potential_camera_location)
+            )
+            if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
+                self.camera.model_matrix = potential_camera_model_matrix
+            else:
+                sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
+                current_polar_angle = sign * np.arccos(
+                    camera_position[2] / np.linalg.norm(camera_position)
+                )
+                if potential_polar_angle > maximum_polar_angle:
+                    polar_angle_delta = maximum_polar_angle - current_polar_angle
+                else:
+                    polar_angle_delta = minimum_polar_angle - current_polar_angle
+                rotation_matrix = space_ops.rotation_matrix(
+                    polar_angle_delta, axis_of_rotation, homogeneous=True
+                )
+                self.camera.model_matrix = rotation_matrix @ self.camera.model_matrix
+
+            # Translate to target the original target.
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*self.camera_target)
+                @ self.camera.model_matrix
+            )
+        # Right click drag.
+        elif buttons == 4:
+            camera_x_axis = self.camera.model_matrix[:3, 0]
+            horizontal_shift_vector = -d_point[0] * camera_x_axis
+            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
+            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
+
+            self.camera.model_matrix = (
+                opengl.translation_matrix(*total_shift_vector)
+                @ self.camera.model_matrix
+            )
+            self.camera_target += total_shift_vector

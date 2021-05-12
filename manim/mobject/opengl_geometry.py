@@ -9,6 +9,7 @@ from ..mobject.types.opengl_vectorized_mobject import (
     OpenGLVMobject,
 )
 from ..utils.color import *
+from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import clip, fdiv
 from ..utils.space_ops import (
@@ -16,7 +17,6 @@ from ..utils.space_ops import (
     angle_of_vector,
     compass_directions,
     find_intersection,
-    get_norm,
     normalize,
     rotate_vector,
     rotation_matrix_transpose,
@@ -192,7 +192,7 @@ class OpenGLTipableVMobject(OpenGLVMobject):
 
     def get_length(self):
         start, end = self.get_start_and_end()
-        return get_norm(start - end)
+        return np.linalg.norm(start - end)
 
 
 class OpenGLArc(OpenGLTipableVMobject):
@@ -212,7 +212,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.n_components = n_components
         self.anchors_span_full_range = anchors_span_full_range
         self.arc_center = arc_center
-        OpenGLVMobject.__init__(self, **kwargs)
+        super().__init__(self, **kwargs)
 
     def init_points(self):
         self.set_points(
@@ -341,14 +341,10 @@ class OpenGLDot(OpenGLCircle):
         )
 
 
+@deprecated(until="v0.6.0", replacement="OpenGLDot")
 class OpenGLSmallDot(OpenGLDot):
-    """ Deprecated"""
-
     def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
-        logger.warning(
-            "OpenGLSmallDot has been deprecated and will be removed in a future release."
-            "Use OpenGLDot instead."
-        )
+
         super().__init__(radius=radius, **kwargs)
 
 
@@ -654,7 +650,7 @@ class OpenGLArrow(OpenGLLine):
     def set_points_by_ends(self, start, end, buff=0, path_arc=0):
         # Find the right tip length and thickness
         vect = end - start
-        length = max(get_norm(vect), 1e-8)
+        length = max(np.linalg.norm(vect), 1e-8)
         thickness = self.thickness
         w_ratio = fdiv(self.max_width_to_length_ratio, fdiv(thickness, length))
         if w_ratio < 1:
@@ -869,7 +865,7 @@ class OpenGLArrowTip(OpenGLTriangle):
         return angle_of_vector(self.get_vector())
 
     def get_length(self):
-        return get_norm(self.get_vector())
+        return np.linalg.norm(self.get_vector())
 
 
 class OpenGLRectangle(OpenGLPolygon):
