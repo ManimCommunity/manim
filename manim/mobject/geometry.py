@@ -1532,14 +1532,9 @@ class Polygon(metaclass=MetaVMobject):
     """
 
     def __init__(self, *vertices, color=BLUE, **kwargs):
-        self.vertices = vertices
         super().__init__(color=color, **kwargs)
-
-    def init_points(self):
-        verts = self.vertices
-        self.set_points_as_corners([*verts, verts[0]])
-
-    generate_points = init_points
+        self.vertices = vertices
+        self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
         """Gets the vertices of the polygon.
