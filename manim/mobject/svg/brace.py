@@ -48,7 +48,7 @@ class Brace(SVGPathMobject):
                     self.add(t)
                     self.add(br)
                 VGroup(*self.mobjects).arrange(DOWN, buff=0.2)
-                
+
     """
 
     def __init__(
@@ -88,7 +88,7 @@ class Brace(SVGPathMobject):
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
-            **kwargs
+            **kwargs,
         )
         self.stretch_to_fit_width(target_width)
         self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
@@ -222,6 +222,7 @@ class BraceBetweenPoints(Brace):
             direction = np.array([line_vector[1], -line_vector[0], 0])
         Brace.__init__(self, Line(point_1, point_2), direction=direction, **kwargs)
 
+
 class ArcBrace(Brace):
     """A Brace that wraps around an Arc.
 
@@ -235,7 +236,7 @@ class ArcBrace(Brace):
     Examples
     --------
         .. manim:: ArcBraceExample
-        
+
         :save_last_frame:
         :ref_methods: Mobject.apply_complex_function
 
@@ -246,31 +247,31 @@ class ArcBrace(Brace):
                     arc_brace = ArcBrace(small_arc)
                     self.add(arc_brace))
     """
+
     def __init__(
-        self,
-        arc = Arc(start_angle=0,angle=1,radius=1),
-        direction = RIGHT,
-        **kwargs
+        self, arc=Arc(start_angle=0, angle=1, radius=1), direction=RIGHT, **kwargs
     ):
         self.arc_center = arc.get_arc_center()
         self.arc_start_angle = arc.start_angle
-        self.arc_end_angle = self.arc_start_angle+arc.angle
+        self.arc_end_angle = self.arc_start_angle + arc.angle
         # self.arc_angle = np.abs(self.arc_start_angle-self.arc_angle)
-        self.arc_radius = Vector(arc.get_start()-self.arc_center).get_length()
+        self.arc_radius = Vector(arc.get_start() - self.arc_center).get_length()
 
         Brace.__init__(
             self,
             Line(
-                self.arc_center+UP*self.arc_start_angle+RIGHT*np.log(self.arc_radius),
-                self.arc_center+UP*self.arc_end_angle+RIGHT*np.log(self.arc_radius)
+                self.arc_center
+                + UP * self.arc_start_angle
+                + RIGHT * np.log(self.arc_radius),
+                self.arc_center
+                + UP * self.arc_end_angle
+                + RIGHT * np.log(self.arc_radius),
             ),
             direction=direction,
             **kwargs,
         )
 
-        self.shift(-1*self.arc_center)
-        
-        self.apply_complex_function(
-            lambda x: np.exp(x)
-        )
+        self.shift(-1 * self.arc_center)
+
+        self.apply_complex_function(lambda x: np.exp(x))
         self.shift(self.arc_center)
