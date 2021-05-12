@@ -1152,7 +1152,7 @@ class Mobject(Container):
         Example
         -------
 
-        ::manim ApplyFuncExample
+        .. manim:: ApplyFuncExample
 
             class ApplyFuncExample(Scene):
                 def construct(self):
