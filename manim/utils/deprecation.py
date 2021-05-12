@@ -213,7 +213,6 @@ def deprecated(
         func.__init__ = decorate(func.__init__, deprecate)
         return func
 
-    print(type(func))
     func = decorate(func, deprecate)
     deprecate_docs(func)
     return func
@@ -374,7 +373,6 @@ def deprecated_params(
             params.append(redirector[0])
         else:
             params.extend(inspect.getargspec(redirector).args)
-            print(inspect.getargspec(redirector).args)
     # Keep ordering of params so that warning message is consistently the same
     # This will also help pass unit testing
     params = list(dict.fromkeys(params))
