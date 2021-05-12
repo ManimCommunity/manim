@@ -448,8 +448,10 @@ class CoordinateSystem:
         stroke_width: float = 1,
         stroke_color: Color = BLACK,
         fill_opacity: float = 1,
-        colors: Iterable[Color] = (BLUE, GREEN),
+        color: Union[Iterable[Color], Color] = np.array((BLUE, GREEN)),
         show_signed_area: bool = True,
+        bounded_graph: "ParametricFunction" = None,
+        blend: bool = False,
         width_scale_factor: float = 1.001,
     ) -> VGroup:
         """This method returns the :class:`~.VGroup` of the Riemann Rectangles for
@@ -480,11 +482,17 @@ class CoordinateSystem:
         fill_opacity
             The opacity of the rectangles.
 
-        colors
+        color
             The colors of the rectangles. Creates a balanced gradient if multiple colors are passed.
 
         show_signed_area
             Indicates negative area when the curve dips below the x-axis by inverting its color.
+
+        blend
+            Sets the :attr:`stroke_color` to :attr:`fill_color`, blending the rectangles without clear separation.
+
+        bounded_graph
+            If a secondary graph is specified, encloses the area between the two curves.
 
         width_scale_factor
             The factor by which the width of the rectangles is scaled.
@@ -510,12 +518,15 @@ class CoordinateSystem:
             else:
                 return 0
 
-        y_point = origin_shift(self.y_range)
-
         rectangles = VGroup()
         x_range = np.arange(*x_range)
 
-        colors = color_gradient(colors, len(x_range))
+        # allows passing a string to color the graph
+        if type(color) is str:
+            colors = [color] * len(x_range)
+        else:
+            colors = color_gradient(color, len(x_range))
+
         for x, color in zip(x_range, colors):
             if input_sample_type == "left":
                 sample_input = x
@@ -526,6 +537,11 @@ class CoordinateSystem:
             else:
                 raise ValueError("Invalid input sample type")
             graph_point = self.input_to_graph_point(sample_input, graph)
+
+            if bounded_graph is None:
+                y_point = origin_shift(self.y_range)
+            else:
+                y_point = bounded_graph.underlying_function(x)
 
             points = VGroup(
                 *list(
@@ -547,7 +563,10 @@ class CoordinateSystem:
             if self.p2c(graph_point)[1] < y_point and show_signed_area:
                 color = invert_color(color)
 
-            # note: implement option to blend smoothly?
+            # blends rectangles smoothly
+            if blend:
+                stroke_color = color
+
             rect.set_style(
                 fill_color=color,
                 fill_opacity=fill_opacity,
@@ -556,6 +575,55 @@ class CoordinateSystem:
             )
 
         return rectangles
+
+    def get_area(
+        self,
+        graph: "ParametricFunction",
+        x_range: List[float],
+        color: Union[Color, Iterable[Color]] = WHITE,
+        opacity: float = 0.3,
+        dx_scaling: float = 1,
+        bounded: "ParametricFunction" = None,
+    ):
+        """Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small enough to visually
+        approximate the area under the graph passed.
+
+        Parameters
+        ----------
+        graph
+            The graph/curve for which the area needs to be gotten.
+
+        x_range
+            The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
+
+        color
+            The color of the area. Creates a gradient if a list of colors is provided.
+
+        opacity
+            The opacity of the area.
+
+        bounded
+            If a secondary :attr:`graph` is specified, encloses the area between the two curves.
+
+        dx_scaling
+            The factor by which the :attr:`dx` value is scaled.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            The :class:`~.VGroup` containing the Riemann Rectangles.
+        """
+
+        dx = self.x_range[2] / 1000
+        return self.get_riemann_rectangles(
+            graph,
+            x_range=x_range,
+            dx=dx * dx_scaling,
+            bounded_graph=bounded,
+            blend=True,
+            color=color,
+            show_signed_area=False,
+        ).set_opacity(opacity=opacity)
 
     def angle_of_tangent(
         self, x: float, graph: "ParametricFunction", dx: float = 1e-8
