@@ -311,37 +311,28 @@ Plotting with Manim
 
 .. manim:: ArgMinExample
 
-    class ArgMinExample(GraphScene):
-        def __init__(self, **kwargs):
-            GraphScene.__init__(
-                self,
-                y_min=0,
-                y_max=100,
-                y_axis_config={"tick_frequency": 10},
-                y_axis_label=r"$f(x)$",
-                x_axis_label=r"$x$",
-                graph_origin=3 * DOWN + 5 * LEFT,
-                **kwargs
-            )
+class ArgMinExample(Scene):
+    def construct(self):
+        ax = Axes(
+            x_range=[0, 10], y_range=[0, 100, 10], axis_config={"include_tip": False}
+        )
+        labels = ax.get_axis_labels(x_label="x", y_label="f(x)")
+        t = ValueTracker(0)
 
-        def construct(self):
-            self.setup_axes()
-            stri= r"{\underset {x\in S}{\operatorname {arg\,min} }}\,f(x):=\{x\in S~:~f(s)\geq f(x){\text{ for all }}s\in S\}"
-            self.add(MathTex(stri).scale(0.8).to_corner(UR))
+        def func(x):
+            return 2 * (x - 5) ** 2
+        graph = ax.get_graph(func, color=MAROON)
 
-            def func(x):
-                return 2*(x-5)**2
-            t= ValueTracker(0)
-            func_graph = self.get_graph(func)
-
-            dot = Dot().move_to(self.coords_to_point(t.get_value(), func(t.get_value())))
-            dot.add_updater(lambda x : x.move_to(self.coords_to_point(t.get_value(), func(t.get_value()))))
-            self.add(dot,func_graph)
-            x_range = np.linspace(0,10,100)
-            index_min= func(x_range).argmin()
-
-            self.play(t.animate.set_value(x_range[index_min]))
-            self.wait()
+        initial_point = [ax.coords_to_point(t.get_value(), func(t.get_value()))]
+        dot = Dot(point=initial_point)
+        
+        dot.add_updater(lambda x: x.move_to(ax.c2p(t.get_value(), func(t.get_value()))))
+        x_space = np.linspace(*ax.x_range[:2],200)
+        minimum_index = func(x_space).argmin()
+        
+        self.add(ax, labels, graph, dot)
+        self.play(t.animate.set_value(x_space[minimum_index]))
+        self.wait()
 
 .. manim:: GraphAreaPlot
     :save_last_frame:
