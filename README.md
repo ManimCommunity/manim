@@ -149,7 +149,7 @@ When executing `manim` within a Docker container, several command line flags (in
 ## Help with Manim
 
 If you need help installing or using Manim, feel free to reach out to our [Discord
-Server](https://discord.gg/mMRrZQW) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit a bug report or feature request, please open an issue.
+Server](https://www.manim.community/discord/) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit a bug report or feature request, please open an issue.
 
 ## Contributing
 
