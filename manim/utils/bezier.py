@@ -395,7 +395,7 @@ def bezier_params_from_point(
 
     Returns
     -------
-        list[float]
+        np.ndarray[float]
             List containing possible parameters for the given point on
             the given bezier curve.
             This usually only contains one or zero elements, but if the
@@ -418,19 +418,19 @@ def bezier_params_from_point(
 
     roots = []
     for dim, coord in enumerate(point):
-        control_coords = c_c = control_points[:, dim]
+        control_coords = control_points[:, dim]
         terms = []
         for term_power in range(n, -1, -1):
             outercoeff = choose(n, term_power)
             term = []
-            negative = 1
+            sign = 1
             for subterm_num in range(term_power, -1, -1):
-                innercoeff = choose(term_power, subterm_num) * negative
-                subterm = innercoeff * c_c[subterm_num]
+                innercoeff = choose(term_power, subterm_num) * sign
+                subterm = innercoeff * control_coords[subterm_num]
                 if term_power == 0:
                     subterm -= coord
                 term.append(subterm)
-                negative = -1 if negative > 0 else 1
+                sign *= -1
             terms.append(outercoeff * sum(np.array(term)))
 
         bezier_polynom = np.polynomial.Polynomial(terms[::-1])
@@ -441,7 +441,7 @@ def bezier_params_from_point(
     roots = np.around(roots, int(np.log10(1 / round_to)))
     roots = [[root for root in rootlist if root.imag == 0] for rootlist in roots]
     roots = reduce(np.intersect1d, roots)  # Get common roots.
-    roots = np.array([r.real for r in roots]).tolist()
+    roots = np.array([r.real for r in roots])
     return roots
 
 
