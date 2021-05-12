@@ -25,7 +25,7 @@ from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
     bezier,
-    bezier_params_from_point,
+    proportions_along_bezier_curve_for_point,
     get_smooth_handle_points,
     integer_interpolate,
     interpolate,
@@ -1073,9 +1073,12 @@ class VMobject(Mobject):
         for n in range(num_curves):
             control_points = self.get_nth_curve_points(n)
             length = self.get_nth_curve_length(n)
-            if point_lies_on_bezier(point, control_points):
-                t = max(bezier_params_from_point(point, control_points))
-                target_length += length * t
+            proportions_along_bezier = proportions_along_bezier_curve_for_point(
+                point, control_points
+            )
+            if len(proportions_along_bezier) > 0:
+                proportion_along_nth_curve = max(proportions_along_bezier)
+                target_length += length * proportion_along_nth_curve
                 break
             target_length += length
         else:

@@ -13,7 +13,7 @@ __all__ = [
     "get_smooth_cubic_bezier_handle_points",
     "diag_to_matrix",
     "is_closed",
-    "bezier_params_from_point",
+    "proportions_along_bezier_curve_for_point",
     "point_lies_on_bezier",
 ]
 
@@ -372,13 +372,13 @@ def is_closed(points: typing.Tuple[np.ndarray, np.ndarray]) -> bool:
     return np.allclose(points[0], points[-1])
 
 
-def bezier_params_from_point(
+def proportions_along_bezier_curve_for_point(
     point: typing.Iterable[typing.Union[float, int]],
     control_points: typing.Iterable[typing.Iterable[typing.Union[float, int]]],
     round_to: typing.Optional[typing.Union[float, int]] = 1e-6,
 ) -> typing.List[float]:
-    """Obtains the parameter corresponding to a given point
-    for a given bezier curve.
+    """Obtains the proportion along the bezier curve corresponding to a given point
+    given the bezier curve's control points.
 
     Parameters
     ----------
@@ -396,8 +396,8 @@ def bezier_params_from_point(
     Returns
     -------
         np.ndarray[float]
-            List containing possible parameters for the given point on
-            the given bezier curve.
+            List containing possible parameters (the proportions along the bezier curve)
+            for the given point on the given bezier curve.
             This usually only contains one or zero elements, but if the
             point is, say, at the beginning/end of a closed loop, may return
             a list with more than 1 value, corresponding to the beginning and
@@ -472,6 +472,6 @@ def point_lies_on_bezier(
     # Method taken from
     # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
 
-    roots = bezier_params_from_point(point, control_points, round_to)
+    roots = proportions_along_bezier_curve_for_point(point, control_points, round_to)
 
     return len(roots) > 0
