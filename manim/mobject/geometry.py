@@ -1479,7 +1479,10 @@ class CubicBezier(metaclass=MetaVMobject):
 
     def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):
         super().__init__(**kwargs)
-        self.set_points([start_anchor, start_handle, end_handle, end_anchor])
+        if config.renderer == "opengl":
+            self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
+        else:
+            self.set_points([start_anchor, start_handle, end_handle, end_anchor])
 
 
 class Polygon(metaclass=MetaVMobject):
