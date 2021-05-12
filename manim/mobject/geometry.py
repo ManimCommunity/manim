@@ -351,7 +351,7 @@ class Arc(TipableVMobject):
         anchors, and finds their intersection points
         """
         # First two anchors and handles
-        a1, h1, h2, a2 = self.points[:4]
+        a1, h1, h2, a2 = self.get_points()[:4]
 
         if np.all(a1 == a2):
             # For a1 and a2 to lie at the same point arc radius
