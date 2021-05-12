@@ -48,6 +48,16 @@ class Brace(SVGPathMobject):
                     self.add(t)
                     self.add(br)
                 VGroup(*self.mobjects).arrange(DOWN, buff=0.2)
+                
+    .. manim:: ArcBraceExample
+        :save_last_frame:
+        
+        class ArcBraceExample(Scene):
+            def construct(self):
+                small_arc = Arc(start_angle=0,angle=1,radius=1).set_color(RED)
+                self.add(small_arc)
+                arc_brace = Brace(Line(ORIGIN,UP),RIGHT).apply_complex_function(np.exp)
+                self.add(arc_brace)
 
     """
 
