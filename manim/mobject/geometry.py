@@ -287,6 +287,42 @@ class Arc(TipableVMobject):
         self.set_pre_positioned_points()
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
+    
+    # Points are set a bit differently when rendering via OpenGL.
+    # TODO: refactor Arc so that only one strategy for setting points
+    # has to be used.
+    def init_points(self):
+        self.set_points(
+            Arc.create_quadratic_bezier_points(
+                angle=self.angle,
+                start_angle=self.start_angle,
+                n_components=self.num_components,
+            )
+        )
+        self.scale(self.radius, about_point=ORIGIN)
+        self.shift(self.arc_center)
+
+
+    @staticmethod
+    def create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
+        samples = np.array(
+            [
+                [np.cos(a), np.sin(a), 0]
+                for a in np.linspace(
+                    start_angle,
+                    start_angle + angle,
+                    2 * n_components + 1,
+                )
+            ]
+        )
+        theta = angle / n_components
+        samples[1::2] /= np.cos(theta / 2)
+
+        points = np.zeros((3 * n_components, 3))
+        points[0::3] = samples[0:-1:2]
+        points[1::3] = samples[1::2]
+        points[2::3] = samples[2::2]
+        return points
 
     def set_pre_positioned_points(self):
         anchors = np.array(
