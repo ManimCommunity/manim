@@ -1,4 +1,10 @@
-"""Utility functions for conversion between color models."""
+"""Colors and utility functions for conversion between different color models.
+
+
+
+
+
+"""
 
 __all__ = [
     "color_to_rgb",
@@ -16,7 +22,6 @@ __all__ = [
     "random_bright_color",
     "random_color",
     "get_shaded_rgb",
-    "Colors",
 ]
 
 import random
@@ -37,16 +42,105 @@ class Colors(Enum):
     Examples
     --------
 
-    .. manim:: ColorExample
+    .. manim:: ColorsOverview
         :save_last_frame:
+        :hide_source:
 
         from manim.utils.color import Colors
-        class ColorExample(Scene):
+        class ColorsOverview(Scene):
             def construct(self):
-                cols = Colors._member_names_
-                s = VGroup(*[Line(DOWN, UP, stroke_width=15).set_color(Colors[cols[i]].value) for i in range(0, len(cols))])
-                s.arrange_submobjects(buff=0.2)
-                self.add(s)
+                def color_group(color):
+                    group = VGroup(
+                        *[
+                            Line(ORIGIN, RIGHT * 1.5, stroke_width=35, color=Colors[name].value)
+                            for name in subnames(color)
+                        ]
+                    ).arrange_submobjects(buff=0.4, direction=DOWN)
+
+                    name = Text(color).scale(0.6).next_to(group, UP, buff=0.3)
+                    if any(decender in color for decender in "gjpqy"):
+                        name.shift(DOWN * 0.08)
+                    group.add(name)
+                    return group
+
+                def subnames(name):
+                    return [name + "_" + char for char in "abcde"]
+
+                color_groups = VGroup(
+                    *[
+                        color_group(color)
+                        for color in [
+                            "blue",
+                            "teal",
+                            "green",
+                            "yellow",
+                            "gold",
+                            "red",
+                            "maroon",
+                            "purple",
+                        ]
+                    ]
+                ).arrange_submobjects(buff=0.2, aligned_edge=DOWN)
+
+                for line, char in zip(color_groups[0], "abcde"):
+                    color_groups.add(Text(char).scale(0.6).next_to(line, LEFT, buff=0.2))
+
+                def named_lines_group(length, colors, names, text_colors, align_to_block):
+                    lines = VGroup(
+                        *[
+                            Line(
+                                ORIGIN,
+                                RIGHT * length,
+                                stroke_width=55,
+                                color=Colors[color].value,
+                            )
+                            for color in colors
+                        ]
+                    ).arrange_submobjects(buff=0.6, direction=DOWN)
+
+                    for line, name, color in zip(lines, names, text_colors):
+                        line.add(Text(name, color=color).scale(0.6).move_to(line))
+                    lines.next_to(color_groups, DOWN, buff=0.5).align_to(
+                        color_groups[align_to_block], LEFT
+                    )
+                    return lines
+
+                gray_lines = named_lines_group(
+                    10,
+                    ["white"] + subnames("gray") + ["black"],
+                    [
+                        "white",
+                        "lighter_gray / gray_a",
+                        "light_gray / gray_b",
+                        "gray / gray_c",
+                        "dark_gray / gray_d",
+                        "darker_gray / gray_e",
+                        "black",
+                    ],
+                    [BLACK] * 3 + [WHITE] * 4,
+                    0,
+                )
+
+                other_colors = (
+                    "pink",
+                    "light_pink",
+                    "orange",
+                    "light_brown",
+                    "dark_brown",
+                    "gray_brown",
+                )
+
+                other_lines = named_lines_group(
+                    3.2,
+                    other_colors,
+                    other_colors,
+                    [BLACK] * 4 + [WHITE] * 2,
+                    6,
+                )
+
+                self.add(color_groups, gray_lines, other_lines)
+
+                VGroup(*self.mobjects).move_to(ORIGIN)
 
     The preferred way of using these colors is
 
@@ -87,8 +181,7 @@ class Colors(Enum):
     blue_b = "#9CDCEB"
     blue_c = "#58C4DD"
     blue_d = "#29ABCA"
-    blue_e = "#1C758A"
-    dark_blue = "#236B8E"
+    blue_e = "#236B8E"
     pure_blue = "#0000FF"
     blue = blue_c
 
@@ -110,8 +203,8 @@ class Colors(Enum):
     yellow_a = "#FFF1B6"
     yellow_b = "#FFEA94"
     yellow_c = "#FFFF00"
-    yellow_e = "#E8C11C"
     yellow_d = "#F4D345"
+    yellow_e = "#E8C11C"
     yellow = yellow_c
 
     gold_a = "#F7C797"
@@ -164,8 +257,93 @@ for name, value in Colors.__members__.items():
         locals()[name] = value
         constants_names.append(name)
 
-# Add constants to module exports
-__all__ += constants_names
+# Add constants to module exports. Simply adding constants_names would work fine, but
+# would make it hard for IDEs to understand that colors are exported. Therefor the
+# result of the following print statement is added instead.
+
+# print(constants_names)
+__all__ += [
+    "WHITE",
+    "GRAY_A",
+    "GREY_A",
+    "GRAY_B",
+    "GREY_B",
+    "GRAY_C",
+    "GREY_C",
+    "GRAY_D",
+    "GREY_D",
+    "GRAY_E",
+    "GREY_E",
+    "BLACK",
+    "LIGHTER_GRAY",
+    "LIGHTER_GREY",
+    "LIGHT_GRAY",
+    "LIGHT_GREY",
+    "GRAY",
+    "GREY",
+    "DARK_GRAY",
+    "DARK_GREY",
+    "DARKER_GRAY",
+    "DARKER_GREY",
+    "BLUE_A",
+    "BLUE_B",
+    "BLUE_C",
+    "BLUE_D",
+    "BLUE_E",
+    "PURE_BLUE",
+    "BLUE",
+    "TEAL_A",
+    "TEAL_B",
+    "TEAL_C",
+    "TEAL_D",
+    "TEAL_E",
+    "TEAL",
+    "GREEN_A",
+    "GREEN_B",
+    "GREEN_C",
+    "GREEN_D",
+    "GREEN_E",
+    "PURE_GREEN",
+    "GREEN",
+    "YELLOW_A",
+    "YELLOW_B",
+    "YELLOW_C",
+    "YELLOW_E",
+    "YELLOW_D",
+    "YELLOW",
+    "GOLD_A",
+    "GOLD_B",
+    "GOLD_C",
+    "GOLD_D",
+    "GOLD_E",
+    "GOLD",
+    "RED_A",
+    "RED_B",
+    "RED_C",
+    "RED_D",
+    "RED_E",
+    "PURE_RED",
+    "RED",
+    "MAROON_A",
+    "MAROON_B",
+    "MAROON_C",
+    "MAROON_D",
+    "MAROON_E",
+    "MAROON",
+    "PURPLE_A",
+    "PURPLE_B",
+    "PURPLE_C",
+    "PURPLE_D",
+    "PURPLE_E",
+    "PURPLE",
+    "PINK",
+    "LIGHT_PINK",
+    "ORANGE",
+    "LIGHT_BROWN",
+    "DARK_BROWN",
+    "GRAY_BROWN",
+    "GREY_BROWN",
+]
 
 
 def color_to_rgb(color: Union[Color, str]) -> np.ndarray:
