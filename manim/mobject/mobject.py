@@ -1146,10 +1146,12 @@ class Mobject(Container):
         return self
 
     def apply_complex_function(self, function, **kwargs):
-        """
+        """Complex function that is applied to the xy-plane
+        With z= u+iv  u respresents the x value, v represents the y value.
 
-                Example
-                -------
+        Example
+        -------
+
         ::manim ApplyFuncExample
 
             class ApplyFuncExample(Scene):
