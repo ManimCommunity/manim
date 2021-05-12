@@ -1756,7 +1756,7 @@ class ArcPolygon(metaclass=MetaVMobject):
         # the arcs, so that their new values are usable.
         self.add(*arcs)
         for arc in arcs:
-            self.append_points(arc.points)
+            self.append_points(arc.get_points())
 
         # This enables the use of ArcPolygon.arcs as a convenience
         # because ArcPolygon[0] returns itself, not the first Arc.
