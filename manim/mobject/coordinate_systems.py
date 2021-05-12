@@ -6,7 +6,6 @@ import math
 import numbers
 from typing import Iterable, List, Optional, Sequence, Union
 
-
 import numpy as np
 from colour import Color
 
