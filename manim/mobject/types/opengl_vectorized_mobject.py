@@ -219,7 +219,7 @@ class OpenGLVMobject(OpenGLMobject):
             "shadow": self.get_shadow(),
         }
 
-    def match_style(self, vmobject, recurse=True, family=True):
+    def match_style(self, vmobject, recurse=True):
         self.set_style(**vmobject.get_style(), recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and

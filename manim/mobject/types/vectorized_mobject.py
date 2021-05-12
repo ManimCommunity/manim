@@ -298,7 +298,7 @@ class VMobject(Mobject):
 
         return ret
 
-    def match_style(self, vmobject, family=True, recurse=True):
+    def match_style(self, vmobject, family=True):
         self.set_style(**vmobject.get_style(), family=False)
 
         if family:
@@ -1966,4 +1966,7 @@ class DashedVMobject(metaclass=MetaVMobject):
             )
         # Family is already taken care of by get_subcurve
         # implementation
-        self.match_style(vmobject, family=False)
+        if config.renderer == "opengl":
+            self.match_style(vmobject, recurse=False)
+        else:
+            self.match_style(vmobject, family=False)
