@@ -1067,6 +1067,16 @@ class VMobject(Mobject):
         """
         self.throw_error_if_no_points()
 
+        
+        # Iterate over each bezier curve that the ``VMobject`` is composed of, checking
+        # if the point lies on that curve. If it does not lie on that curve, add
+        # the whole length of the curve to ``target_length`` and move onto the next
+        # curve. If the point does lie on the curve, add how far along the curve
+        # the point is to ``target_length``.
+        # Then, divide ``target_length`` by the total arc length of the shape to get
+        # the proportion along the ``VMobject`` the point is at.
+        
+
         num_curves = self.get_num_curves()
         total_length = self.get_arc_length()
         target_length = 0
