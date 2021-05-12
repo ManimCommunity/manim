@@ -135,6 +135,7 @@ class ParametricSurface(VGroup):
 class Sphere(ParametricSurface):
     def __init__(
         self,
+        center=ORIGIN,
         radius=1,
         resolution=(12, 24),
         u_min=0.001,
@@ -155,6 +156,7 @@ class Sphere(ParametricSurface):
         )
         self.radius = radius
         self.scale(self.radius)
+        self.shift(center)
 
     def func(
         self, u, v
@@ -167,6 +169,8 @@ class Dot3D(Sphere):
 
     Parameters
     --------
+    point : Union[:class:`list`, :class:`numpy.ndarray`], optional
+        The location of the dot.
     radius : :class:`float`, optional
         The radius of the dot.
     color : :class:`~.Colors`, optional
@@ -183,14 +187,14 @@ class Dot3D(Sphere):
                 self.set_camera_orientation(phi=75*DEGREES, theta=-45*DEGREES)
 
                 axes = ThreeDAxes()
-                dot_1 = Dot3D(color=RED).move_to(axes.coords_to_point(0, 0, 1))
-                dot_2 = Dot3D(radius=0.1, color=BLUE).move_to(axes.coords_to_point(2, 0, 0))
-
-                self.add(axes, dot_1, dot_2)
+                dot_1 = Dot3D(point=axes.coords_to_point(0, 0, 1), color=RED)
+                dot_2 = Dot3D(point=axes.coords_to_point(2, 0, 0), radius=0.1, color=BLUE)
+                dot_3 = Dot3D(point=[0, 0, 0], radius=0.1, color=ORANGE)
+                self.add(axes, dot_1, dot_2,dot_3)
     """
 
-    def __init__(self, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
-        Sphere.__init__(self, radius=radius, **kwargs)
+    def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
+        Sphere.__init__(self, center=point, radius=radius, **kwargs)
         self.set_color(color)
 
 
