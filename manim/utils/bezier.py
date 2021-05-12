@@ -412,6 +412,7 @@ def bezier_params_from_point(
         raise ValueError(
             f"Point {point} and Control Points {control_points} have different shapes."
         )
+
     control_points = np.array(control_points)
     n = len(control_points) - 1
 
@@ -425,14 +426,13 @@ def bezier_params_from_point(
             negative = 1
             for subterm_num in range(term_power, -1, -1):
                 innercoeff = choose(term_power, subterm_num) * negative
-                subterm = (
-                    innercoeff * c_c[subterm_num]
-                    if term_power > 0
-                    else ((innercoeff * c_c[subterm_num]) - coord)
-                )
+                subterm = innercoeff * c_c[subterm_num]
+                if term_power == 0:
+                    subterm -= coord
                 term.append(subterm)
                 negative = -1 if negative > 0 else 1
             terms.append(outercoeff * sum(np.array(term)))
+
         bezier_polynom = np.polynomial.Polynomial(terms[::-1])
         polynom_roots = bezier_polynom.roots()
         if len(polynom_roots) > 0:
@@ -472,6 +472,6 @@ def point_lies_on_bezier(
     # Method taken from
     # http://polymathprogrammer.com/2012/04/03/does-point-lie-on-bezier-curve/
 
-    roots = bezier_params_from_point(point, control_points)
+    roots = bezier_params_from_point(point, control_points, round_to)
 
     return len(roots) > 0
