@@ -2264,18 +2264,19 @@ class Angle(Arc, Elbow):
 
     Parameters
     ----------
-    line1 : :class:`Line`
+    line1 :
         The first line.
-    line2 : :class:`Line`
+    line2 :
         The second line.
-    radius : :class:`float`
+    radius :
         The radius of the :class:`Arc`.
     quadrant : Sequence[:class:`int`]
         A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
         The first value indicates whether to anchor the arc on the first line closer to the end point (1)
-        or start point (-1), and the second value functions similarly for the end (1) or start (-1) of the second line.
+        or start point (-1), and the second value functions similarly for the
+        end (1) or start (-1) of the second line.
         Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
-    other_angle : :class:`bool`
+    other_angle :
         Toggles between the two possible angles defined by two points and an arc center. If set to
         False (default), the arc will always go counterclockwise from the point on line1 until
         the point on line2 is reached. If set to True, the angle will go clockwise from line1 to line2.
@@ -2312,17 +2313,12 @@ class Angle(Arc, Elbow):
                     Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8, dot=True, dot_color=YELLOW, dot_radius=0.04, other_angle=True),
                     Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, dot=True, dot_color=GREEN, dot_radius=0.08),
                 ]
-                line_list = VGroup( *[VGroup() for k in range(4)] )
-                for k in range(4):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( rightarcangles[k] )
-                line_list.arrange_in_grid(buff=1.5)
-                self.add(
-                    line_list
-                )
+                plots = VGroup()
+                for angle in rightarcangles:
+                    plot=VGroup(line1.copy(),line2.copy(), angle)
+                    plots.add(plot)
+                plots.arrange(buff=1.5)
+                self.add(plots)
 
     .. manim:: AngleExample
         :save_last_frame:
@@ -2341,17 +2337,13 @@ class Angle(Arc, Elbow):
                     Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8),
                     Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),
                 ]
-                line_list = VGroup( *[VGroup() for k in range(8)] )
-                for k in range(8):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( angles[k] )
-                line_list.arrange_in_grid(n_rows=2, n_cols=4, buff=1.5)
-                self.add(
-                    line_list
-                )
+                plots = VGroup()
+                for angle in angles:
+                    plot=VGroup(line1.copy(),line2.copy(), angle)
+                    plots.add(VGroup(plot,SurroundingRectangle(plot, buff=0.3)))
+                plots.arrange_in_grid(rows=2,buff=1)
+                self.add(plots)
+
     .. manim:: FilledAngle
         :save_last_frame:
 
@@ -2378,11 +2370,11 @@ class Angle(Arc, Elbow):
 
     def __init__(
         self,
-        line1,
-        line2,
-        radius=None,
+        line1: Line,
+        line2: Line,
+        radius: float = None,
         quadrant=(1, 1),
-        other_angle=False,
+        other_angle: bool = False,
         dot=False,
         dot_radius=None,
         dot_distance=0.55,
@@ -2502,18 +2494,12 @@ class RightAngle(Angle):
                     RightAngle(line1, line2, length=0.5, quadrant=(-1,1), stroke_width=8),
                     RightAngle(line1, line2, length=0.7, quadrant=(-1,-1), color=RED),
                 ]
-                line_list = VGroup( *[VGroup() for k in range(4)] )
-                for k in range(4):
-                    linea = line1.copy()
-                    lineb = line2.copy()
-                    line_list[k].add( linea )
-                    line_list[k].add( lineb )
-                    line_list[k].add( rightangles[k] )
-                line_list.arrange_in_grid(buff=1.5)
-                self.add(
-                    line_list
-                )
-
+                plots = VGroup()
+                for rightangle in rightangles:
+                    plot=VGroup(line1.copy(),line2.copy(), rightangle)
+                    plots.add(plot)
+                plots.arrange(buff=1.5)
+                self.add(plots)
     """
 
     def __init__(self, line1, line2, length=None, **kwargs):
