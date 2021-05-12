@@ -1795,12 +1795,16 @@ class Star(Polygon):
     Examples
     --------
     .. manim:: StarExample
-        :save_last_frame:
+        :save_as_gif:
 
         class StarExample(Scene):
             def construct(self):
-                star = Star(outer_radius=2)
-                self.add(star)
+                pentagram = RegularPolygram(5, radius=2)
+                star = Star(outer_radius=2, color=RED)
+
+                self.add(pentagram)
+                self.play(Create(star), run_time=3)
+                self.play(FadeOut(star), run_time=2)
 
     .. manim:: DifferentDensitiesExample
         :save_last_frame:
