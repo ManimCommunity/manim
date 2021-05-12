@@ -4,11 +4,12 @@
 __all__ = ["print_family", "index_labels", "get_submobject_index_labels"]
 
 
-import logging
+from os import replace
 
 from ..mobject.numbers import Integer
 from ..mobject.types.vectorized_mobject import VGroup
 from .color import BLACK
+from .deprecation import deprecated
 
 
 def print_family(mobject, n_tabs=0):
@@ -29,9 +30,6 @@ def index_labels(mobject, label_height=0.15):
     return labels
 
 
+@deprecated(until="v0.6.0", replacement="index_labels")
 def get_submobject_index_labels(mobject, label_height=0.15):
-    logging.getLogger("manim").warning(
-        "get_submobject_index_labels has been deprecated and has been replaced by index_labels, which does the same thing, and will thus be removed in a future release."
-    )
-
     return index_labels(mobject, label_height)
