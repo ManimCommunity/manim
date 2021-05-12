@@ -147,7 +147,7 @@ class Mobject(Container):
 
     @classmethod
     def _add_intrinsic_animation_overrides(cls):
-        """Initializes animation overrides marked with the `func:override_animation`
+        """Initializes animation overrides marked with the :func:`~.override_animation`
         decorator.
         """
         for method_name in dir(cls):
