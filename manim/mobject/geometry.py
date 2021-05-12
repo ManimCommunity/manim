@@ -798,6 +798,8 @@ class Annulus(Circle):
         self.append_points(outer_circle.get_points())
         self.append_points(inner_circle.get_points())
         self.shift(self.arc_center)
+    
+    init_points = generate_points
 
 
 class Line(TipableVMobject):
