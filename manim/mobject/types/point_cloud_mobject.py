@@ -207,6 +207,36 @@ class PGroup(PMobject):
 
 
 class PointCloudDot(Mobject1D):
+    """A disc made of a cloud of Dots
+    Example
+    --------
+    .. manim:: PointCloudDotExample
+        :save_last_frame:
+
+        class PointCloudDotExample(Scene):
+            def construct(self):
+                cloud_1 = PointCloudDot(color=RED)
+                cloud_2 = PointCloudDot(stroke_width=4, radius=1)
+                cloud_3 = PointCloudDot(density=15)
+
+                group = Group(cloud_1, cloud_2, cloud_3).arrange()
+                self.add(group)
+
+    .. manim:: PointCloudDotExample2
+
+        class PointCloudDotExample2(Scene):
+            def construct(self):
+                plane = ComplexPlane()
+                cloud = PointCloudDot(color=RED)
+                self.add(
+                    plane, cloud
+                )
+                self.wait()
+                self.play(
+                    cloud.animate.apply_complex_function(lambda z: np.exp(z))
+                )
+    """
+
     def __init__(
         self,
         center=ORIGIN,
