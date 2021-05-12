@@ -204,6 +204,7 @@ class TipableVMobject(metaclass=MetaVMobject):
         start, end = self.get_start_and_end()
         if config.renderer == "opengl":
             from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
+
             result = OpenGLVGroup()
         else:
             result = VGroup()
@@ -223,6 +224,7 @@ class TipableVMobject(metaclass=MetaVMobject):
         """
         if config.renderer == "opengl":
             from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
+
             result = OpenGLVGroup()
         else:
             result = VGroup()
@@ -295,7 +297,7 @@ class Arc(TipableVMobject):
         self.set_pre_positioned_points()
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
-    
+
     # Points are set a bit differently when rendering via OpenGL.
     # TODO: refactor Arc so that only one strategy for setting points
     # has to be used.
@@ -309,7 +311,6 @@ class Arc(TipableVMobject):
         )
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
-
 
     @staticmethod
     def create_quadratic_bezier_points(angle, start_angle=0, n_components=8):
@@ -798,7 +799,7 @@ class Annulus(Circle):
         self.append_points(outer_circle.get_points())
         self.append_points(inner_circle.get_points())
         self.shift(self.arc_center)
-    
+
     init_points = generate_points
 
 
@@ -1490,7 +1491,9 @@ class CubicBezier(metaclass=MetaVMobject):
     def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):
         super().__init__(**kwargs)
         if config.renderer == "opengl":
-            self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
+            self.add_cubic_bezier_curve(
+                start_anchor, start_handle, end_handle, end_anchor
+            )
         else:
             self.set_points([start_anchor, start_handle, end_handle, end_anchor])
 
