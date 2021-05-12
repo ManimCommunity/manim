@@ -189,8 +189,8 @@ class Dot3D(Sphere):
                 axes = ThreeDAxes()
                 dot_1 = Dot3D(point=axes.coords_to_point(0, 0, 1), color=RED)
                 dot_2 = Dot3D(point=axes.coords_to_point(2, 0, 0), radius=0.1, color=BLUE)
-
-                self.add(axes, dot_1, dot_2)
+                dot_3 = Dot3D(point=[0, 0, 0], radius=0.1, color=ORANGE)
+                self.add(axes, dot_1, dot_2,dot_3)
     """
 
     def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
