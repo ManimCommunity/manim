@@ -59,7 +59,7 @@ class MetaVMobject(ABCMeta):
                 {},
             )
             return super(MetaVMobject, new_cls).__call__(*args, **kwargs)
-        if config.renderer == "cairo":
+        if config.renderer == "cairo" or config.renderer == "webgl":
             new_cls = type(cls.__name__, (cls, VMobject), {})
             return super(MetaVMobject, new_cls).__call__(*args, **kwargs)
 
