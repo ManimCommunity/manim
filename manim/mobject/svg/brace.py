@@ -49,7 +49,6 @@ class Brace(SVGPathMobject):
                     self.add(br)
                 VGroup(*self.mobjects).arrange(DOWN, buff=0.2)
 
-    You can apply a complex exponential function to curve the brace around an arc.
     .. manim:: ArcBraceExample
         :save_last_frame:
         :ref_methods: Mobject.apply_complex_function
@@ -58,6 +57,7 @@ class Brace(SVGPathMobject):
             def construct(self):
                 small_arc = Arc(start_angle=-1,angle=2,radius=2).set_color(RED)
                 self.add(small_arc)
+                # You can apply a complex exponential function to curve the brace around an arc.
                 arc_brace = Brace(Line(DOWN,UP),RIGHT).apply_complex_function(np.exp).scale(2,about_point=ORIGIN)
                 self.add(arc_brace)
 
