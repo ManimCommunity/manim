@@ -9,9 +9,15 @@ import warnings
 from ..animation.animation import Animation
 from ..mobject.numbers import DecimalNumber
 from ..utils.bezier import interpolate
+from ..utils.deprecation import deprecated_params
 
 
 class ChangingDecimal(Animation):
+    @deprecated_params(
+        "tracked_mobject position_update_func",
+        until="v0.6.0",
+        message="Use a mobject updater instead.",
+    )
     def __init__(
         self,
         decimal_mob: DecimalNumber,
@@ -20,7 +26,6 @@ class ChangingDecimal(Animation):
         **kwargs,
     ) -> None:
         self.check_validity_of_input(decimal_mob)
-        self.yell_about_deprecated_configuration(**kwargs)
         self.number_update_func = number_update_func
         super().__init__(
             decimal_mob, suspend_mobject_updating=suspend_mobject_updating, **kwargs
@@ -29,20 +34,6 @@ class ChangingDecimal(Animation):
     def check_validity_of_input(self, decimal_mob: DecimalNumber) -> None:
         if not isinstance(decimal_mob, DecimalNumber):
             raise TypeError("ChangingDecimal can only take in a DecimalNumber")
-
-    def yell_about_deprecated_configuration(self, **kwargs) -> None:
-        # Obviously this would optimally be removed at
-        # some point.
-        for attr in ["tracked_mobject", "position_update_func"]:
-            if attr in kwargs:
-                warnings.warn(
-                    f"""
-                    Don't use {attr} for ChangingDecimal,
-                        that functionality has been deprecated
-                    and you should use a mobject updater
-                    instead
-                """
-                )
 
     def interpolate_mobject(self, alpha: float) -> None:
         self.mobject.set_value(self.number_update_func(alpha))

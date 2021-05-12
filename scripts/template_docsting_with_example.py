@@ -6,8 +6,6 @@ class SomeClass:
 
     A short paragraph providing more details.
 
-    Deprecation warning
-
     Extended Summary
 
     Parameters
