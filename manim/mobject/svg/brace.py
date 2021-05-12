@@ -58,7 +58,7 @@ class Brace(SVGPathMobject):
             def construct(self):
                 small_arc = Arc(start_angle=-1,angle=2,radius=2).set_color(RED)
                 self.add(small_arc)
-                arc_brace = Brace(Line(ORIGIN,UP),RIGHT).apply_complex_function(np.exp).scale(2,about_point=ORIGIN)
+                arc_brace = Brace(Line(DOWN,UP),RIGHT).apply_complex_function(np.exp).scale(2,about_point=ORIGIN)
                 self.add(arc_brace)
 
     """
