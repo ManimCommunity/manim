@@ -64,7 +64,7 @@ from typing import Sequence
 
 import numpy as np
 
-from .. import logger
+from .. import config, logger
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import (
@@ -377,7 +377,7 @@ class Arc(TipableVMobject):
         return self
 
     def stop_angle(self):
-        return angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU
+        return angle_of_vector(self.get_points()[-1] - self.get_arc_center()) % TAU
 
 
 class ArcBetweenPoints(Arc):
@@ -557,7 +557,7 @@ class Circle(Arc):
             The location of the point along the circle's circumference.
         """
 
-        start_angle = angle_of_vector(self.points[0] - self.get_center())
+        start_angle = angle_of_vector(self.get_points()[0] - self.get_center())
         return self.point_from_proportion((angle - start_angle) / TAU)
 
 
@@ -1317,10 +1317,16 @@ class Arrow(Line):
     def set_stroke_width_from_length(self):
         """Used internally. Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
-        self.set_stroke(
-            width=min(self.initial_stroke_width, max_ratio * self.get_length()),
-            family=False,
-        )
+        if config.renderer == "opengl":
+            self.set_stroke(
+                width=min(self.initial_stroke_width, max_ratio * self.get_length()),
+                recurse=False,
+            )
+        else:
+            self.set_stroke(
+                width=min(self.initial_stroke_width, max_ratio * self.get_length()),
+                family=False,
+            )
         return self
 
 
@@ -2124,7 +2130,7 @@ class ArrowTip(metaclass=MetaVMobject):
             array([2., 0., 0.])
 
         """
-        return self.points[0]
+        return self.get_points()[0]
 
     @property
     def vector(self):
