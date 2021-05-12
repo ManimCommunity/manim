@@ -2,7 +2,6 @@
 
 __all__ = [
     "OpenGLValueTracker",
-    "OpenGLExponentialValueTracker",
     "OpenGLComplexValueTracker",
 ]
 
@@ -43,14 +42,43 @@ class OpenGLValueTracker(OpenGLMobject):
         """Increments (adds) a scalar value  to the ValueTracker"""
         self.set_value(self.get_value() + d_value)
 
+    def __bool__(self):
+        """Return whether the value of this value tracker evaluates as true."""
+        return bool(self.get_value())
+
     def __iadd__(self, d_value: float):
         """adds ``+=`` syntax to increment the value of the ValueTracker"""
         self.increment_value(d_value)
         return self
 
+    def __ifloordiv__(self, d_value: float):
+        """Set the value of this value tracker to the floor division of the current value by ``d_value``."""
+        self.set_value(self.get_value() // d_value)
+        return self
+
+    def __imod__(self, d_value: float):
+        """Set the value of this value tracker to the current value modulo ``d_value``."""
+        self.set_value(self.get_value() % d_value)
+        return self
+
+    def __imul__(self, d_value: float):
+        """Set the value of this value tracker to the product of the current value and ``d_value``."""
+        self.set_value(self.get_value() * d_value)
+        return self
+
+    def __ipow__(self, d_value: float):
+        """Set the value of this value tracker to the current value raised to the power of ``d_value``."""
+        self.set_value(self.get_value() ** d_value)
+        return self
+
     def __isub__(self, d_value: float):
         """adds ``-=`` syntax to decrement the value of the ValueTracker"""
         self.increment_value(-d_value)
+        return self
+
+    def __itruediv__(self, d_value: float):
+        """Sets the value of this value tracker to the current value divided by ``d_value``."""
+        self.set_value(self.get_value() / d_value)
         return self
 
     def interpolate(self, mobject1, mobject2, alpha, path_func=straight_path):
@@ -60,20 +88,6 @@ class OpenGLValueTracker(OpenGLMobject):
         """
         self.points = path_func(mobject1.points, mobject2.points, alpha)
         return self
-
-
-class OpenGLExponentialValueTracker(OpenGLValueTracker):
-    """
-    Operates just like ValueTracker, except it encodes the value as the
-    exponential of a position coordinate, which changes how interpolation
-    behaves
-    """
-
-    def get_value(self):
-        return np.exp(OpenGLValueTracker.get_value(self))
-
-    def set_value(self, value):
-        return OpenGLValueTracker.set_value(self, np.log(value))
 
 
 class OpenGLComplexValueTracker(OpenGLValueTracker):
