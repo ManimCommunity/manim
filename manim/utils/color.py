@@ -21,6 +21,7 @@ __all__ = [
 
 import random
 from enum import Enum
+from typing import Iterable, List, Union
 
 import numpy as np
 from colour import Color
@@ -155,6 +156,7 @@ class Colors(Enum):
 constants_names = []
 for name, value in Colors.__members__.items():
     name = name.upper()
+    value = value.value
     constants_names.append(name)
     locals()[name] = value
     if "GRAY" in name:
@@ -166,7 +168,7 @@ for name, value in Colors.__members__.items():
 __all__ += constants_names
 
 
-def color_to_rgb(color):
+def color_to_rgb(color: Union[Color, str]) -> np.ndarray:
     if isinstance(color, str):
         return hex_to_rgb(color)
     elif isinstance(color, Color):
@@ -175,46 +177,45 @@ def color_to_rgb(color):
         raise ValueError("Invalid color type")
 
 
-def color_to_rgba(color, alpha=1):
+def color_to_rgba(color: Union[Color, str], alpha: float = 1) -> np.ndarray:
     return np.array([*color_to_rgb(color), alpha])
 
 
-def rgb_to_color(rgb):
-    try:
-        return Color(rgb=rgb)
-    except Exception:
-        return Color(WHITE)
+def rgb_to_color(rgb: Iterable[float]) -> Color:
+    return Color(rgb=rgb)
 
 
-def rgba_to_color(rgba):
+def rgba_to_color(rgba: Iterable[float]) -> Color:
     return rgb_to_color(rgba[:3])
 
 
-def rgb_to_hex(rgb):
+def rgb_to_hex(rgb: Iterable[float]) -> str:
     return "#" + "".join("%02x" % int(255 * x) for x in rgb)
 
 
-def hex_to_rgb(hex_code):
+def hex_to_rgb(hex_code: str) -> np.ndarray:
     hex_part = hex_code[1:]
     if len(hex_part) == 3:
         hex_part = "".join([2 * c for c in hex_part])
     return np.array([int(hex_part[i : i + 2], 16) / 255 for i in range(0, 6, 2)])
 
 
-def invert_color(color):
+def invert_color(color: Color) -> Color:
     return rgb_to_color(1.0 - color_to_rgb(color))
 
 
-def color_to_int_rgb(color):
+def color_to_int_rgb(color: Color) -> np.ndarray:
     return (255 * color_to_rgb(color)).astype("uint8")
 
 
-def color_to_int_rgba(color, opacity=1.0):
+def color_to_int_rgba(color: Color, opacity: float = 1.0) -> np.ndarray:
     alpha = int(255 * opacity)
     return np.append(color_to_int_rgb(color), alpha)
 
 
-def color_gradient(reference_colors, length_of_output):
+def color_gradient(
+    reference_colors: Iterable[Color], length_of_output: int
+) -> List[Color]:
     if length_of_output == 0:
         return reference_colors[0]
     rgbs = list(map(color_to_rgb, reference_colors))
@@ -230,29 +231,34 @@ def color_gradient(reference_colors, length_of_output):
     ]
 
 
-def interpolate_color(color1, color2, alpha):
+def interpolate_color(color1: Color, color2: Color, alpha: float) -> Color:
     rgb = interpolate(color_to_rgb(color1), color_to_rgb(color2), alpha)
     return rgb_to_color(rgb)
 
 
-def average_color(*colors):
+def average_color(*colors: Color) -> Color:
     rgbs = np.array(list(map(color_to_rgb, colors)))
     mean_rgb = np.apply_along_axis(np.mean, 0, rgbs)
     return rgb_to_color(mean_rgb)
 
 
-def random_bright_color():
+def random_bright_color() -> Color:
     color = random_color()
     curr_rgb = color_to_rgb(color)
     new_rgb = interpolate(curr_rgb, np.ones(len(curr_rgb)), 0.5)
     return Color(rgb=new_rgb)
 
 
-def random_color():
+def random_color() -> Color:
     return random.choice([c.value for c in list(Colors)])
 
 
-def get_shaded_rgb(rgb, point, unit_normal_vect, light_source):
+def get_shaded_rgb(
+    rgb: np.ndarray,
+    point: np.ndarray,
+    unit_normal_vect: np.ndarray,
+    light_source: np.ndarray,
+) -> np.ndarray:
     to_sun = normalize(light_source - point)
     factor = 0.5 * np.dot(unit_normal_vect, to_sun) ** 3
     if factor < 0:
