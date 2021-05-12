@@ -147,7 +147,7 @@ Animations
             te = MathTex(r"\theta").move_to(
                 Angle(
                     line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
-                ).point_from_proportion(0.5)
+                ).angle_mobject.point_from_proportion(0.5)
             )
 
             self.add(line1, line_moving, a, te)
@@ -166,7 +166,7 @@ Animations
                 lambda x: x.move_to(
                     Angle(
                         line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
-                    ).point_from_proportion(0.5)
+                    ).angle_mobject.point_from_proportion(0.5)
                 )
             )
 
