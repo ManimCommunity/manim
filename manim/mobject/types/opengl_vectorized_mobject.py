@@ -769,7 +769,7 @@ class OpenGLVMobject(OpenGLMobject):
                 ),  # Add up (x1 + x2)*(y2 - y1)
             ]
         )
-    
+
     def get_direction(self):
         return shoelace_direction(self.get_start_anchors())
 
