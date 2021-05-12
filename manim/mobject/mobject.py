@@ -137,7 +137,7 @@ class Mobject(Container):
         Returns
         -------
         Optional[Callable[[Mobject, ...], Animation]]
-            The function returning the override animation or `None` if no such animation
+            The function returning the override animation or ``None`` if no such animation
             override is defined.
         """
         if animation_class in cls.animation_overrides:
