@@ -202,12 +202,7 @@ class TipableVMobject(metaclass=MetaVMobject):
 
     def pop_tips(self):
         start, end = self.get_start_and_end()
-        if config.renderer == "opengl":
-            from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-
-            result = OpenGLVGroup()
-        else:
-            result = VGroup()
+        result = self.get_group_class()()
         if self.has_tip():
             result.add(self.tip)
             self.remove(self.tip)
@@ -222,12 +217,7 @@ class TipableVMobject(metaclass=MetaVMobject):
         Returns a VGroup (collection of VMobjects) containing
         the TipableVMObject instance's tips.
         """
-        if config.renderer == "opengl":
-            from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-
-            result = OpenGLVGroup()
-        else:
-            result = VGroup()
+        result = self.get_group_class()()
         if hasattr(self, "tip"):
             result.add(self.tip)
         if hasattr(self, "start_tip"):
@@ -1490,12 +1480,9 @@ class CubicBezier(metaclass=MetaVMobject):
 
     def __init__(self, start_anchor, start_handle, end_handle, end_anchor, **kwargs):
         super().__init__(**kwargs)
-        if config.renderer == "opengl":
-            self.add_cubic_bezier_curve(
-                start_anchor, start_handle, end_handle, end_anchor
-            )
-        else:
-            self.set_points([start_anchor, start_handle, end_handle, end_anchor])
+        self.add_cubic_bezier_curve(
+            start_anchor, start_handle, end_handle, end_anchor
+        )
 
 
 class Polygon(metaclass=MetaVMobject):
