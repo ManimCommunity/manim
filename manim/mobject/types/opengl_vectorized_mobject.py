@@ -522,6 +522,10 @@ class OpenGLVMobject(OpenGLMobject):
             self.reverse_points()
         return self
 
+    def reverse_direction(self):
+        self.set_points(self.get_points()[::-1])
+        return self
+
     def get_bezier_tuples_from_points(self, points):
         nppc = self.n_points_per_curve
         remainder = len(points) % nppc

@@ -2407,8 +2407,8 @@ class Angle(metaclass=MetaVMobject):
                 norm = l1.get_length()
                 a1 = Angle(l1, l2, other_angle=True, radius=norm - 0.5).set_color(GREEN)
                 a2 = Angle(l1, l2, other_angle=True, radius=norm).set_color(GREEN)
-                q1 = a1.angle_mobject.get_points() #  save all coordinates of points of angle a1
-                q2 = a2.angle_mobject.reverse_direction().get_points()  #  save all coordinates of points of angle a1 (in reversed direction)
+                q1 = a1.get_points() #  save all coordinates of points of angle a1
+                q2 = a2.reverse_direction().get_points()  #  save all coordinates of points of angle a1 (in reversed direction)
                 pnts = np.concatenate([q1, q2, q1[0].reshape(1, 3)])  # adds points and ensures that path starts and ends at same point
                 mfill = VMobject().set_color(ORANGE)
                 mfill.set_points_as_corners(pnts).set_fill(GREEN, opacity=1)
@@ -2464,11 +2464,10 @@ class Angle(metaclass=MetaVMobject):
                 + quadrant[0] * radius * line1.get_unit_vector()
                 + quadrant[1] * radius * line2.get_unit_vector()
             )
-            self.angle_mobject = Elbow(**kwargs)
-            self.angle_mobject.set_points_as_corners(
+            angle_mobject = Elbow(**kwargs)
+            angle_mobject.set_points_as_corners(
                 [anchor_angle_1, anchor_middle, anchor_angle_2]
             )
-            self.add(self.angle_mobject)
         else:
             angle_1 = angle_of_vector(anchor_angle_1 - inter)
             angle_2 = angle_of_vector(anchor_angle_2 - inter)
@@ -2486,14 +2485,14 @@ class Angle(metaclass=MetaVMobject):
                 else:
                     angle_fin = -2 * np.pi + (angle_2 - angle_1)
 
-            self.angle_mobject = Arc(
+            angle_mobject = Arc(
                 radius=radius,
                 angle=angle_fin,
                 start_angle=start_angle,
                 arc_center=inter,
                 **kwargs
             )
-            self.add(self.angle_mobject)
+
             if dot:
                 if dot_radius is None:
                     dot_radius = radius / 10
@@ -2509,6 +2508,7 @@ class Angle(metaclass=MetaVMobject):
                 )
                 right_dot.move_to(dot_anchor)
                 self.add(right_dot)
+        self.set_points(angle_mobject.get_points())
 
 
 class RightAngle(Angle):
