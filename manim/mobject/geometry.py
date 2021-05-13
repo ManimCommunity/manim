@@ -2264,18 +2264,19 @@ class Angle(Arc, Elbow):
 
     Parameters
     ----------
-    line1 : :class:`Line`
+    line1 :
         The first line.
-    line2 : :class:`Line`
+    line2 :
         The second line.
-    radius : :class:`float`
+    radius :
         The radius of the :class:`Arc`.
     quadrant : Sequence[:class:`int`]
         A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used.
         The first value indicates whether to anchor the arc on the first line closer to the end point (1)
-        or start point (-1), and the second value functions similarly for the end (1) or start (-1) of the second line.
+        or start point (-1), and the second value functions similarly for the
+        end (1) or start (-1) of the second line.
         Possibilities: (1,1), (-1,1), (1,-1), (-1,-1).
-    other_angle : :class:`bool`
+    other_angle :
         Toggles between the two possible angles defined by two points and an arc center. If set to
         False (default), the arc will always go counterclockwise from the point on line1 until
         the point on line2 is reached. If set to True, the angle will go clockwise from line1 to line2.
@@ -2369,11 +2370,11 @@ class Angle(Arc, Elbow):
 
     def __init__(
         self,
-        line1,
-        line2,
-        radius=None,
+        line1: Line,
+        line2: Line,
+        radius: float = None,
         quadrant=(1, 1),
-        other_angle=False,
+        other_angle: bool = False,
         dot=False,
         dot_radius=None,
         dot_distance=0.55,
