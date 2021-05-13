@@ -27,6 +27,10 @@ for i, arg in enumerate(sys.argv):
         else:
             parsed_renderer = sys.argv[i + 1]
         config.renderer = parsed_renderer
+    if arg == "--use_opengl_renderer":
+        config.renderer = "opengl"
+    if arg == "--use_webgl_renderer":
+        config.renderer = "webgl"
 
 
 from .animation.animation import *
