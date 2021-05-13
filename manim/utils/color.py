@@ -1,10 +1,4 @@
-"""Colors and utility functions for conversion between different color models.
-
-
-
-
-
-"""
+"""Colors and utility functions for conversion between different color models."""
 
 __all__ = [
     "color_to_rgb",
