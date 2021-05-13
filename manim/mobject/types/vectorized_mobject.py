@@ -48,22 +48,23 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 
 
 class MetaVMobject(ABCMeta):
-    def __call__(cls, *args, **kwargs):
-        if config.renderer == "opengl":
-            new_cls = type(
-                cls.__name__,
-                (
-                    cls,
-                    OpenGLVMobject,
-                ),
-                {},
-            )
-            return super(MetaVMobject, new_cls).__call__(*args, **kwargs)
-        if config.renderer == "cairo" or config.renderer == "webgl":
-            new_cls = type(cls.__name__, (cls, VMobject), {})
-            return super(MetaVMobject, new_cls).__call__(*args, **kwargs)
+    """Metaclass for initializing corresponding classes as either inheriting from
+    VMobject or OpenGLVMobject, depending on the value of ``config.renderer`` at
+    initialization time.
 
-        raise ValueError("Renderer not supported.")
+    Note that with this implementation, changing the value of ``config.renderer``
+    after Manim has been imported won't have the desired effect and will lead to
+    spurious errors.
+    """
+
+    def __new__(cls, name, bases, namespace):
+        if len(bases) == 0:
+            if config.renderer == "opengl":
+                bases = (OpenGLVMobject,)
+            else:
+                bases = (VMobject,)
+
+        return super().__new__(cls, name, bases, namespace)
 
 
 class VMobject(Mobject):

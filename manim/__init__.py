@@ -8,9 +8,25 @@ except ModuleNotFoundError:
 __version__ = importlib_metadata.version(__name__)
 
 
+import sys
+
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
 from ._config import *
+
+# Workaround to set the renderer passed via CLI args *before* importing
+# Manim's classes (as long as the metaclass approach for switching
+# between OpenGL and cairo rendering is in place, classes depend
+# on the value of config.renderer).
+for ind, arg in enumerate(sys.argv):
+    if arg.startswith("--renderer"):
+        if "=" in arg:
+            _, parsed_renderer = arg.split("=")
+        else:
+            parsed_renderer = sys.argv[ind + 1]
+        config.renderer = parsed_renderer
+
+
 from .animation.animation import *
 from .animation.composition import *
 from .animation.creation import *
