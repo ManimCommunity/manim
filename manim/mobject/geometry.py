@@ -812,6 +812,7 @@ class Line(TipableVMobject):
             self.set_points(arc.get_points())
         else:
             self.set_points_as_corners([start, end])
+
         self.account_for_buff(buff)
 
     init_points = generate_points
@@ -916,10 +917,12 @@ class Line(TipableVMobject):
     def set_angle(self, angle, about_point=None):
         if about_point is None:
             about_point = self.get_start()
+
         self.rotate(
             angle - self.get_angle(),
             about_point=about_point,
         )
+
         return self
 
     def set_length(self, length):
@@ -1361,6 +1364,7 @@ class Vector(Arrow):
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
+
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
     def coordinate_label(
@@ -1518,7 +1522,6 @@ class Polygon(metaclass=MetaVMobject):
 
     def __init__(self, *vertices, color=BLUE, **kwargs):
         super().__init__(color=color, **kwargs)
-        self.vertices = vertices
         self.set_points_as_corners([*vertices, vertices[0]])
 
     def get_vertices(self):
@@ -2508,6 +2511,7 @@ class Angle(metaclass=MetaVMobject):
                 )
                 right_dot.move_to(dot_anchor)
                 self.add(right_dot)
+
         self.set_points(angle_mobject.get_points())
 
 

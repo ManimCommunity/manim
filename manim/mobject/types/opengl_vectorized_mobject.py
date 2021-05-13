@@ -518,8 +518,10 @@ class OpenGLVMobject(OpenGLMobject):
     def force_direction(self, target_direction):
         if target_direction not in ("CW", "CCW"):
             raise ValueError('Invalid input for force_direction. Use "CW" or "CCW"')
+
         if self.get_direction() != target_direction:
             self.reverse_points()
+
         return self
 
     def reverse_direction(self):
