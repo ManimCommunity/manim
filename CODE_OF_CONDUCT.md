@@ -4,7 +4,7 @@
 
 
 
-   > TL;DR Be excellent to each other; we're a community after all. If you run into issues with others in our community, please [contact](https://discord.gg/mMRrZQW) a Manim Community Dev, or Moderator.
+   > TL;DR Be excellent to each other; we're a community after all. If you run into issues with others in our community, please [contact](https://www.manim.community/discord/) a Manim Community Dev, or Moderator.
 
 ## Purpose
 
@@ -68,7 +68,7 @@ This Code of Conduct applies to the following online spaces:
 
 - The [ManimCommunity GitHub Organization](https://github.com/ManimCommunity) and all of its repositories
 
-- The Manim [Discord](https://discord.gg/mMRrZQW)
+- The Manim [Discord](https://www.manim.community/discord/)
 
 - The Manim [Reddit](https://www.reddit.com/r/manim/)
 
@@ -104,7 +104,7 @@ Thank you for helping make this a welcoming, friendly community for everyone.
 
 ## Contact Information
 
-If you believe someone is violating the code of conduct, or have any other concerns, please contact a Manim Community Dev, or Moderator immediately. They can be reached on Manim's Community [Discord](https://discord.gg/mMRrZQW).
+If you believe someone is violating the code of conduct, or have any other concerns, please contact a Manim Community Dev, or Moderator immediately. They can be reached on Manim's Community [Discord](https://www.manim.community/discord/).
 
 
 
