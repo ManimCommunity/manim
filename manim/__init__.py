@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# flake8: noqa
+
 try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
