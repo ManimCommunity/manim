@@ -256,7 +256,8 @@ for name, value in Colors.__members__.items():
 # result of the following print statement is added instead.
 
 # print(constants_names)
-__all__ += [
+
+__all__ += [  # noqa: F822 # used to stop flake8 from complaining about undefined vars
     "WHITE",
     "GRAY_A",
     "GREY_A",
