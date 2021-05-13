@@ -6,7 +6,7 @@ List of known installation problems.
 ``pip install manim`` fails when installing manimpango?
 -------------------------------------------------------
 Most likely this means that pip was not able to use our pre-built wheels
-of ``manimpango``. Let us know (via our `Discord <https://discord.gg/mMRrZQW>`_
+of ``manimpango``. Let us know (via our `Discord <https://www.manim.community/discord/>`_
 or by opening a
 `new issue on GitHub <https://github.com/ManimCommunity/ManimPango/issues/new>`_)
 which architecture you would like to see supported, and we'll see what we

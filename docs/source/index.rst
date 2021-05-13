@@ -22,7 +22,7 @@ information here will make it easier for newcomers to get started using
 
     We are curious to see the awesome projects you build using this library, feel
     free to share your projects with us `on Twitter <https://twitter.com/manim_community>`_,
-    `Reddit <https://www.reddit.com/r/manim/>`_, or via `Discord <https://discord.gg/mMRrZQW>`_.
+    `Reddit <https://www.reddit.com/r/manim/>`_, or via `Discord <https://www.manim.community/discord/>`_.
 
     In case you publish your work made with Manim, we would appreciate if you
     add a link to `our homepage <https://www.manim.community>`_ or
