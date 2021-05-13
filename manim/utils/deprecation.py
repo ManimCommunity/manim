@@ -373,7 +373,6 @@ def deprecated_params(
             params.append(redirector[0])
         else:
             params.extend(inspect.getargspec(redirector).args)
-            print(inspect.getargspec(redirector).args)
     # Keep ordering of params so that warning message is consistently the same
     # This will also help pass unit testing
     params = list(dict.fromkeys(params))
