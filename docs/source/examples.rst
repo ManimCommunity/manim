@@ -318,8 +318,6 @@ Plotting with Manim
            )
            labels = ax.get_axis_labels(x_label="x", y_label="f(x)")
            
-           stri = r"{\underset {x\in S}{\operatorname {arg\,min} }}\,f(x):=\{x\in S~:~f(s)\geq f(x){\text{ for all }}s\in S\}"
-           self.add(MathTex(stri).scale(0.8).to_corner(UR))
            t = ValueTracker(0)
 
            def func(x):
