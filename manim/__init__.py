@@ -20,12 +20,12 @@ from ._config import *
 # Manim's classes (as long as the metaclass approach for switching
 # between OpenGL and cairo rendering is in place, classes depend
 # on the value of config.renderer).
-for ind, arg in enumerate(sys.argv):
+for i, arg in enumerate(sys.argv):
     if arg.startswith("--renderer"):
         if "=" in arg:
             _, parsed_renderer = arg.split("=")
         else:
-            parsed_renderer = sys.argv[ind + 1]
+            parsed_renderer = sys.argv[i + 1]
         config.renderer = parsed_renderer
 
 
