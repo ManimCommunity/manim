@@ -304,4 +304,4 @@ look like this:
     }
 
 If you have any questions, please don't hesitate to ask on `Discord
-<https://discord.gg/mMRrZQW>`_, in your pull request, or in an issue.
+<https://www.manim.community/discord/>`_, in your pull request, or in an issue.
