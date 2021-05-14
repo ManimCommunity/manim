@@ -12,6 +12,7 @@
 
 import os
 import sys
+import time
 from distutils.sysconfig import get_python_lib
 from pathlib import Path
 
@@ -37,7 +38,7 @@ if os.environ.get("READTHEDOCS") == "True":
 # -- Project information -----------------------------------------------------
 
 project = "Manim"
-copyright = "2020, The Manim Community Dev Team"
+copyright = f"2020-{time.strftime('%Y')}, The Manim Community Dev Team"
 author = "The Manim Community Dev Team"
 
 
