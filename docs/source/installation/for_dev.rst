@@ -1,7 +1,7 @@
-Manim Installation For Developers
-=================================
+For Developers
+==============
 
-	This documentation is for developers who want to contribute to ``ManimCommunity/manim``.
+	This documentation is for developers who want to contribute to `ManimCommunity/manim <https://github.com/ManimCommunity/manim>`_.
 
 Thank you for your interest in contributing! Please see our documentation on
 :doc:`../contributing` to take the necessary steps before installing Manim as a
@@ -54,7 +54,7 @@ Installing System Dependencies
 ******************************
 
 Please follow the instructions under :ref:`installing-manim` to install all
-dependencies (e.g. ``LaTeX``, ``ffmpeg``, etc.). Afterwards, proceed with the
+dependencies (e.g. ``LaTeX``, ``ffmpeg``, etc.). Afterward, proceed with the
 installation with Poetry.
 
 .. important:: Windows users can skip the steps to install Pycairo.
@@ -146,4 +146,4 @@ For Developers with pip
    python3 -m pip install .
 
 Please see :doc:`../contributing` for more details about contributing to Manim.
-Since `pip` doesn't implement editable installations from our pyproject.toml
+Since `pip` doesn't implement editable installations from our ``pyproject.toml``
