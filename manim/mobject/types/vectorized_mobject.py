@@ -35,7 +35,7 @@ from ...utils.bezier import (
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
-from ...utils.space_ops import rotate_vector, shoelace_direction, rotation_matrix
+from ...utils.space_ops import rotate_vector, rotation_matrix, shoelace_direction
 from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
