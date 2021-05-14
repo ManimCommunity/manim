@@ -1655,7 +1655,7 @@ class RegularPolygram(Polygram):
         to draw a line between them. Every ``density``-th
         vertex is connected.
     radius
-        The radius of the vertices.
+        The radius of the circle that the vertices are placed on.
     start_angle
         The angle the vertices start at; the rotation of
         the :class:`RegularPolygram`.
@@ -1768,18 +1768,19 @@ class Star(Polygon):
     n
         How many points on the :class:`Star`.
     outer_radius
-        The radius of the outer vertices.
+        The radius of the circle that the outer vertices are placed on.
     inner_radius
-        The radius of the inner vertices.
+        The radius of the circle that the inner vertices are placed on.
 
         If unspecified, the inner radius will be
         calculated such that the edges of the :class:`Star`
         perfectly follow the edges of its :class:`RegularPolygram`
         counterpart.
     density
-        The density of the :class:`Star`.
+        The density of the :class:`Star`. Only used if
+        ``inner_radius`` is unspecified.
 
-        Only used if ``inner_radius`` is unspecified.
+        See :class:`RegularPolygram` for more information.
     start_angle
         The angle the vertices start at; the rotation of
         the :class:`Star`.

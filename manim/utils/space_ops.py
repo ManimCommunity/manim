@@ -313,7 +313,7 @@ def regular_vertices(
     n
         The number of vertices
     radius
-        The radius of the vertices.
+        The radius of the circle that the vertices are placed on.
     start_angle
         The angle the vertices start at.
 
