@@ -21,9 +21,10 @@ below)
 \* You used documentation for multiple versions (such as the
 readme for 3b1b/manim and this documentation)
 
-Note: As this is the documentation for the community version, we can
-only help with the installation of this library. If you would like to
-install other versions of manim, please refer to their documentation.
+.. NOTE::
+   As this is the documentation for the community version, we can
+   only help with the installation of this library. If you would like to
+   install other versions of manim, please refer to their documentation.
 
 Identifying files written for a different version of manim
 ----------------------------------------------------------
