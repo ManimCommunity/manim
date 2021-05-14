@@ -53,7 +53,7 @@ def get_norm(vect):
 
 
 def norm_squared(v):
-    return np.linalg.dot(v, v)
+    return np.dot(v, v)
 
 
 # Quaternions
