@@ -1535,9 +1535,10 @@ class Polygram(metaclass=MetaVMobject):
             # Allow any iterable to be passed
             vertices = iter(vertices)
             first_vertex = next(vertices)
+            first_vertex = np.array(first_vertex)
 
             self.start_new_path(first_vertex)
-            self.add_points_as_corners([*vertices, first_vertex])
+            self.add_points_as_corners([*[np.array(vertex) for vertex in vertices], first_vertex])
 
     def get_vertices(self) -> np.ndarray:
         """Gets the vertices of the :class:`Polygram`.
