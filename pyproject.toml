@@ -76,7 +76,7 @@ isort = "^5.8.0"
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"
 "Changelog" = "https://docs.manim.community/en/stable/changelog.html"
 "Twitter" = "https://twitter.com/manim_community"
-"Discord" = "https://discord.gg/mMRrZQW"
+"Discord" = "https://www.manim.community/discord/"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
