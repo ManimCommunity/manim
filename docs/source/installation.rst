@@ -56,3 +56,8 @@ found at `Docker Hub <https://hub.docker.com/r/manimcommunity/manim>`_.
 Installation For Developers
 ***************************
 If you want to contribute to manim, follow the :doc:`contributing` instructions.
+
+Verifying installation
+**********************
+Please proceed to our :doc:`quickstart guide <tutorials/quickstart>` to run a simple file to test your installation.
+If it did not work, please refer to our :doc:`troubleshootinig guide <installation/troubleshooting>` for help.
