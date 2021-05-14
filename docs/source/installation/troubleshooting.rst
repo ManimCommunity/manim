@@ -11,16 +11,10 @@ as follows:
 - ``There are no scenes in that module`` 
 - ``ModuleNotFoundError: No module named 'manim'`` 
 - ``ModuleNotFoundError: No module named 'manimlib'`` 
-- You followed any
-tutorial created before October 2020 (because the community edition did
-not exist before then) 
-- You cloned a repository on GitHub
-(installation of the community version for normal use does not require
-the cloning of any repository) 
-- Different import statements (explained
-below) 
-- You used documentation for multiple versions (such as the
-readme for 3b1b/manim and this documentation)
+- You followed any tutorial created before October 2020 (because the community edition did not exist before then) 
+- You cloned a repository on GitHub (installation of the community version for normal use does not require the cloning of any repository) 
+- Different import statements (explained below) 
+- You used documentation for multiple versions (such as the readme for 3b1b/manim and this documentation)
 
 .. NOTE::
    As this is the documentation for the community version, we can
