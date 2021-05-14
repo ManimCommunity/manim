@@ -35,7 +35,7 @@ from ...utils.bezier import (
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
-from ...utils.space_ops import rotate_vector, shoelace_direction
+from ...utils.space_ops import rotate_vector, shoelace_direction, rotation_matrix
 from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
@@ -414,6 +414,16 @@ class VMobject(Mobject):
             self.sheen_direction = direction
         return self
 
+    def rotate_sheen_direction(self, angle, axis=OUT, family=True):
+        matr = rotation_matrix(angle, axis).T
+        matr[2] = np.zeros(3)
+        if family:
+            for submob in self.get_family():
+                submob.sheen_direction = np.dot(submob.sheen_direction, matr)
+        else:
+            self.sheen_direction = np.dot(self.sheen_direction, matr)
+        return self
+
     def set_sheen(self, factor, direction=None, family=True):
         if family:
             for submob in self.submobjects:
@@ -732,6 +742,17 @@ class VMobject(Mobject):
         self.scale_handle_to_anchor_distances(1.0 / factor)
         if self.make_smooth_after_applying_functions:
             self.make_smooth()
+        return self
+
+    def rotate(
+        self,
+        angle,
+        axis=OUT,
+        about_point: Optional[Sequence[float]] = None,
+        **kwargs,
+    ):
+        self.rotate_sheen_direction(angle, axis)
+        Mobject.rotate(self, angle, axis, about_point, **kwargs)
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> "VMobject":
