@@ -12,7 +12,7 @@ __all__ = [
 import fractions as fr
 import math
 import numbers
-from typing import Iterable, Optional
+from typing import Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -711,7 +711,7 @@ class PolarPlane(Axes):
 
     Parameters
     ----------
-    azimuth_step : :class:`float`, optional
+    azimuth_step
         The number of divisions in the azimuth. If ``None`` is specified then it will use the default
         specified by ``azimuth_units``:
 
@@ -722,16 +722,16 @@ class PolarPlane(Axes):
 
         A non-integer value will result in a partial division at the end of the circle.
 
-    size : :class:`float`, optional
+    size
         The diameter of the plane.
 
-    radius_step : :class:`float`, optional
+    radius_step
         The step of faded lines in the radius.
 
-    radius_max : :class:`float`, optional
+    radius_max
         The maximum value of the radius.
 
-    azimuth_units : Optional[:class:`str`], optional
+    azimuth_units
         Specifies a default labelling system for the azimuth. Choices are:
 
         - ``"PI radians"``: Fractional labels in the interval :math:`\left[0, 2\pi\right]` with :math:`\pi` as a constant.
@@ -762,42 +762,42 @@ class PolarPlane(Axes):
                     self.play(FadeInFrom(polarplot_gradians, RIGHT))
                     self.wait(2)
 
-    azimuth_offset : :class:`float`, optional
+    azimuth_offset
         The angle offset of the azimuth, expressed in radians.
 
-    azimuth_direction : :class:`str`, optional
+    azimuth_direction
         The direction of the azimuth.
 
         - ``"CW"``: Clockwise.
         - ``"CCW"``: Anti-clockwise.
 
-    azimuth_label_buff : :class:`int`, optional
+    azimuth_label_buff
         The buffer for the azimuth labels.
 
-    azimuth_label_scale : :class:`int`, optional
+    azimuth_label_scale
         The scale of the azimuth labels.
 
-    radius_config: :class:`dict`, optional
+    radius_config
         The axis config for the radius.
     """
 
     def __init__(
         self,
-        radius_max=config["frame_y_radius"],
-        size=None,
-        radius_step=1,
-        azimuth_step=None,
-        azimuth_units="PI radians",
-        azimuth_offset=0,
-        azimuth_direction="CCW",
-        azimuth_label_buff=SMALL_BUFF,
-        azimuth_label_scale=0.5,
-        radius_config=None,
-        background_line_style=None,
-        faded_line_style=None,
-        faded_line_ratio=1,
-        make_smooth_after_applying_functions=True,
-        **kwargs,
+        radius_max: Optional[float]=config["frame_y_radius"],
+        size: Optional[float]=None,
+        radius_step: Optional[float]=1,
+        azimuth_step: Optional[float]=None,
+        azimuth_units: Optional[Union[str, None]]="PI radians",
+        azimuth_offset: Optional[float]=0,
+        azimuth_direction: Optional[str]="CCW",
+        azimuth_label_buff: Optional[float]=SMALL_BUFF,
+        azimuth_label_scale: Optional[float]=0.5,
+        radius_config: Optional[dict]=None,
+        background_line_style: Optional[dict]=None,
+        faded_line_style: Optional[dict]=None,
+        faded_line_ratio: Optional[int]=1,
+        make_smooth_after_applying_functions: Optional[bool]=True,
+        **kwargs
     ):
 
         # error catching
@@ -897,7 +897,7 @@ class PolarPlane(Axes):
             self.background_lines,
         )
 
-    def get_lines(self):
+    def get_lines(self) -> Tuple[VGroup, VGroup]:
         """Generate all the lines and circles, faded and not faded.
 
         Returns
@@ -953,7 +953,13 @@ class PolarPlane(Axes):
     def get_y_unit_size(self):
         return self.get_x_axis().get_unit_size()
 
-    def get_axes(self):
+    def get_axes(self) -> VGroup:
+        """Gets the axes.
+        Returns
+        -------
+        :class:`~.VGroup`
+            A pair of axes.
+        """
         return self.axes
 
     def get_vector(self, coords, **kwargs):
@@ -969,35 +975,35 @@ class PolarPlane(Axes):
                 mob.insert_n_curves(num_inserted_curves - num_curves)
         return self
 
-    def polar_to_point(self, radius, azimuth):
+    def polar_to_point(self, radius: float, azimuth: float) -> np.ndarray:
         r"""Gets a point from polar coordinates.
 
         Parameters
         ----------
-        radius : :class:`float`
+        radius
             The coordinate radius (:math:`r`).
 
-        azimuth : :class:`float`
+        azimuth
             The coordinate azimuth (:math:`\theta`).
 
         Returns
         -------
-        :class:`numpy.ndarray`
+        numpy.ndarray
             The point.
         """
 
         return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
 
-    def pr2pt(self, radius, azimuth):
+    def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
         """Abbreviation for :meth:`polar_to_point`"""
         return self.polar_to_point(radius, azimuth)
 
-    def point_to_polar(self, point):
+    def point_to_polar(self, point: np.ndarray) -> Tuple[float, float]:
         r"""Gets polar coordinates from a point.
 
         Parameters
         ----------
-        point : :class:`numpy.ndarray`
+        point
             The point.
 
         Returns
@@ -1008,16 +1014,33 @@ class PolarPlane(Axes):
         x, y = self.point_to_coords(point)
         return np.sqrt(x ** 2 + y ** 2), np.arctan2(y, x)
 
-    def pt2pr(self, point):
+    def pt2pr(self, point: np.ndarray) -> Tuple[float, float]:
         """Abbreviation for :meth:`point_to_polar`"""
         return self.point_to_polar(point)
 
-    def get_coordinate_labels(self, r_vals, a_vals, **kwargs):
-        if r_vals is None:
-            r_vals = [r for r in self.get_x_axis().get_tick_range() if r >= 0]
-        if a_vals is None:
-            a_vals = np.arange(0, 1, 1 / self.azimuth_step)
-        r_mobs = self.get_x_axis().add_numbers(r_vals)
+    def get_coordinate_labels(
+        self,
+        r_values: Optional[Iterable[float]] = None,
+        a_values: Optional[Iterable[float]] = None,
+        **kwargs,
+    ) -> VDict:
+        """Gets labels for the coordinates
+        Parameters
+        ----------
+        r_values
+            Iterable of values along the radius, by default None.
+        a_values
+            Iterable of values along the azimuth, by default None.
+        Returns
+        -------
+        VDict
+            Labels for the radius and azimuth values.
+        """
+        if r_values is None:
+            r_values = [r for r in self.get_x_axis().get_tick_range() if r >= 0]
+        if a_values is None:
+            a_values = np.arange(0, 1, 1 / self.azimuth_step)
+        r_mobs = self.get_x_axis().add_numbers(r_values)
         if self.azimuth_direction == "CCW":
             d = 1
         elif self.azimuth_direction == "CW":
@@ -1037,7 +1060,7 @@ class PolarPlane(Axes):
                     ]
                 ),
             }
-            for i in a_vals
+            for i in a_values
         ]
         if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
             a_tex = [
@@ -1091,20 +1114,20 @@ class PolarPlane(Axes):
         self.coordinate_labels = VGroup(r_mobs, a_mobs)
         return self.coordinate_labels
 
-    def add_coordinates(self, r_vals=None, a_vals=None):
-        r"""Gets polar coordinates from a point.
-
+    def add_coordinates(
+        self,
+        r_values: Optional[Iterable[float]] = None,
+        a_values: Optional[Iterable[float]] = None,
+    ):
+        """Adds the coordinates.
         Parameters
         ----------
-        point : :class:`numpy.ndarray`
-            The point.
-
-        Returns
-        -------
-        Tuple[:class:`float`, :class:`float`]
-            The coordinate radius (:math:`r`) and the coordinate azimuth (:math:`\theta`).
+        r_values
+            Iterable of values along the radius, by default None.
+        a_values
+            Iterable of values along the azimuth, by default None.
         """
-        self.add(self.get_coordinate_labels(r_vals, a_vals))
+        self.add(self.get_coordinate_labels(r_values, a_values))
         return self
 
     def get_radian_label(self, number):
