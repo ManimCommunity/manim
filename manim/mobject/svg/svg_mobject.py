@@ -20,7 +20,7 @@ from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
 from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-from ...mobject.types.vectorized_mobject import VGroup, VMobject, MetaVMobject
+from ...mobject.types.vectorized_mobject import MetaVMobject, VGroup, VMobject
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
 
