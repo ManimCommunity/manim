@@ -35,7 +35,7 @@ can help in identifying what version of manim files are written for:
 +--------------+-------------------------+----------------------------+-----------------------------------------+
 
 If you are a beginner, you should only attempt to run files written for
-your version. Files written for a different version of manim wil
+your version. Files written for a different version of manim will
 generally not work without some modification.
 
 Identifying the version you are running
@@ -137,7 +137,10 @@ In this case, run
 
 If the output does **not** contain ``--libgs=filename``, this means your ``dvisvgm`` does not currently support PostScript. You must get another binary.
 
-If, however, ``--libgs=filename`` appears in the help, that means that your ``dvisvgm`` needs the Ghostscript library in order to support PostScript. Search for ``libgs.so`` (on Linux, probably in ``/usr/local/lib`` or ``/usr/lib``) or ``gsdll32.dll`` (on 32-bit Windows, probably in ``C:\windows\system32``) or ``gsdll64.dll`` (on 64-bit Windows, probably in ``c:\windows\system32`` -- yes 32) or ``libgsl.dylib`` (on Mac OS, probably in ``/usr/local/lib`` or ``/opt/local/lib``). Please look carefully, as the file might be located elsewhere, e.g. in the directory where Ghostscript is installed.
+If, however, ``--libgs=filename`` appears in the help, that means that your ``dvisvgm`` needs the Ghostscript library to support PostScript. Search for 
+``libgs.so`` (on Linux, probably in ``/usr/local/lib`` or ``/usr/lib``) or ``gsdll32.dll`` (on 32-bit Windows, probably in ``C:\windows\system32``) or 
+``gsdll64.dll`` (on 64-bit Windows, probably in ``c:\windows\system32`` -- yes 32) or ``libgsl.dylib`` (on Mac OS, probably in ``/usr/local/lib`` or 
+``/opt/local/lib``). Please look carefully, as the file might be located elsewhere, e.g. in the directory where Ghostscript is installed.
 
 As soon as you have found the library, try (on Mac OS or Linux)
 
@@ -154,7 +157,8 @@ or (on Windows)
   dvisvgm -l
 
 
-You should now see ``ps    dvips PostScript specials`` in the output. Refer to your operating system's documentation to find out how you can set or export the environment variable ``LIBGS`` automatically whenever you open a shell.
+You should now see ``ps    dvips PostScript specials`` in the output. Refer to your operating system's documentation to find out 
+how you can set or export the environment variable ``LIBGS`` automatically whenever you open a shell.
 
 As a last check, you can run
 

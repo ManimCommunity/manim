@@ -132,8 +132,7 @@ Manim will look for ``__all__`` keyword defined in ``manim_plugintemplate`` and
 everything as a global variable one by one.
 
 If ``object_reference`` is a function, Manim calls the function and expects the
-function returns a list of modules or functions that needs to be defined globally and
-in defined it.
+function to return a list of modules or functions that needs to be defined globally.
 
 For example,
 

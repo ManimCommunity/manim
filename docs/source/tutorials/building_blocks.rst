@@ -244,8 +244,8 @@ your scene by calling the :meth:`~.Scene.play` method.
 Put simply, animations are procedures that interpolate between two mobjects.
 For example, :code:`FadeIn(square)` starts with a fully transparent version of
 :code:`square` and ends with a fully opaque version, interpolating between them
-by gradually increasing the opacity.  :class:`.FadeOut` oppositely: it 
-interpolates from fully opaque to fully transparent.  As another
+by gradually increasing the opacity.  :class:`.FadeOut` works in the opposite
+way: it interpolates from fully opaque to fully transparent.  As another
 example, :class:`.Rotate` starts with the mobject passed to it as argument, and
 ends with the same object but rotated by a certain amount, this time
 interpolating the mobject's angle instead of its opacity.

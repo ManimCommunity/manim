@@ -9,7 +9,7 @@ managers `Scoop <https://shoop.sh>`_ and `Chocolatey <https://chocolatey.org/ins
 Installing using Scoop
 **********************
 
-First,    you need to install Scoop, which is a command-line installer for Windows
+First, you need to install Scoop, which is a command-line installer for Windows
 systems. Please refer to `this link
 <https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`_ for
 instructions.
