@@ -680,9 +680,7 @@ class Graph(metaclass=MetaVMobject):
 
             >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
             >>> removed = G.remove_vertices(2, 3); removed
-            Group
-            >>> removed.submobjects
-            [Line, Line, Dot, Dot]
+            VGroup(Line, Line, Dot, Dot)
             >>> G
             Graph on 1 vertices and 0 edges
 
