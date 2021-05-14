@@ -214,7 +214,7 @@ class SVGPathMobject(metaclass=MetaVMobject):
     def __init__(self, path_string, **kwargs):
         self.path_string = path_string
         if config.renderer == "opengl":
-            kwargs['long_lines'] = True
+            kwargs["long_lines"] = True
         super().__init__(**kwargs)
         self.current_path_start = np.zeros((1, self.dim))
 

@@ -86,9 +86,7 @@ class SVGMobject(metaclass=MetaVMobject):
             "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
             "should_remove_null_curves": should_remove_null_curves,
         }
-        super().__init__(
-            fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
-        )
+        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
         self.move_into_position(width, height)
 
     def ensure_valid_file(self):
@@ -135,7 +133,7 @@ class SVGMobject(metaclass=MetaVMobject):
             else:
                 self.add(*mobjects[0].submobjects)
         doc.unlink()
-    
+
     init_points = generate_points
 
     def get_mobjects_from(
@@ -241,7 +239,9 @@ class SVGMobject(metaclass=MetaVMobject):
         VMobjectFromSVGPathstring
             A VMobject from the given path string, or d attribute.
         """
-        return SVGPathMobject(path_string, **self.path_string_config, **parse_style(style))
+        return SVGPathMobject(
+            path_string, **self.path_string_config, **parse_style(style)
+        )
 
     def attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.

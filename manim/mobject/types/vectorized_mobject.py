@@ -1890,7 +1890,7 @@ class VectorizedPoint(metaclass=MetaVMobject):
         self.set_points(np.array([location]))
 
     basecls = OpenGLVMobject if config.renderer == "opengl" else VMobject
-    
+
     @basecls.width.getter
     def width(self):
         return self.artificial_width
