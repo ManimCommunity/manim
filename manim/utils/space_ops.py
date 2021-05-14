@@ -35,7 +35,7 @@ __all__ = [
 import itertools as it
 import math
 from functools import reduce
-from typing import Callable, List, Optional, Sequence, Tuple, TypeVar, Union
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -59,13 +59,15 @@ def norm_squared(v):
 # TODO, implement quaternion type
 
 
-def quaternion_mult(*quats: Sequence[float]) -> List[Union[float, np.ndarray]]:
-    """Gets the Hamilton product the quaternions provided.
+def quaternion_mult(
+    *quats: Sequence[float],
+) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
+    """Gets the Hamilton product of the quaternions provided.
     For more about the quaternion multiplication see: https://en.wikipedia.org/wiki/Quaternion
 
     Returns
     -------
-    List[Union[float, np.ndarray]]
+    Union[np.ndarray, List[Union[float, np.ndarray]]]
         Returns a list of product of two quaternions.
     """
     if config.renderer == "opengl":
@@ -100,7 +102,7 @@ def quaternion_mult(*quats: Sequence[float]) -> List[Union[float, np.ndarray]]:
 
 def quaternion_from_angle_axis(
     angle: float, axis: np.ndarray, axis_normalized: bool = False
-) -> np.ndarray:
+) -> List[float]:
     """Gets a quaternion from an angle and an axis.
     For more information, check: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 
@@ -115,7 +117,7 @@ def quaternion_from_angle_axis(
 
     Returns
     -------
-    np.ndarray
+    List[float]
         Gives back a quaternion from the angle and axis
     """
     if config.renderer == "opengl":
@@ -344,7 +346,7 @@ def angle_of_vector(vector: Sequence[float]) -> float:
 
 def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     """Returns the angle between two vectors.
-    This angle will always be btw 0 and pi
+    This angle will always be between 0 and pi
 
     Parameters
     ----------
