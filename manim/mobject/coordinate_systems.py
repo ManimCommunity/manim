@@ -783,21 +783,21 @@ class PolarPlane(Axes):
 
     def __init__(
         self,
-        radius_max: Optional[float]=config["frame_y_radius"],
-        size: Optional[float]=None,
-        radius_step: Optional[float]=1,
-        azimuth_step: Optional[float]=None,
-        azimuth_units: Optional[Union[str, None]]="PI radians",
-        azimuth_offset: Optional[float]=0,
-        azimuth_direction: Optional[str]="CCW",
-        azimuth_label_buff: Optional[float]=SMALL_BUFF,
-        azimuth_label_scale: Optional[float]=0.5,
-        radius_config: Optional[dict]=None,
-        background_line_style: Optional[dict]=None,
-        faded_line_style: Optional[dict]=None,
-        faded_line_ratio: Optional[int]=1,
-        make_smooth_after_applying_functions: Optional[bool]=True,
-        **kwargs
+        radius_max: Optional[float] = config["frame_y_radius"],
+        size: Optional[float] = None,
+        radius_step: Optional[float] = 1,
+        azimuth_step: Optional[float] = None,
+        azimuth_units: Optional[Union[str, None]] = "PI radians",
+        azimuth_offset: Optional[float] = 0,
+        azimuth_direction: Optional[str] = "CCW",
+        azimuth_label_buff: Optional[float] = SMALL_BUFF,
+        azimuth_label_scale: Optional[float] = 0.5,
+        radius_config: Optional[dict] = None,
+        background_line_style: Optional[dict] = None,
+        faded_line_style: Optional[dict] = None,
+        faded_line_ratio: Optional[int] = 1,
+        make_smooth_after_applying_functions: Optional[bool] = True,
+        **kwargs,
     ):
 
         # error catching
