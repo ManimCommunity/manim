@@ -14,12 +14,14 @@ __all__ = [
 import itertools as it
 import sys
 import typing
+from abc import ABCMeta
 from typing import Optional, Sequence, Union
 
 import colour
 import numpy as np
 from PIL.Image import Image
 
+from ... import config
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
@@ -34,6 +36,7 @@ from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
+from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -42,6 +45,26 @@ from ...utils.space_ops import rotate_vector, shoelace_direction
 #   if last point in close to first point
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
+
+
+class MetaVMobject(ABCMeta):
+    """Metaclass for initializing corresponding classes as either inheriting from
+    VMobject or OpenGLVMobject, depending on the value of ``config.renderer`` at
+    initialization time.
+
+    Note that with this implementation, changing the value of ``config.renderer``
+    after Manim has been imported won't have the desired effect and will lead to
+    spurious errors.
+    """
+
+    def __new__(cls, name, bases, namespace):
+        if len(bases) == 0:
+            if config.renderer == "opengl":
+                bases = (OpenGLVMobject,)
+            else:
+                bases = (VMobject,)
+
+        return super().__new__(cls, name, bases, namespace)
 
 
 class VMobject(Mobject):
@@ -1909,13 +1932,13 @@ class CurvesAsSubmobjects(VGroup):
             self.add(part)
 
 
-class DashedVMobject(VMobject):
+class DashedVMobject(metaclass=MetaVMobject):
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):
         self.num_dashes = num_dashes
         self.positive_space_ratio = positive_space_ratio
-        VMobject.__init__(self, color=color, **kwargs)
+        super().__init__(color=color, **kwargs)
         ps_ratio = self.positive_space_ratio
         if num_dashes > 0:
             # End points of the unit interval for division
@@ -1944,4 +1967,7 @@ class DashedVMobject(VMobject):
             )
         # Family is already taken care of by get_subcurve
         # implementation
-        self.match_style(vmobject, family=False)
+        if config.renderer == "opengl":
+            self.match_style(vmobject, recurse=False)
+        else:
+            self.match_style(vmobject, family=False)
