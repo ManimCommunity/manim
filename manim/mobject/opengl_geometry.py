@@ -9,6 +9,7 @@ from ..mobject.types.opengl_vectorized_mobject import (
     OpenGLVMobject,
 )
 from ..utils.color import *
+from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import clip, fdiv
 from ..utils.space_ops import (
@@ -211,7 +212,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         self.n_components = n_components
         self.anchors_span_full_range = anchors_span_full_range
         self.arc_center = arc_center
-        OpenGLVMobject.__init__(self, **kwargs)
+        super().__init__(self, **kwargs)
 
     def init_points(self):
         self.set_points(
@@ -340,14 +341,10 @@ class OpenGLDot(OpenGLCircle):
         )
 
 
+@deprecated(until="v0.6.0", replacement="OpenGLDot")
 class OpenGLSmallDot(OpenGLDot):
-    """Deprecated"""
-
     def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
-        logger.warning(
-            "OpenGLSmallDot has been deprecated and will be removed in a future release."
-            "Use OpenGLDot instead."
-        )
+
         super().__init__(radius=radius, **kwargs)
 
 

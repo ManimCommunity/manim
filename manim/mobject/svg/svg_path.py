@@ -5,13 +5,181 @@ __all__ = ["SVGPathMobject", "string_to_numbers", "VMobjectFromSVGPathstring"]
 
 
 import re
+from math import *
 from typing import List
 
-from manim import logger
+import numpy as np
 
 from ... import config
 from ...constants import *
 from ...mobject.types.vectorized_mobject import VMobject
+from ...utils.deprecation import deprecated
+
+
+def correct_out_of_range_radii(rx, ry, x1p, y1p):
+    """Correction of out-of-range radii.
+
+    See: https://www.w3.org/TR/SVG11/implnote.html#ArcCorrectionOutOfRangeRadii
+    """
+    # Step 1: Ensure radii are non-zero (taken care of in elliptical_arc_to_cubic_bezier).
+    # Step 2: Ensure radii are positive. If rx or ry have negative signs, these are dropped;
+    # the absolute value is used instead.
+    rx = abs(rx)
+    ry = abs(ry)
+    # Step 3: Ensure radii are large enough.
+    Lambda = (x1p * x1p) / (rx * rx) + (y1p * y1p) / (ry * ry)
+    if Lambda > 1:
+        rx = sqrt(Lambda) * rx
+        ry = sqrt(Lambda) * ry
+
+    # Step 4: Proceed with computations.
+    return rx, ry
+
+
+def vector_angle(ux, uy, vx, vy):
+    """Calculate the dot product angle between two vectors.
+
+    This clamps the argument to the arc cosine due to roundoff errors
+    from some SVG files.
+    """
+    sign = -1 if ux * vy - uy * vx < 0 else 1
+    ua = sqrt(ux * ux + uy * uy)
+    va = sqrt(vx * vx + vy * vy)
+    dot = ux * vx + uy * vy
+
+    # Clamp argument between [-1,1].
+    return sign * acos(max(min(dot / (ua * va), 1), -1))
+
+
+def get_elliptical_arc_center_parameters(x1, y1, rx, ry, phi, fA, fS, x2, y2):
+    """Conversion from endpoint to center parameterization.
+
+    See: https://www.w3.org/TR/SVG11/implnote.html#ArcConversionEndpointToCenter
+    """
+    cos_phi = cos(phi)
+    sin_phi = sin(phi)
+    # Step 1: Compute (x1p,y1p).
+    x = (x1 - x2) / 2
+    y = (y1 - y2) / 2
+    x1p = x * cos_phi + y * sin_phi
+    y1p = -x * sin_phi + y * cos_phi
+
+    # Correct out of range radii
+    rx, ry = correct_out_of_range_radii(rx, ry, x1p, y1p)
+
+    # Step 2: Compute (cxp,cyp).
+    rx2 = rx * rx
+    ry2 = ry * ry
+    x1p2 = x1p * x1p
+    y1p2 = y1p * y1p
+    k = sqrt(max((rx2 * ry2 - rx2 * y1p2 - ry2 * x1p2) / (rx2 * y1p2 + ry2 * x1p2), 0))
+    sign = -1 if fA == fS else 1
+    cxp = sign * k * (rx * y1p) / ry
+    cyp = sign * k * (-ry * x1p) / rx
+
+    # Step 3: Compute (cx,cy) from (cxp,cyp).
+    x = (x1 + x2) / 2
+    y = (y1 + y2) / 2
+    cx = cxp * cos_phi - cyp * sin_phi + x
+    cy = cxp * sin_phi + cyp * cos_phi + y
+
+    # Step 4: Compute theta1 and dtheta.
+    x = (x1p - cxp) / rx
+    y = (y1p - cyp) / ry
+    theta1 = vector_angle(1, 0, x, y)
+
+    x_ = (-x1p - cxp) / rx
+    y_ = (-y1p - cyp) / ry
+    dtheta = degrees(vector_angle(x, y, x_, y_)) % 360
+
+    if fS == 0 and dtheta > 0:
+        dtheta -= 360
+    elif fS == 1 and dtheta < 0:
+        dtheta += 360
+
+    return cx, cy, theta1, radians(dtheta)
+
+
+def elliptical_arc_to_cubic_bezier(x1, y1, rx, ry, phi, fA, fS, x2, y2):
+    """Generate cubic bezier points to approximate SVG elliptical arc.
+
+    See: http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+    """
+    ## Out of range parameters
+    # See: https://www.w3.org/TR/SVG11/implnote.html#ArcOutOfRangeParameters
+    # If rx or ry are 0 then this arc is treated as a
+    # straight line segment (a "lineto") joining the endpoints.
+    if not rx or not ry:
+        return [x1, y1, x2, y2, x2, y2]
+
+    # phi is taken mod 360 degrees and set to radians for subsequent calculations.
+    phi = radians(phi % 360)
+
+    # Any nonzero value for either of the flags fA or fS is taken to mean the value 1.
+    fA = 1 if fA else 0
+    fS = 1 if fS else 0
+
+    # Convert from endpoint to center parameterization.
+    cx, cy, theta1, dtheta = get_elliptical_arc_center_parameters(
+        x1, y1, rx, ry, phi, fA, fS, x2, y2
+    )
+
+    # For a given arc we should "chop" it up into segments if it is too big
+    # to help miminze cubic bezier curve approximation errors.
+    # If dtheta is a multiple of 90 degrees, set the limit to 90 degrees,
+    # otherwise 360/10=36 degrees is a decent sweep limit.
+    if degrees(dtheta) % 90 == 0:
+        sweep_limit = 90
+    else:
+        sweep_limit = 36
+
+    segments = int(ceil(abs(degrees(dtheta)) / sweep_limit))
+    segment = dtheta / float(segments)
+    current_angle = theta1
+    start_x = x1
+    start_y = y1
+    cos_phi = cos(phi)
+    sin_phi = sin(phi)
+    alpha = sin(segment) * (sqrt(4 + 3 * pow(tan(segment / 2.0), 2)) - 1) / 3.0
+    bezier_points = []
+
+    # Calculate the cubic bezier points from elliptical arc parametric equations.
+    # See: (the box on page 18) http://www.spaceroots.org/documents/ellipse/elliptical-arc.pdf
+    for idx in range(segments):
+        next_angle = current_angle + segment
+
+        cos_start = cos(current_angle)
+        sin_start = sin(current_angle)
+
+        e1x = -rx * cos_phi * sin_start - ry * sin_phi * cos_start
+        e1y = -rx * sin_phi * sin_start + ry * cos_phi * cos_start
+        q1_x = start_x + alpha * e1x
+        q1_y = start_y + alpha * e1y
+
+        cos_end = cos(next_angle)
+        sin_end = sin(next_angle)
+
+        p2x = cx + rx * cos_phi * cos_end - ry * sin_phi * sin_end
+        p2y = cy + rx * sin_phi * cos_end + ry * cos_phi * sin_end
+
+        end_x = p2x
+        end_y = p2y
+
+        if idx == segments - 1:
+            end_x = x2
+            end_y = y2
+
+        e2x = -rx * cos_phi * sin_end - ry * sin_phi * cos_end
+        e2y = -rx * sin_phi * sin_end + ry * cos_phi * cos_end
+        q2_x = end_x - alpha * e2x
+        q2_y = end_y - alpha * e2y
+
+        bezier_points += [[q1_x, q1_y, 0], [q2_x, q2_y, 0], [end_x, end_y, 0]]
+        start_x = end_x
+        start_y = end_y
+        current_angle = next_angle
+
+    return bezier_points
 
 
 def string_to_numbers(num_string: str) -> List[float]:
@@ -169,7 +337,12 @@ class SVGPathMobject(VMobject):
                 prev_quad_handle = new_quad_handle
 
         elif command == "A":  # elliptical Arc
-            raise NotImplementedError()
+            # points must be added in groups of 3. See `string_to_points` for
+            # case that new_points can be None.
+            if new_points is not None:
+                for i in range(0, len(new_points), 3):
+                    self.add_cubic_bezier_curve_to(*new_points[i : i + 3])
+                return
 
         elif command == "Z":  # closepath
             if config["renderer"] == "opengl":
@@ -200,8 +373,28 @@ class SVGPathMobject(VMobject):
         # this call to "string to numbers" where problems like parsing 0.5.6 lie
         numbers = string_to_numbers(coord_string)
 
+        # arcs are weirdest, handle them first.
+        if command == "A":
+            # We have to handle offsets here because ellipses are complicated.
+            if is_relative:
+                numbers[5] += start_point[0]
+                numbers[6] += start_point[1]
+
+            # If the endpoints (x1, y1) and (x2, y2) are identical, then this
+            # is equivalent to omitting the elliptical arc segment entirely.
+            # for more information of where this math came from visit:
+            #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+            if start_point[0] == numbers[5] and start_point[1] == numbers[6]:
+                return
+
+            result = np.array(
+                elliptical_arc_to_cubic_bezier(*start_point[:2], *numbers)
+            )
+
+            return result
+
         # H and V expect a sequence of single coords, not coord pairs like the rest of the commands.
-        if command == "H":
+        elif command == "H":
             result = np.zeros((len(numbers), self.dim))
             result[:, 0] = numbers
             if not is_relative:
@@ -212,9 +405,6 @@ class SVGPathMobject(VMobject):
             result[:, 1] = numbers
             if not is_relative:
                 result[:, 0] = start_point[0]
-
-        elif command == "A":
-            raise NotImplementedError("Arcs are not implemented.")
 
         else:
             num_points = len(numbers) // 2
@@ -253,12 +443,7 @@ class SVGPathMobject(VMobject):
         return self
 
 
+@deprecated(until="v0.7.0", replacement="SVGPathMobject")
 class VMobjectFromSVGPathstring(SVGPathMobject):
-    """Pure alias of SVGPathMobject, retained for backwards compatibility"""
-
     def __init__(self, *args, **kwargs):
-        logger.warning(
-            "VMobjectFromSVGPathstring has been deprecated in favour "
-            "of SVGPathMobject. Please use SVGPathMobject instead."
-        )
-        SVGPathMobject.__init__(self, *args, **kwargs)
+        super().__init__(self, *args, **kwargs)

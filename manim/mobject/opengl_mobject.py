@@ -3,7 +3,6 @@ import itertools as it
 import random
 import sys
 from functools import wraps
-from typing import List, Union
 
 import moderngl
 import numpy as np
@@ -887,8 +886,12 @@ class OpenGLMobject:
     def set_width(self, width, stretch=False, **kwargs):
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
+    scale_to_fit_width = set_width
+
     def set_height(self, height, stretch=False, **kwargs):
         return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
+
+    scale_to_fit_height = set_height
 
     def set_depth(self, depth, stretch=False, **kwargs):
         return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)

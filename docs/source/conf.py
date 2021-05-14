@@ -57,6 +57,8 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinxext.opengraph",
     "manim_directive",
+    "sphinx.ext.graphviz",
+    "sphinx.ext.inheritance_diagram",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
@@ -138,3 +140,27 @@ extlinks = {
 ogp_image = "https://www.manim.community/logo.png"
 ogp_site_name = "Manim Community | Documentation"
 ogp_site_url = "https://docs.manim.community/"
+
+
+# inheritance_graph settings
+inheritance_graph_attrs = dict(
+    concentrate=True,
+    size='""',
+    splines="ortho",
+    nodesep=0.1,
+    ranksep=0.2,
+)
+
+inheritance_node_attrs = dict(
+    penwidth=0, shape="box", width=0.05, height=0.05, margin=0.05
+)
+
+inheritance_edge_attrs = dict(
+    penwidth=1,
+)
+
+html_js_files = [
+    "responsiveSvg.js",
+]
+
+graphviz_output_format = "svg"
