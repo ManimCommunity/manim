@@ -17,7 +17,7 @@ LaTeX should only be used when you need Mathematical Typesetting.
 .. _using-text-objects:
 
 Rendering Text without using LaTeX 
-----------------------------------
+**********************************
 
 The simplest way to add text to your animations is to use the :class:`~.Text`
 class. It uses the `Pango library`_ to render text. With Pango, you can also
@@ -31,7 +31,7 @@ Here, is a simple Hello World animation.
     class HelloWorld(Scene):
         def construct(self):
             text = Text('Hello world').scale(3)
-            self.add(FadeIn(text))
+            self.play(FadeIn(text))
 
 You can also use :class:`~.MarkupText` where PangoMarkup (:ref:`pangomarkup`)
 can be used to render text. For example,
@@ -72,10 +72,24 @@ For example, you can set each letter to different colour by iterating it.
     one-one mapping of characters to submobjects you should use 
     ``disable_ligatures`` parameter in :class:`~.Text` while rendering.
 
-
-
-
 .. _Ligature: https://en.wikipedia.org/wiki/Ligature_(writing)
+
+Using Gradients
+---------------
+
+You can use Gradient using the :attr:`~.Text.gradient`. The value must
+be a Iterable or any Length.
+
+For example,
+
+.. manim:: GradientExample
+    :save_last_frame:
+
+    class GradientExample(Scene):
+        def construct(self):
+            t = Text("Hello", gradient=(RED, BLUE, GREEN)).scale(2)
+            self.add(t)
+
 
 .. _pangomarkup:
 
