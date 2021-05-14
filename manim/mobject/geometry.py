@@ -1538,7 +1538,9 @@ class Polygram(metaclass=MetaVMobject):
             first_vertex = np.array(first_vertex)
 
             self.start_new_path(first_vertex)
-            self.add_points_as_corners([*[np.array(vertex) for vertex in vertices], first_vertex])
+            self.add_points_as_corners(
+                [*[np.array(vertex) for vertex in vertices], first_vertex]
+            )
 
     def get_vertices(self) -> np.ndarray:
         """Gets the vertices of the :class:`Polygram`.
