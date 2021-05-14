@@ -68,6 +68,9 @@ them with:
 If you have cloned a repository from GitHub, you should either remove it
 or run manim outside that folder.
 
+Other errors
+************
+
 ``pip install manim`` fails when installing manimpango?
 -------------------------------------------------------
 Most likely this means that pip was not able to use our pre-built wheels
