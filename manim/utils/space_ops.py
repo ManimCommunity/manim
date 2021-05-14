@@ -50,7 +50,7 @@ from ..utils.iterables import adjacent_pairs
 def get_norm(vect):
     return np.linalg.norm(vect)
 
-  
+
 def norm_squared(v):
     return np.dot(v, v)
 
