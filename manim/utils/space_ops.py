@@ -42,18 +42,16 @@ from mapbox_earcut import triangulate_float32 as earcut
 
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
+from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_pairs
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.linalg.norm")
 def get_norm(vect):
-    logger.warning(
-        "get_norm has been deprecated and will be removed in a future release."
-        "Use np.linalg.norm instead."
-    )
     return np.linalg.norm(vect)
 
-
-def norm_squared(v: float) -> float:
+  
+def norm_squared(v):
     return np.dot(v, v)
 
 
@@ -317,11 +315,8 @@ def z_to_vector(vector: np.ndarray) -> np.ndarray:
     return np.dot(rotation_about_z(theta), phi_down)
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="angle_between_vectors")
 def angle_between(v1, v2):
-    logger.warning(
-        "angle_between has been deprecated and will be removed in a future release."
-        "Use angle_between_vectors instead."
-    )
     return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
 
 
@@ -425,11 +420,8 @@ def normalize_along_axis(array: np.ndarray, axis: np.ndarray) -> np.ndarray:
     return array
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.cross")
 def cross(v1, v2):
-    logger.warning(
-        "cross has been deprecated and will be removed in a future release."
-        "Use np.cross instead."
-    )
     return np.cross(v1, v2)
 
 

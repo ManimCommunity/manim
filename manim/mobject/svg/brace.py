@@ -2,6 +2,7 @@
 
 __all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweenPoints"]
 
+from typing import Optional, Sequence
 
 import numpy as np
 
@@ -26,7 +27,7 @@ class Brace(SVGPathMobject):
     ----------
     mobject : :class:`~.Mobject`
         The mobject adjacent to which the brace is placed.
-    direction : Optional[Union[:class:`list`, :class:`numpy.array`]]
+    direction :
         The direction from which the brace faces the mobject.
 
     See Also
@@ -54,7 +55,7 @@ class Brace(SVGPathMobject):
     def __init__(
         self,
         mobject,
-        direction=DOWN,
+        direction: Optional[Sequence[float]] = DOWN,
         buff=0.2,
         sharpness=2,
         stroke_width=0,
@@ -195,11 +196,11 @@ class BraceBetweenPoints(Brace):
 
     Parameters
     ----------
-    point_1 : Union[:class:`list`, :class:`numpy.array`]
+    point_1 :
         The first point.
-    point_2 : Union[:class:`list`, :class:`numpy.array`]
+    point_2 :
         The second point.
-    direction : Optional[Union[:class:`list`, :class:`numpy.array`]]
+    direction :
         The direction from which the brace faces towards the points.
 
     Examples
@@ -216,7 +217,13 @@ class BraceBetweenPoints(Brace):
                     self.wait(2)
     """
 
-    def __init__(self, point_1, point_2, direction=ORIGIN, **kwargs):
+    def __init__(
+        self,
+        point_1: Optional[Sequence[float]],
+        point_2: Optional[Sequence[float]],
+        direction: Optional[Sequence[float]] = ORIGIN,
+        **kwargs
+    ):
         if all(direction == ORIGIN):
             line_vector = np.array(point_2) - np.array(point_1)
             direction = np.array([line_vector[1], -line_vector[0], 0])
