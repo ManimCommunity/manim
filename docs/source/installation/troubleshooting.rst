@@ -7,18 +7,18 @@ Version incompatibility
 Confusion and conflict between versions is by far the most common reason
 for installation failures. Some signs and errors resulting from this are
 as follows: 
-\* ``There are no scenes in that module`` 
-\* ``ModuleNotFoundError: No module named 'manim'`` 
-\* ``ModuleNotFoundError: No module named 'manimlib'`` 
-\* You followed any
+- ``There are no scenes in that module`` 
+- ``ModuleNotFoundError: No module named 'manim'`` 
+- ``ModuleNotFoundError: No module named 'manimlib'`` 
+- You followed any
 tutorial created before October 2020 (because the community edition did
 not exist before then) 
-\* You cloned a repository on GitHub
+- You cloned a repository on GitHub
 (installation of the community version for normal use does not require
 the cloning of any repository) 
-\* Different import statements (explained
+- Different import statements (explained
 below) 
-\* You used documentation for multiple versions (such as the
+- You used documentation for multiple versions (such as the
 readme for 3b1b/manim and this documentation)
 
 .. NOTE::
@@ -32,12 +32,12 @@ Identifying files written for a different version of manim
 There are some distinctive features of different versions of manim that
 can help in identifying what version of manim files are written for:
 
-+--------------+------------------------+---------------------------+-----------------------------------------+
-| Feature      | ManimCE (this version) | ManimGL                   | ManimCairo                              |
-+==============+========================+===========================+=========================================+
-| Import       | ``from manim import *``| ``from manimlib import *``| ``from manimlib.imports import *``      |
-| statement    |                        |                           |                                         |
-+--------------+------------------------+------------+--------------------------------------------------------+
++--------------+-------------------------+----------------------------+-----------------------------------------+
+| Feature      | ManimCE (this version)  | ManimGL                    | ManimCairo                              |
++==============+=========================+============================+=========================================+
+| Import       | ``from manim import *`` | ``from manimlib import *`` | ``from manimlib.imports import *``      |
+| statement    |                         |                            |                                         |
++--------------+-------------------------+----------------------------+-----------------------------------------+
 
 If you are a beginner, you should only attempt to run files written for
 your version. Files written for a different version of manim wil
@@ -54,6 +54,7 @@ Identifying and removing conflicting versions of manim
 
 Within the system or environment you are using to run manim, run the
 following command in the terminal:
+
 .. code-block:: bash
 
    pip list
@@ -63,6 +64,7 @@ you do not see this package listed, please refer back to our
 installation guide to install it. If you see ``manimlib`` or ``manimce``
 (actually an old version of the community edition), you should remove
 them with:
+
 .. code-block:: bash
 
    pip uninstall <package>
