@@ -668,6 +668,9 @@ class Text(SVGMobject):
             self.text,
         )
 
+    def init_colors(self, propagate_colors=True):
+        super().init_colors(propagate_colors=propagate_colors)
+
 
 class MarkupText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
