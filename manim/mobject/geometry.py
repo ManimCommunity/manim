@@ -1441,7 +1441,7 @@ class Polygram(VMobject):
         The groups of vertices making up the :class:`Polygram`.
 
         The first vertex in each group is repeated to close the shape.
-        Must define 3-dimensions: ``[x,y,z]``
+        Each point must be 3-dimensional: ``[x,y,z]``
     color
         The color of the :class:`Polygram`.
     kwargs
@@ -1461,7 +1461,10 @@ class Polygram(VMobject):
                 )
                 self.add(hexagram)
 
-                self.play(MoveAlongPath(Dot(), hexagram), run_time=5, rate_func=linear)
+                dot = Dot()
+                self.play(MoveAlongPath(dot, hexagram), run_time=5, rate_func=linear)
+                self.remove(dot)
+                self.wait()
 
 
     """
@@ -1683,7 +1686,7 @@ class RegularPolygram(Polygram):
         **kwargs,
     ):
         # Regular polygrams can be expressed by the number of their vertices
-        # and their density. This relation can be expressed as its Schläfl
+        # and their density. This relation can be expressed as its Schläfli
         # symbol: {num_vertices/density}.
         #
         # For instance, a pentagon can be expressed as {5/1} or just {5}.
