@@ -1608,11 +1608,11 @@ class Polygram(metaclass=MetaVMobject):
 
             class PolygramRoundCorners(Scene):
                 def construct(self):
-                    square = Polygram([[1, 1, 0], [-1, 1, 0], [-1, -1, 0], [1, -1, 0]])
+                    star = Star(outer_radius=2)
 
-                    shapes = VGroup(square)
-                    shapes.add(square.copy().round_corners(radius=0.25))
-                    shapes.add(square.copy().round_corners(radius=0.5))
+                    shapes = VGroup(star)
+                    shapes.add(star.copy().round_corners(radius=0.1))
+                    shapes.add(star.copy().round_corners(radius=0.25))
 
                     shapes.arrange(RIGHT)
                     self.add(shapes)
