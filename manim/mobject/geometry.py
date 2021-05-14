@@ -63,7 +63,7 @@ __all__ = [
 
 import math
 import warnings
-from typing import Optional, Sequence
+from typing import Iterable, Optional, Sequence
 
 import numpy as np
 
@@ -1528,12 +1528,16 @@ class Polygram(metaclass=MetaVMobject):
 
     """
 
-    def __init__(self, *vertex_groups: Sequence[Sequence[float]], color=BLUE, **kwargs):
+    def __init__(self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs):
         super().__init__(color=color, **kwargs)
 
-        for vertices in np.array(vertex_groups):
-            self.start_new_path(vertices[0])
-            self.add_points_as_corners([*vertices[1:], vertices[0]])
+        for vertices in vertex_groups:
+            # Allow any iterable to be passed
+            vertices = iter(vertices)
+            first_vertex = next(vertices)
+
+            self.start_new_path(first_vertex)
+            self.add_points_as_corners([*vertices, first_vertex])
 
     def get_vertices(self) -> np.ndarray:
         """Gets the vertices of the :class:`Polygram`.
