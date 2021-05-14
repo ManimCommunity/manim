@@ -7,6 +7,7 @@ Version incompatibility
 Confusion and conflict between versions is by far the most common reason
 for installation failures. Some signs and errors resulting from this are
 as follows: 
+
 - ``There are no scenes in that module`` 
 - ``ModuleNotFoundError: No module named 'manim'`` 
 - ``ModuleNotFoundError: No module named 'manimlib'`` 
