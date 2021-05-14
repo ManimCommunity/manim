@@ -743,10 +743,10 @@ class PolarPlane(Axes):
         .. manim:: PolarPlaneUnits
             :ref_classes: PolarPlane
 
-            polarplot_pi = PolarPlane(azimuth_units="PI radians", size=5).add_coordinates()
-            polarplot_tau = PolarPlane(azimuth_units="TAU radians", size=5).add_coordinates()
-            polarplot_degrees = PolarPlane(azimuth_units="degrees", size=5).add_coordinates()
-            polarplot_gradians = PolarPlane(azimuth_units="gradians", size=5).add_coordinates()
+            polarplot_pi = PolarPlane(azimuth_units="PI radians", size=6).add_coordinates()
+            polarplot_tau = PolarPlane(azimuth_units="TAU radians", size=6).add_coordinates()
+            polarplot_degrees = PolarPlane(azimuth_units="degrees", size=6).add_coordinates()
+            polarplot_gradians = PolarPlane(azimuth_units="gradians", size=6).add_coordinates()
 
             class PolarPlaneUnits(Scene):
                 def construct(self):
