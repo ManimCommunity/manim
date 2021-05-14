@@ -55,6 +55,7 @@ from pathlib import Path
 from typing import Dict
 
 import manimpango
+import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
@@ -322,14 +323,19 @@ class Text(SVGMobject):
 
         class TextItalicAndBoldExample(Scene):
             def construct(self):
-                text0 = Text('Hello world', slant=ITALIC)
-                text1 = Text('Hello world', t2s={'world':ITALIC})
-                text2 = Text('Hello world', weight=BOLD)
-                text3 = Text('Hello world', t2w={'world':BOLD})
-                self.add(text0,text1, text2,text3)
-                for i,mobj in enumerate(self.mobjects):
-                    mobj.shift(DOWN*(i-1))
-
+                text1 = Text("Hello world", slant=ITALIC)
+                text2 = Text("Hello world", t2s={'world':ITALIC})
+                text3 = Text("Hello world", weight=BOLD)
+                text4 = Text("Hello world", t2w={'world':BOLD})
+                text5 = Text("Hello world", t2c={'o':YELLOW}, disable_ligatures=True)
+                text6 = Text(
+                    "Visit us at docs.manim.community",
+                    t2c={"docs.manim.community": YELLOW},
+                    disable_ligatures=True,
+               )
+                text6.scale(1.3).shift(DOWN)
+                self.add(text1, text2, text3, text4, text5 , text6)
+                Group(*self.mobjects).arrange(DOWN, buff=.8).set_height(config.frame_height-LARGE_BUFF)
 
     .. manim:: TextMoreCustomization
             :save_last_frame:
@@ -554,7 +560,7 @@ class Text(SVGMobject):
     #         self.t2w = kwargs.pop("text2weight")
 
     def set_color_by_t2c(self, t2c=None):
-        """Internally used function. Sets colour for specified strings."""
+        """Internally used function. Sets color for specified strings."""
         t2c = t2c if t2c else self.t2c
         for word, color in list(t2c.items()):
             for start, end in self.find_indexes(word, self.original_text):

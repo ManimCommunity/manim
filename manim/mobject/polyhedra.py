@@ -1,15 +1,13 @@
 """General polyhedral class and platonic solids."""
 
-from copy import copy
-from typing import TYPE_CHECKING, Dict, Hashable, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
 import numpy as np
 
 from .geometry import Polygon
 from .graph import Graph
-from .mobject_update_utils import always
 from .three_dimensions import Dot3D
-from .types.vectorized_mobject import VGroup, VMobject
+from .types.vectorized_mobject import VGroup
 
 if TYPE_CHECKING:
     from .mobject import Mobject

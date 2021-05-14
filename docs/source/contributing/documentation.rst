@@ -116,7 +116,7 @@ This includes:
 
 1. The usage of ``Attributes`` to specify ALL ATTRIBUTES that a
    class can have, their respective types, and a brief (or long, if
-   needed) description. (See more on :ref:`_types`)
+   needed) description. (See more on :ref:`types<types>`)
 
 Also, ``__init__`` parameters should be specified as ``Parameters`` **on
 the class docstring**, *rather than under* ``__init__``. Note that this
@@ -266,8 +266,8 @@ Example:
 
 .. _types:
 
-Reference to types in documentaion
-----------------------------------
+Reference to types in documentation
+-----------------------------------
 
 Always specify types with the correct **role** (see
 https://www.sphinx-doc.org/en/1.7/domains.html#python-roles) for the
@@ -399,6 +399,25 @@ elements that are either a ``str`` or ``None``;
 ``Tuple[:class:`str`, :class:`int`]`` for a tuple of type
 ``(str, int)``; ``Tuple[:class:`int`, ...]`` for a tuple of variable
 length with only integers.
+
+.. note::
+   As a helper for tool for typesets, you can use `typestring-parser
+   <https://github.com/Dominik1123/typestring-parser>`_ 
+   which can be accessed by first installing it via ``pip`` - ``pip install typestring-parser`` and
+   then using ``from typestring_parser import parse``.
+
+.. doctest::
+    :options: +SKIP
+    
+    >>> from typestring_parser import parse
+    >>> parse("int")
+    <class 'int'>
+    >>> parse("int or str")
+    typing.Union[int, str]
+    >>> parse("list of str or str")
+    typing.Union[typing.List[str], str]
+    >>> parse("list of (int, str)")
+    typing.List[typing.Tuple[int, str]]
 
 
 Adding type hints to functions and parameters
