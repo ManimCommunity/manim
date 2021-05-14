@@ -94,7 +94,7 @@ using ``pip install --upgrade manim``.
 
 
 
-Some letters are missing from TextMobject/TexMobject output?
+Some letters are missing from Text/Tex output?
 ------------------------------------------------------------
 
 If you have recently installed TeX you may need to build the fonts it
