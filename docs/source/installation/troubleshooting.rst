@@ -2,7 +2,7 @@ Troubleshooting
 ===============
 
 Version incompatibility
-=======================
+***********************
 
 Confusion and conflict between versions is by far the most common reason
 for installation failures. Some signs and errors resulting from this are
