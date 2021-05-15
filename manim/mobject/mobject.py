@@ -175,7 +175,7 @@ class Mobject(Container):
         animation_class
             The animation type to be overridden
         override_func
-            The function returning an aniamtion replacing the default animation. It gets
+            The function returning an animation replacing the default animation. It gets
             passed the parameters given to the animnation constructor.
 
         Raises
@@ -809,24 +809,6 @@ class Mobject(Container):
                 submob.update(dt, recursive)
         return self
 
-    def get_time_based_updaters(self) -> List[Updater]:
-        """Return all updaters using the ``dt`` parameter.
-
-        The updaters use this parameter as the input for difference in time.
-
-        Returns
-        -------
-        List[:class:`Callable`]
-            The list of time based updaters.
-
-        See Also
-        --------
-        :meth:`get_updaters`
-        :meth:`has_time_based_updater`
-
-        """
-        return [updater for updater in self.updaters if "dt" in get_parameters(updater)]
-
     def has_time_based_updater(self) -> bool:
         """Test if ``self`` has a time based updater.
 
@@ -835,15 +817,9 @@ class Mobject(Container):
         class:`bool`
             ``True`` if at least one updater uses the ``dt`` parameter, ``False`` otherwise.
 
-        See Also
-        --------
-        :meth:`get_time_based_updaters`
 
         """
-        for updater in self.updaters:
-            if "dt" in get_parameters(updater):
-                return True
-        return False
+        return any(updater.time_based for updater in self.updaters)
 
     def get_updaters(self) -> List[Updater]:
         """Return all updaters.
@@ -856,7 +832,6 @@ class Mobject(Container):
         See Also
         --------
         :meth:`add_updater`
-        :meth:`get_time_based_updaters`
 
         """
         return self.updaters
@@ -866,24 +841,39 @@ class Mobject(Container):
 
     def add_updater(
         self,
-        update_function: Updater,
+        updater: Updater,
+        *,
+        pass_relative_times: Optional[bool] = None,
         index: Optional[int] = None,
         call_updater: bool = False,
     ) -> "Mobject":
         """Add an update function to this mobject.
 
-        Update functions, or updaters in short, are functions that are applied to the Mobject in every frame.
+        Update functions, or updaters in short, are functions that are applied to the
+        Mobject before every frame.
 
         Parameters
         ----------
-        update_function
+        updater
             The update function to be added.
-            Whenever :meth:`update` is called, this update function gets called using ``self`` as the first parameter.
-            The updater can have a second parameter ``dt``. If it uses this parameter, it gets called using a second value ``dt``, usually representing the time in seconds since the last call of :meth:`update`.
+            Whenever :meth:`update` is called, this update function gets called using
+            ``self`` as the first parameter. The updater can have a second parameter
+            that gets passed information about the execution time.
+        pass_relative_times
+            Whether the time information passed to the updater should be relative
+            (usually the time since last call) or absolute (sum of all relative times
+            since the updater was added). If ``pass_relative_times`` is ``None``
+            relative times get passed, except if the second parameter of the updater is
+            named ``t`` or ``time``.
         index
-            The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
+            The index at which the new updater should be added in the list of updaters.
+            The order of this list determines the execution order of the updaters.
+            In case ``index`` is ``None`` the updater will be added at the end, where it
+            would be last in the execution order.
         call_updater
-            Wheather or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
+            Wheather or not to call the updater initially after adding it (using ``0``
+            as time if applicable).
+
 
         Returns
         -------
@@ -925,22 +915,47 @@ class Mobject(Container):
         :class:`~.UpdateFromFunc`
         """
 
-        if index is None:
-            self.updaters.append(update_function)
+        # Test if updater is time based and wheather to use time difference
+        parameters = list(get_parameters(updater).keys())
+        time_based = len(parameters) > 1
+        if time_based:
+            if parameters[1] not in ["t", "time"] and pass_relative_times is None:
+                pass_relative_times = True
+            pass_relative_times = bool(pass_relative_times)
+
+        # Wrap updaters to allow calling all of them using updatable and dt as parameter
+        if time_based:
+            if pass_relative_times:
+                unified_updater = updater
+            else:
+
+                def unified_updater(mob, dt):
+                    unified_updater.total_time += dt
+                    updater(mob, unified_updater.total_time)
+
+                unified_updater.total_time = 0
         else:
-            self.updaters.insert(index, update_function)
+            unified_updater = lambda mob, dt: updater(mob)
+
+        unified_updater.time_based = time_based
+        unified_updater.base_func = updater  # used to enable removing
+
+        if index is None:
+            self.updaters.append(unified_updater)
+        else:
+            self.updaters.insert(index, unified_updater)
         if call_updater:
-            update_function(self, 0)
+            unified_updater(self, 0)
         return self
 
-    def remove_updater(self, update_function: Updater) -> "Mobject":
+    def remove_updater(self, updater: Updater) -> "Mobject":
         """Remove an updater.
 
         If the same updater is applied multiple times, every instance gets removed.
 
         Parameters
         ----------
-        update_function
+        updater
             The update function to be removed.
 
 
@@ -956,8 +971,9 @@ class Mobject(Container):
         :meth:`get_updaters`
 
         """
-        while update_function in self.updaters:
-            self.updaters.remove(update_function)
+        self.updaters = list(
+            filter(lambda unified_updater: unified_updater.base_func is not updater)
+        )
         return self
 
     def clear_updaters(self, recursive: bool = True) -> "Mobject":
@@ -1010,9 +1026,7 @@ class Mobject(Container):
 
         """
 
-        self.clear_updaters()
-        for updater in mobject.get_updaters():
-            self.add_updater(updater)
+        self.updaters = list(mobject.get_updaters())
         return self
 
     def suspend_updating(self, recursive: bool = True) -> "Mobject":
@@ -2265,7 +2279,7 @@ class Mobject(Container):
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
             rows = ceil(len(mobs) / cols)
         if cols is None:
@@ -2335,7 +2349,7 @@ class Mobject(Container):
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
         grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
-        measured_heigths = [
+        measured_heights = [
             max([grid[r][c].height for c in range(cols)]) for r in range(rows)
         ]
         measured_widths = [
@@ -2352,7 +2366,7 @@ class Mobject(Container):
                 sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
 
-        heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
+        heights = init_sizes(row_heights, rows, measured_heights, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
 
         x, y = 0, 0
