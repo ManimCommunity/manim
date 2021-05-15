@@ -1445,7 +1445,7 @@ class VGroup(VMobject):
 
         class ArcShapeIris(Scene):
             def construct(self):
-                colors = [DARK_BLUE, DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
+                colors = [DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
                 radius = [1 + rad * 0.1 for rad in range(len(colors))]
 
                 circles_group = VGroup()
