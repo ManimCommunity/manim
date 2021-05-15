@@ -116,7 +116,7 @@ You can use Colors using :attr:`~.Text.color`. This would color the whole text.
 For example,
 
 .. manim:: SimpleColor
-    :save_last_frame
+    :save_last_frame:
 
     class SimpleColor(Scene):
         def construct(self):
@@ -176,7 +176,7 @@ characters of the Text. It has a very similar syntax like
 For example,
 
 .. manim:: t2gExample
-    :save_last_frame
+    :save_last_frame:
 
     class t2gExample(Scene):
         def construct(self):
