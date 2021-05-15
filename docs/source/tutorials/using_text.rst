@@ -229,6 +229,7 @@ You can disable ligatures by passing ``disable_ligatures`` parameter to
 :class:`Text`. For example,
 
 .. manim:: DisableLigature
+    :save_last_frame:
 
     class DisableLigature(Scene):
         def construct(self):
