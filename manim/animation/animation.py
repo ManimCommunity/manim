@@ -172,6 +172,14 @@ class Animation:
         self.interpolate(0)
 
     def finish(self) -> None:
+        # TODO: begin and finish should require a scene as parameter.
+        # That way Animation.clean_up_from_screen and Scene.add_mobjects_from_animations
+        # could be removed as they fulfill basically the same purpose.
+        """Finish the animation.
+
+        This method gets called when the animation is over.
+
+        """
         self.interpolate(1)
         if self.suspend_mobject_updating and self.mobject is not None:
             self.mobject.resume_updating()
