@@ -22,6 +22,68 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 
 
 class Animation:
+    """An animation.
+
+    Animations have a fixed time span.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be animated. This is not required for all types of animations.
+    lag_ratio
+        Defines the delay after which the animation is applied to submobjects. This lag
+        is relative to the duration of the animation.
+
+        This does not influence the total
+        runtime of the animation. Instead the runtime of individual animations is
+        adjusted so that the complete animation has the defined run time.
+
+    run_time
+        The duration of the animation in seconds.
+    rate_func
+        The function defining the animation progress based on the relative runtime.
+
+        For example ``rate_func(0.5)`` is the proportion of the animation that is done
+        after half of the animations run time.
+    name
+        The name of the animation. This gets displayed while rendering the animation.
+        Defualts to <class-name>(<Mobject-name>).
+    remover
+        Whether the given mobject should be removed from the scene after this animation.
+    suspend_mobject_updating
+        Whether updaters of the mobject should be suspended during the animation.
+
+
+    Examples
+    --------
+
+    .. manim:: LagRatios
+
+        class LagRatios(Scene):
+            def construct(self):
+                ratios = [0, 0.1, 0.5, 1, 2]  # demonstrated lag_ratios
+
+                # Create dot groups
+                group = VGroup(*[Dot() for _ in range(4)]).arrange_submobjects()
+                groups = VGroup(*[group.copy() for _ in ratios]).arrange_submobjects(buff=1)
+                self.add(groups)
+
+                # Label groups
+                self.add(Text("lag_ratio = ").scale(0.7).next_to(groups, UP, buff=1.5))
+                for group, ratio in zip(groups, ratios):
+                    self.add(Text(str(ratio)).scale(0.7).next_to(group, UP))
+
+                #Animate groups with different lag_ratios
+                self.play(AnimationGroup(*[
+                    group.animate(lag_ratio=ratio, run_time=1.5).shift(DOWN * 2)
+                    for group, ratio in zip(groups, ratios)
+                ]))
+
+                # lag_ratio also works recursively on nested submobjects:
+                self.play(groups.animate(run_time=1, lag_ratio=0.1).shift(UP * 2))
+
+    """
+
     def __new__(
         cls,
         mobject: Optional[Mobject] = None,
@@ -46,11 +108,6 @@ class Animation:
     def __init__(
         self,
         mobject: Optional[Mobject],
-        # If lag_ratio is 0, the animation is applied to all submobjects
-        # at the same time
-        # If 1, it is applied to each successively.
-        # If 0 < lag_ratio < 1, its applied to each
-        # with lagged start times
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
