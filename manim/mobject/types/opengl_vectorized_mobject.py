@@ -29,6 +29,7 @@ from ...utils.space_ops import (
     cross2d,
     earclip_triangulation,
     get_unit_normal,
+    shoelace_direction,
     z_to_vector,
 )
 
@@ -514,6 +515,19 @@ class OpenGLVMobject(OpenGLMobject):
         return np.linalg.norm(p1 - p0) < self.tolerance_for_point_equality
 
     # Information about the curve
+    def force_direction(self, target_direction):
+        if target_direction not in ("CW", "CCW"):
+            raise ValueError('Invalid input for force_direction. Use "CW" or "CCW"')
+
+        if self.get_direction() != target_direction:
+            self.reverse_points()
+
+        return self
+
+    def reverse_direction(self):
+        self.set_points(self.get_points()[::-1])
+        return self
+
     def get_bezier_tuples_from_points(self, points):
         nppc = self.n_points_per_curve
         remainder = len(points) % nppc
@@ -761,6 +775,9 @@ class OpenGLVMobject(OpenGLMobject):
                 ),  # Add up (x1 + x2)*(y2 - y1)
             ]
         )
+
+    def get_direction(self):
+        return shoelace_direction(self.get_start_anchors())
 
     def get_unit_normal(self, recompute=False):
         if not recompute:

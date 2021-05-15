@@ -5,7 +5,7 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 
 import math
 import numbers
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
 import numpy as np
 
@@ -174,9 +174,9 @@ class Axes(VGroup, CoordinateSystem):
 
     Parameters
     ----------
-    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    x_range :
         The :code:`[x_min, x_max, x_step]` values of the x-axis.
-    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    y_range :
         The :code:`[y_min, y_max, y_step]` values of the y-axis.
     x_length : Optional[:class:`float`]
         The length of the x-axis.
@@ -194,8 +194,8 @@ class Axes(VGroup, CoordinateSystem):
 
     def __init__(
         self,
-        x_range=None,
-        y_range=None,
+        x_range: Optional[Sequence[float]] = None,
+        y_range: Optional[Sequence[float]] = None,
         x_length=round(config.frame_width) - 2,
         y_length=round(config.frame_height) - 2,
         axis_config=None,
@@ -373,11 +373,11 @@ class ThreeDAxes(Axes):
 
     Parameters
     ----------
-    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    x_range :
         The :code:`[x_min, x_max, x_step]` values of the x-axis.
-    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    y_range :
         The :code:`[y_min, y_max, y_step]` values of the y-axis.
-    z_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    z_range :
         The :code:`[z_min, z_max, z_step]` values of the z-axis.
     x_length : Optional[:class:`float`]
         The length of the x-axis.
@@ -403,9 +403,9 @@ class ThreeDAxes(Axes):
 
     def __init__(
         self,
-        x_range=(-6, 6, 1),
-        y_range=(-5, 5, 1),
-        z_range=(-4, 4, 1),
+        x_range: Optional[Sequence[float]] = (-6, 6, 1),
+        y_range: Optional[Sequence[float]] = (-5, 5, 1),
+        z_range: Optional[Sequence[float]] = (-4, 4, 1),
         x_length=config.frame_height + 2.5,
         y_length=config.frame_height + 2.5,
         z_length=config.frame_height - 1.5,
@@ -480,9 +480,9 @@ class NumberPlane(Axes):
 
     Parameters
     ----------
-    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    x_range :
         The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
-    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    y_range :
         The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
     x_length : Optional[:class:`float`]
         The width of the plane.
@@ -509,8 +509,16 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range=(-config["frame_x_radius"], config["frame_x_radius"], 1),
-        y_range=(-config["frame_y_radius"], config["frame_y_radius"], 1),
+        x_range: Optional[Sequence[float]] = (
+            -config["frame_x_radius"],
+            config["frame_x_radius"],
+            1,
+        ),
+        y_range: Optional[Sequence[float]] = (
+            -config["frame_y_radius"],
+            config["frame_y_radius"],
+            1,
+        ),
         x_length=None,
         y_length=None,
         axis_config=None,
