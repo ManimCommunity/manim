@@ -44,6 +44,7 @@ def test_axes_with_xy_shift():
     assert all(np.isclose(G.graph_origin, G.x_axis.n2p(1)))
     assert all(np.isclose(G.graph_origin, G.y_axis.n2p(-5)))
 
+
 def test_axes_origin_shift():
     ax = Axes(x_range=(5, 10, 1), y_range=(40, 45, 0.5))
     assert np.allclose(ax.coords_to_point(5, 40), ax.x_axis.number_to_point(5))
