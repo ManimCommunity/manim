@@ -36,10 +36,10 @@ Here, is a simple Hello World animation.
 You can also use :class:`~.MarkupText` where PangoMarkup (:class:`MarkupText`)
 can be used to render text. For example,
 
-.. manim:: SingleLineColour
+.. manim:: SingleLineColor
     :save_last_frame:
 
-    class SingleLineColour(Scene):
+    class SingleLineColor(Scene):
         def construct(self):
             text = MarkupText(
                f'all in red <span fgcolor="{YELLOW}">except this</span>',
@@ -50,10 +50,125 @@ can be used to render text. For example,
 .. _Pango library: https://pango.gnome.org
 
 Working with :class:`~.Text`
-===========================
+============================
 
 This section explains the properties of :class:`~.Text` and how can it be used
 in your Animations.
+
+Using Colors
+------------
+
+You can use Colors using :attr:`~.Text.color`. This would color the whole text.
+
+For example,
+
+.. manim:: SimpleColor
+    :save_last_frame
+
+    class SimpleColor(Scene):
+        def construct(self):
+            col = Text("RED COLOR", color=RED)
+            self.add(col)
+
+You can use utilities like :attr:`~.Text.t2c` for coloring characters 
+different from others. This may be problematic if your text contain ligatures
+as explained in :ref:`iterating-text`.
+
+:attr:`~Text.t2c` accepts two types of dictionaries,
+
+* The keys can contain indices like ``[2:-1]`` or ``[4:8]``, 
+  this works similar to how `slicing <https://realpython.com/python-strings/#string-slicing>`_
+  works in Python. The values should be the color of the Text from :class:`~.Color`.
+  
+  .. note:: Negative indices are also supported.
+
+* The keys contain words or character which should be coloured seperately
+  and the values should be the color from :class:`~.Color`.
+
+For example,
+
+.. manim:: Textt2cExample
+    :save_last_frame
+
+    class Textt2cExample(Scene):
+        def construct(self):
+            t2cindices = Text('Hello', t2c={'[1:-1]': BLUE}).move_to(LEFT)
+            t2cwords = Text('World',t2c={'rl':RED}).next_to(t2cindices, RIGHT)
+            self.add(t2cindices)
+
+If you want avoid problems when colours(due to ligatures), consider using
+:class:`MarkupText`.
+
+
+Using Gradients
+---------------
+
+You can use Gradient using :attr:`~.Text.gradient`. The value must
+be a Iterable of any Length.
+
+For example,
+
+.. manim:: GradientExample
+    :save_last_frame:
+
+    class GradientExample(Scene):
+        def construct(self):
+            t = Text("Hello", gradient=(RED, BLUE, GREEN)).scale(2)
+            self.add(t)
+
+You can also use :attr:`~.Text.t2g` for using gradients with specific 
+characters of the Text. It has a very similar syntax like 
+:ref:`Using Colors`.
+
+For example,
+
+.. manim:: t2gExample
+    :save_last_frame
+
+    class t2gExample(Scene):
+        def construct(self):
+            t2gindices = Text(
+                'Hello',
+                t2g={
+                    '[1:-1]': (RED,GREEN),
+                },
+            ).move_to(LEFT)
+            t2gwords = Text(
+                'World',
+                t2g={
+                    'World':(RED,BLUE),
+                },
+            ).next_to(t2gindices, RIGHT)
+            self.add(t2gindices, t2cwords)
+
+
+.. _disable-ligatures:
+
+Disabling Ligatures
+-------------------
+
+By disabling ligatures you would get a 1-1 mapping between characters and
+submobjects. This would fix coloring issue's. 
+
+
+.. warning::
+
+    Be aware that using this method with a text which heavily needs
+    ligatures may not work as expected. For example, when disabling
+    ligatures with Arabic text the output doesn't looks as expected.
+
+You can disable ligatures by passing ``disable_ligatures`` parameter to 
+:class:`Text`. For example,
+
+.. manim:: DisableLigature
+
+    class DisableLigature(Scene):
+        def construct(self):
+            li = Text("fl ligature").scale(2)
+            nli = Text("fl ligature", disable_ligatures=True).scale(2)
+            self.add(Group(li, nli).arrange(DOWN, buff=.8))
+
+.. _iterating-text:
 
 Iterating :class:`~.Text`
 -------------------------
@@ -61,13 +176,13 @@ Iterating :class:`~.Text`
 Text objects behave like a VGroup-like iterable of all characters in the given
 text. In particular, slicing is possible.
 
-For example, you can set each letter to different colour by iterating it.
+For example, you can set each letter to different color by iterating it.
 
 .. manim:: IterateColor
 
     class IterateColor(Scene):
         def construct(self):
-            text = Text("Colours").scale(2)
+            text = Text("Colors").scale(2)
             for letter in text:
                 letter.set_color(random_bright_color())
                 self.play(Write(letter))
@@ -80,46 +195,3 @@ For example, you can set each letter to different colour by iterating it.
     See :ref:`disable-ligatures`
 
 .. _Ligature: https://en.wikipedia.org/wiki/Ligature_(writing)
-
-Using Gradients
----------------
-
-You can use Gradient using the :attr:`~.Text.gradient`. The value must
-be a Iterable or any Length.
-
-For example,
-
-.. manim:: GradientExample
-    :save_last_frame:
-
-    class GradientExample(Scene):
-        def construct(self):
-            t = Text("Hello", gradient=(RED, BLUE, GREEN)).scale(2)
-            self.add(t)
-
-
-.. _disable-ligatures
-
-Disabling Ligatures
--------------------
-
-By disabling ligatures you would get a 1-1 mapping between characters and
-submobjects. This would fix colouring issue's. 
-
-
-.. warning::
-
-    Be aware that using this method with a text which heavily needs ligatures
-    may not work as expected. For example, when disabling ligatures with Arabic
-    text the output doesn't looks as expected.
-
-You can disable ligatures by passing ``disable_ligatures`` parameter to 
-:class:`Text`. For example,
-
-.. manim:: DisableLigature
-
-    class DisableLigature(Scene):
-        def construct(self):
-            li = Text("fl ligature").scale(2)
-            nli = Text("fl ligature", disable_ligatures=True).scale(2)
-            self.add(Group(li, nli).arrange(DOWN, buff=.8))
