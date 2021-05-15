@@ -35,7 +35,7 @@ from ...utils.bezier import (
 from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
-from ...utils.space_ops import rotate_vector, shoelace_direction, rotation_matrix
+from ...utils.space_ops import rotate_vector, shoelace_direction
 from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
@@ -415,13 +415,13 @@ class VMobject(Mobject):
         return self
 
     def rotate_sheen_direction(self, angle, axis=OUT, family=True):
-        matr = rotation_matrix(angle, axis).T
-        matr[2] = np.zeros(3)
         if family:
             for submob in self.get_family():
-                submob.sheen_direction = np.dot(submob.sheen_direction, matr)
+                submob.sheen_direction = rotate_vector(
+                    submob.sheen_direction, angle, axis
+                )
         else:
-            self.sheen_direction = np.dot(self.sheen_direction, matr)
+            self.sheen_direction = rotate_vector(self.sheen_direction, angle, axis)
         return self
 
     def set_sheen(self, factor, direction=None, family=True):
