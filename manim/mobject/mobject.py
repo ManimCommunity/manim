@@ -52,6 +52,7 @@ from ..utils.space_ops import (
     rotation_matrix,
     rotation_matrix_transpose,
 )
+from ..utils.deprecation import deprecated
 
 # TODO: Explain array_attrs
 
@@ -773,7 +774,11 @@ class Mobject(Container):
 
     # Updating
 
-    def update(self, dt: float = 0, recursive: bool = True) -> "Mobject":
+    @deprecated(since="v0.7.0", until="v0.8.0", replacement="_apply_updaters")
+    def update(self, *args, **kwargs):
+        self._apply_updaters(*args, **kwargs)
+
+    def _apply_updaters(self, dt: float = 0, recursive: bool = True) -> "Mobject":
         """Apply all updaters.
 
         Does nothing if updating is suspended.
@@ -781,7 +786,8 @@ class Mobject(Container):
         Parameters
         ----------
         dt
-            The parameter ``dt`` to pass to the update functions. Usually this is the time in seconds since the last call of ``update``.
+            The parameter ``dt`` to pass to the update functions. Usually this is the
+            time in seconds since the last call of ``_apply_updaters``.
         recursive
             Whether to recursively update all submobjects.
 
@@ -800,13 +806,10 @@ class Mobject(Container):
             return self
         for updater in self.updaters:
             parameters = get_parameters(updater)
-            if "dt" in parameters:
-                updater(self, dt)
-            else:
-                updater(self)
+            updater(self, dt)
         if recursive:
             for submob in self.submobjects:
-                submob.update(dt, recursive)
+                submob._apply_updaters(dt, recursive)
         return self
 
     def has_time_based_updater(self) -> bool:
@@ -1079,7 +1082,7 @@ class Mobject(Container):
         if recursive:
             for submob in self.submobjects:
                 submob.resume_updating(recursive)
-        self.update(dt=0, recursive=recursive)
+        self._apply_updaters(dt=0, recursive=recursive)
         return self
 
     # Transforming operations

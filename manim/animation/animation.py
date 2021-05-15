@@ -144,7 +144,7 @@ class Animation:
         nothing to self.mobject.
         """
         for mob in self.get_all_mobjects_to_update():
-            mob.update(dt)
+            mob._apply_updaters(dt)
 
     def get_all_mobjects_to_update(self) -> list:
         # The surrounding scene typically handles

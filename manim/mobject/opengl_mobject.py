@@ -25,6 +25,7 @@ from ..utils.iterables import (
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose
+from ..utils.deprecation import deprecated
 
 
 class OpenGLMobject:
@@ -588,7 +589,11 @@ class OpenGLMobject:
         self.has_updaters = False
         self.updating_suspended = False
 
-    def update(self, dt=0, recurse=True):
+    @deprecated(since="v0.7.0", until="v0.8.0", replacement="_apply_updaters")
+    def update(self, *args, **kwargs):
+        self._apply_updaters(*args, **kwargs)
+
+    def _apply_updaters(self, dt=0, recurse=True):
         if not self.has_updaters or self.updating_suspended:
             return self
         for updater in self.time_based_updaters:
@@ -597,7 +602,7 @@ class OpenGLMobject:
             updater(self)
         if recurse:
             for submob in self.submobjects:
-                submob.update(dt, recurse)
+                submob._apply_updaters(dt, recurse)
         return self
 
     def get_time_based_updaters(self):

@@ -305,7 +305,7 @@ class Scene(Container):
             Change in time between updates. Defaults (mostly) to 1/frames_per_second
         """
         for mobject in self.mobjects:
-            mobject.update(dt)
+            mobject._apply_updaters(dt)
 
     def update_meshes(self, dt):
         for mesh in self.meshes:
