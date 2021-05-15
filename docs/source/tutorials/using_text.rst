@@ -27,11 +27,12 @@ render non-English alphabets like `你好` or  `こんにちは` or `안녕하�
 Here, is a simple Hello World animation.
 
 .. manim:: HelloWorld
+    :save_last_frame:
 
     class HelloWorld(Scene):
         def construct(self):
             text = Text('Hello world').scale(3)
-            self.play(FadeIn(text))
+            self.add(text)
 
 You can also use :class:`~.MarkupText` where PangoMarkup (:class:`MarkupText`)
 can be used to render text. For example,
@@ -179,13 +180,14 @@ text. In particular, slicing is possible.
 For example, you can set each letter to different color by iterating it.
 
 .. manim:: IterateColor
+    :save_last_frame:
 
     class IterateColor(Scene):
         def construct(self):
             text = Text("Colors").scale(2)
             for letter in text:
                 letter.set_color(random_bright_color())
-                self.play(Write(letter))
+            self.add(text)
 
 .. warning::
 
