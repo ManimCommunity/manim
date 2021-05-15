@@ -99,22 +99,6 @@ class Colors(Enum):
                     )
                     return lines
 
-                gray_lines = named_lines_group(
-                    10,
-                    ["white"] + subnames("gray") + ["black"],
-                    [
-                        "white",
-                        "lighter_gray / gray_a",
-                        "light_gray / gray_b",
-                        "gray / gray_c",
-                        "dark_gray / gray_d",
-                        "darker_gray / gray_e",
-                        "black",
-                    ],
-                    [BLACK] * 3 + [WHITE] * 4,
-                    0,
-                )
-
                 other_colors = (
                     "pink",
                     "light_pink",
@@ -129,20 +113,51 @@ class Colors(Enum):
                     other_colors,
                     other_colors,
                     [BLACK] * 4 + [WHITE] * 2,
+                    0,
+                )
+
+                gray_lines = named_lines_group(
+                    6.6,
+                    ["white"] + subnames("gray") + ["black"],
+                    [
+                        "white",
+                        "lighter_gray / gray_a",
+                        "light_gray / gray_b",
+                        "gray / gray_c",
+                        "dark_gray / gray_d",
+                        "darker_gray / gray_e",
+                        "black",
+                    ],
+                    [BLACK] * 3 + [WHITE] * 4,
+                    2,
+                )
+
+                pure_colors = (
+                    "pure_red",
+                    "pure_green",
+                    "pure_blue",
+                )
+
+                pure_lines = named_lines_group(
+                    3.2,
+                    pure_colors,
+                    pure_colors,
+                    [BLACK, BLACK, WHITE],
                     6,
                 )
 
-                self.add(color_groups, gray_lines, other_lines)
+                self.add(color_groups, other_lines, gray_lines, pure_lines)
 
                 VGroup(*self.mobjects).move_to(ORIGIN)
 
-    The preferred way of using these colors is
+
+    The preferred way of using these colors is by importing their constants from manim:
 
     .. code-block:: pycon
 
-        >>> import manim.utils.color as C
-        >>> C.WHITE
-        '#FFFFFF'
+        >>> from manim import RED, GREEN, BLUE
+        >>> RED
+        '#FC6255'
 
     Note this way uses the name of the colors in UPPERCASE.
 
@@ -153,8 +168,13 @@ class Colors(Enum):
     .. code-block:: pycon
 
         >>> from manim.utils.color import Colors
-        >>> Colors.white.value
-        '#FFFFFF'
+        >>> Colors.red.value
+        '#FC6255'
+
+    :: note
+
+        The colors of type "C" have an alias equal to the colorname without a letter,
+        e.g. GREEN = GREEN_C
 
     """
 
