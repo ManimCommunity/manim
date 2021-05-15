@@ -3,6 +3,7 @@ import itertools as it
 import random
 import sys
 from functools import wraps
+from typing import Callable, Optional, Union
 
 import moderngl
 import numpy as np
@@ -26,6 +27,10 @@ from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector, rotation_matrix_transpose
 from ..utils.deprecation import deprecated
+
+Updater = Union[
+    Callable[["OpenGLMobject"], None], Callable[["OpenGLMobject", float], None]
+]
 
 
 class OpenGLMobject:
@@ -605,9 +610,6 @@ class OpenGLMobject:
                 submob._apply_updaters(dt, recurse)
         return self
 
-    def get_time_based_updaters(self):
-        return self.time_based_updaters
-
     def has_time_based_updater(self):
         return len(self.time_based_updaters) > 0
 
@@ -617,26 +619,61 @@ class OpenGLMobject:
     def get_family_updaters(self):
         return list(it.chain(*[sm.get_updaters() for sm in self.get_family()]))
 
-    def add_updater(self, update_function, index=None, call_updater=True):
-        if "dt" in get_parameters(update_function):
-            updater_list = self.time_based_updaters
+    def add_updater(
+        self,
+        updater: Updater,
+        *,
+        pass_relative_times: Optional[bool] = None,
+        index: Optional[int] = None,
+        call_updater: bool = False,
+    ) -> "OpenGLMobject":
+        # Test if updater is time based and wheather to use time difference
+        parameters = list(get_parameters(updater).keys())
+        time_based = len(parameters) > 1
+        if time_based:
+            if parameters[1] not in ["t", "time"] and pass_relative_times is None:
+                pass_relative_times = True
+            pass_relative_times = bool(pass_relative_times)
+
+        # Wrap updaters to allow calling all of them using updatable and dt as parameter
+        if time_based:
+            if pass_relative_times:
+                dt_updater = updater
+            else:
+
+                def dt_updater(mob, dt):
+                    dt_updater.total_time += dt
+                    updater(mob, dt_updater.total_time)
+
+                dt_updater.total_time = 0
+                dt_updater.base_func = updater  # used to enable removing
+                updater_list = self.time_based_updaters
+
+            updater = dt_updater
         else:
             updater_list = self.non_time_updaters
 
         if index is None:
-            updater_list.append(update_function)
+            updater_list.append(updater)
         else:
-            updater_list.insert(index, update_function)
+            updater_list.insert(index, updater)
 
         self.refresh_has_updater_status()
         if call_updater:
-            self.update()
+            self._apply_updaters()
         return self
 
-    def remove_updater(self, update_function):
-        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
-            while update_function in updater_list:
-                updater_list.remove(update_function)
+    def remove_updater(self, updater):
+        self.time_based_updaters = list(
+            filter(lambda x: x.base_func is not updater),
+            self.time_based_updaters,
+        )
+        self.non_time_updaters = list(
+            filter(
+                lambda x: x is not updater,
+                self.non_time_updaters,
+            )
+        )
         self.refresh_has_updater_status()
         return self
 
@@ -651,8 +688,9 @@ class OpenGLMobject:
 
     def match_updaters(self, mobject):
         self.clear_updaters()
-        for updater in mobject.get_updaters():
-            self.add_updater(updater)
+        self.time_based_updaters = list(mobject.time_based_updaters)
+        self.non_time_updaters = list(mobject.non_time_updaters)
+        self.refresh_has_updater_status()
         return self
 
     def suspend_updating(self, recurse=True):
