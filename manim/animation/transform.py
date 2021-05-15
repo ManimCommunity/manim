@@ -26,17 +26,7 @@ __all__ = [
 
 import inspect
 import types
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional
 
 import numpy as np
 
@@ -45,7 +35,7 @@ from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
-from ..utils.paths import path_along_arc, straight_path
+from ..utils.paths import path_along_arc
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:

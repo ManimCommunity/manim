@@ -41,20 +41,17 @@ from mapbox_earcut import triangulate_float32 as earcut
 
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
+from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.linalg.norm")
 def get_norm(vect):
-    logger.warning(
-        "get_norm has been deprecated and will be removed in a future release."
-        "Use np.linalg.norm instead."
-    )
     return np.linalg.norm(vect)
 
 
 def norm_squared(v):
-    return np.linalg.dot(v, v)
+    return np.dot(v, v)
 
 
 # Quaternions
@@ -168,14 +165,20 @@ def rotation_matrix_transpose(angle, axis):
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle, axis):
+def rotation_matrix(angle, axis, homogeneous=False):
     """
     Rotation in R^3 about a specified axis of rotation.
     """
     about_z = rotation_about_z(angle)
     z_to_axis = z_to_vector(axis)
     axis_to_z = np.linalg.inv(z_to_axis)
-    return reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    inhomogeneous_rotation_matrix = reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    if not homogeneous:
+        return inhomogeneous_rotation_matrix
+    else:
+        rotation_matrix = np.eye(4)
+        rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
+        return rotation_matrix
 
 
 def rotation_about_z(angle):
@@ -210,11 +213,8 @@ def z_to_vector(vector):
     return np.dot(rotation_about_z(theta), phi_down)
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="angle_between_vectors")
 def angle_between(v1, v2):
-    logger.warning(
-        "angle_between has been deprecated and will be removed in a future release."
-        "Use angle_between_vectors instead."
-    )
     return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
 
 
@@ -270,11 +270,8 @@ def normalize_along_axis(array, axis, fall_back=None):
     return array
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.cross")
 def cross(v1, v2):
-    logger.warning(
-        "cross has been deprecated and will be removed in a future release."
-        "Use np.cross instead."
-    )
     return np.cross(v1, v2)
 
 

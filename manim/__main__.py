@@ -4,10 +4,12 @@ import click
 from click_default_group import DefaultGroup
 
 from . import __version__, console
-from .cli.cfg.commands import cfg
+from .cli.cfg.group import cfg
+from .cli.init.commands import init
+from .cli.new.group import new
 from .cli.plugins.commands import plugins
 from .cli.render.commands import render
-from .constants import CONTEXT_SETTINGS, EPILOG
+from .constants import EPILOG
 
 
 def exit_early(ctx, param, value):
@@ -22,7 +24,6 @@ console.print(f"Manim Community [green]v{__version__}[/green]\n")
     cls=DefaultGroup,
     default="render",
     no_args_is_help=True,
-    context_settings=CONTEXT_SETTINGS,
     help="Animation engine for explanatory math videos",
     epilog=EPILOG,
 )
@@ -42,6 +43,8 @@ def main(ctx):
 
 main.add_command(cfg)
 main.add_command(plugins)
+main.add_command(init)
+main.add_command(new)
 main.add_command(render)
 
 if __name__ == "__main__":
