@@ -42,6 +42,7 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
+from ..utils.deprecation import deprecated
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
@@ -52,7 +53,6 @@ from ..utils.space_ops import (
     rotation_matrix,
     rotation_matrix_transpose,
 )
-from ..utils.deprecation import deprecated
 
 # TODO: Explain array_attrs
 
