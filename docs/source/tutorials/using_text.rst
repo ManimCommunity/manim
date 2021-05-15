@@ -141,7 +141,7 @@ as explained in :ref:`iterating-text`.
 For example,
 
 .. manim:: Textt2cExample
-    :save_last_frame
+    :save_last_frame:
 
     class Textt2cExample(Scene):
         def construct(self):
