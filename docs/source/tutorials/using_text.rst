@@ -147,7 +147,7 @@ For example,
         def construct(self):
             t2cindices = Text('Hello', t2c={'[1:-1]': BLUE}).move_to(LEFT)
             t2cwords = Text('World',t2c={'rl':RED}).next_to(t2cindices, RIGHT)
-            self.add(t2cindices)
+            self.add(t2cindices, t2cwords)
 
 If you want avoid problems when colours(due to ligatures), consider using
 :class:`MarkupText`.
@@ -192,7 +192,7 @@ For example,
                     'World':(RED,BLUE),
                 },
             ).next_to(t2gindices, RIGHT)
-            self.add(t2gindices, t2cwords)
+            self.add(t2gindices, t2gwords)
 
 Setting Line Spacing
 --------------------
