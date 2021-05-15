@@ -171,7 +171,7 @@ class Colors(Enum):
         >>> Colors.red.value
         '#FC6255'
 
-    :: note
+    .. note::
 
         The colors of type "C" have an alias equal to the colorname without a letter,
         e.g. GREEN = GREEN_C
