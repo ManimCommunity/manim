@@ -33,18 +33,19 @@ import numpy as np
 from ..animation.transform import Transform
 from ..constants import DOWN, ORIGIN
 from ..mobject.mobject import Mobject
+from ..mobject.types.vectorized_mobject import VGroup
 from ..scene.scene import Scene
 from ..utils.deprecation import deprecated
 from ..utils.rate_functions import there_and_back
 
 
 class _Fade(Transform):
-    """Fade in a :class:`~.Mobject` in or out.
+    """Fade :class:`~.Mobject` s in or out.
 
     Parameters
     ----------
-    mobject
-        The mobject to be faded in.
+    mobjects
+        The mobjects to be faded.
     shift
         The vector by which the mobject shifts while beeing faded.
     target_position
@@ -58,12 +59,19 @@ class _Fade(Transform):
 
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         shift: Optional[np.ndarray] = None,
         target_position: Optional[Union[np.ndarray, Mobject]] = None,
         scale: float = 1,
         **kwargs
     ) -> None:
+        if not mobjects:
+            raise ValueError("At least one mobject must be passed.")
+        if len(mobjects) == 1:
+            mobject = mobjects[0]
+        else:
+            mobject = VGroup(*mobjects)
+
         self.point_target = False
         if shift is None:
             if target_position is not None:
@@ -99,12 +107,12 @@ class _Fade(Transform):
 
 
 class FadeIn(_Fade):
-    """Fade in a :class:`~.Mobject`.
+    """Fade in :class:`~.Mobject` s.
 
     Parameters
     ----------
-    mobject
-        The mobject to be faded in.
+    mobjects
+        The mobjects to be faded in.
     shift
         The vector by which the mobject shifts while beeing faded in.
     target_position
@@ -144,12 +152,12 @@ class FadeIn(_Fade):
 
 
 class FadeOut(_Fade):
-    """Fade out a :class:`~.Mobject`.
+    """Fade out :class:`~.Mobject` s.
 
     Parameters
     ----------
-    mobject
-        The mobject to be faded out.
+    mobjects
+        The mobjects to be faded out.
     shift
         The vector by which the mobject shifts while beeing faded out.
     target_position
@@ -181,8 +189,8 @@ class FadeOut(_Fade):
 
     """
 
-    def __init__(self, mobject: Mobject, **kwargs) -> None:
-        super().__init__(mobject, remover=True, **kwargs)
+    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+        super().__init__(*mobjects, remover=True, **kwargs)
 
     def create_target(self):
         return self._create_faded_mobject(fadeIn=False)
