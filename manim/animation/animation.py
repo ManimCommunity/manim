@@ -153,10 +153,13 @@ class Animation:
         return str(self)
 
     def begin(self) -> None:
-        # This is called right as an animation is being
-        # played.  As much initialization as possible,
-        # especially any mobject copying, should live in
-        # this method
+        """Begin the animation.
+
+        This method is called right as an animation is being played. As much
+        initialization as possible, especially any mobject copying, should live in this
+        method.
+
+        """
         self.starting_mobject = self.create_starting_mobject()
         if self.suspend_mobject_updating:
             # All calls to self.mobject's internal updaters
