@@ -975,8 +975,10 @@ class Mobject(Container):
 
         """
         self.updaters = list(
-            filter(lambda unified_updater: unified_updater.base_func is not updater),
-            self.updaters,
+            filter(
+                lambda unified_updater: unified_updater.base_func is not updater,
+                self.updaters,
+            )
         )
         return self
 

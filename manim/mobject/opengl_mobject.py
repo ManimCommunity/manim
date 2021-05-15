@@ -665,8 +665,10 @@ class OpenGLMobject:
 
     def remove_updater(self, updater):
         self.time_based_updaters = list(
-            filter(lambda x: x.base_func is not updater),
-            self.time_based_updaters,
+            filter(
+                lambda x: x.base_func is not updater,
+                self.time_based_updaters,
+            )
         )
         self.non_time_updaters = list(
             filter(
