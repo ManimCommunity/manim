@@ -1619,7 +1619,7 @@ class VDict(VMobject):
                 self.play(FadeOut(my_dict["c"]))
                 self.wait()
 
-                self.play(FadeOutAndShift(my_dict["r"], DOWN))
+                self.play(FadeOut(my_dict["r"], shift=DOWN))
                 self.wait()
 
                 # you can also make a VDict from an existing dict of mobjects
