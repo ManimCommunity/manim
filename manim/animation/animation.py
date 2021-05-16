@@ -246,10 +246,24 @@ class Animation:
         return list(filter(lambda m: m is not self.mobject, self.get_all_mobjects()))
 
     def copy(self) -> "Animation":
+        """Create a copy of the animation.
+
+        Returns
+        -------
+        :class:`Animation`
+            A copy of ``self``
+        """
         return deepcopy(self)
 
     # Methods for interpolation, the mean of an Animation
     def interpolate(self, alpha: float) -> None:
+        """Set the animation progress.
+
+        Parameters
+        ----------
+        alpha : float
+            [description]
+        """
         alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
 
