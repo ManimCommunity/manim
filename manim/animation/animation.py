@@ -56,7 +56,7 @@ class Animation:
         after half of the animations run time.
     name
         The name of the animation. This gets displayed while rendering the animation.
-        Defualts to <class-name>(<Mobject-name>).
+        Defaults to <class-name>(<Mobject-name>).
     remover
         Whether the given mobject should be removed from the scene after this animation.
     suspend_mobject_updating
