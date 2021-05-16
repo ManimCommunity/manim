@@ -849,8 +849,53 @@ class Scene(Container):
         else:
             return np.max([animation.run_time for animation in animations])
 
-    def play(self, *args, **kwargs):
-        self.renderer.play(self, *args, **kwargs)
+    def play(self, *args, run_async=None, **kwargs):
+        sync_animation_running = bool(self.animations)
+
+        if config["renderer"] != "opengl":
+            run_async = False
+
+        if sync_animation_running:
+            if run_async is None:
+                run_async = True
+            if not run_async:
+                raise ValueError(
+                    "Cannot start a synchronous animation while another is running."
+                )
+        elif run_async is None:
+            run_async = False
+
+        if run_async:
+            animations = self.compile_animations(*args, **kwargs)
+
+            self.add_mobjects_from_animations(animations)
+            for animation in animations:
+                self._turn_animation_to_updater(animation)
+            return
+        else:
+            self.renderer.play(self, *args, **kwargs)
+
+    def _turn_animation_to_updater(self, animation: Animation):
+        mobject = animation.mobject
+
+        animation.suspend_mobject_updating = False
+        animation.begin()
+
+        def update(mob, dt):
+            run_time = animation.get_run_time()
+            alpha = update.total_time / run_time
+            if alpha >= 1:
+                animation.finish()
+                animation.clean_up_from_scene(self)
+                self.remove_updater(update)
+                return
+            animation.interpolate(alpha)
+            animation.update_mobjects(dt)
+            update.total_time += dt
+
+        update.total_time = 0
+        mobject.add_updater(update)
+        return self
 
     def wait(self, duration=DEFAULT_WAIT_TIME, stop_condition=None):
         self.play(Wait(run_time=duration, stop_condition=stop_condition))
@@ -966,6 +1011,7 @@ class Scene(Container):
         self.renderer.static_image = None
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
+        self.animations = None
 
     def interactive_embed(self):
         """
