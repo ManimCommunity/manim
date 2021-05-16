@@ -261,8 +261,9 @@ class Animation:
 
         Parameters
         ----------
-        alpha : float
-            [description]
+        alpha
+            The progress to set the aniamtion to, 0 meaning the initial state, 1 meaning
+            the last.
         """
         alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
