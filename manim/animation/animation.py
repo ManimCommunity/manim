@@ -5,7 +5,16 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable, Iterable, Optional, Tuple, Type, Union
+from typing import (
+    Sequence,
+    TYPE_CHECKING,
+    Callable,
+    Iterable,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+)
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -202,9 +211,15 @@ class Animation:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Tuple[Mobject, Mobject]:
-        """
+    def get_all_mobjects(self) -> Sequence[Mobject]:
+        """Get all mobjects involved in the animation.
+
         Ordering must match the ordering of arguments to interpolate_submobject
+
+        Returns
+        -------
+        Sequence[:class:`~.Mobject`]
+            The sequence of mobjects.
         """
         return self.mobject, self.starting_mobject
 
