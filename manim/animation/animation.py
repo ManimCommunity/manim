@@ -294,19 +294,58 @@ class Animation:
         self,
         rate_func: Callable[[float], float],
     ) -> "Animation":
+        """Set the rate function of the animation.
+
+        Parameters
+        ----------
+        run_time
+            The new time the animation should take in seconds.
+
+
+        Returns
+        -------
+        ``Animation``
+            ``self``
+        """
         self.rate_func = rate_func
         return self
 
     def get_rate_func(
         self,
     ) -> Callable[[float], float]:
+        """Get the rate function of the animation.
+
+        Returns
+        -------
+        Callable[[float], float]
+            The rate fucntion of the animation.
+        """
         return self.rate_func
 
     def set_name(self, name: str) -> "Animation":
+        """Set the name of the animation.
+
+        Parameters
+        ----------
+        name
+            The new name of the animation.
+
+        Returns
+        -------
+        ``Animation``
+            ``self``
+        """
         self.name = name
         return self
 
     def is_remover(self) -> bool:
+        """Test if a the animation is a remover.
+
+        Returns
+        -------
+        ``bool``
+            ``True`` if the animation is a remover, ``False`` otherwise.
+        """
         return self.remover
 
 
