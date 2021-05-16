@@ -98,7 +98,7 @@ class _Fade(Transform):
             The faded, shifted and scaled copy of the mobject.
         """
         faded_mobject = self.mobject.copy()
-        faded_mobject.set_opacity(0)
+        faded_mobject.fade(1)
         direction_modifier = -1 if fadeIn and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
