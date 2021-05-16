@@ -6,6 +6,7 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 from copy import deepcopy
 from typing import (
+    List,
     TYPE_CHECKING,
     Callable,
     Iterable,
@@ -194,7 +195,7 @@ class Animation:
             self.mobject.resume_updating()
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
-        """Clean up the :class:`~.Scene` after finishing an animation.
+        """Clean up the :class:`~.Scene` after finishing the animation.
 
         This includes to :meth:`~.Scene.remove` the Animation's
         :class:`~.Mobject` if the animation is a remover.
@@ -239,7 +240,14 @@ class Animation:
         for mob in self.get_all_mobjects_to_update():
             mob.update(dt)
 
-    def get_all_mobjects_to_update(self) -> list:
+    def get_all_mobjects_to_update(self) -> List[Mobject]:
+        """Get all mobjects to be updated during the animation.
+
+        Returns
+        -------
+        List[Mobject]
+            The list of mobjects to be updated during the animation.
+        """
         # The surrounding scene typically handles
         # updating of self.mobject.  Besides, in
         # most cases its updating is suspended anyway
@@ -256,14 +264,18 @@ class Animation:
         return deepcopy(self)
 
     # Methods for interpolation, the mean of an Animation
+
+    # TODO: stop using alpha as parameter name in different meanings.
     def interpolate(self, alpha: float) -> None:
         """Set the animation progress.
+
+        This method gets called for every frame during an animation.
 
         Parameters
         ----------
         alpha
-            The progress to set the aniamtion to, 0 meaning the initial state, 1 meaning
-            the last.
+            The relative time to set the aniamtion to, 0 meaning the start, 1 meaning
+            the end.
         """
         alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
@@ -289,6 +301,27 @@ class Animation:
         pass
 
     def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int) -> float:
+        """Get the animation progress of any a submobjects subanimation.
+
+         for  of the
+        animated mobject based on the overall animation progress.
+
+
+
+        Parameters
+        ----------
+        alpha
+            The overall animation progress
+        index
+            The index of the subanimation.
+        num_submobjects
+            The total count of subanimations.
+
+        Returns
+        -------
+        float
+            The progress of the subanimation.
+        """
         # TODO, make this more understandable, and/or combine
         # its functionality with AnimationGroup's method
         # build_animations_with_timings
