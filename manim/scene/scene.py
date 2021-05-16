@@ -887,7 +887,7 @@ class Scene(Container):
             if alpha >= 1:
                 animation.finish()
                 animation.clean_up_from_scene(self)
-                self.remove_updater(update)
+                mob.remove_updater(update)
                 return
             animation.interpolate(alpha)
             animation.update_mobjects(dt)
