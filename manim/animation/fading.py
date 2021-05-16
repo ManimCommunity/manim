@@ -32,8 +32,7 @@ import numpy as np
 
 from ..animation.transform import Transform
 from ..constants import DOWN, ORIGIN
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
 from ..utils.deprecation import deprecated
 from ..utils.rate_functions import there_and_back
@@ -70,7 +69,7 @@ class _Fade(Transform):
         if len(mobjects) == 1:
             mobject = mobjects[0]
         else:
-            mobject = VGroup(*mobjects)
+            mobject = Group(*mobjects)
 
         self.point_target = False
         if shift is None:
