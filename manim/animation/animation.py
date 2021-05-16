@@ -6,11 +6,11 @@ __all__ = ["Animation", "Wait", "override_animation"]
 
 from copy import deepcopy
 from typing import (
-    Sequence,
     TYPE_CHECKING,
     Callable,
     Iterable,
     Optional,
+    Sequence,
     Tuple,
     Type,
     Union,
