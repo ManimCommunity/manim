@@ -4,3 +4,7 @@ class EndSceneEarlyException(Exception):
 
 class RerunSceneException(Exception):
     pass
+
+
+class MultiAnimationOverrideException(Exception):
+    pass
