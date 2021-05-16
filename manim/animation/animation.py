@@ -185,6 +185,16 @@ class Animation:
             self.mobject.resume_updating()
 
     def clean_up_from_scene(self, scene: "Scene") -> None:
+        """Clean up the :class:`~.Scene` after finishing an animation.
+
+        This includes to :meth:`~.Scene.remove` the Animation's
+        :class:`~.Mobject` if the animation is a remover.
+
+        Parameters
+        ----------
+        scene
+            The scene the animation should be cleaned up from.
+        """
         if self.is_remover():
             scene.remove(self.mobject)
 
