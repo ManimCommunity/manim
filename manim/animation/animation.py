@@ -50,7 +50,7 @@ class Animation:
     run_time
         The duration of the animation in seconds.
     rate_func
-        The function defining the animation progress based on the relative runtime.
+        The function defining the animation progress based on the relative runtime (see  :mod:`~.rate_functions`) .
 
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
         after half of the animations run time.
