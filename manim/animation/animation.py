@@ -260,6 +260,23 @@ class Animation:
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> "Animation":
+        """Set the run time of the animation.
+
+        Parameters
+        ----------
+        run_time
+            The new time the animation should take in seconds.
+
+        .. note::
+
+            The run_time of an animation should not be changed while it is already
+            running.
+
+        Returns
+        -------
+        ``Animation``
+            ``self``
+        """
         self.run_time = run_time
         return self
 
