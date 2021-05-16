@@ -264,6 +264,13 @@ class Animation:
         return self
 
     def get_run_time(self) -> float:
+        """Get the run time of the animation.
+
+        Returns
+        -------
+        float
+            The time the animation takes in seconds.
+        """
         return self.run_time
 
     def set_rate_func(
