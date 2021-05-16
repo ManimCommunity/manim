@@ -1,11 +1,11 @@
 """Animate mobjects."""
 
 
-__all__ = ["Animation", "Wait"]
+__all__ = ["Animation", "Wait", "override_animation"]
 
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable, Iterable, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, Iterable, Optional, Tuple, Type, Union
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -22,9 +22,30 @@ DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 
 
 class Animation:
+    def __new__(
+        cls,
+        mobject: Optional[Mobject] = None,
+        *args,
+        use_override: bool = True,
+        **kwargs,
+    ):
+        if isinstance(mobject, Mobject) and use_override:
+            func = mobject.animation_override_for(cls)
+            if func is not None:
+                anim = func(mobject, *args, **kwargs)
+                logger.debug(
+                    (
+                        f"The {cls.__name__} animation has been is overridden for "
+                        f"{type(mobject).__name__} mobjects. use_override = False can "
+                        f" be used as keyword argument to prevent animation overriding."
+                    )
+                )
+                return anim
+        return super().__new__(cls)
+
     def __init__(
         self,
-        mobject: Union[Mobject, None],
+        mobject: Optional[Mobject],
         # If lag_ratio is 0, the animation is applied to all submobjects
         # at the same time
         # If 1, it is applied to each successively.
@@ -263,3 +284,49 @@ class Wait(Animation):
 
     def interpolate(self, alpha: float) -> None:
         pass
+
+
+def override_animation(
+    animation_class: Type["Animation"],
+) -> Callable[[Callable], Callable]:
+    """Decorator used to mark methods as overrides for specific :class:`~.Animation` types.
+
+    Should only be used to decorate methods of classes derived from :class:`~.Mobject`.
+    ``Animation`` overrides get inherited to subclasses of the ``Mobject`` who defined
+    them. They don't override subclasses of the ``Animation`` they override.
+
+    See Also
+    --------
+    :meth:`~.Mobject.add_animation_override`
+
+    Parameters
+    ----------
+    animation_class
+        The animation to be overridden.
+
+    Returns
+    -------
+    Callable[[Callable], Callable]
+        The actual decorator. This marks the method as overriding an animation.
+
+    Examples
+    --------
+
+    .. manim:: OverrideAnimationExample
+
+        class MySquare(Square):
+            @override_animation(FadeIn)
+            def _fade_in_override(self, **kwargs):
+                return Create(self, **kwargs)
+
+        class OverrideAnimationExample(Scene):
+            def construct(self):
+                self.play(FadeIn(MySquare()))
+
+    """
+
+    def decorator(func):
+        func._override_animation = animation_class
+        return func
+
+    return decorator
