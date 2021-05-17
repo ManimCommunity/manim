@@ -411,7 +411,7 @@ class Scene(Container):
             # Anything animated that's not already in the
             # scene gets added to the scene
             mob = animation.mobject
-            if mob is not None and mob not in curr_mobjects:
+            if mob not in curr_mobjects and not hasattr(mob, "empty_anim_placeholder"):
                 self.add(mob)
                 curr_mobjects += mob.get_family()
 

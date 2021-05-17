@@ -67,7 +67,10 @@ class Animation:
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
         self.starting_mobject: Mobject = Mobject()
-        self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        if mobject is None:
+            mobject = Mobject()
+            mobject.empty_anim_placeholder = True
+        self.mobject: Mobject = mobject
         if kwargs:
             logger.debug("Animation received extra kwargs: %s", kwargs)
 
