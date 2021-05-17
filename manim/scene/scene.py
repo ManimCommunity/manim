@@ -10,9 +10,9 @@ import platform
 import random
 import threading
 import types
-from typing import Any, Optional
 import warnings
 from queue import Queue
+from typing import Any, Optional
 
 import numpy as np
 from tqdm import tqdm
