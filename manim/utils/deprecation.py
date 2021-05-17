@@ -423,7 +423,7 @@ def deprecated_params(
                 if old_param in used:
                     kwargs[new_param] = kwargs.pop(old_param)
             else:
-                redirector_params = inspect.getargspec(redirector).args
+                redirector_params = list(inspect.signature(redirector).parameters)
                 redirector_args = {}
                 for redirector_param in redirector_params:
                     if redirector_param in used:
