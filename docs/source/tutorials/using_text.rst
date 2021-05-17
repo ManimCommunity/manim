@@ -56,6 +56,58 @@ Working with :class:`~.Text`
 This section explains the properties of :class:`~.Text` and how can it be used
 in your Animations.
 
+Using Fonts
+-----------
+
+You can set a different font using :attr:`~.Text.font`.
+
+.. note:: 
+
+    The font used must be installed in your system, and Pango should know
+    about it. You can get a list of fonts using :func:`manimpango.list_fonts`.
+
+    >>> import manimpango
+    >>> manimpango.list_fonts()
+    [...]
+
+
+.. manim:: FontsExample 
+    :save_last_frame:
+    
+    class FontsExample(Scene):
+        def construct(self):
+            ft = Text("Noto Sans", font="Noto Sans")
+            self.add(ft)
+
+Setting Slant and Weight
+------------------------
+Slant is the style of the Text, and it can be ``NORMAL`` (the default), 
+``ITALIC``, ``OBLIQUE``. Usually, for many fonts both ``ITALIC`` and
+``OBLIQUE`` looks similar, but ``ITALIC`` uses **Roman Style**, which 
+``OBLIQUE`` uses **Italic Style**.
+
+Weight specifies the boldness of a font. You can see a list in
+:class:`manimpango.Weight`.
+
+.. manim:: SlantsExample
+    :save_last_frame:
+
+    class SlantsExample(Scene):
+        def construct(self):
+            a = Text("Italic", slant=ITALIC)
+            self.add(a)
+
+.. manim:: DifferentWeight
+   :save_last_frame:
+    
+    import manimpango
+    class DifferentWeight(Scene):
+        def construct(self):
+            g = VGroup()
+            for i in manimpango.Weight:
+                g += Text(i.name, weight=i.name, font="Open Sans")
+            self.add(g.arrange(DOWN).scale(0.5))
+
 Using Colors
 ------------
 
@@ -141,6 +193,21 @@ For example,
                 },
             ).next_to(t2gindices, RIGHT)
             self.add(t2gindices, t2cwords)
+
+Setting Line Spacing
+--------------------
+
+You can set line spacing using :attr:`~.Text.line_spacing`.
+For example,
+
+.. manim:: LineSpacing
+   :save_last_frame:
+
+    class LineWidth(Scene):
+        def construct(self):
+            a = Text("Hello\nWorld", line_spacing=1)
+            b = Text("Hello\nWorld", line_spacing=4)
+            self.add(Group(a,b).arrange(LEFT, buff=5))
 
 
 .. _disable-ligatures:
