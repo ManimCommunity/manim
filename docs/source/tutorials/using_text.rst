@@ -201,7 +201,7 @@ You can set line spacing using :attr:`~.Text.line_spacing`.
 For example,
 
 .. manim:: LineSpacing
-   :save_last_frame:
+    :save_last_frame:
 
     class LineWidth(Scene):
         def construct(self):
