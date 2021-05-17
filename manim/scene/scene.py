@@ -10,6 +10,7 @@ import platform
 import random
 import threading
 import types
+from typing import Any, Optional
 import warnings
 from queue import Queue
 
@@ -91,6 +92,7 @@ class Scene(Container):
         self.random_seed = random_seed
 
         self.animations = None
+        self.sync_play_running = False
         self.stop_condition = None
         self.moving_mobjects = None
         self.static_mobjects = None
@@ -849,13 +851,42 @@ class Scene(Container):
         else:
             return np.max([animation.run_time for animation in animations])
 
-    def play(self, *args, run_async=None, **kwargs):
-        sync_animation_running = bool(self.animations)
+    def play(
+        self, *animations: Animation, run_async: Optional[bool] = None, **kwargs: Any
+    ):
+        """Play :class:`Animations<.Animation>` in the scene.
+
+        Parameters
+        ----------
+        animations
+            The animations to be played. They are started at the same timed and played
+            in parallel.
+        run_async
+            Whether to play the animations asynchronously. Asynchronous animations don't
+            interrupt the execution of :meth:`construct` and can be started while
+            synchronous animations are running. If ``run_async`` is not defined, it
+            defaults to ``True`` if called while a synchronous animation is running,
+            to ``False`` otherwise.
+
+            .. note::
+
+                This feature is only available when using the OpenGL-Renderer. The
+                parameter will be ignored otherwise.
+        kwargs
+            Attributes of all passed animations to be set. Typical usecases are setting
+            `run_time` or `rate_func`.
+
+        Raises
+        ------
+        ValueError
+            If an animation is played synchronously while another synchronous animation
+            is running.
+        """
 
         if config["renderer"] != "opengl":
             run_async = False
 
-        if sync_animation_running:
+        if self.sync_play_running:
             if run_async is None:
                 run_async = True
             if not run_async:
@@ -866,14 +897,14 @@ class Scene(Container):
             run_async = False
 
         if run_async:
-            animations = self.compile_animations(*args, **kwargs)
+            animations = self.compile_animations(*animations, **kwargs)
 
             self.add_mobjects_from_animations(animations)
             for animation in animations:
                 self._turn_animation_to_updater(animation)
             return
         else:
-            self.renderer.play(self, *args, **kwargs)
+            self.renderer.play(self, *animations, **kwargs)
 
     def _turn_animation_to_updater(self, animation: Animation):
         mobject = animation.mobject
@@ -991,6 +1022,7 @@ class Scene(Container):
             named parameters affecting what was passed in ``args``,
             e.g. ``run_time``, ``lag_ratio`` and so on.
         """
+        self.sync_play_running = True
         self.duration = self.get_run_time(self.animations)
         self.time_progression = self._get_animation_time_progression(
             self.animations, self.duration
@@ -1011,7 +1043,7 @@ class Scene(Container):
         self.renderer.static_image = None
         # Closing the progress bar at the end of the play.
         self.time_progression.close()
-        self.animations = None
+        self.sync_play_running = False
 
     def interactive_embed(self):
         """
