@@ -72,13 +72,13 @@ __all__ = [
 
 import itertools as it
 from typing import (
-    Sequence,
     TYPE_CHECKING,
     Callable,
     Dict,
     Iterable,
     List,
     Optional,
+    Sequence,
     Tuple,
     Union,
 )

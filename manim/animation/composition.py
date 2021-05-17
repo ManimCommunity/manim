@@ -1,7 +1,7 @@
 """Tools for displaying multiple animations at once."""
 
 
-from typing import Sequence, TYPE_CHECKING, Callable, Optional, Union
+from typing import TYPE_CHECKING, Callable, Optional, Sequence, Union
 
 import numpy as np
 
