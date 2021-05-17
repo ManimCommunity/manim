@@ -203,7 +203,7 @@ For example,
 .. manim:: LineSpacing
     :save_last_frame:
 
-    class LineWidth(Scene):
+    class LineSpacing(Scene):
         def construct(self):
             a = Text("Hello\nWorld", line_spacing=1)
             b = Text("Hello\nWorld", line_spacing=4)
