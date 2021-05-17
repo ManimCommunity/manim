@@ -478,6 +478,7 @@ class VMobject(Mobject):
         --------
         .. manim:: SetSheen
             :save_last_frame:
+
             class SetSheen(Scene):
                 def construct(self):
                     circle = Circle(fill_opacity=1).set_sheen(-0.3, DR)
