@@ -14,7 +14,7 @@ from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
-from .fading import FadeInFromPoint, FadeOutToPoint
+from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
 
 
@@ -125,11 +125,9 @@ class TransformMatchingAbstractBase(AnimationGroup):
         if fade_transform_mismatches:
             anims.append(FadeTransformPieces(fade_source, fade_target, **kwargs))
         else:
+            anims.append(FadeOut(fade_source, target_position=fade_target, **kwargs))
             anims.append(
-                FadeOutToPoint(fade_source, fade_target.get_center(), **kwargs)
-            )
-            anims.append(
-                FadeInFromPoint(fade_target.copy(), fade_source.get_center(), **kwargs)
+                FadeIn(fade_target.copy(), target_position=fade_target, **kwargs)
             )
 
         super().__init__(*anims)
