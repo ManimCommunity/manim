@@ -21,7 +21,7 @@ class OpeningManim(Scene):
         VGroup(title, basel).arrange(DOWN)
         self.play(
             Write(title),
-            FadeInFrom(basel, UP),
+            FadeIn(basel, shift=DOWN),
         )
         self.wait()
 
@@ -29,7 +29,7 @@ class OpeningManim(Scene):
         transform_title.to_corner(UP + LEFT)
         self.play(
             Transform(title, transform_title),
-            LaggedStart(*[FadeOutAndShift(obj, direction=DOWN) for obj in basel]),
+            LaggedStart(*[FadeOut(obj, shift=DOWN) for obj in basel]),
         )
         self.wait()
 
@@ -41,7 +41,7 @@ class OpeningManim(Scene):
         self.add(grid, grid_title)  # Make sure title is on top of grid
         self.play(
             FadeOut(title),
-            FadeInFrom(grid_title, direction=DOWN),
+            FadeIn(grid_title, shift=UP),
             Create(grid, run_time=3, lag_ratio=0.1),
         )
         self.wait()
