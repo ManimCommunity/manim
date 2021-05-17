@@ -98,7 +98,7 @@ Weight specifies the boldness of a font. You can see a list in
             self.add(a)
 
 .. manim:: DifferentWeight
-   :save_last_frame:    
+    :save_last_frame:
     
     class DifferentWeight(Scene):
         def construct(self):
