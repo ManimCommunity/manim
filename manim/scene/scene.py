@@ -907,6 +907,16 @@ class Scene(Container):
             self.renderer.play(self, *animations, **kwargs)
 
     def _turn_animation_to_updater(self, animation: Animation):
+        """Turn an :class:`~.Animation` into an updater of it's :class:`~.Mobject`.
+
+        The updater will remove itself when the animation is over.
+
+        Parameters
+        ----------
+        animation
+            The animation to be added
+
+        """
         mobject = animation.mobject
 
         animation.suspend_mobject_updating = False
