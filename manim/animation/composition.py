@@ -47,7 +47,7 @@ class AnimationGroup(Animation):
         self.run_time: float = self.init_run_time(run_time)
 
     def get_all_mobjects(self) -> Sequence[Mobject]:
-        return self.group
+        return list(self.group)
 
     def begin(self) -> None:
         for anim in self.animations:
