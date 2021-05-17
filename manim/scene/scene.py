@@ -859,7 +859,7 @@ class Scene(Container):
         Parameters
         ----------
         animations
-            The animations to be played. They are started at the same timed and played
+            The animations to be played. They are started at the same time and played
             in parallel.
         run_async
             Whether to play the animations asynchronously. Asynchronous animations don't
