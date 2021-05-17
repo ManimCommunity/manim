@@ -1,7 +1,7 @@
 """Tools for displaying multiple animations at once."""
 
 
-from typing import TYPE_CHECKING, Callable, Optional, Union
+from typing import Sequence, TYPE_CHECKING, Callable, Optional, Union
 
 import numpy as np
 
@@ -46,7 +46,7 @@ class AnimationGroup(Animation):
         super().__init__(self.group, rate_func=rate_func, lag_ratio=lag_ratio, **kwargs)
         self.run_time: float = self.init_run_time(run_time)
 
-    def get_all_mobjects(self) -> Group:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return self.group
 
     def begin(self) -> None:

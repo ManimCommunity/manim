@@ -219,7 +219,7 @@ class Animation:
 
         Returns
         -------
-        Sequence[:class:`~.Mobject`]
+        Sequence[Mobject]
             The sequence of mobjects.
         """
         return self.mobject, self.starting_mobject
@@ -258,7 +258,7 @@ class Animation:
 
         Returns
         -------
-        :class:`Animation`
+        Animation
             A copy of ``self``
         """
         return deepcopy(self)
@@ -301,12 +301,7 @@ class Animation:
         pass
 
     def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int) -> float:
-        """Get the animation progress of any a submobjects subanimation.
-
-         for  of the
-        animated mobject based on the overall animation progress.
-
-
+        """Get the animation progress of any submobjects subanimation.
 
         Parameters
         ----------
@@ -347,7 +342,7 @@ class Animation:
 
         Returns
         -------
-        ``Animation``
+        Animation
             ``self``
         """
         self.run_time = run_time
@@ -377,7 +372,7 @@ class Animation:
 
         Returns
         -------
-        ``Animation``
+        Animation
             ``self``
         """
         self.rate_func = rate_func
@@ -405,7 +400,7 @@ class Animation:
 
         Returns
         -------
-        ``Animation``
+        Animation
             ``self``
         """
         self.name = name
@@ -416,7 +411,7 @@ class Animation:
 
         Returns
         -------
-        ``bool``
+        bool
             ``True`` if the animation is a remover, ``False`` otherwise.
         """
         return self.remover
