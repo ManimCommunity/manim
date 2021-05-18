@@ -71,7 +71,17 @@ __all__ = [
 
 
 import itertools as it
-from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 from colour import Color
@@ -238,7 +248,7 @@ class DrawBorderThenFill(Animation):
             return vmobject.get_stroke_color()
         return vmobject.get_color()
 
-    def get_all_mobjects(self) -> List[Union[Mobject, None]]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
