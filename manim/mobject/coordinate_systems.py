@@ -726,7 +726,7 @@ class PolarPlane(Axes):
         The diameter of the plane.
 
     radius_step
-        The step of faded lines in the radius.
+        The distance between faded radius lines.
 
     radius_max
         The maximum value of the radius.
