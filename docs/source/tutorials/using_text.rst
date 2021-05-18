@@ -34,7 +34,7 @@ Here, is a simple Hello World animation.
             text = Text('Hello world').scale(3)
             self.add(text)
 
-You can also use :class:`~.MarkupText` where PangoMarkup (:class:`MarkupText`)
+You can also use :class:`~.MarkupText` where PangoMarkup (:class:`~.MarkupText`)
 can be used to render text. For example,
 
 .. manim:: SingleLineColor
