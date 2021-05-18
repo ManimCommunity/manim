@@ -4,7 +4,7 @@ from ..types.opengl_vectorized_mobject import OpenGLVMobject
 from .svg_path import SVGPathMobject
 
 
-class OpenGLSVGPathMobject(OpenGLVMobject, SVGPathMobject):
+class OpenGLSVGPathMobject(SVGPathMobject):
     def __init__(
         self,
         path_string,

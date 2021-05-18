@@ -1445,7 +1445,7 @@ class VGroup(VMobject):
 
         class ArcShapeIris(Scene):
             def construct(self):
-                colors = [DARK_BLUE, DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
+                colors = [DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
                 radius = [1 + rad * 0.1 for rad in range(len(colors))]
 
                 circles_group = VGroup()
@@ -1619,7 +1619,7 @@ class VDict(VMobject):
                 self.play(FadeOut(my_dict["c"]))
                 self.wait()
 
-                self.play(FadeOutAndShift(my_dict["r"], DOWN))
+                self.play(FadeOut(my_dict["r"], shift=DOWN))
                 self.wait()
 
                 # you can also make a VDict from an existing dict of mobjects
@@ -1868,7 +1868,7 @@ class VDict(VMobject):
         super().add(value)
 
 
-class VectorizedPoint(VMobject):
+class VectorizedPoint(metaclass=MetaVMobject):
     def __init__(
         self,
         location=ORIGIN,
@@ -1881,8 +1881,7 @@ class VectorizedPoint(VMobject):
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
-        VMobject.__init__(
-            self,
+        super().__init__(
             color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
@@ -1890,11 +1889,13 @@ class VectorizedPoint(VMobject):
         )
         self.set_points(np.array([location]))
 
-    @VMobject.width.getter
+    basecls = OpenGLVMobject if config.renderer == "opengl" else VMobject
+
+    @basecls.width.getter
     def width(self):
         return self.artificial_width
 
-    @VMobject.height.getter
+    @basecls.height.getter
     def height(self):
         return self.artificial_height
 
