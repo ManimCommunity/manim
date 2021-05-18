@@ -261,7 +261,7 @@ To test videos generated, we use the decorator
 
 .. Note:: ``assert exit*\ code == 0, err`` is used in case of the command fails 
   to run. The decorator takes two arguments: json name and the path
-  to where the video should be generated, starting from the ``medias/`` dir.
+  to where the video should be generated, starting from the ``media/`` dir.
 
 Note the fixtures here:
 
