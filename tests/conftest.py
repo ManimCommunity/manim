@@ -1,6 +1,6 @@
 import os
 import sys
-
+import logging
 import pytest
 
 
@@ -54,7 +54,18 @@ def reset_cfg_file():
 
 
 @pytest.fixture(autouse=True)
-def log_error():
-    import logging
+def enable_log_error():
+    # This is mainly for the doctest.
+    # There isn't a way to enable a fixture when running a
+    # doctest. So, we are setting the manim logger to ERROR
+    # when running tests, and for the modules which test on
+    # logging :func:`enable_info_logging` fixture must be used.
+    # For example, see test_logging folder
 
     logging.getLogger("manim").setLevel(logging.ERROR)
+
+@pytest.fixture()
+def enable_info_logging():
+
+    logging.getLogger("manim").setLevel(logging.INFO)
+
