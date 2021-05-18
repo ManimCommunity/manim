@@ -51,3 +51,9 @@ def reset_cfg_file():
     yield
     with open(cfgfilepath, "w") as cfgfile:
         cfgfile.write(original)
+
+@pytest.fixture
+def log_error(autouse=True):
+    import logging
+    logging.getLogger('manim').setLevel(logging.ERROR)
+
