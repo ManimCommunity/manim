@@ -5,7 +5,6 @@ import pytest
 from manim import logger
 from manim.utils.deprecation import deprecated, deprecated_params
 
-pytestmark = pytest.mark.usefixtures("enable_info_logging")
 
 @deprecated
 class Foo:
