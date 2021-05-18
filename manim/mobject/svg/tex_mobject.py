@@ -289,7 +289,7 @@ class SingleStringMathTex(SVGMobject):
         return result
 
     def modify_special_strings(self, tex):
-        tex = self.remove_stray_braces(tex)
+        tex = tex.strip()
         should_add_filler = reduce(
             op.or_,
             [
@@ -298,12 +298,14 @@ class SingleStringMathTex(SVGMobject):
                 tex == "\\overline",
                 # Make sure sqrt has overbar
                 tex == "\\sqrt",
+                tex == "\\sqrt{",
                 # Need to add blank subscript or superscript
                 tex.endswith("_"),
                 tex.endswith("^"),
                 tex.endswith("dot"),
             ],
         )
+
         if should_add_filler:
             filler = "{\\quad}"
             tex += filler
@@ -326,6 +328,8 @@ class SingleStringMathTex(SVGMobject):
         if num_lefts != num_rights:
             tex = tex.replace("\\left", "\\big")
             tex = tex.replace("\\right", "\\big")
+
+        tex = self.remove_stray_braces(tex)
 
         for context in ["array"]:
             begin_in = ("\\begin{%s}" % context) in tex
