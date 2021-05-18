@@ -712,7 +712,7 @@ class PolarPlane(Axes):
     Parameters
     ----------
     azimuth_step
-        The number of divisions in the azimuth. If ``None`` is specified then it will use the default
+        The number of divisions in the azimuth (also known as the `angular coordinate` or `polar angle`). If ``None`` is specified then it will use the default
         specified by ``azimuth_units``:
 
         - ``"PI radians"`` or ``"TAU radians"``: 20
@@ -740,6 +740,9 @@ class PolarPlane(Axes):
         - ``"gradians"``: Decimal lables in the interval :math:`\left[0, 400\right]` with a superscript "g" (:math:`^{g}`).
         - ``None``: Decimal labels in the interval :math:`\left[0, 1\right]`.
 
+    azimuth_compact_fraction
+        If the ``azimuth_units`` choice has fractional labels, choose whether to combine the constant in a compact form :math:`\tfrac{xu}{y}` as opposed to :math:`\tfrac{x}{y}u`, where :math:`u` is the constant.
+
     azimuth_offset
         The angle offset of the azimuth, expressed in radians.
 
@@ -765,7 +768,7 @@ class PolarPlane(Axes):
         :ref_classes: PolarPlane
         :save_last_frame:
 
-        polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6).add_coordinates()
+        polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6, azimuth_label_scale=0.75, radius_config={'number_scale_value': 0.75}).add_coordinates()
 
         class PolarPlaneExample(Scene):
             def construct(self):
@@ -779,6 +782,7 @@ class PolarPlane(Axes):
         radius_step: Optional[float] = 1,
         azimuth_step: Optional[float] = None,
         azimuth_units: Optional[Union[str, None]] = "PI radians",
+        azimuth_compact_fraction: Optional[bool] = True,
         azimuth_offset: Optional[float] = 0,
         azimuth_direction: Optional[str] = "CCW",
         azimuth_label_buff: Optional[float] = SMALL_BUFF,
@@ -847,6 +851,7 @@ class PolarPlane(Axes):
         self.azimuth_offset = azimuth_offset
         self.azimuth_label_buff = azimuth_label_buff
         self.azimuth_label_scale = azimuth_label_scale
+        self.azimuth_compact_fraction = azimuth_compact_fraction
 
         # init
 
@@ -1135,7 +1140,7 @@ class PolarPlane(Axes):
         self.add(self.get_coordinate_labels(r_values, a_values))
         return self
 
-    def get_radian_label(self, number):
+    def get_radian_label(self, number, stacked=True):
         constant_label = {"PI radians": r"\pi", "TAU radians": r"\tau"}[
             self.azimuth_units
         ]
@@ -1146,20 +1151,35 @@ class PolarPlane(Axes):
         elif frac.numerator == 1 and frac.denominator == 1:
             return MathTex(constant_label)
         elif frac.numerator == 1:
-            return MathTex(
-                r"\tfrac{" + constant_label + r"}{" + str(frac.denominator) + "}"
-            )
+            if self.azimuth_compact_fraction:
+                return MathTex(
+                    r"\tfrac{" + constant_label + r"}{" + str(frac.denominator) + "}"
+                )
+            else:
+                return MathTex(
+                    r"\tfrac{1}{" + str(frac.denominator) + "}" + constant_label
+                )
         elif frac.denominator == 1:
             return MathTex(str(frac.numerator) + constant_label)
         else:
-            return MathTex(
-                r"\tfrac{"
-                + str(frac.numerator)
-                + constant_label
-                + r"}{"
-                + str(frac.denominator)
-                + r"}"
-            )
+            if self.azimuth_compact_fraction:
+                return MathTex(
+                    r"\tfrac{"
+                    + str(frac.numerator)
+                    + constant_label
+                    + r"}{"
+                    + str(frac.denominator)
+                    + r"}"
+                )
+            else:
+                return MathTex(
+                    r"\tfrac{"
+                    + str(frac.numerator)
+                    + r"}{"
+                    + str(frac.denominator)
+                    + r"}"
+                    + constant_label
+                )
 
 
 class ComplexPlane(NumberPlane):
