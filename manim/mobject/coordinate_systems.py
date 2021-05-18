@@ -771,6 +771,7 @@ class PolarPlane(Axes):
             def construct(self):
                 self.add(polarplane_pi)
     """
+
     def __init__(
         self,
         radius_max: Optional[float] = config["frame_y_radius"],
