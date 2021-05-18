@@ -740,28 +740,6 @@ class PolarPlane(Axes):
         - ``"gradians"``: Decimal lables in the interval :math:`\left[0, 400\right]` with a superscript "g" (:math:`^{g}`).
         - ``None``: Decimal labels in the interval :math:`\left[0, 1\right]`.
 
-        .. manim:: PolarPlaneUnits
-            :ref_classes: PolarPlane
-
-            polarplot_pi = PolarPlane(azimuth_units="PI radians", size=6).add_coordinates()
-            polarplot_tau = PolarPlane(azimuth_units="TAU radians", size=6).add_coordinates()
-            polarplot_degrees = PolarPlane(azimuth_units="degrees", size=6).add_coordinates()
-            polarplot_gradians = PolarPlane(azimuth_units="gradians", size=6).add_coordinates()
-
-            class PolarPlaneUnits(Scene):
-                def construct(self):
-                    self.add(polarplot_pi)
-                    self.wait(2)
-                    self.play(FadeOutAndShift(polarplot_pi, LEFT))
-                    self.play(FadeInFrom(polarplot_tau, RIGHT))
-                    self.wait(2)
-                    self.play(FadeOutAndShift(polarplot_tau, LEFT))
-                    self.play(FadeInFrom(polarplot_degrees, RIGHT))
-                    self.wait(2)
-                    self.play(FadeOutAndShift(polarplot_degrees, LEFT))
-                    self.play(FadeInFrom(polarplot_gradians, RIGHT))
-                    self.wait(2)
-
     azimuth_offset
         The angle offset of the azimuth, expressed in radians.
 
@@ -779,8 +757,20 @@ class PolarPlane(Axes):
 
     radius_config
         The axis config for the radius.
-    """
 
+    Examples
+    --------
+
+    .. manim:: PolarPlaneExample
+        :ref_classes: PolarPlane
+        :save_last_frame:
+
+        polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6).add_coordinates()
+
+        class PolarPlaneExample(Scene):
+            def construct(self):
+                self.add(polarplane_pi)
+    """
     def __init__(
         self,
         radius_max: Optional[float] = config["frame_y_radius"],
@@ -990,8 +980,22 @@ class PolarPlane(Axes):
         -------
         numpy.ndarray
             The point.
-        """
 
+        Examples
+        --------
+
+        .. manim:: PolarToPointExample
+            :ref_classes: PolarPlane
+            :save_last_frame:
+
+            polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6)
+            polartopoint_vector = Vector(polarplane_pi.polar_to_point(3, PI/4))
+
+            class PolarToPointExample(Scene):
+                def construct(self):
+                    self.add(polarplane_pi)
+                    self.add(polartopoint_vector)
+        """
         return self.coords_to_point(radius * np.cos(azimuth), radius * np.sin(azimuth))
 
     def pr2pt(self, radius: float, azimuth: float) -> np.ndarray:
