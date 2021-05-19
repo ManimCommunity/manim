@@ -1180,7 +1180,7 @@ class OpenGLMobject:
         return interpolate(points[i], points[i + 1], subalpha)
 
     def pfp(self, alpha):
-        """Abbreviation fo point_from_proportion"""
+        """Abbreviation for point_from_proportion"""
         return self.point_from_proportion(alpha)
 
     def get_pieces(self, n_pieces):
@@ -1365,7 +1365,7 @@ class OpenGLMobject:
 
     def become(self, mobject):
         """
-        Edit all data and submobjects to be idential
+        Edit all data and submobjects to be identical
         to another mobject
         """
         self.align_family(mobject)
@@ -1522,7 +1522,7 @@ class OpenGLMobject:
         return result
 
     def check_data_alignment(self, array, data_key):
-        # Makes sure that self.data[key] can be brodcast into
+        # Makes sure that self.data[key] can be broadcast into
         # the given array, meaning its length has to be either 1
         # or the length of the array
         d_len = len(self.data[data_key])

@@ -275,7 +275,7 @@ class SVGMobject(metaclass=MetaVMobject):
         local_style : :class:`Dict`
             The styling using SVG property names at the point the element is `<use>`d.
             Not all values are applied; styles defined when the element is specified in
-            the `<def>` tag cannot be overriden here.
+            the `<def>` tag cannot be overridden here.
 
         Returns
         -------
@@ -493,8 +493,8 @@ class SVGMobject(metaclass=MetaVMobject):
         # Borrowed/Inspired from:
         # https://github.com/cjlano/svg/blob/3ea3384457c9780fa7d67837c9c5fd4ebc42cb3b/svg/svg.py#L75
 
-        # match any SVG transformation with its parameter (until final parenthese)
-        # [^)]*    == anything but a closing parenthese
+        # match any SVG transformation with its parameter (until final parenthesis)
+        # [^)]*    == anything but a closing parenthesis
         # '|'.join == OR-list of SVG transformations
         transform_regex = "|".join([x + r"[^)]*\)" for x in transform_names])
         transforms = re.findall(transform_regex, transform_attr_value)
