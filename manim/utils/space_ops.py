@@ -397,16 +397,16 @@ def find_intersection(p0, v0, p1, v1, threshold=1e-5):
     m, n = np.shape(p0)
     assert n in [2, 3]
 
-    numer = np.cross(v1, p1 - p0)
-    denom = np.cross(v1, v0)
+    numerator = np.cross(v1, p1 - p0)
+    denominator = np.cross(v1, v0)
     if n == 3:
-        d = len(np.shape(numer))
-        new_numer = np.multiply(numer, numer).sum(d - 1)
-        new_denom = np.multiply(denom, numer).sum(d - 1)
-        numer, denom = new_numer, new_denom
+        d = len(np.shape(numerator))
+        new_numerator = np.multiply(numerator, numerator).sum(d - 1)
+        new_denominator = np.multiply(denominator, numerator).sum(d - 1)
+        numerator, denominator = new_numerator, new_denominator
 
-    denom[abs(denom) < threshold] = np.inf  # So that ratio goes to 0 there
-    ratio = numer / denom
+    denominator[abs(denominator) < threshold] = np.inf  # So that ratio goes to 0 there
+    ratio = numerator / denominator
     ratio = np.repeat(ratio, n).reshape((m, n))
     return p0 + ratio * v0
 
