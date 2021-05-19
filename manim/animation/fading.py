@@ -32,8 +32,7 @@ import numpy as np
 
 from ..animation.transform import Transform
 from ..constants import DOWN, ORIGIN
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
 from ..utils.deprecation import deprecated
 from ..utils.rate_functions import there_and_back
@@ -70,7 +69,7 @@ class _Fade(Transform):
         if len(mobjects) == 1:
             mobject = mobjects[0]
         else:
-            mobject = VGroup(*mobjects)
+            mobject = Group(*mobjects)
 
         self.point_target = False
         if shift is None:
@@ -99,7 +98,7 @@ class _Fade(Transform):
             The faded, shifted and scaled copy of the mobject.
         """
         faded_mobject = self.mobject.copy()
-        faded_mobject.set_opacity(0)
+        faded_mobject.fade(1)
         direction_modifier = -1 if fadeIn and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
