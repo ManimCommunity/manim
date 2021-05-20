@@ -243,19 +243,7 @@ class ArcBrace(Brace):
     direction :
         The direction from which the brace faces the Arc.
         LEFT for inside the Arc, and RIGHT for the outside.
-
-    Examples
-    --------
-        .. manim:: ArcBraceExample
-            :save_last_frame:
-
-            class ArcBraceExample(Scene):
-                def construct(self):
-                    arc = Arc(start_angle=-1, angle=2, radius=2)
-                    brace = ArcBrace(arc)
-                    self.play(Create(NumberPlane()))
-                    self.play(Create(brace))
-
+        
     """
 
     def __init__(
