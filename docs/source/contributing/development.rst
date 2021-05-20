@@ -140,7 +140,7 @@ pull request. A pull request signifies to the ManimCommunity organization,
 "Here are some changes I wrote; I think it's worthwhile for you to maintain
 them."
 
-.. NOTE::
+.. note::
 
    You do not need to have everything (code/documentation/tests) complete
    to open a pull request (PR). If the PR is still under development, please
