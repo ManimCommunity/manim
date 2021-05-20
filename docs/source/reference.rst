@@ -17,6 +17,7 @@ Mobjects
 .. autosummary::
    :toctree: reference
 
+   ~mobject.arrows
    ~mobject.changing
    ~mobject.coordinate_systems
    ~mobject.frame
@@ -51,6 +52,7 @@ Mobjects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. inheritance-diagram::
+   manim.mobject.arrows
    manim.mobject.changing
    manim.mobject.coordinate_systems
    manim.mobject.frame

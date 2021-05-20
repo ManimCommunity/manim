@@ -16,7 +16,7 @@ from ..animation.transform import Transform
 from ..constants import PI
 
 if typing.TYPE_CHECKING:
-    from ..mobject.geometry import Arrow
+    from ..mobject.arrows import Arrow
     from ..mobject.mobject import Mobject
 
 
