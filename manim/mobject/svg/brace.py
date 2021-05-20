@@ -243,7 +243,7 @@ class ArcBrace(Brace):
     direction :
         The direction from which the brace faces the Arc.
         LEFT for inside the Arc, and RIGHT for the outside.
-        
+
     """
 
     def __init__(
