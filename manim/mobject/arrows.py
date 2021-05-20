@@ -38,6 +38,101 @@ class ArrowTip:  # TODO: add presets via string
         secant_delta: float = 1e-4,
         **kwargs,
     ):
+        """An arrow tip.
+
+        An arrow tip is not a :class:`~.Mobject` but always contains one in the
+        attribute ``mobject``. This mobject is placed on the stroke of a
+        :class:`~.VMobject`.
+
+        Parameters
+        ----------
+        base_line
+            The vmobject on whose stroke the tip is placed.
+        mobject
+            The mobject placed on the stroke of the given ``base_line``. If ``mobject``
+            is ``None``, a new :class:`~.Triangle` is used as tip.
+        relative_position
+            Where on the `base_line` the tip should be placed. ``0`` is the start of the
+            line and ``1`` is its end.
+        tip_angle
+            The angle in which the tip mobject is pointing before adding it. By default
+            it is assumed to be pointing up.
+        backwards
+            Whether the arrow tip should be pointing against the direction of the
+            base_line. Effectively this will invert ``relative_position``, ``tip_angle``
+            and ``tip_alignment``.
+        tip_alignment
+            The side of the tip to be positioned at the specified ``relative_position``
+            assuming the arrow points to the right.
+        scale_auto
+            Whether to automatically scale the given ``mobject``.  #TODO
+        length
+            The length of the tip.
+        width
+            The width of the tip.
+        color
+            The color of the tip. If ``color`` is ``None`` the color of the given
+            ``mobject`` is not modified. If ``color == "copy"`` the stroke_color of the
+            ``base_line`` is used.
+        filled
+            Whether the tip should be filled. If ``filled`` is ``None`` the fill of the
+            given ``mobject`` is not modified.
+        secant_delta
+            The difference in ``relative_position`` in both directions to be used to
+            calculate the angle of the ``base_line`` at the required position.
+
+        Examples
+        --------
+
+        .. manim:: ArrowTips
+            :save_last_frame:
+
+            class ArrowTips(Scene):
+                def construct(self):
+                    arcs = VGroup(
+                        *[
+                            Line(LEFT * 4, RIGHT * 4, path_arc=arc, stroke_width=6)
+                            for arc in np.linspace(1, -1, 6)
+                        ]
+                    ).arrange_submobjects(DOWN, buff=0.7)
+                    self.add(arcs)
+
+                    arcs[0].add_tip()
+                    arcs[1].add_tip(Square(), tip_angle=PI / 4, length=0.4, width=0.25)
+                    arcs[2].add_tip(color=RED, filled=False, backwards=True)
+                    arcs[3].add_tip(tip_alignment=ORIGIN, filled=False)
+                    arcs[4].add_tip(tip_alignment=RIGHT, filled=False)
+
+                    for pos in [0.2, 0.4, 0.6, 0.8]:
+                        arcs[5].add_tip(relative_position=pos, tip_alignment=ORIGIN)
+
+        .. manim:: SecantDeltas
+
+            class SecantDeltas(Scene):
+                def construct(self):
+                    deltas = [0.001, 0.02, 0.05, 0.1]
+                    group = VGroup()
+                    for delta in deltas:
+                        elbow = Elbow(3, angle=PI / 4, stroke_width=6).move_to(ORIGIN)
+                        elbow.add(Text(str(delta)).align_to(elbow, DOWN))
+                        elbow.add_tip(secant_delta=delta, tip_alignment=ORIGIN)
+                        group.add(elbow)
+                    group.arrange_in_grid(buff=2)
+                    self.add(group)
+
+                    def updater(elbow, alpha):
+                        alpha = alpha * 0.3 + 0.35
+                        elbow.tips[0].set_relative_position(alpha)
+
+                    self.play(
+                        AnimationGroup(
+                            *[
+                                UpdateFromAlphaFunc(elbow, updater, run_time=3, rate_func=linear)
+                                for elbow in group
+                            ]
+                        )
+                    )
+        """
         if mobject is None:
             mobject = Triangle()
             mobject.width = DEFAULT_ARROW_TIP_LENGTH
@@ -102,17 +197,42 @@ class ArrowTip:  # TODO: add presets via string
 
     @_unrotated_tip
     def set_length(self, length, proportional=True):
+        """Set the length of the tip.
+
+        Parameters
+        ----------
+        length
+            The new length of the arrow tip.
+        proportional
+            Whether to scale the width of the tip proportionally.
+        """
         if proportional:
             self.mobject.width = length
         else:
             self.mobject.stretch_to_fit_width(length)
 
     @_unrotated_tip
-    def get_length(self):
+    def get_length(self) -> float:
+        """Get the length of the arrow tip.
+
+        Returns
+        -------
+        float
+            The length of the arrow tip.
+        """
         return self.mobject.width
 
     @_unrotated_tip
     def set_width(self, width, proportional=True):
+        """Set the width of the tip.
+
+        Parameters
+        ----------
+        width
+            The new width of the arrow tip.
+        proportional
+            Whether to scale the length of the tip proportionally.
+        """
         if proportional:
             self.mobject.height = width
         else:
@@ -120,9 +240,21 @@ class ArrowTip:  # TODO: add presets via string
 
     @_unrotated_tip
     def get_width(self):
+        """Get the width of the arrow tip.
+
+        Returns
+        -------
+        float
+            The width of the arrow tip.
+        """
         return self.mobject.height
 
-    def update_positioning(self, scene=None):
+    def set_relative_position(self, relative_position):
+        self.relative_position = relative_position
+        self.update_positioning()
+
+    def update_positioning(self):
+        """Update the positioning of the tip."""
         p = [
             self.base_line.point_from_proportion(
                 np.clip(self.relative_position + d, 0, 1)
@@ -196,7 +328,7 @@ class Vector(Arrow):
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
     def coordinate_label(self, num_decimal_places: int = 0, n_dim: int = 2, **kwargs):
-        start = self.get_start(0)
+        start = self.get_start()
         end = self.get_end()
         vect = np.round((end - start)[:n_dim], num_decimal_places).reshape((n_dim, 1))
         if num_decimal_places == 0:
