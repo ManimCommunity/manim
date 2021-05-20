@@ -143,7 +143,7 @@ class Paragraph(VGroup):
         lines_str_list = lines_str.split("\n")
         self.chars = self.gen_chars(lines_str_list)
 
-        chars_lines_text_list = VGroup()
+        chars_lines_text_list = self.get_group_class()()
         char_index_counter = 0
         for line_index in range(lines_str_list.__len__()):
             chars_lines_text_list.add(
@@ -165,7 +165,7 @@ class Paragraph(VGroup):
         self.lines[1].extend(
             [self.alignment for _ in range(chars_lines_text_list.__len__())]
         )
-        VGroup.__init__(
+        self.get_group_class().__init__(
             self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config
         )
         self.move_to(np.array([0, 0, 0]))
@@ -186,9 +186,9 @@ class Paragraph(VGroup):
             The generated 2d-VGroup of chars.
         """
         char_index_counter = 0
-        chars = VGroup()
+        chars = self.get_group_class()()
         for line_no in range(lines_str_list.__len__()):
-            chars.add(VGroup())
+            chars.add(self.get_group_class()())
             chars[line_no].add(
                 *self.lines_text.chars[
                     char_index_counter : char_index_counter
@@ -474,13 +474,16 @@ class Text(SVGMobject):
         self.text = text
         if self.disable_ligatures:
             self.submobjects = [*self.gen_chars()]
-        self.chars = VGroup(*self.submobjects)
+        self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
-        nppc = self.n_points_per_cubic_curve
+        if config.renderer == "opengl":
+            nppc = self.n_points_per_curve
+        else:
+            nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.points) == 0:
+            if len(each.get_points()) == 0:
                 continue
-            points = each.points
+            points = each.get_points()
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -507,7 +510,7 @@ class Text(SVGMobject):
         return f"Text({repr(self.original_text)})"
 
     def gen_chars(self):
-        chars = VGroup()
+        chars = self.get_group_class()()
         submobjects_char_index = 0
         for char_index in range(self.text.__len__()):
             if self.text[char_index] in (" ", "\t", "\n"):
@@ -666,7 +669,7 @@ class Text(SVGMobject):
         )
 
     def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+        super().init_colors(propagate_colors=propagate_colors)
 
 
 class MarkupText(SVGMobject):
@@ -719,7 +722,7 @@ class MarkupText(SVGMobject):
 
     You can find more information about Pango markup formatting at the
     corresponding documentation page:
-    `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
+    `Pango Markup <https://developer.gnome.org/pango/1.46/pango-Markup.html>`_.
     Please be aware that not all features are supported by this class and that
     the ``<gradient>`` tag mentioned above is not supported by Pango.
 
@@ -943,8 +946,7 @@ class MarkupText(SVGMobject):
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        SVGMobject.__init__(
-            self,
+        super().__init__(
             file_name,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
@@ -954,14 +956,17 @@ class MarkupText(SVGMobject):
             unpack_groups=unpack_groups,
             **kwargs,
         )
-        self.chars = VGroup(*self.submobjects)
+        self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
-        nppc = self.n_points_per_cubic_curve
+        if config.renderer == "opengl":
+            nppc = self.n_points_per_curve
+        else:
+            nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.points) == 0:
+            if len(each.get_points()) == 0:
                 continue
-            points = each.points
+            points = each.get_points()
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):

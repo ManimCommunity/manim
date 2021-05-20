@@ -1868,7 +1868,7 @@ class VDict(VMobject):
         super().add(value)
 
 
-class VectorizedPoint(VMobject):
+class VectorizedPoint(metaclass=MetaVMobject):
     def __init__(
         self,
         location=ORIGIN,
@@ -1881,8 +1881,7 @@ class VectorizedPoint(VMobject):
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
-        VMobject.__init__(
-            self,
+        super().__init__(
             color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
@@ -1890,11 +1889,13 @@ class VectorizedPoint(VMobject):
         )
         self.set_points(np.array([location]))
 
-    @VMobject.width.getter
+    basecls = OpenGLVMobject if config.renderer == "opengl" else VMobject
+
+    @basecls.width.getter
     def width(self):
         return self.artificial_width
 
-    @VMobject.height.getter
+    @basecls.height.getter
     def height(self):
         return self.artificial_height
 
