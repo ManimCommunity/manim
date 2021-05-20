@@ -10,7 +10,7 @@ from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
 from ...constants import *
-from ...mobject.geometry import Line
+from ...mobject.geometry import Line, Arc
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
@@ -228,3 +228,55 @@ class BraceBetweenPoints(Brace):
             line_vector = np.array(point_2) - np.array(point_1)
             direction = np.array([line_vector[1], -line_vector[0], 0])
         Brace.__init__(self, Line(point_1, point_2), direction=direction, **kwargs)
+
+        
+class ArcBrace(Brace):
+    """Creates a Brace that wraps around an Arc.
+
+    The direction parameter allows the brace to from outside
+    or inside the Arc.
+
+    Parameters
+    ----------
+    arc :
+        The Arc to which the Brace wraps around.
+    direction :
+        The direction from which the brace faces the Arc.
+        LEFT for inside the Arc, and RIGHT for the outside.
+
+    Examples
+    --------
+        .. manim:: ArcBraceExample        
+            :save_last_frame:
+
+            class ArcBraceExample(Scene):
+                def construct(self):
+                    arc = Arc(start_angle=-1, angle=2, radius=2)
+                    brace = ArcBrace(arc)
+                    self.play(Create(NumberPlane()))
+                    self.play(Create(brace))
+                    
+    """
+    
+    def __init__(
+        self,
+        arc = Arc(start_angle=-1,angle=2,radius=1),
+        direction = RIGHT,
+        **kwargs
+    ):
+        arc_center = arc.get_arc_center()
+        arc_start_angle = arc.start_angle
+        arc_end_angle = arc_start_angle+arc.angle
+        arc_radius = arc.radius
+        scale_shift = RIGHT*np.log(arc_radius)
+        Brace.__init__(
+            self, 
+            Line(
+                UP*arc_start_angle+scale_shift,
+                UP*arc_end_angle+scale_shift
+            ),
+            direction=direction,
+            **kwargs
+        )
+        self.apply_complex_function(np.exp)
+        self.shift(arc_center)
