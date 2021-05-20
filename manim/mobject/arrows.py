@@ -1,6 +1,4 @@
-__all__ = [
-    "Arrow",
-]
+__all__ = ["ArrowTip", "Arrow", "Vector"]
 
 from functools import wraps
 from typing import Literal, Optional, Union
@@ -10,9 +8,9 @@ from colour import Color
 
 from .. import config
 from ..constants import *
-from ..utils.color import WHITE
-from ..utils.space_ops import angle_of_vector, normalize
+from ..utils.space_ops import angle_of_vector
 from .geometry import Line, Triangle
+from .matrix import Matrix
 from .mobject import Mobject
 from .opengl_mobject import OpenGLMobject
 from .types.opengl_vectorized_mobject import OpenGLVMobject
@@ -187,31 +185,6 @@ class Arrow(Line):  # Line
 
 
 class Vector(Arrow):
-    """A vector specialized for use in graphs.
-
-    Parameters
-    ----------
-    direction : Union[:class:`list`, :class:`numpy.ndarray`]
-        The direction of the arrow.
-    buff : :class:`float`
-         The distance of the vector from its endpoints.
-    kwargs : Any
-        Additional arguments to be passed to :class:`Arrow`
-
-    Examples
-    --------
-
-    .. manim:: VectorExample
-        :save_last_frame:
-
-        class VectorExample(Scene):
-            def construct(self):
-                plane = NumberPlane()
-                vector_1 = Vector([1,2])
-                vector_2 = Vector([-5,-2])
-                self.add(plane, vector_1, vector_2)
-    """
-
     def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
@@ -220,39 +193,9 @@ class Vector(Arrow):
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
     def coordinate_label(self, num_decimal_places: int = 0, n_dim: int = 2, **kwargs):
-        """Creates a label based on the coordinates of the vector.
-
-        Parameters
-        ----------
-        integer_labels
-            Whether or not to round the coordinates to integers.
-        n_dim
-            The number of dimensions of the vector.
-        color
-            The color of the label.
-
-        Examples
-        --------
-
-        .. manim VectorCoordinateLabel
-            :save_last_frame:
-
-            class VectorCoordinateLabel(Scene):
-                def construct(self):
-                    plane = NumberPlane()
-
-                    vect_1 = Vector([1, 2])
-                    vect_2 = Vector([-3, -2])
-                    label_1 = vect1.coordinate_label()
-                    label_2 = vect2.coordinate_label(color=YELLOW)
-
-                    self.add(plane, vect_1, vect_2, label_1, label_2)
-        """
-        # avoiding circular imports
-        from .matrix import Matrix
-
+        start = self.point_from_proportion(0)
         end = self.point_from_proportion(1)
-        vect = np.round(end[:n_dim], num_decimal_places).reshape((n_dim, 1))
+        vect = np.round((end - start)[:n_dim], num_decimal_places).reshape((n_dim, 1))
         if num_decimal_places == 0:
             vect = vect.astype(int)
         direction = end.copy()
