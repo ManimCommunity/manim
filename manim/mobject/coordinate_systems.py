@@ -777,7 +777,7 @@ class PolarPlane(Axes):
 
     def __init__(
         self,
-        radius_max: Optional[float] = config["frame_y_radius"],
+        radius_max: float = config["frame_y_radius"],
         size: Optional[float] = None,
         radius_step: Optional[float] = 1,
         azimuth_step: Optional[float] = None,
