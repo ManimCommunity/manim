@@ -12,9 +12,9 @@ from ..animation.fading import FadeOut
 from ..animation.growing import GrowArrow
 from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
 from ..constants import *
+from ..mobject.arrows import Arrow, Vector
 from ..mobject.coordinate_systems import Axes, NumberPlane
 from ..mobject.geometry import Dot, Line, Rectangle
-from ..mobject.arrows import Arrow, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
 from ..mobject.svg.tex_mobject import MathTex, Tex

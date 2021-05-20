@@ -21,13 +21,13 @@ from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
-from .arrows import Vector
-from .mobject import Mobject
-from .types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import BLUE_E, GREEN, RED, YELLOW, color_to_rgb, rgb_to_color
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
+from .arrows import Vector
+from .mobject import Mobject
+from .types.vectorized_mobject import VGroup, VMobject
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
