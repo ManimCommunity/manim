@@ -1,7 +1,9 @@
 import sys
+
 import pytest
 
 from ..utils.commands import capture
+
 
 @pytest.mark.slow
 def test_unicode_partial_movie(tmpdir, simple_scenes_path):
