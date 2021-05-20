@@ -10,7 +10,7 @@ from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
 from ...constants import *
-from ...mobject.geometry import Line, Arc
+from ...mobject.geometry import Arc, Line
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
@@ -229,7 +229,7 @@ class BraceBetweenPoints(Brace):
             direction = np.array([line_vector[1], -line_vector[0], 0])
         Brace.__init__(self, Line(point_1, point_2), direction=direction, **kwargs)
 
-        
+
 class ArcBrace(Brace):
     """Creates a Brace that wraps around an Arc.
 
@@ -246,7 +246,7 @@ class ArcBrace(Brace):
 
     Examples
     --------
-        .. manim:: ArcBraceExample        
+        .. manim:: ArcBraceExample
             :save_last_frame:
 
             class ArcBraceExample(Scene):
@@ -255,26 +255,20 @@ class ArcBrace(Brace):
                     brace = ArcBrace(arc)
                     self.play(Create(NumberPlane()))
                     self.play(Create(brace))
-                    
+
     """
-    
+
     def __init__(
-        self,
-        arc = Arc(start_angle=-1,angle=2,radius=1),
-        direction = RIGHT,
-        **kwargs
+        self, arc=Arc(start_angle=-1, angle=2, radius=1), direction=RIGHT, **kwargs
     ):
         arc_center = arc.get_arc_center()
         arc_start_angle = arc.start_angle
-        arc_end_angle = arc_start_angle+arc.angle
+        arc_end_angle = arc_start_angle + arc.angle
         arc_radius = arc.radius
-        scale_shift = RIGHT*np.log(arc_radius)
+        scale_shift = RIGHT * np.log(arc_radius)
         Brace.__init__(
-            self, 
-            Line(
-                UP*arc_start_angle+scale_shift,
-                UP*arc_end_angle+scale_shift
-            ),
+            self,
+            Line(UP * arc_start_angle + scale_shift, UP * arc_end_angle + scale_shift),
             direction=direction,
             **kwargs
         )
