@@ -1413,6 +1413,16 @@ class VMobject(Mobject):
         self.tips.append(tip)
         return self
 
+    def get_tips(self):
+        return self.tips
+
+    def get_tip(self):
+        return self.tips[0] if len(self.tips) else None
+
+    def remove_tip(self, tip: "ArrowTip"):
+        self.tips.remove(tip)
+        self.remove(tip.mobject)
+
 
 class VGroup(VMobject):
     """A group of vectorized mobjects.

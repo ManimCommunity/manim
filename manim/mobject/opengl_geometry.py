@@ -540,6 +540,10 @@ class OpenGLLine(OpenGLTipableVMobject):
     def set_length(self, length):
         self.scale(length / self.get_length())
 
+    def get_length(self):
+        start, end = self.get_start_and_end()
+        return np.linalg.norm(start - end)
+
 
 class OpenGLDashedLine(OpenGLLine):
     def __init__(

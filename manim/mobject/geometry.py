@@ -726,6 +726,10 @@ class Line(metaclass=MetaVMobject):
                 sm.set_opacity(opacity, family)
         return self
 
+    def get_length(self):
+        start, end = self.get_start_and_end()
+        return np.linalg.norm(start - end)
+
 
 class DashedLine(Line):
     """A dashed :class:`Line`.

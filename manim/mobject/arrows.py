@@ -183,6 +183,9 @@ class Arrow(Line):  # Line
             tip.set_length(tip_length)
             tip.mobject.set_stroke_width(self.get_stroke_width())
 
+    def scale(self):
+        pass  # TODO
+
 
 class Vector(Arrow):
     def __init__(self, direction=RIGHT, buff=0, **kwargs):
@@ -193,8 +196,8 @@ class Vector(Arrow):
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
     def coordinate_label(self, num_decimal_places: int = 0, n_dim: int = 2, **kwargs):
-        start = self.point_from_proportion(0)
-        end = self.point_from_proportion(1)
+        start = self.get_start(0)
+        end = self.get_end()
         vect = np.round((end - start)[:n_dim], num_decimal_places).reshape((n_dim, 1))
         if num_decimal_places == 0:
             vect = vect.astype(int)
