@@ -451,7 +451,7 @@ class SceneFileWriter(object):
             f"Partial movie files to combine ({len(partial_movie_files)} files): %(p)s",
             {"p": partial_movie_files[:5]},
         )
-        with open(file_list, "w") as fp:
+        with open(file_list, "w", encoding="utf-8") as fp:
             fp.write("# This file is used internally by FFMPEG.\n")
             for pf_path in partial_movie_files:
                 if os.name == "nt":
