@@ -914,7 +914,7 @@ class PolarPlane(Axes):
         alines1 = VGroup()
         alines2 = VGroup()
 
-        rinput = np.arange(0, self.x_axis.x_max, rstep)
+        rinput = np.arange(0, self.x_axis.x_max + rstep, rstep)
         ainput = np.arange(0, TAU, astep)
 
         unit_vector = self.x_axis.get_unit_vector()[0]
