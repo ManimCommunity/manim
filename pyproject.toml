@@ -71,6 +71,8 @@ gitpython = "^3"
 pygithub = "^1"
 flake8 = "^3.9.0"
 isort = "^5.8.0"
+pytest-sugar = "^0.9.4"
+pytest-icdiff = "^0.5"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"

@@ -8,6 +8,11 @@ import numpy as np
 from PIL import Image
 
 __all__ = [
+    "MANIM_WHITE",
+    "MANIM_GREEN",
+    "MANIM_BLUE",
+    "MANIM_RED",
+    "MANIM_BLACK",
     "NOT_SETTING_FONT_MSG",
     "SCENE_NOT_FOUND_MESSAGE",
     "CHOOSE_NUMBER_MESSAGE",
@@ -76,6 +81,14 @@ __all__ = [
     "SHIFT_VALUE",
     "CTRL_VALUE",
 ]
+
+# The colormap of manim community
+MANIM_WHITE = "#ece6e2"
+MANIM_GREEN = "#87c2a5"
+MANIM_BLUE = "#525893"
+MANIM_RED = "#e07a5f"
+MANIM_BLACK = "#343434"
+
 # Messages
 NOT_SETTING_FONT_MSG: str = """
 You haven't set font.
