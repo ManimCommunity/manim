@@ -1,15 +1,15 @@
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, Succession
-from manim.animation.fading import FadeIn, FadeInFrom, FadeOutAndShift
-from manim.constants import DOWN
+from manim.animation.fading import FadeIn, FadeOut
+from manim.constants import DOWN, UP
 from manim.mobject.geometry import Circle, Line, Square
 
 
 def test_succession_timing():
     """Test timing of animations in a succession."""
     line = Line()
-    animation_1s = FadeInFrom(line, direction=DOWN, run_time=1.0)
-    animation_4s = FadeOutAndShift(line, direction=DOWN, run_time=4.0)
+    animation_1s = FadeIn(line, shift=UP, run_time=1.0)
+    animation_4s = FadeOut(line, shift=DOWN, run_time=4.0)
     succession = Succession(animation_1s, animation_4s)
     assert succession.get_run_time() == 5.0
     succession.begin()
@@ -33,13 +33,13 @@ def test_succession_timing():
 def test_succession_in_succession_timing():
     """Test timing of nested successions."""
     line = Line()
-    animation_1s = FadeInFrom(line, direction=DOWN, run_time=1.0)
-    animation_4s = FadeOutAndShift(line, direction=DOWN, run_time=4.0)
+    animation_1s = FadeIn(line, shift=UP, run_time=1.0)
+    animation_4s = FadeOut(line, shift=DOWN, run_time=4.0)
     nested_succession = Succession(animation_1s, animation_4s)
     succession = Succession(
-        FadeInFrom(line, direction=DOWN, run_time=4.0),
+        FadeIn(line, shift=UP, run_time=4.0),
         nested_succession,
-        FadeInFrom(line, direction=DOWN, run_time=1.0),
+        FadeIn(line, shift=UP, run_time=1.0),
     )
     assert nested_succession.get_run_time() == 5.0
     assert succession.get_run_time() == 10.0

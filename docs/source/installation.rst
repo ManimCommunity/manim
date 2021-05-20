@@ -6,7 +6,7 @@ The following pages have instructions that are specific to your system. Once
 you are done installing the dependencies, come back to this page to install
 manim itself.
 
-.. NOTE::
+.. note::
 
    Before installing manim, you should understand that there are a few main versions of manim 
    today that are generally incompatible with each other.
@@ -60,4 +60,4 @@ If you want to contribute to manim, follow the :doc:`contributing` instructions.
 Verifying installation
 **********************
 Please proceed to our :doc:`quickstart guide <tutorials/quickstart>` to run a simple file to test your installation.
-If it did not work, please refer to our :doc:`troubleshootinig guide <installation/troubleshooting>` for help.
+If it did not work, please refer to our :doc:`troubleshooting guide <installation/troubleshooting>` for help.
