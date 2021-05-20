@@ -24,25 +24,6 @@ class ArcBetweenPointsTest(Scene):
         self.add(a)
 
 
-class CurvedArrowTest(Scene):
-    def construct(self):
-        a = CurvedArrow(np.array([1, 1, 0]), np.array([2, 2, 0]))
-        self.add(a)
-
-
-class CustomDoubleArrowTest(Scene):
-    def construct(self):
-        from manim.mobject.geometry import ArrowCircleTip, ArrowSquareFilledTip
-
-        a = DoubleArrow(
-            np.array([-1, -1, 0]),
-            np.array([1, 1, 0]),
-            tip_shape_start=ArrowCircleTip,
-            tip_shape_end=ArrowSquareFilledTip,
-        )
-        self.add(a)
-
-
 class CircleTest(Scene):
     def construct(self):
         circle = Circle()
@@ -94,12 +75,6 @@ class LineTest(Scene):
 class ElbowTest(Scene):
     def construct(self):
         a = Elbow()
-        self.add(a)
-
-
-class DoubleArrowTest(Scene):
-    def construct(self):
-        a = DoubleArrow()
         self.add(a)
 
 
