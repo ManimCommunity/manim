@@ -15,7 +15,7 @@ import itertools as it
 import sys
 import typing
 from abc import ABCMeta
-from typing import Optional, Sequence, Union
+from typing import List, Optional, Sequence, Union
 
 import colour
 import numpy as np
@@ -23,8 +23,6 @@ from PIL.Image import Image
 
 from ... import config
 from ...constants import *
-from ...mobject.mobject import Mobject
-from ...mobject.three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from ...utils.bezier import (
     bezier,
     get_smooth_handle_points,
@@ -36,6 +34,8 @@ from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
+from ..mobject import Mobject
+from ..three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
@@ -120,6 +120,7 @@ class VMobject(Mobject):
         self.shade_in_3d = shade_in_3d
         self.tolerance_for_point_equality = tolerance_for_point_equality
         self.n_points_per_cubic_curve = n_points_per_cubic_curve
+        self.tips = []
         Mobject.__init__(self, **kwargs)
 
     def get_group_class(self):
@@ -1403,6 +1404,13 @@ class VMobject(Mobject):
             # Since we already assured the input is CW or CCW,
             # and the directions don't match, we just reverse
             self.reverse_direction()
+        return self
+
+    def add_tip(self, mob: Optional[Mobject], **kwargs) -> "VMobject":
+        from ..arrows import ArrowTip
+
+        tip = ArrowTip(self, mob, **kwargs)
+        self.tips.append(tip)
         return self
 
 

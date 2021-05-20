@@ -114,6 +114,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.render_primitive = render_primitive
         self.triangulation_locked = triangulation_locked
         self.n_points_per_curve = n_points_per_curve
+        self.tips = []
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
@@ -1178,6 +1179,13 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_fill_shader_vert_indices(self):
         return self.get_triangulation()
+
+    def add_tip(self, mob: Optional[OpenGLMobject], **kwargs) -> "VMobject":
+        from ..arrows import ArrowTip
+
+        tip = ArrowTip(self, mob, **kwargs)
+        self.tips.append(tip)
+        return self
 
 
 class OpenGLVGroup(OpenGLVMobject):

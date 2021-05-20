@@ -13,15 +13,16 @@ from ..animation.growing import GrowArrow
 from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
 from ..constants import *
 from ..mobject.coordinate_systems import Axes, NumberPlane
-from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
+from ..mobject.geometry import Dot, Line, Rectangle
+from ..mobject.arrows import Arrow, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..scene.scene import Scene
 from ..utils.color import BLUE_D, GREEN_C, GREY, LIGHT_GREY, RED_C, WHITE, YELLOW
 from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
+from .scene import Scene
 
 X_COLOR = GREEN_C
 Y_COLOR = RED_C
