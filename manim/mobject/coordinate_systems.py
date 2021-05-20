@@ -779,7 +779,7 @@ class PolarPlane(Axes):
         self,
         radius_max: float = config["frame_y_radius"],
         size: Optional[float] = None,
-        radius_step: Optional[float] = 1,
+        radius_step: float = 1,
         azimuth_step: Optional[float] = None,
         azimuth_units: Optional[Union[str, None]] = "PI radians",
         azimuth_compact_fraction:bool = True,
