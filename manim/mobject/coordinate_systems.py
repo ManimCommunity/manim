@@ -782,7 +782,7 @@ class PolarPlane(Axes):
         radius_step: Optional[float] = 1,
         azimuth_step: Optional[float] = None,
         azimuth_units: Optional[Union[str, None]] = "PI radians",
-        azimuth_compact_fraction: Optional[bool] = True,
+        azimuth_compact_fraction:bool = True,
         azimuth_offset: float = 0,
         azimuth_direction: Optional[str] = "CCW",
         azimuth_label_buff: Optional[float] = SMALL_BUFF,
