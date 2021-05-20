@@ -13,6 +13,7 @@ import fractions as fr
 import math
 import numbers
 from typing import Iterable, List, Optional, Sequence, Tuple, Union
+
 import numpy as np
 
 from .. import config
@@ -792,7 +793,7 @@ class PolarPlane(Axes):
         radius_step: float = 1,
         azimuth_step: Optional[float] = None,
         azimuth_units: Optional[str] = "PI radians",
-        azimuth_compact_fraction:bool = True,
+        azimuth_compact_fraction: bool = True,
         azimuth_offset: float = 0,
         azimuth_direction: str = "CCW",
         azimuth_label_buff: float = SMALL_BUFF,
