@@ -790,8 +790,8 @@ class PolarPlane(Axes):
         radius_config: Optional[dict] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
-        faded_line_ratio: Optional[int] = 1,
-        make_smooth_after_applying_functions: Optional[bool] = True,
+        faded_line_ratio: int = 1,
+        make_smooth_after_applying_functions: bool = True,
         **kwargs,
     ):
 
