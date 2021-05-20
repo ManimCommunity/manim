@@ -1406,10 +1406,10 @@ class VMobject(Mobject):
             self.reverse_direction()
         return self
 
-    def add_tip(self, mob: Optional[Mobject], **kwargs) -> "VMobject":
+    def add_tip(self, *args, **kwargs) -> "VMobject":
         from ..arrows import ArrowTip
 
-        tip = ArrowTip(self, mob, **kwargs)
+        tip = ArrowTip(self, *args, **kwargs)
         self.tips.append(tip)
         return self
 

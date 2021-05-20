@@ -8,7 +8,7 @@ __all__ = [
     "ArrowTip",
 ]
 
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 from functools import wraps
 
 import numpy as np
@@ -20,13 +20,14 @@ from ..utils.space_ops import angle_of_vector, normalize
 
 from .geometry import Triangle
 from .mobject import Mobject
-from .types.vectorized_mobject import MetaVMobject
+from .types.vectorized_mobject import MetaVMobject, VMobject
 from .opengl_mobject import OpenGLMobject
+from .types.opengl_vectorized_mobject import OpenGLVMobject
 
-DEFAULT_ARROW_TO_STROKE_WIDTH_RATIO = 8
+DEFAULT_ARROW_TO_STROKE_WIDTH_RATIO = 5.833333333
 
 
-class ArrowTip:
+class ArrowTip:  # TODO: add presets via string
     def __init__(
         self,
         base_line: MetaVMobject,
@@ -34,17 +35,21 @@ class ArrowTip:
         *,
         relative_position: float = 1,
         tip_angle: float = PI / 2,
-        tip_alignment=RIGHT,  # or LEFT or ORIGIN # TODO maybe contained(smoothly transitioning from LEFT to RIGHT)
+        tip_alignment=LEFT,  # or RIGHT or ORIGIN
         scale_auto=True,
         length: Optional[float] = None,
         width: Optional[float] = None,
-        color: Optional[Color] = None,
+        color: Optional[Union[Color, Literal["copy"]]] = None,
         filled: Optional[bool] = None,
         secant_delta: float = 1e-4,
         **kwargs,
     ):
         if mobject is None:
             mobject = Triangle()
+            mobject.width = DEFAULT_ARROW_TIP_LENGTH
+            mobject.stretch_to_fit_height(DEFAULT_ARROW_TIP_LENGTH)
+            filled = filled is None or filled
+            color = "copy" if color is None else color
         super().__init__(**kwargs)
         self.base_line = base_line
         self.mobject = mobject
@@ -73,8 +78,10 @@ class ArrowTip:
             self.set_width(width, update=False, proportional=True)
 
         if color:
+            if color == "copy":
+                color = base_line.get_stroke_color()
             mobject.set_color(color)
-        if filled is not None and isinstance(mobject, MetaVMobject):
+        if filled is not None and isinstance(mobject, (VMobject, OpenGLVMobject)):
             mobject.set_fill(opacity=float(filled))
 
         self.update_positioning()
@@ -138,194 +145,6 @@ class Arrow:  # Line
         preserve_tip_size_when_scaling=True,
     ):
         pass
-
-
-# class TipableVMobject(metaclass=MetaVMobject):
-#     """
-#     Meant for shared functionality between Arc and Line.
-#     Functionality can be classified broadly into these groups:
-
-#         * Adding, Creating, Modifying tips
-#             - add_tip calls create_tip, before pushing the new tip
-#                 into the TipableVMobject's list of submobjects
-#             - stylistic and positional configuration
-
-#         * Checking for tips
-#             - Boolean checks for whether the TipableVMobject has a tip
-#                 and a starting tip
-
-#         * Getters
-#             - Straightforward accessors, returning information pertaining
-#                 to the TipableVMobject instance's tip(s), its length etc
-
-#     """
-
-#     def __init__(
-#         self,
-#         tip_length=DEFAULT_ARROW_TIP_LENGTH,
-#         normal_vector=OUT,
-#         tip_style={},
-#         **kwargs,
-#     ):
-#         self.tip_length = tip_length
-#         self.normal_vector = normal_vector
-#         self.tip_style = tip_style
-#         super().__init__(**kwargs)
-
-#     # Adding, Creating, Modifying tips
-
-#     def add_tip(self, tip=None, tip_shape=None, tip_length=None, at_start=False):
-#         """
-#         Adds a tip to the TipableVMobject instance, recognising
-#         that the endpoints might need to be switched if it's
-#         a 'starting tip' or not.
-#         """
-#         if tip is None:
-#             tip = self.create_tip(tip_shape, tip_length, at_start)
-#         else:
-#             self.position_tip(tip, at_start)
-#         self.reset_endpoints_based_on_tip(tip, at_start)
-#         self.asign_tip_attr(tip, at_start)
-#         self.add(tip)
-#         return self
-
-#     def create_tip(self, tip_shape=None, tip_length=None, at_start=False):
-#         """
-#         Stylises the tip, positions it spatially, and returns
-#         the newly instantiated tip to the caller.
-#         """
-#         tip = self.get_unpositioned_tip(tip_shape, tip_length)
-#         self.position_tip(tip, at_start)
-#         return tip
-
-#     def get_unpositioned_tip(self, tip_shape=None, tip_length=None):
-#         """
-#         Returns a tip that has been stylistically configured,
-#         but has not yet been given a position in space.
-#         """
-#         if tip_shape is None:
-#             tip_shape = ArrowTriangleFilledTip
-#         if tip_length is None:
-#             tip_length = self.get_default_tip_length()
-#         color = self.get_color()
-#         style = {"fill_color": color, "stroke_color": color}
-#         style.update(self.tip_style)
-#         tip = tip_shape(length=tip_length, **style)
-#         return tip
-
-#     def position_tip(self, tip, at_start=False):
-#         # Last two control points, defining both
-#         # the end, and the tangency direction
-#         if at_start:
-#             anchor = self.get_start()
-#             handle = self.get_first_handle()
-#         else:
-#             handle = self.get_last_handle()
-#             anchor = self.get_end()
-#         tip.rotate(angle_of_vector(handle - anchor) - PI - tip.tip_angle)
-#         tip.shift(anchor - tip.tip_point)
-#         return tip
-
-#     def reset_endpoints_based_on_tip(self, tip, at_start):
-#         if self.get_length() == 0:
-#             # Zero length, put_start_and_end_on wouldn't work
-#             return self
-
-#         if at_start:
-#             self.put_start_and_end_on(tip.base, self.get_end())
-#         else:
-#             self.put_start_and_end_on(self.get_start(), tip.base)
-#         return self
-
-#     def asign_tip_attr(self, tip, at_start):
-#         if at_start:
-#             self.start_tip = tip
-#         else:
-#             self.tip = tip
-#         return self
-
-#     # Checking for tips
-
-#     def has_tip(self):
-#         return hasattr(self, "tip") and self.tip in self
-
-#     def has_start_tip(self):
-#         return hasattr(self, "start_tip") and self.start_tip in self
-
-#     # Getters
-
-#     def pop_tips(self):
-#         start, end = self.get_start_and_end()
-#         result = self.get_group_class()()
-#         if self.has_tip():
-#             result.add(self.tip)
-#             self.remove(self.tip)
-#         if self.has_start_tip():
-#             result.add(self.start_tip)
-#             self.remove(self.start_tip)
-#         self.put_start_and_end_on(start, end)
-#         return result
-
-#     def get_tips(self):
-#         """
-#         Returns a VGroup (collection of VMobjects) containing
-#         the TipableVMObject instance's tips.
-#         """
-#         result = self.get_group_class()()
-#         if hasattr(self, "tip"):
-#             result.add(self.tip)
-#         if hasattr(self, "start_tip"):
-#             result.add(self.start_tip)
-#         return result
-
-#     def get_tip(self):
-#         """Returns the TipableVMobject instance's (first) tip,
-#         otherwise throws an exception."""
-#         tips = self.get_tips()
-#         if len(tips) == 0:
-#             raise Exception("tip not found")
-#         else:
-#             return tips[0]
-
-#     def get_default_tip_length(self):
-#         return self.tip_length
-
-#     def get_first_handle(self):
-#         return self.get_points()[1]
-
-#     def get_last_handle(self):
-#         return self.get_points()[-2]
-
-#     def get_end(self):
-#         if self.has_tip():
-#             return self.tip.get_start()
-#         else:
-#             return super().get_end()
-
-#     def get_start(self):
-#         if self.has_start_tip():
-#             return self.start_tip.get_start()
-#         else:
-#             return super().get_start()
-
-#     def get_length(self):
-#         start, end = self.get_start_and_end()
-#         return np.linalg.norm(start - end)
-
-
-# class CurvedArrow(ArcBetweenPoints):
-#     def __init__(self, start_point, end_point, **kwargs):
-#         super().__init__(start_point, end_point, **kwargs)
-#         self.add_tip(tip_shape=kwargs.pop("tip_shape", ArrowTriangleFilledTip))
-
-
-# class CurvedDoubleArrow(CurvedArrow):
-#     def __init__(self, start_point, end_point, **kwargs):
-#         if "tip_shape_end" in kwargs:
-#             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
-#         tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
-#         super().__init__(start_point, end_point, **kwargs)
-#         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
 # class Arrow(Line):
@@ -501,6 +320,21 @@ class Arrow:  # Line
 #                 family=False,
 #             )
 #         return self
+
+
+# class CurvedArrow(ArcBetweenPoints):
+#     def __init__(self, start_point, end_point, **kwargs):
+#         super().__init__(start_point, end_point, **kwargs)
+#         self.add_tip(tip_shape=kwargs.pop("tip_shape", ArrowTriangleFilledTip))
+
+
+# class CurvedDoubleArrow(CurvedArrow):
+#     def __init__(self, start_point, end_point, **kwargs):
+#         if "tip_shape_end" in kwargs:
+#             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
+#         tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
+#         super().__init__(start_point, end_point, **kwargs)
+#         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
 class Vector(Arrow):

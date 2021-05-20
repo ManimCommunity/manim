@@ -1180,10 +1180,10 @@ class OpenGLVMobject(OpenGLMobject):
     def get_fill_shader_vert_indices(self):
         return self.get_triangulation()
 
-    def add_tip(self, mob: Optional[OpenGLMobject], **kwargs) -> "VMobject":
+    def add_tip(self, *args, **kwargs) -> "OpenGLVMobject":
         from ..arrows import ArrowTip
 
-        tip = ArrowTip(self, mob, **kwargs)
+        tip = ArrowTip(self, *args, **kwargs)
         self.tips.append(tip)
         return self
 
