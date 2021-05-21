@@ -26,7 +26,7 @@ __all__ = [
 
 import inspect
 import types
-from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional, Sequence
 
 import numpy as np
 
@@ -116,7 +116,7 @@ class Transform(Animation):
             scene.remove(self.mobject)
             scene.add(self.target_mobject)
 
-    def get_all_mobjects(self) -> List[Mobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,
@@ -489,7 +489,7 @@ class FadeTransform(Transform):
         source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
         source.set_opacity(0)
 
-    def get_all_mobjects(self):
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,

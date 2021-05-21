@@ -19,6 +19,7 @@ __all__ = [
     "cross",
     "get_unit_normal",
     "compass_directions",
+    "regular_vertices",
     "complex_to_R3",
     "R3_to_complex",
     "complex_func_to_R3_func",
@@ -35,6 +36,7 @@ __all__ = [
 import itertools as it
 import math
 from functools import reduce
+from typing import Optional, Tuple
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -299,6 +301,43 @@ def get_unit_normal(v1, v2, tol=1e-6):
 def compass_directions(n=4, start_vect=RIGHT):
     angle = TAU / n
     return np.array([rotate_vector(start_vect, k * angle) for k in range(n)])
+
+
+def regular_vertices(
+    n: int, *, radius: float = 1, start_angle: Optional[float] = None
+) -> Tuple[np.ndarray, float]:
+    """Generates regularly spaced vertices around a circle centered at the origin.
+
+    Parameters
+    ----------
+    n
+        The number of vertices
+    radius
+        The radius of the circle that the vertices are placed on.
+    start_angle
+        The angle the vertices start at.
+
+        If unspecified, for even ``n`` values, ``0`` will be used.
+        For odd ``n`` values, 90 degrees is used.
+
+    Returns
+    -------
+    vertices : :class:`numpy.ndarray`
+        The regularly spaced vertices.
+    start_angle : :class:`float`
+        The angle the vertices start at.
+    """
+
+    if start_angle is None:
+        if n % 2 == 0:
+            start_angle = 0
+        else:
+            start_angle = TAU / 4
+
+    start_vector = rotate_vector(RIGHT * radius, start_angle)
+    vertices = compass_directions(n, start_vector)
+
+    return vertices, start_angle
 
 
 def complex_to_R3(complex_num):
