@@ -160,7 +160,7 @@ To save your config please save that file and place it in your current working d
 
             for key in default:
                 # All the cfg entries for logger need to be validated as styles,
-                # as long as they arent setting the log width or height etc
+                # as long as they aren't setting the log width or height etc
                 if category == "logger" and key not in RICH_NON_STYLE_ENTRIES:
                     desc = "style"
                     style = default[key]

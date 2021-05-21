@@ -741,7 +741,7 @@ class Camera:
         return self
 
     def get_stroke_rgbas(self, vmobject, background=False):
-        """Get's the RGBA array for the stroke of the passed
+        """Gets the RGBA array for the stroke of the passed
         VMobject.
 
         Parameters
@@ -1145,7 +1145,7 @@ class Camera:
         return centered_space_coords
 
 
-# NOTE: The methods of the following class have not been mentioned outside of their definitons.
+# NOTE: The methods of the following class have not been mentioned outside of their definitions.
 # Their DocStrings are not as detailed as preferred.
 class BackgroundColoredVMobjectDisplayer:
     def __init__(self, camera):

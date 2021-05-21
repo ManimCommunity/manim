@@ -5,7 +5,7 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 
 import math
 import numbers
-from typing import Iterable, Optional
+from typing import Iterable, List, Optional, Sequence
 
 import numpy as np
 
@@ -174,9 +174,9 @@ class Axes(VGroup, CoordinateSystem):
 
     Parameters
     ----------
-    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    x_range :
         The :code:`[x_min, x_max, x_step]` values of the x-axis.
-    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    y_range :
         The :code:`[y_min, y_max, y_step]` values of the y-axis.
     x_length : Optional[:class:`float`]
         The length of the x-axis.
@@ -194,8 +194,8 @@ class Axes(VGroup, CoordinateSystem):
 
     def __init__(
         self,
-        x_range=None,
-        y_range=None,
+        x_range: Optional[Sequence[float]] = None,
+        y_range: Optional[Sequence[float]] = None,
         x_length=round(config.frame_width) - 2,
         y_length=round(config.frame_height) - 2,
         axis_config=None,
@@ -246,18 +246,13 @@ class Axes(VGroup, CoordinateSystem):
         new_config["length"] = length
         axis = NumberLine(range_terms, **new_config)
 
-        # without the if/elif, graph does not exist when min > 0 or max < 0
+        # without the call to origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
-        if range_terms[0] > 0:
-            axis.shift(-axis.number_to_point(range_terms[0]))
-        elif range_terms[1] < 0:
-            axis.shift(-axis.number_to_point(range_terms[1]))
-        else:
-            axis.shift(-axis.number_to_point(0))
+        axis.shift(-axis.number_to_point(self.origin_shift(range_terms)))
         return axis
 
     def coords_to_point(self, *coords):
-        origin = self.x_axis.number_to_point(0)
+        origin = self.x_axis.number_to_point(self.origin_shift(self.x_range))
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
@@ -367,17 +362,33 @@ class Axes(VGroup, CoordinateSystem):
 
         return line_graph
 
+    @staticmethod
+    def origin_shift(axis_range: List[float]) -> float:
+        """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
+
+        Parameters
+        ----------
+        axis_range
+            The range of the axis : ``(x_min, x_max, x_step)``.
+        """
+        if axis_range[0] > 0:
+            return axis_range[0]
+        if axis_range[1] < 0:
+            return axis_range[1]
+        else:
+            return 0
+
 
 class ThreeDAxes(Axes):
     """A 3-dimensional set of axes.
 
     Parameters
     ----------
-    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    x_range :
         The :code:`[x_min, x_max, x_step]` values of the x-axis.
-    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    y_range :
         The :code:`[y_min, y_max, y_step]` values of the y-axis.
-    z_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    z_range :
         The :code:`[z_min, z_max, z_step]` values of the z-axis.
     x_length : Optional[:class:`float`]
         The length of the x-axis.
@@ -403,9 +414,9 @@ class ThreeDAxes(Axes):
 
     def __init__(
         self,
-        x_range=(-6, 6, 1),
-        y_range=(-5, 5, 1),
-        z_range=(-4, 4, 1),
+        x_range: Optional[Sequence[float]] = (-6, 6, 1),
+        y_range: Optional[Sequence[float]] = (-5, 5, 1),
+        z_range: Optional[Sequence[float]] = (-4, 4, 1),
         x_length=config.frame_height + 2.5,
         y_length=config.frame_height + 2.5,
         z_length=config.frame_height - 1.5,
@@ -444,7 +455,7 @@ class ThreeDAxes(Axes):
         z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
-        z_axis.shift(self.x_axis.n2p(0))
+        z_axis.shift(self.x_axis.number_to_point(self.origin_shift(x_range)))
 
         self.axes.add(z_axis)
         self.add(z_axis)
@@ -480,9 +491,9 @@ class NumberPlane(Axes):
 
     Parameters
     ----------
-    x_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    x_range :
         The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
-    y_range : Optional[Union[:class:`list`, :class:`numpy.ndarray`]]
+    y_range :
         The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
     x_length : Optional[:class:`float`]
         The width of the plane.
@@ -509,8 +520,16 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range=(-config["frame_x_radius"], config["frame_x_radius"], 1),
-        y_range=(-config["frame_y_radius"], config["frame_y_radius"], 1),
+        x_range: Optional[Sequence[float]] = (
+            -config["frame_x_radius"],
+            config["frame_x_radius"],
+            1,
+        ),
+        y_range: Optional[Sequence[float]] = (
+            -config["frame_y_radius"],
+            config["frame_y_radius"],
+            1,
+        ),
         x_length=None,
         y_length=None,
         axis_config=None,
