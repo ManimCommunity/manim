@@ -236,16 +236,16 @@ class ArcBrace(Brace):
     The direction parameter allows the brace to from outside
     or inside the Arc.
 
-        .. warning::
-            The ArcBraces are smaller for Arcs with smaller radii.
-
-        .. note::
-            The ArcBrace is initially a vertical Brace that takes the dimensions of a line
-            with the length of the Arc but scaled down to match the start and end angles,
-            then it is applied an exponential function after it is shifted
-            according to the radii of the arc.
-            The scale is not applied for arcs with radii smaller than 1 as it will
-            experience overscaling which is unideal.
+    .. warning::
+        The ArcBraces are smaller for Arcs with smaller radii.
+    
+    .. note::
+        The ArcBrace is initially a vertical Brace that takes the dimensions of a line
+        with the length of the Arc but scaled down to match the start and end angles,
+        then it is applied an exponential function after it is shifted
+        according to the radii of the arc.
+        The scale is not applied for arcs with radii smaller than 1 as it will
+        experience overscaling which is unideal.
 
     Parameters
     ----------
