@@ -30,5 +30,9 @@ Contributing can be confusing, so here are a few guides:
    :maxdepth: 2
 
    contributing/development
-   contributing/documentation
+   contributing/docstrings
+   contributing/references
+   contributing/examples
+   contributing/typings
+   contributing/admonitions
    contributing/testing
