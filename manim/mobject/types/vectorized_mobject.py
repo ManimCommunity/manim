@@ -485,7 +485,7 @@ class VMobject(Mobject):
     ) -> "VMobject":
         """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
 
-        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded paramaters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
+        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded parameters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
 
         Returns
         -------
@@ -528,7 +528,7 @@ class VMobject(Mobject):
     ) -> None:
         """Add cubic bezier curve to the path.
 
-        NOTE : the first anchor is not a paramater as by default the end of the last sub-path!
+        NOTE : the first anchor is not a parameter as by default the end of the last sub-path!
 
         Parameters
         ----------
@@ -833,8 +833,8 @@ class VMobject(Mobject):
 
         The algorithm every bezier tuple (anchors and handles) in ``self.points`` (by regrouping each n elements, where
         n is the number of points per cubic curve)), and evaluate the relation between two anchors with filter_func.
-        NOTE : The filter_func takes an int n as paramater, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
-        the function takes two points as paramters.
+        NOTE : The filter_func takes an int n as parameter, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
+        the function takes two points as parameters.
 
         Parameters
         ----------
@@ -1445,7 +1445,7 @@ class VGroup(VMobject):
 
         class ArcShapeIris(Scene):
             def construct(self):
-                colors = [DARK_BLUE, DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
+                colors = [DARK_BROWN, BLUE_E, BLUE_D, BLUE_A, TEAL_B, GREEN_B, YELLOW_E]
                 radius = [1 + rad * 0.1 for rad in range(len(colors))]
 
                 circles_group = VGroup()
@@ -1619,7 +1619,7 @@ class VDict(VMobject):
                 self.play(FadeOut(my_dict["c"]))
                 self.wait()
 
-                self.play(FadeOutAndShift(my_dict["r"], DOWN))
+                self.play(FadeOut(my_dict["r"], shift=DOWN))
                 self.wait()
 
                 # you can also make a VDict from an existing dict of mobjects
@@ -1868,7 +1868,7 @@ class VDict(VMobject):
         super().add(value)
 
 
-class VectorizedPoint(VMobject):
+class VectorizedPoint(metaclass=MetaVMobject):
     def __init__(
         self,
         location=ORIGIN,
@@ -1881,8 +1881,7 @@ class VectorizedPoint(VMobject):
     ):
         self.artificial_width = artificial_width
         self.artificial_height = artificial_height
-        VMobject.__init__(
-            self,
+        super().__init__(
             color=color,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
@@ -1890,11 +1889,13 @@ class VectorizedPoint(VMobject):
         )
         self.set_points(np.array([location]))
 
-    @VMobject.width.getter
+    basecls = OpenGLVMobject if config.renderer == "opengl" else VMobject
+
+    @basecls.width.getter
     def width(self):
         return self.artificial_width
 
-    @VMobject.height.getter
+    @basecls.height.getter
     def height(self):
         return self.artificial_height
 

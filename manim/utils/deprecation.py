@@ -202,7 +202,7 @@ def deprecated(
         Returns
         -------
         Any
-            The return value of the given callable when beeing passed the given
+            The return value of the given callable when being passed the given
             arguments.
         """
         logger.warning(warning_msg())
@@ -363,7 +363,7 @@ def deprecated_params(
         params = []
 
     # Construct params list
-    params = re.split("[,\s]+", params) if isinstance(params, str) else list(params)
+    params = re.split(r"[,\s]+", params) if isinstance(params, str) else list(params)
 
     # Add params which are only implicitly given via redirections
     if redirections is None:
@@ -372,7 +372,7 @@ def deprecated_params(
         if isinstance(redirector, tuple):
             params.append(redirector[0])
         else:
-            params.extend(inspect.getargspec(redirector).args)
+            params.extend(list(inspect.signature(redirector).parameters))
     # Keep ordering of params so that warning message is consistently the same
     # This will also help pass unit testing
     params = list(dict.fromkeys(params))
@@ -415,7 +415,7 @@ def deprecated_params(
         kwargs
             The keyword argument dictionary to be updated.
         used
-            The list of depecated parameters used in a call.
+            The list of deprecated parameters used in a call.
         """
         for redirector in redirections:
             if isinstance(redirector, tuple):
@@ -423,7 +423,7 @@ def deprecated_params(
                 if old_param in used:
                     kwargs[new_param] = kwargs.pop(old_param)
             else:
-                redirector_params = inspect.getargspec(redirector).args
+                redirector_params = list(inspect.signature(redirector).parameters)
                 redirector_args = {}
                 for redirector_param in redirector_params:
                     if redirector_param in used:
@@ -449,7 +449,7 @@ def deprecated_params(
         Returns
         -------
         Any
-            The return value of the given callable when beeing passed the given
+            The return value of the given callable when being passed the given
             arguments.
 
         """

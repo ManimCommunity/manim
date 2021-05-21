@@ -1,54 +1,14 @@
 """Fading in and out of view.
 
-.. manim:: Example
-    :hide_source:
+.. manim:: Fading
 
-    class Example(Scene):
+    class Fading(Scene):
         def construct(self):
-            s1 = Square().set_color(BLUE)
-            s2 = Square().set_color(BLUE)
-            s3 = Square().set_color(BLUE)
-            s4 = Square().set_color(BLUE)
-            s5 = Square().set_color(BLUE)
-            s6 = Square().set_color(RED)
-            s7 = Square().set_color(RED)
-            s8 = Square().set_color(RED)
-            VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.9).shift(UP)
-            VGroup(s5, s6, s7, s8).set_x(0).arrange(buff=1.9).shift(2 * DOWN)
-            t1 = Text("FadeIn").scale(0.5).next_to(s1, UP)
-            t2 = Text("FadeInFromPoint").scale(0.5).next_to(s2, UP)
-            t3 = Text("FadeInFrom").scale(0.5).next_to(s3, UP)
-            t4 = Text("VFadeIn").scale(0.5).next_to(s4, UP)
-            t5 = Text("FadeInFromLarge").scale(0.4).next_to(s5, UP)
-            t6 = Text("FadeOut").scale(0.45).next_to(s6, UP)
-            t7 = Text("FadeOutAndShift").scale(0.45).next_to(s7, UP)
-            t8 = Text("VFadeOut").scale(0.45).next_to(s8, UP)
-
-            objs = [ManimBanner().scale(0.25) for _ in range(1, 9)]
-            objs[0].move_to(s1.get_center())
-            objs[1].move_to(s2.get_center())
-            objs[2].move_to(s3.get_center())
-            objs[3].move_to(s4.get_center())
-            objs[4].move_to(s5.get_center())
-            objs[5].move_to(s6.get_center())
-            objs[6].move_to(s7.get_center())
-            objs[7].move_to(s8.get_center())
-            self.add(s1, s2, s3, s4, s5, s6, s7, s8, t1, t2, t3, t4, t5, t6, t7, t8)
-            self.add(*objs)
-
-            self.play(
-                FadeIn(objs[0]),
-                FadeInFromPoint(objs[1], s2.get_center()),
-                FadeInFrom(objs[2], LEFT*0.2),
-                VFadeIn(objs[3]),
-                FadeInFromLarge(objs[4]),
-            )
-            self.wait(0.3)
-            self.play(
-                FadeOut(objs[5]),
-                FadeOutAndShift(objs[6], DOWN),
-                VFadeOut(objs[7])
-            )
+            tex_in = Tex("Fade", "In").scale(3)
+            tex_out = Tex("Fade", "Out").scale(3)
+            self.play(FadeIn(tex_in, shift=DOWN, scale=0.66))
+            self.play(ReplacementTransform(tex_in, tex_out))
+            self.play(FadeOut(tex_out, shift=DOWN * 2, scale=1.5))
 
 """
 
@@ -66,191 +26,260 @@ __all__ = [
     "VFadeInThenOut",
 ]
 
-import typing
+from typing import Callable, Optional, Union
 
 import numpy as np
 
-from .. import logger
-from ..animation.animation import Animation
 from ..animation.transform import Transform
 from ..constants import DOWN, ORIGIN
-from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.bezier import interpolate
+from ..mobject.mobject import Group, Mobject
+from ..scene.scene import Scene
+from ..utils.deprecation import deprecated
 from ..utils.rate_functions import there_and_back
 
-if typing.TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
-    from ..scene.scene import Scene
 
-DEFAULT_FADE_LAG_RATIO: float = 0
+class _Fade(Transform):
+    """Fade :class:`~.Mobject` s in or out.
 
+    Parameters
+    ----------
+    mobjects
+        The mobjects to be faded.
+    shift
+        The vector by which the mobject shifts while being faded.
+    target_position
+        The position to/from which the mobject moves while being faded in. In case
+        another mobject is given as target position, its center is used.
+    scale
+        The factor by which the mobject is scaled initially before being rescaling to
+        its original size while being faded in.
 
-class FadeOut(Transform):
-    """A transform fading out the given mobject."""
+    """
 
     def __init__(
         self,
-        vmobject: typing.Union[VMobject, OpenGLVMobject],
-        remover: bool = True,
-        lag_ratio: float = DEFAULT_FADE_LAG_RATIO,
+        *mobjects: Mobject,
+        shift: Optional[np.ndarray] = None,
+        target_position: Optional[Union[np.ndarray, Mobject]] = None,
+        scale: float = 1,
         **kwargs
     ) -> None:
-        super().__init__(vmobject, remover=remover, lag_ratio=lag_ratio, **kwargs)
+        if not mobjects:
+            raise ValueError("At least one mobject must be passed.")
+        if len(mobjects) == 1:
+            mobject = mobjects[0]
+        else:
+            mobject = Group(*mobjects)
 
-    def create_target(self) -> "Mobject":
-        return self.mobject.copy().fade(1)
+        self.point_target = False
+        if shift is None:
+            if target_position is not None:
+                if isinstance(target_position, Mobject):
+                    target_position = target_position.get_center()
+                shift = target_position - mobject.get_center()
+                self.point_target = True
+            else:
+                shift = ORIGIN
+        self.shift_vector = shift
+        self.scale_factor = scale
+        super().__init__(mobject, **kwargs)
 
-    def clean_up_from_scene(self, scene: "Scene" = None) -> None:
+    def _create_faded_mobject(self, fadeIn: bool) -> Mobject:
+        """Create a faded, shifted and scaled copy of the mobject.
+
+        Parameters
+        ----------
+        fadeIn
+            Whether the faded mobject is used to fade in.
+
+        Returns
+        -------
+        Mobject
+            The faded, shifted and scaled copy of the mobject.
+        """
+        faded_mobject = self.mobject.copy()
+        faded_mobject.fade(1)
+        direction_modifier = -1 if fadeIn and not self.point_target else 1
+        faded_mobject.shift(self.shift_vector * direction_modifier)
+        faded_mobject.scale(self.scale_factor)
+        return faded_mobject
+
+
+class FadeIn(_Fade):
+    """Fade in :class:`~.Mobject` s.
+
+    Parameters
+    ----------
+    mobjects
+        The mobjects to be faded in.
+    shift
+        The vector by which the mobject shifts while being faded in.
+    target_position
+        The position from which the mobject starts while being faded in. In case
+        another mobject is given as target position, its center is used.
+    scale
+        The factor by which the mobject is scaled initially before being rescaling to
+        its original size while being faded in.
+
+    Examples
+    --------
+
+    .. manim :: FadeInExample
+
+        class FadeInExample(Scene):
+            def construct(self):
+                dot = Dot(UP * 2 + LEFT)
+                self.add(dot)
+                tex = Tex(
+                    "FadeIn with ", "shift ", " or target\\_position", " and scale"
+                ).scale(1)
+                animations = [
+                    FadeIn(tex[0]),
+                    FadeIn(tex[1], shift=DOWN),
+                    FadeIn(tex[2], target_position=dot),
+                    FadeIn(tex[3], scale=1.5),
+                ]
+                self.play(AnimationGroup(*animations, lag_ratio=0.5))
+
+    """
+
+    def create_target(self):
+        return self.mobject
+
+    def create_starting_mobject(self):
+        return self._create_faded_mobject(fadeIn=True)
+
+
+class FadeOut(_Fade):
+    """Fade out :class:`~.Mobject` s.
+
+    Parameters
+    ----------
+    mobjects
+        The mobjects to be faded out.
+    shift
+        The vector by which the mobject shifts while being faded out.
+    target_position
+        The position to which the mobject moves while being faded out. In case another
+        mobject is given as target position, its center is used.
+    scale
+        The factor by which the mobject is scaled while being faded out.
+
+    Examples
+    --------
+
+    .. manim :: FadeInExample
+
+        class FadeInExample(Scene):
+            def construct(self):
+                dot = Dot(UP * 2 + LEFT)
+                self.add(dot)
+                tex = Tex(
+                    "FadeOut with ", "shift ", " or target\\_position", " and scale"
+                ).scale(1)
+                animations = [
+                    FadeOut(tex[0]),
+                    FadeOut(tex[1], shift=DOWN),
+                    FadeOut(tex[2], target_position=dot),
+                    FadeOut(tex[3], scale=0.5),
+                ]
+                self.play(AnimationGroup(*animations, lag_ratio=0.5))
+
+
+    """
+
+    def __init__(self, *mobjects: Mobject, **kwargs) -> None:
+        super().__init__(*mobjects, remover=True, **kwargs)
+
+    def create_target(self):
+        return self._create_faded_mobject(fadeIn=False)
+
+    def clean_up_from_scene(self, scene: Scene = None) -> None:
         super().clean_up_from_scene(scene)
         self.interpolate(0)
 
 
-class FadeIn(Transform):
-    def __init__(
-        self,
-        vmobject: typing.Union[VMobject, OpenGLVMobject],
-        lag_ratio: float = DEFAULT_FADE_LAG_RATIO,
-        **kwargs
-    ) -> None:
-        super().__init__(vmobject, lag_ratio=lag_ratio, **kwargs)
-
-    def create_target(self) -> "Mobject":
-        return self.mobject
-
-    def create_starting_mobject(self) -> "Mobject":
-        start = super().create_starting_mobject()
-        start.fade(1)
-        if isinstance(start, (VMobject, OpenGLVMobject)):
-            start.set_stroke(opacity=0)
-            start.set_fill(opacity=0)
-        return start
-
-
-class FadeInFrom(Transform):
+@deprecated(
+    since="v0.6.0",
+    until="v0.8.0",
+    replacement="FadeIn",
+    message="You can set a shift amount there.",
+)
+class FadeInFrom(FadeIn):
     def __init__(
         self, mobject: "Mobject", direction: np.ndarray = DOWN, **kwargs
     ) -> None:
-        self.direction = direction
-        super().__init__(mobject, **kwargs)
-
-    def create_target(self) -> "Mobject":
-        return self.mobject.copy()
-
-    def begin(self) -> None:
-        super().begin()
-        self.starting_mobject.shift(self.direction)
-        self.starting_mobject.fade(1)
+        super().__init__(mobject, shift=-direction, **kwargs)
 
 
-class FadeOutAndShift(FadeOut):
+@deprecated(
+    since="v0.6.0",
+    until="v0.8.0",
+    replacement="FadeOut",
+    message="You can set a shift amount there.",
+)
+class FadeOutAndShift(FadeIn):
     def __init__(
         self, mobject: "Mobject", direction: np.ndarray = DOWN, **kwargs
     ) -> None:
-        self.direction = direction
-        super().__init__(mobject, **kwargs)
-
-    def create_target(self) -> "Mobject":
-        target = super().create_target()
-        target.shift(self.direction)
-        return target
+        super().__init__(mobject, shift=direction, **kwargs)
 
 
+@deprecated(
+    since="v0.6.0",
+    until="v0.8.0",
+    replacement="FadeOut",
+    message="You can set a target position there.",
+)
 class FadeOutToPoint(FadeOut):
-    """Fades out a mobject while moving it to a specified point.
-
-    Parameters
-    ----------
-    mobject
-        The :class:`~.Mobject` to be animated.
-    point
-        Either a point or another :class:`~.Mobject` to whose center the
-        Mobject is moved in the animation. Defaults to ``ORIGIN``.
-    kwargs
-        Further keyword arguments are passed to the parent class.
-
-    """
-
     def __init__(
-        self,
-        mobject: "Mobject",
-        point: typing.Union["Mobject", np.ndarray] = ORIGIN,
-        **kwargs
+        self, mobject: "Mobject", point: Union["Mobject", np.ndarray] = ORIGIN, **kwargs
     ) -> None:
-        self.point = point
-        super().__init__(mobject, **kwargs)
-
-    def create_target(self) -> "Mobject":
-        """Creates the target of the animation."""
-        target = super().create_target()
-        target.move_to(self.point)
-        return target
+        super().__init__(mobject, target_position=point, **kwargs)
 
 
+@deprecated(
+    since="v0.6.0",
+    until="v0.8.0",
+    replacement="FadeIn",
+    message="You can set a target position and scaling factor there.",
+)
 class FadeInFromPoint(FadeIn):
     def __init__(
-        self, mobject: "Mobject", point: typing.Union["Mobject", np.ndarray], **kwargs
+        self, mobject: "Mobject", point: Union["Mobject", np.ndarray], **kwargs
     ) -> None:
-        self.point = point
-        super().__init__(mobject, **kwargs)
-
-    def create_starting_mobject(self) -> "Mobject":
-        start = super().create_starting_mobject()
-        start.scale(0)
-        start.move_to(self.point)
-        return start
+        super().__init__(mobject, target_position=point, scale=0, **kwargs)
 
 
+@deprecated(
+    since="v0.6.0",
+    until="v0.8.0",
+    replacement="FadeIn",
+    message="You can set a scaling factor there.",
+)
 class FadeInFromLarge(FadeIn):
     def __init__(self, mobject: "Mobject", scale_factor: float = 2, **kwargs) -> None:
-        self.scale_factor = scale_factor
+        super().__init__(mobject, scale=scale_factor, **kwargs)
+
+
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="FadeIn")
+class VFadeIn(FadeIn):
+    def __init__(self, mobject: "Mobject", **kwargs) -> None:
         super().__init__(mobject, **kwargs)
 
-    def create_starting_mobject(self) -> "Mobject":
-        start = super().create_starting_mobject()
-        start.scale(self.scale_factor)
-        return start
+
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="FadeOut")
+class VFadeOut(FadeOut):
+    def __init__(self, mobject: "Mobject", **kwargs) -> None:
+        super().__init__(mobject, **kwargs)
 
 
-class VFadeIn(Animation):
-    """
-    VFadeIn and VFadeOut only work for VMobjects,
-    """
-
-    def __init__(
-        self, mobject: "Mobject", suspend_mobject_updating: bool = False, **kwargs
-    ) -> None:
-        super().__init__(
-            mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
-        )
-
-    def interpolate_submobject(
-        self, submobject: "Mobject", starting_submobject: "Mobject", alpha: float
-    ) -> None:
-        submobject.set_stroke(
-            opacity=interpolate(0, starting_submobject.get_stroke_opacity(), alpha)
-        )
-        submobject.set_fill(
-            opacity=interpolate(0, starting_submobject.get_fill_opacity(), alpha)
-        )
-
-
-class VFadeOut(VFadeIn):
-    def __init__(self, mobject: "Mobject", remover: bool = True, **kwargs) -> None:
-        super().__init__(mobject, remover=remover, **kwargs)
-
-    def interpolate_submobject(
-        self, submobject: "Mobject", starting_submobject: "Mobject", alpha: float
-    ) -> None:
-        super().interpolate_submobject(submobject, starting_submobject, 1 - alpha)
-
-
-class VFadeInThenOut(VFadeIn):
+@deprecated(since="v0.6.0", until="v0.8.0")
+class VFadeInThenOut(FadeIn):
     def __init__(
         self,
         mobject: "Mobject",
-        remover: bool = True,
-        rate_func: typing.Callable[[float, float], float] = there_and_back,
+        rate_func: Callable[[float], float] = there_and_back,
         **kwargs
     ):
-        super().__init__(mobject, remover=remover, rate_func=rate_func, **kwargs)
+        super().__init__(mobject, remover=True, rate_func=rate_func, **kwargs)

@@ -144,13 +144,13 @@ Animations
                 theta_tracker.get_value() * DEGREES, about_point=rotation_center
             )
             a = Angle(line1, line_moving, radius=0.5, other_angle=False)
-            te = MathTex(r"\theta").move_to(
+            tex = MathTex(r"\theta").move_to(
                 Angle(
                     line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
                 ).point_from_proportion(0.5)
             )
 
-            self.add(line1, line_moving, a, te)
+            self.add(line1, line_moving, a, tex)
             self.wait()
 
             line_moving.add_updater(
@@ -162,7 +162,7 @@ Animations
             a.add_updater(
                 lambda x: x.become(Angle(line1, line_moving, radius=0.5, other_angle=False))
             )
-            te.add_updater(
+            tex.add_updater(
                 lambda x: x.move_to(
                     Angle(
                         line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
@@ -172,7 +172,7 @@ Animations
 
             self.play(theta_tracker.animate.set_value(40))
             self.play(theta_tracker.animate.increment_value(140))
-            self.play(te.animate.set_color(RED), run_time=0.5)
+            self.play(tex.animate.set_color(RED), run_time=0.5)
             self.play(theta_tracker.animate.set_value(350))
 
 .. tip::
@@ -450,12 +450,12 @@ Special Camera Settings
 
             frame_text.next_to(frame, DOWN)
 
-            self.play(Create(frame), FadeInFrom(frame_text, direction=DOWN))
+            self.play(Create(frame), FadeIn(frame_text, shift=UP))
             self.activate_zooming()
 
             self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera)
             zoomed_camera_text.next_to(zoomed_display_frame, DOWN)
-            self.play(FadeInFrom(zoomed_camera_text, direction=DOWN))
+            self.play(FadeIn(zoomed_camera_text, shift=UP))
             # Scale in        x   y  z
             scale_factor = [0.5, 1.5, 0]
             self.play(
@@ -576,7 +576,7 @@ Advanced Projects
 =================
 
 .. manim:: OpeningManim
-    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane Create
+    :ref_classes: Tex MathTex Write FadeIn LaggedStart NumberPlane Create
     :ref_methods: NumberPlane.prepare_for_nonlinear_transform
 
     class OpeningManim(Scene):
@@ -586,7 +586,7 @@ Advanced Projects
             VGroup(title, basel).arrange(DOWN)
             self.play(
                 Write(title),
-                FadeInFrom(basel, UP),
+                FadeIn(basel, shift=DOWN),
             )
             self.wait()
 
@@ -594,7 +594,7 @@ Advanced Projects
             transform_title.to_corner(UP + LEFT)
             self.play(
                 Transform(title, transform_title),
-                LaggedStart(*[FadeOutAndShift(obj, direction=DOWN) for obj in basel]),
+                LaggedStart(*[FadeOut(obj, shift=DOWN) for obj in basel]),
             )
             self.wait()
 
@@ -606,7 +606,7 @@ Advanced Projects
             self.add(grid, grid_title)  # Make sure title is on top of grid
             self.play(
                 FadeOut(title),
-                FadeInFrom(grid_title, direction=DOWN),
+                FadeIn(grid_title, shift=UP),
                 Create(grid, run_time=3, lag_ratio=0.1),
             )
             self.wait()
