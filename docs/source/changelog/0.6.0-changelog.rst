@@ -177,7 +177,7 @@ Enhancements
 * `#1364 <https://github.com/ManimCommunity/manim/pull/1364>`__: Added :meth:`~.Mobject.match_points`
    - Added :func:`~.Mobject.match_points`, which transforms the points, positions and submobjects of a Mobject to match that of the other while keeping style unchanged.
 
-* `#1363 <https://github.com/ManimCommunity/manim/pull/1363>`__: Change of TeX complier and output file format
+* `#1363 <https://github.com/ManimCommunity/manim/pull/1363>`__: Change of TeX compiler and output file format
 
 
 * `#1359 <https://github.com/ManimCommunity/manim/pull/1359>`__: Make FILE a required argument
@@ -309,7 +309,7 @@ Documentation-related changes
 * `#1338 <https://github.com/ManimCommunity/manim/pull/1338>`__: Added documentation guidelines for type hints
 
 
-* `#1342 <https://github.com/ManimCommunity/manim/pull/1342>`__: Mutliple VauleTracker example for docs
+* `#1342 <https://github.com/ManimCommunity/manim/pull/1342>`__: Multiple ValueTracker example for docs
 
 
 * `#1210 <https://github.com/ManimCommunity/manim/pull/1210>`__: Added tutorial chapter on coordinates of an mobject
@@ -333,7 +333,7 @@ Documentation-related changes
 * `#1300 <https://github.com/ManimCommunity/manim/pull/1300>`__: Added typehints for :class:`~.ValueTracker`
 
 
-* `#1301 <https://github.com/ManimCommunity/manim/pull/1301>`__: Added futher docstrings and typehints to :class:`~.Mobject`
+* `#1301 <https://github.com/ManimCommunity/manim/pull/1301>`__: Added further docstrings and typehints to :class:`~.Mobject`
 
 
 * `#1298 <https://github.com/ManimCommunity/manim/pull/1298>`__: Add double backquotes for rst code samples (value_tracker.py)

@@ -226,7 +226,7 @@ class VectorField(VGroup):
             A scalar to the amount the mobject is moved along the vector field.
             The actual distance is based on the magnitude of the vector field.
         substeps
-            The amount of steps the whole nudge is devided into. Higher values
+            The amount of steps the whole nudge is divided into. Higher values
             give more accurate approximations.
         pointwise
             Whether to move the mobject along the vector field. See :meth:`nudge` for details.
@@ -291,7 +291,7 @@ class VectorField(VGroup):
         return self
 
     def stop_submobject_movement(self) -> "VectorField":
-        """Stops the continous movement started using :meth:`start_submobject_movement`.
+        """Stops the continuous movement started using :meth:`start_submobject_movement`.
 
         Returns
         -------
@@ -546,7 +546,7 @@ class StreamLines(VectorField):
     dt
         The factor by which the distance an agent moves per step is stretched. Lower values result in a better approximation of the trajectories in the vector field.
     virtual_time
-        The time the agents get to move in the vector field. Higher values therefor result in longer stream lines. However, this whole time gets simulated upon creation.
+        The time the agents get to move in the vector field. Higher values therefore result in longer stream lines. However, this whole time gets simulated upon creation.
     max_anchors_per_line
         The maximum number of anchors per line. Lines with more anchors get reduced in complexity, not in length.
     padding
@@ -703,7 +703,7 @@ class StreamLines(VectorField):
         Parameters
         ----------
         lag_ratio
-            The lag ratio ot the animation.
+            The lag ratio of the animation.
             If undefined, it will be selected so that the total animation length is 1.5 times the run time of each stream line creation.
         run_time
             The run time of every single stream line creation. The runtime of the whole animation might be longer due to the `lag_ratio`.
@@ -755,7 +755,7 @@ class StreamLines(VectorField):
     ) -> None:
         """Animates the stream lines using an updater.
 
-        The stream lines will continously flow
+        The stream lines will continuously flow
 
         Parameters
         ----------
@@ -768,7 +768,7 @@ class StreamLines(VectorField):
         rate_func
             The rate function of each stream line flashing
         line_animation_class
-            The animation class beeing used
+            The animation class being used
 
         Examples
         --------
@@ -818,7 +818,7 @@ class StreamLines(VectorField):
     def end_animation(self) -> AnimationGroup:
         """End the stream line animation smoothly.
 
-        Returns an animation resulting in fully displayed stream lines without a noticable cut.
+        Returns an animation resulting in fully displayed stream lines without a noticeable cut.
 
         Returns
         -------
