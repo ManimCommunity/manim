@@ -530,7 +530,7 @@ class CoordinateSystem:
             graph_point = self.input_to_graph_point(sample_input, graph)
 
             if bounded_graph is None:
-                y_point = origin_shift(self.y_range)
+                y_point = self.origin_shift(self.y_range)
             else:
                 y_point = bounded_graph.underlying_function(x)
 
