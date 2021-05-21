@@ -355,7 +355,7 @@ class CoordinateSystem:
         """
 
         if hasattr(graph, "underlying_function"):
-            return self.coords_to_point(x, graph.underlying_function(x))
+            return graph.function(x)
         else:
             alpha = binary_search(
                 function=lambda a: self.point_to_coords(graph.point_from_proportion(a))[
@@ -509,15 +509,6 @@ class CoordinateSystem:
 
         x_range = [*x_range[:2], dx]
 
-        # TODO: remove when the pr gets merged
-        def origin_shift(y_range):
-            if y_range[0] > 0:
-                return y_range[0]
-            elif y_range[1] < 0:
-                return y_range[1]
-            else:
-                return 0
-
         rectangles = VGroup()
         x_range = np.arange(*x_range)
 
@@ -579,8 +570,8 @@ class CoordinateSystem:
     def get_area(
         self,
         graph: "ParametricFunction",
-        x_range: List[float],
-        color: Union[Color, Iterable[Color]] = WHITE,
+        x_range: Optional[List[float]] = None,
+        color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
         opacity: float = 0.3,
         dx_scaling: float = 1,
         bounded: "ParametricFunction" = None,
@@ -614,7 +605,7 @@ class CoordinateSystem:
             The :class:`~.VGroup` containing the Riemann Rectangles.
         """
 
-        dx = self.x_range[2] / 1000
+        dx = self.x_range[2] / 500
         return self.get_riemann_rectangles(
             graph,
             x_range=x_range,
