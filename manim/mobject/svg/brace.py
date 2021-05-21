@@ -306,12 +306,12 @@ class ArcBrace(Brace):
         arc_end_angle = arc_start_angle + arc.angle
         arc_radius = arc.radius
         scale_shift = RIGHT * np.log(arc_radius)
-        line = Line(UP * arc_start_angle, UP * arc_end_angle)
+        line = Line(UP * arc_start_angle, UP * arc_end_angle) # Having the line be oriented to match the angles of the arc
         if arc_radius >= 1:
-            line.scale(arc_radius, about_point=ORIGIN)
+            line.scale(arc_radius, about_point=ORIGIN) # Scales the line to have the same length as the arc length
         Brace.__init__(self, line, direction=direction, **kwargs)
         if arc_radius >= 1:
-            self.scale(1 / (arc_radius), about_point=ORIGIN)
-        self.shift(scale_shift)
+            self.scale(1 / (arc_radius), about_point=ORIGIN) # Undo the scaling to not disrupt the arc angles
+        self.shift(scale_shift) # Shifts to the appropriate position to be applied the exponential function at the correct radii
         self.apply_complex_function(np.exp)
         self.shift(arc_center)
