@@ -240,12 +240,11 @@ class ArcBrace(Brace):
         The :class:`ArcBrace` is smaller for Arcs with smaller radii.
 
     .. note::
-        The ArcBrace is initially a vertical Brace that takes the dimensions of a line
-        with the length of the Arc but scaled down to match the start and end angles,
-        then it is applied an exponential function after it is shifted
-        according to the radii of the arc.
-        The scale is not applied for arcs with radii smaller than 1 as it will
-        experience overscaling which is unideal.
+        The :class:`ArcBrace` is initially a vertical :class:`Brace` defined by the length of the
+         :class:`Arc`, but is then scaled down to match the start and end angles. An 
+         exponential function is applied after it is shifted based on the radius of the arc.
+
+        The scaling effect is not applied for arcs with radii smaller than 1 to prevent over-scaling.
 
     Parameters
     ----------
