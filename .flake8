@@ -1,12 +1,12 @@
 [flake8]
 max-line-length = 88
-                #Black Compatability
+                #Black Compatibility
 extend-ignore = E203, E266,  
                 #Style Changes
                 
                 #Temp
                 F841, B007,
-                #I belive these are unfixable
+                #I believe these are unfixable
                 B006
                 #Code Changes - Remove later -remove from .pre-commit-config.yaml
 
