@@ -25,7 +25,7 @@ class _Memoizer:
     """Implements the memoization logic to optimize the hashing procedure and prevent the circular references within iterable processed.
 
     Keeps a record of all the processed objects, and handle the logic to return a place holder instead of the original object if the object has already been processed
-    by the hashing logic (i.e, recusively checked, converted to JSON, etc..).
+    by the hashing logic (i.e, recursively checked, converted to JSON, etc..).
 
     This class uses two signatures functions to keep a track of processed objects : hash or id. Whenever possible, hash is used to ensure a broader object content-equality detection.
     """
@@ -277,7 +277,7 @@ def get_json(obj):
     """
     return json.dumps(obj, cls=_CustomEncoder)
 
-
+i = 0
 def get_hash_from_play_call(
     scene_object, camera_object, animations_list, current_mobjects_list
 ) -> str:
@@ -307,6 +307,11 @@ def get_hash_from_play_call(
     _Memoizer.mark_as_processed(scene_object)
     camera_json = get_json(camera_object)
     animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
+    global i
+    with open(f"animation{i}.json", "a") as f:
+        for el in animations_list_json:
+            f.write(el)
+    i += 1
     current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
     hash_camera, hash_animations, hash_current_mobjects = [
         zlib.crc32(repr(json_val).encode())
