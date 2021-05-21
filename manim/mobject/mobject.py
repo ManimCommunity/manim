@@ -883,7 +883,7 @@ class Mobject(Container):
         index
             The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
         call_updater
-            Wheather or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
+            Whether or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
 
         Returns
         -------

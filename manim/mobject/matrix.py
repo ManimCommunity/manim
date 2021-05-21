@@ -90,9 +90,9 @@ class Matrix(VMobject):
         h_buff : :class:`float`, optional
             horizontal buffer, by default 1.3
         bracket_h_buff : :class:`float`, optional
-            bracket horizonal buffer, by default MED_SMALL_BUFF
+            bracket horizontal buffer, by default MED_SMALL_BUFF
         bracket_v_buff : :class:`float`, optional
-            bracket veritical buffer, by default MED_SMALL_BUFF
+            bracket vertical buffer, by default MED_SMALL_BUFF
         add_background_rectangles_to_entries : :class:`bool`, optional
             `True` if should add backgraound rectangles to entries, by default False
         include_background_rectangle : :class:`bool`, optional

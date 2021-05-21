@@ -9,7 +9,7 @@ class SquareToCircle(Scene):
 
 
 class FunctionLikeTest(Scene):
-    def contruct(self):
+    def construct(self):
         assert "FunctionLike" in globals()
         a = FunctionLike()
         self.play(FadeIn(a))

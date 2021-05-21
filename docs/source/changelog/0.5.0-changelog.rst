@@ -300,7 +300,7 @@ Code quality improvements and similar refactors
    - Added `is_static_wait` attributes to Wait. (<=> if wait is a frozen frame). 
    - Renamed and moved `scene.add_static_frame` to `renderer.freeze_current_frame`. 
    - Now when calling play without animation, it raises `ValueError` instead of just a warning.
-   - Fixed :pr:`874` by modfying `renderer.update_skipping_status`
+   - Fixed :pr:`874` by modifying `renderer.update_skipping_status`
    - `renderer` starts the animation with `scene.begin_animations` (`scene.compile_animation_data` used to do this)
    - The run time and the time progression generation is now done in `scene.play_internal` although it'd make more sense that renderer processes it later. 
    - Added a bunch of cool tests thanks to mocks, and thanks to the new syntax `scene.render`
