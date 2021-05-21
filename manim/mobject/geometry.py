@@ -2175,7 +2175,7 @@ class Triangle(RegularPolygon):
     Parameters
     ----------
     kwargs : Any
-        Additonal arguments to be passed to :class:`RegularPolygon`
+        Additional arguments to be passed to :class:`RegularPolygon`
 
     Examples
     --------
