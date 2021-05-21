@@ -29,3 +29,7 @@ repos:
     rev: 3.9.2
     hooks:
       - id: flake8
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.0.0
+    hooks:
+      - id: codespell

@@ -202,7 +202,7 @@ def deprecated(
         Returns
         -------
         Any
-            The return value of the given callable when beeing passed the given
+            The return value of the given callable when being passed the given
             arguments.
         """
         logger.warning(warning_msg())
@@ -415,7 +415,7 @@ def deprecated_params(
         kwargs
             The keyword argument dictionary to be updated.
         used
-            The list of depecated parameters used in a call.
+            The list of deprecated parameters used in a call.
         """
         for redirector in redirections:
             if isinstance(redirector, tuple):
@@ -449,7 +449,7 @@ def deprecated_params(
         Returns
         -------
         Any
-            The return value of the given callable when beeing passed the given
+            The return value of the given callable when being passed the given
             arguments.
 
         """
