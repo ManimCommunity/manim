@@ -25,7 +25,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6.2"
+python = "^3.7"
 click = "^7.1"
 click-default-group = "*"
 colour = "*"
@@ -39,7 +39,7 @@ rich = "^6.0"
 pycairo = "^1.19"
 manimpango = "^0.2.4"
 networkx = "^2.5"
-decorator = "<5.0.0"  # remove as soon as https://github.com/networkx/networkx/issues/4718 is resolved
+decorator = "^5.0.7"
 setuptools = "*"
 importlib-metadata = {version = "*", python = "<3.8"}
 grpcio =  { version = "1.33.*", optional = true }
@@ -76,7 +76,7 @@ isort = "^5.8.0"
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"
 "Changelog" = "https://docs.manim.community/en/stable/changelog.html"
 "Twitter" = "https://twitter.com/manim_community"
-"Discord" = "https://discord.gg/mMRrZQW"
+"Discord" = "https://www.manim.community/discord/"
 
 [tool.poetry.dev-dependencies.black]
 version = "^20.8b1"
@@ -109,5 +109,5 @@ exclude_lines = ["pragma: no cover"]
 "manimce" = "manim.__main__:main"
 
 [build-system]
-requires = ["setuptools","poetry_core>=1.0.0"]
+requires = ["setuptools","poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

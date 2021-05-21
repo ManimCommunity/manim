@@ -181,10 +181,12 @@ def get_shader_code_from_file(filename):
     # from other files an inserted into the relevant strings before
     # passing to ctx.program for compiling
     # Replace "#INSERT " lines with relevant code
-    insertions = re.findall(r"^#INSERT .*\.glsl$", result, flags=re.MULTILINE)
+    insertions = re.findall(
+        r"^#include ../include/.*\.glsl$", result, flags=re.MULTILINE
+    )
     for line in insertions:
         inserted_code = get_shader_code_from_file(
-            os.path.join("inserts", line.replace("#INSERT ", ""))
+            os.path.join("inserts", line.replace("#include ../include/", ""))
         )
         result = result.replace(line, inserted_code)
     filename_to_code_map[filename] = result

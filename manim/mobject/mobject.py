@@ -14,7 +14,19 @@ import warnings
 from functools import reduce
 from math import ceil
 from pathlib import Path
-from typing import Callable, Iterable, List, Optional, Sequence, Tuple, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 from colour import Color
@@ -30,12 +42,12 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
+from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
     angle_between_vectors,
-    angle_of_vector,
     normalize,
     rotation_matrix,
     rotation_matrix_transpose,
@@ -45,6 +57,9 @@ from ..utils.space_ops import (
 
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
 T = TypeVar("T", bound="Mobject")
+
+if TYPE_CHECKING:
+    from ..animation.animation import Animation
 
 
 class Mobject(Container):
@@ -66,6 +81,17 @@ class Mobject(Container):
             :class:`~.VMobject`
 
     """
+
+    animation_overrides = {}
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        cls.animation_overrides: Dict[
+            Type["Animation"], Callable[["Mobject"], "Animation"]
+        ] = {}
+        cls._add_intrinsic_animation_overrides()
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
         self.color = Color(color)
@@ -96,6 +122,78 @@ class Mobject(Container):
         self.init_gl_colors()
 
         Container.__init__(self, **kwargs)
+
+    @classmethod
+    def animation_override_for(
+        cls, animation_class: Type["Animation"]
+    ) -> "Optional[Callable[[Mobject, ...], Animation]]":
+        """Returns the function defining a specific animation override for this class.
+
+        Parameters
+        ----------
+        animation_class
+            The animation class for which the override function should be returned.
+
+        Returns
+        -------
+        Optional[Callable[[Mobject, ...], Animation]]
+            The function returning the override animation or ``None`` if no such animation
+            override is defined.
+        """
+        if animation_class in cls.animation_overrides:
+            return cls.animation_overrides[animation_class]
+
+        return None
+
+    @classmethod
+    def _add_intrinsic_animation_overrides(cls):
+        """Initializes animation overrides marked with the :func:`~.override_animation`
+        decorator.
+        """
+        for method_name in dir(cls):
+            # Ignore dunder methods
+            if method_name.startswith("__"):
+                continue
+
+            method = getattr(cls, method_name)
+            if hasattr(method, "_override_animation"):
+                animation_class = method._override_animation
+                cls.add_animation_override(animation_class, method)
+
+    @classmethod
+    def add_animation_override(
+        cls,
+        animation_class: Type["Animation"],
+        override_func: "Callable[[Mobject, ...], Animation]",
+    ):
+        """Add an animation override.
+
+        This does not apply to subclasses.
+
+        Parameters
+        ----------
+        animation_class
+            The animation type to be overridden
+        override_func
+            The function returning an aniamtion replacing the default animation. It gets
+            passed the parameters given to the animnation constructor.
+
+        Raises
+        ------
+        MultiAnimationOverrideException
+            If the overridden animation was already overridden.
+        """
+        if animation_class not in cls.animation_overrides:
+            cls.animation_overrides[animation_class] = override_func
+        else:
+            raise MultiAnimationOverrideException(
+                (
+                    f"The animation {animation_class.__name__} for "
+                    f"{cls.__name__} is overridden by more than one method: "
+                    f"{cls.animation_overrides[animation_class].__qualname__} and "
+                    f"{override_func.__qualname__}."
+                )
+            )
 
     def init_gl_data(self):
         pass
@@ -785,7 +883,7 @@ class Mobject(Container):
         index
             The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
         call_updater
-            Wheather or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
+            Whether or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
 
         Returns
         -------
@@ -1508,7 +1606,6 @@ class Mobject(Container):
     def replace(self, mobject, dim_to_match=0, stretch=False):
         if not mobject.get_num_points() and not mobject.submobjects:
             raise Warning("Attempting to replace mobject with no points")
-            return self
         if stretch:
             self.stretch_to_fit_width(mobject.width)
             self.stretch_to_fit_height(mobject.height)
@@ -2112,6 +2209,15 @@ class Mobject(Container):
 
         Examples
         --------
+        .. manim:: ExampleBoxes
+            :save_last_frame:
+
+            class ExampleBoxes(Scene):
+                def construct(self):
+                    boxes=VGroup(*[Square() for s in range(0,6)])
+                    boxes.arrange_in_grid(rows=2, buff=0.1)
+                    self.add(boxes)
+
 
         .. manim:: ArrangeInGrid
             :save_last_frame:
@@ -2337,9 +2443,9 @@ class Mobject(Container):
         Examples
         --------
 
-        .. manim:: SuffleSumobjectsExample
+        .. manim:: ShuffleSubmobjectsExample
 
-            class SuffleSumobjectsExample(Scene):
+            class ShuffleSubmobjectsExample(Scene):
                 def construct(self):
                     s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
                     s2= s.copy()

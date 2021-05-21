@@ -1,15 +1,13 @@
 """General polyhedral class and platonic solids."""
 
-from copy import copy
-from typing import TYPE_CHECKING, Dict, Hashable, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
 import numpy as np
 
 from .geometry import Polygon
 from .graph import Graph
-from .mobject_update_utils import always
 from .three_dimensions import Dot3D
-from .types.vectorized_mobject import VGroup, VMobject
+from .types.vectorized_mobject import VGroup
 
 if TYPE_CHECKING:
     from .mobject import Mobject
@@ -21,7 +19,7 @@ class Polyhedron(VGroup):
     """An abstract polyhedra class.
 
     In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list
-    of faces. This implementataion mirrors that of a standard polyhedral data format (OFF, object file format).
+    of faces. This implementation mirrors that of a standard polyhedral data format (OFF, object file format).
 
     Parameters
     ----------
@@ -29,7 +27,7 @@ class Polyhedron(VGroup):
         A list of coordinates of the corresponding vertices in the polyhedron. Each coordinate will correspond to
         a vertex. The vertices are indexed with the usual indexing of Python.
     faces_list
-        A list of faces. Each face is a sublist containing the indicies of the vertices that form the corners of that face.
+        A list of faces. Each face is a sublist containing the indices of the vertices that form the corners of that face.
     faces_config
         Configuration for the polygons representing the faces of the polyhedron.
     graph_config
