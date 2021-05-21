@@ -233,8 +233,8 @@ class BraceBetweenPoints(Brace):
 class ArcBrace(Brace):
     """Creates a Brace that wraps around an Arc.
 
-    The direction parameter allows the brace to from outside
-    or inside the Arc.
+    The direction parameter allows the brace to be applied
+    from outside or inside the Arc.
 
     .. warning::
         The ArcBraces are smaller for Arcs with smaller radii.
