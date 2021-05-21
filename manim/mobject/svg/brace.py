@@ -241,7 +241,7 @@ class ArcBrace(Brace):
 
     .. note::
         The :class:`ArcBrace` is initially a vertical :class:`Brace` defined by the length of the
-         :class:`Arc`, but is then scaled down to match the start and end angles. An 
+         :class:`Arc`, but is then scaled down to match the start and end angles. An
          exponential function is applied after it is shifted based on the radius of the arc.
 
         The scaling effect is not applied for arcs with radii smaller than 1 to prevent over-scaling.
