@@ -237,7 +237,7 @@ class ArcBrace(Brace):
     from outside or inside the Arc.
 
     .. warning::
-        The ArcBraces are smaller for Arcs with smaller radii.
+        The :class:`ArcBrace` is smaller for Arcs with smaller radii.
 
     .. note::
         The ArcBrace is initially a vertical Brace that takes the dimensions of a line
