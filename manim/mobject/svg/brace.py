@@ -236,6 +236,8 @@ class ArcBrace(Brace):
     The direction parameter allows the brace to from outside
     or inside the Arc.
 
+    .. warning:: The ArcBraces are smaller for Arcs with smaller radii.
+
     Parameters
     ----------
     arc :
