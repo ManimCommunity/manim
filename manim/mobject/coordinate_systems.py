@@ -5,7 +5,7 @@ __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlan
 
 import math
 import numbers
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, List, Optional, Sequence
 
 import numpy as np
 
@@ -246,18 +246,13 @@ class Axes(VGroup, CoordinateSystem):
         new_config["length"] = length
         axis = NumberLine(range_terms, **new_config)
 
-        # without the if/elif, graph does not exist when min > 0 or max < 0
+        # without the call to origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
-        if range_terms[0] > 0:
-            axis.shift(-axis.number_to_point(range_terms[0]))
-        elif range_terms[1] < 0:
-            axis.shift(-axis.number_to_point(range_terms[1]))
-        else:
-            axis.shift(-axis.number_to_point(0))
+        axis.shift(-axis.number_to_point(self.origin_shift(range_terms)))
         return axis
 
     def coords_to_point(self, *coords):
-        origin = self.x_axis.number_to_point(0)
+        origin = self.x_axis.number_to_point(self.origin_shift(self.x_range))
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
@@ -367,6 +362,22 @@ class Axes(VGroup, CoordinateSystem):
 
         return line_graph
 
+    @staticmethod
+    def origin_shift(axis_range: List[float]) -> float:
+        """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
+
+        Parameters
+        ----------
+        axis_range
+            The range of the axis : ``(x_min, x_max, x_step)``.
+        """
+        if axis_range[0] > 0:
+            return axis_range[0]
+        if axis_range[1] < 0:
+            return axis_range[1]
+        else:
+            return 0
+
 
 class ThreeDAxes(Axes):
     """A 3-dimensional set of axes.
@@ -444,7 +455,7 @@ class ThreeDAxes(Axes):
         z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
-        z_axis.shift(self.x_axis.n2p(0))
+        z_axis.shift(self.x_axis.number_to_point(self.origin_shift(x_range)))
 
         self.axes.add(z_axis)
         self.add(z_axis)

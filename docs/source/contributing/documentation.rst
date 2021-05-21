@@ -68,7 +68,7 @@ Here is the syntax:
 
 * ``.. manim:: [SCENE_NAME]`` has no indentation and ``SCENE_NAME`` refers to the name of the class below.
 
-* The flags are followed in the next line (no blank line here!), with the indention level of one tab.
+* The flags are followed in the next line (no blank line here!), with the indentation level of one tab.
 
 All possible flags can be found at :mod:`~.manim_directive`.
 

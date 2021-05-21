@@ -485,7 +485,7 @@ class VMobject(Mobject):
     ) -> "VMobject":
         """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
 
-        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded paramaters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
+        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded parameters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
 
         Returns
         -------
@@ -528,7 +528,7 @@ class VMobject(Mobject):
     ) -> None:
         """Add cubic bezier curve to the path.
 
-        NOTE : the first anchor is not a paramater as by default the end of the last sub-path!
+        NOTE : the first anchor is not a parameter as by default the end of the last sub-path!
 
         Parameters
         ----------
@@ -833,8 +833,8 @@ class VMobject(Mobject):
 
         The algorithm every bezier tuple (anchors and handles) in ``self.points`` (by regrouping each n elements, where
         n is the number of points per cubic curve)), and evaluate the relation between two anchors with filter_func.
-        NOTE : The filter_func takes an int n as paramater, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
-        the function takes two points as paramters.
+        NOTE : The filter_func takes an int n as parameter, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
+        the function takes two points as parameters.
 
         Parameters
         ----------

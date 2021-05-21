@@ -19,7 +19,7 @@ def test_render(using_temp_config, disabling_caching):
 
 
 def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_caching):
-    """Test if skip_animations is well udpated when -n flag is passed"""
+    """Test if skip_animations is well updated when -n flag is passed"""
     config.from_animation_number = 2
     config.upto_animation_number = 6
 
@@ -46,11 +46,11 @@ def test_when_animation_is_cached(using_temp_config):
     assert scene.renderer.file_writer.is_already_cached(
         scene.renderer.animations_hashes[0]
     )
-    # Check that the same partial movie files has been used (with he same hash)
+    # Check that the same partial movie files has been used (with the same hash)
     assert pmf == scene.renderer.file_writer.partial_movie_files
     # Check that manim correctly skipped the animation.
     scene.update_to_time.assert_called_once_with(1)
-    # Check that the ouput video has been generated.
+    # Check that the output video has been generated.
     assert_file_exists(config["output_file"])
 
 
