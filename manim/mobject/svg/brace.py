@@ -238,7 +238,7 @@ class ArcBrace(Brace):
 
     .. warning::
         The ArcBraces are smaller for Arcs with smaller radii.
-    
+
     .. note::
         The ArcBrace is initially a vertical Brace that takes the dimensions of a line
         with the length of the Arc but scaled down to match the start and end angles,
