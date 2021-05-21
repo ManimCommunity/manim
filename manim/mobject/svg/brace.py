@@ -236,7 +236,16 @@ class ArcBrace(Brace):
     The direction parameter allows the brace to from outside
     or inside the Arc.
 
-    .. warning:: The ArcBraces are smaller for Arcs with smaller radii.
+        .. warning:: 
+            The ArcBraces are smaller for Arcs with smaller radii.
+    
+        .. note::
+            The ArcBrace is initially a vertical Brace that takes the dimensions of a line
+            with the length of the Arc but scaled down to match the start and end angles, 
+            then it is applied an exponential function after it is shifted
+            according to the radii of the arc.
+            The scale is not applied for arcs with radii smaller than 1 as it will
+            experience overscaling which is unideal.
 
     Parameters
     ----------
@@ -248,53 +257,30 @@ class ArcBrace(Brace):
 
     Example
     -------
+        .. manim:: ArcBraceExample
+            :save_last_frame:
+            :ref_classes: Arc
 
-    .. manim:: ArcBraceExample
-        :save_last_frame:
-        :ref_classes: Arc
+            class ArcBraceExample(Scene):
+                def construct(self):
+                    arc_1 = Arc(radius=1.5,start_angle=0,angle=2*PI/3).set_color(RED)
+                    brace_1 = ArcBrace(arc_1,LEFT)
+                    group_1 = VGroup(arc_1,brace_1)
 
-        class ArcBraceExample(Scene):
-            def construct(self):
+                    arc_2 = Arc(radius=3,start_angle=0,angle=5*PI/6).set_color(YELLOW)
+                    brace_2 = ArcBrace(arc_2)
+                    group_2 = VGroup(arc_2,brace_2)
 
-                arc = Arc(start_angle=PI, angle=0.2, radius=20)
-                arc_brace = ArcBrace(arc)
-                VGroup(arc, arc_brace).move_to(ORIGIN + LEFT)
-                self.add(arc, arc_brace)
+                    arc_3 = Arc(radius=0.5,start_angle=-0,angle=PI).set_color(BLUE)
+                    brace_3 = ArcBrace(arc_3)
+                    group_3 = VGroup(arc_3,brace_3)
 
-                arc = Arc(start_angle=PI, angle=PI / 2, radius=3)
-                arc_brace = ArcBrace(arc)
-                self.add(arc, arc_brace)
+                    arc_4 = Arc(radius=0.2,start_angle=0,angle=3*PI/2).set_color(GREEN)
+                    brace_4 = ArcBrace(arc_4)
+                    group_4 = VGroup(arc_4,brace_4)
 
-                arc = Arc(start_angle=PI, angle=PI * 0.1, radius=4)
-                arc_brace = ArcBrace(arc)
-                self.add(arc, arc_brace)
-
-                arc = Arc(start_angle=TAU, angle=PI / 2, radius=1.8)
-                arc_brace = ArcBrace(arc)
-                self.add(arc, arc_brace)
-
-                arc = Arc(start_angle=TAU, angle=TAU - 0.6, radius=0.4).shift(3 * UP + 3 * LEFT)
-                arc_brace = ArcBrace(arc)
-                self.add(arc, arc_brace)
-
-                arc = Arc(start_angle=PI, angle=PI / 3, radius=0.2)
-                arc_brace = ArcBrace(arc)
-                self.add(arc, arc_brace)
-                arc = Arc(start_angle=PI, angle=PI / 3, radius=0.5)
-                arc_brace = ArcBrace(arc)
-                self.add(arc, arc_brace)
-
-                arc = Arc(start_angle=TAU, angle=TAU - 0.1, radius=0.5).shift(3 * UP + 3 * RIGHT)
-                arc_brace = ArcBrace(arc)
-                self.add(arc, arc_brace)
-
-
-
-
-
-
-
-
+                    arc_group = VGroup(group_1, group_2, group_3, group_4).arrange_in_grid(buff=1.5)
+                    self.add(arc_group.center())
 
     """
 
@@ -308,18 +294,18 @@ class ArcBrace(Brace):
         scale_shift = RIGHT * np.log(arc_radius)
         line = Line(
             UP * arc_start_angle, UP * arc_end_angle
-        )  # Having the line be oriented to match the angles of the arc
+        )
         if arc_radius >= 1:
             line.scale(
                 arc_radius, about_point=ORIGIN
-            )  # Scales the line to have the same length as the arc length
+            )
         Brace.__init__(self, line, direction=direction, **kwargs)
         if arc_radius >= 1:
             self.scale(
                 1 / (arc_radius), about_point=ORIGIN
-            )  # Undo the scaling to not disrupt the arc angles
+            )
         self.shift(
             scale_shift
-        )  # Shifts to the appropriate position to be applied the exponential function at the correct radii
+        )
         self.apply_complex_function(np.exp)
         self.shift(arc_center)
