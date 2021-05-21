@@ -243,10 +243,10 @@ class ArcBrace(Brace):
     direction :
         The direction from which the brace faces the Arc.
         LEFT for inside the Arc, and RIGHT for the outside.
-        
+
     Example
     -------
-    
+
     .. manim:: ArcBraceExample
         :save_last_frame:
         :ref_classes: Arc
@@ -286,13 +286,13 @@ class ArcBrace(Brace):
                 arc_brace = ArcBrace(arc)
                 self.add(arc, arc_brace)
 
-     
-                    
-                    
-                    
-     
-     
-     
+
+
+
+
+
+
+
 
     """
 
