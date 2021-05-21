@@ -243,6 +243,56 @@ class ArcBrace(Brace):
     direction :
         The direction from which the brace faces the Arc.
         LEFT for inside the Arc, and RIGHT for the outside.
+        
+    Example
+    -------
+    
+    .. manim:: ArcBraceExample
+        :save_last_frame:
+        :ref_classes: Arc
+
+        class ArcBraceExample(Scene):
+            def construct(self):
+
+                arc = Arc(start_angle=PI, angle=0.2, radius=20)
+                arc_brace = ArcBrace(arc)
+                VGroup(arc, arc_brace).move_to(ORIGIN + LEFT)
+                self.add(arc, arc_brace)
+
+                arc = Arc(start_angle=PI, angle=PI / 2, radius=3)
+                arc_brace = ArcBrace(arc)
+                self.add(arc, arc_brace)
+
+                arc = Arc(start_angle=PI, angle=PI * 0.1, radius=4)
+                arc_brace = ArcBrace(arc)
+                self.add(arc, arc_brace)
+
+                arc = Arc(start_angle=TAU, angle=PI / 2, radius=1.8)
+                arc_brace = ArcBrace(arc)
+                self.add(arc, arc_brace)
+
+                arc = Arc(start_angle=TAU, angle=TAU - 0.6, radius=0.4).shift(3 * UP + 3 * LEFT)
+                arc_brace = ArcBrace(arc)
+                self.add(arc, arc_brace)
+
+                arc = Arc(start_angle=PI, angle=PI / 3, radius=0.2)
+                arc_brace = ArcBrace(arc)
+                self.add(arc, arc_brace)
+                arc = Arc(start_angle=PI, angle=PI / 3, radius=0.5)
+                arc_brace = ArcBrace(arc)
+                self.add(arc, arc_brace)
+
+                arc = Arc(start_angle=TAU, angle=TAU - 0.1, radius=0.5).shift(3 * UP + 3 * RIGHT)
+                arc_brace = ArcBrace(arc)
+                self.add(arc, arc_brace)
+
+     
+                    
+                    
+                    
+     
+     
+     
 
     """
 
