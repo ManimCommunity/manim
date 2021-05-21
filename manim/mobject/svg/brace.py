@@ -250,7 +250,7 @@ class ArcBrace(Brace):
     ----------
     arc : Optional[:class:`Arc`]
         The Arc to which the Brace wraps around.
-    direction : 
+    direction :
         The direction from which the brace faces the Arc.
         LEFT for inside the Arc, and RIGHT for the outside.
 
@@ -284,8 +284,8 @@ class ArcBrace(Brace):
     """
 
     def __init__(
-        self, 
-        arc = Arc(start_angle=-1, angle=2, radius=1), 
+        self,
+        arc=Arc(start_angle=-1, angle=2, radius=1),
         direction: Optional[Sequence[float]] = RIGHT,
         **kwargs
     ):
