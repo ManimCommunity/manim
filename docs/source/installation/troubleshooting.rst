@@ -16,7 +16,7 @@ as follows:
 - Different import statements (explained below) 
 - You used documentation for multiple versions (such as the readme for 3b1b/manim and this documentation)
 
-.. NOTE::
+.. note::
    As this is the documentation for the community version, we can
    only help with the installation of this library. If you would like to
    install other versions of manim, please refer to their documentation.
@@ -35,7 +35,7 @@ can help in identifying what version of manim files are written for:
 +--------------+-------------------------+----------------------------+-----------------------------------------+
 
 If you are a beginner, you should only attempt to run files written for
-your version. Files written for a different version of manim wil
+your version. Files written for a different version of manim will
 generally not work without some modification.
 
 Identifying the version you are running

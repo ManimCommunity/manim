@@ -20,12 +20,12 @@ from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
 from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
 from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-from ...mobject.types.vectorized_mobject import VGroup, VMobject
+from ...mobject.types.vectorized_mobject import MetaVMobject, VGroup, VMobject
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
 
 
-class SVGMobject(VMobject):
+class SVGMobject(metaclass=MetaVMobject):
     """A SVGMobject is a Vector Mobject constructed from an SVG (or XDV) file.
 
     SVGMobjects are constructed from the XML data within the SVG file
@@ -73,6 +73,8 @@ class SVGMobject(VMobject):
         unpack_groups=True,  # if False, creates a hierarchy of VGroups
         stroke_width=DEFAULT_STROKE_WIDTH,
         fill_opacity=1.0,
+        should_subdivide_sharp_curves=False,
+        should_remove_null_curves=False,
         **kwargs,
     ):
         self.def_map = {}
@@ -80,9 +82,11 @@ class SVGMobject(VMobject):
         self.ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
-        VMobject.__init__(
-            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
-        )
+        self.path_string_config = {
+            "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
+            "should_remove_null_curves": should_remove_null_curves,
+        }
+        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
         self.move_into_position(width, height)
 
     def ensure_valid_file(self):
@@ -129,6 +133,8 @@ class SVGMobject(VMobject):
             else:
                 self.add(*mobjects[0].submobjects)
         doc.unlink()
+
+    init_points = generate_points
 
     def get_mobjects_from(
         self,
@@ -233,7 +239,9 @@ class SVGMobject(VMobject):
         VMobjectFromSVGPathstring
             A VMobject from the given path string, or d attribute.
         """
-        return SVGPathMobject(path_string, **parse_style(style))
+        return SVGPathMobject(
+            path_string, **self.path_string_config, **parse_style(style)
+        )
 
     def attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.
@@ -267,7 +275,7 @@ class SVGMobject(VMobject):
         local_style : :class:`Dict`
             The styling using SVG property names at the point the element is `<use>`d.
             Not all values are applied; styles defined when the element is specified in
-            the `<def>` tag cannot be overriden here.
+            the `<def>` tag cannot be overridden here.
 
         Returns
         -------
@@ -485,8 +493,8 @@ class SVGMobject(VMobject):
         # Borrowed/Inspired from:
         # https://github.com/cjlano/svg/blob/3ea3384457c9780fa7d67837c9c5fd4ebc42cb3b/svg/svg.py#L75
 
-        # match any SVG transformation with its parameter (until final parenthese)
-        # [^)]*    == anything but a closing parenthese
+        # match any SVG transformation with its parameter (until final parenthesis)
+        # [^)]*    == anything but a closing parenthesis
         # '|'.join == OR-list of SVG transformations
         transform_regex = "|".join([x + r"[^)]*\)" for x in transform_names])
         transforms = re.findall(transform_regex, transform_attr_value)
@@ -561,4 +569,14 @@ class SVGMobject(VMobject):
             self.width = width
 
     def init_colors(self, propagate_colors=False):
-        VMobject.init_colors(self, propagate_colors=propagate_colors)
+        if config.renderer == "opengl":
+            self.set_style(
+                fill_color=self.fill_color or self.color,
+                fill_opacity=self.fill_opacity,
+                stroke_color=self.stroke_color or self.color,
+                stroke_width=self.stroke_width,
+                stroke_opacity=self.stroke_opacity,
+                recurse=propagate_colors,
+            )
+        else:
+            VMobject.init_colors(self, propagate_colors=propagate_colors)

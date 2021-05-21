@@ -270,6 +270,8 @@ class SingleStringMathTex(SVGMobject):
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
+            should_subdivide_sharp_curves=True,
+            should_remove_null_curves=True,
             **kwargs,
         )
         if height is None:
@@ -364,14 +366,14 @@ class SingleStringMathTex(SVGMobject):
     def path_string_to_mobject(self, path_string, style):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string, z_index=self.z_index, **parse_style(style))
+        return TexSymbol(path_string, **self.path_string_config, **parse_style(style))
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
         return self
 
     def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+        super().init_colors(propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):
@@ -496,7 +498,6 @@ class MathTex(SingleStringMathTex):
                 tex_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
-                z_index=self.z_index,
             )
             num_submobs = len(sub_tex_mob.submobjects)
             new_index = curr_index + num_submobs
@@ -505,13 +506,19 @@ class MathTex(SingleStringMathTex):
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
                 sub_tex_mob.submobjects = [VectorizedPoint()]
+                if config.renderer == "opengl":
+                    sub_tex_mob.assemble_family()
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:
                 sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
+                if config.renderer == "opengl":
+                    sub_tex_mob.assemble_family()
             new_submobjects.append(sub_tex_mob)
             curr_index = new_index
         self.submobjects = new_submobjects
+        if config.renderer == "opengl":
+            self.assemble_family()
         return self
 
     def get_parts_by_tex(self, tex, substring=True, case_sensitive=True):
