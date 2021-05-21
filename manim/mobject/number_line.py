@@ -80,7 +80,7 @@ class NumberLine(Line):
         # ticks
         include_ticks=True,
         tick_size=0.1,
-        numbers_with_elongated_ticks=[],
+        numbers_with_elongated_ticks=None,
         longer_tick_multiple=2,
         # visuals
         color=LIGHT_GREY,
@@ -101,13 +101,23 @@ class NumberLine(Line):
         number_scale_value=0.75,
         **kwargs
     ):
+        # avoid mutable arguments in defaults
         if decimal_number_config is None:
-            decimal_number_config = {"num_decimal_places": 0, "font_size": 24}
+            decimal_number_config = {
+                "num_decimal_places": 0,
+                "font_size": 24,
+            }  # font_size does nothing
         if numbers_to_exclude is None:
             numbers_to_exclude = []
+        if numbers_with_elongated_ticks is None:
+            numbers_with_elongated_ticks = []
 
         if x_range is None:
-            x_range = [-config["frame_x_radius"], config["frame_x_radius"], 1.0]
+            x_range = [
+                round(-config["frame_x_radius"]),
+                round(config["frame_x_radius"]),
+                1.0,
+            ]
         elif len(x_range) == 2:
             # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
             x_range = [*x_range, 1]
@@ -160,7 +170,7 @@ class NumberLine(Line):
             self.add_ticks()
 
         self.rotate(self.rotation)
-        if self.include_numbers:
+        if self.include_numbers or self.numbers_to_include:
             self.add_numbers(
                 x_values=self.numbers_to_include, excluding=self.numbers_to_exclude
             )
