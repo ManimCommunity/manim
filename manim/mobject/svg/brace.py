@@ -236,12 +236,12 @@ class ArcBrace(Brace):
     The direction parameter allows the brace to from outside
     or inside the Arc.
 
-        .. warning:: 
+        .. warning::
             The ArcBraces are smaller for Arcs with smaller radii.
-    
+
         .. note::
             The ArcBrace is initially a vertical Brace that takes the dimensions of a line
-            with the length of the Arc but scaled down to match the start and end angles, 
+            with the length of the Arc but scaled down to match the start and end angles,
             then it is applied an exponential function after it is shifted
             according to the radii of the arc.
             The scale is not applied for arcs with radii smaller than 1 as it will
@@ -292,20 +292,12 @@ class ArcBrace(Brace):
         arc_end_angle = arc_start_angle + arc.angle
         arc_radius = arc.radius
         scale_shift = RIGHT * np.log(arc_radius)
-        line = Line(
-            UP * arc_start_angle, UP * arc_end_angle
-        )
+        line = Line(UP * arc_start_angle, UP * arc_end_angle)
         if arc_radius >= 1:
-            line.scale(
-                arc_radius, about_point=ORIGIN
-            )
+            line.scale(arc_radius, about_point=ORIGIN)
         Brace.__init__(self, line, direction=direction, **kwargs)
         if arc_radius >= 1:
-            self.scale(
-                1 / (arc_radius), about_point=ORIGIN
-            )
-        self.shift(
-            scale_shift
-        )
+            self.scale(1 / (arc_radius), about_point=ORIGIN)
+        self.shift(scale_shift)
         self.apply_complex_function(np.exp)
         self.shift(arc_center)
