@@ -50,7 +50,7 @@ def test_when_animation_is_cached(using_temp_config):
     assert scene.renderer.file_writer.is_already_cached(
         scene.renderer.animations_hashes[0]
     )
-    # Check that the same partial movie files has been used (with he same hash). 
+    # Check that the same partial movie files has been used (with he same hash).
     # As there might have been several hashes, a list is used.
     assert scene.renderer.file_writer.partial_movie_files in partial_movie_files
     # Check that manim correctly skipped the animation.
