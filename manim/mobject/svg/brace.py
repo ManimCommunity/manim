@@ -1,6 +1,6 @@
 """Mobject representing curly braces."""
 
-__all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweenPoints"]
+__all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
 from typing import Optional, Sequence
 
