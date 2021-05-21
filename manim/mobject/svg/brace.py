@@ -231,7 +231,7 @@ class BraceBetweenPoints(Brace):
 
 
 class ArcBrace(Brace):
-    """Creates a Brace that wraps around an Arc.
+    """Creates a :class:`~Brace` that wraps around an :class:`~Arc`.
 
     The direction parameter allows the brace to be applied
     from outside or inside the Arc.
