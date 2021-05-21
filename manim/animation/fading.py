@@ -32,8 +32,7 @@ import numpy as np
 
 from ..animation.transform import Transform
 from ..constants import DOWN, ORIGIN
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.mobject import Group, Mobject
 from ..scene.scene import Scene
 from ..utils.deprecation import deprecated
 from ..utils.rate_functions import there_and_back
@@ -47,13 +46,13 @@ class _Fade(Transform):
     mobjects
         The mobjects to be faded.
     shift
-        The vector by which the mobject shifts while beeing faded.
+        The vector by which the mobject shifts while being faded.
     target_position
-        The position to/from which the mobject moves while beeing faded in. In case
+        The position to/from which the mobject moves while being faded in. In case
         another mobject is given as target position, its center is used.
     scale
-        The factor by which the mobject is scaled initially before beeing rescaling to
-        its original size while beeing faded in.
+        The factor by which the mobject is scaled initially before being rescaling to
+        its original size while being faded in.
 
     """
 
@@ -70,7 +69,7 @@ class _Fade(Transform):
         if len(mobjects) == 1:
             mobject = mobjects[0]
         else:
-            mobject = VGroup(*mobjects)
+            mobject = Group(*mobjects)
 
         self.point_target = False
         if shift is None:
@@ -99,7 +98,7 @@ class _Fade(Transform):
             The faded, shifted and scaled copy of the mobject.
         """
         faded_mobject = self.mobject.copy()
-        faded_mobject.set_opacity(0)
+        faded_mobject.fade(1)
         direction_modifier = -1 if fadeIn and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
@@ -114,13 +113,13 @@ class FadeIn(_Fade):
     mobjects
         The mobjects to be faded in.
     shift
-        The vector by which the mobject shifts while beeing faded in.
+        The vector by which the mobject shifts while being faded in.
     target_position
-        The position from which the mobject starts while beeing faded in. In case
+        The position from which the mobject starts while being faded in. In case
         another mobject is given as target position, its center is used.
     scale
-        The factor by which the mobject is scaled initially before beeing rescaling to
-        its original size while beeing faded in.
+        The factor by which the mobject is scaled initially before being rescaling to
+        its original size while being faded in.
 
     Examples
     --------
@@ -159,12 +158,12 @@ class FadeOut(_Fade):
     mobjects
         The mobjects to be faded out.
     shift
-        The vector by which the mobject shifts while beeing faded out.
+        The vector by which the mobject shifts while being faded out.
     target_position
-        The position to which the mobject moves while beeing faded out. In case another
+        The position to which the mobject moves while being faded out. In case another
         mobject is given as target position, its center is used.
     scale
-        The factor by which the mobject is scaled while beeing faded out.
+        The factor by which the mobject is scaled while being faded out.
 
     Examples
     --------
