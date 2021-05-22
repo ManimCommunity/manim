@@ -98,7 +98,7 @@ class Object3D:
 
     def add(self, *children):
         for child in children:
-            if child.parent != None:
+            if child.parent is not None:
                 raise Exception(
                     "Attempt to add child that's already added to another Object3D"
                 )
