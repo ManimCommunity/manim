@@ -504,7 +504,7 @@ class VectorScene(Scene):
 class LinearTransformationScene(VectorScene):
     """
     This scene contains special methods that make it
-    especially suitable for showing linear Transformations.
+    especially suitable for showing linear transformations.
 
     Parameters
     ----------
@@ -519,13 +519,13 @@ class LinearTransformationScene(VectorScene):
     show_coordinates
         Whether or not to include the coordinates for the background plane.
     show_basis_vectors
-        Whether to show the basis x_axis -> `i_hat`` and y_axis -> `j_hat` vectors.
+        Whether to show the basis x_axis -> ``i_hat`` and y_axis -> ``j_hat`` vectors.
     basis_vector_stroke_width
         The ``stroke_width`` of the basis vectors.
     i_hat_color
-        The color of the `i_hat` vector.
+        The color of the ``i_hat`` vector.
     j_hat_color
-        The color of the `j_hat` vector.
+        The color of the ``j_hat`` vector.
     leave_ghost_vectors
         Indicates the previous position of the basis vectors following a transformation.
 
