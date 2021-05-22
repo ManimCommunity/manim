@@ -62,7 +62,7 @@ from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
-from ...mobject.types.vectorized_mobject import VGroup
+from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ...utils.color import WHITE, Colors
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -282,7 +282,7 @@ class Paragraph(VGroup):
             )
 
 
-class Text(SVGMobject):
+class SingleStringText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
@@ -667,6 +667,107 @@ class Text(SVGMobject):
 
     def init_colors(self, propagate_colors=True):
         SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+
+
+class Text(SingleStringText):
+    def __init__(
+        self,
+        *text_strings,
+        fill_opacity: float = 1.0,
+        stroke_width: int = 0,
+        color: str = WHITE,
+        size: int = 1,
+        line_spacing: int = -1,
+        font: str = "",
+        slant: str = NORMAL,
+        weight: str = NORMAL,
+        t2c: Dict[str, str] = None,
+        t2f: Dict[str, str] = None,
+        t2g: Dict[str, tuple] = None,
+        t2s: Dict[str, str] = None,
+        t2w: Dict[str, str] = None,
+        gradient: tuple = None,
+        tab_width: int = 4,
+        # Mobject
+        height: int = None,
+        width: int = None,
+        should_center: bool = True,
+        unpack_groups: bool = True,
+        disable_ligatures: bool = False,
+        arg_separator: str = " ",
+        **kwargs,
+    ):
+        SingleStringText.__init__(
+            self,
+            arg_separator.join(text_strings),
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            color=color,
+            size=size,
+            line_spacing=line_spacing,
+            font=font,
+            slant=slant,
+            weight=weight,
+            t2c=t2c,
+            t2f=t2f,
+            t2g=t2g,
+            t2s=t2s,
+            t2w=t2w,
+            gradient=gradient,
+            tab_width=tab_width,
+            height=height,
+            width=width,
+            should_center=should_center,
+            unpack_groups=unpack_groups,
+            disable_ligatures=disable_ligatures,
+            **kwargs,
+        )
+        self.text_strings = text_strings
+        self.break_up_by_substrings()
+
+    def break_up_by_substrings(self):
+        if len(self.text_strings) <= 1:
+            return
+        new_submobjects = []
+        curr_index = 0
+        for text_string in self.text_strings:
+            sub_text_mob = SingleStringText(
+                text_string,
+                fill_opacity=self.fill_opacity,
+                stroke_width=self.stroke_width,
+                color=self.color,
+                size=self.size,
+                line_spacing=self.line_spacing,
+                font=self.font,
+                slant=self.slant,
+                weight=self.weight,
+                t2c=self.t2c,
+                t2f=self.t2f,
+                t2g=self.t2g,
+                t2s=self.t2s,
+                t2w=self.t2w,
+                gradient=self.gradient,
+                tab_width=self.tab_width,
+                height=int(self.height),
+                width=int(self.width),
+                should_center=self.should_center,
+                unpack_groups=self.unpack_groups,
+                disable_ligatures=self.disable_ligatures,
+            )
+            num_submobs = len(sub_text_mob.submobjects)
+            new_index = curr_index + num_submobs
+            if num_submobs == 0:
+                # For cases like empty text_strings, we want the corresponding
+                # part to be a VectorizedPoint
+                sub_text_mob.submobjects = [VectorizedPoint()]
+                last_submob_index = min(curr_index, len(self.submobjects) - 1)
+                sub_text_mob.move_to(self.submobjects[last_submob_index], RIGHT)
+            else:
+                sub_text_mob.submobjects = self.submobjects[curr_index:new_index]
+            new_submobjects.append(sub_text_mob)
+            curr_index = new_index
+        self.submobjects = new_submobjects
+        return self
 
 
 class MarkupText(SVGMobject):
