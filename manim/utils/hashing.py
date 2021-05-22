@@ -278,8 +278,6 @@ def get_json(obj):
     return json.dumps(obj, cls=_CustomEncoder)
 
 
-
-
 def get_hash_from_play_call(
     scene_object, camera_object, animations_list, current_mobjects_list
 ) -> str:
