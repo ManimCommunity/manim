@@ -1,14 +1,22 @@
 from pathlib import Path
 
-import dearpygui.core
-import dearpygui.demo
-import dearpygui.simple
+try:
+    import dearpygui.core
+    import dearpygui.demo
+    import dearpygui.simple
+
+    dearpygui_enabled = True
+except ImportError:
+    dearpygui_enabled = False
+
 
 from .. import config
 from ..utils.module_ops import scene_classes_from_file
 
 
 def configure_pygui(renderer, widgets, update=True):
+    if not dearpygui_enabled:
+        raise RuntimeError("Attempted to use DearPyGUI when it isn't imported.")
     if update:
         dearpygui.core.delete_item("Manim GUI")
 
