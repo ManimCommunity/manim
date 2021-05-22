@@ -41,9 +41,9 @@ def choose(n, r, use_cache=True):
         return 0
     if r == 0:
         return 1
-    denom = reduce(op.mul, range(1, r + 1), 1)
-    numer = reduce(op.mul, range(n, n - r, -1), 1)
-    return numer // denom
+    denominator = reduce(op.mul, range(1, r + 1), 1)
+    numerator = reduce(op.mul, range(n, n - r, -1), 1)
+    return numerator // denominator
 
 
 def get_num_args(function):
