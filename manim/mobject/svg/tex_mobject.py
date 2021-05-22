@@ -230,7 +230,7 @@ class SingleStringMathTex(SVGMobject):
     -----
     Check that creating a :class:`~.SingleStringMathTex` object works::
 
-        >>> SingleStringMathTex('Test')
+        >>> SingleStringMathTex('Test') # doctest: +SKIP
         SingleStringMathTex('Test')
     """
 
@@ -393,16 +393,16 @@ class MathTex(SingleStringMathTex):
     -----
     Check that creating a :class:`~.MathTex` works::
 
-        >>> MathTex('a^2 + b^2 = c^2')
+        >>> MathTex('a^2 + b^2 = c^2') # doctest: +SKIP
         MathTex('a^2 + b^2 = c^2')
 
     Check that double brace group splitting works correctly::
 
-        >>> t1 = MathTex('{{ a }} + {{ b }} = {{ c }}')
-        >>> len(t1.submobjects)
+        >>> t1 = MathTex('{{ a }} + {{ b }} = {{ c }}') # doctest: +SKIP
+        >>> len(t1.submobjects) # doctest: +SKIP
         5
-        >>> t2 = MathTex(r"\frac{1}{a+b\sqrt{2}}")
-        >>> len(t2.submobjects)
+        >>> t2 = MathTex(r"\frac{1}{a+b\sqrt{2}}") # doctest: +SKIP
+        >>> len(t2.submobjects) # doctest: +SKIP
         1
 
     """
@@ -577,7 +577,7 @@ class Tex(MathTex):
 
     Check whether writing a LaTeX string works::
 
-        >>> Tex('The horse does not eat cucumber salad.')
+        >>> Tex('The horse does not eat cucumber salad.') # doctest: +SKIP
         Tex('The horse does not eat cucumber salad.')
 
     """
