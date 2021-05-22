@@ -51,7 +51,7 @@ def get_norm(vect):
     return np.linalg.norm(vect)
 
 
-def norm_squared(v):
+def norm_squared(v: float) -> float:
     return np.dot(v, v)
 
 
@@ -63,7 +63,8 @@ def quaternion_mult(
     *quats: Sequence[float],
 ) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
     """Gets the Hamilton product of the quaternions provided.
-    For more about the quaternion multiplication see: https://en.wikipedia.org/wiki/Quaternion
+    For more about the quaternion multiplication see:
+    https://en.wikipedia.org/wiki/Quaternion
 
     Returns
     -------
@@ -104,7 +105,8 @@ def quaternion_from_angle_axis(
     angle: float, axis: np.ndarray, axis_normalized: bool = False
 ) -> List[float]:
     """Gets a quaternion from an angle and an axis.
-    For more information, check: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+    For more information, check:
+    https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 
     Parameters
     ----------
@@ -211,7 +213,8 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
 
 def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
     """Converts the quaternion, quat, to an equivalent rotation matrix representation.
-    See more about this here: https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html
+    See more about this here:
+    https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html
 
     Parameters
     ----------
