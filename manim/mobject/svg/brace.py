@@ -284,7 +284,7 @@ class ArcBrace(Brace):
     def __init__(
         self,
         arc=Arc(start_angle=-1, angle=2, radius=1),
-        direction: Optional[Sequence[float]] = RIGHT,
+        direction: Sequence[float] = RIGHT,
         **kwargs
     ):
         arc_center = arc.get_arc_center()
