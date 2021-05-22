@@ -298,7 +298,10 @@ class ArcBrace(Brace):
         Brace.__init__(self, line, direction=direction, **kwargs)
         if arc.radius >= 1:
             self.scale(1 / (arc.radius), about_point=ORIGIN)
+        if arc.radius >= 0.3:
+            self.shift(scale_shift)
+        else:
+            self.shift(RIGHT*np.log(0.3))
 
-        self.shift(scale_shift)
         self.apply_complex_function(np.exp)
         self.shift(arc_center)
