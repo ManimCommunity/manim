@@ -26,7 +26,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "^7.1"
+click = ">=7.1<=9.0"
 click-default-group = "*"
 colour = "*"
 numpy = "^1.9"
@@ -35,7 +35,7 @@ scipy = "*"
 tqdm = "*"
 pydub = "*"
 pygments = "*"
-rich = "^6.0"
+rich = ">=6.0"
 pycairo = "^1.19"
 manimpango = "^0.2.4"
 networkx = "^2.5"
