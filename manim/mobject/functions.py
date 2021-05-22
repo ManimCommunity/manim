@@ -25,7 +25,7 @@ class ParametricFunction(VMobject):
                 return np.array((np.sin(2 * t), np.sin(3 * t), 0))
 
             def construct(self):
-                func = ParametricFunction(self.func, t_max = TAU, fill_opacity=0).set_color(RED)
+                func = ParametricFunction(self.func, t_range = np.array([0, TAU]), fill_opacity=0).set_color(RED)
                 self.add(func.scale(3))
 
     .. manim:: ThreeDParametricSpring
@@ -38,7 +38,7 @@ class ParametricFunction(VMobject):
                         1.2 * np.cos(u),
                         1.2 * np.sin(u),
                         u * 0.05
-                    ]), color=RED, t_min=-3 * TAU, t_max=5 * TAU,
+                    ]), color=RED, t_range = np.array([-3*TAU, 5*TAU, 0.01])
                 ).set_shade_in_3d(True)
                 axes = ThreeDAxes()
                 self.add(axes, curve1)
