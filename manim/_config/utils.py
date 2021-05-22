@@ -215,7 +215,7 @@ class ManimConfig(MutableMapping):
 
         manim scene.py -c BLUE
 
-    will set the background color to BLUE, regardless of the conents of
+    will set the background color to BLUE, regardless of the contents of
     ``manim.cfg``.
 
     Finally, any programmatic changes made within the scene script itself will
