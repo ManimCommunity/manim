@@ -291,15 +291,15 @@ def test_deprecate_nested_class_func_since_and_until(caplog):
 def test_deprecate_nested_func(caplog):
     """Test the deprecation of a nested method (decorator with no arguments)."""
     b = Top().Bottom()
-    ans = b.normal_func()
-    ans(1)
+    answer = b.normal_func()
+    answer(1)
     assert len(caplog.record_tuples) == 1
     msg = _get_caplog_record_msg(caplog)
     assert (
         msg
         == "The method Top.Bottom.normal_func.<locals>.nested_func has been deprecated and may be removed in a later version."
     )
-    assert ans.__doc__ == f"{doc_admonition}{msg}"
+    assert answer.__doc__ == f"{doc_admonition}{msg}"
 
 
 def test_deprecate_func_params(caplog):
