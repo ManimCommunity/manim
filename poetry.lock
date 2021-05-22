@@ -262,7 +262,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
+test = ["flake8 (3.7.8)", "hypothesis (3.55.3)"]
 
 [[package]]
 name = "coverage"
@@ -285,6 +285,14 @@ python-versions = "*"
 
 [package.dependencies]
 six = "*"
+
+[[package]]
+name = "dearpygui"
+version = "0.6.415"
+description = "DearPyGui: A simple Python GUI Toolkit"
+category = "main"
+optional = false
+python-versions = ">=3.6"
 
 [[package]]
 name = "decorator"
@@ -569,7 +577,7 @@ python-versions = ">=3.6"
 parso = ">=0.8.0,<0.9.0"
 
 [package.extras]
-qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
+qa = ["flake8 (3.8.3)", "mypy (0.782)"]
 testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<6.0.0)"]
 
 [[package]]
@@ -843,7 +851,7 @@ pyrr = ">=0.10.3,<1"
 pysdl2 = ["pysdl2"]
 pyside2 = ["PySide2 (<6)"]
 glfw = ["glfw"]
-pygame = ["pygame (==2.0.0.dev10)"]
+pygame = ["pygame (2.0.0.dev10)"]
 pyqt5 = ["pyqt5"]
 pywavefront = ["pywavefront (>=1.2.0,<2)"]
 tk = ["pyopengltk (>=0.0.3)"]
@@ -927,11 +935,11 @@ testpath = "*"
 traitlets = ">=4.2"
 
 [package.extras]
-all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)", "tornado (>=4.0)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
+all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (0.2.2)", "tornado (>=4.0)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
 docs = ["sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
 serve = ["tornado (>=4.0)"]
-test = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)"]
-webpdf = ["pyppeteer (==0.2.2)"]
+test = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (0.2.2)"]
+webpdf = ["pyppeteer (0.2.2)"]
 
 [[package]]
 name = "nbformat"
@@ -1056,7 +1064,7 @@ optional = true
 python-versions = ">=3.6"
 
 [package.extras]
-qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
+qa = ["flake8 (3.8.3)", "mypy (0.782)"]
 testing = ["docopt", "pytest (<6.0.0)"]
 
 [[package]]
@@ -1257,9 +1265,9 @@ python-versions = ">=3.6"
 
 [package.extras]
 crypto = ["cryptography (>=3.3.1,<4.0.0)"]
-dev = ["sphinx", "sphinx-rtd-theme", "zope.interface", "cryptography (>=3.3.1,<4.0.0)", "pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)", "mypy", "pre-commit"]
+dev = ["sphinx", "sphinx-rtd-theme", "zope.interface", "cryptography (>=3.3.1,<4.0.0)", "pytest (>=6.0.0,<7.0.0)", "coverage[toml] (5.0.4)", "mypy", "pre-commit"]
 docs = ["sphinx", "sphinx-rtd-theme", "zope.interface"]
-tests = ["pytest (>=6.0.0,<7.0.0)", "coverage[toml] (==5.0.4)"]
+tests = ["pytest (>=6.0.0,<7.0.0)", "coverage[toml] (5.0.4)"]
 
 [[package]]
 name = "pylint"
@@ -1290,7 +1298,7 @@ six = "*"
 
 [package.extras]
 docs = ["sphinx (>=1.6.5)", "sphinx-rtd-theme"]
-tests = ["pytest (>=3.2.1,!=3.3.0)", "hypothesis (>=3.27.0)"]
+tests = ["pytest (>=3.2.1,<3.3.0 || >3.3.0)", "hypothesis (>=3.27.0)"]
 
 [[package]]
 name = "pyparsing"
@@ -1355,7 +1363,7 @@ coverage = ">=5.2.1"
 pytest = ">=4.6"
 
 [package.extras]
-testing = ["fields", "hunter", "process-tests (==2.0.2)", "six", "pytest-xdist", "virtualenv"]
+testing = ["fields", "hunter", "process-tests (2.0.2)", "six", "pytest-xdist", "virtualenv"]
 
 [[package]]
 name = "python-dateutil"
@@ -1449,7 +1457,7 @@ urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
-socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
 [[package]]
 name = "rich"
@@ -1570,7 +1578,7 @@ python-versions = "*"
 sphinx = ">=1.8"
 
 [package.extras]
-code_style = ["flake8 (>=3.7.0,<3.8.0)", "black", "pre-commit (==1.17.0)"]
+code_style = ["flake8 (>=3.7.0,<3.8.0)", "black", "pre-commit (1.17.0)"]
 
 [[package]]
 name = "sphinxcontrib-applehelp"
@@ -1750,7 +1758,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
 [package.extras]
 secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
-socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 brotli = ["brotlipy (>=0.6.0)"]
 
 [[package]]
@@ -1837,7 +1845,7 @@ webgl_renderer = ["grpcio", "grpcio-tools"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "f6f3aa159391ab1c675393554dc6e4ef3128d577696c6f7243972f16f5bb1d51"
+content-hash = "9f311fb9e3a55b5df3bae7cf265a9b4967f74b3ade0d6626be0b4424542c4571"
 
 [metadata.files]
 alabaster = [
@@ -2043,6 +2051,21 @@ coverage = [
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
     {file = "cycler-0.10.0.tar.gz", hash = "sha256:cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"},
+]
+dearpygui = [
+    {file = "dearpygui-0.6.415-cp36-cp36m-macosx_10_6_x86_64.whl", hash = "sha256:35cb3909383813e6a6149f533a7ffc1632407826b4323006be743f6fa42c283c"},
+    {file = "dearpygui-0.6.415-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:910a6eaf9c81cb3591c80b87b3943018f31926cfe81495a091423ab46f53aea4"},
+    {file = "dearpygui-0.6.415-cp36-cp36m-win_amd64.whl", hash = "sha256:e7bb980c8547a026c74fcfc7ab739dbc0caf8f07fad4c2307d224a647af21c2e"},
+    {file = "dearpygui-0.6.415-cp37-cp37m-linux_armv7l.whl", hash = "sha256:f2a7dbe1fc428a076eec09be89cef35e320d06d974d405d9e27869a499794f32"},
+    {file = "dearpygui-0.6.415-cp37-cp37m-macosx_10_6_x86_64.whl", hash = "sha256:edc7132f541dd1df90d68a813e8a6d5820ec6bea52ed96918d4e84505fe3d366"},
+    {file = "dearpygui-0.6.415-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:735fd91467febaea5d648d54fac24fd65d92e8aebce57a4e39a690db7cc02e8b"},
+    {file = "dearpygui-0.6.415-cp37-cp37m-win_amd64.whl", hash = "sha256:adacc0ea245a288150dd1dcd4a4208a8de72c7aeff3d7c43a9f88f0d92d4a1ec"},
+    {file = "dearpygui-0.6.415-cp38-cp38-macosx_10_6_x86_64.whl", hash = "sha256:a6edc677adebd36908f8bc034bf12a767a2a869bbb37b209a9548a7526c6a361"},
+    {file = "dearpygui-0.6.415-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:c62f2976ecbf5493491a0b0300c9e75b8b1b9bf397358466b1730c8b7bfb5351"},
+    {file = "dearpygui-0.6.415-cp38-cp38-win_amd64.whl", hash = "sha256:3754903e09edfadce849d345f156323a5fb67e6049a2f2fef3d4ec04b3f92a90"},
+    {file = "dearpygui-0.6.415-cp39-cp39-macosx_10_6_x86_64.whl", hash = "sha256:972742b60aef576d04fe6fcfe31491442ce57bfe40273b9387c46fecac5e7609"},
+    {file = "dearpygui-0.6.415-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:634c5a94745ce2a06c354782ac9423f2ce1418bc14b0d4e33c2551d662b29142"},
+    {file = "dearpygui-0.6.415-cp39-cp39-win_amd64.whl", hash = "sha256:7026fb4441f5e299468c24234bd7f53d934e16100ca1e626255d608ca4b34aff"},
 ]
 decorator = [
     {file = "decorator-5.0.7-py3-none-any.whl", hash = "sha256:945d84890bb20cc4a2f4a31fc4311c0c473af65ea318617f13a7257c9a58bc98"},

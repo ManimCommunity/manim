@@ -1,3 +1,5 @@
+from dearpygui import core as dpg
+
 from ..mobject.opengl_geometry import *
 from ..mobject.opengl_mobject import *
 from ..mobject.opengl_three_dimensions import *
