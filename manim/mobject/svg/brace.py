@@ -247,10 +247,10 @@ class ArcBrace(Brace):
     Parameters
     ----------
     arc : Optional[:class:`Arc`]
-        The Arc to which the Brace wraps around.
-    direction :
-        The direction from which the brace faces the Arc.
-        LEFT for inside the Arc, and RIGHT for the outside.
+        The :class:`~.Arc` that wraps around the :class:`Brace` mobject.
+    direction
+        The direction from which the brace faces the arc.
+        ``LEFT`` for inside the arc, and ``RIGHT`` for the outside.
 
     Example
     -------
