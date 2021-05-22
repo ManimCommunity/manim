@@ -160,7 +160,7 @@ def there_and_back_with_pause(t: float, pause_ratio: float = 1.0 / 3) -> float:
 
 def running_start(
     t: float, pull_factor: float = -0.5
-) -> typing.Iterable:  # what is func return type?
+) -> typing.Union[int, typing.Iterable[typing.Any]]:  # what is func return type?
     return bezier([0, 0, pull_factor, pull_factor, 1, 1, 1])(t)
 
 

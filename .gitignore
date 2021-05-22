@@ -92,6 +92,12 @@ __pypackages__/
 celerybeat-schedule
 celerybeat.pid
 
+#Monkey Type
+monkeytype.sqlite3
+
+#Realtime Testing
+testing.py
+
 # Environments
 .env
 .venv

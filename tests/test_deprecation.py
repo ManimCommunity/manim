@@ -1,9 +1,7 @@
+from manim.utils.deprecation import deprecated, deprecated_params
 import warnings
 
-import pytest
-
-from manim import logger
-from manim.utils.deprecation import deprecated, deprecated_params
+warnings.filterwarnings("ignore")
 
 
 @deprecated

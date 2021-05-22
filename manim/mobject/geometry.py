@@ -22,6 +22,10 @@ Examples
 
 """
 
+
+# TODO: This file has been typed by monkey type. Please have a human check types.
+from __future__ import annotations
+
 __all__ = [
     "TipableVMobject",
     "Arc",
@@ -63,18 +67,16 @@ __all__ = [
 
 import math
 import warnings
-from typing import Iterable, Optional, Sequence
 
 import numpy as np
 
-from .. import config, logger
+from .. import config
 from ..constants import *
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import (
     DashedVMobject,
     MetaVMobject,
     VGroup,
-    VMobject,
 )
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
@@ -82,12 +84,18 @@ from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
-    compass_directions,
     line_intersection,
     normalize,
     regular_vertices,
     rotate_vector,
 )
+
+# Typing
+from typing import TYPE_CHECKING, Any, Dict, Type, Union, Iterable, Optional, Sequence
+
+if TYPE_CHECKING:
+    from .number_line import NumberLine
+    from numpy import float64, ndarray
 
 
 class TipableVMobject(metaclass=MetaVMobject):
@@ -112,11 +120,11 @@ class TipableVMobject(metaclass=MetaVMobject):
 
     def __init__(
         self,
-        tip_length=DEFAULT_ARROW_TIP_LENGTH,
-        normal_vector=OUT,
-        tip_style={},
+        tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
+        normal_vector: ndarray = OUT,
+        tip_style: Dict[Any, Any] = {},
         **kwargs,
-    ):
+    ) -> None:
         self.tip_length = tip_length
         self.normal_vector = normal_vector
         self.tip_style = tip_style
@@ -124,7 +132,13 @@ class TipableVMobject(metaclass=MetaVMobject):
 
     # Adding, Creating, Modifying tips
 
-    def add_tip(self, tip=None, tip_shape=None, tip_length=None, at_start=False):
+    def add_tip(
+        self,
+        tip: Optional[ArrowTriangleFilledTip] = None,
+        tip_shape: Optional[Type[ArrowTriangleFilledTip]] = None,
+        tip_length: None = None,
+        at_start: bool = False,
+    ) -> Union[NumberLine, Vector, DoubleArrow, Arrow]:
         """
         Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
@@ -139,7 +153,12 @@ class TipableVMobject(metaclass=MetaVMobject):
         self.add(tip)
         return self
 
-    def create_tip(self, tip_shape=None, tip_length=None, at_start=False):
+    def create_tip(
+        self,
+        tip_shape: Optional[Type[ArrowTriangleFilledTip]] = None,
+        tip_length: None = None,
+        at_start: bool = False,
+    ) -> ArrowTriangleFilledTip:
         """
         Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
@@ -148,7 +167,11 @@ class TipableVMobject(metaclass=MetaVMobject):
         self.position_tip(tip, at_start)
         return tip
 
-    def get_unpositioned_tip(self, tip_shape=None, tip_length=None):
+    def get_unpositioned_tip(
+        self,
+        tip_shape: Optional[Type[ArrowTriangleFilledTip]] = None,
+        tip_length: None = None,
+    ) -> ArrowTriangleFilledTip:
         """
         Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
@@ -163,7 +186,9 @@ class TipableVMobject(metaclass=MetaVMobject):
         tip = tip_shape(length=tip_length, **style)
         return tip
 
-    def position_tip(self, tip, at_start=False):
+    def position_tip(
+        self, tip: ArrowTriangleFilledTip, at_start: bool = False
+    ) -> ArrowTriangleFilledTip:
         # Last two control points, defining both
         # the end, and the tangency direction
         if at_start:
@@ -176,7 +201,9 @@ class TipableVMobject(metaclass=MetaVMobject):
         tip.shift(anchor - tip.tip_point)
         return tip
 
-    def reset_endpoints_based_on_tip(self, tip, at_start):
+    def reset_endpoints_based_on_tip(
+        self, tip: ArrowTriangleFilledTip, at_start: bool
+    ) -> Union[NumberLine, Vector, DoubleArrow, Arrow]:
         if self.get_length() == 0:
             # Zero length, put_start_and_end_on wouldn't work
             return self
@@ -187,7 +214,9 @@ class TipableVMobject(metaclass=MetaVMobject):
             self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
-    def asign_tip_attr(self, tip, at_start):
+    def asign_tip_attr(
+        self, tip: ArrowTriangleFilledTip, at_start: bool
+    ) -> Union[NumberLine, Vector, DoubleArrow, Arrow]:
         if at_start:
             self.start_tip = tip
         else:
@@ -196,15 +225,15 @@ class TipableVMobject(metaclass=MetaVMobject):
 
     # Checking for tips
 
-    def has_tip(self):
+    def has_tip(self) -> bool:
         return hasattr(self, "tip") and self.tip in self
 
-    def has_start_tip(self):
+    def has_start_tip(self) -> bool:
         return hasattr(self, "start_tip") and self.start_tip in self
 
     # Getters
 
-    def pop_tips(self):
+    def pop_tips(self) -> VGroup:
         start, end = self.get_start_and_end()
         result = self.get_group_class()()
         if self.has_tip():
@@ -237,28 +266,28 @@ class TipableVMobject(metaclass=MetaVMobject):
         else:
             return tips[0]
 
-    def get_default_tip_length(self):
+    def get_default_tip_length(self) -> float:
         return self.tip_length
 
-    def get_first_handle(self):
+    def get_first_handle(self) -> ndarray:
         return self.get_points()[1]
 
-    def get_last_handle(self):
+    def get_last_handle(self) -> ndarray:
         return self.get_points()[-2]
 
-    def get_end(self):
+    def get_end(self) -> ndarray:
         if self.has_tip():
             return self.tip.get_start()
         else:
             return super().get_end()
 
-    def get_start(self):
+    def get_start(self) -> ndarray:
         if self.has_start_tip():
             return self.start_tip.get_start()
         else:
             return super().get_start()
 
-    def get_length(self):
+    def get_length(self) -> float64:
         start, end = self.get_start_and_end()
         return np.linalg.norm(start - end)
 
@@ -269,13 +298,13 @@ class Arc(TipableVMobject):
     def __init__(
         self,
         radius: float = 1.0,
-        start_angle=0,
-        angle=TAU / 4,
-        num_components=9,
-        anchors_span_full_range=True,
-        arc_center=ORIGIN,
+        start_angle: int = 0,
+        angle: Union[float64, float] = TAU / 4,
+        num_components: int = 9,
+        anchors_span_full_range: bool = True,
+        arc_center: ndarray = ORIGIN,
         **kwargs,
-    ):
+    ) -> None:
         if radius is None:  # apparently None is passed by ArcBetweenPoints
             radius = 1.0
         self.radius = radius
@@ -287,7 +316,7 @@ class Arc(TipableVMobject):
         self._failed_to_get_center = False
         super().__init__(**kwargs)
 
-    def generate_points(self):
+    def generate_points(self) -> None:
         self.set_pre_positioned_points()
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
@@ -327,7 +356,7 @@ class Arc(TipableVMobject):
         points[2::3] = samples[2::2]
         return points
 
-    def set_pre_positioned_points(self):
+    def set_pre_positioned_points(self) -> None:
         anchors = np.array(
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
@@ -348,7 +377,7 @@ class Arc(TipableVMobject):
         handles2 = anchors[1:] - (d_theta / 3) * tangent_vectors[1:]
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
-    def get_arc_center(self, warning=True):
+    def get_arc_center(self, warning: bool = True) -> ndarray:
         """
         Looks at the normals to the first two
         anchors, and finds their intersection points
@@ -388,7 +417,14 @@ class ArcBetweenPoints(Arc):
     Inherits from Arc and additionally takes 2 points between which the arc is spanned.
     """
 
-    def __init__(self, start, end, angle=TAU / 4, radius=None, **kwargs):
+    def __init__(
+        self,
+        start: ndarray,
+        end: ndarray,
+        angle: float64 = TAU / 4,
+        radius: None = None,
+        **kwargs,
+    ) -> None:
         if radius is not None:
             self.radius = radius
             if radius < 0:
@@ -466,11 +502,11 @@ class Circle(Arc):
     def __init__(
         self,
         radius: float = None,
-        color=RED,
-        close_new_points=True,
-        anchors_span_full_range=False,
+        color: str = RED,
+        close_new_points: bool = True,
+        anchors_span_full_range: bool = False,
         **kwargs,
-    ):
+    ) -> None:
         Arc.__init__(
             self,
             radius=radius,
@@ -598,13 +634,13 @@ class Dot(Circle):
 
     def __init__(
         self,
-        point=ORIGIN,
+        point: ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
-        stroke_width=0,
-        fill_opacity=1.0,
-        color=WHITE,
+        stroke_width: int = 0,
+        fill_opacity: float = 1.0,
+        color: str = WHITE,
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(
             arc_center=point,
             radius=radius,
@@ -623,11 +659,11 @@ class AnnotationDot(Dot):
     def __init__(
         self,
         radius: float = DEFAULT_DOT_RADIUS * 1.3,
-        stroke_width=5,
-        stroke_color=WHITE,
-        fill_color=BLUE,
+        stroke_width: int = 5,
+        stroke_color: str = WHITE,
+        fill_color: str = BLUE,
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(
             radius=radius,
             stroke_width=stroke_width,
@@ -714,7 +750,7 @@ class Ellipse(Circle):
                 self.add(ellipse_group)
     """
 
-    def __init__(self, width=2, height=1, **kwargs):
+    def __init__(self, width: int = 2, height: int = 1, **kwargs) -> None:
         super().__init__(**kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
@@ -723,15 +759,15 @@ class Ellipse(Circle):
 class AnnularSector(Arc):
     def __init__(
         self,
-        inner_radius=1,
-        outer_radius=2,
-        angle=TAU / 4,
-        start_angle=0,
-        fill_opacity=1,
-        stroke_width=0,
-        color=WHITE,
+        inner_radius: int = 1,
+        outer_radius: int = 2,
+        angle: float = TAU / 4,
+        start_angle: int = 0,
+        fill_opacity: int = 1,
+        stroke_width: int = 0,
+        color: str = WHITE,
         **kwargs,
-    ):
+    ) -> None:
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         super().__init__(
@@ -743,7 +779,7 @@ class AnnularSector(Arc):
             **kwargs,
         )
 
-    def generate_points(self):
+    def generate_points(self) -> None:
         inner_arc, outer_arc = [
             Arc(
                 start_angle=self.start_angle,
@@ -763,21 +799,21 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
-    def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
+    def __init__(self, outer_radius: int = 1, inner_radius: int = 0, **kwargs) -> None:
         super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
 
 class Annulus(Circle):
     def __init__(
         self,
-        inner_radius=1,
-        outer_radius=2,
-        fill_opacity=1,
-        stroke_width=0,
-        color=WHITE,
-        mark_paths_closed=False,
+        inner_radius: int = 1,
+        outer_radius: int = 2,
+        fill_opacity: int = 1,
+        stroke_width: int = 0,
+        color: str = WHITE,
+        mark_paths_closed: bool = False,
         **kwargs,
-    ):
+    ) -> None:
         self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
@@ -785,7 +821,7 @@ class Annulus(Circle):
             fill_opacity=fill_opacity, stroke_width=stroke_width, color=color, **kwargs
         )
 
-    def generate_points(self):
+    def generate_points(self) -> None:
         self.radius = self.outer_radius
         outer_circle = Circle(radius=self.outer_radius)
         inner_circle = Circle(radius=self.inner_radius)
@@ -798,19 +834,32 @@ class Annulus(Circle):
 
 
 class Line(TipableVMobject):
-    def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=None, **kwargs):
+    def __init__(
+        self,
+        start: ndarray = LEFT,
+        end: ndarray = RIGHT,
+        buff: Union[float, int] = 0,
+        path_arc: None = None,
+        **kwargs,
+    ) -> None:
         self.dim = 3
         self.buff = buff
         self.path_arc = path_arc
         self.set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
 
-    def generate_points(self):
+    def generate_points(self) -> None:
         self.set_points_by_ends(
             start=self.start, end=self.end, buff=self.buff, path_arc=self.path_arc
         )
 
-    def set_points_by_ends(self, start, end, buff=0, path_arc=0):
+    def set_points_by_ends(
+        self,
+        start: ndarray,
+        end: ndarray,
+        buff: Union[int, float] = 0,
+        path_arc: None = 0,
+    ) -> None:
         if path_arc:
             arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
             self.set_points(arc.get_points())
@@ -825,7 +874,9 @@ class Line(TipableVMobject):
         self.path_arc = new_value
         self.init_points()
 
-    def account_for_buff(self, buff):
+    def account_for_buff(
+        self, buff: Union[float, int]
+    ) -> Optional[Union[DoubleArrow, Arrow]]:
         if buff == 0:
             return
         #
@@ -840,7 +891,7 @@ class Line(TipableVMobject):
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def set_start_and_end_attrs(self, start, end):
+    def set_start_and_end_attrs(self, start: ndarray, end: ndarray) -> None:
         # If either start or end are Mobjects, this
         # gives their centers
         rough_start = self.pointify(start)
@@ -852,7 +903,9 @@ class Line(TipableVMobject):
         self.start = self.pointify(start, vect)
         self.end = self.pointify(end, -vect)
 
-    def pointify(self, mob_or_point, direction=None):
+    def pointify(
+        self, mob_or_point: ndarray, direction: Optional[ndarray] = None
+    ) -> ndarray:
         if isinstance(mob_or_point, Mobject):
             mob = mob_or_point
             if direction is None:
@@ -861,7 +914,9 @@ class Line(TipableVMobject):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
+    def put_start_and_end_on(
+        self, start: Sequence[float], end: Sequence[float]
+    ) -> Union[NumberLine, Vector, DoubleArrow, Arrow]:
         """Sets starts and end coordinates of a line.
         Examples
         --------
@@ -891,13 +946,13 @@ class Line(TipableVMobject):
             self.generate_points()
         return super().put_start_and_end_on(start, end)
 
-    def get_vector(self):
+    def get_vector(self) -> ndarray:
         return self.get_end() - self.get_start()
 
-    def get_unit_vector(self):
+    def get_unit_vector(self) -> ndarray:
         return normalize(self.get_vector())
 
-    def get_angle(self):
+    def get_angle(self) -> float64:
         return angle_of_vector(self.get_vector())
 
     def get_projection(self, point):
@@ -929,7 +984,7 @@ class Line(TipableVMobject):
 
         return self
 
-    def set_length(self, length):
+    def set_length(self, length: Union[float, int]) -> NumberLine:
         return self.scale(length / self.get_length())
 
     def set_opacity(self, opacity, family=True):
@@ -985,7 +1040,7 @@ class DashedLine(Line):
         dash_spacing=None,
         positive_space_ratio=0.5,
         **kwargs,
-    ):
+    ) -> None:
         self.dash_length = dash_length
         self.dash_spacing = (dash_spacing,)
         self.positive_space_ratio = positive_space_ratio
@@ -1155,7 +1210,7 @@ class Elbow(metaclass=MetaVMobject):
     :class:`RightAngle`
     """
 
-    def __init__(self, width=0.2, angle=0, **kwargs):
+    def __init__(self, width: float = 0.2, angle: int = 0, **kwargs) -> None:
         self.angle = angle
         super().__init__(**kwargs)
         self.set_points_as_corners([UP, UP + RIGHT, RIGHT])
@@ -1224,7 +1279,7 @@ class Arrow(Line):
         max_stroke_width_to_length_ratio=5,
         preserve_tip_size_when_scaling=True,
         **kwargs,
-    ):
+    ) -> None:
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         self.preserve_tip_size_when_scaling = (
@@ -1238,7 +1293,9 @@ class Arrow(Line):
         self.add_tip(tip_shape=tip_shape)
         self.set_stroke_width_from_length()
 
-    def scale(self, factor, scale_tips=False, **kwargs):
+    def scale(
+        self, factor: float64, scale_tips: bool = False, **kwargs
+    ) -> Union[Vector, DoubleArrow, Arrow]:
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
         See Also
@@ -1322,7 +1379,7 @@ class Arrow(Line):
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
-    def set_stroke_width_from_length(self):
+    def set_stroke_width_from_length(self) -> Union[Vector, DoubleArrow, Arrow]:
         """Used internally. Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         if config.renderer == "opengl":
@@ -1364,7 +1421,7 @@ class Vector(Arrow):
                 self.add(plane, vector_1, vector_2)
     """
 
-    def __init__(self, direction=RIGHT, buff=0, **kwargs):
+    def __init__(self, direction: ndarray = RIGHT, buff: int = 0, **kwargs) -> None:
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
@@ -1455,7 +1512,7 @@ class DoubleArrow(Arrow):
     :class:`CurvedDoubleArrow`
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
@@ -1528,7 +1585,9 @@ class Polygram(metaclass=MetaVMobject):
 
     """
 
-    def __init__(self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs):
+    def __init__(
+        self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs
+    ) -> None:
         super().__init__(color=color, **kwargs)
 
         for vertices in vertex_groups:
@@ -1599,7 +1658,7 @@ class Polygram(metaclass=MetaVMobject):
 
         return np.array(vertex_groups)
 
-    def round_corners(self, radius: float = 0.5):
+    def round_corners(self, radius: float = 0.5) -> RoundedRectangle:
         """Rounds off the corners of the :class:`Polygram`.
 
         Parameters
@@ -1706,7 +1765,7 @@ class Polygon(Polygram):
                 self.add(isosceles, square_and_triangles)
     """
 
-    def __init__(self, *vertices: Sequence[float], **kwargs):
+    def __init__(self, *vertices: Sequence[float], **kwargs) -> None:
         super().__init__(vertices, **kwargs)
 
 
@@ -1750,7 +1809,7 @@ class RegularPolygram(Polygram):
         radius: float = 1,
         start_angle: Optional[float] = None,
         **kwargs,
-    ):
+    ) -> None:
         # Regular polygrams can be expressed by the number of their vertices
         # and their density. This relation can be expressed as its Schläfli
         # symbol: {num_vertices/density}.
@@ -1825,7 +1884,7 @@ class RegularPolygon(RegularPolygram):
                 self.add(poly_group)
     """
 
-    def __init__(self, n: int = 6, **kwargs):
+    def __init__(self, n: int = 6, **kwargs) -> None:
         super().__init__(n, density=1, **kwargs)
 
 
@@ -1897,7 +1956,7 @@ class Star(Polygon):
         density: int = 2,
         start_angle: Optional[float] = TAU / 4,
         **kwargs,
-    ):
+    ) -> None:
         inner_angle = TAU / (2 * n)
 
         if inner_radius is None:
@@ -2008,7 +2067,9 @@ class ArcPolygon(metaclass=MetaVMobject):
     For further examples see :class:`ArcPolygonFromArcs`.
     """
 
-    def __init__(self, *vertices, angle=PI / 4, radius=None, arc_config=None, **kwargs):
+    def __init__(
+        self, *vertices, angle=PI / 4, radius=None, arc_config=None, **kwargs
+    ) -> None:
         n = len(vertices)
         point_pairs = [(vertices[k], vertices[(k + 1) % n]) for k in range(n)]
 
@@ -2146,7 +2207,7 @@ class ArcPolygonFromArcs(metaclass=MetaVMobject):
 
     """
 
-    def __init__(self, *arcs, **kwargs):
+    def __init__(self, *arcs, **kwargs) -> None:
         if not all(isinstance(m, (Arc, ArcBetweenPoints)) for m in arcs):
             raise ValueError(
                 "All ArcPolygon submobjects must be of type Arc/ArcBetweenPoints"
@@ -2175,7 +2236,7 @@ class Triangle(RegularPolygon):
     Parameters
     ----------
     kwargs : Any
-        Additonal arguments to be passed to :class:`RegularPolygon`
+        Additional arguments to be passed to :class:`RegularPolygon`
 
     Examples
     --------
@@ -2191,7 +2252,7 @@ class Triangle(RegularPolygon):
                 self.add(tri_group)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(n=3, **kwargs)
 
 
@@ -2230,13 +2291,13 @@ class Rectangle(Polygon):
 
     def __init__(
         self,
-        color=WHITE,
-        height=2.0,
-        width=4.0,
-        mark_paths_closed=True,
-        close_new_points=True,
+        color: str = WHITE,
+        height: Union[float, int] = 2.0,
+        width: Union[int, float] = 4.0,
+        mark_paths_closed: bool = True,
+        close_new_points: bool = True,
         **kwargs,
-    ):
+    ) -> None:
         self.mark_paths_closed = mark_paths_closed
         self.close_new_points = close_new_points
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
@@ -2268,7 +2329,7 @@ class Square(Rectangle):
                 self.add(square_1, square_2, square_3)
     """
 
-    def __init__(self, side_length=2.0, **kwargs):
+    def __init__(self, side_length: Union[float, int] = 2.0, **kwargs) -> None:
         self.side_length = side_length
         super().__init__(height=side_length, width=side_length, **kwargs)
 
@@ -2298,7 +2359,7 @@ class RoundedRectangle(Rectangle):
                 self.add(rect_group)
     """
 
-    def __init__(self, corner_radius=0.5, **kwargs):
+    def __init__(self, corner_radius: float = 0.5, **kwargs) -> None:
         self.corner_radius = corner_radius
         super().__init__(**kwargs)
         self.round_corners(self.corner_radius)
@@ -2379,7 +2440,7 @@ class ArrowTip(metaclass=MetaVMobject):
         raise NotImplementedError("Has to be implemented in inheriting subclasses.")
 
     @property
-    def base(self):
+    def base(self) -> ndarray:
         r"""The base point of the arrow tip.
 
         This is the point connecting to the arrow line.
@@ -2396,7 +2457,7 @@ class ArrowTip(metaclass=MetaVMobject):
         return self.point_from_proportion(0.5)
 
     @property
-    def tip_point(self):
+    def tip_point(self) -> ndarray:
         r"""The tip point of the arrow tip.
 
         Examples
@@ -2411,7 +2472,7 @@ class ArrowTip(metaclass=MetaVMobject):
         return self.get_points()[0]
 
     @property
-    def vector(self):
+    def vector(self) -> ndarray:
         r"""The vector pointing from the base point to the tip point.
 
         Examples
@@ -2426,7 +2487,7 @@ class ArrowTip(metaclass=MetaVMobject):
         return self.tip_point - self.base
 
     @property
-    def tip_angle(self):
+    def tip_angle(self) -> float64:
         r"""The angle of the arrow tip.
 
         Examples
@@ -2461,12 +2522,12 @@ class ArrowTriangleTip(ArrowTip, Triangle):
 
     def __init__(
         self,
-        fill_opacity=0,
-        stroke_width=3,
-        length=DEFAULT_ARROW_TIP_LENGTH,
-        start_angle=PI,
+        fill_opacity: int = 0,
+        stroke_width: int = 3,
+        length: Union[float64, float] = DEFAULT_ARROW_TIP_LENGTH,
+        start_angle: float = PI,
         **kwargs,
-    ):
+    ) -> None:
         Triangle.__init__(
             self,
             fill_opacity=fill_opacity,
@@ -2484,7 +2545,7 @@ class ArrowTriangleFilledTip(ArrowTriangleTip):
     This is the default arrow tip shape.
     """
 
-    def __init__(self, fill_opacity=1, stroke_width=0, **kwargs):
+    def __init__(self, fill_opacity: int = 1, stroke_width: int = 0, **kwargs) -> None:
         super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
