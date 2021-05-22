@@ -19,6 +19,7 @@ __all__ = [
     "cross",
     "get_unit_normal",
     "compass_directions",
+    "regular_vertices",
     "complex_to_R3",
     "R3_to_complex",
     "complex_func_to_R3_func",
@@ -35,6 +36,7 @@ __all__ = [
 import itertools as it
 import math
 from functools import reduce
+from typing import Optional, Tuple
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
@@ -301,6 +303,43 @@ def compass_directions(n=4, start_vect=RIGHT):
     return np.array([rotate_vector(start_vect, k * angle) for k in range(n)])
 
 
+def regular_vertices(
+    n: int, *, radius: float = 1, start_angle: Optional[float] = None
+) -> Tuple[np.ndarray, float]:
+    """Generates regularly spaced vertices around a circle centered at the origin.
+
+    Parameters
+    ----------
+    n
+        The number of vertices
+    radius
+        The radius of the circle that the vertices are placed on.
+    start_angle
+        The angle the vertices start at.
+
+        If unspecified, for even ``n`` values, ``0`` will be used.
+        For odd ``n`` values, 90 degrees is used.
+
+    Returns
+    -------
+    vertices : :class:`numpy.ndarray`
+        The regularly spaced vertices.
+    start_angle : :class:`float`
+        The angle the vertices start at.
+    """
+
+    if start_angle is None:
+        if n % 2 == 0:
+            start_angle = 0
+        else:
+            start_angle = TAU / 4
+
+    start_vector = rotate_vector(RIGHT * radius, start_angle)
+    vertices = compass_directions(n, start_vector)
+
+    return vertices, start_angle
+
+
 def complex_to_R3(complex_num):
     return np.array((complex_num.real, complex_num.imag, 0))
 
@@ -358,16 +397,16 @@ def find_intersection(p0, v0, p1, v1, threshold=1e-5):
     m, n = np.shape(p0)
     assert n in [2, 3]
 
-    numer = np.cross(v1, p1 - p0)
-    denom = np.cross(v1, v0)
+    numerator = np.cross(v1, p1 - p0)
+    denominator = np.cross(v1, v0)
     if n == 3:
-        d = len(np.shape(numer))
-        new_numer = np.multiply(numer, numer).sum(d - 1)
-        new_denom = np.multiply(denom, numer).sum(d - 1)
-        numer, denom = new_numer, new_denom
+        d = len(np.shape(numerator))
+        new_numerator = np.multiply(numerator, numerator).sum(d - 1)
+        new_denominator = np.multiply(denominator, numerator).sum(d - 1)
+        numerator, denominator = new_numerator, new_denominator
 
-    denom[abs(denom) < threshold] = np.inf  # So that ratio goes to 0 there
-    ratio = numer / denom
+    denominator[abs(denominator) < threshold] = np.inf  # So that ratio goes to 0 there
+    ratio = numerator / denominator
     ratio = np.repeat(ratio, n).reshape((m, n))
     return p0 + ratio * v0
 
@@ -449,11 +488,11 @@ def earclip_triangulation(verts, ring_ends):
             for ring_group in (attached_rings, detached_rings)
         ]
 
-        # Closet point on the atttached rings to an estimated midpoint
+        # Closest point on the attached rings to an estimated midpoint
         # of the detached rings
         tmp_j_vert = midpoint(verts[j_range[0]], verts[j_range[len(j_range) // 2]])
         i = min(i_range, key=lambda i: norm_squared(verts[i] - tmp_j_vert))
-        # Closet point of the detached rings to the aforementioned
+        # Closest point of the detached rings to the aforementioned
         # point of the attached rings
         j = min(j_range, key=lambda j: norm_squared(verts[i] - verts[j]))
         # Recalculate i based on new j

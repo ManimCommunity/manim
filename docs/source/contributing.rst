@@ -19,7 +19,7 @@ some are detailed below:
 *  Testing (graphical, unit & video)
 *  Website design and development
 
-.. NOTE::
+.. note::
    Please ensure that you are reading the latest version of this guide by ensuring that "latest" is selected in the version switcher.
 
 
@@ -30,5 +30,9 @@ Contributing can be confusing, so here are a few guides:
    :maxdepth: 2
 
    contributing/development
-   contributing/documentation
+   contributing/docstrings
+   contributing/references
+   contributing/examples
+   contributing/typings
+   contributing/admonitions
    contributing/testing
