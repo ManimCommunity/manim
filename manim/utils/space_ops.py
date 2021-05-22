@@ -476,7 +476,7 @@ def compass_directions(n: int = 4, start_vect: np.ndarray = RIGHT) -> np.ndarray
     n
         The amount to be rotated, by default 4
     start_vect
-        The directon for the angle to start with, by default RIGHT
+        The direction for the angle to start with, by default RIGHT
 
     Returns
     -------
