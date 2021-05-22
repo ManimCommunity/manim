@@ -68,6 +68,9 @@ __all__ = [
 import math
 import warnings
 
+# Typing
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Sequence, Type, Union
+
 import numpy as np
 
 from .. import config
@@ -77,7 +80,7 @@ from ..mobject.types.vectorized_mobject import (
     DashedVMobject,
     MetaVMobject,
     VGroup,
-    VMobject
+    VMobject,
 )
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
@@ -91,12 +94,10 @@ from ..utils.space_ops import (
     rotate_vector,
 )
 
-# Typing
-from typing import TYPE_CHECKING, Any, Dict, Type, Union, Iterable, Optional, Sequence
-
 if TYPE_CHECKING:
-    from .number_line import NumberLine
     from numpy import float64, ndarray
+
+    from .number_line import NumberLine
 
 
 class TipableVMobject(metaclass=MetaVMobject):
