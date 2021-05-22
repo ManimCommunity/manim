@@ -246,7 +246,7 @@ class ArcBrace(Brace):
 
     Parameters
     ----------
-    arc : Optional[:class:`Arc`]
+    arc
         The :class:`~.Arc` that wraps around the :class:`Brace` mobject.
     direction
         The direction from which the brace faces the arc.
@@ -283,7 +283,7 @@ class ArcBrace(Brace):
 
     def __init__(
         self,
-        arc=Arc(start_angle=-1, angle=2, radius=1),
+        arc: Arc = Arc(start_angle=-1, angle=2, radius=1),
         direction: Sequence[float] = RIGHT,
         **kwargs
     ):
