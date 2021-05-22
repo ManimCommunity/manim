@@ -19,7 +19,7 @@ class Polyhedron(VGroup):
     """An abstract polyhedra class.
 
     In this implementation, polyhedra are defined with a list of vertex coordinates in space, and a list
-    of faces. This implementataion mirrors that of a standard polyhedral data format (OFF, object file format).
+    of faces. This implementation mirrors that of a standard polyhedral data format (OFF, object file format).
 
     Parameters
     ----------
@@ -27,7 +27,7 @@ class Polyhedron(VGroup):
         A list of coordinates of the corresponding vertices in the polyhedron. Each coordinate will correspond to
         a vertex. The vertices are indexed with the usual indexing of Python.
     faces_list
-        A list of faces. Each face is a sublist containing the indicies of the vertices that form the corners of that face.
+        A list of faces. Each face is a sublist containing the indices of the vertices that form the corners of that face.
     faces_config
         Configuration for the polygons representing the faces of the polyhedron.
     graph_config
