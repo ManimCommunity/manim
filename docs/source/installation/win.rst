@@ -1,7 +1,7 @@
 Windows
 =======
 
-There are two simple ways to download manim's depedencies, using the popular package
+There are two simple ways to download manim's dependencies, using the popular package
 managers `Scoop <https://scoop.sh>`_ and `Chocolatey <https://chocolatey.org/install>`_
 
 .. _scoop:
