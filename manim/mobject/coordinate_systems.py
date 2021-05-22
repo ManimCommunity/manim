@@ -779,10 +779,14 @@ class PolarPlane(Axes):
         :ref_classes: PolarPlane
         :save_last_frame:
 
-        polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6, azimuth_label_scale=0.75, radius_config={'number_scale_value': 0.75}).add_coordinates()
-
         class PolarPlaneExample(Scene):
             def construct(self):
+                polarplane_pi = PolarPlane(
+                    azimuth_units="PI radians",
+                    size=6,
+                    azimuth_label_scale=0.7,
+                    radius_config={"number_scale_value": 0.7},
+                ).add_coordinates()
                 self.add(polarplane_pi)
     """
 
@@ -1005,11 +1009,10 @@ class PolarPlane(Axes):
             :ref_classes: PolarPlane Vector
             :save_last_frame:
 
-            polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6)
-            polartopoint_vector = Vector(polarplane_pi.polar_to_point(3, PI/4))
-
             class PolarToPointExample(Scene):
                 def construct(self):
+                    polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6)
+                    polartopoint_vector = Vector(polarplane_pi.polar_to_point(3, PI/4))
                     self.add(polarplane_pi)
                     self.add(polartopoint_vector)
         """
