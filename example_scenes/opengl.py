@@ -72,7 +72,7 @@ def get_plane_mesh(context):
     return Mesh(shader, attributes)
 
 
-class MobjectTest(Scene):
+class GuiTest(Scene):
     def construct(self):
         mesh = get_plane_mesh(self.renderer.context)
         # mesh.attributes["in_vert"][:, 0]
@@ -88,7 +88,7 @@ class MobjectTest(Scene):
         self.interactive_embed()
 
 
-class MobjectTest2(Scene):
+class GuiTest2(Scene):
     def construct(self):
         mesh = get_plane_mesh(self.renderer.context)
         mesh.attributes["in_vert"][:, 0] -= 2
