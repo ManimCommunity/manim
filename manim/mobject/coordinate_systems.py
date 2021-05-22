@@ -748,7 +748,7 @@ class PolarPlane(Axes):
         - ``"PI radians"``: Fractional labels in the interval :math:`\left[0, 2\pi\right]` with :math:`\pi` as a constant.
         - ``"TAU radians"``: Fractional labels in the interval :math:`\left[0, \tau\right]` (where :math:`\tau = 2\pi`) with :math:`\tau` as a constant.
         - ``"degrees"``: Decimal labels in the interval :math:`\left[0, 360\right]` with a degree (:math:`^{\circ}`) symbol.
-        - ``"gradians"``: Decimal lables in the interval :math:`\left[0, 400\right]` with a superscript "g" (:math:`^{g}`).
+        - ``"gradians"``: Decimal labels in the interval :math:`\left[0, 400\right]` with a superscript "g" (:math:`^{g}`).
         - ``None``: Decimal labels in the interval :math:`\left[0, 1\right]`.
 
     azimuth_compact_fraction
@@ -914,7 +914,7 @@ class PolarPlane(Axes):
         Returns
         -------
         Tuple[:class:`~.VGroup`, :class:`~.VGroup`]
-            The first (i.e the non faded lines andd circles) and second (i.e the faded lines and circles) sets of lines and circles, respectively.
+            The first (i.e the non faded lines and circles) and second (i.e the faded lines and circles) sets of lines and circles, respectively.
         """
         center = self.get_center_point()
         ratio_faded_lines = self.faded_line_ratio
