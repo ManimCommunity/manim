@@ -353,7 +353,7 @@ class Shader:
     def set_uniform(self, name, value):
         try:
             self.shader_program[name] = value
-        except:
+        except KeyError:
             pass
 
 

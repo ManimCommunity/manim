@@ -16,7 +16,12 @@ import types
 import warnings
 from queue import Queue
 
-import dearpygui.core
+try:
+    import dearpygui.core
+
+    dearpygui_enabled = True
+except ImportError:
+    dearpygui_enabled = False
 import numpy as np
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
@@ -108,6 +113,7 @@ class Scene(Container):
         self.meshes = []
         self.camera_target = ORIGIN
         self.widgets = []
+        self.dearpygui_enabled = dearpygui_enabled
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -1024,15 +1030,16 @@ class Scene(Container):
         )
         keyboard_thread.start()
 
-        if not dearpygui.core.is_dearpygui_running():
-            gui_thread = threading.Thread(
-                target=configure_pygui,
-                args=(self.renderer, self.widgets),
-                kwargs={"update": False},
-            )
-            gui_thread.start()
-        else:
-            configure_pygui(self.renderer, self.widgets, update=True)
+        if self.dearpygui_enabled:
+            if not dearpygui.core.is_dearpygui_running():
+                gui_thread = threading.Thread(
+                    target=configure_pygui,
+                    args=(self.renderer, self.widgets),
+                    kwargs={"update": False},
+                )
+                gui_thread.start()
+            else:
+                configure_pygui(self.renderer, self.widgets, update=True)
 
         self.camera.model_matrix = self.camera.default_model_matrix
 
@@ -1101,7 +1108,8 @@ class Scene(Container):
             while self.queue.qsize() > 0:
                 self.queue.get()
 
-        dearpygui.core.stop_dearpygui()
+        if self.dearpygui_enabled:
+            dearpygui.core.stop_dearpygui()
 
         if self.renderer.window.is_closing:
             self.renderer.window.destroy()
