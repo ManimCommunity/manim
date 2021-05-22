@@ -1002,7 +1002,7 @@ class PolarPlane(Axes):
         --------
 
         .. manim:: PolarToPointExample
-            :ref_classes: PolarPlane
+            :ref_classes: PolarPlane Vector
             :save_last_frame:
 
             polarplane_pi = PolarPlane(azimuth_units="PI radians", size=6)
