@@ -209,14 +209,40 @@ class VectorField(VGroup):
 
         step_size = dt / substeps
 
-        def runge_kutta_pointwise(self, p, step_size):
+        def runge_kutta_pointwise(self, p: Sequence[float], step_size: float) -> float:
+            """Returns the change in position of a point along a vector field.
+            Parameters
+            ----------
+            p
+               The position of each point being moved along the vector field.
+            step_size
+               A scalar that is used to determine how much a point is shifted in a single step.
+
+            Returns
+            -------
+            float
+               How much the point is shifted.
+            """
             k_1 = self.func(p)
             k_2 = self.func(p + step_size * (k_1 * 0.5))
             k_3 = self.func(p + step_size * (k_2 * 0.5))
             k_4 = self.func(p + step_size * k_3)
             return step_size / 6.0 * (k_1 + 2.0 * k_2 + 2.0 * k_3 + k_4)
 
-        def runge_kutta_center(self, mob, step_size):
+        def runge_kutta_center(self, mob: "Mobject", step_size: float) -> float:
+            """Returns the change in position of a mobject along a vector field.
+            Parameters
+            ----------
+            mob
+               The mobject moved along the vector field.
+            step_size
+               A scalar that is used to determine how much a mobject is shifted in a single step.
+
+            Returns
+            -------
+            float
+               How much the mobject is shifted.
+            """
             k_1 = self.func(mob.get_center())
             k_2 = self.func(mob.get_center() + step_size * (k_1 * 0.5))
             k_3 = self.func(mob.get_center() + step_size * (k_2 * 0.5))
