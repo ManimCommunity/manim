@@ -1,11 +1,11 @@
 import warnings
 
 import pytest
-
+import logging
 from manim import logger
 from manim.utils.deprecation import deprecated, deprecated_params
 
-
+logger.setLevel(logging.INFO)
 @deprecated
 class Foo:
     def __init__(self):
@@ -92,6 +92,7 @@ def test_deprecate_class_since(caplog):
 def test_deprecate_class_until(caplog):
     """Test the deprecation of a class (decorator with until argument)."""
     bz = Baz()
+    raise Exception(caplog.records)
     assert len(caplog.record_tuples) == 1
     msg = _get_caplog_record_msg(caplog)
     assert (
