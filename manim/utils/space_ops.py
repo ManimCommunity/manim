@@ -214,7 +214,7 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
 
 def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
     """Converts the quaternion, quat, to an equivalent rotation matrix representation.
-    For more information, check `this Wikipedia page
+    For more information, check `this page
     <https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html>`_.
 
     Parameters
