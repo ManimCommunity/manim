@@ -18,4 +18,4 @@ def test_add_sound(tmpdir):
     f.close()
 
     scene = Scene()
-    scene.add_sound("noise.wav")
+    scene.add_sound(sound_loc)
