@@ -141,7 +141,7 @@ def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
 
     Returns
     -------
-    float
+    Sequence[float]
         Gives the angle and axis
     """
     axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
