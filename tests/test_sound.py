@@ -1,13 +1,14 @@
-import os
 import struct
 import wave
 
 from manim import Scene
+from pathlib import Path
 
 
-def test_add_sound():
+def test_add_sound(tmpdir):
     # create sound file
-    f = wave.open("noise.wav", "w")
+    sound_loc = Path(tmpdir, "noise.wav")
+    f = wave.open(sound_loc, "w")
     f.setparams((2, 2, 44100, 0, "NONE", "not compressed"))
     for _ in range(22050):  # half a second of sound
         packed_value = struct.pack("h", 14242)
@@ -18,5 +19,3 @@ def test_add_sound():
 
     scene = Scene()
     scene.add_sound("noise.wav")
-
-    os.remove("noise.wav")
