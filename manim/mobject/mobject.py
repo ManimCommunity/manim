@@ -1246,7 +1246,7 @@ class Mobject(Container):
 
     def apply_complex_function(self, function, **kwargs):
         """Applies a complex function to a :class:`Mobject`.
-        With z= u+iv  u respresents the x value, v represents the y value.
+        The x and y coordinates correspond to the real and imaginary parts respectively.
 
         Example
         -------
