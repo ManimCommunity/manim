@@ -64,8 +64,8 @@ def quaternion_mult(
     *quats: Sequence[float],
 ) -> Union[np.ndarray, List[Union[float, np.ndarray]]]:
     """Gets the Hamilton product of the quaternions provided.
-    For more about the quaternion multiplication see:
-    https://en.wikipedia.org/wiki/Quaternion
+    For more information, check `this Wikipedia page
+    <https://en.wikipedia.org/wiki/Quaternion>`_.
 
     Returns
     -------
@@ -106,8 +106,8 @@ def quaternion_from_angle_axis(
     angle: float, axis: np.ndarray, axis_normalized: bool = False
 ) -> List[float]:
     """Gets a quaternion from an angle and an axis.
-    For more information, check:
-    https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+    For more information, check `this Wikipedia page
+    <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>`_.
 
     Parameters
     ----------
@@ -131,7 +131,7 @@ def quaternion_from_angle_axis(
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
-def angle_axis_from_quaternion(quaternion: np.ndarray) -> float:
+def angle_axis_from_quaternion(quaternion: Sequence[float]) -> float:
     """Gets angle and axis from a quaternion.
 
     Parameters
@@ -151,7 +151,7 @@ def angle_axis_from_quaternion(quaternion: np.ndarray) -> float:
     return angle, axis
 
 
-def quaternion_conjugate(quaternion: np.ndarray) -> np.ndarray:
+def quaternion_conjugate(quaternion: Sequence[float]) -> np.ndarray:
     """Used for finding the conjugate of the quaternion
 
     Parameters
@@ -162,7 +162,7 @@ def quaternion_conjugate(quaternion: np.ndarray) -> np.ndarray:
     Returns
     -------
     np.ndarray
-        Gives back the conjugate of the quaternion.
+        The conjugate of the quaternion.
     """
     result = np.array(quaternion)
     result[1:] *= -1
@@ -189,7 +189,7 @@ def rotate_vector(vector: np.ndarray, angle: int, axis: np.ndarray = OUT) -> np.
     Raises
     ------
     ValueError
-        If vector is not a dimension of 2 or 3.
+        If vector is not of dimension 2 or 3.
     """
 
     if len(vector) == 2:
@@ -214,8 +214,8 @@ def thick_diagonal(dim: int, thickness=2) -> np.ndarray:
 
 def rotation_matrix_transpose_from_quaternion(quat: np.ndarray) -> List[np.ndarray]:
     """Converts the quaternion, quat, to an equivalent rotation matrix representation.
-    See more about this here:
-    https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html
+    For more information, check `this Wikipedia page
+    <https://in.mathworks.com/help/driving/ref/quaternion.rotmat.html>`_.
 
     Parameters
     ----------
@@ -592,7 +592,7 @@ def line_intersection(line1: Sequence[float], line2: Sequence[float]) -> np.ndar
     Raises
     ------
     ValueError
-        Error is produced if the two line don't intersect with each other
+        Error is produced if the two lines don't intersect with each other
     """
     x_diff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     y_diff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
