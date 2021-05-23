@@ -52,6 +52,7 @@ mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "*"
 mypy = "^0.812"
+termcolor = "^1.1.0"
 
 [tool.poetry.extras]
 webgl_renderer = ["grpcio","grpcio-tools"]

@@ -1705,6 +1705,14 @@ python-versions = ">=3.6"
 sphinx = ">=2.0"
 
 [[package]]
+name = "termcolor"
+version = "1.1.0"
+description = "ANSII Color formatting for output in terminal."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "terminado"
 version = "0.9.5"
 description = "Tornado websocket backend for the Xterm.js Javascript terminal emulator library."
@@ -1896,7 +1904,7 @@ webgl_renderer = ["grpcio", "grpcio-tools"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "4d03d7b124a4d224ddc29669c1b7556f04cbd0852d90d7c5022076529da4364c"
+content-hash = "39d18dfd9cf3fdac47a99b8ea1e28b1090c419c645898a157c68626c105885b4"
 
 [metadata.files]
 alabaster = [
@@ -3077,6 +3085,9 @@ sphinxcontrib-serializinghtml = [
 sphinxext-opengraph = [
     {file = "sphinxext-opengraph-0.4.1.tar.gz", hash = "sha256:6ce428fc078bf2dfdb46fba035958989a4865180d8b6dbb03892692e95e1e5d8"},
     {file = "sphinxext_opengraph-0.4.1-py3-none-any.whl", hash = "sha256:ebdfd83535aad4ffe290d5adffe181dae03b59da7fdd25765ee4982e2041bf9e"},
+]
+termcolor = [
+    {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
 ]
 terminado = [
     {file = "terminado-0.9.5-py3-none-any.whl", hash = "sha256:3838414888b49a96145e277fd707a26a0fdb4bdaba88bb677a44abb68e3a1041"},

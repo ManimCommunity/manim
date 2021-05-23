@@ -1,3 +1,5 @@
+"""Gathers Info for MonkeyType"""
+
 import inspect
 import importlib
 import manim
