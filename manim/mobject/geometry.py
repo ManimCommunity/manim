@@ -67,9 +67,7 @@ __all__ = [
 
 import math
 import warnings
-
-# Typing
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Sequence, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
 import numpy as np
 
@@ -140,7 +138,7 @@ class TipableVMobject(metaclass=MetaVMobject):
         tip_shape: Optional[Type[ArrowTriangleFilledTip]] = None,
         tip_length: None = None,
         at_start: bool = False,
-    ) -> Union[NumberLine, Vector, DoubleArrow, Arrow]:
+    ) -> Union[NumberLine, Arrow, DoubleArrow, Vector]:
         """
         Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
@@ -205,7 +203,7 @@ class TipableVMobject(metaclass=MetaVMobject):
 
     def reset_endpoints_based_on_tip(
         self, tip: ArrowTriangleFilledTip, at_start: bool
-    ) -> Union[NumberLine, Vector, DoubleArrow, Arrow]:
+    ) -> Union[Arrow, NumberLine, Vector, DoubleArrow]:
         if self.get_length() == 0:
             # Zero length, put_start_and_end_on wouldn't work
             return self
@@ -218,7 +216,7 @@ class TipableVMobject(metaclass=MetaVMobject):
 
     def asign_tip_attr(
         self, tip: ArrowTriangleFilledTip, at_start: bool
-    ) -> Union[NumberLine, Vector, DoubleArrow, Arrow]:
+    ) -> Union[NumberLine, Arrow, Vector, DoubleArrow]:
         if at_start:
             self.start_tip = tip
         else:
@@ -299,7 +297,7 @@ class Arc(TipableVMobject):
 
     def __init__(
         self,
-        radius: float = 1.0,
+        radius: Optional[Union[float, int]] = 1.0,
         start_angle: int = 0,
         angle: Union[float64, float] = TAU / 4,
         num_components: int = 9,
@@ -503,7 +501,7 @@ class Circle(Arc):
 
     def __init__(
         self,
-        radius: float = None,
+        radius: Optional[Union[float, int]] = None,
         color: str = RED,
         close_new_points: bool = True,
         anchors_span_full_range: bool = False,
@@ -859,7 +857,7 @@ class Line(TipableVMobject):
         self,
         start: ndarray,
         end: ndarray,
-        buff: Union[int, float] = 0,
+        buff: Union[float, int] = 0,
         path_arc: None = 0,
     ) -> None:
         if path_arc:
@@ -878,7 +876,7 @@ class Line(TipableVMobject):
 
     def account_for_buff(
         self, buff: Union[float, int]
-    ) -> Optional[Union[DoubleArrow, Arrow]]:
+    ) -> Optional[Union[Arrow, DoubleArrow]]:
         if buff == 0:
             return
         #
@@ -917,8 +915,8 @@ class Line(TipableVMobject):
         return np.array(mob_or_point)
 
     def put_start_and_end_on(
-        self, start: Sequence[float], end: Sequence[float]
-    ) -> Union[NumberLine, Vector, DoubleArrow, Arrow]:
+        self, start: ndarray, end: ndarray
+    ) -> Union[NumberLine, Arrow, DoubleArrow, Vector]:
         """Sets starts and end coordinates of a line.
         Examples
         --------
@@ -986,7 +984,7 @@ class Line(TipableVMobject):
 
         return self
 
-    def set_length(self, length: Union[float, int]) -> NumberLine:
+    def set_length(self, length: Union[int, float]) -> NumberLine:
         return self.scale(length / self.get_length())
 
     def set_opacity(self, opacity, family=True):
@@ -1075,7 +1073,7 @@ class DashedLine(Line):
     def calculate_positive_space_ratio(self):
         return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
-    def get_start(self) -> np.ndarray:
+    def get_start(self) -> ndarray:
         """Returns the start point of the line.
 
         Examples
@@ -1091,7 +1089,7 @@ class DashedLine(Line):
         else:
             return Line.get_start(self)
 
-    def get_end(self) -> np.ndarray:
+    def get_end(self) -> ndarray:
         """Returns the end point of the line.
 
         Examples
@@ -1289,15 +1287,14 @@ class Arrow(Line):
         )
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
         super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)
-        # TODO, should this be affected when
-        # Arrow.set_stroke is called?
+        # TODO, should this be affected when Arrow.set_stroke is called?
         self.initial_stroke_width = self.stroke_width
         self.add_tip(tip_shape=tip_shape)
         self.set_stroke_width_from_length()
 
     def scale(
         self, factor: float64, scale_tips: bool = False, **kwargs
-    ) -> Union[Vector, DoubleArrow, Arrow]:
+    ) -> Union[Arrow, DoubleArrow, Vector]:
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
         See Also
@@ -1366,7 +1363,7 @@ class Arrow(Line):
         self.normal_vector = self.get_normal_vector()
         return self
 
-    def get_default_tip_length(self) -> float:
+    def get_default_tip_length(self) -> Union[float64, float]:
         """Returns the default tip_length of the arrow.
 
         Examples
@@ -1381,7 +1378,7 @@ class Arrow(Line):
         max_ratio = self.max_tip_length_to_length_ratio
         return min(self.tip_length, max_ratio * self.get_length())
 
-    def set_stroke_width_from_length(self) -> Union[Vector, DoubleArrow, Arrow]:
+    def set_stroke_width_from_length(self) -> Union[Arrow, Vector, DoubleArrow]:
         """Used internally. Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         if config.renderer == "opengl":
@@ -1587,9 +1584,7 @@ class Polygram(metaclass=MetaVMobject):
 
     """
 
-    def __init__(
-        self, *vertex_groups: Iterable[Sequence[float]], color=BLUE, **kwargs
-    ) -> None:
+    def __init__(self, *vertex_groups, color=BLUE, **kwargs) -> None:
         super().__init__(color=color, **kwargs)
 
         for vertices in vertex_groups:
@@ -1625,7 +1620,7 @@ class Polygram(metaclass=MetaVMobject):
 
         return self.get_start_anchors()
 
-    def get_vertex_groups(self) -> np.ndarray:
+    def get_vertex_groups(self) -> ndarray:
         """Gets the vertex groups of the :class:`Polygram`.
 
         Returns
@@ -1767,7 +1762,7 @@ class Polygon(Polygram):
                 self.add(isosceles, square_and_triangles)
     """
 
-    def __init__(self, *vertices: Sequence[float], **kwargs) -> None:
+    def __init__(self, *vertices, **kwargs) -> None:
         super().__init__(vertices, **kwargs)
 
 
@@ -2294,7 +2289,7 @@ class Rectangle(Polygon):
     def __init__(
         self,
         color: str = WHITE,
-        height: Union[float, int] = 2.0,
+        height: Union[int, float] = 2.0,
         width: Union[int, float] = 4.0,
         mark_paths_closed: bool = True,
         close_new_points: bool = True,
@@ -2526,7 +2521,7 @@ class ArrowTriangleTip(ArrowTip, Triangle):
         self,
         fill_opacity: int = 0,
         stroke_width: int = 3,
-        length: Union[float64, float] = DEFAULT_ARROW_TIP_LENGTH,
+        length: Union[float, float64] = DEFAULT_ARROW_TIP_LENGTH,
         start_angle: float = PI,
         **kwargs,
     ) -> None:

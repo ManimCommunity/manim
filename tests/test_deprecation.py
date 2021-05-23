@@ -1,7 +1,4 @@
 from manim.utils.deprecation import deprecated, deprecated_params
-import warnings
-
-warnings.filterwarnings("ignore")
 
 
 @deprecated
