@@ -266,3 +266,23 @@ For example, you can set each letter to different color by iterating it.
     See :ref:`disable-ligatures`
 
 .. _Ligature: https://en.wikipedia.org/wiki/Ligature_(writing)
+
+Working with :class:`~.MarkupText`
+==================================
+
+MarkupText is similar to :class:`~.Text`, the only difference between them is 
+that this accepts PangoMarkup(which are similar to html), instead of text.
+
+You can find the reference of PangoMarkup in :class:`MarkupText`.
+
+.. manim:: MarkupTest 
+    :save_last_frame:
+
+    class MarkupTest(Scene):
+        def construct(self):
+            text = MarkupText(
+                f'<span underline="double" underline_color="green">double green underline</span> in red text<span fgcolor="{YELLOW}"> except this</span>',
+                color=RED,
+            ).scale(0.7)
+            self.add(text)
+
