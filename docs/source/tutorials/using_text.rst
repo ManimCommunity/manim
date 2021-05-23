@@ -26,26 +26,25 @@ render non-English alphabets like `你好` or  `こんにちは` or `안녕하�
 
 Here, is a simple Hello World animation.
 
-.. manim:: HelloWorld
+.. manim:: HelloWorld 
     :save_last_frame:
+    :ref_classes: Text
 
     class HelloWorld(Scene):
         def construct(self):
-            text = Text('Hello world').scale(3)
+            text = Text("Hello world").scale(3)
             self.add(text)
 
 You can also use :class:`~.MarkupText` where PangoMarkup (:class:`~.MarkupText`)
 can be used to render text. For example,
 
-.. manim:: SingleLineColor
+.. manim:: SingleLineColor 
     :save_last_frame:
+    :ref_classes: MarkupText
 
     class SingleLineColor(Scene):
         def construct(self):
-            text = MarkupText(
-               f'all in red <span fgcolor="{YELLOW}">except this</span>',
-               color=RED
-            )
+            text = MarkupText(f'all in red <span fgcolor="{YELLOW}">except this</span>', color=RED)
             self.add(text)
 
 .. _Pango library: https://pango.gnome.org
@@ -97,15 +96,17 @@ Weight specifies the boldness of a font. You can see a list in
             a = Text("Italic", slant=ITALIC)
             self.add(a)
 
-.. manim:: DifferentWeight
+.. manim:: DifferentWeight 
     :save_last_frame:
-    
+
     class DifferentWeight(Scene):
         def construct(self):
             import manimpango
+
             g = VGroup()
-            for i in manimpango.Weight:
-                g += Text(i.name, weight=i.name, font="Open Sans")
+            weight_list = dict(sorted({weight: manimpango.Weight(weight).value for weight in manimpango.Weight}.items(), key=lambda x: x[1]))
+            for weight in weight_list:
+                g += Text(weight.name, weight=weight.name, font="Open Sans")
             self.add(g.arrange(DOWN).scale(0.5))
 
 Using Colors
