@@ -208,11 +208,28 @@ class VectorField(VGroup):
         """
 
         step_size = dt / substeps
+
+        def runge_kutta_pointwise(self, p, step_size):
+            k_1 = self.func(p)
+            k_2 = self.func(p + step_size * (k_1 * 0.5))
+            k_3 = self.func(p + step_size * (k_2 * 0.5))
+            k_4 = self.func(p + step_size * k_3)
+            return step_size / 6.0 * (k_1 + 2.0 * k_2 + 2.0 * k_3 + k_4)
+
+        def runge_kutta_center(self, mob, step_size):
+            k_1 = self.func(mob.get_center())
+            k_2 = self.func(mob.get_center() + step_size * (k_1 * 0.5))
+            k_3 = self.func(mob.get_center() + step_size * (k_2 * 0.5))
+            k_4 = self.func(mob.get_center() + step_size * k_3)
+            return step_size / 6.0 * (k_1 + 2.0 * k_2 + 2.0 * k_3 + k_4)
+
         for i in range(substeps):
             if pointwise:
-                mob.apply_function(lambda p: p + self.func(p) * step_size)
+                mob.apply_function(
+                    lambda p: p + runge_kutta_pointwise(self, p, step_size)
+                )
             else:
-                mob.shift(self.func(mob.get_center()) * step_size)
+                mob.shift(runge_kutta_center(self, mob, step_size))
         return self
 
     def nudge_submobjects(
