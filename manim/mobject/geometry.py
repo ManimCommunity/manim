@@ -93,8 +93,6 @@ from ..utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    from numpy import float64, ndarray
-
     from .number_line import NumberLine
 
 
@@ -121,7 +119,7 @@ class TipableVMobject(metaclass=MetaVMobject):
     def __init__(
         self,
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
-        normal_vector: ndarray = OUT,
+        normal_vector: np.ndarray = OUT,
         tip_style: Dict[Any, Any] = {},
         **kwargs,
     ) -> None:
@@ -269,25 +267,25 @@ class TipableVMobject(metaclass=MetaVMobject):
     def get_default_tip_length(self) -> float:
         return self.tip_length
 
-    def get_first_handle(self) -> ndarray:
+    def get_first_handle(self) -> np.ndarray:
         return self.get_points()[1]
 
-    def get_last_handle(self) -> ndarray:
+    def get_last_handle(self) -> np.ndarray:
         return self.get_points()[-2]
 
-    def get_end(self) -> ndarray:
+    def get_end(self) -> np.ndarray:
         if self.has_tip():
             return self.tip.get_start()
         else:
             return super().get_end()
 
-    def get_start(self) -> ndarray:
+    def get_start(self) -> np.ndarray:
         if self.has_start_tip():
             return self.start_tip.get_start()
         else:
             return super().get_start()
 
-    def get_length(self) -> float64:
+    def get_length(self) -> np.float64:
         start, end = self.get_start_and_end()
         return np.linalg.norm(start - end)
 
@@ -299,10 +297,10 @@ class Arc(TipableVMobject):
         self,
         radius: Optional[Union[float, int]] = 1.0,
         start_angle: int = 0,
-        angle: Union[float64, float] = TAU / 4,
+        angle: Union[np.float64, float] = TAU / 4,
         num_components: int = 9,
         anchors_span_full_range: bool = True,
-        arc_center: ndarray = ORIGIN,
+        arc_center: np.ndarray = ORIGIN,
         **kwargs,
     ) -> None:
         if radius is None:  # apparently None is passed by ArcBetweenPoints
@@ -377,7 +375,7 @@ class Arc(TipableVMobject):
         handles2 = anchors[1:] - (d_theta / 3) * tangent_vectors[1:]
         self.set_anchors_and_handles(anchors[:-1], handles1, handles2, anchors[1:])
 
-    def get_arc_center(self, warning: bool = True) -> ndarray:
+    def get_arc_center(self, warning: bool = True) -> np.ndarray:
         """
         Looks at the normals to the first two
         anchors, and finds their intersection points
@@ -419,9 +417,9 @@ class ArcBetweenPoints(Arc):
 
     def __init__(
         self,
-        start: ndarray,
-        end: ndarray,
-        angle: float64 = TAU / 4,
+        start: np.ndarray,
+        end: np.ndarray,
+        angle: np.float64 = TAU / 4,
         radius: None = None,
         **kwargs,
     ) -> None:
@@ -634,7 +632,7 @@ class Dot(Circle):
 
     def __init__(
         self,
-        point: ndarray = ORIGIN,
+        point: np.ndarray = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width: int = 0,
         fill_opacity: float = 1.0,
@@ -836,8 +834,8 @@ class Annulus(Circle):
 class Line(TipableVMobject):
     def __init__(
         self,
-        start: ndarray = LEFT,
-        end: ndarray = RIGHT,
+        start: np.ndarray = LEFT,
+        end: np.ndarray = RIGHT,
         buff: Union[float, int] = 0,
         path_arc: None = None,
         **kwargs,
@@ -855,8 +853,8 @@ class Line(TipableVMobject):
 
     def set_points_by_ends(
         self,
-        start: ndarray,
-        end: ndarray,
+        start: np.ndarray,
+        end: np.ndarray,
         buff: Union[float, int] = 0,
         path_arc: None = 0,
     ) -> None:
@@ -891,7 +889,7 @@ class Line(TipableVMobject):
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
         return self
 
-    def set_start_and_end_attrs(self, start: ndarray, end: ndarray) -> None:
+    def set_start_and_end_attrs(self, start: np.ndarray, end: np.ndarray) -> None:
         # If either start or end are Mobjects, this
         # gives their centers
         rough_start = self.pointify(start)
@@ -904,8 +902,8 @@ class Line(TipableVMobject):
         self.end = self.pointify(end, -vect)
 
     def pointify(
-        self, mob_or_point: ndarray, direction: Optional[ndarray] = None
-    ) -> ndarray:
+        self, mob_or_point: np.ndarray, direction: Optional[np.ndarray] = None
+    ) -> np.ndarray:
         if isinstance(mob_or_point, Mobject):
             mob = mob_or_point
             if direction is None:
@@ -915,7 +913,7 @@ class Line(TipableVMobject):
         return np.array(mob_or_point)
 
     def put_start_and_end_on(
-        self, start: ndarray, end: ndarray
+        self, start: np.ndarray, end: np.ndarray
     ) -> Union[NumberLine, Arrow, DoubleArrow, Vector]:
         """Sets starts and end coordinates of a line.
         Examples
@@ -946,13 +944,13 @@ class Line(TipableVMobject):
             self.generate_points()
         return super().put_start_and_end_on(start, end)
 
-    def get_vector(self) -> ndarray:
+    def get_vector(self) -> np.ndarray:
         return self.get_end() - self.get_start()
 
-    def get_unit_vector(self) -> ndarray:
+    def get_unit_vector(self) -> np.ndarray:
         return normalize(self.get_vector())
 
-    def get_angle(self) -> float64:
+    def get_angle(self) -> np.float64:
         return angle_of_vector(self.get_vector())
 
     def get_projection(self, point):
@@ -1038,7 +1036,7 @@ class DashedLine(Line):
         *args,
         dash_length=DEFAULT_DASH_LENGTH,
         dash_spacing=None,
-        positive_space_ratio=0.5,
+        positive_space_ratio: float = 0.5,
         **kwargs,
     ) -> None:
         self.dash_length = dash_length
@@ -1073,7 +1071,7 @@ class DashedLine(Line):
     def calculate_positive_space_ratio(self):
         return fdiv(self.dash_length, self.dash_length + self.dash_spacing)
 
-    def get_start(self) -> ndarray:
+    def get_start(self) -> np.ndarray:
         """Returns the start point of the line.
 
         Examples
@@ -1089,7 +1087,7 @@ class DashedLine(Line):
         else:
             return Line.get_start(self)
 
-    def get_end(self) -> ndarray:
+    def get_end(self) -> np.ndarray:
         """Returns the end point of the line.
 
         Examples
@@ -1293,7 +1291,7 @@ class Arrow(Line):
         self.set_stroke_width_from_length()
 
     def scale(
-        self, factor: float64, scale_tips: bool = False, **kwargs
+        self, factor: np.float64, scale_tips: bool = False, **kwargs
     ) -> Union[Arrow, DoubleArrow, Vector]:
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
@@ -1363,7 +1361,7 @@ class Arrow(Line):
         self.normal_vector = self.get_normal_vector()
         return self
 
-    def get_default_tip_length(self) -> Union[float64, float]:
+    def get_default_tip_length(self) -> Union[np.float64, float]:
         """Returns the default tip_length of the arrow.
 
         Examples
@@ -1420,7 +1418,7 @@ class Vector(Arrow):
                 self.add(plane, vector_1, vector_2)
     """
 
-    def __init__(self, direction: ndarray = RIGHT, buff: int = 0, **kwargs) -> None:
+    def __init__(self, direction: np.ndarray = RIGHT, buff: int = 0, **kwargs) -> None:
         self.buff = buff
         if len(direction) == 2:
             direction = np.hstack([direction, 0])
@@ -1620,7 +1618,7 @@ class Polygram(metaclass=MetaVMobject):
 
         return self.get_start_anchors()
 
-    def get_vertex_groups(self) -> ndarray:
+    def get_vertex_groups(self) -> np.ndarray:
         """Gets the vertex groups of the :class:`Polygram`.
 
         Returns
@@ -2437,7 +2435,7 @@ class ArrowTip(metaclass=MetaVMobject):
         raise NotImplementedError("Has to be implemented in inheriting subclasses.")
 
     @property
-    def base(self) -> ndarray:
+    def base(self) -> np.ndarray:
         r"""The base point of the arrow tip.
 
         This is the point connecting to the arrow line.
@@ -2454,7 +2452,7 @@ class ArrowTip(metaclass=MetaVMobject):
         return self.point_from_proportion(0.5)
 
     @property
-    def tip_point(self) -> ndarray:
+    def tip_point(self) -> np.ndarray:
         r"""The tip point of the arrow tip.
 
         Examples
@@ -2469,7 +2467,7 @@ class ArrowTip(metaclass=MetaVMobject):
         return self.get_points()[0]
 
     @property
-    def vector(self) -> ndarray:
+    def vector(self) -> np.ndarray:
         r"""The vector pointing from the base point to the tip point.
 
         Examples
@@ -2484,7 +2482,7 @@ class ArrowTip(metaclass=MetaVMobject):
         return self.tip_point - self.base
 
     @property
-    def tip_angle(self) -> float64:
+    def tip_angle(self) -> np.float64:
         r"""The angle of the arrow tip.
 
         Examples
@@ -2521,7 +2519,7 @@ class ArrowTriangleTip(ArrowTip, Triangle):
         self,
         fill_opacity: int = 0,
         stroke_width: int = 3,
-        length: Union[float, float64] = DEFAULT_ARROW_TIP_LENGTH,
+        length: Union[float, np.float64] = DEFAULT_ARROW_TIP_LENGTH,
         start_angle: float = PI,
         **kwargs,
     ) -> None:

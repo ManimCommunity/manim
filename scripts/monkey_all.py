@@ -8,7 +8,7 @@ import sys
 
 sys.path.append('tests')
 
-for file in os.listdir("tests"):
+for root, dirs, files in os.walk("tests"):
     if file.startswith("test_"):
         try:
             importlib.import_module(file[:-3])
@@ -23,4 +23,3 @@ for name, obj in inspect.getmembers(manim):
             pass
         except Exception as e:
             print(f"Error: {e} from {obj.__name__}")
-
