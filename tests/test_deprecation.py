@@ -1,9 +1,10 @@
-import warnings
-
 import pytest
 import logging
-from manim import logger
 from manim.utils.deprecation import deprecated, deprecated_params
+
+def _get_caplog_record_msg(warn_caplog_manim):
+    logger_name, level, message = warn_caplog_manim.record_tuples[0]
+    return message
 
 @pytest.fixture()
 def warn_caplog_manim(caplog):
@@ -73,7 +74,7 @@ def test_deprecate_class_no_args(warn_caplog_manim):
     """Test the deprecation of a class (decorator with no arguments)."""
     f = Foo()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The class Foo has been deprecated and may be removed in a later version."
@@ -85,7 +86,7 @@ def test_deprecate_class_since(warn_caplog_manim):
     """Test the deprecation of a class (decorator with since argument)."""
     b = Bar()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The class Bar has been deprecated since v0.6.0 and may be removed in a later version."
@@ -97,7 +98,7 @@ def test_deprecate_class_until(warn_caplog_manim):
     """Test the deprecation of a class (decorator with until argument)."""
     bz = Baz()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The class Baz has been deprecated and is expected to be removed after 06/01/2021."
@@ -109,7 +110,7 @@ def test_deprecate_class_since_and_until(warn_caplog_manim):
     """Test the deprecation of a class (decorator with since and until arguments)."""
     qx = Qux()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The class Qux has been deprecated since 0.7.0 and is expected to be removed after 0.9.0-rc2."
@@ -121,7 +122,7 @@ def test_deprecate_class_msg(warn_caplog_manim):
     """Test the deprecation of a class (decorator with msg argument)."""
     qu = Quux()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The class Quux has been deprecated and may be removed in a later version. Use something else."
@@ -133,7 +134,7 @@ def test_deprecate_class_replacement(warn_caplog_manim):
     """Test the deprecation of a class (decorator with replacement argument)."""
     qz = Quuz()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The class Quuz has been deprecated and may be removed in a later version. Use ReplaceQuuz instead."
@@ -146,18 +147,13 @@ def test_deprecate_class_all(warn_caplog_manim):
     """Test the deprecation of a class (decorator with all arguments)."""
     qza = QuuzAll()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use ReplaceQuuz instead. Don't use this please."
     )
     doc_msg = "The class QuuzAll has been deprecated since 0.7.0 and is expected to be removed after 1.2.1. Use :class:`~.ReplaceQuuz` instead. Don't use this please."
     assert qza.__doc__ == f"{doc_admonition}{doc_msg}"
-
-
-def _get_warn_caplog_manim_record_msg(warn_caplog_manim):
-    logger_name, level, message = warn_caplog_manim.record_tuples[0]
-    return message
 
 
 @deprecated
@@ -242,7 +238,7 @@ def test_deprecate_func_no_args(warn_caplog_manim):
     """Test the deprecation of a method (decorator with no arguments)."""
     useless()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The function useless has been deprecated and may be removed in a later version."
@@ -255,7 +251,7 @@ def test_deprecate_func_in_class_since_and_message(warn_caplog_manim):
     t = Top()
     t.mid_func()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The method Top.mid_func has been deprecated since 0.8.0 and may be removed in a later version. This method is useless."
@@ -267,7 +263,7 @@ def test_deprecate_nested_class_until_and_replacement(warn_caplog_manim):
     """Test the deprecation of a nested class (decorator with until and replacement arguments)."""
     n = Top().Nested()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The class Top.Nested has been deprecated and is expected to be removed after 1.4.0. Use Top.NewNested instead."
@@ -281,7 +277,7 @@ def test_deprecate_nested_class_func_since_and_until(warn_caplog_manim):
     n = Top().NewNested()
     n.nested_func()
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The method Top.NewNested.nested_func has been deprecated since 1.0.0 and is expected to be removed after 12/25/2025."
@@ -298,7 +294,7 @@ def test_deprecate_nested_func(warn_caplog_manim):
     answer = b.normal_func()
     answer(1)
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The method Top.Bottom.normal_func.<locals>.nested_func has been deprecated and may be removed in a later version."
@@ -311,7 +307,7 @@ def test_deprecate_func_params(warn_caplog_manim):
     t = Top()
     t.foo(a=2, b=3, z=4)
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version. Use something else."
@@ -323,7 +319,7 @@ def test_deprecate_func_single_param_since_and_until(warn_caplog_manim):
     t = Top()
     t.bar(a=1, b=2)
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The parameter a of method Top.bar has been deprecated since v0.2 and is expected to be removed after v0.4."
@@ -335,7 +331,7 @@ def test_deprecate_func_param_redirect_tuple(warn_caplog_manim):
     t = Top()
     obj = t.baz(x=1, old_param=2)
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The parameter old_param of method Top.baz has been deprecated and may be removed in a later version."
@@ -348,7 +344,7 @@ def test_deprecate_func_param_redirect_lambda(warn_caplog_manim):
     t = Top()
     obj = t.qux(runtime_in_ms=500)
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The parameter runtime_in_ms of method Top.qux has been deprecated and may be removed in a later version."
@@ -361,7 +357,7 @@ def test_deprecate_func_param_redirect_many_to_one(warn_caplog_manim):
     t = Top()
     obj = t.quux(point2D_x=3, point2D_y=5)
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The parameters point2D_x and point2D_y of method Top.quux have been deprecated and may be removed in a later version."
@@ -374,7 +370,7 @@ def test_deprecate_func_param_redirect_one_to_many(warn_caplog_manim):
     t = Top()
     obj1 = t.quuz(point2D=0)
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
@@ -385,7 +381,7 @@ def test_deprecate_func_param_redirect_one_to_many(warn_caplog_manim):
 
     obj2 = t.quuz(point2D=(2, 3))
     assert len(warn_caplog_manim.record_tuples) == 1
-    msg = _get_warn_caplog_manim_record_msg(warn_caplog_manim)
+    msg = _get_caplog_record_msg(warn_caplog_manim)
     assert (
         msg
         == "The parameter point2D of method Top.quuz has been deprecated and may be removed in a later version."
