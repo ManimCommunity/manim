@@ -1260,7 +1260,7 @@ class Mobject(Container):
                     circ.apply_complex_function(
                         lambda x: np.exp(x*1j)
                     )
-                    t=ValueTracker(0)
+                    t = ValueTracker(0)
                     circ.add_updater(
                         lambda x: x.become(circ_ref.copy().apply_complex_function(
                             lambda x: np.exp(x+t.get_value()*1j)
