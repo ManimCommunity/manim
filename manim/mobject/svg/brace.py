@@ -297,7 +297,8 @@ class ArcBrace(Brace):
             line.scale(arc.radius, about_point=ORIGIN)
         Brace.__init__(self, line, direction=direction, **kwargs)
         if arc.radius >= 1:
-            self.scale(1 / (arc.radius), about_point=ORIGIN)            
+            self.scale(1 / (arc.radius), about_point=ORIGIN)
+
         if arc.radius >= 0.3:
             self.shift(scale_shift)
         else:
