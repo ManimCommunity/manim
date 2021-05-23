@@ -2,7 +2,9 @@ import os
 import sys
 
 import pytest
-from manim import tempconfig, config
+
+from manim import config, tempconfig
+
 
 def pytest_addoption(parser):
     parser.addoption(
