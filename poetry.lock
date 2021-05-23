@@ -898,7 +898,7 @@ six = "*"
 name = "mypy"
 version = "0.812"
 description = "Optional static typing for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.5"
 
@@ -914,7 +914,7 @@ dmypy = ["psutil (>=4.0)"]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -1786,7 +1786,7 @@ test = ["pytest"]
 name = "typed-ast"
 version = "1.4.3"
 description = "a fork of Python 2 and 3 ast modules with type comment support"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -1904,7 +1904,7 @@ webgl_renderer = ["grpcio", "grpcio-tools"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "39d18dfd9cf3fdac47a99b8ea1e28b1090c419c645898a157c68626c105885b4"
+content-hash = "3bec8f72f8025a30d4760382c2d054b49c87ca7e3e13312af070dba214b4dcda"
 
 [metadata.files]
 alabaster = [

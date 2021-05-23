@@ -51,7 +51,6 @@ moderngl-window = "^2.3.0"
 mapbox-earcut = "^0.12.10"
 cloup = "^0.7.0"
 requests = "*"
-mypy = "^0.812"
 termcolor = "^1.1.0"
 
 [tool.poetry.extras]
@@ -74,6 +73,7 @@ pygithub = "^1"
 flake8 = "^3.9.0"
 isort = "^5.8.0"
 MonkeyType = "^21.5.0"
+mypy = "^0.812"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"
