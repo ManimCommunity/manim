@@ -1,8 +1,7 @@
 For Developers
 ==============
 
-This documentation is for developers who want to contribute to 
-`ManimCommunity/manim <https://github.com/ManimCommunity/manim>`_.
+	This documentation is for developers who want to contribute to `ManimCommunity/manim <https://github.com/ManimCommunity/manim>`_.
 
 Thank you for your interest in contributing! Please see our documentation on
 :doc:`../contributing` to take the necessary steps before installing Manim as a
@@ -37,10 +36,7 @@ Windows PowerShell install instructions
 	
 	  (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python
 
-.. note:: Poetry can be installed by other ways also, such as with ``pip``. 
-          See `<https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_. 
-          If you are using MacOS with the Homebrew package manager, you can also install 
-          poetry with ``brew install poetry``.
+.. note:: Poetry can be installed by other ways also, such as with ``pip``. See `<https://python-poetry.org/docs/#alternative-installation-methods-not-recommended>`_. If you are using MacOS with the Homebrew package manager, you can also install poetry with ``brew install poetry``.
 
 It will add it to ``PATH`` variable automatically. In order to make sure you have poetry installed correctly, try running:
 
@@ -58,7 +54,7 @@ Installing System Dependencies
 ******************************
 
 Please follow the instructions under :ref:`installing-manim` to install all
-dependencies (e.g. ``LaTeX``, ``ffmpeg``, etc.). Afterwards, proceed with the
+dependencies (e.g. ``LaTeX``, ``ffmpeg``, etc.). Afterward, proceed with the
 installation with Poetry.
 
 .. important:: Windows users can skip the steps to install Pycairo.
@@ -117,8 +113,8 @@ command ``pytest`` to run the tests.
 Code Formatting and Linting Using Poetry
 ****************************************
 
-Once you are done with :ref:`install-manim-poetry`, you can run the code 
-formatter ``black`` by activating entering the virtual environment:
+Once you are done with :ref:`install-manim-poetry`, you can run the code formatter ``black`` 
+by activating entering the virtual environment:
 
 .. code-block:: bash
 
