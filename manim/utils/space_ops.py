@@ -131,7 +131,7 @@ def quaternion_from_angle_axis(
         return np.append(np.cos(angle / 2), np.sin(angle / 2) * normalize(axis))
 
 
-def angle_axis_from_quaternion(quaternion: Sequence[float]) -> float:
+def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
     """Gets angle and axis from a quaternion.
 
     Parameters
