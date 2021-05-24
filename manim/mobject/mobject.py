@@ -1245,6 +1245,32 @@ class Mobject(Container):
         return self
 
     def apply_complex_function(self, function, **kwargs):
+        """Applies a complex function to a :class:`Mobject`.
+        The x and y coordinates correspond to the real and imaginary parts respectively.
+
+        Example
+        -------
+
+        .. manim:: ApplyFuncExample
+
+            class ApplyFuncExample(Scene):
+                def construct(self):
+                    circ = Circle().scale(1.5)
+                    circ_ref = circ.copy()
+                    circ.apply_complex_function(
+                        lambda x: np.exp(x*1j)
+                    )
+                    t = ValueTracker(0)
+                    circ.add_updater(
+                        lambda x: x.become(circ_ref.copy().apply_complex_function(
+                            lambda x: np.exp(x+t.get_value()*1j)
+                        )).set_color(BLUE)
+                    )
+                    self.add(circ_ref)
+                    self.play(TransformFromCopy(circ_ref, circ))
+                    self.play(t.animate.set_value(TAU), run_time=3)
+        """
+
         def R3_func(point):
             x, y, z = point
             xy_complex = function(complex(x, y))
