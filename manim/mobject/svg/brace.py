@@ -302,6 +302,6 @@ class ArcBrace(Brace):
         if arc.radius >= 0.3:
             self.shift(scale_shift)
         else:
-            self.shift(RIGHT*np.log(0.3))
+            self.shift(RIGHT * np.log(0.3))
         self.apply_complex_function(np.exp)
         self.shift(arc_center)
