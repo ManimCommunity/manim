@@ -123,6 +123,27 @@ class Arcs02Test(Scene):
         self.wait()
 
 
+class LineDasharray(Scene):
+    def construct(self):
+        line_dasharray = SVGMobject(get_test_resource("line_dasharray.svg"))
+        self.add(line_dasharray)
+        self.wait()
+
+
+class LineLinecapRound(Scene):
+    def construct(self):
+        line_linecap_round = SVGMobject(get_test_resource("line_linecap_round.svg"))
+        self.add(line_linecap_round)
+        self.wait()
+
+
+class TriangleLinejoin(Scene):
+    def construct(self):
+        triangle_linejoin = SVGMobject(get_test_resource("triangle_linejoin.svg"))
+        self.add(triangle_linejoin)
+        self.wait()
+
+
 # Second are the visual tests - these are probably too complex to verify step-by-step, so
 # these are really more of a spot-check
 
