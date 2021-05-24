@@ -28,9 +28,11 @@ class BraceTipTest(Scene):
             self.add(brace, dot)
             self.wait()
 
+
 class ArcBraceTest(Scene):
     def construct(self):
         self.play(Animation(ArcBrace()))
+
 
 MODULE_NAME = "brace"
 
