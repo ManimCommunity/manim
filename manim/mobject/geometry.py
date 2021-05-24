@@ -2206,6 +2206,10 @@ class Rectangle(Polygon):
         The vertical height of the rectangle.
     width : :class:`float`, optional
         The horizontal width of the rectangle.
+    grid_xstep : :class:`float`, optional
+        Space between vertical grid lines.
+    grid_ystep : :class:`float`, optional
+        Space between horizontal grid lines.
     mark_paths_closed : :class:`bool`, optional
         No purpose.
     close_new_points : :class:`bool`, optional
@@ -2233,6 +2237,8 @@ class Rectangle(Polygon):
         color=WHITE,
         height=2.0,
         width=4.0,
+        grid_xstep=0,
+        grid_ystep=0,
         mark_paths_closed=True,
         close_new_points=True,
         **kwargs,
@@ -2242,6 +2248,33 @@ class Rectangle(Polygon):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
+        v = self.get_vertices()
+        if grid_xstep != 0:
+            count = int(width / grid_xstep)
+            grid = VGroup(
+                *[
+                    Line(
+                        v[1] + i * grid_xstep * RIGHT,
+                        v[1] + i * grid_xstep * RIGHT + height * DOWN,
+                        color=color,
+                    )
+                    for i in range(1, count)
+                ]
+            )
+            self.add(grid)
+        if grid_ystep != 0:
+            count = int(height / grid_ystep)
+            grid = VGroup(
+                *[
+                    Line(
+                        v[1] + i * grid_ystep * DOWN,
+                        v[1] + i * grid_ystep * DOWN + width * RIGHT,
+                        color=color,
+                    )
+                    for i in range(1, count)
+                ]
+            )
+            self.add(grid)
 
 
 class Square(Rectangle):
