@@ -287,21 +287,21 @@ class ArcBrace(Brace):
         direction: Sequence[float] = RIGHT,
         **kwargs
     ):
-        arc_center = arc.get_arc_center()
         arc_end_angle = arc.start_angle + arc.angle
-
-        scale_shift = RIGHT * np.log(arc.radius)
         line = Line(UP * arc.start_angle, UP * arc_end_angle)
-
+        scale_shift = RIGHT * np.log(arc.radius)
+        
         if arc.radius >= 1:
-            line.scale(arc.radius)
-        Brace.__init__(self, line, direction=direction, **kwargs)
-        if arc.radius >= 1:
-            self.scale(1 / (arc.radius))
-
+            line.scale(arc.radius, about_point=ORIGIN)
+            Brace.__init__(self, line, direction=direction, **kwargs)
+            self.scale(1 / (arc.radius), about_point=ORIGIN)
+        else:
+            Brace.__init__(self, line, direction=direction, **kwargs)
+            
         if arc.radius >= 0.3:
             self.shift(scale_shift)
         else:
             self.shift(RIGHT * np.log(0.3))
+            
         self.apply_complex_function(np.exp)
-        self.shift(arc_center)
+        self.shift(arc.get_arc_center())
