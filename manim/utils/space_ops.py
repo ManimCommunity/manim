@@ -19,6 +19,7 @@ __all__ = [
     "cross",
     "get_unit_normal",
     "compass_directions",
+    "regular_vertices",
     "complex_to_R3",
     "R3_to_complex",
     "complex_func_to_R3_func",
@@ -35,26 +36,24 @@ __all__ = [
 import itertools as it
 import math
 from functools import reduce
+from typing import Optional, Tuple
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
 
 from .. import config
 from ..constants import DOWN, OUT, PI, RIGHT, TAU
+from ..utils.deprecation import deprecated
 from ..utils.iterables import adjacent_pairs
-from ..utils.simple_functions import fdiv
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.linalg.norm")
 def get_norm(vect):
-    logger.warning(
-        "get_norm has been deprecated and will be removed in a future release."
-        "Use np.linalg.norm instead."
-    )
     return np.linalg.norm(vect)
 
 
 def norm_squared(v):
-    return np.linalg.dot(v, v)
+    return np.dot(v, v)
 
 
 # Quaternions
@@ -168,14 +167,20 @@ def rotation_matrix_transpose(angle, axis):
     return rotation_matrix_transpose_from_quaternion(quat)
 
 
-def rotation_matrix(angle, axis):
+def rotation_matrix(angle, axis, homogeneous=False):
     """
     Rotation in R^3 about a specified axis of rotation.
     """
     about_z = rotation_about_z(angle)
     z_to_axis = z_to_vector(axis)
     axis_to_z = np.linalg.inv(z_to_axis)
-    return reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    inhomogeneous_rotation_matrix = reduce(np.dot, [z_to_axis, about_z, axis_to_z])
+    if not homogeneous:
+        return inhomogeneous_rotation_matrix
+    else:
+        rotation_matrix = np.eye(4)
+        rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
+        return rotation_matrix
 
 
 def rotation_about_z(angle):
@@ -210,11 +215,8 @@ def z_to_vector(vector):
     return np.dot(rotation_about_z(theta), phi_down)
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="angle_between_vectors")
 def angle_between(v1, v2):
-    logger.warning(
-        "angle_between has been deprecated and will be removed in a future release."
-        "Use angle_between_vectors instead."
-    )
     return np.arccos(np.dot(v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2)))
 
 
@@ -270,11 +272,8 @@ def normalize_along_axis(array, axis, fall_back=None):
     return array
 
 
+@deprecated(since="v0.6.0", until="v0.8.0", replacement="np.cross")
 def cross(v1, v2):
-    logger.warning(
-        "cross has been deprecated and will be removed in a future release."
-        "Use np.cross instead."
-    )
     return np.cross(v1, v2)
 
 
@@ -302,6 +301,43 @@ def get_unit_normal(v1, v2, tol=1e-6):
 def compass_directions(n=4, start_vect=RIGHT):
     angle = TAU / n
     return np.array([rotate_vector(start_vect, k * angle) for k in range(n)])
+
+
+def regular_vertices(
+    n: int, *, radius: float = 1, start_angle: Optional[float] = None
+) -> Tuple[np.ndarray, float]:
+    """Generates regularly spaced vertices around a circle centered at the origin.
+
+    Parameters
+    ----------
+    n
+        The number of vertices
+    radius
+        The radius of the circle that the vertices are placed on.
+    start_angle
+        The angle the vertices start at.
+
+        If unspecified, for even ``n`` values, ``0`` will be used.
+        For odd ``n`` values, 90 degrees is used.
+
+    Returns
+    -------
+    vertices : :class:`numpy.ndarray`
+        The regularly spaced vertices.
+    start_angle : :class:`float`
+        The angle the vertices start at.
+    """
+
+    if start_angle is None:
+        if n % 2 == 0:
+            start_angle = 0
+        else:
+            start_angle = TAU / 4
+
+    start_vector = rotate_vector(RIGHT * radius, start_angle)
+    vertices = compass_directions(n, start_vector)
+
+    return vertices, start_angle
 
 
 def complex_to_R3(complex_num):
@@ -361,16 +397,16 @@ def find_intersection(p0, v0, p1, v1, threshold=1e-5):
     m, n = np.shape(p0)
     assert n in [2, 3]
 
-    numer = np.cross(v1, p1 - p0)
-    denom = np.cross(v1, v0)
+    numerator = np.cross(v1, p1 - p0)
+    denominator = np.cross(v1, v0)
     if n == 3:
-        d = len(np.shape(numer))
-        new_numer = np.multiply(numer, numer).sum(d - 1)
-        new_denom = np.multiply(denom, numer).sum(d - 1)
-        numer, denom = new_numer, new_denom
+        d = len(np.shape(numerator))
+        new_numerator = np.multiply(numerator, numerator).sum(d - 1)
+        new_denominator = np.multiply(denominator, numerator).sum(d - 1)
+        numerator, denominator = new_numerator, new_denominator
 
-    denom[abs(denom) < threshold] = np.inf  # So that ratio goes to 0 there
-    ratio = numer / denom
+    denominator[abs(denominator) < threshold] = np.inf  # So that ratio goes to 0 there
+    ratio = numerator / denominator
     ratio = np.repeat(ratio, n).reshape((m, n))
     return p0 + ratio * v0
 
@@ -452,11 +488,11 @@ def earclip_triangulation(verts, ring_ends):
             for ring_group in (attached_rings, detached_rings)
         ]
 
-        # Closet point on the atttached rings to an estimated midpoint
+        # Closest point on the attached rings to an estimated midpoint
         # of the detached rings
         tmp_j_vert = midpoint(verts[j_range[0]], verts[j_range[len(j_range) // 2]])
         i = min(i_range, key=lambda i: norm_squared(verts[i] - tmp_j_vert))
-        # Closet point of the detached rings to the aforementioned
+        # Closest point of the detached rings to the aforementioned
         # point of the attached rings
         j = min(j_range, key=lambda j: norm_squared(verts[i] - verts[j]))
         # Recalculate i based on new j

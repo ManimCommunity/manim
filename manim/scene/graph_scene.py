@@ -45,8 +45,9 @@ Examples
 
 __all__ = ["GraphScene"]
 
-
 import itertools as it
+
+import numpy as np
 
 from .. import config, logger
 from ..animation.creation import Create, DrawBorderThenFill, Write
@@ -79,8 +80,12 @@ from ..utils.space_ops import angle_of_vector
 
 
 class GraphScene(Scene):
-    """
-    Deprecated - GraphScene
+    """A special scene intended for plotting functions.
+
+    .. note::
+
+        This class is in the process of being deprecated. Functionality is
+        currently being ported to :class:`~.Axes`.
     """
 
     def __init__(
@@ -116,10 +121,6 @@ class GraphScene(Scene):
         y_axis_config=None,
         **kwargs,
     ):
-        logger.warning(
-            "GraphScene has been deprecated and will be removed in a future release. "
-            "Use Axes instead."
-        )
         self.x_min = x_min
         self.x_max = x_max
         self.x_axis_width = x_axis_width

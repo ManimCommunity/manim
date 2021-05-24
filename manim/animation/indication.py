@@ -19,8 +19,8 @@ Examples
                 else:
                     self.play(indications[i](names[i]))
                 self.play(AnimationGroup(
-                    FadeOutAndShift(names[i], UP*1.5),
-                    FadeInFrom(names[(i+1)%len(names)], DOWN*1.5),
+                    FadeOut(names[i], shift=UP*1.5),
+                    FadeIn(names[(i+1)%len(names)], shift=UP*1.5),
                 ))
 
 """
@@ -31,6 +31,7 @@ __all__ = [
     "Flash",
     "CircleIndicate",
     "ShowPassingFlash",
+    "ShowPassingFlashWithThinningStrokeWidth",
     "ShowCreationThenDestruction",
     "ShowCreationThenFadeOut",
     "AnimationOnSurroundingRectangle",
@@ -44,14 +45,13 @@ __all__ = [
     "Wiggle",
 ]
 
-
+import typing
 from typing import Callable, Type, Union
 
 import numpy as np
 from colour import Color
 
 from .. import config
-from .._config import logger
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, ShowPartial, Uncreate
@@ -65,6 +65,7 @@ from ..mobject.shape_matchers import SurroundingRectangle
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW
+from ..utils.deprecation import deprecated
 from ..utils.rate_functions import smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
@@ -129,7 +130,7 @@ class FocusOn(Transform):
 
 
 class Indicate(Transform):
-    """Indicate a Mobject by temporaly resizing and recoloring it.
+    """Indicate a Mobject by temporarily resizing and recoloring it.
 
     Parameters
     ----------
@@ -277,9 +278,8 @@ class Flash(AnimationGroup):
         ]
 
 
+@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
 class CircleIndicate(Indicate):
-    """Deprecated. Use :class:`~.Circumscribe` instead."""
-
     def __init__(
         self,
         mobject: "Mobject",
@@ -290,9 +290,6 @@ class CircleIndicate(Indicate):
         remover: bool = True,
         **kwargs
     ) -> None:
-        logger.warning(
-            "ShowCreationThenDestructionAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
-        )
         self.circle_config = circle_config
         circle = self.get_circle(mobject)
         super().__init__(circle, rate_func=rate_func, remover=remover, **kwargs)
@@ -359,15 +356,34 @@ class ShowPassingFlash(ShowPartial):
             submob.pointwise_become_partial(start, 0, 1)
 
 
-class ShowCreationThenDestruction(ShowPassingFlash):
-    """Deprecated. Use :class:`~.ShowPassingFlash` instead."""
+class ShowPassingFlashWithThinningStrokeWidth(AnimationGroup):
+    def __init__(self, vmobject, n_segments=10, time_width=0.1, remover=True, **kwargs):
+        self.n_segments = n_segments
+        self.time_width = time_width
+        self.remover = remover
+        max_stroke_width = vmobject.get_stroke_width()
+        max_time_width = kwargs.pop("time_width", self.time_width)
+        AnimationGroup.__init__(
+            self,
+            *[
+                ShowPassingFlash(
+                    vmobject.deepcopy().set_stroke(width=stroke_width),
+                    time_width=time_width,
+                    **kwargs,
+                )
+                for stroke_width, time_width in zip(
+                    np.linspace(0, max_stroke_width, self.n_segments),
+                    np.linspace(max_time_width, 0, self.n_segments),
+                )
+            ],
+        )
 
+
+@deprecated(since="v0.5.0", until="v0.7.0", replacement="ShowPassingFlash")
+class ShowCreationThenDestruction(ShowPassingFlash):
     def __init__(
         self, mobject: "Mobject", time_width: float = 2.0, run_time: float = 1, **kwargs
     ) -> None:
-        logger.warning(
-            "ShowCreationThenDestruction has been deprecated in favor of ShowPassingFlash. Please use ShowPassingFlash instead!"
-        )
         super().__init__(mobject, time_width=time_width, run_time=run_time, **kwargs)
 
 
@@ -380,9 +396,8 @@ class ShowCreationThenFadeOut(Succession):
         super().__init__(Create(mobject), FadeOut(mobject), remover=remover, **kwargs)
 
 
+@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
 class AnimationOnSurroundingRectangle(AnimationGroup):
-    """Deprecated. Use :class:`~.Circumscribe` instead or build an Animation using :class:`~SurroundingRectangle`."""
-
     def __init__(
         self,
         mobject: "Mobject",
@@ -390,9 +405,6 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         surrounding_rectangle_config: typing.Dict[str, typing.Any] = {},
         **kwargs
     ) -> None:
-        logger.warning(
-            "AnimationOnSurroundingRectangle has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
-        )
         # Callable which takes in a rectangle, and spits out some animation.  Could be
         # some animation class, could be something more
         self.rect_animation = rect_animation
@@ -412,45 +424,33 @@ class AnimationOnSurroundingRectangle(AnimationGroup):
         )
 
 
+@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
 class ShowPassingFlashAround(AnimationOnSurroundingRectangle):
-    """Deprecated. Use :class:`~.Circumscribe` instead."""
-
     def __init__(
         self, mobject: "Mobject", rect_animation: Animation = ShowPassingFlash, **kwargs
     ) -> None:
-        logger.warning(
-            "ShowPassingFlashAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
-        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
+@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
 class ShowCreationThenDestructionAround(AnimationOnSurroundingRectangle):
-    """Deprecated. Use :class:`~.Circumscribe` instead."""
-
     def __init__(
         self,
         mobject: "Mobject",
         rect_animation: Animation = ShowCreationThenDestruction,
         **kwargs
     ) -> None:
-        logger.warning(
-            "ShowCreationThenDestructionAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
-        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
+@deprecated(since="v0.5.0", until="v0.7.0", replacement="Circumscribe")
 class ShowCreationThenFadeAround(AnimationOnSurroundingRectangle):
-    """Deprecated. Use :class:`~.Circumscribe` instead."""
-
     def __init__(
         self,
         mobject: "Mobject",
         rect_animation: Animation = ShowCreationThenFadeOut,
         **kwargs
     ) -> None:
-        logger.warning(
-            "ShowCreationThenFadeAround has been deprecated in favor of Circumscribe. Please use Circumscribe instead!"
-        )
         super().__init__(mobject, rect_animation=rect_animation, **kwargs)
 
 
@@ -519,7 +519,7 @@ class ApplyWave(Homotopy):
             # either rises to one or goes down to zero. Consecutive ripples will have
             # their amplitudes in oppising directions (first ripple from 0 to 1 to 0,
             # second from 0 to -1 to 0 and so on). This is how two ripples would be
-            # devided into phases:
+            # divided into phases:
 
             #         ####|####        |            |
             #       ##    |    ##      |            |
@@ -529,8 +529,8 @@ class ApplyWave(Homotopy):
             #             |            |      ##    |    ##
             #             |            |        ####|####
 
-            # However, this looks weired in the middle between two ripples. Therefor the
-            # middle phases do acutally use only one appropriately scaled version of the
+            # However, this looks weird in the middle between two ripples. Therefore the
+            # middle phases do actually use only one appropriately scaled version of the
             # rate like this:
 
             # 1 / 4 Time  | 2 / 4 Time            | 1 / 4 Time
@@ -555,7 +555,7 @@ class ApplyWave(Homotopy):
                 # First rising ripple
                 return wave_func(t * phases)
             elif phase == phases - 1:
-                # last ripple. Rising or falling depening on the number of ripples
+                # last ripple. Rising or falling depending on the number of ripples
                 # The (ripples % 2)-term is used to make this destinction.
                 t -= phase / phases  # Time relative to the phase
                 return (1 - wave_func(t * phases)) * (2 * (ripples % 2) - 1)
@@ -588,7 +588,7 @@ class Wiggle(Animation):
     mobject : Mobject
         The mobject to wiggle.
     scale_value
-        The factor by which the mobject will be temporarilly scaled.
+        The factor by which the mobject will be temporarily scaled.
     rotation_angle
         The wiggle angle.
     n_wiggles
@@ -653,23 +653,19 @@ class Wiggle(Animation):
         )
 
 
+@deprecated(since="v0.5.0", until="v0.7.0", replacement="Wiggle")
 class WiggleOutThenIn(Wiggle):
-    """Deprecated. Use :class:`~.Wiggle` instead."""
-
     def __init__(*args, **kwargs):
-        logger.warning(
-            "WiggleOutThenIn has been deprecated in favor of Wiggle. Please use Wiggle instead!"
-        )
         super().__init(*args, **kwargs)
 
 
+@deprecated(
+    since="v0.5.0",
+    until="v0.7.0",
+    message="Use :code:`mobject.animate.become(mobject.copy().reverse_points())` instead if you have to.",
+)
 class TurnInsideOut(Transform):
-    """Deprecated. Use :code:`mobject.animate.become(mobject.copy().reverse_points())` instead if you have to."""
-
     def __init__(self, mobject: "Mobject", path_arc: float = TAU / 4, **kwargs) -> None:
-        logger.warning(
-            "TurnInsideOut has been deprecated. Please stop using TurnInsideOut!"
-        )
         super().__init__(mobject, path_arc=path_arc, **kwargs)
 
     def create_target(self) -> "Mobject":

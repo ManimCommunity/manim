@@ -49,10 +49,10 @@ const float MITER_JOINT = 3;
 const float PI = 3.141592653;
 
 
-#INSERT quadratic_bezier_geometry_functions.glsl
-#INSERT get_gl_Position.glsl
-#INSERT get_unit_normal.glsl
-#INSERT finalize_color.glsl
+#include ../include/quadratic_bezier_geometry_functions.glsl
+#include ../include/get_gl_Position.glsl
+#include ../include/get_unit_normal.glsl
+#include ../include/finalize_color.glsl
 
 
 void flatten_points(in vec3[3] points, out vec2[3] flat_points){
@@ -223,7 +223,7 @@ void main() {
     }
 
     // Control points are projected to the xy plane before drawing, which in turn
-    // gets tranlated to a uv plane.  The z-coordinate information will be remembered
+    // gets translated to a uv plane.  The z-coordinate information will be remembered
     // by what's sent out to gl_Position, and by how it affects the lighting and stroke width
     vec2 flat_controls[3];
     vec2 flat_prev[3];

@@ -72,7 +72,7 @@ Enabling plugins through ``manim.cfg``
     [CLI]
     plugins = manim_rubikscube
 
-For specifing multiple plugins, command separated values must be used.
+For specifying multiple plugins, command separated values must be used.
 
 .. code-block:: ini
 
@@ -95,7 +95,7 @@ Creating Plugins
 ****************
 Plugins are intended to extend Manim's core functionality. If you aren't sure
 whether a feature should be included in Manim's core, feel free to ask over
-on the `Discord server <https://discord.gg/mMRrZQW>`_. Visit
+on the `Discord server <https://www.manim.community/discord/>`_. Visit
 `manim-plugintemplate <https://pypi.org/project/manim-plugintemplate/>`_
 on PyPI.org which serves as an in-depth tutorial for creating plugins.
 

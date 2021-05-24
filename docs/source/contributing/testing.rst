@@ -141,7 +141,7 @@ The Main Directories
 
   Useful internal functions used by pytest.
 
-  .. Note:: fixtures are not contained here, they are in ``conftest.py``.
+  .. note:: fixtures are not contained here, they are in ``conftest.py``.
 
 - ``helpers/``:
 
@@ -181,7 +181,7 @@ Scene names follow the syntax: ``<thing_to_test>Test``. In the example above,
 we are testing whether Circle properly shows up with the generic
 ``Animation`` and not any specific animation.
 
-.. Note:: 
+.. note:: 
 
    If the file already exists, edit it and add the test within the file. The 
    ``Scene`` will be tested thanks to the ``GraphicalUnitTester`` that lives
@@ -259,9 +259,9 @@ To test videos generated, we use the decorator
         out, err, exit_code = capture(command)
         assert exit_code == 0, err
 
-.. Note:: ``assert exit*\ code == 0, err`` is used in case of the command fails 
+.. note:: ``assert exit*\ code == 0, err`` is used in case of the command fails 
   to run. The decorator takes two arguments: json name and the path
-  to where the video should be generated, starting from the ``medias/`` dir.
+  to where the video should be generated, starting from the ``media/`` dir.
 
 Note the fixtures here:
 
@@ -304,4 +304,4 @@ look like this:
     }
 
 If you have any questions, please don't hesitate to ask on `Discord
-<https://discord.gg/mMRrZQW>`_, in your pull request, or in an issue.
+<https://www.manim.community/discord/>`_, in your pull request, or in an issue.

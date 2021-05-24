@@ -57,13 +57,12 @@ r"""Animate the display or removal of a mobject from a scene.
 
 
 __all__ = [
-    "ShowPartial",
-    "ShowCreation",
     "Create",
     "Uncreate",
     "DrawBorderThenFill",
     "Write",
     "Unwrite",
+    "ShowPartial",
     "ShowIncreasingSubsets",
     "AddTextLetterByLetter",
     "ShowSubmobjectsOneByOne",
@@ -72,12 +71,20 @@ __all__ = [
 
 
 import itertools as it
-from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 from colour import Color
-
-from .. import logger
 
 if TYPE_CHECKING:
     from manim.mobject.svg.text_mobject import Text
@@ -88,6 +95,7 @@ from ..mobject.mobject import Group, Mobject
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
+from ..utils.deprecation import deprecated
 from ..utils.rate_functions import double_smooth, linear, smooth
 
 
@@ -154,19 +162,6 @@ class Create(ShowPartial):
         lag_ratio: float = 1.0,
         **kwargs,
     ) -> None:
-        super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
-
-    def _get_bounds(self, alpha: float) -> Tuple[int, float]:
-        return (0, alpha)
-
-
-class ShowCreation(Create):
-    """Deprecated. Use :class:`~.Create` instead."""
-
-    def __init__(self, mobject: VMobject, lag_ratio: float = 1.0, **kwargs) -> None:
-        logger.warning(
-            "ShowCreation has been deprecated in favor of Create. Please use Create instead!"
-        )
         super().__init__(mobject, lag_ratio=lag_ratio, **kwargs)
 
     def _get_bounds(self, alpha: float) -> Tuple[int, float]:
@@ -253,7 +248,7 @@ class DrawBorderThenFill(Animation):
             return vmobject.get_stroke_color()
         return vmobject.get_color()
 
-    def get_all_mobjects(self) -> List[Union[Mobject, None]]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
