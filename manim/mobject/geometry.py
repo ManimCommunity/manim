@@ -80,7 +80,7 @@ from ..mobject.types.vectorized_mobject import (
     VGroup,
     VMobject,
 )
-from ..utils.color import *
+from ..utils.color import Colors
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
@@ -500,7 +500,7 @@ class Circle(Arc):
     def __init__(
         self,
         radius: Optional[Union[float, int]] = None,
-        color: str = RED,
+        color: str = Colors.red,
         close_new_points: bool = True,
         anchors_span_full_range: bool = False,
         **kwargs,

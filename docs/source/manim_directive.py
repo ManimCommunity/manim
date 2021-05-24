@@ -80,7 +80,7 @@ import shutil
 import sys
 from pathlib import Path
 from timeit import timeit
-from typing import Callable, List
+from typing import Callable, Dict, List
 
 import jinja2
 from docutils import nodes
@@ -89,7 +89,7 @@ from docutils.statemachine import StringList
 
 from manim import QUALITIES
 
-classnamedict = {}
+classnamedict: Dict = {}
 
 
 class skip_manim_node(nodes.Admonition, nodes.Element):
