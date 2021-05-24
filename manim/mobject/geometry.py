@@ -80,7 +80,7 @@ from ..mobject.types.vectorized_mobject import (
     VGroup,
     VMobject,
 )
-from ..utils.color import Colors
+from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
