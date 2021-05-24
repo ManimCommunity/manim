@@ -66,6 +66,7 @@ import warnings
 from typing import Iterable, Optional, Sequence
 
 import numpy as np
+from colour import Color
 
 from .. import config, logger
 from ..constants import *
@@ -2237,8 +2238,8 @@ class Rectangle(Polygon):
         color: Color = WHITE,
         height: float = 2.0,
         width: float = 4.0,
-        grid_xstep: float = 0,
-        grid_ystep: float = 0,
+        grid_xstep: Optional[float] = None,
+        grid_ystep: Optional[float] = None,
         mark_paths_closed=True,
         close_new_points=True,
         **kwargs,
@@ -2249,7 +2250,8 @@ class Rectangle(Polygon):
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
         v = self.get_vertices()
-        if grid_xstep != 0:
+        if grid_xstep is not None:
+            grid_xstep = abs(grid_xstep)
             count = int(width / grid_xstep)
             grid = VGroup(
                 *[
@@ -2262,7 +2264,8 @@ class Rectangle(Polygon):
                 ]
             )
             self.add(grid)
-        if grid_ystep != 0:
+        if grid_ystep is not None:
+            grid_ystep = abs(grid_ystep)
             count = int(height / grid_ystep)
             grid = VGroup(
                 *[
