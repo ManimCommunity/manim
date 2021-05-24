@@ -1541,6 +1541,32 @@ class VGroup(VMobject):
     def __isub__(self, vmobject):
         return self.remove(vmobject)
 
+    def __setitem__(self, key: int, value: Union[VMobject, typing.Sequence[VMobject]]):
+        """Override the [] operator for item assignment.
+
+        Parameters
+        ----------
+        key
+            The index of the submobject to be assigned
+        value
+            The vmobject value to assign to the key
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Normal usage::
+
+            >>> vgroup = VGroup(VMobject())
+            >>> new_obj = VMobject()
+            >>> vgroup[0] = new_obj
+        """
+        if not all(isinstance(m, VMobject) for m in value):
+            raise TypeError("All submobjects must be of type VMobject")
+        self.submobjects[key] = value
+
 
 class VDict(VMobject):
     """A VGroup-like class, also offering submobject access by
