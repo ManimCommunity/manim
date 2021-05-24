@@ -14,7 +14,11 @@ CASCADING_STYLING_ATTRIBUTES: List[str] = [
     "fill",
     "stroke",
     "fill-opacity",
+    "stroke-width",
     "stroke-opacity",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-dasharray",
 ]
 
 
@@ -25,7 +29,11 @@ SVG_DEFAULT_ATTRIBUTES: Dict[str, str] = {
     "fill": "black",
     "fill-opacity": "1",
     "stroke": "none",
+    "stroke-width": "1",
     "stroke-opacity": "1",
+    "stroke-linecap": "butt",
+    "stroke-linejoin": "miter",
+    "stroke-dasharray": "none",
 }
 
 
@@ -162,6 +170,18 @@ def parse_style(svg_style: Dict[str, str]) -> Dict:
 
     if "stroke-opacity" in svg_style:
         manim_style["stroke_opacity"] = float(svg_style["stroke-opacity"])
+
+    if "stroke-linecap" in svg_style:
+        manim_style["stroke_linecap"] = svg_style["stroke-linecap"]
+
+    if "stroke-linejoin" in svg_style:
+        manim_style["stroke_linejoin"] = svg_style["stroke-linejoin"]
+
+    if "stroke-dasharray" in svg_style:
+        if svg_style["stroke-dasharray"] != "none":
+            manim_style["stroke_dasharray"] = float(svg_style["stroke-dasharray"])
+        else:
+            manim_style["stroke_dasharray"] = None
 
     # nones need to be handled specially
     if "fill" in svg_style:

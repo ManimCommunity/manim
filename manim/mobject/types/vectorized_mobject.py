@@ -75,6 +75,9 @@ class VMobject(Mobject):
         stroke_color=None,
         stroke_opacity=1.0,
         stroke_width=DEFAULT_STROKE_WIDTH,
+        stroke_linecap=None,
+        stroke_linejoin=None,
+        stroke_dasharray=None,
         # The purpose of background stroke is to have
         # something that won't overlap the fill, e.g.
         # For text against some textured background
@@ -106,6 +109,9 @@ class VMobject(Mobject):
         self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width
+        self.stroke_linecap = stroke_linecap
+        self.stroke_linejoin = stroke_linejoin
+        self.stroke_dasharray = stroke_dasharray
         self.background_stroke_color = background_stroke_color
         self.background_stroke_opacity = background_stroke_opacity
         self.background_stroke_width = background_stroke_width
@@ -245,8 +251,11 @@ class VMobject(Mobject):
         fill_color=None,
         fill_opacity=None,
         stroke_color=None,
-        stroke_width=None,
         stroke_opacity=None,
+        stroke_width=None,
+        stroke_linecap=None,
+        stroke_linejoin=None,
+        stroke_dasharray=None,
         background_stroke_color=None,
         background_stroke_width=None,
         background_stroke_opacity=None,
@@ -255,6 +264,11 @@ class VMobject(Mobject):
         background_image=None,
         family=True,
     ):
+        # These three attributes are used in camera to set the stroke.
+        self.stroke_linecap = stroke_linecap
+        self.stroke_linejoin = stroke_linejoin
+        self.stroke_dasharray = stroke_dasharray
+
         self.set_fill(color=fill_color, opacity=fill_opacity, family=family)
         self.set_stroke(
             color=stroke_color,

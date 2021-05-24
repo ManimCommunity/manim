@@ -737,7 +737,28 @@ class Camera:
             # as you zoom in on them.
             (self.frame_width / self.frame_width)
         )
+
+        # Set stroke style attributes.
+        if vmobject.stroke_linecap == "round":
+            ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+        elif vmobject.stroke_linecap == "butt":
+            ctx.set_line_cap(cairo.LINE_CAP_BUTT)
+        if vmobject.stroke_linejoin == "round":
+            ctx.set_line_join(cairo.LINE_CAP_ROUND)
+        dash_old = ctx.get_dash()
+        if vmobject.stroke_dasharray is not None:
+            # Only a single value is currently supported.
+            dash = vmobject.stroke_dasharray * self.cairo_line_width_multiple
+            ctx.set_dash([dash, dash])
+
         ctx.stroke_preserve()
+
+        # Undo the stroke-dasharray if set so it doesn't persist.
+        if vmobject.stroke_dasharray is not None:
+            # Only a single value is currently supported.
+            dash = vmobject.stroke_dasharray * self.cairo_line_width_multiple
+            ctx.set_dash(*dash_old)
+
         return self
 
     def get_stroke_rgbas(self, vmobject, background=False):
