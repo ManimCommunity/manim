@@ -5,9 +5,10 @@ __all__ = ["AnimatedBoundary", "TracedPath"]
 import numpy as np
 
 from ..constants import *
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.types.vectorized_mobject import MetaVMobject, VGroup, VMobject
 from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
+from .._config import config
 
 
 class AnimatedBoundary(VGroup):
@@ -89,7 +90,7 @@ class AnimatedBoundary(VGroup):
         return self
 
 
-class TracedPath(VMobject):
+class TracedPath(metaclass=MetaVMobject):
     """Traces the path of a point returned by a function call.
 
     Examples
@@ -123,15 +124,18 @@ class TracedPath(VMobject):
 
     def update_path(self):
         new_point = self.traced_point_func()
-        if self.has_no_points():
+        if not self.has_points():
             self.start_new_path(new_point)
             self.add_line_to(new_point)
         else:
             # Set the end to be the new point
-            self.points[-1] = new_point
+            self.get_points()[-1] = new_point
 
             # Second to last point
-            nppcc = self.n_points_per_cubic_curve
-            dist = np.linalg.norm(new_point - self.points[-nppcc])
+            if config["renderer"] == "opengl":
+                nppcc = self.n_points_per_curve
+            else:
+                nppcc = self.n_points_per_cubic_curve
+            dist = np.linalg.norm(new_point - self.get_points()[-nppcc])
             if dist >= self.min_distance_to_new_point:
                 self.add_line_to(new_point)
