@@ -144,6 +144,68 @@ class Transform(Animation):
 
 
 class ReplacementTransform(Transform):
+    """Replace the mobject with target_mobject (like Transform does), and shows the target_mobject (whereas Transform shows the mobject)
+
+    Fades one mobject into another. Transform M1 is shown M2 doies not change, only M1
+
+        Parameters
+        ----------
+        mobject
+            The starting :class:`~.Mobject`.
+        target_mobject
+            The target :class:`~.Mobject`.
+        kwargs
+            Further keyword arguments are passed to the parent class.
+
+        Examples
+        --------
+
+        .. manim:: ReplacementTransformOrTransform
+
+            class ReplacementTransformOrTransform(Scene):
+                def construct(self):
+                    # Set the context
+                    text_0 = Tex("ReplacementTransform vs Transform", color = BLUE).scale(0.9).shift(2.5*UP)
+                    self.play(Write(text_0))
+                    text_1 = Tex("Text no. 1").shift(UP + 2*LEFT)
+                    text_2 = Tex("Text no. 2").next_to(text_1, DOWN)
+                    text_3 = Tex("Text no. 3").next_to(text_2, DOWN)
+                    text_4 = Tex("Text no. 4").next_to(text_1, 5*RIGHT)
+                    text_5 = Tex("Text no. 5").next_to(text_4, DOWN)
+                    text_6 = Tex("Text no. 6").next_to(text_5, DOWN)
+                    self.play(Write(text_1))
+                    self.play(Write(text_2))
+                    self.play(Write(text_3))
+                    self.play(Write(text_4))
+                    self.play(Write(text_5))
+                    self.play(Write(text_6))
+                    self.wait()
+                    # Explanation between ReplacementTransform and Transform
+                    text_7 = Tex("ReplacementTransform \"Text no. 1\" with \"Text no. 2\".", color = BLUE).scale(0.5).shift(1.5*DOWN + 4*LEFT)
+                    self.play(Write(text_7))
+                    self.play(ReplacementTransform(text_1, text_2))
+                    text_8 = Tex("ReplacementTransform \"Text no. 2\" with \"Text no. 3\".", color = BLUE).scale(0.5).next_to(text_7, DOWN)
+                    self.play(Write(text_8))
+                    self.play(ReplacementTransform(text_2, text_3))
+                    text_9 = Tex("FadeOut \"Text no. 3\".", color = BLUE).scale(0.5).next_to(text_8, DOWN)
+                    self.play(Write(text_9))
+                    self.play(FadeOut(text_3))
+                    self.wait()
+                    text_10 = Tex("Transform \"Text no. 4\" with \"Text no. 5\".", color = BLUE).scale(0.5).shift(1.5*DOWN + 4*RIGHT)
+                    self.play(Write(text_10))
+                    self.play(Transform(text_4, text_5))
+                    text_11 = Tex("Transform \"Text no. 5\" with \"Text no. 6\".", color = BLUE).scale(0.5).next_to(text_10, DOWN)
+                    self.play(Write(text_11))
+                    self.play(Transform(text_5, text_6))
+                    text_12 = Tex("FadeOut \"Text no. 6\".", color = BLUE).scale(0.5).next_to(text_11, DOWN)
+                    self.play(Write(text_12))
+                    self.play(FadeOut(text_6))
+                    self.wait()
+                    text_13 = Tex("Transform does not replace the mobject with the target\\_mobject, ReplacementTransform does.").scale(0.5).shift(3.25*DOWN)
+                    self.play(Write(text_13))
+                    self.wait()
+    """
+
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(
             mobject, target_mobject, replace_mobject_with_target_in_scene=True, **kwargs
