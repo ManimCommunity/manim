@@ -970,10 +970,12 @@ class DashedLine(Line):
         self,
         *args,
         dash_length=DEFAULT_DASH_LENGTH,
+        dash_spacing=None,
         positive_space_ratio=0.5,
         **kwargs,
     ):
         self.dash_length = dash_length
+        self.dash_spacing = (dash_spacing,)
         self.positive_space_ratio = positive_space_ratio
         super().__init__(*args, **kwargs)
         dashes = DashedVMobject(
