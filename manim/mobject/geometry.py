@@ -2234,11 +2234,11 @@ class Rectangle(Polygon):
 
     def __init__(
         self,
-        color=WHITE,
-        height=2.0,
-        width=4.0,
-        grid_xstep=0,
-        grid_ystep=0,
+        color: Color = WHITE,
+        height: float = 2.0,
+        width: float = 4.0,
+        grid_xstep: float = 0,
+        grid_ystep: float = 0,
         mark_paths_closed=True,
         close_new_points=True,
         **kwargs,
