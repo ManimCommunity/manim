@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="inline large" viewBox="0 0 51.87 71" preserveAspectRatio="xMidYMid meet" role="img">
+  <title>Left triangle</title>
+  <path class="fill-black" d="M25.97,15.04c2.03,0.94,4.29,1.46,6.68,1.46c2.38,0,4.64-0.53,6.68-1.46L32.63,0.5L25.97,15.04z" style="fill:#000000;fill-opacity:1;stroke-opacity:0;"/>
+  <line class="stroke-med stroke-blue" x1="0.5" y1="70.5" x2="51.37" y2="41.27" style="stroke:#0e638e;stroke-width:3;stroke-opacity:1;stroke-linecap:round;stroke-linejoin:round;fill-opacity:0;"/>
+  <line class="stroke-med stroke-red" x1="32.64" y1="0.5" x2="13.92" y2="41.27" style="stroke:#d42a20;stroke-width:3;stroke-opacity:1;stroke-linecap:round;stroke-linejoin:round;fill-opacity:0;"/>
+  <line class="stroke-med stroke-yellow" x1="13.92" y1="41.27" x2="0.5" y2="70.5" style="stroke:#fac22b;stroke-width:3;stroke-opacity:1;stroke-linecap:round;stroke-linejoin:round;fill-opacity:0;"/>
+  <line class="stroke-med stroke-red" x1="51.37" y1="41.27" x2="32.64" y2="0.5" style="stroke:#d42a20;stroke-width:3;stroke-opacity:1;stroke-linecap:round;stroke-linejoin:round;fill-opacity:0;"/>
+</svg>
