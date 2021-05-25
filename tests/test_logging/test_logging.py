@@ -1,5 +1,8 @@
 import os
 import re
+import sys
+
+from pathlib import Path
 
 from ..utils.commands import capture
 from ..utils.logging_tester import *
@@ -52,3 +55,20 @@ def test_logging_when_scene_is_not_specified(tmp_path, python_version):
     ]
     _, err, exitcode = capture(command)
     assert exitcode == 0, err
+
+
+def test_error_logging(tmp_path):
+    path_error_scene = Path("tests/test_logging/basic_scenes_error.py")
+
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        str(path_error_scene),
+    ]
+
+    _, err, exitcode = capture(command)
+    assert exitcode != 0 and len(err) > 0
