@@ -1406,7 +1406,7 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(metaclass=MetaVMobject):
+class VGroup(VMobject):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -1458,9 +1458,7 @@ class VGroup(metaclass=MetaVMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        super().__init__(self, **kwargs)
-
-        self.bascls = OpenGLVMobject if config["renderer"] == "opengl" else VMobject
+        VMobject.__init__(self, **kwargs)
         self.add(*vmobjects)
 
     def __repr__(self):
@@ -1525,7 +1523,7 @@ class VGroup(metaclass=MetaVMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, self.bascls) for m in vmobjects):
+        if not all(isinstance(m, VMobject) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         return super().add(*vmobjects)
 
@@ -1565,12 +1563,12 @@ class VGroup(metaclass=MetaVMobject):
             >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj
         """
-        if not all(isinstance(m, self.bascls) for m in value):
+        if not all(isinstance(m, VMobject) for m in value):
             raise TypeError("All submobjects must be of type VMobject")
         self.submobjects[key] = value
 
 
-class VDict(metaclass=MetaVMobject):
+class VDict(VMobject):
     """A VGroup-like class, also offering submobject access by
     key, like a python dict
 
@@ -1669,7 +1667,7 @@ class VDict(metaclass=MetaVMobject):
     """
 
     def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
-        super().__init__(self, **kwargs)
+        VMobject.__init__(self, **kwargs)
         self.show_keys = show_keys
         self.submob_dict = {}
         self.add(mapping_or_iterable)
@@ -1882,7 +1880,7 @@ class VDict(metaclass=MetaVMobject):
             self.add_key_value_pair('s', square_obj)
 
         """
-        if not isinstance(value, (VMobject, OpenGLVMobject)):
+        if not isinstance(value, VMobject):
             raise TypeError("All submobjects must be of type VMobject")
         mob = value
         if self.show_keys:
