@@ -144,7 +144,7 @@ class BraceLabel(metaclass=MetaVMobject):
     ):
         self.label_constructor = label_constructor
         self.label_scale = label_scale
-        super().__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
         self.basecls = OpenGLVMobject if config["renderer"] == "opengl" else VMobject
         self.brace_direction = brace_direction

@@ -65,7 +65,7 @@ class ParametricFunction(metaclass=MetaVMobject):
         self.use_smoothing = use_smoothing
         self.t_min, self.t_max, self.t_step = t_range
 
-        super().__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def get_function(self):
         return self.function
