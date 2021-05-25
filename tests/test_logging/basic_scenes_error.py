@@ -5,4 +5,4 @@ from manim import *
 
 class Error(Scene):
     def construct(self):
-        raise Exception("An error has occured")
+        raise Exception("An error has occurred")
