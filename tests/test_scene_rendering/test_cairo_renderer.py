@@ -37,7 +37,7 @@ def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_cac
 
 def test_when_animation_is_cached(using_temp_config):
     partial_movie_files = []
-    for _ in range(2):
+    for _ in range(4):
         # Render several times to generate a cache.
         # In some edgy cases and on some OS, a same scene can produce
         # a (finite, generally 2) number of different hash. In this case, the scene wouldn't be detected as cached, making the test fail.
