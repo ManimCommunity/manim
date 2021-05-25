@@ -70,7 +70,7 @@ def cfg_file_create(cfg_file_contents, path):
 
 @pytest.fixture
 def random_string():
-    all_letters = string.ascii_letters
+    all_letters = string.ascii_lowercase
     a = random.Random()
     final_letters = [a.choice(all_letters) for _ in range(8)]
     yield "".join(final_letters)
