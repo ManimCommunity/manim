@@ -385,7 +385,12 @@ class SVGPathMobject(metaclass=MetaVMobject):
         # arcs are weirdest, handle them first.
         if command == "A":
             result = np.zeros((0, self.dim))
+            last_end_point = None
             for elliptic_numbers in grouped(numbers, 7):
+                # update the start point
+                if last_end_point is not None:
+                    start_point = last_end_point
+
                 # We have to handle offsets here because ellipses are complicated.
                 if is_relative:
                     elliptic_numbers[5] += start_point[0]
@@ -404,6 +409,8 @@ class SVGPathMobject(metaclass=MetaVMobject):
                     elliptical_arc_to_cubic_bezier(*start_point[:2], *elliptic_numbers),
                     axis=0
                 )
+
+                last_end_point = elliptic_numbers[5:]
 
             return result
 
