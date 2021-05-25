@@ -3,6 +3,8 @@ import sys
 
 import pytest
 
+from manim import config, tempconfig
+
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -53,11 +55,8 @@ def reset_cfg_file():
         cfgfile.write(original)
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def temp_media_dir(tmpdir):
-    from manim import config
-
-    orig_dir = config.media_dir
-    config.media_dir = str(tmpdir)
-    yield tmpdir
-    config.media_dir = orig_dir
+    with tempconfig({"media_dir": str(tmpdir)}):
+        assert config.media_dir == str(tmpdir)
+        yield tmpdir
