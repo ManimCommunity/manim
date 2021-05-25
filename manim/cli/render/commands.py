@@ -14,7 +14,7 @@ import click
 import cloup
 import requests
 
-from ... import __version__, config, console, logger
+from ... import __version__, config, console, error_console, logger
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
@@ -134,7 +134,8 @@ def render(
                     else:
                         break
             except Exception:
-                console.print_exception()
+                error_console.print_exception()
+                sys.exit(1)
     elif config.renderer == "webgl":
         try:
             from manim.grpc.impl import frame_server_impl
@@ -147,14 +148,16 @@ def render(
                 "Dependencies for the WebGL render are missing. Run "
                 "pip install manim[webgl_renderer] to install them."
             )
-            console.print_exception()
+            error_console.print_exception()
+            sys.exit(1)
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
                 scene = SceneClass()
                 scene.render()
             except Exception:
-                console.print_exception()
+                error_console.print_exception()
+                sys.exit(1)
 
     if config.notify_outdated_version:
         manim_info_url = "https://pypi.org/pypi/manim/json"
