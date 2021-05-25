@@ -298,7 +298,8 @@ Using coordinates of a mobject
 ==============================
 
 Mobjects contain points that define their boundaries.
-These points can be used to add other mobjects respectively to each other, e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
+These points can be used to add other mobjects respectively to each other, 
+e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
 and :meth:`~.Mobject.get_start`. Here is an example of some important coordinates:
 
 .. manim:: MobjectExample
@@ -340,9 +341,12 @@ It is also possible to transform a mobject into another mobject like this:
             m2 = Rectangle().set_color(RED).rotate(0.2)
             self.play(Transform(m1,m2))
 
-The Transform function maps points of the previous mobject to the points of the next mobject.
-This might result in strange behaviour, e.g. when the dots of one mobject are arranged clockwise and the other points are arranged counterclockwise.
-Here it might help to use the `flip` function and reposition the points via the  `roll <https://numpy.org/doc/stable/reference/generated/numpy.roll.html>`_ 
+The Transform function maps points of the previous mobject to the points of the 
+next mobject.
+This might result in strange behaviour, e.g. when the dots of one mobject are 
+arranged clockwise and the other points are arranged counterclockwise.
+Here it might help to use the `flip` function and reposition the points via the  
+`roll <https://numpy.org/doc/stable/reference/generated/numpy.roll.html>`_ 
 function of numpy:
 
 .. manim:: ExampleRotation

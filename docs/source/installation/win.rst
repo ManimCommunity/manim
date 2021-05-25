@@ -14,10 +14,11 @@ systems. Please refer to `this link
 <https://scoop-docs.now.sh/docs/getting-started/Quick-Start.html>`_ for
 instructions.
 
-While a manifest for manim doesn't currently exist, it is sufficient to install the dependencies
-via scoop and manim itself via ``pip``.
+While a manifest for manim doesn't currently exist, it is sufficient to install 
+the dependencies via scoop and manim itself via ``pip``.
 
-After installing Scoop, add these "buckets" as we'll need to install things from them later:
+After installing Scoop, add these "buckets" as we'll need to install things from 
+them later:
 
 .. code-block:: powershell
 
@@ -56,8 +57,8 @@ Now run the following command to install all necessary packages for using manim:
       fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english
       gnu-freefont mathastext cbfonts-fd
 
-You can check whether they were installed properly by rendering an example scene that uses
-:class:`~.Tex` or :class:`~.MathTex`.
+You can check whether they were installed properly by rendering an example scene
+that uses :class:`~.Tex` or :class:`~.MathTex`.
 
 .. _choco:
 
@@ -75,8 +76,9 @@ You can install manim very easily using chocolatey, by typing the following comm
       choco install manimce
 
 
-And then you can skip all the other steps and move to installing :ref:`latex-installation`.
-Please see the :doc:`troubleshooting` section for details about OSError.
+And then you can skip all the other steps and move to installing 
+:ref:`latex-installation`. Please see the :doc:`troubleshooting` section for
+details about OSError.
 
 FFmpeg installation
 -------------------
@@ -92,13 +94,15 @@ FFmpeg installation
 
 LaTeX Installation
 ------------------
-You can install latex by either of the two methods below. MiKTex is very large (2 GB) while ManimLaTeX is small  (500Mb).
+You can install latex by either of the two methods below. MiKTex is very large 
+(2 GB) while ManimLaTeX is small  (500Mb).
 
-Using a custom distribution for Manim based on Texlive
-++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Using a custom distribution for Manim based on Texlive (Recommended for beginners)
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-This is the smallest latex distribution just enough to run Manim. Extra latex packages for fonts can be
-installed using ``tlmgr``. See https://www.tug.org/texlive/tlmgr.html for more information.
+This is the smallest latex distribution just enough to run Manim. Extra latex 
+packages for fonts can be installed using ``tlmgr``. 
+See https://www.tug.org/texlive/tlmgr.html for more information.
 
 1. Install chocolatey if you haven't already.
 
