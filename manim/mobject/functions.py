@@ -7,11 +7,11 @@ import numpy as np
 
 from .. import config
 from ..constants import *
-from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.types.vectorized_mobject import MetaVMobject
 from ..utils.color import YELLOW
 
 
-class ParametricFunction(VMobject):
+class ParametricFunction(metaclass=MetaVMobject):
     """A parametric curve.
 
     Examples
@@ -65,7 +65,7 @@ class ParametricFunction(VMobject):
         self.use_smoothing = use_smoothing
         self.t_min, self.t_max, self.t_step = t_range
 
-        VMobject.__init__(self, **kwargs)
+        super().__init__(self, **kwargs)
 
     def get_function(self):
         return self.function
@@ -95,6 +95,8 @@ class ParametricFunction(VMobject):
             # TODO: not in line with upstream, approx_smooth does not exist
             self.make_smooth()
         return self
+
+    init_points = generate_points
 
 
 class FunctionGraph(ParametricFunction):
