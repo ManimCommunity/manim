@@ -107,6 +107,13 @@ class HalfEllipseTest(Scene):
         self.wait()
 
 
+class DoubleHalfEllipseTest(Scene):
+    def construct(self):
+        double_half_ellipse = SVGMobject(get_test_resource("double_half_ellipse.svg"))
+        self.add(double_half_ellipse)
+        self.wait()
+
+
 class Arcs01Test(Scene):
     # See: https://www.w3.org/TR/SVG11/images/paths/arcs01.svg
     def construct(self):
