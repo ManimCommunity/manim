@@ -15,7 +15,7 @@ plugin_pyproject_template = textwrap.dedent(
     authors = ["ManimCE Test Suite"]
     version = "0.1.0"
     description = ""
-    
+
     [tool.poetry.dependencies]
     python = "^3.7"
 
@@ -212,6 +212,7 @@ def test_plugin_no_all(tmp_path, create_plugin, python_version):
     print(err)
     assert exit_code == 0, err
     Path(tmpfile.name).unlink()
+
 
 @pytest.mark.slow
 def test_plugin_with_all(tmp_path, create_plugin, python_version, simple_scenes_path):
