@@ -210,6 +210,11 @@ def string_to_numbers(num_string: str) -> List[float]:
     return float_results
 
 
+def grouped(iterable, n):
+    """Group iterable into arrays of n items."""
+    return (np.array(v) for v in zip(*[iter(iterable)]*n))
+
+
 class SVGPathMobject(metaclass=MetaVMobject):
     def __init__(self, path_string, **kwargs):
         self.path_string = path_string
@@ -379,21 +384,26 @@ class SVGPathMobject(metaclass=MetaVMobject):
 
         # arcs are weirdest, handle them first.
         if command == "A":
-            # We have to handle offsets here because ellipses are complicated.
-            if is_relative:
-                numbers[5] += start_point[0]
-                numbers[6] += start_point[1]
+            result = np.zeros((0, self.dim))
+            for elliptic_numbers in grouped(numbers, 7):
+                # We have to handle offsets here because ellipses are complicated.
+                if is_relative:
+                    elliptic_numbers[5] += start_point[0]
+                    elliptic_numbers[6] += start_point[1]
 
-            # If the endpoints (x1, y1) and (x2, y2) are identical, then this
-            # is equivalent to omitting the elliptical arc segment entirely.
-            # for more information of where this math came from visit:
-            #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
-            if start_point[0] == numbers[5] and start_point[1] == numbers[6]:
-                return
+                # If the endpoints (x1, y1) and (x2, y2) are identical, then this
+                # is equivalent to omitting the elliptical arc segment entirely.
+                # for more information of where this math came from visit:
+                #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+                if start_point[0] == elliptic_numbers[5] and \
+                   start_point[1] == elliptic_numbers[6]:
+                    continue
 
-            result = np.array(
-                elliptical_arc_to_cubic_bezier(*start_point[:2], *numbers)
-            )
+                result = np.append(
+                    result,
+                    elliptical_arc_to_cubic_bezier(*start_point[:2], *elliptic_numbers),
+                    axis=0
+                )
 
             return result
 
