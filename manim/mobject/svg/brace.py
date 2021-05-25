@@ -146,7 +146,7 @@ class BraceLabel(metaclass=MetaVMobject):
         self.label_scale = label_scale
         super().__init__(self, **kwargs)
 
-        self.basecls = OpenGLVMobject if config["rednerer"] == "opengl" else VMobject
+        self.basecls = OpenGLVMobject if config["renderer"] == "opengl" else VMobject
         self.brace_direction = brace_direction
         if isinstance(obj, list):
             obj = self.basecls(*obj)
