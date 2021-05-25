@@ -2,10 +2,11 @@
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from manim._config import config
 from typing import Optional, Sequence
 
 import numpy as np
+
+from manim._config import config
 
 from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
@@ -14,8 +15,8 @@ from ...constants import *
 from ...mobject.geometry import Arc, Line
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
-from ...mobject.types.vectorized_mobject import MetaVMobject, VMobject
 from ...mobject.types.opengl_vectorized_mobject import OpenGLVMobject
+from ...mobject.types.vectorized_mobject import MetaVMobject, VMobject
 from ...utils.color import BLACK
 
 

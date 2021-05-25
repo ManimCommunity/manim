@@ -4,11 +4,11 @@ __all__ = ["AnimatedBoundary", "TracedPath"]
 
 import numpy as np
 
+from .._config import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import MetaVMobject, VGroup, VMobject
 from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
-from .._config import config
 
 
 class AnimatedBoundary(VGroup):
