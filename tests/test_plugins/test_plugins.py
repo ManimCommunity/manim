@@ -1,11 +1,11 @@
-import shutil
+import random
+import string
+import tempfile
 import textwrap
 from pathlib import Path
 
 import pytest
-import string
-import random
-import tempfile
+
 from ..utils.commands import capture
 
 plugin_pyproject_template = textwrap.dedent(
