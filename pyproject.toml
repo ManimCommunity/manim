@@ -71,6 +71,9 @@ gitpython = "^3"
 pygithub = "^1"
 flake8 = "^3.9.0"
 isort = "^5.8.0"
+pytest-xdist = "^2.2"
+psutil = ">=3.0"
+
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"
@@ -86,7 +89,7 @@ markers = "platform_python_implementation == 'CPython'"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
-addopts = "--cov=manim --cov-report xml --cov-report term"
+addopts = "--no-cov-on-fail --cov=manim --cov-report xml --cov-report term -n auto"
 
 [tool.isort]
 # from https://black.readthedocs.io/en/stable/compatible_configs.html
