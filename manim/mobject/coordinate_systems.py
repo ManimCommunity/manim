@@ -3,7 +3,7 @@
 __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlane"]
 
 import numbers
-from typing import Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
