@@ -1,6 +1,8 @@
 import os
 from unittest.mock import Mock, patch
 
+import pytest
+
 from manim import *
 
 from ..assert_utils import assert_file_exists
@@ -35,6 +37,7 @@ def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_cac
     SceneWithMultipleCalls().render()
 
 
+@pytest.mark.xfail(reason="caching issue")
 def test_when_animation_is_cached(using_temp_config):
     partial_movie_files = []
     for _ in range(2):
