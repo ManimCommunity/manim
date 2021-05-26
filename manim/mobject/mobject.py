@@ -11,7 +11,6 @@ import random
 import sys
 import types
 import warnings
-from abc import ABCMeta
 from functools import reduce
 from math import ceil
 from pathlib import Path
@@ -53,7 +52,6 @@ from ..utils.space_ops import (
     rotation_matrix,
     rotation_matrix_transpose,
 )
-from .opengl_mobject import OpenGLMobject
 
 # TODO: Explain array_attrs
 
@@ -62,25 +60,6 @@ T = TypeVar("T", bound="Mobject")
 
 if TYPE_CHECKING:
     from ..animation.animation import Animation
-
-
-class MetaMobject(ABCMeta):
-    """Metaclass for initializing corresponding classes as either inheriting from
-    Mobject or OpenGLMobject, depending on the value of ``config.renderer`` at
-    initialization time.
-    Note that with this implementation, changing the value of ``config.renderer``
-    after Manim has been imported won't have the desired effect and will lead to
-    spurious errors.
-    """
-
-    def __new__(cls, name, bases, namespace):
-        if len(bases) == 0:
-            if config.renderer == "opengl":
-                bases = (OpenGLMobject,)
-            else:
-                bases = (Mobject,)
-
-        return super().__new__(cls, name, bases, namespace)
 
 
 class Mobject(Container):
