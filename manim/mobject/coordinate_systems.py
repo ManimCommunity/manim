@@ -699,7 +699,7 @@ class NumberPlane(Axes):
 
     def get_vector(self, coords, **kwargs):
         kwargs["buff"] = 0
-        return Arrow(
+        return Arrow(  # TODO why an Arrow?
             self.coords_to_point(0, 0), self.coords_to_point(*coords), **kwargs
         )
 

@@ -78,12 +78,6 @@ class ElbowTest(Scene):
         self.add(a)
 
 
-class VectorTest(Scene):
-    def construct(self):
-        a = Vector(UP)
-        self.add(a)
-
-
 class PolygonTest(Scene):
     def construct(self):
         a = Polygon(*[np.array([1, 1, 0]), np.array([2, 2, 0]), np.array([2, 3, 0])])
