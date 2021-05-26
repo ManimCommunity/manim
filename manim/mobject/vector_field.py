@@ -207,12 +207,32 @@ class VectorField(VGroup):
 
         """
 
+        def runge_kutta(self, p: Sequence[float], step_size: float) -> float:
+            """Returns the change in position of a point along a vector field.
+            Parameters
+            ----------
+            p
+               The position of each point being moved along the vector field.
+            step_size
+               A scalar that is used to determine how much a point is shifted in a single step.
+
+            Returns
+            -------
+            float
+               How much the point is shifted.
+            """
+            k_1 = self.func(p)
+            k_2 = self.func(p + step_size * (k_1 * 0.5))
+            k_3 = self.func(p + step_size * (k_2 * 0.5))
+            k_4 = self.func(p + step_size * k_3)
+            return step_size / 6.0 * (k_1 + 2.0 * k_2 + 2.0 * k_3 + k_4)
+
         step_size = dt / substeps
         for i in range(substeps):
             if pointwise:
-                mob.apply_function(lambda p: p + self.func(p) * step_size)
+                mob.apply_function(lambda p: p + runge_kutta(self, p, step_size))
             else:
-                mob.shift(self.func(mob.get_center()) * step_size)
+                mob.shift(runge_kutta(self, mob.get_center(), step_size))
         return self
 
     def nudge_submobjects(
