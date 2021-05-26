@@ -1,6 +1,6 @@
 """Mobjects that represent coordinate systems."""
 
-__all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlane"]
+__all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "PolarPlane", "ComplexPlane"]
 
 import numbers
 from typing import Iterable, Optional, Sequence, Tuple, Union
