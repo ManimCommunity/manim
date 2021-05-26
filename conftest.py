@@ -18,6 +18,7 @@ from manim import config, tempconfig
 def temp_media_dir(tmpdir, monkeypatch, request):
     if isinstance(request.node, DoctestItem):
         monkeypatch.chdir(tmpdir)
+        yield tmpdir
     else:
         with tempconfig({"media_dir": str(tmpdir)}):
             assert config.media_dir == str(tmpdir)
