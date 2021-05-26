@@ -11,10 +11,8 @@ __all__ = [
 ]
 
 import fractions as fr
-import math
 import numbers
-from typing import Iterable, List, Optional, Sequence, Tuple, Union
-
+from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from colour import Color
