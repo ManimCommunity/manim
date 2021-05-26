@@ -2,9 +2,8 @@
 
 __all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "ComplexPlane"]
 
-import math
 import numbers
-from typing import Iterable, List, Optional, Sequence, Union
+from typing import Callable, Iterable, Optional, Sequence, Union
 
 import numpy as np
 from colour import Color
@@ -30,7 +29,6 @@ from ..utils.color import (
     LIGHT_GREY,
     WHITE,
     YELLOW,
-    Colors,
     color_gradient,
     invert_color,
 )
@@ -290,8 +288,8 @@ class CoordinateSystem:
 
     def get_graph(
         self,
-        function: "ParametricFunction",
-        x_range: Optional[List[float]] = None,
+        function: Callable[[float], float],
+        x_range: Optional[Sequence[float]] = None,
         **kwargs,
     ):
         """Generates a curve based on a function.
@@ -302,7 +300,7 @@ class CoordinateSystem:
             The function used to construct the :class:`~.ParametricFunction`.
 
         x_range
-            The range of the curve along the axes. ``x_range = [x_min, x_max]``
+            The range of the curve along the axes. ``x_range = [x_min, x_max]``.
 
         kwargs
             Additional parameters to be passed to :class:`~.ParametricFunction`.
@@ -317,7 +315,7 @@ class CoordinateSystem:
         if x_range is not None:
             t_range[: len(x_range)] = x_range
 
-        if x_range is None or len(x_range) < 3 and len(t_range) == 3:
+        if x_range is None or len(x_range) < 3:
             # if t_range has a defined step size, increase the number of sample points per tick
             t_range[2] /= self.num_sampled_graph_points_per_tick
         # For axes, the third coordinate of x_range indicates
@@ -442,7 +440,7 @@ class CoordinateSystem:
     def get_riemann_rectangles(
         self,
         graph: "ParametricFunction",
-        x_range: Optional[Union[List[float], np.ndarray]] = None,
+        x_range: Optional[Sequence[float]] = None,
         dx: Optional[float] = 0.1,
         input_sample_type: str = "left",
         stroke_width: float = 1,
@@ -570,7 +568,7 @@ class CoordinateSystem:
     def get_area(
         self,
         graph: "ParametricFunction",
-        x_range: Optional[List[float]] = None,
+        x_range: Optional[Sequence[float]] = None,
         color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
         opacity: float = 0.3,
         dx_scaling: float = 1,
@@ -806,7 +804,7 @@ class CoordinateSystem:
     def get_vertical_lines_to_graph(
         self,
         graph: ParametricFunction,
-        x_range: Optional[List[float]] = None,
+        x_range: Optional[Sequence[float]] = None,
         num_lines: int = 20,
         **kwargs,
     ) -> VGroup:
@@ -1112,7 +1110,7 @@ class Axes(VGroup, CoordinateSystem):
         return line_graph
 
     @staticmethod
-    def origin_shift(axis_range: List[float]) -> float:
+    def origin_shift(axis_range: Sequence[float]) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
