@@ -1421,7 +1421,7 @@ class VMobject(Mobject):
     def get_tips(self) -> List["ArrowTip"]:
         return self.tips
 
-    def get_tip(self, index=0) -> "ArrowTip":
+    def get_tip(self, index=-1) -> "ArrowTip":
         return self.tips[index] if len(self.tips) >= index else None
 
     def remove_tip(self, tip: "ArrowTip"):
@@ -1712,7 +1712,7 @@ class VDict(VMobject):
         Parameters
         ----------
         key : :class:`typing.Hashable`
-            The key of the submoject to be removed.
+            The key of the submobject to be removed.
 
         Returns
         -------
@@ -1737,7 +1737,7 @@ class VDict(VMobject):
         Parameters
         ----------
         key : :class:`typing.Hashable`
-           The key of the submoject to be accessed
+           The key of the submobject to be accessed
 
         Returns
         -------
@@ -1759,7 +1759,7 @@ class VDict(VMobject):
         Parameters
         ----------
         key : :class:`typing.Hashable`
-            The key of the submoject to be assigned
+            The key of the submobject to be assigned
         value : :class:`VMobject`
             The submobject to bind the key to
 
@@ -1784,7 +1784,7 @@ class VDict(VMobject):
         Parameters
         ----------
         key : :class:`typing.Hashable`
-            The key of the submoject to be deleted
+            The key of the submobject to be deleted
 
         Returns
         -------

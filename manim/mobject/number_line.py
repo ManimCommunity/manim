@@ -147,7 +147,7 @@ class NumberLine(Line):
 
         if self.include_tip:
             self.add_tip()
-            self.get_tip().mobject.set_stroke(self.stroke_color, self.stroke_width)
+            self.get_tip().set_stroke(self.stroke_color, self.stroke_width)
 
         if self.include_ticks:
             self.add_ticks()

@@ -218,7 +218,7 @@ class ArrowTip:
                 self.tip_attrs["tip_angle"] = 0
             result = func(self, *args, **kwargs)
             if update:
-                self.update_positioning()
+                self.update_tip_positioning()
             return result
 
         return method_wrapper
@@ -392,7 +392,8 @@ class Arrow(Line):
                 **kwargs,
             )
         self.add_tip(tip_mobject, **kwargs)
-        self.target_tip_length = self.tips[0].get_tip_length()
+        tip = self.get_tip(-1)
+        self.target_tip_length = tip.get_tip_length()
 
         self.update_stroke_and_tips()
 
