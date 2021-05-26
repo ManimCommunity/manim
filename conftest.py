@@ -8,9 +8,10 @@
 # itself. If it's a normal test then it uses the
 # tempconfig to change directories.
 
-from _pytest.doctest import DoctestItem
 import pytest
-from manim import tempconfig, config
+from _pytest.doctest import DoctestItem
+
+from manim import config, tempconfig
 
 
 @pytest.fixture(autouse=True)
