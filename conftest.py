@@ -5,7 +5,7 @@
 
 # If it is running Doctest the current directory
 # is changed because it also tests the config module
-# itself. If it's a normal test then it uses the 
+# itself. If it's a normal test then it uses the
 # tempconfig to change directories.
 
 from _pytest.doctest import DoctestItem

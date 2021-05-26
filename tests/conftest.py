@@ -3,9 +3,6 @@ import sys
 
 import pytest
 
-from manim import config, tempconfig
-import manim
-
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -54,4 +51,3 @@ def reset_cfg_file():
     yield
     with open(cfgfilepath, "w") as cfgfile:
         cfgfile.write(original)
-
