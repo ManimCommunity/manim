@@ -1,3 +1,2 @@
 imageio-ffmpeg
 jupyterlab
-https://github.com/ManimCommunity/ManimPango/releases/download/v0.2.4/ManimPango-0.2.4-cp38-cp38-manylinux2014_x86_64.whl
