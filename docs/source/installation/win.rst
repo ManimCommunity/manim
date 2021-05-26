@@ -97,7 +97,7 @@ LaTeX Installation
 You can install latex by either of the two methods below. MiKTex is very large 
 (2 GB) while ManimLaTeX is small  (500Mb).
 
-Using a custom distribution for Manim based on Texlive (Recommended for beginners)
+Using a custom distribution for Manim based on Texlive (recommended for beginners)
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 This is the smallest latex distribution just enough to run Manim. Extra latex 
