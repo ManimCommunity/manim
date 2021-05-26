@@ -19,18 +19,13 @@ import numpy as np
 from .. import config
 from ..constants import *
 
-from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Circle, DashedLine, Dot, Line
-from ..mobject.number_line import NumberLine
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import VDict, VGroup, VMobject
 from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE, YELLOW, Colors
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
 from .arrows import Arrow
 from .functions import ParametricFunction
-from .geometry import DashedLine, Dot, Line
+from .geometry import Circle, DashedLine, Dot, Line
 from .number_line import NumberLine
 from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VDict, VGroup, VMobject
