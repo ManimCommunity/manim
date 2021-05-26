@@ -1,6 +1,17 @@
 import json
+from zlib import crc32
+
+import pytest
 
 import manim.utils.hashing as hashing
+from manim import Square
+
+ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
+
+
+@pytest.fixture(autouse=True, scope="function")
+def reset_already_processed():
+    hashing._Memoizer.reset_already_processed()
 
 
 def test_JSON_basic():
@@ -81,8 +92,7 @@ def test_JSON_with_wrong_keys():
     a = {(1, 2): 3}
     b = {Test(): 3}
     c = {test: 3}
-
-    for el in (a, b, c):
+    for el in [a, b, c]:
         o_ser = hashing.get_json(el)
         dict_o = json.loads(o_ser)
         # check if this is an int (it meant that the lkey has been hashed)
@@ -99,7 +109,7 @@ def test_JSON_with_circular_references():
     B["circular_ref"] = A()
     o_ser = hashing.get_json(B)
     dict_o = json.loads(o_ser)
-    assert dict_o["circular_ref"]["b"]["circular_ref"] == "already_processed"
+    assert dict_o["circular_ref"]["b"] == ALREADY_PROCESSED_PLACEHOLDER
 
 
 def test_JSON_with_big_np_array():
@@ -114,3 +124,36 @@ def test_JSON_with_tuple():
     o = [(1, [1])]
     o_ser = hashing.get_json(o)
     assert o_ser == "[[1, [1]]]"
+
+
+def test_JSON_with_object_that_is_itself_circular_reference():
+    class T:
+        def __init__(self) -> None:
+            self.a = None
+
+    o = T()
+    o.a = o
+    hashing.get_json(o)
+
+
+def test_hash_consistency():
+    def assert_two_objects_produce_same_hash(obj1, obj2, debug=False):
+        """
+        When debug is True, if the hashes differ an assertion comparing (element-wise) the two objects will be raised,
+        and pytest will display a nice difference summary making it easier to debug.
+        """
+        json1 = hashing.get_json(obj1)
+        hashing._Memoizer.reset_already_processed()
+        json2 = hashing.get_json(obj2)
+        hashing._Memoizer.reset_already_processed()
+        hash1 = crc32(repr(json1).encode())
+        hash2 = crc32(repr(json2).encode())
+        if hash1 != hash2 and debug:
+            dict1 = json.loads(json1)
+            dict2 = json.loads(json2)
+            assert dict1 == dict2
+        assert hash1 == hash2, f"{obj1} and {obj2} have different hashes."
+
+    assert_two_objects_produce_same_hash(Square(), Square())
+    s = Square()
+    assert_two_objects_produce_same_hash(s, s.copy())
