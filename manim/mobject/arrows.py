@@ -1,6 +1,6 @@
 __all__ = ["ArrowTip", "Arrow", "Vector"]
 
-from functools import wraps
+from functools import cached_property, wraps
 from typing import Literal, Optional, Union
 
 import numpy as np
@@ -20,7 +20,12 @@ DEFAULT_ARROW_TO_STROKE_WIDTH_RATIO = 35 / 6
 # TODO needs cleanup
 
 
-class ArrowTip:  # TODO: add presets via string
+import types
+
+# TODO: add tip presets (via string?)
+
+
+class ArrowTip:
     """An arrow tip.
 
     An arrow tip is not a :class:`~.Mobject` but always contains one in the
@@ -123,18 +128,16 @@ class ArrowTip:  # TODO: add presets via string
         secant_delta: Optional[float] = None,
         **kwargs,
     ):
-
         if mobject is None:
             mobject = Triangle()
             mobject.width = DEFAULT_ARROW_TIP_LENGTH
             mobject.stretch_to_fit_height(DEFAULT_ARROW_TIP_LENGTH)
             filled = filled is None or filled
             color = "copy" if color is None else color
-        elif isinstance(mobject, cls):  # mobject is used as tip elsewhere
-            mobject.tip_attrs["base_line"].remove_tip(mobject)
-            # TODO "mixout"
+        elif hasattr(mobject, "tip_attrs"):  # mobject is used as tip elsewhere
+            cls.trim(mobject)
 
-        cls.mixin(mobject)
+        cls.extend(mobject)
 
         if backwards:
             relative_position = 1 - relative_position
@@ -171,12 +174,22 @@ class ArrowTip:  # TODO: add presets via string
         if filled is not None and isinstance(mobject, (VMobject, OpenGLVMobject)):
             mobject.set_fill(opacity=float(filled))
 
-        mobject.update_positioning()
-        base_line.add(mobject)
-        base_line.tips.append(mobject)
+        mobject.update_tip_positioning()
+        return mobject
 
     @classmethod
-    def mixin(cls, mobject: Mobject):
+    def _methods_list(cls):
+        return filter(
+            lambda name: not (
+                name.startswith("__")
+                and name.endswith("__")
+                or type(cls.__dict__[name]) != types.FunctionType
+            ),
+            cls.__dict__,
+        )
+
+    @classmethod
+    def extend(cls, mobject: Mobject):
         """Add this class as mixin to a mobject.
 
         Parameters
@@ -184,8 +197,18 @@ class ArrowTip:  # TODO: add presets via string
         mobject
             The mobject to be extended.
         """
-        base_cls = mobject.__class__
-        mobject.__class__ = type(base_cls.__name__, (base_cls, cls), {})
+
+        for name in cls._methods_list():
+            if name in mobject.__dict__:
+                raise ValueError()
+            mobject.__dict__[name] = cls.__dict__[name].__get__(mobject)
+
+    @classmethod
+    def trim(cls, tip: "ArrowTip"):
+        tip.rotate(-tip.tip_attrs["tip_angle"] + PI / 2)  # add pi/2 to rotate up
+        for name in cls._methods_list():
+            tip.__dict__.pop(name)
+        delattr(tip, "tip_attrs")
 
     def _unrotated_tip(func):
         @wraps(func)
@@ -362,14 +385,14 @@ class Arrow(Line):
         self.target_stroke_width = target_stroke_width
 
         kwargs.setdefault("tip_alignment", RIGHT)
-        self.add_tip(None if tip_mobject is None else tip_mobject.copy(), **kwargs)
         if double:
             self.add_tip(
                 None if tip_mobject is None else tip_mobject.copy(),
                 backwards=True,
                 **kwargs,
             )
-        self.target_tip_length = self.tips[0].get_length()
+        self.add_tip(tip_mobject, **kwargs)
+        self.target_tip_length = self.tips[0].get_tip_length()
 
         self.update_stroke_and_tips()
 
@@ -383,8 +406,8 @@ class Arrow(Line):
         max_from_ratio = self.max_tip_length_to_length_ratio * self.get_arc_length()
         tip_length = min(self.target_tip_length, max_from_ratio)
         for tip in self.tips:
-            tip.set_length(tip_length)
-            tip.mobject.set_stroke_width(self.get_stroke_width())
+            tip.set_tip_length(tip_length)
+            tip.set_stroke_width(self.get_stroke_width())
 
     def scale(self, factor, scale_tips=False, **kwargs):
         super().scale(factor, **kwargs)

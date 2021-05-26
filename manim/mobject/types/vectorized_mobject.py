@@ -38,6 +38,10 @@ from ..mobject import Mobject
 from ..three_d_utils import get_3d_vmob_gradient_start_and_end_points
 from .opengl_vectorized_mobject import OpenGLVMobject
 
+if typing.TYPE_CHECKING:
+    from ..arrows import ArrowTip
+
+
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
 # - Change sub_path idea accordingly
@@ -1410,18 +1414,22 @@ class VMobject(Mobject):
         from ..arrows import ArrowTip
 
         tip = ArrowTip(self, *args, **kwargs)
+        self.add(tip)
         self.tips.append(tip)
         return self
 
-    def get_tips(self):
+    def get_tips(self) -> List["ArrowTip"]:
         return self.tips
 
-    def get_tip(self):
-        return self.tips[0] if len(self.tips) else None
+    def get_tip(self, index=0) -> "ArrowTip":
+        return self.tips[index] if len(self.tips) >= index else None
 
     def remove_tip(self, tip: "ArrowTip"):
+        from ..arrows import ArrowTip
+
         self.tips.remove(tip)
-        self.remove(tip.mobject)
+        self.remove(tip)
+        ArrowTip.trim(tip)
 
 
 class VGroup(VMobject):
