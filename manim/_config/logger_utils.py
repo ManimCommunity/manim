@@ -14,6 +14,7 @@ import copy
 import json
 import logging
 import os
+import sys
 import typing
 from typing import TYPE_CHECKING
 
@@ -62,9 +63,10 @@ def make_logger(
 
     Returns
     -------
-    :class:`logging.Logger`, :class:`rich.Console`
-        The manim logger and console.  Both use the theme returned by
-        :func:`parse_theme`
+    :class:`logging.Logger`, :class:`rich.Console`, :class:`rich.Console`
+        The manim logger and consoles. The first console outputs
+        to stdout, the second to stderr. All use the theme returned by
+        :func:`parse_theme`.
 
     See Also
     --------
@@ -80,6 +82,9 @@ def make_logger(
     theme = parse_theme(parser)
     console = Console(theme=theme)
 
+    # With rich 9.5.0+ we could pass stderr=True instead
+    error_console = Console(theme=theme, file=sys.stderr)
+
     # set the rich handler
     RichHandler.KEYWORDS = HIGHLIGHTED_KEYWORDS
     rich_handler = RichHandler(
@@ -91,7 +96,7 @@ def make_logger(
     logger.addHandler(rich_handler)
     logger.setLevel(verbosity)
 
-    return logger, console
+    return logger, console, error_console
 
 
 def parse_theme(parser: configparser.ConfigParser) -> Theme:
