@@ -1,0 +1,3 @@
+[codespell]
+exclude-file=.codespell_ignorelines
+check-hidden=True

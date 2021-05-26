@@ -140,7 +140,7 @@ def scene(**args):
     FILE is the name of file in which the SCENE will be inserted.
     """
     if not Path("main.py").exists():
-        raise FileNotFoundError(f"{Path('main.py')} : Not a valid project direcotory.")
+        raise FileNotFoundError(f"{Path('main.py')} : Not a valid project directory.")
 
     template_name = click.prompt(
         "template",
