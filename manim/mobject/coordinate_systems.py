@@ -20,7 +20,15 @@ from colour import Color
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, DashedLine, Dot, Line, Rectangle, RegularPolygon
+from ..mobject.geometry import (
+    Arrow,
+    Circle,
+    DashedLine,
+    Dot,
+    Line,
+    Rectangle,
+    RegularPolygon,
+)
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
 from ..mobject.types.vectorized_mobject import (
