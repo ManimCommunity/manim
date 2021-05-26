@@ -18,7 +18,6 @@ import numpy as np
 
 from .. import config
 from ..constants import *
-
 from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE, YELLOW, Colors
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
