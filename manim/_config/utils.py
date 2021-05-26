@@ -282,6 +282,7 @@ class ManimConfig(MutableMapping):
         "renderer",
         "use_opengl_renderer",
         "use_webgl_renderer",
+        "opengl_samples",
         "verbosity",
         "video_dir",
         "write_all",
@@ -520,6 +521,7 @@ class ManimConfig(MutableMapping):
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
+            "opengl_samples",
         ]:
             setattr(self, key, parser["CLI"].getint(key))
 
@@ -637,6 +639,7 @@ class ManimConfig(MutableMapping):
             "renderer",
             "background_color",
             "use_opengl_renderer",
+            "opengl_samples",
             "use_webgl_renderer",
         ]:
             if hasattr(args, key):
@@ -1100,6 +1103,12 @@ class ManimConfig(MutableMapping):
                 "opengl",
                 ["cairo", "opengl", "webgl"],
             )
+
+    opengl_samples = property(
+        lambda self: self._d["opengl_samples"],
+        lambda self, val: self._d.__setitem__("opengl_samples", val),
+        doc="Number of samples for MSAA in OpenGL rendering.",
+    )
 
     @property
     def use_webgl_renderer(self):

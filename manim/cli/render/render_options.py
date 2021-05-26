@@ -93,6 +93,13 @@ render_options = option_group(
         help="Render scenes using OpenGL (Deprecated).",
     ),
     option(
+        "--ogls",
+        "--opengl_samples",
+        "opengl_samples",
+        type=int,
+        help="Render with this number of MSAA samples in OpenGL rendering.",
+    ),
+    option(
         "--use_webgl_renderer",
         is_flag=True,
         help="Render scenes using the WebGL frontend (Deprecated).",

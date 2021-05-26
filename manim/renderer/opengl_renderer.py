@@ -214,7 +214,7 @@ class OpenGLRenderer:
         self.scene = scene
         if not hasattr(self, "window"):
             if config["preview"]:
-                self.window = Window(self)
+                self.window = Window(self, samples=config["opengl_samples"])
                 self.context = self.window.ctx
                 self.frame_buffer_object = self.context.detect_framebuffer()
             else:

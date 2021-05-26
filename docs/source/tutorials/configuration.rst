@@ -351,7 +351,7 @@ A list of all config options
    'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
    'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
-   'upto_animation_number', 'use_opengl_renderer', 'use_webgl_renderer',
+   'upto_animation_number', 'use_opengl_renderer', 'opengl_samples', 'use_webgl_renderer',
    'verbosity', 'video_dir', 'webgl_renderer_path', 'write_all',
    'write_to_movie']
 

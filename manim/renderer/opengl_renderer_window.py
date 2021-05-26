@@ -12,10 +12,10 @@ class Window(PygletWindow):
     vsync = True
     cursor = True
 
-    def __init__(self, renderer, size=None, **kwargs):
+    def __init__(self, renderer, size=None, samples=0, **kwargs):
         if size is None:
             size = (config["pixel_width"], config["pixel_height"])
-        super().__init__(size=size)
+        super().__init__(size=size, samples=samples)
 
         self.title = f"Manim Community {__version__}"
         self.size = size
