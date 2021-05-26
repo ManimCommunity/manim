@@ -31,7 +31,6 @@ __all__ = [
     "MobjectMatrix",
     "matrix_to_tex_string",
     "matrix_to_mobject",
-    "vector_coordinate_label",
     "get_det_text",
 ]
 
@@ -44,8 +43,6 @@ from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import WHITE
-
-VECTOR_LABEL_SCALE_FACTOR = 0.8
 
 
 def matrix_to_tex_string(matrix):
@@ -61,27 +58,6 @@ def matrix_to_tex_string(matrix):
 
 def matrix_to_mobject(matrix):
     return MathTex(matrix_to_tex_string(matrix))
-
-
-def vector_coordinate_label(vector_mob, integer_labels=True, n_dim=2, color=WHITE):
-    vect = np.array(vector_mob.get_end())
-    if integer_labels:
-        vect = np.round(vect).astype(int)
-    vect = vect[:n_dim]
-    vect = vect.reshape((n_dim, 1))
-    label = Matrix(vect, add_background_rectangles_to_entries=True)
-    label.scale(VECTOR_LABEL_SCALE_FACTOR)
-
-    shift_dir = np.array(vector_mob.get_end())
-    if shift_dir[0] >= 0:  # Pointing right
-        shift_dir -= label.get_left() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * LEFT
-    else:  # Pointing left
-        shift_dir -= label.get_right() + DEFAULT_MOBJECT_TO_MOBJECT_BUFFER * RIGHT
-    label.shift(shift_dir)
-    label.set_color(color)
-    label.rect = BackgroundRectangle(label)
-    label.add_to_back(label.rect)
-    return label
 
 
 class Matrix(VMobject):
@@ -114,9 +90,9 @@ class Matrix(VMobject):
         h_buff : :class:`float`, optional
             horizontal buffer, by default 1.3
         bracket_h_buff : :class:`float`, optional
-            bracket horizonal buffer, by default MED_SMALL_BUFF
+            bracket horizontal buffer, by default MED_SMALL_BUFF
         bracket_v_buff : :class:`float`, optional
-            bracket veritical buffer, by default MED_SMALL_BUFF
+            bracket vertical buffer, by default MED_SMALL_BUFF
         add_background_rectangles_to_entries : :class:`bool`, optional
             `True` if should add backgraound rectangles to entries, by default False
         include_background_rectangle : :class:`bool`, optional

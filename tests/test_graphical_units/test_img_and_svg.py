@@ -100,6 +100,29 @@ class UseTagInheritanceTest(Scene):
         self.wait()
 
 
+class HalfEllipseTest(Scene):
+    def construct(self):
+        half_ellipse = SVGMobject(get_test_resource("half_ellipse.svg"))
+        self.add(half_ellipse)
+        self.wait()
+
+
+class Arcs01Test(Scene):
+    # See: https://www.w3.org/TR/SVG11/images/paths/arcs01.svg
+    def construct(self):
+        arcs = SVGMobject(get_test_resource("arcs01.svg"))
+        self.add(arcs)
+        self.wait()
+
+
+class Arcs02Test(Scene):
+    # See: https://www.w3.org/TR/SVG11/images/paths/arcs02.svg
+    def construct(self):
+        arcs = SVGMobject(get_test_resource("arcs02.svg"))
+        self.add(arcs)
+        self.wait()
+
+
 # Second are the visual tests - these are probably too complex to verify step-by-step, so
 # these are really more of a spot-check
 

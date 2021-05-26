@@ -144,13 +144,13 @@ Animations
                 theta_tracker.get_value() * DEGREES, about_point=rotation_center
             )
             a = Angle(line1, line_moving, radius=0.5, other_angle=False)
-            te = MathTex(r"\theta").move_to(
+            tex = MathTex(r"\theta").move_to(
                 Angle(
                     line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
                 ).point_from_proportion(0.5)
             )
 
-            self.add(line1, line_moving, a, te)
+            self.add(line1, line_moving, a, tex)
             self.wait()
 
             line_moving.add_updater(
@@ -162,7 +162,7 @@ Animations
             a.add_updater(
                 lambda x: x.become(Angle(line1, line_moving, radius=0.5, other_angle=False))
             )
-            te.add_updater(
+            tex.add_updater(
                 lambda x: x.move_to(
                     Angle(
                         line1, line_moving, radius=0.5 + 3 * SMALL_BUFF, other_angle=False
@@ -172,7 +172,7 @@ Animations
 
             self.play(theta_tracker.animate.set_value(40))
             self.play(theta_tracker.animate.increment_value(140))
-            self.play(te.animate.set_color(RED), run_time=0.5)
+            self.play(tex.animate.set_color(RED), run_time=0.5)
             self.play(theta_tracker.animate.set_value(350))
 
 .. tip::
@@ -450,12 +450,12 @@ Special Camera Settings
 
             frame_text.next_to(frame, DOWN)
 
-            self.play(Create(frame), FadeInFrom(frame_text, direction=DOWN))
+            self.play(Create(frame), FadeIn(frame_text, shift=UP))
             self.activate_zooming()
 
             self.play(self.get_zoomed_display_pop_out_animation(), unfold_camera)
             zoomed_camera_text.next_to(zoomed_display_frame, DOWN)
-            self.play(FadeInFrom(zoomed_camera_text, direction=DOWN))
+            self.play(FadeIn(zoomed_camera_text, shift=UP))
             # Scale in        x   y  z
             scale_factor = [0.5, 1.5, 0]
             self.play(
@@ -508,6 +508,7 @@ Special Camera Settings
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
+
 .. manim:: ThreeDCameraRotation
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
@@ -519,7 +520,7 @@ Special Camera Settings
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(circle,axes)
             self.begin_ambient_camera_rotation(rate=0.1)
-            self.wait(3)
+            self.wait()
             self.stop_ambient_camera_rotation()
             self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES)
             self.wait()
@@ -535,68 +536,47 @@ Special Camera Settings
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(circle,axes)
             self.begin_3dillusion_camera_rotation(rate=2)
-            self.wait(PI)
+            self.wait(PI/2)
             self.stop_3dillusion_camera_rotation()
 
-.. manim:: ThreeDFunctionPlot
-    :ref_classes: ThreeDScene ParametricSurface
+.. manim:: ThreeDSurfacePlot
+   :save_last_frame:
+   :ref_classes: ThreeDScene ParametricSurface
+   
+   class ThreeDSurfacePlot(ThreeDScene):
+       def construct(self):
+           resolution_fa = 42
+           self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
 
-    class ThreeDFunctionPlot(ThreeDScene):
-        def construct(self):
-            resolution_fa = 22
-            self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
+           def param_gauss(u, v):
+               x = u
+               y = v
+               d = np.sqrt(x * x + y * y)
+               sigma, mu = 0.4, 0.0
+               z = np.exp(-((d - mu) ** 2 / (2.0 * sigma ** 2)))
+               return np.array([x, y, z])
 
-            def param_plane(u, v):
-                x = u
-                y = v
-                z = 0
-                return np.array([x, y, z])
+           gauss_plane = ParametricSurface(
+               param_gauss,
+               resolution=(resolution_fa, resolution_fa),
+               v_min=-2,
+               v_max=+2,
+               u_min=-2,
+               u_max=+2,
+           )
 
-            plane = ParametricSurface(
-                param_plane,
-                resolution=(resolution_fa, resolution_fa),
-                v_min=-2,
-                v_max=+2,
-                u_min=-2,
-                u_max=+2,
-            )
-            plane.scale_about_point(2, ORIGIN)
-
-            def param_gauss(u, v):
-                x = u
-                y = v
-                d = np.sqrt(x * x + y * y)
-                sigma, mu = 0.4, 0.0
-                z = np.exp(-((d - mu) ** 2 / (2.0 * sigma ** 2)))
-                return np.array([x, y, z])
-
-            gauss_plane = ParametricSurface(
-                param_gauss,
-                resolution=(resolution_fa, resolution_fa),
-                v_min=-2,
-                v_max=+2,
-                u_min=-2,
-                u_max=+2,
-            )
-
-            gauss_plane.scale_about_point(2, ORIGIN)
-            gauss_plane.set_style(fill_opacity=1)
-            gauss_plane.set_style(stroke_color=GREEN)
-            gauss_plane.set_fill_by_checkerboard(GREEN, BLUE, opacity=0.1)
-
-            axes = ThreeDAxes()
-
-            self.add(axes)
-            self.play(Write(plane))
-            self.play(Transform(plane, gauss_plane))
-            self.wait()
+           gauss_plane.scale_about_point(2, ORIGIN)
+           gauss_plane.set_style(fill_opacity=1,stroke_color=GREEN)
+           gauss_plane.set_fill_by_checkerboard(ORANGE, BLUE, opacity=0.5)
+           axes = ThreeDAxes()
+           self.add(axes,gauss_plane)
 
 
 Advanced Projects
 =================
 
 .. manim:: OpeningManim
-    :ref_classes: Tex MathTex Write FadeInFrom LaggedStart NumberPlane Create
+    :ref_classes: Tex MathTex Write FadeIn LaggedStart NumberPlane Create
     :ref_methods: NumberPlane.prepare_for_nonlinear_transform
 
     class OpeningManim(Scene):
@@ -606,7 +586,7 @@ Advanced Projects
             VGroup(title, basel).arrange(DOWN)
             self.play(
                 Write(title),
-                FadeInFrom(basel, UP),
+                FadeIn(basel, shift=DOWN),
             )
             self.wait()
 
@@ -614,7 +594,7 @@ Advanced Projects
             transform_title.to_corner(UP + LEFT)
             self.play(
                 Transform(title, transform_title),
-                LaggedStart(*[FadeOutAndShift(obj, direction=DOWN) for obj in basel]),
+                LaggedStart(*[FadeOut(obj, shift=DOWN) for obj in basel]),
             )
             self.wait()
 
@@ -626,7 +606,7 @@ Advanced Projects
             self.add(grid, grid_title)  # Make sure title is on top of grid
             self.play(
                 FadeOut(title),
-                FadeInFrom(grid_title, direction=DOWN),
+                FadeIn(grid_title, shift=UP),
                 Create(grid, run_time=3, lag_ratio=0.1),
             )
             self.wait()

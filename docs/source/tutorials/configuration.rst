@@ -14,7 +14,7 @@ The ManimConfig class
 
 The most direct way of configuring manim is via the global ``config`` object,
 which is an instance of :class:`.ManimConfig`.  Each property of this class is
-a config option that can be accessed either with standard attribute syntax, or
+a config option that can be accessed either with standard attribute syntax or
 with dict-like syntax:
 
 .. code-block:: pycon
@@ -81,7 +81,7 @@ Usually, manim is run from the command-line by executing
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName
+   manim <file.py> SceneName
 
 This asks manim to search for a Scene class called :code:`SceneName` inside the
 file <file.py> and render it.  One can also specify the render quality by using
@@ -90,7 +90,7 @@ high, and 4k quality, respectively.
 
 .. code-block:: bash
 
-   $ manim -ql <file.py> SceneName 
+   manim -ql <file.py> SceneName 
 
 These flags set the values of the config options ``config.pixel_width``,
 ``config.pixel_height``, ``config.frame_rate``, and ``config.quality``.
@@ -110,7 +110,7 @@ instead of the whole video, you can execute
 
 .. code-block:: bash
 
-   $ manim -sqh <file.py> SceneName 
+   manim -sqh <file.py> SceneName 
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
@@ -120,7 +120,7 @@ open the file after it is rendered.
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
+   manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
 
 .. tip:: There are many more command-line flags that manim accepts.  All the
 	 possible flags are shown by executing ``manim -h``.  A complete list
@@ -147,7 +147,7 @@ The config file must start with the section header ``[CLI]``.  The
 configuration options under this header have the same name as the CLI flags,
 and serve the same purpose.  Take for example the following config file.
 
-.. code-block::
+.. code-block:: ini
 
    [CLI]
    # my config file
@@ -162,17 +162,17 @@ Now, executing the following command
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -c WHITE <file.py> SceneName 
+   manim -o myscene -i -c WHITE <file.py> SceneName 
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
 
 .. code-block:: bash
 
-   $ manim <file.py> SceneName
+   manim <file.py> SceneName
 
 .. tip:: The names of the configuration options admissible in config files are
-         exactly the same as the **long names** of the corresponding command
+         exactly the same as the **long names** of the corresponding command-
          line flags.  For example, the ``-c`` and ``--background_color`` flags
          are interchangeable, but the config file only accepts
          :code:`background_color` as an admissible option.
@@ -187,7 +187,7 @@ file being rendered, and **not** in the directory of execution.  For example,
 
 .. code-block:: bash
 
-   $ manim -o myscene -i -c WHITE <path/to/file.py> SceneName
+   manim -o myscene -i -c WHITE <path/to/file.py> SceneName
 
 will use the config file found in ``path/to/file.py``, if any.  It will **not**
 use the config file found in the current working directory, even if it exists.
@@ -195,7 +195,7 @@ In this way, the user may keep different config files for different scenes or
 projects, and execute them with the right configuration from anywhere in the
 system.
 
-The file described here is called the **folder-wide** config file, because it
+The file described here is called the **folder-wide** config file because it
 affects all scene scripts found in the same folder.
 
 
@@ -239,7 +239,7 @@ incompatible, **the folder-wide file takes precedence**.
 
 For example, take the following user-wide config file
 
-.. code-block::
+.. code-block:: ini
 
    # user-wide
    [CLI]
@@ -249,7 +249,7 @@ For example, take the following user-wide config file
 
 and the following folder-wide file
 
-.. code-block::
+.. code-block:: ini
 
    # folder-wide
    [CLI]
