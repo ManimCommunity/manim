@@ -405,7 +405,26 @@ class VMobject(Mobject):
             return self.get_stroke_color()
         return self.get_fill_color()
 
-    def set_sheen_direction(self, direction, family=True):
+    def set_sheen_direction(self, direction: np.ndarray, family=True):
+        """Sets the direction of the applied sheen.
+
+        Parameters
+        ----------
+        direction : :class:`numpy.ndarray`, optional
+            Direction from where the gradient is applied.
+
+        Examples
+        --------
+        Normal usage::
+
+            Circle().set_sheen_direction(UP)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_sheen`
+        :meth:`~.VMobject.rotate_sheen_direction`
+        """
+
         direction = np.array(direction)
         if family:
             for submob in self.get_family():
@@ -414,7 +433,58 @@ class VMobject(Mobject):
             self.sheen_direction = direction
         return self
 
-    def set_sheen(self, factor, direction=None, family=True):
+    def rotate_sheen_direction(self, angle: np.ndarray, axis: float = OUT, family=True):
+        """Rotates the direction of the applied sheen.
+
+        Parameters
+        ----------
+        angle : :class:`float`
+            Angle by which the direction of sheen is rotated.
+        axis : :class:`numpy.ndarray`
+            Axis of rotation.
+
+        Examples
+        --------
+        Normal usage::
+
+            Circle().set_sheen_direction(UP).rotate_sheen_direction(PI)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_sheen_direction`
+        """
+        if family:
+            for submob in self.get_family():
+                submob.sheen_direction = rotate_vector(
+                    submob.sheen_direction, angle, axis
+                )
+        else:
+            self.sheen_direction = rotate_vector(self.sheen_direction, angle, axis)
+        return self
+
+    def set_sheen(self, factor, direction: np.ndarray = None, family=True):
+        """Applies a color gradient from a direction.
+
+        Parameters
+        ----------
+        factor : :class:`float`
+            The extent of lustre/gradient to apply. If negative, the gradient
+            starts from black, if positive the gradient starts from white and
+            changes to the current color.
+        direction : :class:`numpy.ndarray`, optional
+            Direction from where the gradient is applied.
+
+        Examples
+        --------
+        .. manim:: SetSheen
+            :save_last_frame:
+
+            class SetSheen(Scene):
+                def construct(self):
+                    circle = Circle(fill_opacity=1).set_sheen(-0.3, DR)
+                    self.add(circle)
+        """
+
         if family:
             for submob in self.submobjects:
                 submob.set_sheen(factor, direction, family)
@@ -732,6 +802,17 @@ class VMobject(Mobject):
         self.scale_handle_to_anchor_distances(1.0 / factor)
         if self.make_smooth_after_applying_functions:
             self.make_smooth()
+        return self
+
+    def rotate(
+        self,
+        angle: float,
+        axis: np.ndarray = OUT,
+        about_point: Optional[Sequence[float]] = None,
+        **kwargs,
+    ):
+        self.rotate_sheen_direction(angle, axis)
+        super().rotate(angle, axis, about_point, **kwargs)
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> "VMobject":
