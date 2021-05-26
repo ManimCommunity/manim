@@ -52,6 +52,7 @@ from ..utils.space_ops import (
     rotation_matrix,
     rotation_matrix_transpose,
 )
+from .opengl_compatibility import ConvertToOpenGL
 
 # TODO: Explain array_attrs
 
@@ -62,7 +63,7 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
 
 
-class Mobject(Container):
+class Mobject(Container, metaclass=ConvertToOpenGL):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
