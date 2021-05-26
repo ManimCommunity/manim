@@ -7,11 +7,11 @@ from typing import Union
 
 import numpy as np
 
-from ..mobject.mobject import MetaMobject, Mobject
+from ..mobject.mobject import Mobject
 from ..utils.paths import straight_path
 
 
-class ValueTracker(metaclass=MetaMobject):
+class ValueTracker(Mobject):
     """A mobject that can be used for tracking (real-valued) parameters.
     Useful for animating parameter changes.
 
@@ -69,7 +69,7 @@ class ValueTracker(metaclass=MetaMobject):
     """
 
     def __init__(self, value=0, **kwargs):
-        super().__init__(**kwargs)
+        Mobject.__init__(self, **kwargs)
         self.points = np.zeros((1, 3))
         self.set_value(value)
 
