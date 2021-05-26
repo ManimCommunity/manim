@@ -3,7 +3,7 @@ import pytest
 
 from manim import LEFT, ORIGIN, Axes, ComplexPlane
 from manim import CoordinateSystem as CS
-from manim import NumberPlane, ThreeDAxes, config, tempconfig
+from manim import NumberPlane, PolarPlane, ThreeDAxes, config, tempconfig
 
 
 def test_initial_config():
@@ -32,6 +32,7 @@ def test_dimension():
     """Check that objects have the correct dimension."""
     assert Axes().dimension == 2
     assert NumberPlane().dimension == 2
+    assert PolarPlane().dimension == 2
     assert ComplexPlane().dimension == 2
     assert ThreeDAxes().dimension == 3
 

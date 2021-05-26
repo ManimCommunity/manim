@@ -174,3 +174,33 @@ def test_vdict_remove():
     assert len(obj.submob_dict) == 0
     with pytest.raises(KeyError):
         obj.remove("a")
+
+
+def test_vgroup_supports_item_assigment():
+    """Test VGroup supports array-like assignment for VMObjects"""
+    a = VMobject()
+    b = VMobject()
+    vgroup = VGroup(a)
+    assert vgroup[0] == a
+    vgroup[0] = b
+    assert vgroup[0] == b
+    assert len(vgroup) == 1
+
+
+def test_vgroup_item_assignment_at_correct_position():
+    """Test VGroup item-assignment adds to correct position for VMObjects"""
+    n_items = 10
+    vgroup = VGroup()
+    for i in range(n_items):
+        vgroup.add(VMobject())
+    new_obj = VMobject()
+    vgroup[6] = new_obj
+    assert vgroup[6] == new_obj
+    assert len(vgroup) == n_items
+
+
+def test_vgroup_item_assignment_only_allows_vmobjects():
+    """Test VGroup item-assignment raises TypeError when invalid type is passed"""
+    vgroup = VGroup(VMobject())
+    with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
+        vgroup[0] = "invalid object"
