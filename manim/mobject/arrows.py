@@ -1,7 +1,7 @@
 __all__ = ["ArrowTip", "Arrow", "Vector"]
 
 import types
-from functools import cached_property, wraps
+from functools import wraps
 from typing import Literal, Optional, Union
 
 import numpy as np
