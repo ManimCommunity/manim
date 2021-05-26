@@ -192,8 +192,8 @@ class Axes(VGroup, CoordinateSystem):
 
     def __init__(
         self,
-        x_range: Optional[Union[List[float], np.ndarray]] = None,
-        y_range: Optional[Union[List[float], np.ndarray]] = None,
+        x_range: Optional[Union[Sequence[float], np.ndarray]] = None,
+        y_range: Optional[Union[Sequence[float], np.ndarray]] = None,
         x_length: Optional[float] = round(config.frame_width) - 2,
         y_length: Optional[float] = round(config.frame_height) - 2,
         axis_config: Optional[dict] = None,
@@ -230,7 +230,7 @@ class Axes(VGroup, CoordinateSystem):
 
     def create_axis(
         self,
-        range_terms: Union[List[float], np.ndarray],
+        range_terms: Union[Sequence[float], np.ndarray],
         axis_config: dict,
         length: float,
     ) -> NumberLine:
@@ -269,7 +269,7 @@ class Axes(VGroup, CoordinateSystem):
             A point that results from a change of basis from the coordinate system
             defined by the :class:`Axes` to that of ``manim``'s default coordinate system
         """
-        origin = self.x_axis.number_to_point(0)
+        origin = self.x_axis.number_to_point(self.origin_shift(self.x_range))
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
@@ -432,7 +432,7 @@ class Axes(VGroup, CoordinateSystem):
         return line_graph
 
     @staticmethod
-    def origin_shift(axis_range: List[float]) -> float:
+    def origin_shift(axis_range: Sequence[float]) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
@@ -483,9 +483,9 @@ class ThreeDAxes(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Union[List[float], np.ndarray]] = (-6, 6, 1),
-        y_range: Optional[Union[List[float], np.ndarray]] = (-5, 5, 1),
-        z_range: Optional[Union[List[float], np.ndarray]] = (-4, 4, 1),
+        x_range: Optional[Union[Sequence[float], np.ndarray]] = (-6, 6, 1),
+        y_range: Optional[Union[Sequence[float], np.ndarray]] = (-5, 5, 1),
+        z_range: Optional[Union[Sequence[float], np.ndarray]] = (-4, 4, 1),
         x_length: Optional[float] = config.frame_height + 2.5,
         y_length: Optional[float] = config.frame_height + 2.5,
         z_length: Optional[float] = config.frame_height - 1.5,
@@ -589,12 +589,12 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Union[List[float], np.ndarray]] = (
+        x_range: Optional[Union[Sequence[float], np.ndarray]] = (
             -config["frame_x_radius"],
             config["frame_x_radius"],
             1,
         ),
-        y_range: Optional[Union[List[float], np.ndarray]] = (
+        y_range: Optional[Union[Sequence[float], np.ndarray]] = (
             -config["frame_y_radius"],
             config["frame_y_radius"],
             1,
@@ -680,7 +680,7 @@ class NumberPlane(Axes):
             self.background_lines,
         )
 
-    def get_lines(self):
+    def get_lines(self) -> Tuple[VGroup, VGroup]:
         """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
 
         Returns
