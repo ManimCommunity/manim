@@ -2,7 +2,7 @@ __all__ = ["ArrowTip", "Arrow", "Vector"]
 
 import types
 from functools import wraps
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 from colour import Color
@@ -122,7 +122,7 @@ class ArrowTip:
         scale_auto=True,
         length: Optional[float] = None,
         width: Optional[float] = None,
-        color: Optional[Union[Color, Literal["copy"]]] = None,
+        color: Optional[Color] = None,
         filled: Optional[bool] = None,
         secant_delta: Optional[float] = None,
         **kwargs,
@@ -182,7 +182,7 @@ class ArrowTip:
             lambda name: not (
                 name.startswith("__")
                 and name.endswith("__")
-                or not isinstance(cls.__dict__[name], type.FunctionType)
+                or not isinstance(cls.__dict__[name], types.FunctionType)
             ),
             cls.__dict__,
         )
