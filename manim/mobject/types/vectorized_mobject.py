@@ -48,27 +48,7 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 #   That's kind of weird.
 
 
-class MetaVMobject(ConvertToOpenGL):
-    """Metaclass for initializing corresponding classes as either inheriting from
-    VMobject or OpenGLVMobject, depending on the value of ``config.renderer`` at
-    initialization time.
-
-    Note that with this implementation, changing the value of ``config.renderer``
-    after Manim has been imported won't have the desired effect and will lead to
-    spurious errors.
-    """
-
-    def __new__(cls, name, bases, namespace):
-        if len(bases) == 0:
-            if config.renderer == "opengl":
-                bases = (OpenGLVMobject,)
-            else:
-                bases = (VMobject,)
-
-        return super().__new__(cls, name, bases, namespace)
-
-
-class VMobject(Mobject, metaclass=ConvertToOpenGL):
+class VMobject(Mobject):
     def __init__(
         self,
         fill_color=None,
@@ -1976,7 +1956,7 @@ class VDict(VMobject):
         super().add(value)
 
 
-class VectorizedPoint(metaclass=MetaVMobject):
+class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         location=ORIGIN,
@@ -2041,7 +2021,7 @@ class CurvesAsSubmobjects(VGroup):
             self.add(part)
 
 
-class DashedVMobject(metaclass=MetaVMobject):
+class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):
