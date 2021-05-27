@@ -4,6 +4,7 @@ from pathlib import Path
 import manim.utils.opengl as opengl
 import manim.utils.space_ops as space_ops
 from manim import *
+from manim.cli.new.group import scene
 from manim.opengl import *
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.

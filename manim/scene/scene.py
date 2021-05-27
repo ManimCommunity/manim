@@ -19,9 +19,9 @@ from queue import Queue
 try:
     import dearpygui.core
 
-    dearpygui_enabled = True
+    dearpygui_imported = True
 except ImportError:
-    dearpygui_enabled = False
+    dearpygui_imported = False
 import numpy as np
 from tqdm import tqdm
 from watchdog.events import FileSystemEventHandler
@@ -113,7 +113,7 @@ class Scene(Container):
         self.meshes = []
         self.camera_target = ORIGIN
         self.widgets = []
-        self.dearpygui_enabled = dearpygui_enabled
+        self.dearpygui_imported = dearpygui_imported
 
         if config.renderer == "opengl":
             # Items associated with interaction
@@ -1030,7 +1030,7 @@ class Scene(Container):
         )
         keyboard_thread.start()
 
-        if self.dearpygui_enabled:
+        if self.dearpygui_imported and config["enable_gui"]:
             if not dearpygui.core.is_dearpygui_running():
                 gui_thread = threading.Thread(
                     target=configure_pygui,
@@ -1108,7 +1108,7 @@ class Scene(Container):
             while self.queue.qsize() > 0:
                 self.queue.get()
 
-        if self.dearpygui_enabled:
+        if self.dearpygui_imported and config["enable_gui"]:
             dearpygui.core.stop_dearpygui()
 
         if self.renderer.window.is_closing:

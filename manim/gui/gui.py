@@ -5,9 +5,9 @@ try:
     import dearpygui.demo
     import dearpygui.simple
 
-    dearpygui_enabled = True
+    dearpygui_imported = True
 except ImportError:
-    dearpygui_enabled = False
+    dearpygui_imported = False
 
 
 from .. import config
@@ -15,7 +15,7 @@ from ..utils.module_ops import scene_classes_from_file
 
 
 def configure_pygui(renderer, widgets, update=True):
-    if not dearpygui_enabled:
+    if not dearpygui_imported:
         raise RuntimeError("Attempted to use DearPyGUI when it isn't imported.")
     if update:
         dearpygui.core.delete_item("Manim GUI")
@@ -37,10 +37,6 @@ def configure_pygui(renderer, widgets, update=True):
         "Manim GUI", x_pos=40, y_pos=800, width=1000, height=500
     ):
         dearpygui.core.set_global_font_scale(2)
-        # dearpygui.core.add_additional_font(
-        #     "roboto", "../../../../.local/share/fonts/Roboto-Black.ttf", 30
-        # )
-        # dearpygui.core.set_font("roboto", 30)
         dearpygui.core.add_button("Rerun", callback=rerun_callback)
         dearpygui.core.add_button("Continue", callback=continue_callback)
         dearpygui.core.add_combo(

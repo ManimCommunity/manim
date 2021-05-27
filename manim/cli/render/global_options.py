@@ -36,4 +36,9 @@ global_options = option_group(
         default=None,
         help="Display warnings for outdated installation.",
     ),
+    option(
+        "--enable_gui",
+        is_flag=True,
+        help="Enable GUI interaction.",
+    ),
 )

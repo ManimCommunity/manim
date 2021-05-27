@@ -282,6 +282,7 @@ class ManimConfig(MutableMapping):
         "renderer",
         "use_opengl_renderer",
         "use_webgl_renderer",
+        "enable_gui",
         "verbosity",
         "video_dir",
         "write_all",
@@ -638,6 +639,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "use_opengl_renderer",
             "use_webgl_renderer",
+            "enable_gui",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1127,6 +1129,12 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["media_dir"],
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    enable_gui = property(
+        lambda self: self._d["enable_gui"],
+        lambda self, val: self._set_boolean("enable_gui", val),
+        doc="Enable GUI interaction.",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:
