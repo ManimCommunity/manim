@@ -294,7 +294,7 @@ class Animation:
         self,
         submobject: Mobject,
         starting_submobject: Mobject,
-        # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differes in Transform().
+        # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differs in Transform().
         alpha: float,
     ) -> "Animation":
         # Typically implemented by subclass
@@ -386,7 +386,7 @@ class Animation:
         Returns
         -------
         Callable[[float], float]
-            The rate fucntion of the animation.
+            The rate function of the animation.
         """
         return self.rate_func
 

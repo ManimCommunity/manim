@@ -722,7 +722,7 @@ class MarkupText(SVGMobject):
 
     You can find more information about Pango markup formatting at the
     corresponding documentation page:
-    `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
+    `Pango Markup <https://developer.gnome.org/pango/1.46/pango-Markup.html>`_.
     Please be aware that not all features are supported by this class and that
     the ``<gradient>`` tag mentioned above is not supported by Pango.
 
@@ -931,13 +931,9 @@ class MarkupText(SVGMobject):
                 'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
             )
         gradientmap = self.extract_gradient_tags()
-
-        if not MarkupUtils.validate(self.text):
-            raise ValueError(
-                f"Pango cannot parse your markup in {self.text}. "
-                "Please check for typos, unmatched tags or unescaped "
-                "special chars like < and &."
-            )
+        validate_error = MarkupUtils.validate(self.text)
+        if validate_error:
+            raise ValueError(validate_error)
 
         if self.line_spacing == -1:
             self.line_spacing = self.size + self.size * 0.3

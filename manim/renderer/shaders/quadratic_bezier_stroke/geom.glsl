@@ -223,7 +223,7 @@ void main() {
     }
 
     // Control points are projected to the xy plane before drawing, which in turn
-    // gets tranlated to a uv plane.  The z-coordinate information will be remembered
+    // gets translated to a uv plane.  The z-coordinate information will be remembered
     // by what's sent out to gl_Position, and by how it affects the lighting and stroke width
     vec2 flat_controls[3];
     vec2 flat_prev[3];
