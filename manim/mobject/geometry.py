@@ -66,16 +66,12 @@ import warnings
 from typing import Iterable, Optional, Sequence
 
 import numpy as np
+from colour import Color
 
 from .. import config, logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import (
-    DashedVMobject,
-    MetaVMobject,
-    VGroup,
-    VMobject,
-)
+from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import fdiv
@@ -88,9 +84,10 @@ from ..utils.space_ops import (
     regular_vertices,
     rotate_vector,
 )
+from .opengl_compatibility import ConvertToOpenGL
 
 
-class TipableVMobject(metaclass=MetaVMobject):
+class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     """
     Meant for shared functionality between Arc and Line.
     Functionality can be classified broadly into these groups:
@@ -1123,7 +1120,7 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-class Elbow(metaclass=MetaVMobject):
+class Elbow(VMobject, metaclass=ConvertToOpenGL):
     """Two lines that create a right angle about each other: L-shape.
 
     Parameters
@@ -1463,7 +1460,7 @@ class DoubleArrow(Arrow):
         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
-class CubicBezier(metaclass=MetaVMobject):
+class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
     """
     Example
     -------
@@ -1491,7 +1488,7 @@ class CubicBezier(metaclass=MetaVMobject):
         self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
 
 
-class Polygram(metaclass=MetaVMobject):
+class Polygram(VMobject, metaclass=ConvertToOpenGL):
     """A generalized :class:`Polygon`, allowing for disconnected sets of edges.
 
     Parameters
@@ -1931,7 +1928,7 @@ class Star(Polygon):
         super().__init__(*vertices, **kwargs)
 
 
-class ArcPolygon(metaclass=MetaVMobject):
+class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version tries to stick close to the way :class:`Polygon` is used. Points
@@ -2041,7 +2038,7 @@ class ArcPolygon(metaclass=MetaVMobject):
         self.arcs = arcs
 
 
-class ArcPolygonFromArcs(metaclass=MetaVMobject):
+class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version takes in pre-defined arcs to generate the arcpolygon and introduces
@@ -2206,6 +2203,10 @@ class Rectangle(Polygon):
         The vertical height of the rectangle.
     width : :class:`float`, optional
         The horizontal width of the rectangle.
+    grid_xstep : :class:`float`, optional
+        Space between vertical grid lines.
+    grid_ystep : :class:`float`, optional
+        Space between horizontal grid lines.
     mark_paths_closed : :class:`bool`, optional
         No purpose.
     close_new_points : :class:`bool`, optional
@@ -2221,7 +2222,7 @@ class Rectangle(Polygon):
 
         class RectangleExample(Scene):
             def construct(self):
-                rect1 = Rectangle(width=4.0, height=2.0)
+                rect1 = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
                 rect2 = Rectangle(width=1.0, height=4.0)
 
                 rects = Group(rect1,rect2).arrange(buff=1)
@@ -2230,9 +2231,11 @@ class Rectangle(Polygon):
 
     def __init__(
         self,
-        color=WHITE,
-        height=2.0,
-        width=4.0,
+        color: Color = WHITE,
+        height: float = 2.0,
+        width: float = 4.0,
+        grid_xstep: Optional[float] = None,
+        grid_ystep: Optional[float] = None,
         mark_paths_closed=True,
         close_new_points=True,
         **kwargs,
@@ -2242,6 +2245,35 @@ class Rectangle(Polygon):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
+        v = self.get_vertices()
+        if grid_xstep is not None:
+            grid_xstep = abs(grid_xstep)
+            count = int(width / grid_xstep)
+            grid = VGroup(
+                *[
+                    Line(
+                        v[1] + i * grid_xstep * RIGHT,
+                        v[1] + i * grid_xstep * RIGHT + height * DOWN,
+                        color=color,
+                    )
+                    for i in range(1, count)
+                ]
+            )
+            self.add(grid)
+        if grid_ystep is not None:
+            grid_ystep = abs(grid_ystep)
+            count = int(height / grid_ystep)
+            grid = VGroup(
+                *[
+                    Line(
+                        v[1] + i * grid_ystep * DOWN,
+                        v[1] + i * grid_ystep * DOWN + width * RIGHT,
+                        color=color,
+                    )
+                    for i in range(1, count)
+                ]
+            )
+            self.add(grid)
 
 
 class Square(Rectangle):
@@ -2304,7 +2336,7 @@ class RoundedRectangle(Rectangle):
         self.round_corners(self.corner_radius)
 
 
-class ArrowTip(metaclass=MetaVMobject):
+class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     r"""Base class for arrow tips.
 
     See Also
@@ -2544,7 +2576,7 @@ class ArrowSquareFilledTip(ArrowSquareTip):
         super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
 
 
-class Cutout(metaclass=MetaVMobject):
+class Cutout(VMobject, metaclass=ConvertToOpenGL):
     """A shape with smaller cutouts.
 
     .. warning::
@@ -2590,7 +2622,7 @@ class Cutout(metaclass=MetaVMobject):
             self.append_points(mobject.force_direction(sub_direction).get_points())
 
 
-class Angle(metaclass=MetaVMobject):
+class Angle(VMobject, metaclass=ConvertToOpenGL):
     """A circular arc or elbow-type mobject representing an angle of two lines.
 
     Parameters
