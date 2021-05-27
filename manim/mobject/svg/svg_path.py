@@ -212,11 +212,7 @@ def string_to_numbers(num_string: str) -> List[float]:
 
 def grouped(iterable, n):
     """Group iterable into arrays of n items."""
-<<<<<<< HEAD
-    return (np.array(v) for v in zip(*[iter(iterable)]*n))
-=======
     return (np.array(v) for v in zip(*[iter(iterable)] * n))
->>>>>>> origin/elliptical_arc_fix
 
 
 class SVGPathMobject(metaclass=MetaVMobject):
@@ -391,11 +387,7 @@ class SVGPathMobject(metaclass=MetaVMobject):
             result = np.zeros((0, self.dim))
             last_end_point = None
             for elliptic_numbers in grouped(numbers, 7):
-<<<<<<< HEAD
-                # update the start point
-=======
                 # The startpoint changes with each iteration.
->>>>>>> origin/elliptical_arc_fix
                 if last_end_point is not None:
                     start_point = last_end_point
 
@@ -408,31 +400,20 @@ class SVGPathMobject(metaclass=MetaVMobject):
                 # is equivalent to omitting the elliptical arc segment entirely.
                 # for more information of where this math came from visit:
                 #  http://www.w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
-<<<<<<< HEAD
-                if start_point[0] == elliptic_numbers[5] and \
-                   start_point[1] == elliptic_numbers[6]:
-=======
                 if (
                     start_point[0] == elliptic_numbers[5]
                     and start_point[1] == elliptic_numbers[6]
                 ):
->>>>>>> origin/elliptical_arc_fix
                     continue
 
                 result = np.append(
                     result,
                     elliptical_arc_to_cubic_bezier(*start_point[:2], *elliptic_numbers),
-<<<<<<< HEAD
-                    axis=0
-                )
-
-=======
                     axis=0,
                 )
 
                 # We store the endpoint so that it can be the startpoint for the
                 # next iteration.
->>>>>>> origin/elliptical_arc_fix
                 last_end_point = elliptic_numbers[5:]
 
             return result
