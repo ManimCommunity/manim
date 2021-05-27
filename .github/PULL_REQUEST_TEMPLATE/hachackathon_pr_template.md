@@ -1,3 +1,11 @@
+---
+name: Default pull request
+title: ""
+labels: ""
+assignees: ''
+
+---
+
 Thanks for your contribution for the manim community hackathon!
 
 Please make sure your pull request has a meaningful title.
