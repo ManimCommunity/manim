@@ -107,6 +107,7 @@ class HalfEllipseTest(Scene):
         self.wait()
 
 
+<<<<<<< HEAD
 class DoubleHalfEllipseTest(Scene):
     def construct(self):
         double_half_ellipse = SVGMobject(get_test_resource("double_half_ellipse.svg"))
@@ -115,6 +116,9 @@ class DoubleHalfEllipseTest(Scene):
 
 
 class TestHeart(Scene):
+=======
+class HeartTest(Scene):
+>>>>>>> origin/elliptical_arc_fix
     def construct(self):
         heart = SVGMobject(get_test_resource("heart.svg"))
         self.add(heart)
