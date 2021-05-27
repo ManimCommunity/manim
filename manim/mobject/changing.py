@@ -6,9 +6,10 @@ import numpy as np
 
 from .._config import config
 from ..constants import *
-from ..mobject.types.vectorized_mobject import MetaVMobject, VGroup, VMobject
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
+from .opengl_compatibility import ConvertToOpenGL
 
 
 class AnimatedBoundary(VGroup):
@@ -90,7 +91,7 @@ class AnimatedBoundary(VGroup):
         return self
 
 
-class TracedPath(metaclass=MetaVMobject):
+class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     """Traces the path of a point returned by a function call.
 
     Examples

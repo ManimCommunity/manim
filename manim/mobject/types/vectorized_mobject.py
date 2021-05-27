@@ -1468,7 +1468,7 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(metaclass=MetaVMobject):
+class VGroup(VMobject, metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together

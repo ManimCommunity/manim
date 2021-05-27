@@ -7,11 +7,12 @@ import numpy as np
 
 from .. import config
 from ..constants import *
-from ..mobject.types.vectorized_mobject import MetaVMobject
+from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
+from .opengl_compatibility import ConvertToOpenGL
 
 
-class ParametricFunction(metaclass=MetaVMobject):
+class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     """A parametric curve.
 
     Examples

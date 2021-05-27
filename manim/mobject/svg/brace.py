@@ -7,6 +7,7 @@ from typing import Optional, Sequence
 import numpy as np
 
 from manim._config import config
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
 from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
@@ -16,7 +17,7 @@ from ...mobject.geometry import Arc, Line
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.opengl_vectorized_mobject import OpenGLVMobject
-from ...mobject.types.vectorized_mobject import MetaVMobject, VMobject
+from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 
 
@@ -132,7 +133,7 @@ class Brace(SVGPathMobject):
         return vect / np.linalg.norm(vect)
 
 
-class BraceLabel(metaclass=MetaVMobject):
+class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         obj,
