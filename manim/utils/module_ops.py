@@ -99,6 +99,7 @@ def prompt_user_for_choice(scene_classes):
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")
         num_to_class[count] = scene_class
+        config["write_all"] = True
     try:
         user_input = console.input(
             f"[log.message] {constants.CHOOSE_NUMBER_MESSAGE} [/log.message]"
