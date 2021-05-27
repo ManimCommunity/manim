@@ -24,6 +24,8 @@ class ConvertToOpenGL(ABCMeta):
                 "VMobject": OpenGLVMobject,
             }
 
-            bases = tuple(base_names_to_opengl.get(base.__name__, base) for base in bases)
+            bases = tuple(
+                base_names_to_opengl.get(base.__name__, base) for base in bases
+            )
 
         return super().__new__(cls, name, bases, namespace)
