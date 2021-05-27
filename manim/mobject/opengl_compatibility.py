@@ -2,7 +2,6 @@ from abc import ABCMeta
 
 from .. import config
 
-# from .mobject import Mobject # cannot import since this is cyclic
 from .opengl_mobject import OpenGLMobject
 from .types.opengl_vectorized_mobject import OpenGLVMobject
 
