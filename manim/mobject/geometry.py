@@ -1431,38 +1431,38 @@ class Polygon(VMobject):
         --------
         :class:`RoundedRectangle`
         """
+        if radius is not None and radius is not 0:
+            vertices = self.get_vertices()
+            arcs = []
+            for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
+                vect1 = v2 - v1
+                vect2 = v3 - v2
+                unit_vect1 = normalize(vect1)
+                unit_vect2 = normalize(vect2)
+                angle = angle_between_vectors(vect1, vect2)
+                # Negative radius gives concave curves
+                angle *= np.sign(radius)
+                # Distance between vertex and start of the arc
+                cut_off_length = radius * np.tan(angle / 2)
+                # Determines counterclockwise vs. clockwise
+                sign = np.sign(np.cross(vect1, vect2)[2])
+                arc = ArcBetweenPoints(
+                    v2 - unit_vect1 * cut_off_length,
+                    v2 + unit_vect2 * cut_off_length,
+                    angle=sign * angle,
+                )
+                arcs.append(arc)
 
-        vertices = self.get_vertices()
-        arcs = []
-        for v1, v2, v3 in adjacent_n_tuples(vertices, 3):
-            vect1 = v2 - v1
-            vect2 = v3 - v2
-            unit_vect1 = normalize(vect1)
-            unit_vect2 = normalize(vect2)
-            angle = angle_between_vectors(vect1, vect2)
-            # Negative radius gives concave curves
-            angle *= np.sign(radius)
-            # Distance between vertex and start of the arc
-            cut_off_length = radius * np.tan(angle / 2)
-            # Determines counterclockwise vs. clockwise
-            sign = np.sign(np.cross(vect1, vect2)[2])
-            arc = ArcBetweenPoints(
-                v2 - unit_vect1 * cut_off_length,
-                v2 + unit_vect2 * cut_off_length,
-                angle=sign * angle,
-            )
-            arcs.append(arc)
-
-        self.clear_points()
-        # To ensure that we loop through starting with last
-        arcs = [arcs[-1], *arcs[:-1]]
-        for arc1, arc2 in adjacent_pairs(arcs):
-            self.append_points(arc1.points)
-            line = Line(arc1.get_end(), arc2.get_start())
-            # Make sure anchors are evenly distributed
-            len_ratio = line.get_length() / arc1.get_arc_length()
-            line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
-            self.append_points(line.get_points())
+            self.clear_points()
+            # To ensure that we loop through starting with last
+            arcs = [arcs[-1], *arcs[:-1]]
+            for arc1, arc2 in adjacent_pairs(arcs):
+                self.append_points(arc1.points)
+                line = Line(arc1.get_end(), arc2.get_start())
+                # Make sure anchors are evenly distributed
+                len_ratio = line.get_length() / arc1.get_arc_length()
+                line.insert_n_curves(int(arc1.get_num_curves() * len_ratio))
+                self.append_points(line.get_points())
         return self
 
 
