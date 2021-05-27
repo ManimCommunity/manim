@@ -66,6 +66,7 @@ import warnings
 from typing import Iterable, Optional, Sequence
 
 import numpy as np
+from colour import Color
 
 from .. import config, logger
 from ..constants import *
@@ -2206,6 +2207,10 @@ class Rectangle(Polygon):
         The vertical height of the rectangle.
     width : :class:`float`, optional
         The horizontal width of the rectangle.
+    grid_xstep : :class:`float`, optional
+        Space between vertical grid lines.
+    grid_ystep : :class:`float`, optional
+        Space between horizontal grid lines.
     mark_paths_closed : :class:`bool`, optional
         No purpose.
     close_new_points : :class:`bool`, optional
@@ -2221,7 +2226,7 @@ class Rectangle(Polygon):
 
         class RectangleExample(Scene):
             def construct(self):
-                rect1 = Rectangle(width=4.0, height=2.0)
+                rect1 = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
                 rect2 = Rectangle(width=1.0, height=4.0)
 
                 rects = Group(rect1,rect2).arrange(buff=1)
@@ -2230,9 +2235,11 @@ class Rectangle(Polygon):
 
     def __init__(
         self,
-        color=WHITE,
-        height=2.0,
-        width=4.0,
+        color: Color = WHITE,
+        height: float = 2.0,
+        width: float = 4.0,
+        grid_xstep: Optional[float] = None,
+        grid_ystep: Optional[float] = None,
         mark_paths_closed=True,
         close_new_points=True,
         **kwargs,
@@ -2242,6 +2249,35 @@ class Rectangle(Polygon):
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
+        v = self.get_vertices()
+        if grid_xstep is not None:
+            grid_xstep = abs(grid_xstep)
+            count = int(width / grid_xstep)
+            grid = VGroup(
+                *[
+                    Line(
+                        v[1] + i * grid_xstep * RIGHT,
+                        v[1] + i * grid_xstep * RIGHT + height * DOWN,
+                        color=color,
+                    )
+                    for i in range(1, count)
+                ]
+            )
+            self.add(grid)
+        if grid_ystep is not None:
+            grid_ystep = abs(grid_ystep)
+            count = int(height / grid_ystep)
+            grid = VGroup(
+                *[
+                    Line(
+                        v[1] + i * grid_ystep * DOWN,
+                        v[1] + i * grid_ystep * DOWN + width * RIGHT,
+                        color=color,
+                    )
+                    for i in range(1, count)
+                ]
+            )
+            self.add(grid)
 
 
 class Square(Rectangle):
