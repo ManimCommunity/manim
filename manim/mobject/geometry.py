@@ -68,6 +68,8 @@ from typing import Iterable, Optional, Sequence
 import numpy as np
 from colour import Color
 
+from manim.mobject.opengl_mobject import OpenGLMobject
+
 from .. import config, logger
 from ..constants import *
 from ..mobject.mobject import Mobject
@@ -850,7 +852,7 @@ class Line(TipableVMobject):
         self.end = self.pointify(end, -vect)
 
     def pointify(self, mob_or_point, direction=None):
-        if isinstance(mob_or_point, Mobject):
+        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()
