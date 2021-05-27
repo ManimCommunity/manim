@@ -123,7 +123,7 @@ def get_template_path():
 
 
 def add_import_statement(file):
-    """Prepends an import statment in a file
+    """Prepends an import statement in a file
 
     Parameters
     ----------

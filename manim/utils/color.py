@@ -272,7 +272,7 @@ for name, value in Colors.__members__.items():
         constants_names.append(name)
 
 # Add constants to module exports. Simply adding constants_names would work fine, but
-# would make it hard for IDEs to understand that colors are exported. Therefor the
+# would make it hard for IDEs to understand that colors are exported. Therefore the
 # result of the following print statement is added instead.
 
 # print(constants_names)

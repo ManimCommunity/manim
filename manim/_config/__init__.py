@@ -10,6 +10,7 @@ from .utils import ManimConfig, ManimFrame, make_config_parser
 __all__ = [
     "logger",
     "console",
+    "error_console",
     "config",
     "frame",
     "tempconfig",
@@ -20,7 +21,10 @@ parser = make_config_parser()
 # The logger can be accessed from anywhere as manim.logger, or as
 # logging.getLogger("manim").  The console must be accessed as manim.console.
 # Throughout the codebase, use manim.console.print() instead of print().
-logger, console = make_logger(parser["logger"], parser["CLI"]["verbosity"])
+# Use error_console to print errors so that it outputs to stderr.
+logger, console, error_console = make_logger(
+    parser["logger"], parser["CLI"]["verbosity"]
+)
 # TODO: temporary to have a clean terminal output when working with PIL or matplotlib
 logging.getLogger("PIL").setLevel(logging.INFO)
 logging.getLogger("matplotlib").setLevel(logging.INFO)
