@@ -1,9 +1,18 @@
 """Mobjects that represent coordinate systems."""
 
-__all__ = ["CoordinateSystem", "Axes", "ThreeDAxes", "NumberPlane", "PolarPlane", "ComplexPlane"]
+__all__ = [
+    "CoordinateSystem",
+    "Axes",
+    "ThreeDAxes",
+    "NumberPlane",
+    "PolarPlane",
+    "ComplexPlane",
+]
 
+import fractions as fr
+import math
 import numbers
-from typing import Iterable, Optional, Sequence, Tuple, Union
+from typing import Iterable, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -192,8 +201,8 @@ class Axes(VGroup, CoordinateSystem):
 
     def __init__(
         self,
-        x_range: Optional[Union[Sequence[float], np.ndarray]] = None,
-        y_range: Optional[Union[Sequence[float], np.ndarray]] = None,
+        x_range: Optional[Sequence[float]] = None,
+        y_range: Optional[Sequence[float]] = None,
         x_length: Optional[float] = round(config.frame_width) - 2,
         y_length: Optional[float] = round(config.frame_height) - 2,
         axis_config: Optional[dict] = None,
@@ -230,7 +239,7 @@ class Axes(VGroup, CoordinateSystem):
 
     def create_axis(
         self,
-        range_terms: Union[Sequence[float], np.ndarray],
+        range_terms: Sequence[float],
         axis_config: dict,
         length: float,
     ) -> NumberLine:
@@ -483,9 +492,9 @@ class ThreeDAxes(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Union[Sequence[float], np.ndarray]] = (-6, 6, 1),
-        y_range: Optional[Union[Sequence[float], np.ndarray]] = (-5, 5, 1),
-        z_range: Optional[Union[Sequence[float], np.ndarray]] = (-4, 4, 1),
+        x_range: Optional[Sequence[float]] = (-6, 6, 1),
+        y_range: Optional[Sequence[float]] = (-5, 5, 1),
+        z_range: Optional[Sequence[float]] = (-4, 4, 1),
         x_length: Optional[float] = config.frame_height + 2.5,
         y_length: Optional[float] = config.frame_height + 2.5,
         z_length: Optional[float] = config.frame_height - 1.5,
@@ -589,12 +598,12 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Optional[Union[Sequence[float], np.ndarray]] = (
+        x_range: Optional[Sequence[float]] = (
             -config["frame_x_radius"],
             config["frame_x_radius"],
             1,
         ),
-        y_range: Optional[Union[Sequence[float], np.ndarray]] = (
+        y_range: Optional[Sequence[float]] = (
             -config["frame_y_radius"],
             config["frame_y_radius"],
             1,
