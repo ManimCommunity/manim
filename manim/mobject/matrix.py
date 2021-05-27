@@ -43,6 +43,7 @@ from ..mobject.shape_matchers import BackgroundRectangle
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import WHITE
+from .opengl_compatibility import ConvertToOpenGL
 
 
 def matrix_to_tex_string(matrix):
@@ -60,7 +61,7 @@ def matrix_to_mobject(matrix):
     return MathTex(matrix_to_tex_string(matrix))
 
 
-class Matrix(VMobject):
+class Matrix(VMobject, metaclass=ConvertToOpenGL):
     """A mobject that displays a matrix on the screen."""
 
     def __init__(
@@ -121,7 +122,7 @@ class Matrix(VMobject):
         self.element_alignment_corner = element_alignment_corner
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         matrix = np.array(matrix)
         if len(matrix.shape) < 2:
             raise ValueError(
@@ -141,7 +142,7 @@ class Matrix(VMobject):
             self.add_background_rectangle()
 
     def matrix_to_mob_matrix(self, matrix):
-        return np.vectorize(self.element_to_mobject)(
+        return np.vectorize(self.element_to_mobject, otypes=[object])(
             matrix, **self.element_to_mobject_config
         )
 

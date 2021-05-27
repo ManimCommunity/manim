@@ -6,6 +6,10 @@ import uuid
 
 import numpy as np
 
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl_value_tracker import OpenGLValueTracker
+
+from .._config import config
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
@@ -13,7 +17,7 @@ from ..mobject.value_tracker import ValueTracker
 from ..utils.family import extract_mobject_family_members
 
 
-class DecimalNumber(VMobject):
+class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     """An mobject representing a decimal number.
 
     Examples
@@ -189,13 +193,8 @@ class DecimalNumber(VMobject):
         new_decimal.scale(self[-1].height / new_decimal[-1].height)
         new_decimal.move_to(self, self.edge_to_fix)
         new_decimal.match_style(self)
+        self.become(new_decimal)
 
-        old_family = self.get_family()
-        self.submobjects = new_decimal.submobjects
-        for mob in old_family:
-            # Dumb hack...due to how scene handles families
-            # of animated mobjects
-            mob.points[:] = 0
         self.number = number
         return self
 
@@ -216,7 +215,7 @@ class Integer(DecimalNumber):
         return int(np.round(super().get_value()))
 
 
-class Variable(VMobject):
+class Variable(VMobject, metaclass=ConvertToOpenGL):
     """A class for displaying text that continuously updates to reflect the value of a python variable.
 
     Automatically adds the text for the label and the value when instantiated and added to the screen.
@@ -313,7 +312,11 @@ class Variable(VMobject):
         equals = MathTex("=").next_to(self.label, RIGHT)
         self.label.add(equals)
 
-        self.tracker = ValueTracker(var)
+        self.tracker = (
+            OpenGLValueTracker(var)
+            if config["renderer"] == "opengl"
+            else ValueTracker(var)
+        )
 
         if var_type == DecimalNumber:
             self.value = DecimalNumber(
@@ -326,5 +329,5 @@ class Variable(VMobject):
             self.label, RIGHT
         )
 
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(self.label, self.value)
