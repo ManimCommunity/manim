@@ -73,7 +73,7 @@ class SceneFileWriter(object):
         else:
             module_name = ""
 
-        if config["output_file"] and not config["write_all"]:
+        if config["output_file"] and not config["write_all"] and len(config["scene_names"]) == 1:
             default_name = config.get_dir("output_file")
         else:
             default_name = Path(scene_name)
