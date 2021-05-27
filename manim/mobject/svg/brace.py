@@ -147,10 +147,9 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
         self.label_scale = label_scale
         super().__init__(**kwargs)
 
-        self.basecls = OpenGLVMobject if config["renderer"] == "opengl" else VMobject
         self.brace_direction = brace_direction
         if isinstance(obj, list):
-            obj = self.basecls(*obj)
+            obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, brace_direction, **kwargs)
 
         if isinstance(text, tuple) or isinstance(text, list):
@@ -168,7 +167,7 @@ class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
 
     def shift_brace(self, obj, **kwargs):
         if isinstance(obj, list):
-            obj = self.basecls(*obj)
+            obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, self.brace_direction, **kwargs)
         self.brace.put_at_tip(self.label)
         self.submobjects[0] = self.brace
