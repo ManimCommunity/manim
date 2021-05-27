@@ -10,7 +10,7 @@ from ..utils.testing_utils import get_scenes_to_test
 class FunctionGraphTest(Scene):
     def construct(self):
         graph = FunctionGraph(
-            lambda x: 2 * np.cos(0.5 * x), x_min=-PI, x_max=PI, color=BLUE
+            lambda x: 2 * np.cos(0.5 * x), x_range=[-PI, PI], color=BLUE
         )
         self.add(graph)
 

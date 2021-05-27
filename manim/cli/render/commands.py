@@ -14,7 +14,7 @@ import click
 import cloup
 import requests
 
-from ... import __version__, config, console, logger
+from ... import __version__, config, console, error_console, logger
 from ...constants import CONTEXT_SETTINGS, EPILOG
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
@@ -24,7 +24,7 @@ from .render_options import render_options
 
 
 @cloup.command(
-    context_settings=CONTEXT_SETTINGS,
+    context_settings=None,
     epilog=EPILOG,
 )
 @click.argument("file", type=Path, required=True)
@@ -33,9 +33,7 @@ from .render_options import render_options
 @output_options
 @render_options
 @ease_of_access_options
-@click.pass_context
 def render(
-    ctx,
     **args,
 ):
     """Render SCENE(S) from the input FILE.
@@ -70,17 +68,30 @@ def render(
         logger.warning(
             "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!"
         )
-        renderer = "opengl"
+        args["renderer"] = "opengl"
 
     if args["use_webgl_renderer"]:
         logger.warning(
             "--use_webgl_renderer is deprecated, please use --renderer=webgl instead!"
         )
-        renderer = "webgl"
+        args["renderer"] = "webgl"
 
     if args["use_webgl_renderer"] and args["use_opengl_renderer"]:
         logger.warning("You may select only one renderer!")
         sys.exit()
+
+    if args["save_as_gif"]:
+        logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
+        args["format"] = "gif"
+
+    if args["save_pngs"]:
+        logger.warning("--save_pngs is deprecated, please use --format=png instead!")
+        args["format"] = "png"
+
+    if args["show_in_file_browser"]:
+        logger.warning(
+            "The short form of show_in_file_browser is deprecated and will be moved to support --format."
+        )
 
     class ClickArgs:
         def __init__(self, args):
@@ -123,7 +134,8 @@ def render(
                     else:
                         break
             except Exception:
-                console.print_exception()
+                error_console.print_exception()
+                sys.exit(1)
     elif config.renderer == "webgl":
         try:
             from manim.grpc.impl import frame_server_impl
@@ -136,14 +148,16 @@ def render(
                 "Dependencies for the WebGL render are missing. Run "
                 "pip install manim[webgl_renderer] to install them."
             )
-            console.print_exception()
+            error_console.print_exception()
+            sys.exit(1)
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
                 scene = SceneClass()
                 scene.render()
             except Exception:
-                console.print_exception()
+                error_console.print_exception()
+                sys.exit(1)
 
     if config.notify_outdated_version:
         manim_info_url = "https://pypi.org/pypi/manim/json"
@@ -153,18 +167,8 @@ def render(
         try:
             req_info = requests.get(manim_info_url)
             req_info.raise_for_status()
-        except requests.exceptions.HTTPError:
-            logger.debug(f"HTTP Error: {warn_prompt}")
-        except requests.exceptions.ConnectionError:
-            logger.debug(f"Connection Error: {warn_prompt}")
-        except requests.exceptions.Timeout:
-            logger.debug(f"Timed Out: {warn_prompt}")
-        except Exception:
-            logger.debug(f"Something went wrong: {warn_prompt}")
 
-        try:
             stable = req_info.json()["info"]["version"]
-
             if stable != __version__:
                 console.print(
                     f"You are using manim version [red]v{__version__}[/red], but version [green]v{stable}[/green] is available."
@@ -172,8 +176,16 @@ def render(
                 console.print(
                     "You should consider upgrading via [yellow]pip install -U manim[/yellow]"
                 )
+        except requests.exceptions.HTTPError:
+            logger.debug(f"HTTP Error: {warn_prompt}")
+        except requests.exceptions.ConnectionError:
+            logger.debug(f"Connection Error: {warn_prompt}")
+        except requests.exceptions.Timeout:
+            logger.debug(f"Timed Out: {warn_prompt}")
         except json.JSONDecodeError:
             logger.debug(warn_prompt)
             logger.debug(f"Error decoding JSON from {manim_info_url}")
+        except Exception:
+            logger.debug(f"Something went wrong: {warn_prompt}")
 
     return args
