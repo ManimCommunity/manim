@@ -17,13 +17,13 @@ class ConvertToOpenGL(ABCMeta):
 
     def __new__(cls, name, bases, namespace):
         if config.renderer == "opengl":
-            # must check class names to prevent
-            #  cyclic importing
-            baseNameDict = {
+            # Must check class names to prevent
+            # cyclic importing.
+            base_names_to_opengl = {
                 "Mobject": OpenGLMobject,
                 "VMobject": OpenGLVMobject,
             }
 
-            bases = tuple((baseNameDict.get(base.__name__, base) for base in bases))
+            bases = tuple(base_names_to_opengl.get(base.__name__, base) for base in bases)
 
         return super().__new__(cls, name, bases, namespace)
