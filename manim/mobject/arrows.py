@@ -1,8 +1,8 @@
 __all__ = ["ArrowTip", "Arrow", "Vector"]
 
-import types
+from types import FunctionType
 from functools import wraps
-from typing import Optional, Union
+from typing import Iterable, Optional, Union
 
 import numpy as np
 from colour import Color
@@ -93,21 +93,6 @@ class ArrowTip:
 
                 for pos in [0.2, 0.4, 0.6, 0.8]:
                     arcs[5].add_tip(relative_position=pos, tip_alignment=ORIGIN)
-
-    .. manim:: CornerExample
-
-        class CornerExample(Scene):
-            def construct(self):
-                elbow = Elbow(4, angle=PI / 4, stroke_width=30).move_to(ORIGIN)
-                self.add(elbow)
-                elbow.add_tip(tip_alignment=ORIGIN, color=RED)
-                #secant_delta and tip_alignment influence how the arrow behaves close to corners
-
-                def updater(elbow, alpha):
-                    alpha = alpha * 0.5 + 0.25
-                    elbow.tips[0].set_relative_position(alpha)
-
-                self.play(UpdateFromAlphaFunc(elbow, updater, run_time=1.5, rate_func=linear))
     """
 
     def __new__(
@@ -177,19 +162,27 @@ class ArrowTip:
         return mobject
 
     @classmethod
-    def _methods_list(cls):
+    def _methods_list(cls) -> Iterable[FunctionType]:
+        """Returns the functions that need to be bound/unbound to a :class:`~.Mobject`
+        to make it an arrow tip.
+
+        Returns
+        -------
+        Iterable[FunctionType]
+            The non-dunder functions defined in this class.
+        """
         return filter(
             lambda name: not (
                 name.startswith("__")
                 and name.endswith("__")
-                or not isinstance(cls.__dict__[name], types.FunctionType)
+                or not isinstance(cls.__dict__[name], FunctionType)
             ),
             cls.__dict__,
         )
 
     @classmethod
     def extend(cls, mobject: Mobject):
-        """Add this class as mixin to a mobject.
+        """Add this class as mixin to a :class:`~.Mobject`.
 
         Parameters
         ----------
@@ -204,12 +197,39 @@ class ArrowTip:
 
     @classmethod
     def trim(cls, tip: "ArrowTip"):
+        """Undo the changes applied to a :class:`~.Mobject` when making it an
+        ``ArrowTip``.
+
+        This includes removing this class as mixin, deleting tip related attributes and
+        unrotating the tip.
+
+        Parameters
+        ----------
+        tip
+            The extended mobject to be reverted to a normal mobject.
+        """
         tip.rotate(-tip.tip_attrs["tip_angle"] + PI / 2)  # add pi/2 to rotate up
         for name in cls._methods_list():
             tip.__dict__.pop(name)
         delattr(tip, "tip_attrs")
 
-    def _unrotated_tip(func):
+    def _unrotated_tip(func: FunctionType):
+        """Decorator used to perform a method on the tip while it is not rotated, i.e.
+        pointing right.
+
+        Parameters
+        ----------
+        func
+            The function to be decorated.
+
+        Returns
+        -------
+        FunctionType
+            The decorated function. This function allows an additional keyword argument
+            ``update`` defaulting to ``True``, defining whether
+            :meth:`update_tip_positioning` should be called afterwards.
+        """
+
         @wraps(func)
         def method_wrapper(self, *args, update=True, **kwargs):
             if self.tip_attrs["tip_angle"] != 0:
@@ -276,7 +296,32 @@ class ArrowTip:
         """
         return self.height
 
-    def set_relative_tip_position(self, relative_position):
+    def set_relative_tip_position(self, relative_position: float):
+        """Set the position of the tip relative to its base line.
+
+        Parameters
+        ----------
+        relative_position
+            Where on the `base_line` the tip should be placed. ``0`` is the start of the
+            line and ``1`` is its end.
+
+        .. manim:: TipMovingAroundCorner
+
+            class TipMovingAroundCorner(Scene):
+                def construct(self):
+                    elbow = Elbow(4, angle=PI / 4, stroke_width=30).move_to(ORIGIN)
+                    self.add(elbow)
+                    elbow.add_tip(tip_alignment=ORIGIN, color=RED)
+                    # secant_delta and tip_alignment influence how the arrow behaves close to corners
+
+                    def updater(elbow, alpha):
+                        alpha = alpha * 0.5 + 0.25
+                        elbow.get_tip().set_relative_tip_position(alpha)
+
+                    self.play(UpdateFromAlphaFunc(elbow, updater, run_time=1.5, rate_func=linear))
+
+
+        """
         self.tip_attrs["relative_position"] = relative_position
         self.update_tip_positioning()
 
