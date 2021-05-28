@@ -32,6 +32,10 @@ for i, arg in enumerate(sys.argv):
     elif arg == "--use_webgl_renderer":
         config.renderer = "webgl"
 
+from tests.conftest import OPENGL
+
+if OPENGL:
+    config.renderer = "opengl"
 
 from .animation.animation import *
 from .animation.composition import *

@@ -11,11 +11,11 @@
 import pytest
 from _pytest.doctest import DoctestItem
 
-from manim import config, tempconfig
-
 
 @pytest.fixture(autouse=True)
 def temp_media_dir(tmpdir, monkeypatch, request):
+    from manim import config, tempconfig
+
     if isinstance(request.node, DoctestItem):
         monkeypatch.chdir(tmpdir)
         yield tmpdir

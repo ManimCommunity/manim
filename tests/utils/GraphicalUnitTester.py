@@ -29,7 +29,18 @@ class GraphicalUnitTester:
         The scene tested
     """
 
-    def __init__(self, scene_class, module_tested, tmpdir, rgb_atol=0):
+    def __init__(
+        self,
+        scene_class,
+        module_tested,
+        tmpdir,
+        rgb_atol=0,
+        opengl_test=False,
+        opengl_enabled=True,
+    ):
+        self.opengl_test = opengl_test
+        self.opengl_enabled = opengl_enabled
+
         # Disable the the logs, (--quiet is broken) TODO
         logging.disable(logging.CRITICAL)
         tests_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -117,6 +128,9 @@ class GraphicalUnitTester:
         plt.savefig(f"{self.scene}.png")
 
     def test(self, show_diff=False):
+        if self.opengl_test and not self.opengl_enabled:
+            return
+
         """Compare pre-rendered frame to the frame rendered during the test."""
         frame_data = self.scene.renderer.get_frame()
         expected_frame_data = self._load_data()

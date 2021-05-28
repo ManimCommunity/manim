@@ -17,10 +17,22 @@ def pytest_addoption(parser):
         default=False,
         help="Will show a visual comparison if a graphical unit test fails.",
     )
+    parser.addoption(
+        "--opengl",
+        action="store_true",
+        default=False,
+        help="Enable testing in opengl mode",
+    )
+
+
+OPENGL = False
 
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "skip_end_to_end: mark test as end_to_end test")
+
+    global OPENGL
+    OPENGL = config.getoption("--opengl")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -51,3 +63,8 @@ def reset_cfg_file():
     yield
     with open(cfgfilepath, "w") as cfgfile:
         cfgfile.write(original)
+
+
+@pytest.fixture
+def opengl(request):
+    return request.config.getoption("opengl")
