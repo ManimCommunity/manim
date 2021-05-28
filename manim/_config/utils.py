@@ -510,6 +510,7 @@ class ManimConfig(MutableMapping):
             "custom_folders",
             "use_opengl_renderer",
             "use_webgl_renderer",
+            "enable_gui",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
