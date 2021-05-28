@@ -347,6 +347,7 @@ class OpenGLRenderer:
     def render(self, scene, frame_offset, moving_mobjects):
         def update_frame():
             self.frame_buffer_object.clear(*window_background_color)
+            self.context.clear(*window_background_color)
             self.refresh_perspective_uniforms(scene.camera)
 
             for mobject in scene.mobjects:
@@ -415,8 +416,6 @@ class OpenGLRenderer:
             components=num_channels,
             dtype=dtype,
         )
-
-        self.context.clear()
 
         return ret
 
