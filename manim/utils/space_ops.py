@@ -30,6 +30,7 @@ __all__ = [
     "get_winding_number",
     "cross2d",
     "earclip_triangulation",
+    "pointify",
 ]
 
 
@@ -766,3 +767,39 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
     meta_indices = earcut(verts[indices, :2], [len(indices)])
     return [indices[mi] for mi in meta_indices]
+
+
+def pointify(mob_or_point, direction=None) -> np.ndarray:
+    from ..mobject.mobject import Mobject
+
+    if isinstance(mob_or_point, Mobject):
+        mob = mob_or_point
+        if direction is None:
+            return mob.get_center()
+        else:
+            return mob.get_boundary_point(direction)
+    return np.array(mob_or_point)
+
+
+def get_start_and_end_point(start, end, buff=0, path_arc=0):
+    # If either start or end are Mobjects, this
+    # gives their centers
+    rough_start = pointify(start)
+    rough_end = pointify(end)
+    vect = rough_end - rough_start
+
+    # calculate directions from center of the mobjects
+    start_direction = rotate_vector(vect, -path_arc / 2)
+    end_direction = rotate_vector(-vect, path_arc / 2)
+
+    # Now that we know the direction between them,
+    # we can find the appropriate boundary point from
+    # start and end, if they're mobjects
+    start = pointify(start, start_direction)
+    end = pointify(end, end_direction)
+
+    # Apply buffer
+    start += normalize(start_direction) * buff
+    end += normalize(end_direction) * buff
+
+    return start, end

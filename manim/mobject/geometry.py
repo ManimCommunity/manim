@@ -34,9 +34,10 @@ __all__ = [
     "RightAngle",
 ]
 
+from manim.mobject.svg.style_utils import SVG_DEFAULT_ATTRIBUTES
 import math
 import warnings
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 from colour import Color
@@ -57,10 +58,12 @@ from ..utils.space_ops import (
     angle_between_vectors,
     angle_of_vector,
     compass_directions,
+    get_start_and_end_point,
     line_intersection,
     normalize,
     regular_vertices,
     rotate_vector,
+    pointify,
 )
 
 
@@ -189,7 +192,9 @@ class ArcBetweenPoints(Arc):
     Inherits from Arc and additionally takes 2 points between which the arc is spanned.
     """
 
-    def __init__(self, start, end, angle=TAU / 4, radius=None, **kwargs):
+    def __init__(self, start, end, angle=TAU / 4, radius=None, buff=0, **kwargs):
+        start_center, end_center = get_start_and_end_point(start, end)
+        print(start_center, end_center)
         if radius is not None:
             self.radius = radius
             if radius < 0:
@@ -197,11 +202,12 @@ class ArcBetweenPoints(Arc):
                 radius *= -1
             else:
                 sign = 2
-            halfdist = np.linalg.norm(np.array(start) - np.array(end)) / 2
+            halfdist = np.linalg.norm(np.array(start_center) - np.array(end_center)) / 2
             if radius < halfdist:
                 raise ValueError(
-                    """ArcBetweenPoints called with a radius that is
-                            smaller than half the distance between the points."""
+                    f"""ArcBetweenPoints called with a radius that is smaller than half
+                    the distance between the points. The radius must be at least
+                    {halfdist}."""
                 )
             arc_height = radius - math.sqrt(radius ** 2 - halfdist ** 2)
             angle = math.acos((radius - arc_height) / radius) * sign
@@ -209,12 +215,14 @@ class ArcBetweenPoints(Arc):
         Arc.__init__(self, radius=radius, angle=angle, **kwargs)
         if angle == 0:
             self.set_points_as_corners([LEFT, RIGHT])
-        self.put_start_and_end_on(start, end)
+        self.put_start_and_end_on(start, end, buff, angle)
 
         if radius is None:
             center = self.get_arc_center(warning=False)
             if not self._failed_to_get_center:
-                self.radius = np.linalg.norm(np.array(start) - np.array(center))
+                self.radius = np.linalg.norm(
+                    np.array(self.get_start()) - np.array(center)
+                )
             else:
                 self.radius = math.inf
 
@@ -588,22 +596,19 @@ class Line(metaclass=MetaVMobject):
         self.dim = 3
         self.buff = buff
         self.path_arc = path_arc
-        self.set_start_and_end_attrs(start, end)
+        self.start = start
+        self.end = end
         super().__init__(**kwargs)
 
     def generate_points(self):
-        self.set_points_by_ends(
-            start=self.start, end=self.end, buff=self.buff, path_arc=self.path_arc
-        )
-
-    def set_points_by_ends(self, start, end, buff=0, path_arc=0):
-        if path_arc:
-            arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
+        if self.path_arc:
+            arc = ArcBetweenPoints(
+                self.start, self.end, angle=self.path_arc, buff=self.buff
+            )
             self.set_points(arc.get_points())
         else:
+            start, end = get_start_and_end_point(self.start, self.end, self.buff)
             self.set_points_as_corners([start, end])
-
-        self.account_for_buff(buff)
 
     init_points = generate_points
 
@@ -611,71 +616,23 @@ class Line(metaclass=MetaVMobject):
         self.path_arc = new_value
         self.init_points()
 
-    def account_for_buff(self, buff):
-        if buff == 0:
-            return
-        #
-        if self.path_arc == 0:
-            length = self.get_length()
-        else:
-            length = self.get_arc_length()
-        #
-        if length < 2 * buff:
-            return
-        buff_proportion = buff / length
-        self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
-        return self
-
-    def set_start_and_end_attrs(self, start, end):
-        # If either start or end are Mobjects, this
-        # gives their centers
-        rough_start = self.pointify(start)
-        rough_end = self.pointify(end)
-        vect = normalize(rough_end - rough_start)
-        # Now that we know the direction between them,
-        # we can find the appropriate boundary point from
-        # start and end, if they're mobjects
-        self.start = self.pointify(start, vect)
-        self.end = self.pointify(end, -vect)
-
-    def pointify(self, mob_or_point, direction=None):
-        if isinstance(mob_or_point, Mobject):
-            mob = mob_or_point
-            if direction is None:
-                return mob.get_center()
-            else:
-                return mob.get_boundary_point(direction)
-        return np.array(mob_or_point)
-
-    def put_start_and_end_on(self, start: Sequence[float], end: Sequence[float]):
-        """Sets starts and end coordinates of a line.
-        Examples
-        --------
-        .. manim:: LineExample
-
-            class LineExample(Scene):
-                def construct(self):
-                    d = VGroup()
-                    for i in range(0,10):
-                        d.add(Dot())
-                    d.arrange_in_grid(buff=1)
-                    self.add(d)
-                    l= Line(d[0], d[1])
-                    self.add(l)
-                    self.wait()
-                    l.put_start_and_end_on(d[1].get_center(), d[2].get_center())
-                    self.wait()
-                    l.put_start_and_end_on(d[4].get_center(), d[7].get_center())
-                    self.wait()
-        """
-        curr_start, curr_end = self.get_start_and_end()
-        if np.all(curr_start == curr_end):
-            # TODO, any problems with resetting
-            # these attrs?
-            self.start = start
-            self.end = end
+    def put_start_and_end_on(
+        self,
+        start: Union[Sequence[float], Mobject],
+        end: Union[Sequence[float], Mobject],
+        buff: Optional[float] = None,
+        path_arc: Optional[float] = None,
+    ):
+        """Sets starts and end coordinates of a line."""
+        self.start = start
+        self.end = end
+        if buff is not None:
+            self.buff = buff
+        if path_arc is not None:
+            self.path_arc = path_arc
             self.generate_points()
-        return super().put_start_and_end_on(start, end)
+
+        return super().put_start_and_end_on(self.start, self.end, self.buff)
 
     def get_vector(self):
         return self.get_end() - self.get_start()

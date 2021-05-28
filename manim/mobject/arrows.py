@@ -2,7 +2,7 @@ __all__ = ["ArrowTip", "Arrow", "Vector"]
 
 from types import FunctionType
 from functools import wraps
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Sequence, Union
 
 import numpy as np
 from colour import Color
@@ -398,9 +398,9 @@ class Arrow(Line):
                 pos = [LEFT * 3, RIGHT * 4]
                 more_arrows = VGroup(
                     Arrow(*pos, path_arc=-PI / 4),
-                    Arrow(*pos, double=True, color=BLUE_B),
+                    Arrow(*pos, double=True, color=BLUE),
                     Arrow(*pos, tip_mobject=Circle(), filled=True),  # Tip color is kept
-                    Arrow(*pos, backwards=True, color=BLUE_D),
+                    Arrow(*pos, backwards=True, color=GREEN),
                     Arrow(*pos, path_arc=PI / 4, relative_position=0.5, tip_alignment=ORIGIN),
                 ).arrange_submobjects(DOWN, buff=1)
                 self.add(more_arrows)
@@ -424,6 +424,8 @@ class Arrow(Line):
         super().__init__(start, end, buff, path_arc, stroke_width=target_stroke_width)
         if "color" in kwargs:
             self.set_color(kwargs["color"])
+        self.buff = buff
+        self.path_arc = path_arc
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
         self.target_stroke_width = target_stroke_width
@@ -451,13 +453,59 @@ class Arrow(Line):
         max_from_ratio = self.max_tip_length_to_length_ratio * self.get_arc_length()
         tip_length = min(self.target_tip_length, max_from_ratio)
         for tip in self.tips:
-            tip.set_tip_length(tip_length)
             tip.set_stroke_width(self.get_stroke_width())
+            tip.set_tip_length(tip_length)
 
     def scale(self, factor, scale_tips=False, **kwargs):
         super().scale(factor, **kwargs)
         if not scale_tips:
             self.update_stroke_and_tips()
+
+    def put_start_and_end_on(
+        self,
+        start: Union[Sequence[float], Mobject],
+        end: Union[Sequence[float], Mobject],
+        buff: Optional[float] = None,
+        path_arc: Optional[float] = None,
+    ):
+        """[summary]
+
+        Parameters
+        ----------
+        start : Union[Sequence[float], Mobject]
+            [description]
+        end : Union[Sequence[float], Mobject]
+            [description]
+        buff : Optional[float], optional
+            [description], by default None
+        path_arc : Optional[float], optional
+            [description], by default None
+
+        .. manim:: MovingAndScaling
+
+            class MovingAndScaling(Scene):
+                def construct(self):
+                    dots = VGroup(Dot([2.75, 0, 0]), Dot([0, 2, 0]))
+                    arrow = Arrow(buff=0.2, color=RED)
+                    self.add(dots, arrow)
+
+                    # Fix arrow to dots using an updater
+                    arrow.add_updater(
+                        lambda mob: mob.put_start_and_end_on(
+                            dots[0].get_center(), dots[1].get_center()
+                        )
+                    )
+
+                    self.play(
+                        dots[0].animate.shift([LEFT * 2]),
+                        dots[1].animate.shift(DOWN * 2),
+                        run_time=2,
+                    )
+                    self.wait(0.5)
+
+        """
+        super().put_start_and_end_on(start, end, buff, path_arc)
+        self.update_stroke_and_tips()
 
 
 class Vector(Arrow):

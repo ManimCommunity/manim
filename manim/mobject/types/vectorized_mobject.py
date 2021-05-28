@@ -818,6 +818,12 @@ class VMobject(Mobject):
     ):
         self.rotate_sheen_direction(angle, axis)
         super().rotate(angle, axis, about_point, **kwargs)
+        for tip in self.get_tips():
+            if axis[2] < 0:
+                tip.tip_attrs["tip_angle"] -= angle
+            else:
+                tip.tip_attrs["tip_angle"] += angle
+            tip.update_tip_positioning()
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> "VMobject":

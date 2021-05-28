@@ -48,6 +48,7 @@ from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
     angle_between_vectors,
+    get_start_and_end_point,
     normalize,
     rotation_matrix,
     rotation_matrix_transpose,
@@ -1650,12 +1651,20 @@ class Mobject(Container):
         self.scale_in_place((length + buff) / length)
         return self
 
-    def put_start_and_end_on(self, start, end):
+    def put_start_and_end_on(
+        self,
+        start: Union[Sequence[float], "Mobject"],
+        end: Union[Sequence[float], "Mobject"],
+        buff: float = 0,
+        path_arc: float = 0,
+    ):
+        start, end = get_start_and_end_point(start, end, buff, path_arc)
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
+
         axis = (
             normalize(np.cross(curr_vect, target_vect))
             if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
@@ -1915,6 +1924,7 @@ class Mobject(Container):
         all_points = self.get_points_defining_boundary()
         index = np.argmax(np.dot(all_points, np.array(direction).T))
         return all_points[index]
+        # TODO: allow using points_from_proportion (find point via subdivision)
 
     def get_midpoint(self) -> np.ndarray:
         """Get coordinates of the middle of the path that forms the  :class:`~.Mobject`.
