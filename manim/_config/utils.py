@@ -763,7 +763,7 @@ class ManimConfig(MutableMapping):
 
     # config options are properties
     preview = property(
-        lambda self: self._d["preview"],
+        lambda self: self._d["preview"] or self._d["enable_gui"],
         lambda self, val: self._set_boolean("preview", val),
         doc="Whether to play the rendered movie (-p).",
     )

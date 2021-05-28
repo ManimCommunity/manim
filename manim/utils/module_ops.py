@@ -103,10 +103,12 @@ def prompt_user_for_choice(scene_classes):
         user_input = console.input(
             f"[log.message] {constants.CHOOSE_NUMBER_MESSAGE} [/log.message]"
         )
-        return [
+        scene_classes = [
             num_to_class[int(num_str)]
             for num_str in re.split(r"\s*,\s*", user_input.strip())
         ]
+        config["scene_names"] = [scene_class.__name__ for scene_class in scene_classes]
+        return scene_classes
     except KeyError:
         logger.error(constants.INVALID_NUMBER_MESSAGE)
         sys.exit(2)
