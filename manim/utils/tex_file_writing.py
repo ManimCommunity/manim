@@ -171,22 +171,40 @@ def compile_tex(tex_file, tex_compiler, output_format):
                 )
             with open(log_file, "r") as f:
                 log = f.readlines()
-                log_error_pos = [
-                    ind for (ind, line) in enumerate(log) if line.startswith("!")
+                error_pos = [
+                    index for index, line in enumerate(log) if line.startswith("!")
                 ]
-                if log_error_pos:
-                    logger.error(f"LaTeX compilation error! {tex_compiler} reports:")
-                    for lineno in log_error_pos:
-                        # search for a line starting with "l." in the next
-                        # few lines past the error; otherwise just print some lines.
-                        printed_lines = 1
-                        for _ in range(10):
-                            if log[lineno + printed_lines].startswith("l."):
-                                break
-                            printed_lines += 1
+                if error_pos:
+                    with open(tex_file, "r") as g:
+                        tex = g.readlines()
+                        logger.error("LaTeX compilation error! LaTeX reports:")
+                        for log_index in error_pos:
+                            index_line = log_index
+                            CONTENT = (
+                                f"{log[log_index][2:]}Here is the tex content:\n\n"
+                            )
 
-                        for line in log[lineno : lineno + printed_lines + 1]:
-                            logger.error(line)
+                            # Find where the line of the error is indicated in the log file
+                            while not log[index_line].startswith("l."):
+                                index_line += 1
+
+                            # Find the index of the errored line in the tex file
+                            tex_index = (
+                                int(log[index_line].split(" ")[0].split(".")[1]) - 1
+                            )
+
+                            # Seek the environment scope that contains the error
+                            environment = tex_index
+                            while not tex[environment].startswith("\\begin"):
+                                environment -= 1
+
+                            # Print the entire environment including its end
+                            while not tex_lines[environment - 1].startswith("\\end"):
+                                CONTENT += tex_lines[environment]
+                                if environment == tex_index:
+                                    CONTENT += "^\n"
+                                environment += 1
+                            logger.error(CONTENT)
 
             raise ValueError(
                 f"{tex_compiler} error converting to"

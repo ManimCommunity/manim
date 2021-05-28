@@ -1,6 +1,6 @@
 """Mobject representing curly braces."""
 
-__all__ = ["Brace", "BraceLabel", "BraceText", "BraceBetweenPoints"]
+__all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
 from typing import Optional, Sequence
 
@@ -10,7 +10,7 @@ from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
 from ...constants import *
-from ...mobject.geometry import Line
+from ...mobject.geometry import Arc, Line
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
 from ...mobject.types.vectorized_mobject import VMobject
@@ -228,3 +228,80 @@ class BraceBetweenPoints(Brace):
             line_vector = np.array(point_2) - np.array(point_1)
             direction = np.array([line_vector[1], -line_vector[0], 0])
         Brace.__init__(self, Line(point_1, point_2), direction=direction, **kwargs)
+
+
+class ArcBrace(Brace):
+    """Creates a :class:`~Brace` that wraps around an :class:`~.Arc`.
+
+    The direction parameter allows the brace to be applied
+    from outside or inside the arc.
+
+    .. warning::
+        The :class:`ArcBrace` is smaller for arcs with smaller radii.
+
+    .. note::
+        The :class:`ArcBrace` is initially a vertical :class:`Brace` defined by the length of the :class:`~.Arc`, but is scaled down to match the start and end angles. An exponential function is then applied after it is shifted based on the radius of the arc.
+
+        The scaling effect is not applied for arcs with radii smaller than 1 to prevent over-scaling.
+
+    Parameters
+    ----------
+    arc
+        The :class:`~.Arc` that wraps around the :class:`Brace` mobject.
+    direction
+        The direction from which the brace faces the arc.
+        ``LEFT`` for inside the arc, and ``RIGHT`` for the outside.
+
+    Example
+    -------
+        .. manim:: ArcBraceExample
+            :save_last_frame:
+            :ref_classes: Arc
+
+            class ArcBraceExample(Scene):
+                def construct(self):
+                    arc_1 = Arc(radius=1.5,start_angle=0,angle=2*PI/3).set_color(RED)
+                    brace_1 = ArcBrace(arc_1,LEFT)
+                    group_1 = VGroup(arc_1,brace_1)
+
+                    arc_2 = Arc(radius=3,start_angle=0,angle=5*PI/6).set_color(YELLOW)
+                    brace_2 = ArcBrace(arc_2)
+                    group_2 = VGroup(arc_2,brace_2)
+
+                    arc_3 = Arc(radius=0.5,start_angle=-0,angle=PI).set_color(BLUE)
+                    brace_3 = ArcBrace(arc_3)
+                    group_3 = VGroup(arc_3,brace_3)
+
+                    arc_4 = Arc(radius=0.2,start_angle=0,angle=3*PI/2).set_color(GREEN)
+                    brace_4 = ArcBrace(arc_4)
+                    group_4 = VGroup(arc_4,brace_4)
+
+                    arc_group = VGroup(group_1, group_2, group_3, group_4).arrange_in_grid(buff=1.5)
+                    self.add(arc_group.center())
+
+    """
+
+    def __init__(
+        self,
+        arc: Arc = Arc(start_angle=-1, angle=2, radius=1),
+        direction: Sequence[float] = RIGHT,
+        **kwargs
+    ):
+        arc_end_angle = arc.start_angle + arc.angle
+        line = Line(UP * arc.start_angle, UP * arc_end_angle)
+        scale_shift = RIGHT * np.log(arc.radius)
+
+        if arc.radius >= 1:
+            line.scale(arc.radius, about_point=ORIGIN)
+            Brace.__init__(self, line, direction=direction, **kwargs)
+            self.scale(1 / (arc.radius), about_point=ORIGIN)
+        else:
+            Brace.__init__(self, line, direction=direction, **kwargs)
+
+        if arc.radius >= 0.3:
+            self.shift(scale_shift)
+        else:
+            self.shift(RIGHT * np.log(0.3))
+
+        self.apply_complex_function(np.exp)
+        self.shift(arc.get_arc_center())
