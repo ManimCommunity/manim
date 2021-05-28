@@ -1628,6 +1628,9 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         :class:`RoundedRectangle`
         """
 
+        if radius == 0:
+            return self
+
         new_points = []
 
         for vertices in self.get_vertex_groups():
