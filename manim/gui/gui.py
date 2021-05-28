@@ -34,7 +34,11 @@ def configure_pygui(renderer, widgets, update=True):
     scene_names = [scene_class.__name__ for scene_class in scene_classes]
 
     with dearpygui.simple.window(
-        "Manim GUI", x_pos=40, y_pos=800, width=1000, height=500
+        "Manim GUI",
+        x_pos=config["gui_location"][0],
+        y_pos=config["gui_location"][1],
+        width=1000,
+        height=500,
     ):
         dearpygui.core.set_global_font_scale(2)
         dearpygui.core.add_button("Rerun", callback=rerun_callback)

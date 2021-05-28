@@ -1,5 +1,20 @@
+import re
+
 import click
 from cloup import option, option_group
+
+from ... import logger
+
+
+def validate_gui_location(ctx, param, value):
+    if value:
+        try:
+            x_offset, y_offset = map(int, re.split(";|,|-", value))
+            return (x_offset, y_offset)
+        except Exception:
+            logger.error("GUI location option is invalid.")
+            exit()
+
 
 global_options = option_group(
     "Global options",
@@ -40,5 +55,11 @@ global_options = option_group(
         "--enable_gui",
         is_flag=True,
         help="Enable GUI interaction.",
+    ),
+    option(
+        "--gui_location",
+        default="40,800",
+        callback=validate_gui_location,
+        help="Starting location for the GUI.",
     ),
 )

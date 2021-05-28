@@ -283,6 +283,7 @@ class ManimConfig(MutableMapping):
         "use_opengl_renderer",
         "use_webgl_renderer",
         "enable_gui",
+        "gui_location",
         "verbosity",
         "video_dir",
         "write_all",
@@ -407,6 +408,12 @@ class ManimConfig(MutableMapping):
             self._d[key] = val
         else:
             raise ValueError(f"{key} must be boolean")
+
+    def _set_tuple(self, key: str, val: tuple) -> None:
+        if isinstance(val, tuple):
+            self._d[key] = val
+        else:
+            raise ValueError(f"{key} must be tuple")
 
     def _set_str(self, key: str, val: typing.Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is a string."""
@@ -555,6 +562,7 @@ class ManimConfig(MutableMapping):
             # "frame_height",
         ]:
             setattr(self, key, parser["CLI"].getfloat(key))
+
         # plugins
         self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
         # the next two must be set AFTER digesting pixel_width and pixel_height
@@ -717,6 +725,9 @@ class ManimConfig(MutableMapping):
             if getattr(args, "write_to_movie") is None:
                 # --write_to_movie was not passed on the command line, so don't generate video.
                 self["write_to_movie"] = False
+
+        # Handle --gui_location flag.
+        self.gui_location = args.gui_location
 
         return self
 
@@ -1135,6 +1146,12 @@ class ManimConfig(MutableMapping):
     enable_gui = property(
         lambda self: self._d["enable_gui"],
         lambda self, val: self._set_boolean("enable_gui", val),
+        doc="Enable GUI interaction.",
+    )
+
+    gui_location = property(
+        lambda self: self._d["gui_location"],
+        lambda self, val: self._set_tuple("gui_location", val),
         doc="Enable GUI interaction.",
     )
 
