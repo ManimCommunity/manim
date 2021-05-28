@@ -308,9 +308,8 @@ class ApplyFunction(Transform):
         super().__init__(mobject, **kwargs)
 
     def create_target(self) -> Any:
-        assert isinstance(self.mobject, Mobject)
         target = self.function(self.mobject.copy())
-        if not isinstance(target, Mobject):
+        if not isinstance(target, (Mobject, OpenGLMobject)):
             raise TypeError(
                 "Functions passed to ApplyFunction must return object of type Mobject"
             )
