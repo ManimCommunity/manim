@@ -220,8 +220,13 @@ class OpenGLRenderer:
             else:
                 self.window = None
                 self.context = moderngl.create_standalone_context()
-                self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-                self.frame_buffer_object.use()
+                self.frame_buffer_object_msaa = self.get_frame_buffer_object(
+                    self.context, samples=config["opengl_samples"]
+                )
+                self.frame_buffer_object = self.get_frame_buffer_object(
+                    self.context, samples=0
+                )
+                self.frame_buffer_object_msaa.use()
             self.context.enable(moderngl.BLEND)
             self.context.blend_func = (
                 moderngl.SRC_ALPHA,
@@ -386,30 +391,33 @@ class OpenGLRenderer:
         pixel_height = config["pixel_height"]
         num_channels = 4
         return context.framebuffer(
-            color_attachments=context.texture(
-                (pixel_width, pixel_height),
-                components=num_channels,
-                samples=samples,
-            ),
+            color_attachments=[
+                context.texture(
+                    (pixel_width, pixel_height),
+                    components=num_channels,
+                    samples=samples,
+                )
+            ],
             depth_attachment=context.depth_renderbuffer(
                 (pixel_width, pixel_height), samples=samples
             ),
         )
 
     def get_raw_frame_buffer_object_data(self, dtype="f1"):
-        # Copy blocks from the fbo_msaa to the drawn fbo using Blit
-        # pw, ph = self.get_pixel_shape()
-        # gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self.fbo_msaa.glo)
-        # gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, self.fbo.glo)
-        # gl.glBlitFramebuffer(
-        #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
-        # )
+        if hasattr(self, "frame_buffer_object_msaa"):
+            self.context.copy_framebuffer(
+                dst=self.frame_buffer_object, src=self.frame_buffer_object_msaa
+            )
+
         num_channels = 4
         ret = self.frame_buffer_object.read(
             viewport=self.frame_buffer_object.viewport,
             components=num_channels,
             dtype=dtype,
         )
+
+        self.context.clear()
+
         return ret
 
     def get_frame(self):
