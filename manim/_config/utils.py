@@ -15,6 +15,7 @@ import copy
 import errno
 import logging
 import os
+import re
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -562,6 +563,9 @@ class ManimConfig(MutableMapping):
             # "frame_height",
         ]:
             setattr(self, key, parser["CLI"].getfloat(key))
+
+        gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
+        setattr(self, "gui_location", gui_location)
 
         # plugins
         self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
