@@ -41,6 +41,11 @@ for module in modules_to_test:
         ids=map(lambda s: s[1].__name__, scenes),
     )
     def test_opengl_scene(scene_to_test: Scene, tmpdir, show_diff, opengl):
+        # must add a wait() command to end of scene
+        #  this is a temporary workaround until image
+        #  rendering is supported in OpenGL, since
+        #  currently, if there are no animations,
+        #  the result is an empty image
         class wrapped_scene(scene_to_test[1]):
             def construct(self):
                 super().construct()
