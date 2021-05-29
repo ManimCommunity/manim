@@ -66,18 +66,16 @@ Basic Concepts
             b2text = b2.get_tex("x-x_1")
             self.add(line, dot, dot2, b1, b2, b1text, b2text)
 
-.. manim:: VectorArrow
+.. manim:: VectorExample
     :save_last_frame:
-    :ref_classes: Dot Arrow NumberPlane Text
+    :ref_classes: Dot Vector NumberPlane
 
-    class VectorArrow(Scene):
+    class VectorExample(Scene):
         def construct(self):
-            dot = Dot(ORIGIN)
-            arrow = Arrow(ORIGIN, [2, 2, 0], buff=0)
-            numberplane = NumberPlane()
-            origin_text = Text('(0, 0)').next_to(dot, DOWN)
-            tip_text = Text('(2, 2)').next_to(arrow.get_end(), RIGHT)
-            self.add(numberplane, dot, arrow, origin_text, tip_text)
+            numberplane = NumberPlane().add(Dot(ORIGIN))
+            vector = Vector([3, 2, 0])
+            label = vector.coordinate_label()
+            self.add(numberplane, vector, label)
 
 .. manim:: GradientImageFromArray
     :save_last_frame:
