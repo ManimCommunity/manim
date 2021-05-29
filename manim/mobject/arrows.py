@@ -15,7 +15,7 @@ from .matrix import Matrix
 from .mobject import Mobject
 from .opengl_mobject import OpenGLMobject
 from .types.opengl_vectorized_mobject import OpenGLVMobject
-from .types.vectorized_mobject import MetaVMobject, VMobject
+from .types.vectorized_mobject import VMobject
 
 DEFAULT_ARROW_TO_STROKE_WIDTH_RATIO = 35 / 6  # TODO needs cleanup
 
@@ -96,7 +96,7 @@ class ArrowTip:
 
     def __new__(
         cls,
-        base_line: MetaVMobject,
+        base_line: VMobject,
         mobject: Optional[Union[Mobject, OpenGLMobject]] = None,
         *,
         relative_position: float = 1,
