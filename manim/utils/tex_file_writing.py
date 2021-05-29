@@ -198,9 +198,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
                         logger.error("LaTeX compilation error: {log[error_pos][2:])}")
                         for log_index in error_pos:
                             index_line = log_index
-                            context = (
-                                "Context for error:\n\n"
-                            )
+                            context = "Context for error:\n\n"
 
                             # Find where the line of the error is indicated in the log file
                             while not log[index_line].startswith("l."):
@@ -226,7 +224,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
 
                         # add insight for errors
                         for prog, get_insight in LATEX_ERROR_INSIGHTS:
-                            match = re.search(prog, ''.join(log[log_index:index_line]))
+                            match = re.search(prog, "".join(log[log_index:index_line]))
                             if match is not None:
                                 for insight in get_insight(match):
                                     logger.info(insight)
