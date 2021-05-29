@@ -42,15 +42,12 @@ from typing import Iterable, Optional, Sequence, Union
 import numpy as np
 from colour import Color
 
+from manim.mobject.opengl_mobject import OpenGLMobject
+
 from .. import config, logger
 from ..constants import *
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import (
-    DashedVMobject,
-    MetaVMobject,
-    VGroup,
-    VMobject,
-)
+from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
 from ..utils.simple_functions import fdiv
@@ -65,9 +62,10 @@ from ..utils.space_ops import (
     rotate_vector,
     pointify,
 )
+from .opengl_compatibility import ConvertToOpenGL
 
 
-class Arc(metaclass=MetaVMobject):
+class Arc(VMobject, metaclass=ConvertToOpenGL):
     """A circular arc."""
 
     def __init__(
@@ -590,7 +588,7 @@ class Annulus(Circle):
     init_points = generate_points
 
 
-class Line(metaclass=MetaVMobject):
+class Line(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, start=LEFT, end=RIGHT, buff=0, path_arc=None, **kwargs):
         self.dim = 3
         self.buff = buff
@@ -869,7 +867,7 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-class Elbow(metaclass=MetaVMobject):
+class Elbow(VMobject, metaclass=ConvertToOpenGL):
     """Two lines that create a right angle about each other: L-shape.
 
     Parameters
@@ -909,7 +907,7 @@ class Elbow(metaclass=MetaVMobject):
         self.rotate(self.angle, about_point=ORIGIN)
 
 
-class CubicBezier(metaclass=MetaVMobject):
+class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
     """
     Example
     -------
@@ -937,7 +935,7 @@ class CubicBezier(metaclass=MetaVMobject):
         self.add_cubic_bezier_curve(start_anchor, start_handle, end_handle, end_anchor)
 
 
-class Polygram(metaclass=MetaVMobject):
+class Polygram(VMobject, metaclass=ConvertToOpenGL):
     """A generalized :class:`Polygon`, allowing for disconnected sets of edges.
 
     Parameters
@@ -1074,6 +1072,9 @@ class Polygram(metaclass=MetaVMobject):
         --------
         :class:`RoundedRectangle`
         """
+
+        if radius == 0:
+            return self
 
         new_points = []
 
@@ -1377,7 +1378,7 @@ class Star(Polygon):
         super().__init__(*vertices, **kwargs)
 
 
-class ArcPolygon(metaclass=MetaVMobject):
+class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version tries to stick close to the way :class:`Polygon` is used. Points
@@ -1487,7 +1488,7 @@ class ArcPolygon(metaclass=MetaVMobject):
         self.arcs = arcs
 
 
-class ArcPolygonFromArcs(metaclass=MetaVMobject):
+class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     """A generalized polygon allowing for points to be connected with arcs.
 
     This version takes in pre-defined arcs to generate the arcpolygon and introduces
@@ -1785,7 +1786,7 @@ class RoundedRectangle(Rectangle):
         self.round_corners(self.corner_radius)
 
 
-class Cutout(metaclass=MetaVMobject):
+class Cutout(VMobject, metaclass=ConvertToOpenGL):
     """A shape with smaller cutouts.
 
     .. warning::
@@ -1831,7 +1832,7 @@ class Cutout(metaclass=MetaVMobject):
             self.append_points(mobject.force_direction(sub_direction).get_points())
 
 
-class Angle(metaclass=MetaVMobject):
+class Angle(VMobject, metaclass=ConvertToOpenGL):
     """A circular arc or elbow-type mobject representing an angle of two lines.
 
     Parameters
