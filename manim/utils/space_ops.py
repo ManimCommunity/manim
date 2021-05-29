@@ -799,7 +799,7 @@ def get_start_and_end_point(start, end, buff=0, path_arc=0):
     end = pointify(end, end_direction)
 
     # Apply buffer
-    start += normalize(start_direction) * buff
-    end += normalize(end_direction) * buff
+    start = start + normalize(start_direction) * buff
+    end = end + normalize(end_direction) * buff
 
     return start, end
