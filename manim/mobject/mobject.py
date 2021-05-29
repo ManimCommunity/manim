@@ -1661,9 +1661,10 @@ class Mobject(Container):
         start, end = get_start_and_end_point(start, end, buff, path_arc)
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
+        if np.all(curr_vect == 0):
+            # Cannot position endpoints of closed loop.
+            return
 
         axis = (
             normalize(np.cross(curr_vect, target_vect))
