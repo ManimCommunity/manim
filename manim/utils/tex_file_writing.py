@@ -199,7 +199,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
                         for log_index in error_pos:
                             index_line = log_index
                             context = (
-                                f"Context for error:\n\n"
+                                "Context for error:\n\n"
                             )
 
                             # Find where the line of the error is indicated in the log file
