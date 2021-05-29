@@ -6,13 +6,12 @@ import uuid
 
 import numpy as np
 
-from manim.mobject.opengl_compatibility import ConvertToOpenGL
-
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
 from ..mobject.value_tracker import ValueTracker
 from ..utils.family import extract_mobject_family_members
+from .opengl_compatibility import ConvertToOpenGL
 
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
