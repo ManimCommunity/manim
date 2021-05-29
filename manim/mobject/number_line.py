@@ -170,7 +170,7 @@ class NumberLine(Line):
             self.add_ticks()
 
         self.rotate(self.rotation)
-        if self.include_numbers or self.numbers_to_include:
+        if self.include_numbers or self.numbers_to_include is not None:
             self.add_numbers(
                 x_values=self.numbers_to_include, excluding=self.numbers_to_exclude
             )

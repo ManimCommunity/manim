@@ -952,6 +952,8 @@ class Axes(VGroup, CoordinateSystem):
         Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
     y_axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    include_tips
+        Whether or not to include the tips on both axes.
     kwargs : Any
         Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`.
     """
@@ -965,12 +967,13 @@ class Axes(VGroup, CoordinateSystem):
         axis_config=None,
         x_axis_config=None,
         y_axis_config=None,
+        tips: bool = True,
         **kwargs,
     ):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
-        self.axis_config = {"include_tip": True, "numbers_to_exclude": [0]}
+        self.axis_config = {"include_tip": tips, "numbers_to_exclude": [0]}
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
