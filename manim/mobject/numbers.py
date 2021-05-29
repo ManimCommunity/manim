@@ -8,7 +8,6 @@ import numpy as np
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
 
-from .._config import config
 from ..constants import *
 from ..mobject.svg.tex_mobject import MathTex, SingleStringMathTex
 from ..mobject.types.vectorized_mobject import VMobject
