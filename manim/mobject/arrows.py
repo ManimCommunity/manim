@@ -17,8 +17,7 @@ from .opengl_mobject import OpenGLMobject
 from .types.opengl_vectorized_mobject import OpenGLVMobject
 from .types.vectorized_mobject import MetaVMobject, VMobject
 
-DEFAULT_ARROW_TO_STROKE_WIDTH_RATIO = 35 / 6
-# TODO needs cleanup
+DEFAULT_ARROW_TO_STROKE_WIDTH_RATIO = 35 / 6  # TODO needs cleanup
 
 
 # TODO: add tip presets (via string?)
@@ -52,7 +51,7 @@ class ArrowTip:
         The side of the tip to be positioned at the specified ``relative_position``
         assuming the arrow points to the right.
     scale_auto
-        Whether to automatically scale the given ``mobject``.  #TODO
+        Whether to automatically scale the given ``mobject``.
     length
         The length of the tip.
     width
@@ -481,6 +480,8 @@ class Arrow(Line):
         path_arc : Optional[float], optional
             [description], by default None
 
+        Examples
+        --------
         .. manim:: MovingAndScaling
 
             class MovingAndScaling(Scene):
@@ -509,6 +510,34 @@ class Arrow(Line):
 
 
 class Vector(Arrow):
+    """
+
+
+
+    Parameters
+    ----------
+    Arrow : [type]
+        [description]
+
+    Examples
+    --------
+
+    .. manim:: VectorExample
+        :save_last_frame:
+        :ref_classes: NumberPlane
+
+        class VectorExample(Scene):
+            def construct(self):
+                numberplane = NumberPlane()
+                vectors = [
+                    Vector([3, 2, 0]),
+                    Vector([-2, 1, 0], color=RED),
+                ]
+                labels = [v.coordinate_label() for v in vectors]
+                self.add(numberplane, *vectors, *labels, Dot())
+
+    """
+
     def __init__(self, direction=RIGHT, buff=0, **kwargs):
         self.buff = buff
         if len(direction) == 2:
@@ -516,7 +545,13 @@ class Vector(Arrow):
 
         super().__init__(ORIGIN, direction, buff=buff, **kwargs)
 
-    def coordinate_label(self, num_decimal_places: int = 0, n_dim: int = 2, **kwargs):
+    def coordinate_label(
+        self,
+        num_decimal_places: int = 0,
+        n_dim: int = 2,
+        buff: float = SMALL_BUFF,
+        **kwargs,
+    ):
         start = self.get_start()
         end = self.get_end()
         vect = np.round((end - start)[:n_dim], num_decimal_places).reshape((n_dim, 1))
@@ -525,4 +560,4 @@ class Vector(Arrow):
         direction = end.copy()
         direction[1] = 0
 
-        return Matrix(vect, **kwargs).scale(0.8).next_to(end, direction)
+        return Matrix(vect, **kwargs).next_to(end, direction, buff=buff)
