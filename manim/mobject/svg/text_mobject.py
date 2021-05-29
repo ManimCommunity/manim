@@ -931,9 +931,12 @@ class MarkupText(SVGMobject):
                 'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
             )
         gradientmap = self.extract_gradient_tags()
-        validate_error = MarkupUtils.validate(self.text)
-        if validate_error:
-            raise ValueError(validate_error)
+        if not MarkupUtils.validate(self.text):
+            raise ValueError(
+                f"Pango cannot parse your markup in {self.text}. "
+                "Please check for typos, unmatched tags or unescaped "
+                "special chars like < and &."
+            )
 
         if self.line_spacing == -1:
             self.line_spacing = self.size + self.size * 0.3
