@@ -94,12 +94,12 @@ def get_scenes_to_render(scene_classes):
 
 def prompt_user_for_choice(scene_classes):
     num_to_class = {}
+    config["write_all"] = True
     for count, scene_class in enumerate(scene_classes):
         count += 1  # start with 1 instead of 0
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")
         num_to_class[count] = scene_class
-        config["write_all"] = True
     try:
         user_input = console.input(
             f"[log.message] {constants.CHOOSE_NUMBER_MESSAGE} [/log.message]"
