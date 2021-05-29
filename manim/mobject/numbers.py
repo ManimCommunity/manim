@@ -7,7 +7,6 @@ import uuid
 import numpy as np
 
 from manim.mobject.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl_value_tracker import OpenGLValueTracker
 
 from .._config import config
 from ..constants import *
@@ -312,11 +311,7 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
         equals = MathTex("=").next_to(self.label, RIGHT)
         self.label.add(equals)
 
-        self.tracker = (
-            OpenGLValueTracker(var)
-            if config["renderer"] == "opengl"
-            else ValueTracker(var)
-        )
+        self.tracker = ValueTracker(var)
 
         if var_type == DecimalNumber:
             self.value = DecimalNumber(
