@@ -194,7 +194,6 @@ class ArcBetweenPoints(Arc):
 
     def __init__(self, start, end, angle=TAU / 4, radius=None, buff=0, **kwargs):
         start_center, end_center = get_start_and_end_point(start, end)
-        print(start_center, end_center)
         if radius is not None:
             self.radius = radius
             if radius < 0:
