@@ -12,8 +12,9 @@ import numpy as np
 
 from ... import config
 from ...constants import *
-from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.deprecation import deprecated
+from ..opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
 
 
 def correct_out_of_range_radii(rx, ry, x1p, y1p):
@@ -210,10 +211,12 @@ def string_to_numbers(num_string: str) -> List[float]:
     return float_results
 
 
-class SVGPathMobject(VMobject):
+class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, path_string, **kwargs):
         self.path_string = path_string
-        VMobject.__init__(self, **kwargs)
+        if config.renderer == "opengl":
+            kwargs["long_lines"] = True
+        super().__init__(**kwargs)
         self.current_path_start = np.zeros((1, self.dim))
 
     def get_path_commands(self):
@@ -266,6 +269,8 @@ class SVGPathMobject(VMobject):
                 self.set_points(self.get_points_without_null_curves())
         # people treat y-coordinate differently
         self.rotate(np.pi, RIGHT, about_point=ORIGIN)
+
+    init_points = generate_points
 
     def handle_command(self, command, coord_string, prev_command):
         """Core logic for handling each of the various path commands."""

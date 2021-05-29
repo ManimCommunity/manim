@@ -10,11 +10,14 @@ from typing import Hashable, List, Optional, Tuple, Type, Union
 import networkx as nx
 import numpy as np
 
+from manim.mobject.opengl_mobject import OpenGLMobject
+
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
 from .mobject import Group, Mobject, override_animate
+from .opengl_compatibility import ConvertToOpenGL
 from .svg.tex_mobject import MathTex
 from .types.vectorized_mobject import VMobject
 
@@ -152,7 +155,7 @@ def _tree_layout(
     }
 
 
-class Graph(VMobject):
+class Graph(VMobject, metaclass=ConvertToOpenGL):
     """An undirected graph (that is, a collection of vertices connected with edges).
 
     Graphs can be instantiated by passing both a list of (distinct, hashable)
@@ -511,7 +514,7 @@ class Graph(VMobject):
         self._graph.add_node(vertex)
         self._layout[vertex] = position
 
-        if isinstance(label, Mobject):
+        if isinstance(label, (Mobject, OpenGLMobject)):
             self._labels[vertex] = label
         elif label is True:
             self._labels[vertex] = MathTex(vertex, fill_color=label_fill_color)
@@ -663,7 +666,7 @@ class Graph(VMobject):
         to_remove.append(self.vertices.pop(vertex))
 
         self.remove(*to_remove)
-        return Group(*to_remove)
+        return self.get_group_class()(*to_remove)
 
     def remove_vertices(self, *vertices):
         """Remove several vertices from the graph.
@@ -680,9 +683,7 @@ class Graph(VMobject):
 
             >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
             >>> removed = G.remove_vertices(2, 3); removed
-            Group
-            >>> removed.submobjects
-            [Line, Line, Dot, Dot]
+            VGroup(Line, Line, Dot, Dot)
             >>> G
             Graph on 1 vertices and 0 edges
 
@@ -690,7 +691,7 @@ class Graph(VMobject):
         mobjects = []
         for v in vertices:
             mobjects.extend(self._remove_vertex(v).submobjects)
-        return Group(*mobjects)
+        return self.get_group_class()(*mobjects)
 
     @override_animate(remove_vertices)
     def _remove_vertices_animation(self, *vertices, anim_args=None):
@@ -751,7 +752,7 @@ class Graph(VMobject):
 
         self.add(edge_mobject)
         added_mobjects.append(edge_mobject)
-        return Group(*added_mobjects)
+        return self.get_group_class()(*added_mobjects)
 
     def add_edges(
         self,
@@ -802,7 +803,7 @@ class Graph(VMobject):
             ],
             [],
         )
-        return Group(*added_mobjects)
+        return self.get_group_class()(*added_mobjects)
 
     @override_animate(add_edges)
     def _add_edges_animation(self, *args, anim_args=None, **kwargs):
@@ -857,7 +858,7 @@ class Graph(VMobject):
 
         """
         edge_mobjects = [self._remove_edge(edge) for edge in edges]
-        return Group(*edge_mobjects)
+        return self.get_group_class()(*edge_mobjects)
 
     @override_animate(remove_edges)
     def _remove_edges_animation(self, *edges, anim_args=None):

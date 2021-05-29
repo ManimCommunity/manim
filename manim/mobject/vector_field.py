@@ -207,12 +207,32 @@ class VectorField(VGroup):
 
         """
 
+        def runge_kutta(self, p: Sequence[float], step_size: float) -> float:
+            """Returns the change in position of a point along a vector field.
+            Parameters
+            ----------
+            p
+               The position of each point being moved along the vector field.
+            step_size
+               A scalar that is used to determine how much a point is shifted in a single step.
+
+            Returns
+            -------
+            float
+               How much the point is shifted.
+            """
+            k_1 = self.func(p)
+            k_2 = self.func(p + step_size * (k_1 * 0.5))
+            k_3 = self.func(p + step_size * (k_2 * 0.5))
+            k_4 = self.func(p + step_size * k_3)
+            return step_size / 6.0 * (k_1 + 2.0 * k_2 + 2.0 * k_3 + k_4)
+
         step_size = dt / substeps
         for i in range(substeps):
             if pointwise:
-                mob.apply_function(lambda p: p + self.func(p) * step_size)
+                mob.apply_function(lambda p: p + runge_kutta(self, p, step_size))
             else:
-                mob.shift(self.func(mob.get_center()) * step_size)
+                mob.shift(runge_kutta(self, mob.get_center(), step_size))
         return self
 
     def nudge_submobjects(
@@ -226,7 +246,7 @@ class VectorField(VGroup):
             A scalar to the amount the mobject is moved along the vector field.
             The actual distance is based on the magnitude of the vector field.
         substeps
-            The amount of steps the whole nudge is devided into. Higher values
+            The amount of steps the whole nudge is divided into. Higher values
             give more accurate approximations.
         pointwise
             Whether to move the mobject along the vector field. See :meth:`nudge` for details.
@@ -291,7 +311,7 @@ class VectorField(VGroup):
         return self
 
     def stop_submobject_movement(self) -> "VectorField":
-        """Stops the continous movement started using :meth:`start_submobject_movement`.
+        """Stops the continuous movement started using :meth:`start_submobject_movement`.
 
         Returns
         -------
@@ -546,7 +566,7 @@ class StreamLines(VectorField):
     dt
         The factor by which the distance an agent moves per step is stretched. Lower values result in a better approximation of the trajectories in the vector field.
     virtual_time
-        The time the agents get to move in the vector field. Higher values therefor result in longer stream lines. However, this whole time gets simulated upon creation.
+        The time the agents get to move in the vector field. Higher values therefore result in longer stream lines. However, this whole time gets simulated upon creation.
     max_anchors_per_line
         The maximum number of anchors per line. Lines with more anchors get reduced in complexity, not in length.
     padding
@@ -703,7 +723,7 @@ class StreamLines(VectorField):
         Parameters
         ----------
         lag_ratio
-            The lag ratio ot the animation.
+            The lag ratio of the animation.
             If undefined, it will be selected so that the total animation length is 1.5 times the run time of each stream line creation.
         run_time
             The run time of every single stream line creation. The runtime of the whole animation might be longer due to the `lag_ratio`.
@@ -755,7 +775,7 @@ class StreamLines(VectorField):
     ) -> None:
         """Animates the stream lines using an updater.
 
-        The stream lines will continously flow
+        The stream lines will continuously flow
 
         Parameters
         ----------
@@ -768,7 +788,7 @@ class StreamLines(VectorField):
         rate_func
             The rate function of each stream line flashing
         line_animation_class
-            The animation class beeing used
+            The animation class being used
 
         Examples
         --------
@@ -818,7 +838,7 @@ class StreamLines(VectorField):
     def end_animation(self) -> AnimationGroup:
         """End the stream line animation smoothly.
 
-        Returns an animation resulting in fully displayed stream lines without a noticable cut.
+        Returns an animation resulting in fully displayed stream lines without a noticeable cut.
 
         Returns
         -------

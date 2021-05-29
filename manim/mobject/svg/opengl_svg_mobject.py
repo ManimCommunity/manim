@@ -5,7 +5,7 @@ from .opengl_svg_path import OpenGLSVGPathMobject
 from .style_utils import cascade_element_style, parse_style
 
 
-class OpenGLSVGMobject(OpenGLVMobject, SVGMobject):
+class OpenGLSVGMobject(SVGMobject):
     def __init__(
         self,
         file_name=None,
