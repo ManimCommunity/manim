@@ -269,13 +269,14 @@ class NumberLine(Line):
         if x_values is None:
             x_values = self.get_tick_range()
 
+        if excluding is None:
+            excluding = self.numbers_to_exclude
+
         kwargs["font_size"] = font_size
 
         numbers = VGroup()
         for x in x_values:
-            if x in self.numbers_to_exclude:
-                continue
-            if excluding is not None and x in excluding:
+            if x in excluding:
                 continue
             numbers.add(self.get_number_mobject(x, **kwargs))
         self.add(numbers)
