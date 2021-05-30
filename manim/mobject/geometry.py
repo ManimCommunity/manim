@@ -771,9 +771,9 @@ class Annulus(Circle):
 
     Parameters
     ----------
-    inner_radius : Optional[float] = 1
+    inner_radius : Optional[float] = 1,
         The radius of the inner :class:`Circle`.
-    outer_radius : Optional[float] = 2
+    outer_radius : Optional[float] = 2,
         The radius of the outer :class:`Circle`.
     kwargs : Any
         Additional arguments to be passed to :class:`Annulus`
