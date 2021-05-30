@@ -768,7 +768,7 @@ class Sector(AnnularSector):
 
 class Annulus(Circle):
     """Region between two concentric :class:`Circle`s.
-    
+        
     Parameters
     ----------
     inner_radius : :class:`float`, optional
@@ -777,7 +777,7 @@ class Annulus(Circle):
         The radius of the outer :class:`Circle`.
     kwargs : Any
         Additional arguments to be passed to :class:`Annulus`
-     
+    
     Examples
     --------
     
