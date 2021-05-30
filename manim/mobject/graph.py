@@ -10,13 +10,16 @@ from typing import Hashable, List, Optional, Tuple, Type, Union
 import networkx as nx
 import numpy as np
 
+from manim.mobject.opengl_mobject import OpenGLMobject
+
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Uncreate
 from ..utils.color import BLACK
 from .geometry import Dot, LabeledDot, Line
 from .mobject import Group, Mobject, override_animate
+from .opengl_compatibility import ConvertToOpenGL
 from .svg.tex_mobject import MathTex
-from .types.vectorized_mobject import MetaVMobject
+from .types.vectorized_mobject import VMobject
 
 
 def _determine_graph_layout(
@@ -152,7 +155,7 @@ def _tree_layout(
     }
 
 
-class Graph(metaclass=MetaVMobject):
+class Graph(VMobject, metaclass=ConvertToOpenGL):
     """An undirected graph (that is, a collection of vertices connected with edges).
 
     Graphs can be instantiated by passing both a list of (distinct, hashable)
@@ -511,7 +514,7 @@ class Graph(metaclass=MetaVMobject):
         self._graph.add_node(vertex)
         self._layout[vertex] = position
 
-        if isinstance(label, Mobject):
+        if isinstance(label, (Mobject, OpenGLMobject)):
             self._labels[vertex] = label
         elif label is True:
             self._labels[vertex] = MathTex(vertex, fill_color=label_fill_color)
