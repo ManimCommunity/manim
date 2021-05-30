@@ -767,6 +767,30 @@ class Sector(AnnularSector):
 
 
 class Annulus(Circle):
+    """Region between two concentric :class:`Circle`s.
+    
+    Parameters
+    ----------
+    inner_radius : :class:`float`, optional
+        The radius of the inner :class:`Circle`.
+    outer_radius : :class:`float`, optional
+        The radius of the outer :class:`Circle`.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Annulus`
+     
+    Examples
+    --------
+    
+    .. manim:: AnnulusExample
+        :save_last_frame:
+        
+        class AnnulusExample(Scene):
+            def construct(self):
+                annulus_1 = Annulus(inner_radius=0.5, outer_radius=1).shift(UP)
+                annulus_2 = Annulus(inner_radius=0.3, outer_radius=0.6, color=RED).next_to(annulus_1, DOWN)
+                self.add(annulus_1, annulus_2)
+    """
+    
     def __init__(
         self,
         inner_radius=1,
