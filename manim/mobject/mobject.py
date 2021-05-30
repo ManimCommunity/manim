@@ -874,7 +874,7 @@ class Mobject(Container):
             In case ``index`` is ``None`` the updater will be added at the end, where it
             would be last in the execution order.
         call_updater
-            Wheather or not to call the updater initially after adding it (using ``0``
+            Whether or not to call the updater initially after adding it (using ``0``
             as time if applicable).
 
         Returns
@@ -917,7 +917,7 @@ class Mobject(Container):
         :class:`~.UpdateFromFunc`
         """
 
-        # Test if updater is time based and wheather to use time difference
+        # Test if updater is time based and whether to use time difference
         parameters = list(get_parameters(updater).keys())
         time_based = len(parameters) > 1
         if time_based:

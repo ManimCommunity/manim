@@ -627,7 +627,7 @@ class OpenGLMobject:
         index: Optional[int] = None,
         call_updater: bool = False,
     ) -> "OpenGLMobject":
-        # Test if updater is time based and wheather to use time difference
+        # Test if updater is time based and whether to use time difference
         parameters = list(get_parameters(updater).keys())
         time_based = len(parameters) > 1
         if time_based:
