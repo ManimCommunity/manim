@@ -771,9 +771,9 @@ class Annulus(Circle):
 
     Parameters
     ----------
-    inner_radius : Optional[float] = 1,
+    inner_radius
         The radius of the inner :class:`Circle`.
-    outer_radius : Optional[float] = 2,
+    outer_radius
         The radius of the outer :class:`Circle`.
     kwargs : Any
         Additional arguments to be passed to :class:`Annulus`
@@ -793,8 +793,8 @@ class Annulus(Circle):
 
     def __init__(
         self,
-        inner_radius=1,
-        outer_radius=2,
+        inner_radius = Optional[float] = 1,
+        outer_radius = Optional[float] = 2,
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
