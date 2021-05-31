@@ -9,9 +9,10 @@ from .. import config
 from ..constants import *
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.color import YELLOW
+from .opengl_compatibility import ConvertToOpenGL
 
 
-class ParametricFunction(VMobject):
+class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     """A parametric curve.
 
     Examples
@@ -65,7 +66,7 @@ class ParametricFunction(VMobject):
         self.use_smoothing = use_smoothing
         self.t_min, self.t_max, self.t_step = t_range
 
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def get_function(self):
         return self.function
@@ -97,6 +98,8 @@ class ParametricFunction(VMobject):
             # TODO: not in line with upstream, approx_smooth does not exist
             self.make_smooth()
         return self
+
+    init_points = generate_points
 
 
 class FunctionGraph(ParametricFunction):
