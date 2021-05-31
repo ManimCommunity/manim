@@ -939,19 +939,19 @@ class Axes(VGroup, CoordinateSystem):
 
     Parameters
     ----------
-    x_range :
+    x_range
         The :code:`[x_min, x_max, x_step]` values of the x-axis.
-    y_range :
+    y_range
         The :code:`[y_min, y_max, y_step]` values of the y-axis.
-    x_length : Optional[:class:`float`]
+    x_length
         The length of the x-axis.
-    y_length : Optional[:class:`float`]
+    y_length
         The length of the y-axis.
-    axis_config : Optional[:class:`dict`]
+    axis_config
         Arguments to be passed to :class:`~.NumberLine` that influences both axes.
-    x_axis_config : Optional[:class:`dict`]
+    x_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
-    y_axis_config : Optional[:class:`dict`]
+    y_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
     include_tips
         Whether or not to include the tips on both axes.
@@ -963,11 +963,11 @@ class Axes(VGroup, CoordinateSystem):
         self,
         x_range: Optional[Sequence[float]] = None,
         y_range: Optional[Sequence[float]] = None,
-        x_length=round(config.frame_width) - 2,
-        y_length=round(config.frame_height) - 2,
-        axis_config=None,
-        x_axis_config=None,
-        y_axis_config=None,
+        x_length: Optional[float] = round(config.frame_width) - 2,
+        y_length: Optional[float] = round(config.frame_height) - 2,
+        axis_config: Optional[dict] = None,
+        x_axis_config: Optional[dict] = None,
+        y_axis_config: Optional[dict] = None,
         tips: bool = True,
         **kwargs,
     ):
@@ -998,17 +998,27 @@ class Axes(VGroup, CoordinateSystem):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
-    def create_axis(self, range_terms, axis_config, length):
+    def create_axis(
+        self,
+        range_terms: Sequence[float],
+        axis_config: dict,
+        length: float,
+    ) -> NumberLine:
         """Creates an axis and dynamically adjusts its position depending on where 0 is located on the line.
 
         Parameters
         ----------
-        range_terms : Union[:class:`list`, :class:`numpy.ndarray`]
+        range_terms
             The range of the the axis : `(x_min, x_max, x_step)`.
-        axis_config : :class:`dict`
+        axis_config
             Additional parameters that are passed to :class:`NumberLine`.
-        length : :class:`float`
+        length
             The length of the axis.
+
+        Returns
+        -------
+        :class:`NumberLine`
+            Returns a number line with the provided x and y axis range.
         """
         new_config = merge_dicts_recursively(self.axis_config, axis_config)
         new_config["length"] = length
@@ -1019,20 +1029,68 @@ class Axes(VGroup, CoordinateSystem):
         axis.shift(-axis.number_to_point(self.origin_shift(range_terms)))
         return axis
 
-    def coords_to_point(self, *coords):
+    def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
+        """Transforms the vector formed from ``coords`` formed by the :class:`Axes`
+        into the corresponding vector with respect to the default basis.
+
+        Returns
+        -------
+        np.ndarray
+            A point that results from a change of basis from the coordinate system
+            defined by the :class:`Axes` to that of ``manim``'s default coordinate system
+        """
         origin = self.x_axis.number_to_point(self.origin_shift(self.x_range))
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):
             result += axis.number_to_point(coord) - origin
         return result
 
-    def point_to_coords(self, point):
+    def point_to_coords(self, point: float) -> Tuple:
+        """Transforms the coordinates of the point which are with respect to ``manim``'s default
+        basis into the coordinates of that point with respect to the basis defined by :class:`Axes`.
+
+        Parameters
+        ----------
+        point
+            The point whose coordinates will be found.
+
+        Returns
+        -------
+        Tuple
+            Coordinates of the point with respect to :class:`Axes`'s basis
+        """
         return tuple([axis.point_to_number(point) for axis in self.get_axes()])
 
-    def get_axes(self):
+    def get_axes(self) -> VGroup:
+        """Gets the axes.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A pair of axes.
+        """
         return self.axes
 
-    def get_coordinate_labels(self, x_values=None, y_values=None, **kwargs):
+    def get_coordinate_labels(
+        self,
+        x_values: Optional[Iterable[float]] = None,
+        y_values: Optional[Iterable[float]] = None,
+        **kwargs,
+    ) -> VDict:
+        """Gets labels for the coordinates
+
+        Parameters
+        ----------
+        x_values
+            Iterable of values along the x-axis, by default None.
+        y_values
+            Iterable of values along the y-axis, by default None.
+
+        Returns
+        -------
+        VDict
+            Labels for the x and y values.
+        """
         axes = self.get_axes()
         self.coordinate_labels = VGroup()
         for axis, values in zip(axes, [x_values, y_values]):
@@ -1040,7 +1098,20 @@ class Axes(VGroup, CoordinateSystem):
             self.coordinate_labels.add(labels)
         return self.coordinate_labels
 
-    def add_coordinates(self, x_values=None, y_values=None):
+    def add_coordinates(
+        self,
+        x_values: Optional[Iterable[float]] = None,
+        y_values: Optional[Iterable[float]] = None,
+    ):
+        """Adds the coordinates.
+
+        Parameters
+        ----------
+        x_values
+            Iterable of values along the x-axis, by default None.
+        y_values
+            Iterable of values along the y-axis, by default None.
+        """
         self.add(self.get_coordinate_labels(x_values, y_values))
         return self
 
@@ -1152,25 +1223,25 @@ class ThreeDAxes(Axes):
 
     Parameters
     ----------
-    x_range :
+    x_range
         The :code:`[x_min, x_max, x_step]` values of the x-axis.
-    y_range :
+    y_range
         The :code:`[y_min, y_max, y_step]` values of the y-axis.
-    z_range :
+    z_range
         The :code:`[z_min, z_max, z_step]` values of the z-axis.
-    x_length : Optional[:class:`float`]
+    x_length
         The length of the x-axis.
-    y_length : Optional[:class:`float`]
+    y_length
         The length of the y-axis.
-    z_length : Optional[:class:`float`]
+    z_length
         The length of the z-axis.
-    z_axis_config : Optional[:class:`dict`]
+    z_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the z-axis.
-    z_normal : Union[:class:`list`, :class:`numpy.ndarray`]
+    z_normal
         The direction of the normal.
-    num_axis_pieces : :class:`int`
+    num_axis_pieces
         The number of pieces used to construct the axes.
-    light_source : Union[:class:`list`, :class:`numpy.ndarray`]
+    light_source
         The direction of the light source.
     depth
         Currently non-functional.
@@ -1185,13 +1256,13 @@ class ThreeDAxes(Axes):
         x_range: Optional[Sequence[float]] = (-6, 6, 1),
         y_range: Optional[Sequence[float]] = (-5, 5, 1),
         z_range: Optional[Sequence[float]] = (-4, 4, 1),
-        x_length=config.frame_height + 2.5,
-        y_length=config.frame_height + 2.5,
-        z_length=config.frame_height - 1.5,
-        z_axis_config=None,
-        z_normal=DOWN,
-        num_axis_pieces=20,
-        light_source=9 * DOWN + 7 * LEFT + 10 * OUT,
+        x_length: Optional[float] = config.frame_height + 2.5,
+        y_length: Optional[float] = config.frame_height + 2.5,
+        z_length: Optional[float] = config.frame_height - 1.5,
+        z_axis_config: Optional[dict] = None,
+        z_normal: Sequence[float] = DOWN,
+        num_axis_pieces: int = 20,
+        light_source: Sequence[float] = 9 * DOWN + 7 * LEFT + 10 * OUT,
         # opengl stuff (?)
         depth=None,
         gloss=0.5,
@@ -1259,23 +1330,23 @@ class NumberPlane(Axes):
 
     Parameters
     ----------
-    x_range :
+    x_range
         The :code:`[x_min, x_max, x_step]` values of the plane in the horizontal direction.
-    y_range :
+    y_range
         The :code:`[y_min, y_max, y_step]` values of the plane in the vertical direction.
-    x_length : Optional[:class:`float`]
+    x_length
         The width of the plane.
-    y_length : Optional[:class:`float`]
+    y_length
         The height of the plane.
-    axis_config : Optional[:class:`dict`]
+    axis_config
         Arguments to be passed to :class:`~.NumberLine` that influences both axes.
-    y_axis_config : Optional[:class:`dict`]
+    y_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
-    background_line_style : Optional[:class:`dict`]
+    background_line_style
         Arguments that influence the construction of the background lines of the plane.
-    faded_line_style : Optional[:class:`dict`]
+    faded_line_style
         Similar to :attr:`background_line_style`, affects the construction of the scene's background lines.
-    faded_line_ratio : Optional[:class:`int`]
+    faded_line_ratio
         Determines the number of boxes within the background lines: :code:`2` = 4 boxes, :code:`3` = 9 boxes.
     make_smooth_after_applying_functions
         Currently non-functional.
@@ -1298,13 +1369,13 @@ class NumberPlane(Axes):
             config["frame_y_radius"],
             1,
         ),
-        x_length=None,
-        y_length=None,
-        axis_config=None,
-        y_axis_config=None,
-        background_line_style=None,
-        faded_line_style=None,
-        faded_line_ratio=1,
+        x_length: Optional[float] = None,
+        y_length: Optional[float] = None,
+        axis_config: Optional[dict] = None,
+        y_axis_config: Optional[dict] = None,
+        background_line_style: Optional[dict] = None,
+        faded_line_style: Optional[dict] = None,
+        faded_line_ratio: Optional[float] = 1,
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
@@ -1379,7 +1450,7 @@ class NumberPlane(Axes):
             self.background_lines,
         )
 
-    def get_lines(self):
+    def get_lines(self) -> Tuple[VGroup, VGroup]:
         """Generate all the lines, faded and not faded. Two sets of lines are generated: one parallel to the X-axis, and parallel to the Y-axis.
 
         Returns
@@ -1407,22 +1478,26 @@ class NumberPlane(Axes):
         return lines1, lines2
 
     def get_lines_parallel_to_axis(
-        self, axis_parallel_to, axis_perpendicular_to, freq, ratio_faded_lines
-    ):
+        self,
+        axis_parallel_to: Line,
+        axis_perpendicular_to: Line,
+        freq: float,
+        ratio_faded_lines: float,
+    ) -> Tuple[VGroup, VGroup]:
         """Generate a set of lines parallel to an axis.
 
         Parameters
         ----------
-        axis_parallel_to : :class:`~.Line`
+        axis_parallel_to
             The axis with which the lines will be parallel.
 
-        axis_perpendicular_to : :class:`~.Line`
+        axis_perpendicular_to
             The axis with which the lines will be perpendicular.
 
-        ratio_faded_lines : :class:`float`
+        ratio_faded_lines
             The ratio between the space between faded lines and the space between non-faded lines.
 
-        freq : :class:`float`
+        freq
             Frequency of non-faded lines (number of non-faded lines per graph unit).
 
         Returns
@@ -1452,7 +1527,14 @@ class NumberPlane(Axes):
                     lines2.add(new_line)
         return lines1, lines2
 
-    def get_center_point(self):
+    def get_center_point(self) -> np.ndarray:
+        """Gets the origin of :class:`NumberPlane`.
+
+        Returns
+        -------
+        np.ndarray
+            The center point.
+        """
         return self.coords_to_point(0, 0)
 
     def get_x_unit_size(self):
@@ -1461,7 +1543,15 @@ class NumberPlane(Axes):
     def get_y_unit_size(self):
         return self.get_x_axis().get_unit_size()
 
-    def get_axes(self):
+    def get_axes(self) -> VGroup:
+        # Method Already defined at Axes.get_axes so we could remove this a later PR.
+        """Gets the pair of axes.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            Axes
+        """
         return self.axes
 
     def get_vector(self, coords, **kwargs):
