@@ -18,14 +18,13 @@ import numpy as np
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
-from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
-from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-from ...mobject.types.vectorized_mobject import MetaVMobject, VGroup, VMobject
+from ...mobject.types.vectorized_mobject import VMobject
+from ..opengl_compatibility import ConvertToOpenGL
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
 
 
-class SVGMobject(metaclass=MetaVMobject):
+class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     """A SVGMobject is a Vector Mobject constructed from an SVG (or XDV) file.
 
     SVGMobjects are constructed from the XML data within the SVG file
@@ -203,15 +202,11 @@ class SVGMobject(metaclass=MetaVMobject):
             pass  # TODO
 
         result = [m for m in result if m is not None]
-        if config["renderer"] == "opengl":
-            self.handle_transforms(element, OpenGLVGroup(*result))
-        else:
-            self.handle_transforms(element, VGroup(*result))
+        group_cls = self.get_group_class()
+
+        self.handle_transforms(element, group_cls(*result))
         if len(result) > 1 and not self.unpack_groups:
-            if config["renderer"] == "opengl":
-                result = [OpenGLVGroup(*result)]
-            else:
-                result = [VGroup(*result)]
+            result = [group_cls(*result)]
 
         if within_defs and element.hasAttribute("id"):
             # it seems wasteful to throw away the actual element,
@@ -357,33 +352,18 @@ class SVGMobject(metaclass=MetaVMobject):
         parsed_style["stroke_width"] = stroke_width
 
         if corner_radius == 0:
-            if config["renderer"] == "opengl":
-                mob = OpenGLRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    **parsed_style,
-                )
-            else:
-                mob = Rectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    **parsed_style,
-                )
+            mob = Rectangle(
+                width=self.attribute_to_float(rect_element.getAttribute("width")),
+                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                **parsed_style,
+            )
         else:
-            if config["renderer"] == "opengl":
-                mob = OpenGLRoundedRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    corner_radius=corner_radius,
-                    **parsed_style,
-                )
-            else:
-                mob = RoundedRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    corner_radius=corner_radius,
-                    **parsed_style,
-                )
+            mob = RoundedRectangle(
+                width=self.attribute_to_float(rect_element.getAttribute("width")),
+                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                corner_radius=corner_radius,
+                **parsed_style,
+            )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
         return mob
