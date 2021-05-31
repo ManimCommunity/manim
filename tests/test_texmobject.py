@@ -27,3 +27,48 @@ def test_double_braces_testing(text_input, length_sub):
 def test_tex():
     Tex("The horse does not eat cucumber salad.")
     assert Path(config.media_dir, "Tex", "983949cac5bdd272.svg").exists()
+
+
+def test_tex_whitespace_arg():
+    """Check that correct number of submobjects are created per string with whitespace separator"""
+    separator = "\t"
+    str_part_1 = "Hello"
+    str_part_2 = "world"
+    str_part_3 = "It is"
+    str_part_4 = "me!"
+    tex = Tex(str_part_1, str_part_2, str_part_3, str_part_4, arg_separator=separator)
+    assert len(tex) == 4
+    assert len(tex[0]) == len("".join((str_part_1 + separator).split()))
+    assert len(tex[1]) == len("".join((str_part_2 + separator).split()))
+    assert len(tex[2]) == len("".join((str_part_3 + separator).split()))
+    assert len(tex[3]) == len("".join(str_part_4.split()))
+
+
+def test_tex_non_whitespace_arg():
+    """Check that correct number of submobjects are created per string with non_whitespace characters"""
+    separator = ","
+    str_part_1 = "Hello"
+    str_part_2 = "world"
+    str_part_3 = "It is"
+    str_part_4 = "me!"
+    tex = Tex(str_part_1, str_part_2, str_part_3, str_part_4, arg_separator=separator)
+    assert len(tex) == 4
+    assert len(tex[0]) == len("".join((str_part_1 + separator).split()))
+    assert len(tex[1]) == len("".join((str_part_2 + separator).split()))
+    assert len(tex[2]) == len("".join((str_part_3 + separator).split()))
+    assert len(tex[3]) == len("".join(str_part_4.split()))
+
+
+def test_tex_white_space_and_non_whitespace_args():
+    """Check that correct number of submobjects are created per string when mixing characters with whitespace"""
+    separator = ", \n . \t\t"
+    str_part_1 = "Hello"
+    str_part_2 = "world"
+    str_part_3 = "It is"
+    str_part_4 = "me!"
+    tex = Tex(str_part_1, str_part_2, str_part_3, str_part_4, arg_separator=separator)
+    assert len(tex) == 4
+    assert len(tex[0]) == len("".join((str_part_1 + separator).split()))
+    assert len(tex[1]) == len("".join((str_part_2 + separator).split()))
+    assert len(tex[2]) == len("".join((str_part_3 + separator).split()))
+    assert len(tex[3]) == len("".join(str_part_4.split()))
