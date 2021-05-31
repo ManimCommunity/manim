@@ -12,8 +12,9 @@ import numpy as np
 
 from ... import config
 from ...constants import *
-from ...mobject.types.vectorized_mobject import MetaVMobject
 from ...utils.deprecation import deprecated
+from ..opengl_compatibility import ConvertToOpenGL
+from ..types.vectorized_mobject import VMobject
 
 
 def correct_out_of_range_radii(rx, ry, x1p, y1p):
@@ -210,7 +211,7 @@ def string_to_numbers(num_string: str) -> List[float]:
     return float_results
 
 
-class SVGPathMobject(metaclass=MetaVMobject):
+class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(self, path_string, **kwargs):
         self.path_string = path_string
         if config.renderer == "opengl":

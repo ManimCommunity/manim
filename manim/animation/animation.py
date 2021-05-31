@@ -149,9 +149,7 @@ class Animation:
     def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, Mobject) and not isinstance(
-            mobject, OpenGLMobject
-        ):
+        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:

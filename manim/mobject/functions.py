@@ -56,7 +56,7 @@ class ParametricFunction(VMobject):
         **kwargs
     ):
         self.function = function
-        t_range = np.array([0, 1, 0.01]) if t_range is None else t_range
+        t_range = [0, 1, 0.01] if t_range is None else t_range
         if len(t_range) == 2:
             t_range = [*t_range, 0.01]
 
