@@ -94,10 +94,16 @@ Breaking changes
 * `#1470 <https://github.com/ManimCommunity/manim/pull/1470>`__: Drop support for Python 3.6
    Manim won't work on Python 3.6 anymore.
 
+Highlights
+----------
+
+* `#1462 <https://github.com/ManimCommunity/manim/pull/1462>`__: OpenGL: Added :class:`~.Shader`, :class:`~.Mesh`, and :class:`~.FullScreenQuad`
+   Add Shader and Mesh objects
+
 Deprecated classes and functions
 --------------------------------
 
-* `#1598 <https://github.com/ManimCommunity/manim/pull/1598>`__: Update examples to use :class:`Axes` and deprecate :class:`GraphScene`
+* `#1598 <https://github.com/ManimCommunity/manim/pull/1598>`__: Update examples to use :class:`~.Axes` and deprecate :class:`~.GraphScene`
    :class:`~.GraphScene` has been deprecated and its functionality has been shifted to :class:`~.Axes`. See the updated example gallery for sample usage.
 
 * `#1597 <https://github.com/ManimCommunity/manim/pull/1597>`__: Removed hilite_me and insert_line_numbers_in_html from global name space
@@ -115,11 +121,14 @@ New features
 * `#1447 <https://github.com/ManimCommunity/manim/pull/1447>`__: Added :class:`~.PolarPlane` for polar coordinates.
 
 
-* `#1566 <https://github.com/ManimCommunity/manim/pull/1566>`__: Added :attr:`~.Rectangle.grid`
+* `#1566 <https://github.com/ManimCommunity/manim/pull/1566>`__: Added the ability to add gridlines to a :class:`~.Rectangle`
 
 
 * `#1548 <https://github.com/ManimCommunity/manim/pull/1548>`__: :class:`~.ArcBrace`
    Added an :class:`~.ArcBrace` submobject for :class:`~.Brace`.
+
+* `#1559 <https://github.com/ManimCommunity/manim/pull/1559>`__: Update VGroup to support item assignment (#1530)
+   Support indexed item-assignment for VGroup
 
 * `#1490 <https://github.com/ManimCommunity/manim/pull/1490>`__: Added :class:`~.Polygram`, rework the polygon inheritance tree, and add :class:`~.Star`
    - Add :class:`~.Polygram`, a generalized :class:`~.Polygon` that allows for disconnected sets of edges.
@@ -128,6 +137,9 @@ New features
    - Add :class:`~.RegularPolygram`.
    - Make :class:`~.RegularPolygon` inherit from :class:`~.RegularPolygram`.
    - Add :class:`~.Star`.
+
+* `#1518 <https://github.com/ManimCommunity/manim/pull/1518>`__: Allow fading multiple Mobjects in one Animation  
+
 
 * `#1422 <https://github.com/ManimCommunity/manim/pull/1422>`__: Added :func:`~.override_animation` decorator
 
@@ -142,6 +154,9 @@ New features
 * `#1272 <https://github.com/ManimCommunity/manim/pull/1272>`__: Implement metaclass approach in geometry module to make mobjects compatible with cairo and opengl rendering
 
 
+* `#1404 <https://github.com/ManimCommunity/manim/pull/1404>`__: Added two deprecation decorators
+   Added two function decorators ``deprecated`` and ``deprecated_params`` as a consistent way of deprecating code.
+
 * `#1418 <https://github.com/ManimCommunity/manim/pull/1418>`__: Added project management commands
    - ``manim init`` - quickly sets up default files for a manim project.
    - ``manim new project`` - lets the user set project settings. It also creates the project inside a new folder of name <project_name>
@@ -150,14 +165,17 @@ New features
 Enhancements
 ------------
 
-* `#1572 <https://github.com/ManimCommunity/manim/pull/1572>`__: OpenGL compatibility via metaclass: TracedPath, ParametricFunction, Brace, VGroup
-   Increased OpenGL compatibility using the metaclass mechanism from #1272. `TracedPath`, `ParametricFunction`, `Brace`,  and `VGroup` mobjects are now compatible with both renderers
+* `#1572 <https://github.com/ManimCommunity/manim/pull/1572>`__: OpenGL compatibility via metaclass: :class:`~.TracedPath`, :class:`~.ParametricFunction`, :class:`~.Brace`, :class:`~.VGroup`
+
 
 * `#1472 <https://github.com/ManimCommunity/manim/pull/1472>`__: Porting methods from :class:`~.GraphScene` to :class:`~.CoordinateSystem`
 
 
 * `#1589 <https://github.com/ManimCommunity/manim/pull/1589>`__: OpenGL compatibility via metaclass: :class:`~.ValueTracker`
 
+
+* `#1564 <https://github.com/ManimCommunity/manim/pull/1564>`__: Add extra notes for TeX compilation errors
+   Add hint to use custom ``TexTemplate`` on TeX compilation errors
 
 * `#1584 <https://github.com/ManimCommunity/manim/pull/1584>`__: Added a check for ``0`` in :meth:`~.round_corners`
 
@@ -187,11 +205,17 @@ Enhancements
 * `#1502 <https://github.com/ManimCommunity/manim/pull/1502>`__: Added ``center`` parameter to :class:`~.Sphere` and ``point`` parameter to :class:`~.Dot3D`
 
 
+* `#1486 <https://github.com/ManimCommunity/manim/pull/1486>`__: Update of ``rate_functions``
+   Changed the picture for the non standard rate functions.
+
 * `#1495 <https://github.com/ManimCommunity/manim/pull/1495>`__: Ported value_tracker to OpenGL
-   Added `OpenGLValueTracker` and `OpenGLComplexValueTracker` which does the same things as the original ones but in OpenGL
+
 
 * `#1382 <https://github.com/ManimCommunity/manim/pull/1382>`__: Expand documentation, testing, and functionality of ValueTrackers; remove ExponentialValueTracker
    Added more documentation and inline operators to ValueTracker and ComplexValueTracker. Brought coverage for value_tracker.py to 100%. Removed ExponentialValueTracker.
+
+* `#1475 <https://github.com/ManimCommunity/manim/pull/1475>`__: Add SVG elliptical arc support
+
 
 Fixed bugs
 ----------
@@ -205,6 +229,9 @@ Fixed bugs
    Fix issue when setting the arg_separator of a Tex object as a non-whitespace character(s). The method `break_up_by_substrings(self)` was not accounting for the separator when setting the index.
 
 * `#1588 <https://github.com/ManimCommunity/manim/pull/1588>`__: Fixed multiple animations being saved in the same file
+
+
+* `#1571 <https://github.com/ManimCommunity/manim/pull/1571>`__: Fix tests after introducing parallelization
 
 
 * `#1545 <https://github.com/ManimCommunity/manim/pull/1545>`__: Fix outdated parameters for :class:`LinearTransformationScene` and add an example + typing.
@@ -227,6 +254,9 @@ Fixed bugs
 
 
 * `#1526 <https://github.com/ManimCommunity/manim/pull/1526>`__: Fix fading
+
+
+* `#1523 <https://github.com/ManimCommunity/manim/pull/1523>`__: Fix multiple FadeIn / Out only working on VMobjects
 
 
 Documentation-related changes
@@ -330,8 +360,14 @@ Changes to our development infrastructure
 Code quality improvements and similar refactors
 -----------------------------------------------
 
+* `#1465 <https://github.com/ManimCommunity/manim/pull/1465>`__: Added typings and description to some functions in :mod:`~.coordinate_systems`.
+
+
 * `#1552 <https://github.com/ManimCommunity/manim/pull/1552>`__: Removed unwanted parameters in geometry
-   Removed `anchors_span_full_range`, `close_new_points`, `anchors_span_full_range`, `dash_spacing `, `preserve_tip_size_when_scaling`, `mark_paths_closed ` and `close_new_points `
+   Removed ``anchors_span_full_range``, ``close_new_points``, ``anchors_span_full_range``, ``dash_spacing``, ``preserve_tip_size_when_scaling``, ``mark_paths_closed`` and ``close_new_points``
+
+* `#1535 <https://github.com/ManimCommunity/manim/pull/1535>`__: Update dependencies and fix tests
+
 
 * `#1544 <https://github.com/ManimCommunity/manim/pull/1544>`__: Adding spell checker as a pre-commit hook
 
@@ -347,42 +383,4 @@ Code quality improvements and similar refactors
 
 * `#1471 <https://github.com/ManimCommunity/manim/pull/1471>`__: Fix Some Warnings from lgtm
 
-
-Unclassified changes
---------------------
-
-* `#1465 <https://github.com/ManimCommunity/manim/pull/1465>`__: Added typings and description to some functions in coordinate_systems.py
-   Added a few more functions from `typing` module.
-   Added typings for `Axes` , `ThreeDAxes` and `NumberPlane` classes.
-   Added more documentations for some of the functions (minor additions like `Returns` and some descriptions).
-
-* `#1564 <https://github.com/ManimCommunity/manim/pull/1564>`__: Add extra notes for TeX compilation errors
-   Add hint to use custom ``TexTemplate`` on TeX compilation errors
-
-* `#1571 <https://github.com/ManimCommunity/manim/pull/1571>`__: Fix tests
-
-
-* `#1559 <https://github.com/ManimCommunity/manim/pull/1559>`__: Update VGroup to support item assignment (#1530)
-   Support indexed item-assignment for VGroup
-
-* `#1535 <https://github.com/ManimCommunity/manim/pull/1535>`__: Update dependencies and fix tests
-
-
-* `#1523 <https://github.com/ManimCommunity/manim/pull/1523>`__: Fix multiple FadeIn / Out only working on VMobjects
-
-
-* `#1518 <https://github.com/ManimCommunity/manim/pull/1518>`__: Allow fading multiple Mobjects in one Animation  
-
-
-* `#1486 <https://github.com/ManimCommunity/manim/pull/1486>`__: Update of ``rate_functions``
-   Changed the picture for the non standard rate functions.
-
-* `#1404 <https://github.com/ManimCommunity/manim/pull/1404>`__: Deprecation Decorators
-   Added two function decorators ``deprecated`` and ``deprecated_params`` as a consistent way of deprecating code.
-
-* `#1475 <https://github.com/ManimCommunity/manim/pull/1475>`__: Add SVG elliptical arc support
-
-
-* `#1462 <https://github.com/ManimCommunity/manim/pull/1462>`__: Shader mobject
-   Add Shader and Mesh objects
 
