@@ -757,7 +757,7 @@ class Sector(AnnularSector):
 
 
 class Annulus(Circle):
-    """Region between two concentric :class:`Circle`s.
+    """Region between two concentric :class:`Circles <.Circle>`.
 
     Parameters
     ----------
