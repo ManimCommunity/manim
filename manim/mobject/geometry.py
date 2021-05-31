@@ -793,8 +793,8 @@ class Annulus(Circle):
 
     def __init__(
         self,
-        inner_radius = Optional[float] = 1,
-        outer_radius = Optional[float] = 2,
+        inner_radius: Optional[float] = 1,
+        outer_radius: Optional[float] = 2,
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
