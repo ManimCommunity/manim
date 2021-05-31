@@ -45,17 +45,18 @@ Examples
 
 __all__ = ["GraphScene"]
 
-
 import itertools as it
 
-from .. import config
+import numpy as np
+
+from .. import config, logger
 from ..animation.creation import Create, DrawBorderThenFill, Write
 from ..animation.transform import Transform
 from ..animation.update import UpdateFromAlphaFunc
 from ..constants import *
 from ..mobject.functions import ParametricFunction
 from ..mobject.geometry import Line, Rectangle, RegularPolygon
-from ..mobject.number_line import NumberLine
+from ..mobject.number_line import NumberLineOld
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
@@ -70,6 +71,7 @@ from ..utils.color import (
     color_gradient,
     invert_color,
 )
+from ..utils.deprecation import deprecated
 from ..utils.space_ops import angle_of_vector
 
 # TODO, this should probably reimplemented entirely, especially so as to
@@ -78,7 +80,20 @@ from ..utils.space_ops import angle_of_vector
 # is way too messy to work with.
 
 
+@deprecated(
+    since="v0.7.0",
+    until="v0.9.0",
+    replacement="Axes",
+)
 class GraphScene(Scene):
+    """A special scene intended for plotting functions.
+
+    .. note::
+
+        This class is in the process of being deprecated. Functionality is
+        currently being ported to :class:`~.Axes`.
+    """
+
     def __init__(
         self,
         x_min=-1,
@@ -185,7 +200,7 @@ class GraphScene(Scene):
             **self.x_axis_config,
         )
 
-        x_axis = NumberLine(**self.x_axis_config)
+        x_axis = NumberLineOld(**self.x_axis_config)
         x_shift = x_axis.number_to_point(
             0 if self.x_min <= 0 <= self.x_max else self.x_min
         )
@@ -228,7 +243,7 @@ class GraphScene(Scene):
             **self.y_axis_config,
         )
 
-        y_axis = NumberLine(**self.y_axis_config)
+        y_axis = NumberLineOld(**self.y_axis_config)
         y_shift = y_axis.number_to_point(
             0 if self.y_min <= 0 <= self.y_max else self.y_min
         )

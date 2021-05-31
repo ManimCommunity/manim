@@ -1,5 +1,8 @@
 version: 2
-
+build:
+  image: latest
+  apt_packages:
+    - libpango1.0-dev
 python:
    version: 3.8
    install:

@@ -13,19 +13,18 @@ from typing import Dict, List
 from xml.dom.minidom import Element as MinidomElement
 from xml.dom.minidom import parse as minidom_parse
 
-from manim import logger
+import numpy as np
 
-from ... import config
+from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Circle, Line, Rectangle, RoundedRectangle
-from ...mobject.opengl_geometry import OpenGLRectangle, OpenGLRoundedRectangle
-from ...mobject.types.opengl_vectorized_mobject import OpenGLVGroup
-from ...mobject.types.vectorized_mobject import VGroup, VMobject
+from ...mobject.types.vectorized_mobject import VMobject
+from ..opengl_compatibility import ConvertToOpenGL
 from .style_utils import cascade_element_style, parse_style
 from .svg_path import SVGPathMobject, string_to_numbers
 
 
-class SVGMobject(VMobject):
+class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
     """A SVGMobject is a Vector Mobject constructed from an SVG (or XDV) file.
 
     SVGMobjects are constructed from the XML data within the SVG file
@@ -73,6 +72,8 @@ class SVGMobject(VMobject):
         unpack_groups=True,  # if False, creates a hierarchy of VGroups
         stroke_width=DEFAULT_STROKE_WIDTH,
         fill_opacity=1.0,
+        should_subdivide_sharp_curves=False,
+        should_remove_null_curves=False,
         **kwargs,
     ):
         self.def_map = {}
@@ -80,9 +81,11 @@ class SVGMobject(VMobject):
         self.ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
-        VMobject.__init__(
-            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
-        )
+        self.path_string_config = {
+            "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
+            "should_remove_null_curves": should_remove_null_curves,
+        }
+        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
         self.move_into_position(width, height)
 
     def ensure_valid_file(self):
@@ -129,6 +132,8 @@ class SVGMobject(VMobject):
             else:
                 self.add(*mobjects[0].submobjects)
         doc.unlink()
+
+    init_points = generate_points
 
     def get_mobjects_from(
         self,
@@ -197,15 +202,11 @@ class SVGMobject(VMobject):
             pass  # TODO
 
         result = [m for m in result if m is not None]
-        if config["renderer"] == "opengl":
-            self.handle_transforms(element, OpenGLVGroup(*result))
-        else:
-            self.handle_transforms(element, VGroup(*result))
+        group_cls = self.get_group_class()
+
+        self.handle_transforms(element, group_cls(*result))
         if len(result) > 1 and not self.unpack_groups:
-            if config["renderer"] == "opengl":
-                result = [OpenGLVGroup(*result)]
-            else:
-                result = [VGroup(*result)]
+            result = [group_cls(*result)]
 
         if within_defs and element.hasAttribute("id"):
             # it seems wasteful to throw away the actual element,
@@ -233,7 +234,9 @@ class SVGMobject(VMobject):
         VMobjectFromSVGPathstring
             A VMobject from the given path string, or d attribute.
         """
-        return SVGPathMobject(path_string, **parse_style(style))
+        return SVGPathMobject(
+            path_string, **self.path_string_config, **parse_style(style)
+        )
 
     def attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.
@@ -249,7 +252,7 @@ class SVGMobject(VMobject):
             A float representing the attribute string value.
         """
         stripped_attr = "".join(
-            [char for char in attr if char in string.digits + "." + "-"]
+            [char for char in attr if char in string.digits + ".-e"]
         )
         return float(stripped_attr)
 
@@ -267,7 +270,7 @@ class SVGMobject(VMobject):
         local_style : :class:`Dict`
             The styling using SVG property names at the point the element is `<use>`d.
             Not all values are applied; styles defined when the element is specified in
-            the `<def>` tag cannot be overriden here.
+            the `<def>` tag cannot be overridden here.
 
         Returns
         -------
@@ -349,33 +352,18 @@ class SVGMobject(VMobject):
         parsed_style["stroke_width"] = stroke_width
 
         if corner_radius == 0:
-            if config["renderer"] == "opengl":
-                mob = OpenGLRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    **parsed_style,
-                )
-            else:
-                mob = Rectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    **parsed_style,
-                )
+            mob = Rectangle(
+                width=self.attribute_to_float(rect_element.getAttribute("width")),
+                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                **parsed_style,
+            )
         else:
-            if config["renderer"] == "opengl":
-                mob = OpenGLRoundedRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    corner_radius=corner_radius,
-                    **parsed_style,
-                )
-            else:
-                mob = RoundedRectangle(
-                    width=self.attribute_to_float(rect_element.getAttribute("width")),
-                    height=self.attribute_to_float(rect_element.getAttribute("height")),
-                    corner_radius=corner_radius,
-                    **parsed_style,
-                )
+            mob = RoundedRectangle(
+                width=self.attribute_to_float(rect_element.getAttribute("width")),
+                height=self.attribute_to_float(rect_element.getAttribute("height")),
+                corner_radius=corner_radius,
+                **parsed_style,
+            )
 
         mob.shift(mob.get_center() - mob.get_corner(UP + LEFT))
         return mob
@@ -485,8 +473,8 @@ class SVGMobject(VMobject):
         # Borrowed/Inspired from:
         # https://github.com/cjlano/svg/blob/3ea3384457c9780fa7d67837c9c5fd4ebc42cb3b/svg/svg.py#L75
 
-        # match any SVG transformation with its parameter (until final parenthese)
-        # [^)]*    == anything but a closing parenthese
+        # match any SVG transformation with its parameter (until final parenthesis)
+        # [^)]*    == anything but a closing parenthesis
         # '|'.join == OR-list of SVG transformations
         transform_regex = "|".join([x + r"[^)]*\)" for x in transform_names])
         transforms = re.findall(transform_regex, transform_attr_value)
@@ -561,4 +549,14 @@ class SVGMobject(VMobject):
             self.width = width
 
     def init_colors(self, propagate_colors=False):
-        VMobject.init_colors(self, propagate_colors=propagate_colors)
+        if config.renderer == "opengl":
+            self.set_style(
+                fill_color=self.fill_color or self.color,
+                fill_opacity=self.fill_opacity,
+                stroke_color=self.stroke_color or self.color,
+                stroke_width=self.stroke_width,
+                stroke_opacity=self.stroke_opacity,
+                recurse=propagate_colors,
+            )
+        else:
+            VMobject.init_colors(self, propagate_colors=propagate_colors)

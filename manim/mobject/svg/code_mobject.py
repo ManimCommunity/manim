@@ -2,14 +2,13 @@
 
 __all__ = [
     "Code",
-    "hilite_me",
-    "insert_line_numbers_in_html",
 ]
 
 import html
 import os
 import re
 
+import numpy as np
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer_for_filename

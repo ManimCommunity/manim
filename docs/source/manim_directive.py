@@ -72,11 +72,15 @@ directive:
         that is rendered in a reference block after the source code.
 
 """
+import csv
+import itertools as it
 import os
+import re
 import shutil
-from os.path import relpath
+import sys
 from pathlib import Path
-from typing import List
+from timeit import timeit
+from typing import Callable, List
 
 import jinja2
 from docutils import nodes
@@ -187,17 +191,12 @@ class ManimDirective(Directive):
         state_machine = self.state_machine
         document = state_machine.document
 
-        source_file_name = document.attributes["source"]
-        source_rel_name = relpath(source_file_name, setup.confdir)
-        source_rel_dir = os.path.dirname(source_rel_name)
-        while source_rel_dir.startswith(os.path.sep):
-            source_rel_dir = source_rel_dir[1:]
-
-        dest_dir = os.path.abspath(
-            os.path.join(setup.app.builder.outdir, source_rel_dir)
-        )
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
+        source_file_name = Path(document.attributes["source"])
+        source_rel_name = source_file_name.relative_to(setup.confdir)
+        source_rel_dir = source_rel_name.parents[0]
+        dest_dir = Path(setup.app.builder.outdir, source_rel_dir).absolute()
+        if not dest_dir.exists():
+            dest_dir.mkdir(parents=True, exist_ok=True)
 
         source_block = [
             ".. code-block:: python",
@@ -207,21 +206,26 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block)
 
-        config.media_dir = Path(setup.confdir) / "media"
+        config.media_dir = (Path(setup.confdir) / "media").absolute()
         config.images_dir = "{media_dir}/images"
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
         config.assets_dir = Path("_static")
+        config.progress_bar = "none"
+        config.verbosity = "WARNING"
 
         config_code = [
             f'config["frame_rate"] = {frame_rate}',
             f'config["pixel_height"] = {pixel_height}',
             f'config["pixel_width"] = {pixel_width}',
             f'config["save_last_frame"] = {save_last_frame}',
-            f'config["save_as_gif"] = {save_as_gif}',
             f'config["write_to_movie"] = {not save_last_frame}',
             f'config["output_file"] = r"{output_file}"',
         ]
+        if save_last_frame:
+            config_code.append('config["format"] = None')
+        if save_as_gif:
+            config_code.append('config["format"] = "gif"')
 
         user_code = self.content
         if user_code[0].startswith(">>> "):  # check whether block comes from doctest
@@ -235,13 +239,19 @@ class ManimDirective(Directive):
             *user_code,
             f"{clsname}().render()",
         ]
-        exec("\n".join(code), globals())
+        run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
+
+        _write_rendering_stats(
+            clsname,
+            run_time,
+            self.state.document.settings.env.docname,
+        )
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
             filename = f"{output_file}.mp4"
             filesrc = config.get_dir("video_dir") / filename
-            destfile = os.path.join(dest_dir, filename)
+            destfile = Path(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
         elif save_as_gif:
             filename = f"{output_file}.gif"
@@ -251,12 +261,11 @@ class ManimDirective(Directive):
             filesrc = config.get_dir("images_dir") / filename
         else:
             raise ValueError("Invalid combination of render flags received.")
-
         rendered_template = jinja2.Template(TEMPLATE).render(
             clsname=clsname,
             clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
-            filesrc_rel=os.path.relpath(filesrc, setup.confdir),
+            filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),
             output_file=output_file,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
@@ -270,6 +279,51 @@ class ManimDirective(Directive):
         return []
 
 
+rendering_times_file_path = Path("../rendering_times.csv")
+
+
+def _write_rendering_stats(scene_name, run_time, file_name):
+    with open(rendering_times_file_path, "a") as file:
+        csv.writer(file).writerow(
+            [
+                re.sub("^(reference\/)|(manim\.)", "", file_name),
+                scene_name,
+                "%.3f" % run_time,
+            ]
+        )
+
+
+def _log_rendering_times(*args):
+    if rendering_times_file_path.exists():
+        with open(rendering_times_file_path) as file:
+            data = list(csv.reader(file))
+            if len(data) == 0:
+                sys.exit()
+
+            print("\nRendering Summary\n-----------------\n")
+
+            max_file_length = max([len(row[0]) for row in data])
+            for key, group in it.groupby(data, key=lambda row: row[0]):
+                key = key.ljust(max_file_length + 1, ".")
+                group = list(group)
+                if len(group) == 1:
+                    row = group[0]
+                    print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
+                    continue
+                time_sum = sum([float(row[2]) for row in group])
+                print(
+                    f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES"
+                )
+                for row in group:
+                    print(f"{' '*(max_file_length)} {row[2].rjust(7)}s {row[1]}")
+        print("")
+
+
+def _delete_rendering_times(*args):
+    if rendering_times_file_path.exists():
+        os.remove(rendering_times_file_path)
+
+
 def setup(app):
     import manim
 
@@ -280,6 +334,9 @@ def setup(app):
     setup.confdir = app.confdir
 
     app.add_directive("manim", ManimDirective)
+
+    app.connect("builder-inited", _delete_rendering_times)
+    app.connect("build-finished", _log_rendering_times)
 
     metadata = {"parallel_read_safe": False, "parallel_write_safe": True}
     return metadata

@@ -1,9 +1,10 @@
 r"""Mobjects representing text rendered using LaTeX.
 
+.. note::
+   Just as you can use :class:`~.Text` (from the module :mod:`~.text_mobject`) to add text to your videos, you can use :class:`~.Tex` and :class:`~.MathTex` to insert LaTeX.
 
 The Tex mobject
 +++++++++++++++
-Just as you can use :class:`~.Text` to add text to your videos, you can use :class:`~.Tex` to insert LaTeX.
 
 .. manim:: HelloLaTeX
     :save_last_frame:
@@ -194,8 +195,6 @@ __all__ = [
     "Tex",
     "BulletedList",
     "Title",
-    "TexMobject",
-    "TextMobject",
 ]
 
 
@@ -232,7 +231,7 @@ class SingleStringMathTex(SVGMobject):
     -----
     Check that creating a :class:`~.SingleStringMathTex` object works::
 
-        >>> SingleStringMathTex('Test')
+        >>> SingleStringMathTex('Test') # doctest: +SKIP
         SingleStringMathTex('Test')
     """
 
@@ -272,6 +271,8 @@ class SingleStringMathTex(SVGMobject):
             fill_opacity=fill_opacity,
             background_stroke_width=background_stroke_width,
             background_stroke_color=background_stroke_color,
+            should_subdivide_sharp_curves=True,
+            should_remove_null_curves=True,
             **kwargs,
         )
         if height is None:
@@ -289,7 +290,7 @@ class SingleStringMathTex(SVGMobject):
         return result
 
     def modify_special_strings(self, tex):
-        tex = self.remove_stray_braces(tex)
+        tex = tex.strip()
         should_add_filler = reduce(
             op.or_,
             [
@@ -298,12 +299,14 @@ class SingleStringMathTex(SVGMobject):
                 tex == "\\overline",
                 # Make sure sqrt has overbar
                 tex == "\\sqrt",
+                tex == "\\sqrt{",
                 # Need to add blank subscript or superscript
                 tex.endswith("_"),
                 tex.endswith("^"),
                 tex.endswith("dot"),
             ],
         )
+
         if should_add_filler:
             filler = "{\\quad}"
             tex += filler
@@ -326,6 +329,8 @@ class SingleStringMathTex(SVGMobject):
         if num_lefts != num_rights:
             tex = tex.replace("\\left", "\\big")
             tex = tex.replace("\\right", "\\big")
+
+        tex = self.remove_stray_braces(tex)
 
         for context in ["array"]:
             begin_in = ("\\begin{%s}" % context) in tex
@@ -362,14 +367,14 @@ class SingleStringMathTex(SVGMobject):
     def path_string_to_mobject(self, path_string, style):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string, z_index=self.z_index, **parse_style(style))
+        return TexSymbol(path_string, **self.path_string_config, **parse_style(style))
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
         return self
 
     def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+        super().init_colors(propagate_colors=propagate_colors)
 
 
 class MathTex(SingleStringMathTex):
@@ -389,16 +394,16 @@ class MathTex(SingleStringMathTex):
     -----
     Check that creating a :class:`~.MathTex` works::
 
-        >>> MathTex('a^2 + b^2 = c^2')
+        >>> MathTex('a^2 + b^2 = c^2') # doctest: +SKIP
         MathTex('a^2 + b^2 = c^2')
 
     Check that double brace group splitting works correctly::
 
-        >>> t1 = MathTex('{{ a }} + {{ b }} = {{ c }}')
-        >>> len(t1.submobjects)
+        >>> t1 = MathTex('{{ a }} + {{ b }} = {{ c }}') # doctest: +SKIP
+        >>> len(t1.submobjects) # doctest: +SKIP
         5
-        >>> t2 = MathTex(r"\frac{1}{a+b\sqrt{2}}")
-        >>> len(t2.submobjects)
+        >>> t2 = MathTex(r"\frac{1}{a+b\sqrt{2}}") # doctest: +SKIP
+        >>> len(t2.submobjects) # doctest: +SKIP
         1
 
     """
@@ -494,22 +499,29 @@ class MathTex(SingleStringMathTex):
                 tex_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
-                z_index=self.z_index,
             )
             num_submobs = len(sub_tex_mob.submobjects)
-            new_index = curr_index + num_submobs
+            new_index = (
+                curr_index + num_submobs + len("".join(self.arg_separator.split()))
+            )
             if num_submobs == 0:
                 # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
                 # positioned in the right part of the MathTex
                 sub_tex_mob.submobjects = [VectorizedPoint()]
+                if config.renderer == "opengl":
+                    sub_tex_mob.assemble_family()
                 last_submob_index = min(curr_index, len(self.submobjects) - 1)
                 sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
             else:
                 sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
+                if config.renderer == "opengl":
+                    sub_tex_mob.assemble_family()
             new_submobjects.append(sub_tex_mob)
             curr_index = new_index
         self.submobjects = new_submobjects
+        if config.renderer == "opengl":
+            self.assemble_family()
         return self
 
     def get_parts_by_tex(self, tex, substring=True, case_sensitive=True):
@@ -568,7 +580,7 @@ class Tex(MathTex):
 
     Check whether writing a LaTeX string works::
 
-        >>> Tex('The horse does not eat cucumber salad.')
+        >>> Tex('The horse does not eat cucumber salad.') # doctest: +SKIP
         Tex('The horse does not eat cucumber salad.')
 
     """
@@ -623,6 +635,22 @@ class BulletedList(Tex):
 
 
 class Title(Tex):
+    """
+    Examples
+    --------
+    .. manim:: TitleExample
+        :save_last_frame:
+
+        import manim
+
+        class TitleExample(Scene):
+            def construct(self):
+                banner = ManimBanner()
+                title = Title(f"Manim version {manim.__version__}")
+                self.add(banner, title)
+
+    """
+
     def __init__(
         self,
         *text_parts,
@@ -649,21 +677,3 @@ class Title(Tex):
                 underline.width = underline_width
             self.add(underline)
             self.underline = underline
-
-
-class TexMobject(MathTex):
-    def __init__(self, *tex_strings, **kwargs):
-        logger.warning(
-            "TexMobject has been deprecated (due to its confusing name) "
-            "in favour of MathTex. Please use MathTex instead!"
-        )
-        MathTex.__init__(self, *tex_strings, **kwargs)
-
-
-class TextMobject(Tex):
-    def __init__(self, *text_parts, **kwargs):
-        logger.warning(
-            "TextMobject has been deprecated (due to its confusing name) "
-            "in favour of Tex. Please use Tex instead!"
-        )
-        Tex.__init__(self, *text_parts, **kwargs)

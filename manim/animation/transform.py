@@ -26,17 +26,7 @@ __all__ = [
 
 import inspect
 import types
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Optional, Sequence
 
 import numpy as np
 
@@ -45,7 +35,7 @@ from ..animation.animation import Animation
 from ..constants import DEFAULT_POINTWISE_FUNCTION_RUN_TIME, DEGREES, OUT
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl_mobject import OpenGLGroup, OpenGLMobject
-from ..utils.paths import path_along_arc, straight_path
+from ..utils.paths import path_along_arc
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
@@ -63,9 +53,9 @@ class Transform(Animation):
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
+        self.path_arc_axis: np.ndarray = path_arc_axis
         self.path_arc: float = path_arc
         self.path_func: Optional[Callable] = path_func
-        self.path_arc_axis: np.ndarray = path_arc_axis
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
@@ -73,18 +63,33 @@ class Transform(Animation):
             target_mobject if target_mobject is not None else Mobject()
         )
         super().__init__(mobject, **kwargs)
-        self._init_path_func()
 
-    def _init_path_func(self) -> None:
-        if self.path_func is not None:
-            return
-        elif self.path_arc == 0:
-            self.path_func = straight_path
-        else:
-            self.path_func = path_along_arc(
-                self.path_arc,
-                self.path_arc_axis,
-            )
+    @property
+    def path_arc(self) -> float:
+        return self._path_arc
+
+    @path_arc.setter
+    def path_arc(self, path_arc: float) -> None:
+        self._path_arc = path_arc
+        self._path_func = path_along_arc(self._path_arc, self.path_arc_axis)
+
+    @property
+    def path_func(
+        self,
+    ) -> Callable[
+        [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+    ]:
+        return self._path_func
+
+    @path_func.setter
+    def path_func(
+        self,
+        path_func: Callable[
+            [Iterable[np.ndarray], Iterable[np.ndarray], float], Iterable[np.ndarray]
+        ],
+    ) -> None:
+        if path_func is not None:
+            self._path_func = path_func
 
     def begin(self) -> None:
         # Use a copy of target_mobject for the align_data
@@ -111,7 +116,7 @@ class Transform(Animation):
             scene.remove(self.mobject)
             scene.add(self.target_mobject)
 
-    def get_all_mobjects(self) -> List[Mobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,
@@ -303,9 +308,8 @@ class ApplyFunction(Transform):
         super().__init__(mobject, **kwargs)
 
     def create_target(self) -> Any:
-        assert isinstance(self.mobject, Mobject)
         target = self.function(self.mobject.copy())
-        if not isinstance(target, Mobject):
+        if not isinstance(target, (Mobject, OpenGLMobject)):
             raise TypeError(
                 "Functions passed to ApplyFunction must return object of type Mobject"
             )
@@ -484,7 +488,7 @@ class FadeTransform(Transform):
         source.replace(target, stretch=self.stretch, dim_to_match=self.dim_to_match)
         source.set_opacity(0)
 
-    def get_all_mobjects(self):
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,

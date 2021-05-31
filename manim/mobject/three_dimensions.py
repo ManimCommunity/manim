@@ -14,13 +14,16 @@ __all__ = [
     "Torus",
 ]
 
+import numpy as np
+
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import tuplify
-from ..utils.space_ops import get_norm, normalize, z_to_vector
+from ..utils.space_ops import normalize, z_to_vector
 
 
 class ThreeDVMobject(VMobject):
@@ -133,6 +136,7 @@ class ParametricSurface(VGroup):
 class Sphere(ParametricSurface):
     def __init__(
         self,
+        center=ORIGIN,
         radius=1,
         resolution=(12, 24),
         u_min=0.001,
@@ -153,6 +157,7 @@ class Sphere(ParametricSurface):
         )
         self.radius = radius
         self.scale(self.radius)
+        self.shift(center)
 
     def func(
         self, u, v
@@ -165,6 +170,8 @@ class Dot3D(Sphere):
 
     Parameters
     --------
+    point : Union[:class:`list`, :class:`numpy.ndarray`], optional
+        The location of the dot.
     radius : :class:`float`, optional
         The radius of the dot.
     color : :class:`~.Colors`, optional
@@ -181,14 +188,14 @@ class Dot3D(Sphere):
                 self.set_camera_orientation(phi=75*DEGREES, theta=-45*DEGREES)
 
                 axes = ThreeDAxes()
-                dot_1 = Dot3D(color=RED).move_to(axes.coords_to_point(0, 0, 1))
-                dot_2 = Dot3D(radius=0.1, color=BLUE).move_to(axes.coords_to_point(2, 0, 0))
-
-                self.add(axes, dot_1, dot_2)
+                dot_1 = Dot3D(point=axes.coords_to_point(0, 0, 1), color=RED)
+                dot_2 = Dot3D(point=axes.coords_to_point(2, 0, 0), radius=0.1, color=BLUE)
+                dot_3 = Dot3D(point=[0, 0, 0], radius=0.1, color=ORANGE)
+                self.add(axes, dot_1, dot_2,dot_3)
     """
 
-    def __init__(self, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
-        Sphere.__init__(self, radius=radius, **kwargs)
+    def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
+        Sphere.__init__(self, center=point, radius=radius, **kwargs)
         self.set_color(color)
 
 
@@ -538,12 +545,12 @@ class Line3D(Cylinder):
     def set_start_and_end_attrs(self, start, end, **kwargs):
         """Sets the start and end points of the line.
 
-        If either ``start`` or ``end`` are :class:`~.Mobject`s, this gives their centers.
+        If either ``start`` or ``end`` are :class:`Mobjects <.Mobject>`, this gives their centers.
         """
         rough_start = self.pointify(start)
         rough_end = self.pointify(end)
         self.vect = rough_end - rough_start
-        self.length = get_norm(self.vect)
+        self.length = np.linalg.norm(self.vect)
         self.direction = normalize(self.vect)
         # Now that we know the direction between them,
         # we can the appropriate boundary point from
@@ -552,7 +559,7 @@ class Line3D(Cylinder):
         self.end = self.pointify(end, -self.direction)
         Cylinder.__init__(
             self,
-            height=get_norm(self.vect),
+            height=np.linalg.norm(self.vect),
             radius=self.thickness,
             direction=self.direction,
             **kwargs,
@@ -560,7 +567,7 @@ class Line3D(Cylinder):
         self.shift((self.start + self.end) / 2)
 
     def pointify(self, mob_or_point, direction=None):
-        if isinstance(mob_or_point, Mobject):
+        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()
@@ -616,7 +623,7 @@ class Arrow3D(Line3D):
     ):
         Line3D.__init__(self, start=start, end=end, **kwargs)
 
-        self.length = get_norm(self.vect)
+        self.length = np.linalg.norm(self.vect)
         self.set_start_and_end_attrs(
             self.start,
             self.end - height * self.direction,

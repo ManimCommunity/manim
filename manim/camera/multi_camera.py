@@ -50,7 +50,7 @@ class MultiCamera(MovingCamera):
         self.image_mobjects_from_cameras.append(imfc)
 
     def update_sub_cameras(self):
-        """ Reshape sub_camera pixel_arrays """
+        """Reshape sub_camera pixel_arrays"""
         for imfc in self.image_mobjects_from_cameras:
             pixel_height, pixel_width = self.pixel_array.shape[:2]
             imfc.camera.frame_shape = (

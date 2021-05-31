@@ -8,7 +8,7 @@
     <a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-red.svg?style=flat" alt="MIT License"></a>
     <a href="https://www.reddit.com/r/manim/"><img src="https://img.shields.io/reddit/subreddit-subscribers/manim.svg?color=orange&label=reddit&logo=reddit" alt="Reddit" href=></a>
     <a href="https://twitter.com/manim_community/"><img src="https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40manim_community" alt="Twitter">
-    <a href="https://discord.gg/mMRrZQW"><img src="https://img.shields.io/discord/581738731934056449.svg?label=discord&color=yellow&logo=discord" alt="Discord"></a>
+    <a href="https://www.manim.community/discord/"><img src="https://img.shields.io/discord/581738731934056449.svg?label=discord&color=yellow&logo=discord" alt="Discord"></a>
     <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
     <a href="https://docs.manim.community/"><img src="https://readthedocs.org/projects/manimce/badge/?version=latest" alt="Documentation Status"></a>
     <a href="https://pepy.tech/project/manim"><img src="https://pepy.tech/badge/manim/month?" alt="Downloads"> </a>
@@ -72,7 +72,7 @@ class SquareToCircle(Scene):
 In order to view the output of this scene, save the code in a file called `example.py`. Then, run the following in a terminal window:
 
 ```sh
-manim -p -ql example.py SquareToCircle 
+manim -p -ql example.py SquareToCircle
 ```
 
 You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
@@ -149,13 +149,38 @@ When executing `manim` within a Docker container, several command line flags (in
 ## Help with Manim
 
 If you need help installing or using Manim, feel free to reach out to our [Discord
-Server](https://discord.gg/mMRrZQW) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit a bug report or feature request, please open an issue.
+Server](https://www.manim.community/discord/) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit a bug report or feature request, please open an issue.
 
 ## Contributing
 
 Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/stable/contributing.html).
 
 Most developers on the project use [Poetry](https://python-poetry.org/docs/) for management. You'll want to have poetry installed and available in your environment. You can learn more about `poetry` and how to use it at its [documentation](https://docs.manim.community/en/stable/installation/for_dev.html).
+
+## How to Cite Manim
+
+We acknowledge the importance of good software to support research, and we note
+that research becomes more valuable when it is communicated effectively. To
+demonstrate the value of Manim, we ask that you cite Manim in your work.
+Currently, the best way to cite Manim is to reference the
+[Manim home page](https://www.manim.community) using this BibTeX entry (the
+entry is for release `v0.6.0`, but can be adapted easily):
+
+```
+@Manual{Manim:v0.6.0,
+  key =          {Manim},
+  author =       {{The Manim Community Developers}},
+  title =        {{Manim} -- {M}athematical {A}nimation {F}ramework ({V}ersion v0.6.0)},
+  note =         {\url{https://www.manim.community}},
+  year =         2021,
+}
+```
+
+This should render a reference that looks more or less like this:
+
+42. The Manim Community Developers,
+    [Manim – Mathematical Animation Framework (Version v0.6.0)](https://www.manim.community).
+    2021.
 
 ## Code of Conduct
 

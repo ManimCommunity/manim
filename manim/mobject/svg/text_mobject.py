@@ -1,5 +1,9 @@
 """Mobjects used for displaying (non-LaTeX) text.
 
+.. note::
+   Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
+
+
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
 With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
 
@@ -24,18 +28,14 @@ Examples
             self.add(title.to_edge(UP))
 
             t1 = Text("1. Measuring").set_color(WHITE)
-            t1.next_to(ORIGIN, direction=RIGHT, aligned_edge=UP)
 
             t2 = Text("2. Clustering").set_color(WHITE)
-            t2.next_to(t1, direction=DOWN, aligned_edge=LEFT)
 
             t3 = Text("3. Regression").set_color(WHITE)
-            t3.next_to(t2, direction=DOWN, aligned_edge=LEFT)
 
             t4 = Text("4. Prediction").set_color(WHITE)
-            t4.next_to(t3, direction=DOWN, aligned_edge=LEFT)
 
-            x = VGroup(t1, t2, t3, t4).scale_in_place(0.7)
+            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale_in_place(0.7).next_to(ORIGIN,DR)
             x.set_opacity(0.5)
             x.submobjects[1].set_opacity(1)
             self.add(x)
@@ -55,6 +55,7 @@ from pathlib import Path
 from typing import Dict
 
 import manimpango
+import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from ... import config, logger
@@ -142,7 +143,7 @@ class Paragraph(VGroup):
         lines_str_list = lines_str.split("\n")
         self.chars = self.gen_chars(lines_str_list)
 
-        chars_lines_text_list = VGroup()
+        chars_lines_text_list = self.get_group_class()()
         char_index_counter = 0
         for line_index in range(lines_str_list.__len__()):
             chars_lines_text_list.add(
@@ -164,7 +165,7 @@ class Paragraph(VGroup):
         self.lines[1].extend(
             [self.alignment for _ in range(chars_lines_text_list.__len__())]
         )
-        VGroup.__init__(
+        self.get_group_class().__init__(
             self, *[self.lines[0][i] for i in range(self.lines[0].__len__())], **config
         )
         self.move_to(np.array([0, 0, 0]))
@@ -185,9 +186,9 @@ class Paragraph(VGroup):
             The generated 2d-VGroup of chars.
         """
         char_index_counter = 0
-        chars = VGroup()
+        chars = self.get_group_class()()
         for line_no in range(lines_str_list.__len__()):
-            chars.add(VGroup())
+            chars.add(self.get_group_class()())
             chars[line_no].add(
                 *self.lines_text.chars[
                     char_index_counter : char_index_counter
@@ -322,14 +323,19 @@ class Text(SVGMobject):
 
         class TextItalicAndBoldExample(Scene):
             def construct(self):
-                text0 = Text('Hello world', slant=ITALIC)
-                text1 = Text('Hello world', t2s={'world':ITALIC})
-                text2 = Text('Hello world', weight=BOLD)
-                text3 = Text('Hello world', t2w={'world':BOLD})
-                self.add(text0,text1, text2,text3)
-                for i,mobj in enumerate(self.mobjects):
-                    mobj.shift(DOWN*(i-1))
-
+                text1 = Text("Hello world", slant=ITALIC)
+                text2 = Text("Hello world", t2s={'world':ITALIC})
+                text3 = Text("Hello world", weight=BOLD)
+                text4 = Text("Hello world", t2w={'world':BOLD})
+                text5 = Text("Hello world", t2c={'o':YELLOW}, disable_ligatures=True)
+                text6 = Text(
+                    "Visit us at docs.manim.community",
+                    t2c={"docs.manim.community": YELLOW},
+                    disable_ligatures=True,
+               )
+                text6.scale(1.3).shift(DOWN)
+                self.add(text1, text2, text3, text4, text5 , text6)
+                Group(*self.mobjects).arrange(DOWN, buff=.8).set_height(config.frame_height-LARGE_BUFF)
 
     .. manim:: TextMoreCustomization
             :save_last_frame:
@@ -468,13 +474,16 @@ class Text(SVGMobject):
         self.text = text
         if self.disable_ligatures:
             self.submobjects = [*self.gen_chars()]
-        self.chars = VGroup(*self.submobjects)
+        self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
-        nppc = self.n_points_per_cubic_curve
+        if config.renderer == "opengl":
+            nppc = self.n_points_per_curve
+        else:
+            nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.points) == 0:
+            if len(each.get_points()) == 0:
                 continue
-            points = each.points
+            points = each.get_points()
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):
@@ -501,7 +510,7 @@ class Text(SVGMobject):
         return f"Text({repr(self.original_text)})"
 
     def gen_chars(self):
-        chars = VGroup()
+        chars = self.get_group_class()()
         submobjects_char_index = 0
         for char_index in range(self.text.__len__()):
             if self.text[char_index] in (" ", "\t", "\n"):
@@ -554,7 +563,7 @@ class Text(SVGMobject):
     #         self.t2w = kwargs.pop("text2weight")
 
     def set_color_by_t2c(self, t2c=None):
-        """Internally used function. Sets colour for specified strings."""
+        """Internally used function. Sets color for specified strings."""
         t2c = t2c if t2c else self.t2c
         for word, color in list(t2c.items()):
             for start, end in self.find_indexes(word, self.original_text):
@@ -660,7 +669,7 @@ class Text(SVGMobject):
         )
 
     def init_colors(self, propagate_colors=True):
-        SVGMobject.init_colors(self, propagate_colors=propagate_colors)
+        super().init_colors(propagate_colors=propagate_colors)
 
 
 class MarkupText(SVGMobject):
@@ -713,7 +722,7 @@ class MarkupText(SVGMobject):
 
     You can find more information about Pango markup formatting at the
     corresponding documentation page:
-    `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
+    `Pango Markup <https://developer.gnome.org/pango/1.46/pango-Markup.html>`_.
     Please be aware that not all features are supported by this class and that
     the ``<gradient>`` tag mentioned above is not supported by Pango.
 
@@ -922,13 +931,9 @@ class MarkupText(SVGMobject):
                 'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
             )
         gradientmap = self.extract_gradient_tags()
-
-        if not MarkupUtils.validate(self.text):
-            raise ValueError(
-                f"Pango cannot parse your markup in {self.text}. "
-                "Please check for typos, unmatched tags or unescaped "
-                "special chars like < and &."
-            )
+        validate_error = MarkupUtils.validate(self.text)
+        if validate_error:
+            raise ValueError(validate_error)
 
         if self.line_spacing == -1:
             self.line_spacing = self.size + self.size * 0.3
@@ -937,8 +942,7 @@ class MarkupText(SVGMobject):
 
         file_name = self.text2svg()
         PangoUtils.remove_last_M(file_name)
-        SVGMobject.__init__(
-            self,
+        super().__init__(
             file_name,
             fill_opacity=fill_opacity,
             stroke_width=stroke_width,
@@ -948,14 +952,17 @@ class MarkupText(SVGMobject):
             unpack_groups=unpack_groups,
             **kwargs,
         )
-        self.chars = VGroup(*self.submobjects)
+        self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
 
-        nppc = self.n_points_per_cubic_curve
+        if config.renderer == "opengl":
+            nppc = self.n_points_per_curve
+        else:
+            nppc = self.n_points_per_cubic_curve
         for each in self:
-            if len(each.points) == 0:
+            if len(each.get_points()) == 0:
                 continue
-            points = each.points
+            points = each.get_points()
             last = points[0]
             each.clear_points()
             for index, point in enumerate(points):

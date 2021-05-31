@@ -12,8 +12,21 @@ import sys
 import types
 import warnings
 from functools import reduce
+from math import ceil
 from pathlib import Path
-from typing import Callable, List, Optional, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 from colour import Color
@@ -29,12 +42,13 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
+from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
-    angle_of_vector,
-    get_norm,
+    angle_between_vectors,
+    normalize,
     rotation_matrix,
     rotation_matrix_transpose,
 )
@@ -43,6 +57,9 @@ from ..utils.space_ops import (
 
 Updater = Union[Callable[["Mobject"], None], Callable[["Mobject", float], None]]
 T = TypeVar("T", bound="Mobject")
+
+if TYPE_CHECKING:
+    from ..animation.animation import Animation
 
 
 class Mobject(Container):
@@ -61,9 +78,20 @@ class Mobject(Container):
 
         .. seealso::
 
-        :class:`~.VMobject`
+            :class:`~.VMobject`
 
     """
+
+    animation_overrides = {}
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        cls.animation_overrides: Dict[
+            Type["Animation"], Callable[["Mobject"], "Animation"]
+        ] = {}
+        cls._add_intrinsic_animation_overrides()
 
     def __init__(self, color=WHITE, name=None, dim=3, target=None, z_index=0, **kwargs):
         self.color = Color(color)
@@ -94,6 +122,78 @@ class Mobject(Container):
         self.init_gl_colors()
 
         Container.__init__(self, **kwargs)
+
+    @classmethod
+    def animation_override_for(
+        cls, animation_class: Type["Animation"]
+    ) -> "Optional[Callable[[Mobject, ...], Animation]]":
+        """Returns the function defining a specific animation override for this class.
+
+        Parameters
+        ----------
+        animation_class
+            The animation class for which the override function should be returned.
+
+        Returns
+        -------
+        Optional[Callable[[Mobject, ...], Animation]]
+            The function returning the override animation or ``None`` if no such animation
+            override is defined.
+        """
+        if animation_class in cls.animation_overrides:
+            return cls.animation_overrides[animation_class]
+
+        return None
+
+    @classmethod
+    def _add_intrinsic_animation_overrides(cls):
+        """Initializes animation overrides marked with the :func:`~.override_animation`
+        decorator.
+        """
+        for method_name in dir(cls):
+            # Ignore dunder methods
+            if method_name.startswith("__"):
+                continue
+
+            method = getattr(cls, method_name)
+            if hasattr(method, "_override_animation"):
+                animation_class = method._override_animation
+                cls.add_animation_override(animation_class, method)
+
+    @classmethod
+    def add_animation_override(
+        cls,
+        animation_class: Type["Animation"],
+        override_func: "Callable[[Mobject, ...], Animation]",
+    ):
+        """Add an animation override.
+
+        This does not apply to subclasses.
+
+        Parameters
+        ----------
+        animation_class
+            The animation type to be overridden
+        override_func
+            The function returning an aniamtion replacing the default animation. It gets
+            passed the parameters given to the animnation constructor.
+
+        Raises
+        ------
+        MultiAnimationOverrideException
+            If the overridden animation was already overridden.
+        """
+        if animation_class not in cls.animation_overrides:
+            cls.animation_overrides[animation_class] = override_func
+        else:
+            raise MultiAnimationOverrideException(
+                (
+                    f"The animation {animation_class.__name__} for "
+                    f"{cls.__name__} is overridden by more than one method: "
+                    f"{cls.animation_overrides[animation_class].__qualname__} and "
+                    f"{override_func.__qualname__}."
+                )
+            )
 
     def init_gl_data(self):
         pass
@@ -382,15 +482,16 @@ class Mobject(Container):
         :meth:`add`
 
         """
+        if self in mobjects:
+            raise ValueError("A mobject shouldn't contain itself")
+
         for mobject in mobjects:
-            if self in mobjects:
-                raise ValueError("Mobject cannot contain self")
             if not isinstance(mobject, Mobject):
                 raise TypeError("All submobjects must be of type Mobject")
 
-        filtered = list_update(mobjects, self.submobjects)
         self.remove(*mobjects)
-        self.submobjects = list(filtered) + self.submobjects
+        # dict.fromkeys() removes duplicates while maintaining order
+        self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
         return self
 
     def remove(self, *mobjects: "Mobject") -> "Mobject":
@@ -782,7 +883,7 @@ class Mobject(Container):
         index
             The index at which the new updater should be added in ``self.updaters``. In case ``index`` is ``None`` the updater will be added at the end.
         call_updater
-            Wheather or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
+            Whether or not to call the updater initially. If ``True``, the updater will be called using ``dt=0``.
 
         Returns
         -------
@@ -1025,21 +1126,23 @@ class Mobject(Container):
             return self
 
     def scale(self, scale_factor: float, **kwargs) -> "Mobject":
-        """Scale the size by a factor.
+        r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
 
         Parameters
         ----------
         scale_factor
-            The scaling factor. Values 0 < |`scale_factor`| < 1 will shrink the mobject, 1 < |`scale_factor`| will increase it's size. A `scale_factor`<0 resuls in  additionally flipping by 180°.
-        kwargs :
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
+            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore, if :math:`\alpha < 0`,
+            the mobject is also flipped.
+        kwargs
             Additional keyword arguments passed to :meth:`apply_points_function_about_point`.
 
         Returns
         -------
-        :class:`Mobject`
-            ``self``
+        Mobject
+            The scaled mobject.
 
         See also
         --------
@@ -1067,7 +1170,7 @@ class Mobject(Container):
         self,
         angle,
         axis=OUT,
-        about_point: Union[np.ndarray, List, None] = None,
+        about_point: Optional[Sequence[float]] = None,
         **kwargs,
     ):
         """Rotates the :class:`~.Mobject` about a certain point."""
@@ -1142,6 +1245,32 @@ class Mobject(Container):
         return self
 
     def apply_complex_function(self, function, **kwargs):
+        """Applies a complex function to a :class:`Mobject`.
+        The x and y coordinates correspond to the real and imaginary parts respectively.
+
+        Example
+        -------
+
+        .. manim:: ApplyFuncExample
+
+            class ApplyFuncExample(Scene):
+                def construct(self):
+                    circ = Circle().scale(1.5)
+                    circ_ref = circ.copy()
+                    circ.apply_complex_function(
+                        lambda x: np.exp(x*1j)
+                    )
+                    t = ValueTracker(0)
+                    circ.add_updater(
+                        lambda x: x.become(circ_ref.copy().apply_complex_function(
+                            lambda x: np.exp(x+t.get_value()*1j)
+                        )).set_color(BLUE)
+                    )
+                    self.add(circ_ref)
+                    self.play(TransformFromCopy(circ_ref, circ))
+                    self.play(t.animate.set_value(TAU), run_time=3)
+        """
+
         def R3_func(point):
             x, y, z = point
             xy_complex = function(complex(x, y))
@@ -1503,7 +1632,6 @@ class Mobject(Container):
     def replace(self, mobject, dim_to_match=0, stretch=False):
         if not mobject.get_num_points() and not mobject.submobjects:
             raise Warning("Attempting to replace mobject with no points")
-            return self
         if stretch:
             self.stretch_to_fit_width(mobject.width)
             self.stretch_to_fit_height(mobject.height)
@@ -1528,13 +1656,19 @@ class Mobject(Container):
         if np.all(curr_vect == 0):
             raise Exception("Cannot position endpoints of closed loop")
         target_vect = np.array(end) - np.array(start)
+        axis = (
+            normalize(np.cross(curr_vect, target_vect))
+            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            else OUT
+        )
         self.scale(
-            get_norm(target_vect) / get_norm(curr_vect),
+            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
             about_point=curr_start,
         )
         self.rotate(
-            angle_of_vector(target_vect) - angle_of_vector(curr_vect),
+            angle_between_vectors(curr_vect, target_vect),
             about_point=curr_start,
+            axis=axis,
         )
         self.shift(start - curr_start)
         return self
@@ -1637,7 +1771,7 @@ class Mobject(Container):
             center = self.get_center()
 
         for mob in self.family_members_with_points():
-            t = get_norm(mob.get_center() - center) / radius
+            t = np.linalg.norm(mob.get_center() - center) / radius
             t = min(t, 1)
             mob_color = interpolate_color(inner_color, outer_color, t)
             mob.set_color(mob_color, family=False)
@@ -1840,15 +1974,15 @@ class Mobject(Container):
         return self.get_extremum_along_dim(dim=dim, key=direction[dim])
 
     def get_x(self, direction=ORIGIN) -> np.float64:
-        """Returns x coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns x coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(0, direction)
 
     def get_y(self, direction=ORIGIN) -> np.float64:
-        """Returns y coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns y coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(1, direction)
 
     def get_z(self, direction=ORIGIN) -> np.float64:
-        """Returns z coordinate of the center of the :class:`~.Mobject` as ``float`` """
+        """Returns z coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
     def get_start(self):
@@ -1868,7 +2002,7 @@ class Mobject(Container):
             return np.array(self.points[-1])
 
     def get_start_and_end(self):
-        """Returns starting and ending point of a stroke as a ``tuple``. """
+        """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
     def point_from_proportion(self, alpha):
@@ -1891,7 +2025,7 @@ class Mobject(Container):
         return z_index_group.get_center()
 
     def has_points(self) -> bool:
-        """Check if :class:`~.Mobject` contains points. """
+        """Check if :class:`~.Mobject` contains points."""
         return len(self.points) > 0
 
     def has_no_points(self) -> bool:
@@ -2004,7 +2138,7 @@ class Mobject(Container):
 
     def arrange(
         self,
-        direction: Union[np.ndarray, List] = RIGHT,
+        direction: Sequence[float] = RIGHT,
         buff=DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center=True,
         **kwargs,
@@ -2032,40 +2166,240 @@ class Mobject(Container):
             self.center()
         return self
 
-    def arrange_in_grid(self, n_rows=None, n_cols=None, **kwargs):
-        """Sorts :class:`~.Mobject` next to each other on screen using a grid.
+    def arrange_in_grid(
+        self,
+        rows: Optional[int] = None,
+        cols: Optional[int] = None,
+        buff: Union[float, Tuple[float, float]] = MED_SMALL_BUFF,
+        cell_alignment: np.ndarray = ORIGIN,
+        row_alignments: Optional[str] = None,  # "ucd"
+        col_alignments: Optional[str] = None,  # "lcr"
+        row_heights: Optional[Iterable[Optional[float]]] = None,
+        col_widths: Optional[Iterable[Optional[float]]] = None,
+        flow_order: str = "rd",
+        **kwargs,
+    ) -> "Mobject":
+        """Arrange submobjects in a grid.
+
+        Parameters
+        ----------
+        rows
+            The number of rows in the grid.
+        cols
+            The number of columns in the grid.
+        buff
+            The gap between grid cells. To specify a different buffer in the horizontal and
+            vertical directions, a tuple of two values can be given - ``(row, col)``.
+        cell_alignment
+            The way each submobject is aligned in its grid cell.
+        row_alignments
+            The vertical alignment for each row (top to bottom). Accepts the following characters: ``"u"`` -
+            up, ``"c"`` - center, ``"d"`` - down.
+        col_alignments
+            The horizontal alignment for each column (left to right). Accepts the following characters ``"l"`` - left,
+            ``"c"`` - center, ``"r"`` - right.
+        row_heights
+            Defines a list of heights for certain rows (top to bottom). If the list contains
+            ``None``, the corresponding row will fit its height automatically based
+            on the highest element in that row.
+        col_widths
+            Defines a list of widths for certain columns (left to right). If the list contains ``None``, the
+            corresponding column will fit its width automatically based on the widest element in that column.
+        flow_order
+            The order in which submobjects fill the grid. Can be one of the following values:
+            "rd", "dr", "ld", "dl", "ru", "ur", "lu", "ul". ("rd" -> fill rightwards then downwards)
+
+        Returns
+        -------
+        Mobject
+            The mobject.
+
+        NOTES
+        -----
+
+        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
+        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
+        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
+
+        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
+        defined, the latter has higher priority.
+
+
+        Raises
+        ------
+        ValueError
+            If ``rows`` and ``cols`` are too small to fit all submobjects.
+        ValueError
+            If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
+            :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
 
         Examples
         --------
-
-        .. manim:: ArrangeExample
+        .. manim:: ExampleBoxes
             :save_last_frame:
 
-            class ArrangeExample(Scene):
+            class ExampleBoxes(Scene):
                 def construct(self):
-                    self.add(*[Square(color= random_bright_color()) for i in range(0,5)])
-                    x = VGroup(*self.mobjects).arrange_in_grid(buff=0.2)
-                    self.add(x)
+                    boxes=VGroup(*[Square() for s in range(0,6)])
+                    boxes.arrange_in_grid(rows=2, buff=0.1)
+                    self.add(boxes)
+
+
+        .. manim:: ArrangeInGrid
+            :save_last_frame:
+
+            class ArrangeInGrid(Scene):
+                def construct(self):
+                    #Add some numbered boxes:
+                    np.random.seed(3)
+                    boxes = VGroup(*[
+                        Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5))
+                        for i in range(22)
+                    ])
+                    self.add(boxes)
+
+                    boxes.arrange_in_grid(
+                        buff=(0.25,0.5),
+                        col_alignments="lccccr",
+                        row_alignments="uccd",
+                        col_widths=[2, *[None]*4, 2],
+                        flow_order="dr"
+                    )
+
+
         """
+        from .geometry import Line
 
-        submobs = self.submobjects
-        if n_rows is None and n_cols is None:
-            n_cols = int(np.sqrt(len(submobs)))
+        mobs = self.submobjects.copy()
+        start_pos = self.get_center()
 
-        if n_rows is not None:
-            v1 = RIGHT
-            v2 = DOWN
-            n = len(submobs) // n_rows
-        elif n_cols is not None:
-            v1 = DOWN
-            v2 = RIGHT
-            n = len(submobs) // n_cols
-        Group(
-            *[
-                Group(*submobs[i : i + n]).arrange(v1, **kwargs)
-                for i in range(0, len(submobs), n)
+        # get cols / rows values if given (implicitly)
+        def init_size(num, alignments, sizes):
+            if num is not None:
+                return num
+            if alignments is not None:
+                return len(alignments)
+            if sizes is not None:
+                return len(sizes)
+
+        cols = init_size(cols, col_alignments, col_widths)
+        rows = init_size(rows, row_alignments, row_heights)
+
+        # calculate rows cols
+        if rows is None and cols is None:
+            cols = ceil(np.sqrt(len(mobs)))
+            # make the grid as close to quadratic as possible.
+            # choosing cols first can results in cols>rows.
+            # This is favored over rows>cols since in general
+            # the sceene is wider than high.
+        if rows is None:
+            rows = ceil(len(mobs) / cols)
+        if cols is None:
+            cols = ceil(len(mobs) / rows)
+        if rows * cols < len(mobs):
+            raise ValueError("Too few rows and columns to fit all submobjetcs.")
+        # rows and cols are now finally valid.
+
+        if isinstance(buff, tuple):
+            buff_x = buff[0]
+            buff_y = buff[1]
+        else:
+            buff_x = buff_y = buff
+
+        # Initialize alignments correctly
+        def init_alignments(alignments, num, mapping, name, dir):
+            if alignments is None:
+                # Use cell_alignment as fallback
+                return [cell_alignment * dir] * num
+            if len(alignments) != num:
+                raise ValueError("{}_alignments has a mismatching size.".format(name))
+            alignments = list(alignments)
+            for i in range(num):
+                alignments[i] = mapping[alignments[i]]
+            return alignments
+
+        row_alignments = init_alignments(
+            row_alignments, rows, {"u": UP, "c": ORIGIN, "d": DOWN}, "row", RIGHT
+        )
+        col_alignments = init_alignments(
+            col_alignments, cols, {"l": LEFT, "c": ORIGIN, "r": RIGHT}, "col", UP
+        )
+        # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
+
+        mapper = {
+            "dr": lambda r, c: (rows - r - 1) + c * rows,
+            "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
+            "ur": lambda r, c: r + c * rows,
+            "ul": lambda r, c: r + (cols - c - 1) * rows,
+            "rd": lambda r, c: (rows - r - 1) * cols + c,
+            "ld": lambda r, c: (rows - r - 1) * cols + (cols - c - 1),
+            "ru": lambda r, c: r * cols + c,
+            "lu": lambda r, c: r * cols + (cols - c - 1),
+        }
+        if flow_order not in mapper:
+            raise ValueError(
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".'
+            )
+        flow_order = mapper[flow_order]
+
+        # Reverse row_alignments and row_heights. Necessary since the
+        # grid filling is handled bottom up for simplicity reasons.
+        def reverse(maybe_list):
+            if maybe_list is not None:
+                maybe_list = list(row_alignments)
+                maybe_list.reverse()
+                return maybe_list
+
+        row_alignments = reverse(row_alignments)
+        row_heights = reverse(row_heights)
+
+        placeholder = Mobject()
+        # Used to fill up the grid temporarily, doesn't get added to the scene.
+        # In this case a Mobject is better than None since it has width and height
+        # properties of 0.
+
+        mobs.extend([placeholder] * (rows * cols - len(mobs)))
+        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
+
+        measured_heigths = [
+            max([grid[r][c].height for c in range(cols)]) for r in range(rows)
+        ]
+        measured_widths = [
+            max([grid[r][c].width for r in range(rows)]) for c in range(cols)
+        ]
+
+        # Initialize row_heights / col_widths correctly using measurements as fallback
+        def init_sizes(sizes, num, measures, name):
+            if sizes is None:
+                sizes = [None] * num
+            if len(sizes) != num:
+                raise ValueError("{} has a mismatching size.".format(name))
+            return [
+                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
-        ).arrange(v2, **kwargs)
+
+        heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
+        widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
+
+        x, y = 0, 0
+        for r in range(rows):
+            x = 0
+            for c in range(cols):
+                if grid[r][c] is not placeholder:
+                    alignment = row_alignments[r] + col_alignments[c]
+                    line = Line(
+                        x * RIGHT + y * UP,
+                        (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
+                    )
+                    # Use a mobject to avoid rewriting align inside
+                    # box code that Mobject.move_to(Mobject) already
+                    # includes.
+
+                    grid[r][c].move_to(line, alignment)
+                x += widths[c] + buff_x
+            y += heights[r] + buff_y
+
+        self.move_to(start_pos)
         return self
 
     def sort(self, point_to_num_func=lambda p: p[0], submob_func=None):
@@ -2135,9 +2469,9 @@ class Mobject(Container):
         Examples
         --------
 
-        .. manim:: SuffleSumobjectsExample
+        .. manim:: ShuffleSubmobjectsExample
 
-            class SuffleSumobjectsExample(Scene):
+            class ShuffleSubmobjectsExample(Scene):
                 def construct(self):
                     s= VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
                     s2= s.copy()
@@ -2274,8 +2608,8 @@ class Mobject(Container):
 
             class BecomeScene(Scene):
                 def construct(self):
-                    circ = Circle(fill_color=RED)
-                    square = Square(fill_color=BLUE)
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
                     self.add(circ)
                     self.wait(0.5)
                     circ.become(square)
@@ -2285,6 +2619,28 @@ class Mobject(Container):
         for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
+        return self
+
+    def match_points(self, mobject: "Mobject", copy_submobjects: bool = True):
+        """Edit points, positions, and submobjects to be identical
+        to another :class:`~.Mobject`, while keeping the style unchanged.
+
+        Examples
+        --------
+        .. manim:: MatchPointsScene
+
+            class MatchPointsScene(Scene):
+                def construct(self):
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
+                    self.add(circ)
+                    self.wait(0.5)
+                    self.play(circ.animate.match_points(square))
+                    self.wait(0.5)
+        """
+        self.align_data(mobject)
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+            sm1.points = np.array(sm2.points)
         return self
 
     # Errors
@@ -2333,7 +2689,7 @@ class Mobject(Container):
 
 
 class Group(Mobject):
-    """Groups together multiple :class:`~.Mobject`s."""
+    """Groups together multiple :class:`Mobjects <.Mobject>`."""
 
     def __init__(self, *mobjects, **kwargs):
         Mobject.__init__(self, **kwargs)
@@ -2378,7 +2734,10 @@ class _AnimationBuilder:
         def update_target(*method_args, **method_kwargs):
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
-                    self.mobject, *method_args, **method_kwargs
+                    self.mobject,
+                    *method_args,
+                    anim_args=self.anim_args,
+                    **method_kwargs,
                 )
             else:
                 method(*method_args, **method_kwargs)
@@ -2440,8 +2799,10 @@ def override_animate(method):
                 self.content = None
 
             @override_animate(clear_content)
-            def _clear_content_animation(self):
-                anim = Uncreate(self.content)
+            def _clear_content_animation(self, anim_args=None):
+                if anim_args is None:
+                    anim_args = {}
+                anim = Uncreate(self.content, **anim_args)
                 self.clear_content()
                 return anim
 
