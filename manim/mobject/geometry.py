@@ -271,7 +271,6 @@ class Arc(TipableVMobject):
         start_angle=0,
         angle=TAU / 4,
         num_components=9,
-        anchors_span_full_range=True,
         arc_center=ORIGIN,
         **kwargs,
     ):
@@ -279,7 +278,6 @@ class Arc(TipableVMobject):
             radius = 1.0
         self.radius = radius
         self.num_components = num_components
-        self.anchors_span_full_range = anchors_span_full_range
         self.arc_center = arc_center
         self.start_angle = start_angle
         self.angle = angle
@@ -439,10 +437,6 @@ class Circle(Arc):
     ----------
     color : :class:`~.Colors`, optional
         The color of the shape.
-    close_new_points : :class:`bool`, optional
-        No purpose.
-    anchors_span_full_range : :class:`bool`, optional
-        No purpose.
     kwargs : Any
         Additional arguments to be passed to :class:`Arc`
 
@@ -466,8 +460,6 @@ class Circle(Arc):
         self,
         radius: float = None,
         color=RED,
-        close_new_points=True,
-        anchors_span_full_range=False,
         **kwargs,
     ):
         Arc.__init__(
@@ -476,8 +468,6 @@ class Circle(Arc):
             start_angle=0,
             angle=TAU,
             color=color,
-            close_new_points=close_new_points,
-            anchors_span_full_range=anchors_span_full_range,
             **kwargs,
         )
 
@@ -951,7 +941,7 @@ class DashedLine(Line):
     dash_length : :class:`float`, optional
         The length of each individual dash of the line.
     dash_spacing : Optional[:class:`float`]
-        No purpose.
+        The spacing between the dashes.
     positive_space_ratio : :class:`float`, optional
         The ratio of empty space to dash space. Range of 0-1.
     kwargs : Any
@@ -1177,8 +1167,6 @@ class Arrow(Line):
         :attr:`tip_length` scales with the length of the arrow. Increasing this ratio raises the max value of :attr:`tip_length`.
     max_stroke_width_to_length_ratio : :class:`float`, optional
         :attr:`stroke_width` scales with the length of the arrow. Increasing this ratio ratios the max value of :attr:`stroke_width`.
-    preserve_tip_size_when_scaling : :class:`bool`, optional
-        No purpose.
     kwargs : Any
         Additional arguments to be passed to :class:`Line`.
 
@@ -1221,14 +1209,10 @@ class Arrow(Line):
         buff=MED_SMALL_BUFF,
         max_tip_length_to_length_ratio=0.25,
         max_stroke_width_to_length_ratio=5,
-        preserve_tip_size_when_scaling=True,
         **kwargs,
     ):
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
-        self.preserve_tip_size_when_scaling = (
-            preserve_tip_size_when_scaling  # is this used anywhere
-        )
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
         super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)
         # TODO, should this be affected when
@@ -2245,8 +2229,6 @@ class Rectangle(Polygon):
         close_new_points=True,
         **kwargs,
     ):
-        self.mark_paths_closed = mark_paths_closed
-        self.close_new_points = close_new_points
         super().__init__(UR, UL, DL, DR, color=color, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
