@@ -58,7 +58,7 @@ class ParametricFunction(VMobject):
         self.function = function
         t_range = [0, 1, 0.01] if t_range is None else t_range
         if len(t_range) == 2:
-            t_range = [*t_range, 0.01]
+            t_range = np.array([*t_range, 0.01])
 
         self.dt = dt
         self.discontinuities = [] if discontinuities is None else discontinuities
@@ -79,15 +79,17 @@ class ParametricFunction(VMobject):
             lambda t: self.t_min <= t <= self.t_max, self.discontinuities
         )
         discontinuities = np.array(list(discontinuities))
-        boundary_times = [
-            self.t_min,
-            self.t_max,
-            *(discontinuities - self.dt),
-            *(discontinuities + self.dt),
-        ]
+        boundary_times = np.array(
+            [
+                self.t_min,
+                self.t_max,
+                *(discontinuities - self.dt),
+                *(discontinuities + self.dt),
+            ]
+        )
         boundary_times.sort()
         for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
-            t_range = [*np.arange(t1, t2, self.t_step), t2]
+            t_range = np.array([*np.arange(t1, t2, self.t_step), t2])
             points = np.array([self.function(t) for t in t_range])
             self.start_new_path(points[0])
             self.add_points_as_corners(points[1:])

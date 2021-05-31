@@ -353,7 +353,7 @@ class CoordinateSystem:
         return graph
 
     def input_to_graph_point(self, x: float, graph: "ParametricFunction") -> np.ndarray:
-        """Returns the coordinates of point on the ``graph``
+        """Returns the coordinates of the point on the ``graph``
         corresponding to the input ``x`` value.
 
         Parameters
