@@ -2,7 +2,7 @@
 v0.7.0
 ******
 
-:Date: May 31, 2021
+:Date: June 01, 2021
 
 Contributors
 ============
@@ -82,7 +82,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 86 pull requests were merged for this release.
+A total of 87 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -97,8 +97,24 @@ Breaking changes
 Highlights
 ----------
 
+* `#1447 <https://github.com/ManimCommunity/manim/pull/1447>`__: Added :class:`~.PolarPlane` for polar coordinates.
+
+
+* `#1490 <https://github.com/ManimCommunity/manim/pull/1490>`__: Added :class:`~.Polygram`, rework the polygon inheritance tree, and add :class:`~.Star`
+   - Add :class:`~.Polygram`, a generalized :class:`~.Polygon` that allows for disconnected sets of edges.
+   - Make :class:`~.Polygon` inherit from :class:`~.Polygram`.
+   - Add :func:`~.regular_vertices`
+   - Add :class:`~.RegularPolygram`.
+   - Make :class:`~.RegularPolygon` inherit from :class:`~.RegularPolygram`.
+   - Add :class:`~.Star`.
+
 * `#1462 <https://github.com/ManimCommunity/manim/pull/1462>`__: OpenGL: Added :class:`~.Shader`, :class:`~.Mesh`, and :class:`~.FullScreenQuad`
    Add Shader and Mesh objects
+
+* `#1418 <https://github.com/ManimCommunity/manim/pull/1418>`__: Added project management commands
+   - ``manim init`` - quickly sets up default files for a manim project.
+   - ``manim new project`` - lets the user set project settings. It also creates the project inside a new folder of name <project_name>
+   - ``manim new scene`` - used to quickly insert new scenes into files. If ``file name`` is not provided ``main.py`` is used as default.
 
 Deprecated classes and functions
 --------------------------------
@@ -112,31 +128,20 @@ Deprecated classes and functions
 * `#1454 <https://github.com/ManimCommunity/manim/pull/1454>`__: Fading module enhancements
    Moved functionality of all Fading classes to :class:`~.FadeIn` and :class:`~.FadeOut`. All other fading classes have been deprecated.
 
-* `#1375 <https://github.com/ManimCommunity/manim/pull/1375>`__: Deprecation of ShowCreation
-   Deleted ShowCreation()
+* `#1375 <https://github.com/ManimCommunity/manim/pull/1375>`__: Deleted the deprecated ``ShowCreation`` in favor of :class:`~.Create`
+
 
 New features
 ------------
 
-* `#1447 <https://github.com/ManimCommunity/manim/pull/1447>`__: Added :class:`~.PolarPlane` for polar coordinates.
-
-
 * `#1566 <https://github.com/ManimCommunity/manim/pull/1566>`__: Added the ability to add gridlines to a :class:`~.Rectangle`
 
 
-* `#1548 <https://github.com/ManimCommunity/manim/pull/1548>`__: :class:`~.ArcBrace`
-   Added an :class:`~.ArcBrace` submobject for :class:`~.Brace`.
+* `#1548 <https://github.com/ManimCommunity/manim/pull/1548>`__: Added :class:`~.ArcBrace`, a subclass of :class:`~.Brace`.
+
 
 * `#1559 <https://github.com/ManimCommunity/manim/pull/1559>`__: Update VGroup to support item assignment (#1530)
    Support indexed item-assignment for VGroup
-
-* `#1490 <https://github.com/ManimCommunity/manim/pull/1490>`__: Added :class:`~.Polygram`, rework the polygon inheritance tree, and add :class:`~.Star`
-   - Add :class:`~.Polygram`, a generalized :class:`~.Polygon` that allows for disconnected sets of edges.
-   - Make :class:`~.Polygon` inherit from :class:`~.Polygram`.
-   - Add :func:`~.regular_vertices`
-   - Add :class:`~.RegularPolygram`.
-   - Make :class:`~.RegularPolygon` inherit from :class:`~.RegularPolygram`.
-   - Add :class:`~.Star`.
 
 * `#1518 <https://github.com/ManimCommunity/manim/pull/1518>`__: Allow fading multiple Mobjects in one Animation  
 
@@ -156,11 +161,6 @@ New features
 
 * `#1404 <https://github.com/ManimCommunity/manim/pull/1404>`__: Added two deprecation decorators
    Added two function decorators ``deprecated`` and ``deprecated_params`` as a consistent way of deprecating code.
-
-* `#1418 <https://github.com/ManimCommunity/manim/pull/1418>`__: Added project management commands
-   - ``manim init`` - quickly sets up default files for a manim project.
-   - ``manim new project`` - lets the user set project settings. It also creates the project inside a new folder of name <project_name>
-   - ``manim new scene`` - used to quickly insert new scenes into files. If ``file name`` is not provided ``main.py`` is used as default.
 
 Enhancements
 ------------
@@ -261,6 +261,8 @@ Fixed bugs
 
 Documentation-related changes
 -----------------------------
+
+* `#1599 <https://github.com/ManimCommunity/manim/pull/1599>`__: Added example for :class:`~.Annulus`
 
 * `#1415 <https://github.com/ManimCommunity/manim/pull/1415>`__: New example for gallery and some docs refinements
 
@@ -364,7 +366,7 @@ Code quality improvements and similar refactors
 
 
 * `#1552 <https://github.com/ManimCommunity/manim/pull/1552>`__: Removed unwanted parameters in geometry
-   Removed ``anchors_span_full_range``, ``close_new_points``, ``anchors_span_full_range``, ``dash_spacing``, ``preserve_tip_size_when_scaling``, ``mark_paths_closed`` and ``close_new_points``
+   Removed ``anchors_span_full_range``, ``close_new_points``, ``anchors_span_full_range``, ``preserve_tip_size_when_scaling``, ``mark_paths_closed`` and ``close_new_points``
 
 * `#1535 <https://github.com/ManimCommunity/manim/pull/1535>`__: Update dependencies and fix tests
 
