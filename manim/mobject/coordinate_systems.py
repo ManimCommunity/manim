@@ -1,5 +1,6 @@
 """Mobjects that represent coordinate systems."""
 
+
 __all__ = [
     "CoordinateSystem",
     "Axes",
@@ -10,20 +11,44 @@ __all__ = [
 ]
 
 import fractions as fr
-import math
 import numbers
-from typing import Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Callable, Iterable, Optional, Sequence, Tuple, Union
 
 import numpy as np
+from colour import Color
 
 from .. import config
 from ..constants import *
 from ..mobject.functions import ParametricFunction
-from ..mobject.geometry import Arrow, Circle, DashedLine, Dot, Line
+from ..mobject.geometry import (
+    Arrow,
+    Circle,
+    DashedLine,
+    Dot,
+    Line,
+    Rectangle,
+    RegularPolygon,
+)
 from ..mobject.number_line import NumberLine
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.types.vectorized_mobject import VDict, VGroup, VMobject
-from ..utils.color import BLUE, BLUE_D, LIGHT_GREY, WHITE, YELLOW, Colors
+from ..mobject.types.vectorized_mobject import (
+    Mobject,
+    VDict,
+    VectorizedPoint,
+    VGroup,
+    VMobject,
+)
+from ..utils.color import (
+    BLACK,
+    BLUE,
+    BLUE_D,
+    GREEN,
+    LIGHT_GREY,
+    WHITE,
+    YELLOW,
+    color_gradient,
+    invert_color,
+)
 from ..utils.config_ops import merge_dicts_recursively, update_dict_recursively
 from ..utils.simple_functions import binary_search
 from ..utils.space_ops import angle_of_vector
@@ -46,18 +71,24 @@ class CoordinateSystem:
     ):
         self.dimension = dimension
 
+        default_step = 1.0
         if x_range is None:
             x_range = [
                 round(-config["frame_x_radius"]),
                 round(config["frame_x_radius"]),
-                1.0,
+                default_step,
             ]
+        elif len(x_range) == 2:
+            x_range = [*x_range, default_step]
+
         if y_range is None:
             y_range = [
                 round(-config["frame_y_radius"]),
                 round(config["frame_y_radius"]),
-                1.0,
+                default_step,
             ]
+        elif len(y_range) == 2:
+            y_range = [*y_range, default_step]
 
         self.x_range = x_range
         self.y_range = y_range
@@ -106,39 +137,202 @@ class CoordinateSystem:
             label_tex, self.get_y_axis(), edge, direction, **kwargs
         )
 
-    def get_axis_label(self, label_tex, axis, edge, direction, buff=SMALL_BUFF):
-        label = MathTex(label_tex)
+    # move to a util_file, or Mobject()??
+    @staticmethod
+    def create_label_tex(label_tex) -> "Mobject":
+        """Checks if the label is a ``float``, ``int`` or a ``str`` and creates a :class:`~.MathTex` label accordingly.
+
+        Parameters
+        ----------
+        label_tex : The label to be compared against the above types.
+
+        Returns
+        -------
+        :class:`~.Mobject`
+            The label.
+        """
+
+        if (
+            isinstance(label_tex, float)
+            or isinstance(label_tex, int)
+            or isinstance(label_tex, str)
+        ):
+            label_tex = MathTex(label_tex)
+        return label_tex
+
+    def get_axis_label(
+        self,
+        label: Union[float, str, "Mobject"],
+        axis: "Mobject",
+        edge: Sequence[float],
+        direction: Sequence[float],
+        buff: float = SMALL_BUFF,
+    ) -> "Mobject":
+        """Gets the label for an axis.
+
+        Parameters
+        ----------
+        label
+            The label. Can be any mobject or `int/float/str` to be used with :class:`~.MathTex`
+        axis
+            The axis to which the label will be added.
+        edge
+            The edge of the axes to which the label will be added. ``RIGHT`` adds to the right side of the axis
+        direction
+            Allows for further positioning of the label.
+        buff
+            The distance of the label from the line.
+
+        Returns
+        -------
+        :class:`~.Mobject`
+            The positioned label along the given axis.
+        """
+
+        label = self.create_label_tex(label)
         label.next_to(axis.get_edge_center(edge), direction, buff=buff)
         label.shift_onto_screen(buff=MED_SMALL_BUFF)
         return label
 
-    def get_axis_labels(self, x_label_tex="x", y_label_tex="y"):
+    def get_axis_labels(
+        self,
+        x_label: Union[float, str, "Mobject"] = "x",
+        y_label: Union[float, str, "Mobject"] = "y",
+    ) -> "VGroup":
+        """Defines labels for the x_axis and y_axis of the graph.
+
+        Parameters
+        ----------
+        x_label
+            The label for the x_axis
+        y_label
+            The label for the y_axis
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.Vgroup` of the labels for the x_axis and y_axis.
+
+        See Also
+        --------
+        :class:`get_x_axis_label`
+        :class:`get_y_axis_label`
+        """
+
         self.axis_labels = VGroup(
-            self.get_x_axis_label(x_label_tex),
-            self.get_y_axis_label(y_label_tex),
+            self.get_x_axis_label(x_label),
+            self.get_y_axis_label(y_label),
         )
         return self.axis_labels
 
     def get_line_from_axis_to_point(
-        self, index, point, line_func=DashedLine, color=LIGHT_GREY, stroke_width=2
-    ):
+        self,
+        index: int,
+        point: Sequence[float],
+        line_func: Line = DashedLine,
+        color: Color = LIGHT_GREY,
+        stroke_width: float = 2,
+    ) -> Line:
+        """Returns a straight line from a given axis to a point in the scene.
+
+        Parameters
+        ----------
+        index
+            Specifies the axis from which to draw the line. `0 = x_axis`, `1 = y_axis`
+        point
+            The point to which the line will be drawn.
+        line_func
+            The function of the :class:`~.Line` mobject used to construct the line.
+        color
+            The color of the line.
+        stroke_width
+            The stroke width of the line.
+
+        Returns
+        -------
+        :class:`~.Line`
+            The line from an axis to a point.
+
+        See Also
+        --------
+        :class:`get_vertical_line`
+        :class:`get_horizontal_line`
+        """
         axis = self.get_axis(index)
         line = line_func(axis.get_projection(point), point)
         line.set_stroke(color, stroke_width)
         return line
 
-    def get_vertical_line(self, point, **kwargs):
+    def get_vertical_line(self, point: Sequence[float], **kwargs) -> Line:
+        """A vertical line from the x-axis to a given point in the scene.
+
+        Parameters
+        ----------
+        point
+            The point to which the vertical line will be drawn.
+
+        kwargs
+            Additional parameters to be passed to :class:`get_line_from_axis_to_point`
+
+        Returns
+        -------
+        :class:`Line`
+            A vertical line from the x-axis to the point.
+        """
+
         return self.get_line_from_axis_to_point(0, point, **kwargs)
 
-    def get_horizontal_line(self, point, **kwargs):
+    def get_horizontal_line(self, point: Sequence[float], **kwargs) -> Line:
+        """A horizontal line from the y-axis to a given point in the scene.
+
+        Parameters
+        ----------
+        point
+            The point to which the horizontal line will be drawn.
+
+        kwargs
+            Additional parameters to be passed to :class:`get_line_from_axis_to_point`
+
+        Returns
+        -------
+        :class:`Line`
+            A horizontal line from the y-axis to the point.
+        """
+
         return self.get_line_from_axis_to_point(1, point, **kwargs)
 
     # graphing
 
-    def get_graph(self, function, **kwargs):
-        t_range = self.x_range
+    def get_graph(
+        self,
+        function: Callable[[float], float],
+        x_range: Optional[Sequence[float]] = None,
+        **kwargs,
+    ):
+        """Generates a curve based on a function.
 
-        if len(t_range) == 3:
+        Parameters
+        ----------
+        function
+            The function used to construct the :class:`~.ParametricFunction`.
+
+        x_range
+            The range of the curve along the axes. ``x_range = [x_min, x_max]``.
+
+        kwargs
+            Additional parameters to be passed to :class:`~.ParametricFunction`.
+
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The plotted curve.
+        """
+
+        t_range = np.array(self.x_range, dtype=float)
+        if x_range is not None:
+            t_range[: len(x_range)] = x_range
+
+        if x_range is None or len(x_range) < 3:
             # if t_range has a defined step size, increase the number of sample points per tick
             t_range[2] /= self.num_sampled_graph_points_per_tick
         # For axes, the third coordinate of x_range indicates
@@ -158,9 +352,26 @@ class CoordinateSystem:
         graph.underlying_function = function
         return graph
 
-    def input_to_graph_point(self, x, graph):
+    def input_to_graph_point(self, x: float, graph: "ParametricFunction") -> np.ndarray:
+        """Returns the coordinates of point on the ``graph``
+        corresponding to the input ``x`` value.
+
+        Parameters
+        ----------
+        x
+            The x-value for which the coordinates of corresponding point on the :attr:`graph` are to be found.
+
+        graph
+            The :class:`~.ParametricFunction` on which the x-value and y-value lie.
+
+        Returns
+        -------
+        :class:`np.ndarray`
+            The coordinates of the point on the :attr:`graph` corresponding to the :attr:`x` value.
+        """
+
         if hasattr(graph, "underlying_function"):
-            return self.coords_to_point(x, graph.underlying_function(x))
+            return graph.function(x)
         else:
             alpha = binary_search(
                 function=lambda a: self.point_to_coords(graph.point_from_proportion(a))[
@@ -174,6 +385,553 @@ class CoordinateSystem:
                 return graph.point_from_proportion(alpha)
             else:
                 return None
+
+    def i2gp(self, x, graph):
+        """
+        Alias for :meth:`input_to_graph_point`.
+        """
+        return self.input_to_graph_point(x, graph)
+
+    def get_graph_label(
+        self,
+        graph: "ParametricFunction",
+        label: Union[float, str, "Mobject"] = "f(x)",
+        x_val: Optional[float] = None,
+        direction: Sequence[float] = RIGHT,
+        buff: float = MED_SMALL_BUFF,
+        color: Optional[Color] = None,
+        dot: bool = False,
+        dot_config: Optional[dict] = None,
+    ) -> Mobject:
+        """Creates a properly positioned label for the passed graph,
+        styled with parameters and an optional dot.
+
+        Parameters
+        ----------
+        graph
+            The curve of the function plotted.
+        label
+            The label for the function's curve. Written with :class:`MathTex` if not specified otherwise.
+        x_val
+            The x_value with which the label should be aligned.
+        direction
+            The cartesian position, relative to the curve that the label will be at --> ``LEFT``, ``RIGHT``
+        buff
+            The buffer space between the curve and the label.
+        color
+            The color of the label.
+        dot
+            Adds a dot at the given point on the graph.
+        dot_config
+            Additional parameters to be passed to :class:`~.Dot`.
+
+        Returns
+        -------
+        :class:`Mobject`
+            The positioned label and :class:`~.Dot`, if applicable.
+        """
+
+        if dot_config is None:
+            dot_config = {}
+        label = self.create_label_tex(label)
+        color = color or graph.get_color()
+        label.set_color(color)
+
+        if x_val is None:
+            # Search from right to left
+            for x in np.linspace(self.x_range[1], self.x_range[0], 100):
+                point = self.input_to_graph_point(x, graph)
+                if point[1] < config["frame_y_radius"]:
+                    break
+        else:
+            point = self.input_to_graph_point(x_val, graph)
+
+        label.next_to(point, direction, buff=buff)
+        label.shift_onto_screen()
+
+        if dot:
+            label.add(Dot(point=point, **dot_config))
+        return label
+
+    # calculus
+
+    def get_riemann_rectangles(
+        self,
+        graph: "ParametricFunction",
+        x_range: Optional[Sequence[float]] = None,
+        dx: Optional[float] = 0.1,
+        input_sample_type: str = "left",
+        stroke_width: float = 1,
+        stroke_color: Color = BLACK,
+        fill_opacity: float = 1,
+        color: Union[Iterable[Color], Color] = np.array((BLUE, GREEN)),
+        show_signed_area: bool = True,
+        bounded_graph: "ParametricFunction" = None,
+        blend: bool = False,
+        width_scale_factor: float = 1.001,
+    ) -> VGroup:
+        """This method returns the :class:`~.VGroup` of the Riemann Rectangles for
+        a particular curve.
+
+        Parameters
+        ----------
+        graph
+            The graph whose area will be approximated by Riemann rectangles.
+
+        x_range
+            The minimum and maximum x-values of the rectangles. ``x_range = [x_min, x_max]``.
+
+        dx
+            The change in x-value that separates each rectangle.
+
+        input_sample_type
+            Can be any of ``"left"``, ``"right"`` or ``"center"``. Refers to where
+            the sample point for the height of each Riemann Rectangle
+            will be inside the segments of the partition.
+
+        stroke_width
+            The stroke_width of the border of the rectangles.
+
+        stroke_color
+            The color of the border of the rectangle.
+
+        fill_opacity
+            The opacity of the rectangles.
+
+        color
+            The colors of the rectangles. Creates a balanced gradient if multiple colors are passed.
+
+        show_signed_area
+            Indicates negative area when the curve dips below the x-axis by inverting its color.
+
+        blend
+            Sets the :attr:`stroke_color` to :attr:`fill_color`, blending the rectangles without clear separation.
+
+        bounded_graph
+            If a secondary graph is specified, encloses the area between the two curves.
+
+        width_scale_factor
+            The factor by which the width of the rectangles is scaled.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` containing the Riemann Rectangles.
+        """
+
+        # setting up x_range, overwrite user's third input
+        if x_range is None:
+            x_range = self.x_range
+
+        x_range = [*x_range[:2], dx]
+
+        rectangles = VGroup()
+        x_range = np.arange(*x_range)
+
+        # allows passing a string to color the graph
+        if type(color) is str:
+            colors = [color] * len(x_range)
+        else:
+            colors = color_gradient(color, len(x_range))
+
+        for x, color in zip(x_range, colors):
+            if input_sample_type == "left":
+                sample_input = x
+            elif input_sample_type == "right":
+                sample_input = x + dx
+            elif input_sample_type == "center":
+                sample_input = x + 0.5 * dx
+            else:
+                raise ValueError("Invalid input sample type")
+            graph_point = self.input_to_graph_point(sample_input, graph)
+
+            if bounded_graph is None:
+                y_point = self.origin_shift(self.y_range)
+            else:
+                y_point = bounded_graph.underlying_function(x)
+
+            points = VGroup(
+                *list(
+                    map(
+                        VectorizedPoint,
+                        [
+                            self.coords_to_point(x, y_point),
+                            self.coords_to_point(x + width_scale_factor * dx, y_point),
+                            graph_point,
+                        ],
+                    )
+                )
+            )
+
+            rect = Rectangle().replace(points, stretch=True)
+            rectangles.add(rect)
+
+            # checks if the rectangle is under the x-axis
+            if self.p2c(graph_point)[1] < y_point and show_signed_area:
+                color = invert_color(color)
+
+            # blends rectangles smoothly
+            if blend:
+                stroke_color = color
+
+            rect.set_style(
+                fill_color=color,
+                fill_opacity=fill_opacity,
+                stroke_color=stroke_color,
+                stroke_width=stroke_width,
+            )
+
+        return rectangles
+
+    def get_area(
+        self,
+        graph: "ParametricFunction",
+        x_range: Optional[Sequence[float]] = None,
+        color: Union[Color, Iterable[Color]] = [BLUE, GREEN],
+        opacity: float = 0.3,
+        dx_scaling: float = 1,
+        bounded: "ParametricFunction" = None,
+    ):
+        """Returns a :class:`~.VGroup` of Riemann rectangles sufficiently small enough to visually
+        approximate the area under the graph passed.
+
+        Parameters
+        ----------
+        graph
+            The graph/curve for which the area needs to be gotten.
+
+        x_range
+            The range of the minimum and maximum x-values of the area. ``x_range = [x_min, x_max]``.
+
+        color
+            The color of the area. Creates a gradient if a list of colors is provided.
+
+        opacity
+            The opacity of the area.
+
+        bounded
+            If a secondary :attr:`graph` is specified, encloses the area between the two curves.
+
+        dx_scaling
+            The factor by which the :attr:`dx` value is scaled.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            The :class:`~.VGroup` containing the Riemann Rectangles.
+        """
+
+        dx = self.x_range[2] / 500
+        return self.get_riemann_rectangles(
+            graph,
+            x_range=x_range,
+            dx=dx * dx_scaling,
+            bounded_graph=bounded,
+            blend=True,
+            color=color,
+            show_signed_area=False,
+        ).set_opacity(opacity=opacity)
+
+    def angle_of_tangent(
+        self, x: float, graph: "ParametricFunction", dx: float = 1e-8
+    ) -> float:
+        """Returns the angle to the x-axis of the tangent
+        to the plotted curve at a particular x-value.
+
+        Parameters
+        ----------
+        x
+            The x-value at which the tangent must touch the curve.
+
+        graph
+            The :class:`~.ParametricFunction` for which to calculate the tangent.
+
+        dx
+            The small change in `x` with which a small change in `y`
+            will be compared in order to obtain the tangent.
+
+        Returns
+        -------
+        :class:`float`
+            The angle of the tangent with the x axis.
+        """
+
+        p0 = self.input_to_graph_point(x, graph)
+        p1 = self.input_to_graph_point(x + dx, graph)
+        return angle_of_vector(p1 - p0)
+
+    def slope_of_tangent(
+        self, x: float, graph: "ParametricFunction", **kwargs
+    ) -> float:
+        """Returns the slope of the tangent to the plotted curve
+        at a particular x-value.
+
+        Parameters
+        ----------
+        x
+            The x-value at which the tangent must touch the curve.
+
+        graph
+            The :class:`~.ParametricFunction` for which to calculate the tangent.
+
+        Returns
+        -------
+        :class:`float`
+            The slope of the tangent with the x axis.
+        """
+
+        return np.tan(self.angle_of_tangent(x, graph, **kwargs))
+
+    def get_derivative_graph(
+        self, graph: "ParametricFunction", color: Color = GREEN, **kwargs
+    ) -> ParametricFunction:
+        """Returns the curve of the derivative of the passed
+        graph.
+
+        Parameters
+        ----------
+        graph
+            The graph for which the derivative will be found.
+
+        color
+            The color of the derivative curve.
+
+        **kwargs
+            Any valid keyword argument of :class:`~.ParametricFunction`
+
+        Returns
+        -------
+        :class:`~.ParametricFunction`
+            The curve of the derivative.
+        """
+
+        def deriv(x):
+            return self.slope_of_tangent(x, graph)
+
+        return self.get_graph(deriv, color=color, **kwargs)
+
+    def get_secant_slope_group(
+        self,
+        x: float,
+        graph: ParametricFunction,
+        dx: Optional[float] = None,
+        dx_line_color: Color = YELLOW,
+        dy_line_color: Optional[Color] = None,
+        dx_label: Optional[Union[float, str]] = None,
+        dy_label: Optional[Union[float, str]] = None,
+        include_secant_line: bool = True,
+        secant_line_color: Color = GREEN,
+        secant_line_length: float = 10,
+    ) -> VGroup:
+        """Creates two lines representing `dx` and `df`, the labels for `dx` and `df`, and
+         the secant to the curve at a particular x-value.
+
+        Parameters
+        ----------
+        x
+            The x-value at which the secant intersects the graph for the first time.
+
+        graph
+            The curve for which the secant will be found.
+
+        dx
+            The change in `x` after which the secant exits.
+
+        dx_line_color
+            The color of the line that indicates the change in `x`.
+
+        dy_line_color
+            The color of the line that indicates the change in `y`. Defaults to the color of :attr:`graph`.
+
+        dx_label
+            The label for the `dx` line.
+
+        dy_label
+            The label for the `dy` line.
+
+        include_secant_line
+            Whether or not to include the secant line in the graph,
+            or just have the df and dx lines and labels.
+
+        secant_line_color
+            The color of the secant line.
+
+        secant_line_length
+            The length of the secant line.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A group containing the elements: `dx_line`, `df_line`, and
+            if applicable also :attr:`dx_label`, :attr:`df_label`, `secant_line`.
+
+        """
+        group = VGroup()
+
+        dx = dx or float(self.x_range[1] - self.x_range[0]) / 10
+        dx_line_color = dx_line_color
+        dy_line_color = dy_line_color or graph.get_color()
+
+        p1 = self.input_to_graph_point(x, graph)
+        p2 = self.input_to_graph_point(x + dx, graph)
+        interim_point = p2[0] * RIGHT + p1[1] * UP
+
+        group.dx_line = Line(p1, interim_point, color=dx_line_color)
+        group.df_line = Line(interim_point, p2, color=dy_line_color)
+        group.add(group.dx_line, group.df_line)
+
+        labels = VGroup()
+        if dx_label is not None:
+            group.dx_label = self.create_label_tex(dx_label)
+            labels.add(group.dx_label)
+            group.add(group.dx_label)
+        if dy_label is not None:
+            group.df_label = self.create_label_tex(dy_label)
+            labels.add(group.df_label)
+            group.add(group.df_label)
+
+        if len(labels) > 0:
+            max_width = 0.8 * group.dx_line.width
+            max_height = 0.8 * group.df_line.height
+            if labels.width > max_width:
+                labels.width = max_width
+            if labels.height > max_height:
+                labels.height = max_height
+
+        if dx_label is not None:
+            group.dx_label.next_to(
+                group.dx_line, np.sign(dx) * DOWN, buff=group.dx_label.height / 2
+            )
+            group.dx_label.set_color(group.dx_line.get_color())
+
+        if dy_label is not None:
+            group.df_label.next_to(
+                group.df_line, np.sign(dx) * RIGHT, buff=group.df_label.height / 2
+            )
+            group.df_label.set_color(group.df_line.get_color())
+
+        if include_secant_line:
+            secant_line_color = secant_line_color
+            group.secant_line = Line(p1, p2, color=secant_line_color)
+            group.secant_line.scale_in_place(
+                secant_line_length / group.secant_line.get_length()
+            )
+            group.add(group.secant_line)
+        return group
+
+    def get_vertical_lines_to_graph(
+        self,
+        graph: ParametricFunction,
+        x_range: Optional[Sequence[float]] = None,
+        num_lines: int = 20,
+        **kwargs,
+    ) -> VGroup:
+        """Obtains multiple lines from the x-axis to the curve.
+
+        Parameters
+        ----------
+        graph
+            The graph on which the line should extend to.
+
+        x_range
+            A list containing the lower and and upper bounds of the lines -> ``x_range = [x_min, x_max]``.
+
+        num_lines
+            The number of evenly spaced lines.
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            The :class:`~.VGroup` of the evenly spaced lines.
+        """
+
+        x_range = x_range if x_range is not None else self.x_range
+
+        return VGroup(
+            *[
+                self.get_vertical_line(self.i2gp(x, graph), **kwargs)
+                for x in np.linspace(x_range[0], x_range[1], num_lines)
+            ]
+        )
+
+    def get_T_label(
+        self,
+        x_val: float,
+        graph: "ParametricFunction",
+        label: Optional[Union[float, str, "Mobject"]] = None,
+        label_color: Color = WHITE,
+        triangle_size: float = MED_SMALL_BUFF,
+        triangle_color: Color = WHITE,
+        line_func: "Line" = Line,
+        line_color: Color = YELLOW,
+    ) -> VGroup:
+        """Creates a labelled triangle marker with a vertical line from the x-axis
+        to a curve at a given x-value.
+
+        Parameters
+        ----------
+        x_val
+            The position along the curve at which the label, line and triangle will be constructed.
+
+        graph
+            The :class:`~.ParametricFunction` for which to construct the label.
+
+        label
+            The label of the vertical line and triangle.
+
+        label_color
+            The color of the label.
+
+        triangle_size
+            The size of the triangle.
+
+        triangle_color
+            The color of the triangle.
+
+        line_func
+            The function used to construct the vertical line.
+
+        line_color
+            The color of the vertical line.
+
+        Examples
+        -------
+        .. manim:: T_labelExample
+            :save_last_frame:
+
+            class T_labelExample(Scene):
+                def construct(self):
+                    # defines the axes and linear function
+                    axes = Axes(x_range=[-1, 10], y_range=[-1, 10], x_length=9, y_length=6)
+                    func = axes.get_graph(lambda x: x, color=BLUE)
+                    # creates the T_label
+                    t_label = axes.get_T_label(x_val=4, graph=func, label=Tex("x-value"))
+                    self.add(axes, func, t_label)
+
+        Returns
+        -------
+        :class:`~.VGroup`
+            A :class:`~.VGroup` of the label, triangle and vertical line mobjects.
+        """
+
+        T_label_group = VGroup()
+        triangle = RegularPolygon(n=3, start_angle=np.pi / 2, stroke_width=0).set_fill(
+            color=triangle_color, opacity=1
+        )
+        triangle.height = triangle_size
+        triangle.move_to(self.coords_to_point(x_val, 0), UP)
+        if label is not None:
+            t_label = self.create_label_tex(label).set_color(label_color)
+            t_label.next_to(triangle, DOWN)
+            T_label_group.add(t_label)
+
+        v_line = self.get_vertical_line(
+            self.i2gp(x_val, graph), color=line_color, line_func=line_func
+        )
+
+        T_label_group.add(triangle, v_line)
+
+        return T_label_group
 
 
 class Axes(VGroup, CoordinateSystem):
@@ -195,6 +953,8 @@ class Axes(VGroup, CoordinateSystem):
         Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
     y_axis_config : Optional[:class:`dict`]
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
+    include_tips
+        Whether or not to include the tips on both axes.
     kwargs : Any
         Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`.
     """
@@ -208,12 +968,13 @@ class Axes(VGroup, CoordinateSystem):
         axis_config=None,
         x_axis_config=None,
         y_axis_config=None,
+        tips: bool = True,
         **kwargs,
     ):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
-        self.axis_config = {"include_tip": True, "numbers_to_exclude": [0]}
+        self.axis_config = {"include_tip": tips, "numbers_to_exclude": [0]}
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
@@ -288,7 +1049,7 @@ class Axes(VGroup, CoordinateSystem):
         x_values: Iterable[float],
         y_values: Iterable[float],
         z_values: Optional[Iterable[float]] = None,
-        line_color: Colors = YELLOW,
+        line_color: Color = YELLOW,
         add_vertex_dots: bool = True,
         vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
         vertex_dot_style: Optional[dict] = None,
@@ -370,7 +1131,7 @@ class Axes(VGroup, CoordinateSystem):
         return line_graph
 
     @staticmethod
-    def origin_shift(axis_range: List[float]) -> float:
+    def origin_shift(axis_range: Sequence[float]) -> float:
         """Determines how to shift graph mobjects to compensate when 0 is not on the axis.
 
         Parameters
