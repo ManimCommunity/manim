@@ -304,7 +304,9 @@ Plotting with Manim
             vert_line = axes.get_vertical_line(
                 axes.i2gp(TAU, cos_graph), color=YELLOW, line_func=Line
             )
-            line_label = axes.get_graph_label(cos_graph, "x=2\pi", x_val=TAU, direction=UR)
+            line_label = axes.get_graph_label(
+                cos_graph, "x=2\pi", x_val=TAU, direction=UR, color=WHITE
+            )
 
             plot = VGroup(axes, sin_graph, cos_graph, vert_line)
             labels = VGroup(axes_labels, sin_label, cos_label, line_label)
@@ -337,7 +339,7 @@ Plotting with Manim
             line_1 = ax.get_vertical_line(ax.input_to_graph_point(2, curve_1), color=YELLOW)
             line_2 = ax.get_vertical_line(ax.i2gp(3, curve_1), color=YELLOW)
 
-            area_1 = ax.get_area(curve_1, x_range=[0.3, 0.6], dx_scaling=100, color=BLUE)
+            area_1 = ax.get_area(curve_1, x_range=[0.3, 0.6], dx_scaling=40, color=BLUE)
             area_2 = ax.get_area(curve_2, [2, 3], bounded=curve_1, color=GREY, opacity=0.2)
 
             self.add(ax, labels, curve_1, curve_2, line_1, line_2, area_1, area_2)
