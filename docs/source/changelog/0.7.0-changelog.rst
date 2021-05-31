@@ -82,7 +82,7 @@ the following contributors.
 Pull requests merged
 ====================
 
-A total of 84 pull requests were merged for this release.
+A total of 86 pull requests were merged for this release.
 
 Breaking changes
 ----------------
@@ -382,5 +382,17 @@ Code quality improvements and similar refactors
 
 
 * `#1471 <https://github.com/ManimCommunity/manim/pull/1471>`__: Fix Some Warnings from lgtm
+
+
+Changes that needed to be reverted again
+----------------------------------------
+
+* `#1606 <https://github.com/ManimCommunity/manim/pull/1606>`__: Bring back ``DARK_BLUE``
+
+
+New releases
+------------
+
+* `#1601 <https://github.com/ManimCommunity/manim/pull/1601>`__: Preparation for v0.7.0: added changelog and bumped version number
 
 
