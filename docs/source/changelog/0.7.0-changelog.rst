@@ -1,0 +1,363 @@
+******
+v0.7.0
+******
+
+:Date: May 31, 2021
+
+Contributors
+============
+
+A total of 44 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Anton Ballmaier
+* Benjamin Hackl
+* Clar Fon
+* Darylgolden
+* Devin Neal
+* Hugues Devimeux
+* Iced-Tea3 +
+* Jan-Hendrik Müller
+* Jason Villanueva
+* Jerónimo Squartini +
+* KingWampy
+* Laith Bahodi
+* Max Stoumen +
+* Mohammad Al-Fetyani
+* Naveen M K
+* NeoPlato
+* Newell Jensen
+* Nikhil Garuda
+* Nikhil Sharma +
+* PaulCMurdoch +
+* Philipp Imhof
+* Raghav Goel
+* Robert West +
+* Ryan McCauley +
+* Skaft +
+* SwiddisZwei +
+* e4coder +
+* friedkeenan
+* malte-v +
+* ralphieraccoon
+* sparshg
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Aathish Sivasubrahmanian
+* Abhijith Muthyala
+* Anton Ballmaier
+* Aron
+* Benjamin Hackl
+* Darylgolden
+* Devin Neal
+* GameDungeon
+* Hugues Devimeux
+* Iced-Tea3
+* Jan-Hendrik Müller
+* Jason Villanueva
+* Jerónimo Squartini
+* KingWampy
+* Laith Bahodi
+* Mark Miller
+* Mohammad Al-Fetyani
+* Naveen M K
+* Nikhil Garuda
+* Oliver
+* Philipp Imhof
+* Raghav Goel
+* Ricky Chon
+* Ryan McCauley
+* Skaft
+* SwiddisZwei
+* e4coder
+* friedkeenan
+* ralphieraccoon
+* sparshg
+
+Pull requests merged
+====================
+
+A total of 77 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* `#1521 <https://github.com/ManimCommunity/manim/pull/1521>`__: Improve Animation docs
+   - Improve documentation of the Animation class.
+   - Unify the signature of `get_all_mobjects`. Now it always returns a sequence of `Mobject`s. This breaks using  `FadeTransform.get_all_mobjects` as `Group`.
+
+* `#1470 <https://github.com/ManimCommunity/manim/pull/1470>`__: Drop support for Python 3.6
+   Manim won't work on Python 3.6 anymore.
+
+Deprecated classes and functions
+--------------------------------
+
+* `#1454 <https://github.com/ManimCommunity/manim/pull/1454>`__: Fading module enhancements
+   Moved functionality of all Fading classes to :class:`~.FadeIn` and :class:`~.FadeOut`. All other fading classes have been deprecated.
+
+* `#1375 <https://github.com/ManimCommunity/manim/pull/1375>`__: Deprecation of ShowCreation
+   Deleted ShowCreation()
+
+New features
+------------
+
+* `#1447 <https://github.com/ManimCommunity/manim/pull/1447>`__: Added :class:~.PolarPlane for polar coordinates.
+
+
+* `#1566 <https://github.com/ManimCommunity/manim/pull/1566>`__: New feature: Add grid to Rectangle
+
+
+* `#1548 <https://github.com/ManimCommunity/manim/pull/1548>`__: New feature: :class:`ArcBrace`
+   Added an ArcBrace submobject for Brace.
+
+* `#1490 <https://github.com/ManimCommunity/manim/pull/1490>`__: Added :class:`~.Polygram`, rework the polygon inheritance tree, and add :class:`~.Star`
+   - Add :class:`~.Polygram`, a generalized :class:`~.Polygon` that allows for disconnected sets of edges.
+   - Make :class:`~.Polygon` inherit from :class:`~.Polygram`.
+   - Add :func:`~.regular_vertices`
+   - Add :class:`~.RegularPolygram`.
+   - Make :class:`~.RegularPolygon` inherit from :class:`~.RegularPolygram`.
+   - Add :class:`~.Star`.
+
+* `#1422 <https://github.com/ManimCommunity/manim/pull/1422>`__: Added :func:`~.override_animation` decorator
+
+
+* `#1504 <https://github.com/ManimCommunity/manim/pull/1504>`__: Color module enhancements
+   - Replaced `BLUE_E` with what was previously `DARK_BLUE` and removed `DARK_BLUE`
+   - Added alias `LIGHTER_GRAY` for `GRAY_A`
+   - Added `PURE_RED`, `PURE_BLUE` and renamed `GREEN_SCREEN` to `PURE_GREEN`
+   - All gray colors are now also available using British spelling (including `GREY_BROWN`)
+   - Replaced color example in the docs. It can now be used as a quick reference for all color names.
+
+* `#1272 <https://github.com/ManimCommunity/manim/pull/1272>`__: Implement metaclass approach in geometry module to make mobjects compatible with cairo and opengl rendering
+
+
+* `#1418 <https://github.com/ManimCommunity/manim/pull/1418>`__: Added project management commands
+   - ``manim init`` - quickly sets up default files for a manim project.
+   - ``manim new project`` - lets the user set project settings. It also creates the project inside a new folder of name <project_name>
+   - ``manim new scene`` - used to quickly insert new scenes into files. If ``file name`` is not provided ``main.py`` is used as default.
+
+Enhancements
+------------
+
+* `#1472 <https://github.com/ManimCommunity/manim/pull/1472>`__: Porting methods from :class:`GraphScene` to :class:`CoordinateSystem`
+
+
+* `#1589 <https://github.com/ManimCommunity/manim/pull/1589>`__: OpenGL compatibility via metaclass: ValueTracker
+   Add OpenGL compatibility for ValueTracker through the ConvertToOpenGL metaclass and get/set_points,
+
+* `#1584 <https://github.com/ManimCommunity/manim/pull/1584>`__: Added a check for `0` in :meth:`~.round_corners`
+
+
+* `#1586 <https://github.com/ManimCommunity/manim/pull/1586>`__: Add OpenGLMobject support to all `isinstance` occurrences
+   This PR increases the support for OpenGL in the remaining animation classes and in other places where appropriate.
+
+* `#1577 <https://github.com/ManimCommunity/manim/pull/1577>`__: Added new metaclass ConvertToOpenGL (replacing MetaVMobject), restore IntelliSense
+   Implement MetaMobject, which is either OpenGLMobject or Mobject depending on runtime config. Refactor ValueTracker to extend MetaMobject.
+
+* `#1562 <https://github.com/ManimCommunity/manim/pull/1562>`__: Improved VectorField's Nudge Accuracy Per Step
+   Implemented the Runge-Kutta algorithm in VectorField's nudge function. This increases the accuracy as an object moves along a vector field. This also increases efficentcy as the nudge function requires less loops to achieve accuracy than the previous implementation.
+
+* `#1480 <https://github.com/ManimCommunity/manim/pull/1480>`__: Add logging info to tex errors
+
+
+* `#1567 <https://github.com/ManimCommunity/manim/pull/1567>`__: Compatibility Fixes with ManimPango v0.3.0
+   ManimPango v0.3.0+ is required for Manim now. 
+   * Show errors from Pango when Markup isn't correct
+
+* `#1512 <https://github.com/ManimCommunity/manim/pull/1512>`__: OpenGL compatibility via metaclass: graph
+
+
+* `#1511 <https://github.com/ManimCommunity/manim/pull/1511>`__: OpenGL compatibility via metaclass: svg_mobject, text_mobject, tex_mobject
+
+
+* `#1502 <https://github.com/ManimCommunity/manim/pull/1502>`__: Added `center` parameter to :class:`~.Sphere` and `point` parameter to :class:`~.Dot3D`
+
+
+* `#1382 <https://github.com/ManimCommunity/manim/pull/1382>`__: Expand documentation, testing, and functionality of ValueTrackers; remove ExponentialValueTracker
+   Added more documentation and inline operators to ValueTracker and ComplexValueTracker. Brought coverage for value_tracker.py to 100%. Removed ExponentialValueTracker.
+
+Fixed bugs
+----------
+
+* `#1588 <https://github.com/ManimCommunity/manim/pull/1588>`__: Fixed multiple animations being saved in the same file
+
+
+* `#1545 <https://github.com/ManimCommunity/manim/pull/1545>`__: Fix outdated parameters for :class:`LinearTransformationScene` and add an example + typing.
+
+
+* `#1513 <https://github.com/ManimCommunity/manim/pull/1513>`__: Fixed rotation of gradients while rotating a VMobject
+   Fixed the direction of gradient which remained the same while rotating VMobjects
+   Added `rotate_sheen_direction()` method in VMobject
+
+* `#1570 <https://github.com/ManimCommunity/manim/pull/1570>`__: Output errors to stderr
+
+
+* `#1211 <https://github.com/ManimCommunity/manim/pull/1211>`__: Refactored scene caching and fixed issue when a different hash was produced when copying a mobject in the scene 
+   Refactored internal scene-caching mechanism and fixed bug when an inconsistent hash was produced when copying a mobject.
+
+* `#1527 <https://github.com/ManimCommunity/manim/pull/1527>`__: Improved handling of substring isolation within sqrt, and fixed a bug with transform_mismatch for the matching shape transforms
+
+
+* `#1526 <https://github.com/ManimCommunity/manim/pull/1526>`__: Fix fading
+
+
+Documentation-related changes
+-----------------------------
+
+* `#1509 <https://github.com/ManimCommunity/manim/pull/1509>`__: Copyedited Documentation
+   Added a link to Manim Community GitHub page in `for_dev.rst`.
+   Fixed :meth:`~.Mobject.get_start`  and added `roll` link in `building_blocks-rst`
+   Added language to code blocks in `configuration.rst`
+
+* `#1550 <https://github.com/ManimCommunity/manim/pull/1550>`__: Restructuring of Contribution Section
+   Check the commits for the Changelog
+
+* `#1541 <https://github.com/ManimCommunity/manim/pull/1541>`__: Fixing broken links and other minor doc things
+
+
+* `#1516 <https://github.com/ManimCommunity/manim/pull/1516>`__: Update docs to use t_range instead of t_min and t_max in ParametricFunction
+
+
+* `#1485 <https://github.com/ManimCommunity/manim/pull/1485>`__: Added `Title` example for the docs
+
+
+* `#1458 <https://github.com/ManimCommunity/manim/pull/1458>`__: Refine docs of `Text` ( add `disable_ligatures=True` for t2c)
+
+
+* `#1449 <https://github.com/ManimCommunity/manim/pull/1449>`__: Added PointCloudDot example
+
+
+* `#1473 <https://github.com/ManimCommunity/manim/pull/1473>`__: Added easy example for `arrange_in_grid`
+
+
+* `#1402 <https://github.com/ManimCommunity/manim/pull/1402>`__: Added typestring parser checker
+   Added `typestring-parser`
+
+* `#1451 <https://github.com/ManimCommunity/manim/pull/1451>`__: Reduce complexity of AngleExample
+
+
+* `#1457 <https://github.com/ManimCommunity/manim/pull/1457>`__: Fixing broken doc links
+
+
+* `#1445 <https://github.com/ManimCommunity/manim/pull/1445>`__: Remove $ from tutorial commands
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* `#1556 <https://github.com/ManimCommunity/manim/pull/1556>`__: Try pytest-xdist for parallelization in tests
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* `#1499 <https://github.com/ManimCommunity/manim/pull/1499>`__: Updated Discord links in the docs to point towards a standardized redirect
+
+
+* `#1461 <https://github.com/ManimCommunity/manim/pull/1461>`__: Build the docs - Logging 
+
+
+* `#1481 <https://github.com/ManimCommunity/manim/pull/1481>`__: pyproject.toml: poetry_core -> poetry-core
+
+
+* `#1477 <https://github.com/ManimCommunity/manim/pull/1477>`__: Update RDT sphinx package to version 3.5.3
+
+
+* `#1460 <https://github.com/ManimCommunity/manim/pull/1460>`__: Create CONTRIBUTING.md
+
+
+* `#1453 <https://github.com/ManimCommunity/manim/pull/1453>`__: manim_directive: fix image links in docs - Windows
+   Use POSIX path on Windows to link images so documentation can build locally.
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#1544 <https://github.com/ManimCommunity/manim/pull/1544>`__: Adding spell checker as a pre-commit hook
+   * Adds a pre-commit hook for [codespell](https://github.com/codespell-project/codespell)
+   * Fixes a bunch of spelling mistakes in code and documentation
+
+* `#1542 <https://github.com/ManimCommunity/manim/pull/1542>`__: Swapping a pango markup link in docs
+
+
+* `#1531 <https://github.com/ManimCommunity/manim/pull/1531>`__: Don't use deprecated methods in deprecation.py
+
+
+* `#1492 <https://github.com/ManimCommunity/manim/pull/1492>`__: Remove stray print statements introduced in #1404
+
+
+Unclassified changes
+--------------------
+
+* `#1597 <https://github.com/ManimCommunity/manim/pull/1597>`__: Removed hilite_me and insert_line_numbers_in_html from global name space
+   Fixes #1450
+
+* `#1564 <https://github.com/ManimCommunity/manim/pull/1564>`__: Add extra notes for TeX compilation errors
+   Add hint to use custom `TexTemplate` on TeX compilation errors
+
+* `#1571 <https://github.com/ManimCommunity/manim/pull/1571>`__: Fix tests
+
+
+* `#1384 <https://github.com/ManimCommunity/manim/pull/1384>`__: Added typings to space_ops.py
+   Added Typehints to most of the functions
+
+* `#1500 <https://github.com/ManimCommunity/manim/pull/1500>`__: Example for `apply_complex_function`
+
+
+* `#1559 <https://github.com/ManimCommunity/manim/pull/1559>`__: Update VGroup to support item assignment (#1530)
+   Support indexed item-assignment for VGroup
+
+* `#1560 <https://github.com/ManimCommunity/manim/pull/1560>`__: Declare *.npz *.wav *.png as binary in .gitattributes
+
+
+* `#1535 <https://github.com/ManimCommunity/manim/pull/1535>`__: Update dependencies and fix tests
+
+
+* `#1551 <https://github.com/ManimCommunity/manim/pull/1551>`__: Fixed the typo for Admonitions
+   Fixed the typo
+
+* `#1523 <https://github.com/ManimCommunity/manim/pull/1523>`__: Fix multiple FadeIn / Out only working on VMobjects
+
+
+* `#1518 <https://github.com/ManimCommunity/manim/pull/1518>`__: Allow fading multiple Mobjects in one Animation  
+
+
+* `#1508 <https://github.com/ManimCommunity/manim/pull/1508>`__: Update troubleshooting docs
+
+
+* `#1505 <https://github.com/ManimCommunity/manim/pull/1505>`__: Add docs reference to PR template
+   Added documentation link to the Pull Request Template.
+
+* `#1439 <https://github.com/ManimCommunity/manim/pull/1439>`__: Cleaning `Sequence typehints`
+
+
+* `#1486 <https://github.com/ManimCommunity/manim/pull/1486>`__: Update of `rate_functions`
+   Changed the picture for the non standard rate functions.
+
+* `#1495 <https://github.com/ManimCommunity/manim/pull/1495>`__: Ported value_tracker to OpenGL
+   Added `OpenGLValueTracker` and `OpenGLComplexValueTracker` which does the same things as the original ones but in OpenGL
+
+* `#1440 <https://github.com/ManimCommunity/manim/pull/1440>`__: Added Scoop installation docs (Windows)
+   Adds documentation for installing manim dependencies via [`scoop`](https://scoop.sh)
+
+* `#1452 <https://github.com/ManimCommunity/manim/pull/1452>`__: Refine typehints at `Angle`
+
+
+* `#1404 <https://github.com/ManimCommunity/manim/pull/1404>`__: Deprecation Decorators
+   Added two function decorators `deprecated` and `deprecated_params` as a consistent way of deprecating code.
+
+* `#1475 <https://github.com/ManimCommunity/manim/pull/1475>`__: Add SVG elliptical arc support
+
+
+* `#1471 <https://github.com/ManimCommunity/manim/pull/1471>`__: Fix Some Warnings from lgtm
+
+
+* `#1462 <https://github.com/ManimCommunity/manim/pull/1462>`__: Shader mobject
+   Add Shader and Mesh objects
+
+* `#1441 <https://github.com/ManimCommunity/manim/pull/1441>`__: Add inheritance diagrams to reference page
+   Added inheritance diagrams to the reference page as a quick navigation method.
+
