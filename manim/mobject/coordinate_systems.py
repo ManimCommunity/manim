@@ -1375,7 +1375,7 @@ class NumberPlane(Axes):
         y_axis_config: Optional[dict] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
-        faded_line_ratio: Optional[int] = 1,
+        faded_line_ratio: Optional[float] = 1,
         make_smooth_after_applying_functions=True,
         **kwargs,
     ):
