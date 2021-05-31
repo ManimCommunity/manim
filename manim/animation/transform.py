@@ -158,33 +158,35 @@ class ReplacementTransform(Transform):
     Examples
     --------
 
-    .. manim:: ReplacementTransformOrTransform
-
-        class ReplacementTransformOrTransform(Scene):
+    .. manim:: ReplacementTransformVsTransform
+        class ReplacementTransformVsTransform(Scene):
             def construct(self):
-                text_0 = Tex('ReplacementTransform vs Transform', color = BLUE).scale(0.9).shift(2.5*UP)
-                self.play(Write(text_0))
-                integer_1 = Integer(1).shift(UP + LEFT)
-                integer_2 = Integer(2).next_to(integer_1, DOWN)
-                integer_3 = Integer(3).next_to(integer_2, DOWN)
-                integer_4 = Integer(4).next_to(integer_1, 6*RIGHT)
-                integer_5 = Integer(5).next_to(integer_4, DOWN)
-                integer_6 = Integer(6).next_to(integer_5, DOWN)
-                self.play(Write(integer_1))
-                self.play(Write(integer_2))
-                self.play(Write(integer_3))
-                self.play(Write(integer_4))
-                self.play(Write(integer_5))
-                self.play(Write(integer_6))
+                # set up the numbers
+                r_transform = VGroup(*[Integer(i) for i in range(1,4)])
+                text_1 = Text("ReplacementTransform", color=RED)
+                r_transform.add(text_1)
+
+                transform = VGroup(*[Integer(i) for i in range(4,7)])
+                text_2 = Text("Transform", color=BLUE)
+                transform.add(text_2)
+
+                ints = VGroup(r_transform, transform)
+                texts = VGroup(text_1, text_2).scale(0.75)
+                r_transform.arrange(direction=UP, buff=1)
+                transform.arrange(direction=UP, buff=1)
+
+                ints.arrange(buff=2)
+                self.add(ints, texts)
+
+                # The mobs replace each other and none are left behind
+                self.play(ReplacementTransform(r_transform[0], r_transform[1]))
+                self.play(ReplacementTransform(r_transform[1], r_transform[2]))
+
+                # The mobs linger after the Transform()
+                self.play(Transform(transform[0], transform[1]))
+                self.play(Transform(transform[1], transform[2]))
                 self.wait()
-                self.play(ReplacementTransform(integer_1, integer_2))
-                self.play(ReplacementTransform(integer_2, integer_3))
-                self.play(FadeOut(integer_3))
-                self.wait()
-                self.play(Transform(integer_4, integer_5))
-                self.play(Transform(integer_5, integer_6))
-                self.play(FadeOut(integer_6))
-                self.wait()
+
     """
 
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
