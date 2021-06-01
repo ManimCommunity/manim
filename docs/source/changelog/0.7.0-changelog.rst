@@ -122,9 +122,6 @@ Deprecated classes and functions
 * `#1598 <https://github.com/ManimCommunity/manim/pull/1598>`__: Update examples to use :class:`~.Axes` and deprecate :class:`~.GraphScene`
    :class:`~.GraphScene` has been deprecated and its functionality has been shifted to :class:`~.Axes`. See the updated example gallery for sample usage.
 
-* `#1597 <https://github.com/ManimCommunity/manim/pull/1597>`__: Removed hilite_me and insert_line_numbers_in_html from global name space
-
-
 * `#1454 <https://github.com/ManimCommunity/manim/pull/1454>`__: Fading module enhancements
    Moved functionality of all Fading classes to :class:`~.FadeIn` and :class:`~.FadeOut`. All other fading classes have been deprecated.
 
@@ -264,6 +261,7 @@ Documentation-related changes
 
 * `#1599 <https://github.com/ManimCommunity/manim/pull/1599>`__: Added example for :class:`~.Annulus`
 
+
 * `#1415 <https://github.com/ManimCommunity/manim/pull/1415>`__: New example for gallery and some docs refinements
 
 
@@ -367,6 +365,9 @@ Code quality improvements and similar refactors
 
 * `#1552 <https://github.com/ManimCommunity/manim/pull/1552>`__: Removed unwanted parameters in geometry
    Removed ``anchors_span_full_range``, ``close_new_points``, ``anchors_span_full_range``, ``preserve_tip_size_when_scaling``, ``mark_paths_closed`` and ``close_new_points``
+
+* `#1597 <https://github.com/ManimCommunity/manim/pull/1597>`__: Removed hilite_me and insert_line_numbers_in_html from global name space
+
 
 * `#1535 <https://github.com/ManimCommunity/manim/pull/1535>`__: Update dependencies and fix tests
 
