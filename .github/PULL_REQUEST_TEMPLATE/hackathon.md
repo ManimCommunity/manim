@@ -1,8 +1,7 @@
 ---
 name: Hackathon 2021
-title: ""
+about: For participation in the Manim Community Hackathon
 labels: hackathon
-assignees: ''
 ---
 
 Thanks for your contribution for the manim community hackathon!

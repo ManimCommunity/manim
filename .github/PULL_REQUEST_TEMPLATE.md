@@ -1,8 +1,6 @@
 ---
 name: Default pull request
-title: ""
-labels: ""
-assignees: ''
+about: The default template for general purpose pull requests.
 ---
 
 <!--
