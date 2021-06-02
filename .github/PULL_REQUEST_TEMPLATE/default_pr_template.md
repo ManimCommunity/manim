@@ -1,3 +1,10 @@
+---
+name: Default pull request
+title: ""
+labels: ""
+assignees: ''
+---
+
 <!--
 Thanks for your contribution to ManimCommunity!
 
