@@ -16,6 +16,7 @@ from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.bezier import interpolate
 from ..utils.color import LIGHT_GREY
 from ..utils.config_ops import merge_dicts_recursively
+from ..utils.deprecation import deprecated
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import normalize
 
@@ -317,6 +318,12 @@ class UnitInterval(NumberLine):
         )
 
 
+@deprecated(
+    since="v0.7.0",
+    until="v0.9.0",
+    replacement="NumberLine",
+    message="NumberLineOld will be removed alongside GraphScene ",
+)
 class NumberLineOld(Line):
     """The old version of :class:`NumberLine`.
 

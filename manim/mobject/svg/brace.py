@@ -6,6 +6,9 @@ from typing import Optional, Sequence
 
 import numpy as np
 
+from manim._config import config
+from manim.mobject.opengl_compatibility import ConvertToOpenGL
+
 from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
@@ -13,6 +16,7 @@ from ...constants import *
 from ...mobject.geometry import Arc, Line
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.svg.tex_mobject import MathTex, Tex
+from ...mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 
@@ -119,14 +123,17 @@ class Brace(SVGPathMobject):
 
     def get_tip(self):
         # Returns the position of the seventh point in the path, which is the tip.
-        return self.points[28]  # = 7*4
+        if config["renderer"] == "opengl":
+            return self.get_points()[34]
+
+        return self.get_points()[28]  # = 7*4
 
     def get_direction(self):
         vect = self.get_tip() - self.get_center()
         return vect / np.linalg.norm(vect)
 
 
-class BraceLabel(VMobject):
+class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         obj,
@@ -138,10 +145,11 @@ class BraceLabel(VMobject):
     ):
         self.label_constructor = label_constructor
         self.label_scale = label_scale
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
+
         self.brace_direction = brace_direction
         if isinstance(obj, list):
-            obj = VMobject(*obj)
+            obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, brace_direction, **kwargs)
 
         if isinstance(text, tuple) or isinstance(text, list):
@@ -159,7 +167,7 @@ class BraceLabel(VMobject):
 
     def shift_brace(self, obj, **kwargs):
         if isinstance(obj, list):
-            obj = VMobject(*obj)
+            obj = self.get_group_class()(*obj)
         self.brace = Brace(obj, self.brace_direction, **kwargs)
         self.brace.put_at_tip(self.label)
         self.submobjects[0] = self.brace

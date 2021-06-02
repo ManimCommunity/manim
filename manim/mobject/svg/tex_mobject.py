@@ -501,7 +501,9 @@ class MathTex(SingleStringMathTex):
                 tex_template=self.tex_template,
             )
             num_submobs = len(sub_tex_mob.submobjects)
-            new_index = curr_index + num_submobs
+            new_index = (
+                curr_index + num_submobs + len("".join(self.arg_separator.split()))
+            )
             if num_submobs == 0:
                 # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
