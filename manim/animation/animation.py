@@ -278,10 +278,6 @@ class Animation:
         alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
 
-    @deprecated(until="v0.6.0", replacement="interpolate")
-    def update(self, alpha: float) -> None:
-        self.interpolate(alpha)
-
     def interpolate_mobject(self, alpha: float) -> None:
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
