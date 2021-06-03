@@ -45,7 +45,7 @@ def render_opengl_vectorized_mobject_fill(renderer, mobject):
         textures.append(texture)
         texture_fbos.append(texture_fbo)
 
-    vao, vbo = render_textures_to_screen(renderer.context, textures)
+    vao, vbo = textures_to_fill_vao(renderer.context, textures, mobject)
     renderer.frame_buffer_object.use()
     vao.render()
     vao.release()
@@ -164,7 +164,7 @@ def layer_to_stencil_vao(context, layer, uniforms=None):
     return vao, vbo, ibo
 
 
-def render_textures_to_screen(context, textures):
+def textures_to_fill_vao(context, textures, mobject):
     vertices = np.zeros(
         len(textures) * 6,
         dtype=[
@@ -205,6 +205,7 @@ def render_textures_to_screen(context, textures):
         axis=0,
     )
     texture_shader = Shader(context, name="vectorized_mobject_fill")
+    texture_shader.set_uniform("color", tuple(mobject.data["fill_rgba"][0]))
     for i in range(len(textures)):
         texture_shader.set_uniform(f"Texture{i}", i)
         textures[i].use(location=i)

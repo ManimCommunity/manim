@@ -73,51 +73,6 @@ def get_plane_mesh(context):
     return Mesh(shader, attributes)
 
 
-class TextTest(Scene):
-    def construct(self):
-        text = OpenGLTextMobject("A").scale(4)
-        self.play(Write(text))
-        a_points = text.submobjects[0].submobjects[0].data["points"]
-        a_points /= np.array([config["frame_width"], config["frame_height"], 1])
-        print(repr(text.submobjects[0].submobjects[0].data["points"]))
-
-
-class TextTest2(Scene):
-    def construct(self):
-        text = OpenGLTextMobject(
-            "abcdefg",
-            fill_color=RED,
-            fill_opacity=1,
-            stroke_color=WHITE,
-            stroke_opacity=1,
-            stroke_width=4,
-        ).scale(5)
-        self.play(Create(text), run_time=1, rate_func=lambda t: t)
-        self.wait()
-        self.interactive_embed()
-
-        # obj = OpenGLVMobject()
-        # obj.data["points"] = [UP + LEFT]
-        # obj.add_line_to(UP + RIGHT)
-        # obj.add_line_to(DOWN + RIGHT)
-        # obj.add_line_to(DOWN + LEFT)
-        # obj.add_line_to(UP + LEFT)
-        # obj.shift(2 * RIGHT)
-        # self.add(obj)
-        # self.wait()
-
-        # output = []
-        # for child in text.submobjects[0].submobjects:
-        #     child_points = child.data["points"]
-        #     child_points /= np.array([config["frame_width"], config["frame_height"], 1])
-        #     output.append(child_points.tolist())
-
-        # import pickle
-
-        # with open("text_rendering/overlap_data.npz", "wb") as f:
-        #     pickle.dump(output, f)
-
-
 class GuiTest(Scene):
     def construct(self):
         mesh = get_plane_mesh(self.renderer.context)
