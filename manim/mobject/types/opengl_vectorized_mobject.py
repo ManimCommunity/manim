@@ -1104,12 +1104,12 @@ class OpenGLVMobject(OpenGLMobject):
         from ...renderer.shader_wrapper import ShaderWrapper
 
         # Build up data lists
-        fill_shader_wrappers = []
+        # fill_shader_wrappers = []
         stroke_shader_wrappers = []
         back_stroke_shader_wrappers = []
         for submob in self.family_members_with_points():
-            if submob.has_fill():
-                fill_shader_wrappers.append(submob.get_fill_shader_wrapper())
+            # if submob.has_fill():
+            #     fill_shader_wrappers.append(submob.get_fill_shader_wrapper())
             if submob.has_stroke():
                 ssw = submob.get_stroke_shader_wrapper()
                 if submob.draw_stroke_behind_fill:
@@ -1120,7 +1120,7 @@ class OpenGLVMobject(OpenGLMobject):
         # Combine data lists
         wrapper_lists = [
             back_stroke_shader_wrappers,
-            fill_shader_wrappers,
+            # fill_shader_wrappers,
             stroke_shader_wrappers,
         ]
         result = []
