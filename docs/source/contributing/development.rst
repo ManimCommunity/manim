@@ -172,7 +172,7 @@ them."
    Choose the branch from your fork as the head repository - see the
    screenshot below.
 
-   .. image:: /_static/pull-requests.PNG
+   .. image:: /_static/pull-requests.png
       :align: center
 
    Please make sure you follow the template (this is the default
