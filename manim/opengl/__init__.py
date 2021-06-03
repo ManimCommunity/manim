@@ -1,4 +1,7 @@
-from dearpygui import core as dpg
+try:
+    from dearpygui import core as dpg
+except ImportError:
+    pass
 
 from ..mobject.opengl_geometry import *
 from ..mobject.opengl_mobject import *
