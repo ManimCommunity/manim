@@ -195,7 +195,7 @@ def compile_tex(tex_file, tex_compiler, output_format):
                 if error_pos:
                     with open(tex_file, "r") as g:
                         tex = g.readlines()
-                        logger.error("LaTeX compilation error: {log[error_pos][2:])}")
+                        logger.error(f"LaTeX compilation error: {log[error_pos[0]][2:]}")
                         for log_index in error_pos:
                             index_line = log_index
                             context = "Context for error:\n\n"
