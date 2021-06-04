@@ -58,7 +58,7 @@ import manimpango
 import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
-from ... import config, logger
+from ... import Group, config, logger
 from ...constants import *
 from ...mobject.geometry import Dot
 from ...mobject.svg.svg_mobject import SVGMobject
@@ -285,7 +285,7 @@ class Paragraph(VGroup):
 class SingleStringText(SVGMobject):
     r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
 
-    Text objects behave like a :class:`.VGroup`-like iterable of all characters
+    SingleStringText objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
 
     Parameters
@@ -295,7 +295,7 @@ class SingleStringText(SVGMobject):
 
     Returns
     -------
-    :class:`Text`
+    :class:`SingleStringText`
         The mobject like :class:`.VGroup`.
 
     Examples
@@ -306,7 +306,7 @@ class SingleStringText(SVGMobject):
 
         class Example1Text(Scene):
             def construct(self):
-                text = Text('Hello world').scale(3)
+                text = SingleStringText('Hello world').scale(3)
                 self.add(text)
 
     .. manim:: TextColorExample
@@ -314,8 +314,8 @@ class SingleStringText(SVGMobject):
 
         class TextColorExample(Scene):
             def construct(self):
-                text1 = Text('Hello world', color=BLUE).scale(3)
-                text2 = Text('Hello world', gradient=(BLUE, GREEN)).scale(3).next_to(text1, DOWN)
+                text1 = SingleStringText('Hello world', color=BLUE).scale(3)
+                text2 = SingleStringText('Hello world', gradient=(BLUE, GREEN)).scale(3).next_to(text1, DOWN)
                 self.add(text1, text2)
 
     .. manim:: TextItalicAndBoldExample
@@ -323,12 +323,12 @@ class SingleStringText(SVGMobject):
 
         class TextItalicAndBoldExample(Scene):
             def construct(self):
-                text1 = Text("Hello world", slant=ITALIC)
-                text2 = Text("Hello world", t2s={'world':ITALIC})
-                text3 = Text("Hello world", weight=BOLD)
-                text4 = Text("Hello world", t2w={'world':BOLD})
-                text5 = Text("Hello world", t2c={'o':YELLOW}, disable_ligatures=True)
-                text6 = Text(
+                text1 = SingleStringText("Hello world", slant=ITALIC)
+                text2 = SingleStringText("Hello world", t2s={'world':ITALIC})
+                text3 = SingleStringText("Hello world", weight=BOLD)
+                text4 = SingleStringText("Hello world", t2w={'world':BOLD})
+                text5 = SingleStringText("Hello world", t2c={'o':YELLOW}, disable_ligatures=True)
+                text6 = SingleStringText(
                     "Visit us at docs.manim.community",
                     t2c={"docs.manim.community": YELLOW},
                     disable_ligatures=True,
@@ -342,14 +342,14 @@ class SingleStringText(SVGMobject):
 
             class TextMoreCustomization(Scene):
                 def construct(self):
-                    text1 = Text(
+                    text1 = SingleStringText(
                         'Google',
                         t2c={'[:1]': '#3174f0', '[1:2]': '#e53125',
                              '[2:3]': '#fbb003', '[3:4]': '#3174f0',
                              '[4:5]': '#269a43', '[5:]': '#e53125'}, size=1.2).scale(3)
                     self.add(text1)
 
-    As :class:`Text` uses Pango to render text, rendering non-English
+    As :class:`SingleStringText` uses Pango to render text, rendering non-English
     characters is easily possible:
 
     .. manim:: MultipleFonts
@@ -357,17 +357,17 @@ class SingleStringText(SVGMobject):
 
         class MultipleFonts(Scene):
             def construct(self):
-                morning = Text("வணக்கம்", font="sans-serif")
-                chin = Text(
+                morning = SingleStringText("வணக்கம்", font="sans-serif")
+                chin = SingleStringText(
                     "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
-                )  # works same as ``Text``.
-                mess = Text("Multi-Language", style=BOLD)
-                russ = Text("Здравствуйте मस नम म ", font="sans-serif")
-                hin = Text("नमस्ते", font="sans-serif")
-                arb = Text(
+                )  # works same as ``SingleStringText``.
+                mess = SingleStringText("Multi-Language", style=BOLD)
+                russ = SingleStringText("Здравствуйте मस नम म ", font="sans-serif")
+                hin = SingleStringText("नमस्ते", font="sans-serif")
+                arb = SingleStringText(
                     "صباح الخير \n تشرفت بمقابلتك", font="sans-serif"
                 )  # don't mix RTL and LTR languages nothing shows up then ;-)
-                japanese = Text("臂猿「黛比」帶著孩子", font="sans-serif")
+                japanese = SingleStringText("臂猿「黛比」帶著孩子", font="sans-serif")
                 self.add(morning,chin,mess,russ,hin,arb,japanese)
                 for i,mobj in enumerate(self.mobjects):
                     mobj.shift(DOWN*(i-3))
@@ -378,17 +378,17 @@ class SingleStringText(SVGMobject):
 
         class PangoRender(Scene):
             def construct(self):
-                morning = Text("வணக்கம்", font="sans-serif")
+                morning = SingleStringText("வணக்கம்", font="sans-serif")
                 self.play(Write(morning))
                 self.wait(2)
 
     Tests
     -----
 
-    Check that the creation of :class:`~.Text` works::
+    Check that the creation of :class:`~.SingleStringText` works::
 
-        >>> Text('The horse does not eat cucumber salad.')
-        Text('The horse does not eat cucumber salad.')
+        >>> SingleStringText('The horse does not eat cucumber salad.')
+        SingleStringText('The horse does not eat cucumber salad.')
 
     """
 
@@ -507,7 +507,7 @@ class SingleStringText(SVGMobject):
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
     def __repr__(self):
-        return f"Text({repr(self.original_text)})"
+        return f"SingleStringText({repr(self.original_text)})"
 
     def gen_chars(self):
         chars = self.get_group_class()()
@@ -673,6 +673,63 @@ class SingleStringText(SVGMobject):
 
 
 class Text(SingleStringText):
+    r"""Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_.
+    A wrapper for :class:`SingleStringText` to allow for multiple string
+    initialization. For more examples refer to :class:`SingleStringText`
+    documentation.
+
+    Text objects behave like a :class:`.VGroup`-like iterable of all characters
+    in the given text if they are initialized with a single string. Otherwise,
+    the objects behave like an iterable of initialization strings.
+    In particular, slicing is possible.
+
+    Parameters
+    ----------
+    text_strings : :class:`Iterable[str]`
+        The text strings that will join to make up the text.
+
+    Returns
+    -------
+    :class:`Text`
+        The mobject like :class:`.VGroup`.
+
+    Examples
+    ---------
+
+    .. manim:: MultiAndSingleStringInitText
+        :save_last_frame:
+
+        class MultiAndSingleStringInitText(Scene):
+            def construct(self):
+                text1 = Text('Hello', 'world', '!').scale(3)
+                text2 = Text('Hello world !').scale(3)
+                text2.next_to(text1, 3*DOWN)
+                self.add(text1)
+                self.add(text2)
+
+    .. manim:: TextColorExample
+        :save_last_frame:
+
+        class TextColorExample(Scene):
+            def construct(self):
+                text1 = Text('Hello', 'world', '!', "It is", 'me!')
+                text2 = Text('Hello world!').next_to(text1, 3 * DOWN)
+                text1[1:3].set_color((YELLOW, PINK))
+                text1[4].set_color(ORANGE)
+                text2[1:3].set_color(YELLOW)
+                self.add(text1, text2)
+
+
+    Tests
+    -----
+
+    Check that the creation of :class:`~.Text` works::
+
+        >>> Text('The horse does not eat cucumber salad.')
+        Text('The horse does not eat cucumber salad.')
+
+    """
+
     def __init__(
         self,
         *text_strings,
@@ -725,8 +782,15 @@ class Text(SingleStringText):
             disable_ligatures=disable_ligatures,
             **kwargs,
         )
+        self.fill_opacity = fill_opacity
+        self.stroke_width = stroke_width
+        self.color = color
+        self.arg_separator = arg_separator
         self.text_strings = text_strings
         self.break_up_by_substrings()
+
+    def __repr__(self):
+        return f"Text({repr(self.text)})"
 
     def break_up_by_substrings(self):
         if len(self.text_strings) <= 1:
@@ -757,6 +821,41 @@ class Text(SingleStringText):
                 unpack_groups=self.unpack_groups,
                 disable_ligatures=self.disable_ligatures,
             )
+            if curr_index != 0:
+                arg_sub_mobject = SingleStringText(
+                    self.arg_separator,
+                    fill_opacity=self.fill_opacity,
+                    stroke_width=self.stroke_width,
+                    color=self.color,
+                    size=self.size,
+                    line_spacing=self.line_spacing,
+                    font=self.font,
+                    slant=self.slant,
+                    weight=self.weight,
+                    t2c=self.t2c,
+                    t2f=self.t2f,
+                    t2g=self.t2g,
+                    t2s=self.t2s,
+                    t2w=self.t2w,
+                    gradient=self.gradient,
+                    tab_width=self.tab_width,
+                    height=int(self.height),
+                    width=int(self.width),
+                    should_center=self.should_center,
+                    unpack_groups=self.unpack_groups,
+                    disable_ligatures=self.disable_ligatures,
+                )
+                arg_num_submobs = len(arg_sub_mobject.submobjects)
+                new_index = curr_index + arg_num_submobs
+                if arg_num_submobs == 0:
+                    arg_sub_mobject.submobjects = [VectorizedPoint()]
+                    last_submob_index = min(curr_index, len(self.submobjects) - 1)
+                    arg_sub_mobject.move_to(self.submobjects[last_submob_index], RIGHT)
+                else:
+                    arg_sub_mobject.submobjects = self.submobjects[curr_index:new_index]
+                new_submobjects.append(arg_sub_mobject)
+                curr_index = new_index
+
             num_submobs = len(sub_text_mob.submobjects)
             new_index = curr_index + num_submobs
             if num_submobs == 0:
@@ -771,6 +870,20 @@ class Text(SingleStringText):
             curr_index = new_index
         self.submobjects = new_submobjects
         return self
+
+    def __getitem__(self, item):
+        if isinstance(item, int) and item >= 0:
+            return self.submobjects[item * 2]
+        if isinstance(item, int) is int and item < 0:
+            return self.submobjects[item * 2 + 1]
+        elif isinstance(item, slice):
+            start, stop, step = item.indices(len(self.submobjects))
+            stop = item.stop
+            step = step * 2
+            start = start * 2 + (0 if start >= 0 else 1)
+            stop = stop if stop is None else stop * 2 + (0 if stop >= 0 else 1)
+            print(start, stop, step)
+            return Group(*self.submobjects[start:stop:step])
 
 
 class MarkupText(SVGMobject):
