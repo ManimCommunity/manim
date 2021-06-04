@@ -134,6 +134,27 @@ class ParametricSurface(VGroup):
 
 
 class Sphere(ParametricSurface):
+    """A sphere
+
+    Examples
+    ---------
+    .. manim:: ExampleSphere
+        :save_last_frame:
+
+        class ExampleSphere(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi = PI/6, theta = PI/6)
+                sphere = Sphere(center=(0,1,0),radius=1,resolution=(12, 24),u_min=0.001,u_max=PI - 0.001,v_min=0,v_max=6)
+                self.add(sphere)
+                newSphere = Sphere(center=(0,1,0),radius=2)
+                newSphere.move_to((0,3,0))
+                self.add(newSphere)      
+                yetAnotherSphere = Sphere(center=(0,1,0),radius=2,resolution=(6, 12))     
+                yetAnotherSphere.move_to((0,-1,0))       
+                self.add(yetAnotherSphere)
+
+
+    """
     def __init__(
         self,
         center=ORIGIN,
