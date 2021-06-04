@@ -1355,14 +1355,14 @@ class NumberPlane(Axes):
 
     .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
         on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
-        
+
     Examples
     --------
-    
+
     .. manim:: NumberPlaneExample
         :ref_classes: NumberPlane
         :save_last_frame:
-        
+
         class NumberPlaneExample(Scene):
             def construct(self):
                 number_plane = NumberPlane(
@@ -1376,7 +1376,7 @@ class NumberPlane(Axes):
                     "line_to_number_buff": SMALL_BUFF,
                     "label_direction": DR,
                     "number_scale_value": 0.5,
-                },   
+                },
                 background_line_style={
                     "stroke_color": RED_D,
                     "stroke_width": 2,
