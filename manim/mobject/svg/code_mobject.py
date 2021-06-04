@@ -119,23 +119,19 @@ class Code(VGroup):
     We can also render code passed as a string (but note that
     the language has to be specified in this case):
 
-    .. manim:: CodeFromString
-        :save_last_frame:
-
-        class CodeFromString(Scene):
-            def construct(self):
-                code = '''from manim import Scene, Square
-
-        class FadeInSquare(Scene):
-            def construct(self):
-                s = Square()
-                self.play(FadeIn(s))
-                self.play(s.animate.scale(2))
-                self.wait()
-        '''
-                rendered_code = Code(code=code, tab_width=4, background="window",
-                                    language="Python", font="Monospace")
-                self.add(rendered_code)
+    class CodeExample(Scene):
+        def construct(self):
+            code_string = """from manim import Code
+    \n        class Code_Example(Scene): 
+    \n            def construct(self): 
+    \n                self.add(Code(code="Code String" 
+    \n\t\t\t                          language="Programming Language" 
+    \n\t\t\t                          style="Code style name"  
+    \n\t\t\t                          insert_line_no="Boolean for code line numbers" 
+    \n\t\t\t                          file_path="Optional path for code file" 
+    \n\t\t\t                          line_no_from="Int for first number in the line count"))"""
+            self.add(Code(code=code_string, language="python"))
+      
 
     """
 
