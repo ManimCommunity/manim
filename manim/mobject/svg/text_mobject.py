@@ -872,17 +872,19 @@ class Text(SingleStringText):
         return self
 
     def __getitem__(self, item):
+        if isinstance(item, int) and len(self.text_strings) == 1:
+            return self.submobjects[item]
         if isinstance(item, int) and item >= 0:
             return self.submobjects[item * 2]
-        if isinstance(item, int) is int and item < 0:
+        if isinstance(item, int) and item < 0:
             return self.submobjects[item * 2 + 1]
-        elif isinstance(item, slice):
+        if isinstance(item, slice):
             start, stop, step = item.indices(len(self.submobjects))
-            stop = item.stop
-            step = step * 2
-            start = start * 2 + (0 if start >= 0 else 1)
-            stop = stop if stop is None else stop * 2 + (0 if stop >= 0 else 1)
-            print(start, stop, step)
+            if len(self.text_strings) != 1:
+                stop = item.stop
+                step = step * 2
+                start = start * 2 + (0 if start >= 0 else 1)
+                stop = stop if stop is None else stop * 2 + (0 if stop >= 0 else 1)
             return Group(*self.submobjects[start:stop:step])
 
 
