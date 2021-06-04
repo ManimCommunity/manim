@@ -230,6 +230,26 @@ class Cube(VGroup):
 
 
 class Prism(Cube):
+    """A Prism.
+ 
+    Examples
+    --------
+    .. manim:: ExamplePrism
+        :save_last_frame:
+
+        class ExamplePrism(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi = PI/4, theta = PI/4)
+                prismSmall = Prism(dimensions=[1,2,3])
+                self.add(prismSmall)
+                self.wait(1)
+                self.play(FadeOut(prismSmall))
+                prismLarge = Prism(dimensions=[2,4,6])
+                self.add(prismLarge)
+                self.wait(1)
+                self.play(FadeOut(prismLarge))
+                self.play(Transform(prismSmall,prismLarge))
+    """
     def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
         Cube.__init__(self, **kwargs)
