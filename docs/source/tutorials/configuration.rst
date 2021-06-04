@@ -123,7 +123,7 @@ open the file after it is rendered.
    manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
 
 .. tip:: There are many more command-line flags that manim accepts.  All the
-	 possible flags are shown by executing ``manim -h``.  A complete list
+	 possible flags are shown by executing ``manim render --help``.  A complete list
 	 of CLI flags is at the end of this document.
 
 
