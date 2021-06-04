@@ -1,8 +1,3 @@
----
-name: Default pull request
-about: The default template for general purpose pull requests.
----
-
 <!--
 Thanks for your contribution to ManimCommunity!
 

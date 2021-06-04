@@ -1,9 +1,3 @@
----
-name: Bug fix
-about: For bug fixes
-labels: bugfix
----
-
 <!-- Thank you for contributing to ManimCommunity!
 Before filling in the details, ensure:
 - The title of your PR gives a descriptive summary to end-users. Some examples:
