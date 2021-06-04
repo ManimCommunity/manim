@@ -1,10 +1,3 @@
----
-name: Hackathon 2021
-title: ""
-labels: hackathon
-assignees: ''
----
-
 Thanks for your contribution for the manim community hackathon!
 
 Please make sure your pull request has a meaningful title.
