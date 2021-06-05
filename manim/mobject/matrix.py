@@ -10,14 +10,14 @@ Examples
         def construct(self):
             m0 = Matrix([[2, 0], [-1, 1]])
             m1 = Matrix([[1, 0], [0, 1]],
-                        left_bracket="(",
-                        right_bracket=")")
+                left_bracket="(",
+                right_bracket=")")
             m2 = DecimalMatrix(
                 [[3.456, 2.122], [33.2244, 12.33]],
                 element_to_mobject_config={"num_decimal_places": 2},
                 left_bracket="\\{",
                 right_bracket="\\}")
-            g = Group(m0, m1, m2).arrang(buff=1)
+            g = Group(m0, m1, m2).arrange(buff=1)
             self.add(g)
 """
 
