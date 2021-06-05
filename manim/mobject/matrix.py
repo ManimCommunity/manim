@@ -256,7 +256,7 @@ class Matrix(VMobject):
 
         Examples
         --------
-        
+
         .. manim:: GetColumnsExample
         :save_last_frame:
 
