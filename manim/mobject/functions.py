@@ -103,7 +103,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
 
 class FunctionGraph(ParametricFunction):
-     """A parametric curve.
+    """A parametric curve.
 
     Examples
     --------
@@ -116,6 +116,7 @@ class FunctionGraph(ParametricFunction):
                 parametricFunction2 = lambda t: np.sin(t)+0.5*np.sin(7*t)+(1/7)*np.sin(14*t)
                 parametricFunction3 = lambda t: np.sin(t)+0.5*np.sin(7*t)+(1/7)*np.sin(14*t)
                 self.add(FunctionGraph(parametricFunction1,color=RED),FunctionGraph(parametricFunction2,color=BLUE),FunctionGraph(parametricFunction2,color=GREEN).move_to([0,1,0]))
+   
     """
     def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
 
