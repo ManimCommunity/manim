@@ -208,11 +208,11 @@ class DecimalNumber(VMobject):
 
 class Integer(DecimalNumber):
     """A class for displaying Integers.
-    
+
     Examples
     --------
-    
-    .. manim:: IntegerExample 
+
+    .. manim:: IntegerExample
     :save_last_frame:
 
         class IntegerExample(Scene):
@@ -222,6 +222,7 @@ class Integer(DecimalNumber):
                 self.add(Integer(number=42).set_x(2.5).set_y(-2.3).set_color_by_gradient(BLUE, TEAL).scale(1.7))
                 self.add(Integer(number=6.28).set_x(-1.5).set_y(-2).set_color(YELLOW).scale(1.4))
     """
+
     def __init__(self, number=0, num_decimal_places=0, **kwargs):
         DecimalNumber.__init__(
             self, number=number, num_decimal_places=num_decimal_places, **kwargs
