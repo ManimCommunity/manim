@@ -974,7 +974,11 @@ class Axes(VGroup, CoordinateSystem):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
-        self.axis_config = {"include_tip": tips, "numbers_to_exclude": [0]}
+        self.axis_config = {
+            "include_tip": tips,
+            "numbers_to_exclude": [0],
+            "exclude_origin_tick": True,
+        }
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
