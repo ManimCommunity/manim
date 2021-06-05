@@ -484,21 +484,22 @@ class DecimalMatrix(Matrix):
 class IntegerMatrix(Matrix):
     """A mobject that displays a matrix with integer entries on the screen.
 
-    Example
+    Examples
     --------
-    .. manim:: IntegerMatrixExample
-    :save_last_frame:
 
-    class IntegerMatrixExample(Scene):
-        def construct(self):
-            m0 = IntegerMatrix(
-                [[3.7, 2.], [42.2, 12]],
-                left_bracket="\\big(",
-                right_bracket="\\big)"
-            )
-            self.add(
-                m0
-            )
+    .. manim:: IntegerMatrixExample
+        :save_last_frame:
+
+        class IntegerMatrixExample(Scene):
+            def construct(self):
+                m0 = IntegerMatrix(
+                    [[3.7, 2.], [42.2, 12]],
+                    left_bracket="\\big(",
+                    right_bracket="\\big)"
+                )
+                self.add(
+                    m0
+                )
     """
 
     def __init__(self, matrix, element_to_mobject=Integer, **kwargs):
@@ -518,12 +519,13 @@ class IntegerMatrix(Matrix):
 class MobjectMatrix(Matrix):
     """A mobject that displays a matrix of mobject entries on the screen.
 
-    Example
+    Examples
     --------
-    .. manim:: IntegerMatrixExample
-    :save_last_frame:
 
-    class MobjectMatrixExample(Scene):
+    .. manim:: MobjectMatrixExample
+        :save_last_frame:
+
+        class MobjectMatrixExample(Scene):
         def construct(self):
             a = Circle().scale(0.3)
             b = Square().scale(0.3)
