@@ -1710,22 +1710,29 @@ class Polygon(Polygram):
     Examples
     --------
 
-    .. manim:: PolygonExample
+    .. manim:: PolygonExample 
         :save_last_frame:
-
-        class PolygonExample(Scene):
-            def construct(self):
-                isosceles = Polygon([-5, 1.5, 0], [-2, 1.5, 0], [-3.5, -2, 0])
-                position_list = [
-                    [4, 1, 0],  # middle right
-                    [4, -2.5, 0],  # bottom right
-                    [0, -2.5, 0],  # bottom left
-                    [0, 3, 0],  # top left
-                    [2, 1, 0],  # middle
-                    [4, 3, 0],  # top right
-                ]
-                square_and_triangles = Polygon(*position_list, color=PURPLE_B)
-                self.add(isosceles, square_and_triangles)
+        
+    class PolygonExample(Scene):
+        def construct(self):
+            isosceles = Polygon([-5, -0.5, 0], [-4, 0.5, 0], [-5, 2.25, 0])
+            isosceles.set_color([ORANGE, BLUE])
+            isosceles.set_stroke(width=5)
+            square = Polygon([-3.8, 2, 0], [-3.8, 0.4, 0], [-2.2, 0.4, 0], [-2.2, 2, 0])
+            square.set_color(BLACK)
+            square.set_fill(GREEN_B, opacity=0.5)
+            pentagon = Polygon([-1, 0.5, 0], [-0.5, 2, 0], [1, 2, 0], [1.5, 0.5, 0], [0.25, -0.5, 0])
+            pentagon.set_fill(opacity=0.5)
+            pentagon.set_color([TEAL, RED, YELLOW])
+            pentagon.set_stroke(width=8)
+            rectangle = Polygon([-2.75, -1.75, 0], [-2.75, -0.75, 0], [2.50, -0.75, 0], [3, -1.75, 0])
+            rectangle.set_color(GREEN)
+            rectangle.set_fill(WHITE, opacity=1)
+            rectangle.set_stroke(width=10)
+            upright_rectangle = Polygon([2.15, -2, 0], [3.5, -2, 0], [3.5, 2.5, 0], [2.15, 2.5, 0])
+            upright_rectangle.set_color(BLACK)
+            upright_rectangle.set_fill(PURPLE, opacity=0.5)
+            self.add(isosceles, square, pentagon, rectangle, upright_rectangle)
     """
 
     def __init__(self, *vertices: Sequence[float], **kwargs):
