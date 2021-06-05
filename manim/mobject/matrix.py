@@ -495,7 +495,7 @@ class IntegerMatrix(Matrix):
         class IntegerMatrixExample(Scene):
             def construct(self):
                 m0 = IntegerMatrix(
-                    [[3.7, 2.], [42.2, 12]],
+                    [[3.7, 2], [42.2, 12]],
                     left_bracket="\\big(",
                     right_bracket="\\big)"
                 )
