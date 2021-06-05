@@ -70,7 +70,6 @@ class Matrix(VMobject):
 
     Examples
     --------
-
     .. manim:: MatrixExamples
         :save_last_frame:
 
@@ -255,8 +254,9 @@ class Matrix(VMobject):
         List[:class:`~.VGroup`]
             Each VGroup contains a column of the matrix.
 
-        Example
+        Examples
         --------
+        
         .. manim:: GetColumnsExample
         :save_last_frame:
 
@@ -289,8 +289,9 @@ class Matrix(VMobject):
         :class:`Matrix`
             The current matrix object (self).
 
-        Example
+        Examples
         --------
+
         .. manim:: SetColumnColorsExample
         :save_last_frame:
 
@@ -315,8 +316,9 @@ class Matrix(VMobject):
         List[:class:`~.VGroup`]
             Each VGroup contains a row of the matrix.
 
-        Example
+        Examples
         --------
+
         .. manim:: GetRowsExample
         :save_last_frame:
 
@@ -343,8 +345,9 @@ class Matrix(VMobject):
         :class:`Matrix`
             The current matrix object (self).
 
-        Example
+        Examples
         --------
+
         .. manim:: SetRowColorsExample
         :save_last_frame:
 
@@ -384,8 +387,9 @@ class Matrix(VMobject):
         :class:`~.VGroup`
             VGroup containing entries of the matrix
 
-        Example
+        Examples
         --------
+
         .. manim:: GetEntriesExample
         :save_last_frame:
 
@@ -410,8 +414,9 @@ class Matrix(VMobject):
         List[:class:`~.VGroup`]
             Each VGroup contains a bracket
 
-        Example
+        Examples
         --------
+
         .. manim:: GetBracketsExample
         :save_last_frame:
 
