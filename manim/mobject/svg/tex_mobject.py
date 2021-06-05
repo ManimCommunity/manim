@@ -602,7 +602,7 @@ class BulletedList(Tex):
     Examples
     --------
 
-    ..manim:: BulletedListExample
+    .. manim:: BulletedListExample
         :save_last_frame:
 
         class BulletedListExample(Scene):
