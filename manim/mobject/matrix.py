@@ -45,6 +45,8 @@ from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import WHITE
 
+# TO DO : The following two functions are not used in this file.
+#         Not sure if we should keep it or not.
 
 def matrix_to_tex_string(matrix):
     matrix = np.array(matrix).astype("str")
@@ -186,14 +188,8 @@ class Matrix(VMobject):
         self.left_bracket = left_bracket
         self.right_bracket = right_bracket
         VMobject.__init__(self, **kwargs)
-        # matrix = np.array(matrix, ndmin=2, dtype=object)
-        # if len(matrix.shape) < 2:
-        #     raise ValueError(
-        #         f"{self.__str__()} class requires a two-dimensional array!"
-        #     )
         mob_matrix = self.matrix_to_mob_matrix(matrix)
         self.organize_mob_matrix(mob_matrix)
-        # self.elements = VGroup(*mob_matrix.flatten())
         self.elements = VGroup(*it.chain(*mob_matrix))
         self.add(self.elements)
         self.add_brackets(self.left_bracket, self.right_bracket)
@@ -206,9 +202,6 @@ class Matrix(VMobject):
             self.add_background_rectangle()
 
     def matrix_to_mob_matrix(self, matrix):
-        # return np.vectorize(self.element_to_mobject)(
-        #     matrix, **self.element_to_mobject_config
-        # )
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -277,9 +270,6 @@ class Matrix(VMobject):
                 )
 
         """
-        # return VGroup(
-        #     *[VGroup(*self.mob_matrix[:, i]) for i in range(self.mob_matrix.shape[1])]
-        # )
         return VGroup(*[
              VGroup(*[row[i] for row in self.mob_matrix])
              for i in range(len(self.mob_matrix[0]))
@@ -337,9 +327,6 @@ class Matrix(VMobject):
                     m0
                 )
         """
-        # return VGroup(
-        #     *[VGroup(*self.mob_matrix[i, :]) for i in range(self.mob_matrix.shape[0])]
-        # )
         return VGroup(*[
             VGroup(*row)
             for row in self.mob_matrix
@@ -415,7 +402,6 @@ class Matrix(VMobject):
                     m0
                 )
         """
-        # return VGroup(*self.get_mob_matrix().flatten())
         return self.elements
 
     def get_brackets(self):
