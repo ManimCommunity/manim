@@ -17,11 +17,8 @@ Examples
                 element_to_mobject_config={"num_decimal_places": 2},
                 left_bracket="\\{",
                 right_bracket="\\}")
-
-            self.add(m0.shift(LEFT - (3, 0, 0)))
-            self.add(m1)
-            self.add(m2.shift(RIGHT + (3, 0, 0)))
-
+            g = Group(m0, m1, m2).arrang(buff=1)
+            self.add(g)
 """
 
 __all__ = [
@@ -82,23 +79,19 @@ class Matrix(VMobject):
                     bracket_h_buff=SMALL_BUFF,
                     bracket_v_buff=SMALL_BUFF,
                     left_bracket="\\{",
-                    right_bracket="\\}"
-                )
+                    right_bracket="\\}")
                 m1.add(SurroundingRectangle(m1.get_columns()[1]))
                 m2 = Matrix([[2, 1], [-1, 3]],
                     element_alignment_corner=UL,
                     left_bracket="(",
-                    right_bracket=")"
-                )
+                    right_bracket=")")
                 m3 = Matrix([[2, 1], [-1, 3]],
                     left_bracket="<",
-                    right_bracket=">"
-                )
+                    right_bracket=">")
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
                 m5 = Matrix([[2, 1], [-1, 3]],
                 ).set_row_colors(RED, GREEN)
-
                 g = Group(
                     m0,m1,m2,m3,m4,m5
                 ).arrange_in_grid(buff=2)
@@ -111,19 +104,12 @@ class Matrix(VMobject):
             def construct(self):
                 func = lambda pos: ((pos[0]*UR+pos[1]*LEFT) - pos)/3
                 self.add(StreamLines(func))
-
                 m0 = Matrix([[12, -30], [-1, 15]],
-                    add_background_rectangles_to_entries=True
-                )
+                    add_background_rectangles_to_entries=True)
                 m1 = Matrix([[2, 0], [-1, 1]],
-                    include_background_rectangle=True
-                )
-                m3 = Matrix([[12, -30], [-1, 15]])
-                g = Group(
-                    m0,
-                    m1,
-                    m3
-                ).arrange(buff=2)
+                    include_background_rectangle=True)
+                m2 = Matrix([[12, -30], [-1, 15]])
+                g = Group(m0, m1, m2).arrange(buff=2)
                 self.add(g)
     """
 
@@ -264,9 +250,7 @@ class Matrix(VMobject):
                 def construct(self):
                     m0 = Matrix([["\\pi", 3], [1, 5]])
                     m0.add(SurroundingRectangle(m0.get_columns()[1]))
-                    self.add(
-                        m0
-                )
+                    self.add(m0)
         """
 
         return VGroup(
@@ -299,9 +283,7 @@ class Matrix(VMobject):
                 def construct(self):
                     m0 = Matrix([["\\pi", 1], [-1, 3]],
                     ).set_column_colors([RED,BLUE], GREEN)
-                    self.add(
-                        m0
-                    )
+                    self.add(m0)
         """
         columns = self.get_columns()
         for color, column in zip(colors, columns):
@@ -326,9 +308,7 @@ class Matrix(VMobject):
                 def construct(self):
                     m0 = Matrix([["\\pi", 3], [1, 5]])
                     m0.add(SurroundingRectangle(m0.get_rows()[1]))
-                    self.add(
-                        m0
-                    )
+                    self.add(m0)
         """
         return VGroup(*[VGroup(*row) for row in self.mob_matrix])
 
@@ -355,9 +335,7 @@ class Matrix(VMobject):
                 def construct(self):
                     m0 = Matrix([["\\pi", 1], [-1, 3]],
                     ).set_row_colors([RED,BLUE], GREEN)
-                    self.add(
-                        m0
-                    )
+                    self.add(m0)
         """
         rows = self.get_rows()
         for color, row in zip(colors, rows):
@@ -400,9 +378,7 @@ class Matrix(VMobject):
                     colors = [BLUE, GREEN, YELLOW, RED]
                     for k in range(len(colors)):
                         ent[k].set_color(colors[k])
-                    self.add(
-                        m0
-                    )
+                    self.add(m0)
         """
         return self.elements
 
@@ -427,9 +403,7 @@ class Matrix(VMobject):
                     colors = [BLUE, GREEN]
                     for k in range(len(colors)):
                         bra[k].set_color(colors[k])
-                    self.add(
-                        m0
-                    )
+                    self.add(m0)
         """
         return self.brackets
 
@@ -450,9 +424,7 @@ class DecimalMatrix(Matrix):
                     element_to_mobject_config={"num_decimal_places": 2},
                     left_bracket="\\{",
                     right_bracket="\\}")
-                self.add(
-                    m0
-                )
+                self.add(m0)
     """
 
     def __init__(
@@ -497,11 +469,8 @@ class IntegerMatrix(Matrix):
                 m0 = IntegerMatrix(
                     [[3.7, 2], [42.2, 12]],
                     left_bracket="(",
-                    right_bracket=")"
-                )
-                self.add(
-                    m0
-                )
+                    right_bracket=")")
+                self.add(m0)
     """
 
     def __init__(self, matrix, element_to_mobject=Integer, **kwargs):
@@ -533,12 +502,8 @@ class MobjectMatrix(Matrix):
                 b = Square().scale(0.3)
                 c = Triangle().scale(0.3)
                 d = Star().scale(0.3)
-                m0 = MobjectMatrix(
-                    [[a, b], [c, d]]
-                )
-                self.add(
-                    m0
-                )
+                m0 = MobjectMatrix([[a, b], [c, d]])
+                self.add(m0)
     """
 
     def __init__(self, matrix, element_to_mobject=lambda m: m, **kwargs):
@@ -590,7 +555,6 @@ def get_det_text(
                 # must add the matrix
                 self.add(matrix)
                 self.add(det)
-
     """
     parens = MathTex("(", ")")
     parens.scale(initial_scale_factor)
