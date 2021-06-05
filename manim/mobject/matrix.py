@@ -81,8 +81,8 @@ class Matrix(VMobject):
                 h_buff=0.8,
                 bracket_h_buff=SMALL_BUFF,
                 bracket_v_buff=SMALL_BUFF,
-                left_bracket="\\big\\lbrace",
-                right_bracket="\\big\\rbrace"
+                left_bracket="\\{",
+                right_bracket="\\}"
                 )
                 m1.add(SurroundingRectangle(m1.get_columns()[1]))
                 m2 = Matrix([[2, 1], [-1, 3]],
@@ -168,9 +168,9 @@ class Matrix(VMobject):
         element_alignment_corner : :class:`np.ndarray`, optional
             the element alignment corner, by default DR
         left_bracket : :class:`str`, optional
-            the left bracket type, by default "\\big["
+            the left bracket type, by default "\\\\big["
         right_bracket : :class:`str`, optional
-            the right bracket type, by default "\\big]"
+            the right bracket type, by default "\\\\big]"
 
         """
 
