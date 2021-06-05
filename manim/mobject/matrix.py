@@ -433,24 +433,24 @@ class Matrix(VMobject):
 
 
 class DecimalMatrix(Matrix):
-    """A mobject that displays a matrix with decimal entries on the screen.
+    # """A mobject that displays a matrix with decimal entries on the screen.
 
-    Example
-    --------
-    .. manim:: DecimalMatrixExample
-    :save_last_frame:
+    # Example
+    # --------
+    # .. manim:: DecimalMatrixExample
+    # :save_last_frame:
 
-    class DecimalMatrixExample(Scene):
-        def construct(self):
-            m0 = DecimalMatrix(
-                [[3.456, 2.122], [33.2244, 12]],
-                element_to_mobject_config={"num_decimal_places": 2},
-                left_bracket="\\{",
-                right_bracket="\\}")
-            self.add(
-                m0
-            )
-    """
+    # class DecimalMatrixExample(Scene):
+    #     def construct(self):
+    #         m0 = DecimalMatrix(
+    #             [[3.456, 2.122], [33.2244, 12]],
+    #             element_to_mobject_config={"num_decimal_places": 2},
+    #             left_bracket="\\{",
+    #             right_bracket="\\}")
+    #         self.add(
+    #             m0
+    #         )
+    # """
 
     def __init__(
         self,
