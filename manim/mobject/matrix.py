@@ -104,7 +104,7 @@ class Matrix(VMobject):
                     m0,m1,m2,m3,m4,m5
                 ).arrange_in_grid(buff=2)
                 self.add(g)
-        
+
     .. manim:: BackgroundRectanglesExample
         :save_last_frame:
 
