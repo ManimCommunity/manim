@@ -27,6 +27,22 @@ EPSILON = 0.0001
 
 
 class SampleSpace(Rectangle):
+    """A sample space.
+    
+    Examples
+    --------
+    .. manim:: ExampleSampleSpace
+        :save_last_frame:
+        class ExampleSampleSpace(Scene):
+            def construct(self):
+                poly1 = SampleSpace(stroke_width=15,fill_opacity=1).move_to([-1,0,0])
+                poly2 = SampleSpace(width = 5, height = 3, stroke_width=5,fill_opacity=0.5).move_to([4,0,0])
+                poly3 = SampleSpace(width = 2, height = 2, stroke_width=5,fill_opacity=0.1).move_to([-4.5,0,0])
+                self.add(poly1)
+                self.add(poly2)
+                self.add(poly3)
+    
+    """
     def __init__(
         self,
         height=3,
