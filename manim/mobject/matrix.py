@@ -70,10 +70,8 @@ class Matrix(VMobject):
 
     Examples
     --------
-    The first example shows some options while the second example explains the use of
-    `add_background_rectangles_to_entries` and `include_background_rectangle`.
 
-    .. manim:: MatrixExamples
+    .. manim:: MobjectMatrixExample
         :save_last_frame:
 
         class MatrixExamples(Scene):
@@ -106,7 +104,7 @@ class Matrix(VMobject):
                     m0,m1,m2,m3,m4,m5
                 ).arrange_in_grid(buff=2)
                 self.add(g)
-
+        
     .. manim:: BackgroundRectanglesExample
         :save_last_frame:
 
@@ -128,7 +126,6 @@ class Matrix(VMobject):
                     m3
                 ).arrange(buff=2)
                 self.add(g)
-
     """
 
     def __init__(
