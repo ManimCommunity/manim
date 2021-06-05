@@ -62,7 +62,70 @@ def matrix_to_mobject(matrix):
 
 
 class Matrix(VMobject):
-    """A mobject that displays a matrix on the screen."""
+    """A mobject that displays a matrix on the screen.
+
+    Examples
+    --------
+    The first example shows some options while the second example explains the use of 
+    `add_background_rectangles_to_entries` and `include_background_rectangle`.
+
+    .. manim:: MatrixExamples
+        :save_last_frame:
+
+        class MatrixExamples(Scene):
+            def construct(self):
+                m0 = Matrix([[2, "\\pi"], [-1, 1]])
+                m1 = Matrix([[2, 0, 4], [-1, 1, 5]],
+                v_buff=1.3,
+                h_buff=0.8,
+                bracket_h_buff=SMALL_BUFF,
+                bracket_v_buff=SMALL_BUFF,
+                left_bracket="\\big\\lbrace",
+                right_bracket="\\big\\rbrace"
+                )
+                m1.add(SurroundingRectangle(m1.get_columns()[1]))
+                m2 = Matrix([[2, 1], [-1, 3]],
+                    element_alignment_corner=UL,
+                    left_bracket="\\big(",
+                    right_bracket="\\big)"
+                )
+                m3 = Matrix([[2, 1], [-1, 3]],
+                    left_bracket="\\big<",
+                    right_bracket="\\big>"
+                )
+                m4 = Matrix([[2, 1], [-1, 3]],
+                ).set_column_colors(RED, GREEN)
+                m5 = Matrix([[2, 1], [-1, 3]],
+                ).set_row_colors(RED, GREEN)
+
+                g = Group(
+                    m0,m1,m2,m3,m4,m5
+                ).arrange_in_grid(buff=2)
+                self.add(g)
+
+    .. manim:: BackgroundRectanglesExample
+        :save_last_frame:
+
+        class BackgroundRectanglesExample(Scene):
+            def construct(self):
+                func = lambda pos: ((pos[0]*UR+pos[1]*LEFT) - pos)/3
+                self.add(StreamLines(func))
+
+                m0 = Matrix([[12, -30], [-1, 15]],
+                    add_background_rectangles_to_entries=True
+                )
+                m1 = Matrix([[2, 0], [-1, 1]],
+                    include_background_rectangle=True
+                )
+                m3 = Matrix([[12, -30], [-1, 15]])
+                g = Group(
+                    m0,
+                    m1,
+                    m3
+                ).arrange(buff=2)
+                self.add(g)
+
+    """
 
     def __init__(
         self,
@@ -105,9 +168,9 @@ class Matrix(VMobject):
         element_alignment_corner : :class:`np.ndarray`, optional
             the element alignment corner, by default DR
         left_bracket : :class:`str`, optional
-            the left bracket type, by default "\\\\big["
+            the left bracket type, by default "\\big["
         right_bracket : :class:`str`, optional
-            the right bracket type, by default "\\\\big]"
+            the right bracket type, by default "\\big]"
 
         """
 
@@ -199,6 +262,20 @@ class Matrix(VMobject):
         --------
         List[:class:`~.VGroup`]
             Each VGroup contains a column of the matrix.
+        
+        Example
+        --------
+        .. manim:: GetColumnsExample
+        :save_last_frame:
+
+        class GetColumnsExample(Scene):
+            def construct(self):
+                m0 = Matrix([["\\pi", 3], [1, 5]])
+                m0.add(SurroundingRectangle(m0.get_columns()[1]))
+                self.add(
+                    m0
+                )
+
         """
         # return VGroup(
         #     *[VGroup(*self.mob_matrix[:, i]) for i in range(self.mob_matrix.shape[1])]
@@ -220,6 +297,19 @@ class Matrix(VMobject):
         -------
         :class:`Matrix`
             The current matrix object (self).
+
+        Example
+        --------
+        .. manim:: SetColumnColorsExample
+        :save_last_frame:
+
+        class SetColumnColorsExample(Scene):
+            def construct(self):
+                m0 = Matrix([["\\pi", 1], [-1, 3]],
+                ).set_column_colors([RED,BLUE], GREEN)
+                self.add(
+                    m0
+                )
         """
         columns = self.get_columns()
         for color, column in zip(colors, columns):
@@ -233,6 +323,19 @@ class Matrix(VMobject):
         --------
         List[:class:`~.VGroup`]
             Each VGroup contains a row of the matrix.
+        
+        Example
+        --------
+        .. manim:: GetRowsExample
+        :save_last_frame:
+
+        class GetRowsExample(Scene):
+            def construct(self):
+                m0 = Matrix([["\\pi", 3], [1, 5]])
+                m0.add(SurroundingRectangle(m0.get_rows()[1]))
+                self.add(
+                    m0
+                )
         """
         # return VGroup(
         #     *[VGroup(*self.mob_matrix[i, :]) for i in range(self.mob_matrix.shape[0])]
@@ -254,6 +357,19 @@ class Matrix(VMobject):
         -------
         :class:`Matrix`
             The current matrix object (self).
+
+        Example
+        --------
+        .. manim:: SetRowColorsExample
+        :save_last_frame:
+
+        class SetRowColorsExample(Scene):
+            def construct(self):
+                m0 = Matrix([["\\pi", 1], [-1, 3]],
+                ).set_row_colors([RED,BLUE], GREEN)
+                self.add(
+                    m0
+                )
         """
         rows = self.get_rows()
         for color, row in zip(colors, rows):
@@ -282,6 +398,22 @@ class Matrix(VMobject):
         --------
         :class:`~.VGroup`
             VGroup containing entries of the matrix
+
+        Example
+        --------
+        .. manim:: GetEntriesExample
+        :save_last_frame:
+
+        class GetEntriesExample(Scene):
+            def construct(self):
+                m0 = Matrix([[2, 3], [1, 5]])
+                ent = m0.get_entries()
+                colors = [BLUE, GREEN, YELLOW, RED]
+                for k in range(len(colors)):
+                    ent[k].set_color(colors[k])
+                self.add(
+                    m0
+                )
         """
         # return VGroup(*self.get_mob_matrix().flatten())
         return self.elements
@@ -293,12 +425,45 @@ class Matrix(VMobject):
         --------
         List[:class:`~.VGroup`]
             Each VGroup contains a bracket
+
+        Example
+        --------
+        .. manim:: GetBracketsExample
+        :save_last_frame:
+
+        class GetBracketsExample(Scene):
+            def construct(self):
+                m0 = Matrix([["\\pi", 3], [1, 5]])
+                bra = m0.get_brackets()
+                colors = [BLUE, GREEN]
+                for k in range(len(colors)):
+                    bra[k].set_color(colors[k])
+                self.add(
+                    m0
+                )
         """
         return self.brackets
 
 
 class DecimalMatrix(Matrix):
-    """A mobject that displays a matrix with decimal entries on the screen."""
+    """A mobject that displays a matrix with decimal entries on the screen.
+    
+    Example
+    --------
+    .. manim:: DecimalMatrixExample
+    :save_last_frame:
+
+    class DecimalMatrixExample(Scene):
+        def construct(self):
+            m0 = DecimalMatrix(
+                [[3.456, 2.122], [33.2244, 12]],
+                element_to_mobject_config={"num_decimal_places": 2},
+                left_bracket="\\{",
+                right_bracket="\\}")
+            self.add(
+                m0
+            )
+    """
 
     def __init__(
         self,
@@ -329,7 +494,24 @@ class DecimalMatrix(Matrix):
 
 
 class IntegerMatrix(Matrix):
-    """A mobject that displays a matrix with integer entries on the screen."""
+    """A mobject that displays a matrix with integer entries on the screen.
+
+    Example
+    --------
+    .. manim:: IntegerMatrixExample
+    :save_last_frame:
+
+    class IntegerMatrixExample(Scene):
+        def construct(self):
+            m0 = IntegerMatrix(
+                [[3.7, 2.], [42.2, 12]],
+                left_bracket="\\big(",
+                right_bracket="\\big)"
+            )
+            self.add(
+                m0
+            )
+    """
 
     def __init__(self, matrix, element_to_mobject=Integer, **kwargs):
         """
@@ -346,7 +528,26 @@ class IntegerMatrix(Matrix):
 
 
 class MobjectMatrix(Matrix):
-    """A mobject that displays a matrix of mobject entries on the screen."""
+    """A mobject that displays a matrix of mobject entries on the screen.
+
+    Example
+    --------
+    .. manim:: IntegerMatrixExample
+    :save_last_frame:
+
+    class MobjectMatrixExample(Scene):
+        def construct(self):
+            a = Circle().scale(0.3)
+            b = Square().scale(0.3)
+            c = Triangle().scale(0.3)
+            d = Star().scale(0.3)
+            m0 = MobjectMatrix(
+                [[a, b], [c, d]]
+            )
+            self.add(
+                m0
+            )
+    """
 
     def __init__(self, matrix, element_to_mobject=lambda m: m, **kwargs):
         Matrix.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
