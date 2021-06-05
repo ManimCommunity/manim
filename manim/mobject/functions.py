@@ -115,8 +115,9 @@ class FunctionGraph(ParametricFunction):
                 parametricFunction1 = lambda t: np.cos(t)+0.5*np.cos(7*t)+(1/7)*np.cos(14*t)
                 parametricFunction2 = lambda t: np.sin(t)+0.5*np.sin(7*t)+(1/7)*np.sin(14*t)
                 parametricFunction3 = lambda t: np.sin(t)+0.5*np.sin(7*t)+(1/7)*np.sin(14*t)
-                self.add(FunctionGraph(parametricFunction1,color=RED),FunctionGraph(parametricFunction2,color=BLUE),FunctionGraph(parametricFunction2,color=GREEN).move_to([0,1,0]))
-
+                self.add(FunctionGraph(parametricFunction1,color=RED))
+                self.add(FunctionGraph(parametricFunction2,color=BLUE))
+                self.add(FunctionGraph(parametricFunction3,color=GREEN).move_to([0,1,0]))
     """
 
     def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
