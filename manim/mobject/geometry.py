@@ -1710,9 +1710,9 @@ class Polygon(Polygram):
     Examples
     --------
 
-    .. manim:: PolygonExample 
+    .. manim:: PolygonExample
         :save_last_frame:
-        
+
     class PolygonExample(Scene):
         def construct(self):
             isosceles = Polygon([-5, -0.5, 0], [-4, 0.5, 0], [-5, 2.25, 0])
