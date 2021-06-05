@@ -270,11 +270,11 @@ class Arc(TipableVMobject):
     A simple arc with angle Pi.
 
     .. manim:: ArcExample
-    :save_last_frame:
+        :save_last_frame:
 
-    class ArcExample(Scene):
-        def construct(self):
-            self.add(Arc(angle=PI))
+        class ArcExample(Scene):
+            def construct(self):
+                self.add(Arc(angle=PI))
     """
 
     def __init__(
