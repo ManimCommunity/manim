@@ -71,7 +71,7 @@ class Matrix(VMobject):
     Examples
     --------
 
-    .. manim:: MobjectMatrixExample
+    .. manim:: MatrixExamples
         :save_last_frame:
 
         class MatrixExamples(Scene):
