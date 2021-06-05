@@ -263,7 +263,19 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
 
 class Arc(TipableVMobject):
-    """A circular arc."""
+    """A circular arc.
+
+    Examples
+    --------
+    A simple arc of angle Pi.
+
+    .. manim:: ArcExample
+        :save_last_frame:
+
+        class ArcExample(Scene):
+            def construct(self):
+                self.add(Arc(angle=PI))
+    """
 
     def __init__(
         self,
