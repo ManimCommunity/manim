@@ -267,7 +267,7 @@ class Arc(TipableVMobject):
 
     Examples
     --------
-    A simple arc with angle Pi.
+    A simple arc of angle Pi.
 
     .. manim:: ArcExample
         :save_last_frame:
