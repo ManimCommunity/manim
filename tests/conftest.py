@@ -51,13 +51,3 @@ def reset_cfg_file():
     yield
     with open(cfgfilepath, "w") as cfgfile:
         cfgfile.write(original)
-
-
-@pytest.fixture
-def temp_media_dir(tmpdir):
-    from manim import config
-
-    orig_dir = config.media_dir
-    config.media_dir = str(tmpdir)
-    yield tmpdir
-    config.media_dir = orig_dir
