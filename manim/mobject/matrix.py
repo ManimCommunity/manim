@@ -10,8 +10,8 @@ Examples
         def construct(self):
             m0 = Matrix([[2, 0], [-1, 1]])
             m1 = Matrix([[1, 0], [0, 1]],
-                        left_bracket="\\big(",
-                        right_bracket="\\big)")
+                        left_bracket="(",
+                        right_bracket=")")
             m2 = DecimalMatrix(
                 [[3.456, 2.122], [33.2244, 12.33]],
                 element_to_mobject_config={"num_decimal_places": 2},
@@ -87,12 +87,12 @@ class Matrix(VMobject):
                 m1.add(SurroundingRectangle(m1.get_columns()[1]))
                 m2 = Matrix([[2, 1], [-1, 3]],
                     element_alignment_corner=UL,
-                    left_bracket="\\\\big(",
-                    right_bracket="\\\\big)"
+                    left_bracket="(",
+                    right_bracket=")"
                 )
                 m3 = Matrix([[2, 1], [-1, 3]],
-                    left_bracket="\\\\big<",
-                    right_bracket="\\\\big>"
+                    left_bracket="<",
+                    right_bracket=">"
                 )
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
@@ -139,8 +139,8 @@ class Matrix(VMobject):
         element_to_mobject=MathTex,
         element_to_mobject_config={},
         element_alignment_corner=DR,
-        left_bracket="\\big[",
-        right_bracket="\\big]",
+        left_bracket="[",
+        right_bracket="]",
         **kwargs,
     ):
         """
@@ -168,9 +168,9 @@ class Matrix(VMobject):
         element_alignment_corner : :class:`np.ndarray`, optional
             the element alignment corner, by default DR
         left_bracket : :class:`str`, optional
-            the left bracket type, by default "\\\\big["
+            the left bracket type, by default "["
         right_bracket : :class:`str`, optional
-            the right bracket type, by default "\\\\big]"
+            the right bracket type, by default "]"
 
         """
 
@@ -218,7 +218,7 @@ class Matrix(VMobject):
                 )
         return self
 
-    def add_brackets(self, left="\\big[", right="\\big]"):
+    def add_brackets(self, left="[", right="]"):
         """Add the brackets to the Matrix mobject
 
         See Latex document for various bracket types.
@@ -226,9 +226,9 @@ class Matrix(VMobject):
         Parameters
         ----------
         left : :class:`str`, optional
-            the left bracket, by default "\\\\big["
+            the left bracket, by default "["
         right : :class:`str`, optional
-            the right bracket, by default "\\\\big]"
+            the right bracket, by default "]"
 
         Returns
         -------
