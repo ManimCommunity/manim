@@ -213,7 +213,7 @@ class Integer(DecimalNumber):
     --------
 
     .. manim:: IntegerExample
-    :save_last_frame:
+        :save_last_frame:
 
         class IntegerExample(Scene):
             def construct(self):
