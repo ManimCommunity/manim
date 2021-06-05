@@ -149,13 +149,13 @@ class Sphere(ParametricSurface):
                 self.add(sphere)
                 newSphere = Sphere(center=(0,1,0),radius=2,resolution=(40, 50))
                 newSphere.move_to((0,3,0))
-                newSphere.set_color(GREEN)  
-                self.add(newSphere)        
-                yetAnotherSphere = Sphere(center=(0,1,0),radius=2,resolution=(40, 50))     
-                yetAnotherSphere.move_to((0,-1,0))  
-                yetAnotherSphere.set_color(BLUE)      
+                newSphere.set_color(GREEN)
+                self.add(newSphere)
+                yetAnotherSphere = Sphere(center=(0,1,0),radius=2,resolution=(40, 50))
+                yetAnotherSphere.move_to((0,-1,0))
+                yetAnotherSphere.set_color(BLUE)
                 self.add(yetAnotherSphere)
-                
+
     """
 
     def __init__(
