@@ -35,8 +35,9 @@ __all__ = [
 ]
 
 
-import numpy as np
 import itertools as it
+
+import numpy as np
 
 from ..constants import *
 from ..mobject.numbers import DecimalNumber, Integer
@@ -47,6 +48,7 @@ from ..utils.color import WHITE
 
 # TO DO : The following two functions are not used in this file.
 #         Not sure if we should keep it or not.
+
 
 def matrix_to_tex_string(matrix):
     matrix = np.array(matrix).astype("str")
@@ -68,7 +70,7 @@ class Matrix(VMobject):
 
     Examples
     --------
-    The first example shows some options while the second example explains the use of 
+    The first example shows some options while the second example explains the use of
     `add_background_rectangles_to_entries` and `include_background_rectangle`.
 
     .. manim:: MatrixExamples
@@ -255,7 +257,7 @@ class Matrix(VMobject):
         --------
         List[:class:`~.VGroup`]
             Each VGroup contains a column of the matrix.
-        
+
         Example
         --------
         .. manim:: GetColumnsExample
@@ -270,10 +272,12 @@ class Matrix(VMobject):
                 )
 
         """
-        return VGroup(*[
-             VGroup(*[row[i] for row in self.mob_matrix])
-             for i in range(len(self.mob_matrix[0]))
-         ])
+        return VGroup(
+            *[
+                VGroup(*[row[i] for row in self.mob_matrix])
+                for i in range(len(self.mob_matrix[0]))
+            ]
+        )
 
     def set_column_colors(self, *colors):
         """Set individual colors for each columns of the matrix
@@ -313,7 +317,7 @@ class Matrix(VMobject):
         --------
         List[:class:`~.VGroup`]
             Each VGroup contains a row of the matrix.
-        
+
         Example
         --------
         .. manim:: GetRowsExample
@@ -327,10 +331,7 @@ class Matrix(VMobject):
                     m0
                 )
         """
-        return VGroup(*[
-            VGroup(*row)
-            for row in self.mob_matrix
-        ])
+        return VGroup(*[VGroup(*row) for row in self.mob_matrix])
 
     def set_row_colors(self, *colors):
         """Set individual colors for each row of the matrix
@@ -433,7 +434,7 @@ class Matrix(VMobject):
 
 class DecimalMatrix(Matrix):
     """A mobject that displays a matrix with decimal entries on the screen.
-    
+
     Example
     --------
     .. manim:: DecimalMatrixExample
