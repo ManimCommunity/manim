@@ -28,7 +28,7 @@ EPSILON = 0.0001
 
 class SampleSpace(Rectangle):
     """A sample space.
-    
+
     Examples
     --------
     .. manim:: ExampleSampleSpace
@@ -41,8 +41,9 @@ class SampleSpace(Rectangle):
                 self.add(poly1)
                 self.add(poly2)
                 self.add(poly3)
-    
+
     """
+
     def __init__(
         self,
         height=3,
