@@ -528,17 +528,17 @@ class MobjectMatrix(Matrix):
         :save_last_frame:
 
         class MobjectMatrixExample(Scene):
-        def construct(self):
-            a = Circle().scale(0.3)
-            b = Square().scale(0.3)
-            c = Triangle().scale(0.3)
-            d = Star().scale(0.3)
-            m0 = MobjectMatrix(
-                [[a, b], [c, d]]
-            )
-            self.add(
-                m0
-            )
+            def construct(self):
+                a = Circle().scale(0.3)
+                b = Square().scale(0.3)
+                c = Triangle().scale(0.3)
+                d = Star().scale(0.3)
+                m0 = MobjectMatrix(
+                    [[a, b], [c, d]]
+                )
+                self.add(
+                    m0
+                )
     """
 
     def __init__(self, matrix, element_to_mobject=lambda m: m, **kwargs):
