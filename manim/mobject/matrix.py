@@ -77,22 +77,22 @@ class Matrix(VMobject):
             def construct(self):
                 m0 = Matrix([[2, "\\pi"], [-1, 1]])
                 m1 = Matrix([[2, 0, 4], [-1, 1, 5]],
-                v_buff=1.3,
-                h_buff=0.8,
-                bracket_h_buff=SMALL_BUFF,
-                bracket_v_buff=SMALL_BUFF,
-                left_bracket="\\{",
-                right_bracket="\\}"
+                    v_buff=1.3,
+                    h_buff=0.8,
+                    bracket_h_buff=SMALL_BUFF,
+                    bracket_v_buff=SMALL_BUFF,
+                    left_bracket="\\{",
+                    right_bracket="\\}"
                 )
                 m1.add(SurroundingRectangle(m1.get_columns()[1]))
                 m2 = Matrix([[2, 1], [-1, 3]],
                     element_alignment_corner=UL,
-                    left_bracket="\\big(",
-                    right_bracket="\\big)"
+                    left_bracket="\\\\big(",
+                    right_bracket="\\\\big)"
                 )
                 m3 = Matrix([[2, 1], [-1, 3]],
-                    left_bracket="\\big<",
-                    right_bracket="\\big>"
+                    left_bracket="\\\\big<",
+                    right_bracket="\\\\big>"
                 )
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
@@ -496,8 +496,8 @@ class IntegerMatrix(Matrix):
             def construct(self):
                 m0 = IntegerMatrix(
                     [[3.7, 2], [42.2, 12]],
-                    left_bracket="\\big(",
-                    right_bracket="\\big)"
+                    left_bracket="\\\\big(",
+                    right_bracket="\\\\big)"
                 )
                 self.add(
                     m0
