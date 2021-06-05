@@ -144,16 +144,18 @@ class Sphere(ParametricSurface):
         class ExampleSphere(ThreeDScene):
             def construct(self):
                 self.set_camera_orientation(phi = PI/6, theta = PI/6)
-                sphere = Sphere(center=(0,1,0),radius=1,resolution=(12, 24),u_min=0.001,u_max=PI - 0.001,v_min=0,v_max=6)
+                sphere = Sphere(center = (0,1,0),radius = 1,resolution = (30, 40),u_min = 0.001,u_max = PI - 0.001,v_min = 0,v_max = TAU)
+                sphere.set_color(RED)
                 self.add(sphere)
-                newSphere = Sphere(center=(0,1,0),radius=2)
+                newSphere = Sphere(center=(0,1,0),radius=2,resolution=(40, 50))
                 newSphere.move_to((0,3,0))
-                self.add(newSphere)
-                yetAnotherSphere = Sphere(center=(0,1,0),radius=2,resolution=(6, 12))
-                yetAnotherSphere.move_to((0,-1,0))
+                newSphere.set_color(GREEN)  
+                self.add(newSphere)        
+                yetAnotherSphere = Sphere(center=(0,1,0),radius=2,resolution=(40, 50))     
+                yetAnotherSphere.move_to((0,-1,0))  
+                yetAnotherSphere.set_color(BLUE)      
                 self.add(yetAnotherSphere)
-
-
+                
     """
 
     def __init__(
