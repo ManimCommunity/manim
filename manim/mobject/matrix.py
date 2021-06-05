@@ -258,17 +258,17 @@ class Matrix(VMobject):
         --------
 
         .. manim:: GetColumnsExample
-        :save_last_frame:
+            :save_last_frame:
 
-        class GetColumnsExample(Scene):
-            def construct(self):
-                m0 = Matrix([["\\pi", 3], [1, 5]])
-                m0.add(SurroundingRectangle(m0.get_columns()[1]))
-                self.add(
-                    m0
+            class GetColumnsExample(Scene):
+                def construct(self):
+                    m0 = Matrix([["\\pi", 3], [1, 5]])
+                    m0.add(SurroundingRectangle(m0.get_columns()[1]))
+                    self.add(
+                        m0
                 )
-
         """
+
         return VGroup(
             *[
                 VGroup(*[row[i] for row in self.mob_matrix])
@@ -293,15 +293,15 @@ class Matrix(VMobject):
         --------
 
         .. manim:: SetColumnColorsExample
-        :save_last_frame:
+            :save_last_frame:
 
-        class SetColumnColorsExample(Scene):
-            def construct(self):
-                m0 = Matrix([["\\pi", 1], [-1, 3]],
-                ).set_column_colors([RED,BLUE], GREEN)
-                self.add(
-                    m0
-                )
+            class SetColumnColorsExample(Scene):
+                def construct(self):
+                    m0 = Matrix([["\\pi", 1], [-1, 3]],
+                    ).set_column_colors([RED,BLUE], GREEN)
+                    self.add(
+                        m0
+                    )
         """
         columns = self.get_columns()
         for color, column in zip(colors, columns):
@@ -320,15 +320,15 @@ class Matrix(VMobject):
         --------
 
         .. manim:: GetRowsExample
-        :save_last_frame:
+            :save_last_frame:
 
-        class GetRowsExample(Scene):
-            def construct(self):
-                m0 = Matrix([["\\pi", 3], [1, 5]])
-                m0.add(SurroundingRectangle(m0.get_rows()[1]))
-                self.add(
-                    m0
-                )
+            class GetRowsExample(Scene):
+                def construct(self):
+                    m0 = Matrix([["\\pi", 3], [1, 5]])
+                    m0.add(SurroundingRectangle(m0.get_rows()[1]))
+                    self.add(
+                        m0
+                    )
         """
         return VGroup(*[VGroup(*row) for row in self.mob_matrix])
 
@@ -349,15 +349,15 @@ class Matrix(VMobject):
         --------
 
         .. manim:: SetRowColorsExample
-        :save_last_frame:
+            :save_last_frame:
 
-        class SetRowColorsExample(Scene):
-            def construct(self):
-                m0 = Matrix([["\\pi", 1], [-1, 3]],
-                ).set_row_colors([RED,BLUE], GREEN)
-                self.add(
-                    m0
-                )
+            class SetRowColorsExample(Scene):
+                def construct(self):
+                    m0 = Matrix([["\\pi", 1], [-1, 3]],
+                    ).set_row_colors([RED,BLUE], GREEN)
+                    self.add(
+                        m0
+                    )
         """
         rows = self.get_rows()
         for color, row in zip(colors, rows):
@@ -391,18 +391,18 @@ class Matrix(VMobject):
         --------
 
         .. manim:: GetEntriesExample
-        :save_last_frame:
+            :save_last_frame:
 
-        class GetEntriesExample(Scene):
-            def construct(self):
-                m0 = Matrix([[2, 3], [1, 5]])
-                ent = m0.get_entries()
-                colors = [BLUE, GREEN, YELLOW, RED]
-                for k in range(len(colors)):
-                    ent[k].set_color(colors[k])
-                self.add(
-                    m0
-                )
+            class GetEntriesExample(Scene):
+                def construct(self):
+                    m0 = Matrix([[2, 3], [1, 5]])
+                    ent = m0.get_entries()
+                    colors = [BLUE, GREEN, YELLOW, RED]
+                    for k in range(len(colors)):
+                        ent[k].set_color(colors[k])
+                    self.add(
+                        m0
+                    )
         """
         return self.elements
 
@@ -418,18 +418,18 @@ class Matrix(VMobject):
         --------
 
         .. manim:: GetBracketsExample
-        :save_last_frame:
+            :save_last_frame:
 
-        class GetBracketsExample(Scene):
-            def construct(self):
-                m0 = Matrix([["\\pi", 3], [1, 5]])
-                bra = m0.get_brackets()
-                colors = [BLUE, GREEN]
-                for k in range(len(colors)):
-                    bra[k].set_color(colors[k])
-                self.add(
-                    m0
-                )
+            class GetBracketsExample(Scene):
+                def construct(self):
+                    m0 = Matrix([["\\pi", 3], [1, 5]])
+                    bra = m0.get_brackets()
+                    colors = [BLUE, GREEN]
+                    for k in range(len(colors)):
+                        bra[k].set_color(colors[k])
+                    self.add(
+                        m0
+                    )
         """
         return self.brackets
 
