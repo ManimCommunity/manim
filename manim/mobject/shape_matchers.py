@@ -107,6 +107,27 @@ class Cross(VGroup):
 
 
 class Underline(Line):
+    """Creates an underline.
+
+    Parameters
+    ----------
+    Line
+        The underline.
+
+    Examples
+    --------
+    .. manim:: UnderLine
+
+        class UnderLine(Scene):
+            def construct(self):
+                m = Tex("M")  # Starting letter
+                man = Tex("M", "anim")  # Full Word
+                ul = Underline(man)  # Underlining the word
+                self.play(Write(m), run_time=1.5)
+                self.play(ReplacementTransform(m, man[0]), FadeIn(man[1]))  # Replaces the starting letter to word
+                self.play(Create(ul))  # Creates the underline
+    """
+
     def __init__(self, mobject, buff=SMALL_BUFF, **kwargs):
         super().__init__(LEFT, RIGHT, buff=buff, **kwargs)
         self.match_width(mobject)
