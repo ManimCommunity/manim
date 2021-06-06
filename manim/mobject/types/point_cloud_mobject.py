@@ -271,7 +271,7 @@ class PointCloudDot(Mobject1D):
 
 
 class Point(PMobject):
-    """A point.
+    """
 
     Examples
     --------
