@@ -275,8 +275,8 @@ class Point(PMobject):
 
     Examples
     --------
-    
-    .. manim:: ExamplePoint 
+
+    .. manim:: ExamplePoint
         :save_last_frame:
 
         class ExamplePoint(ThreeDScene):
