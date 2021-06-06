@@ -95,8 +95,8 @@ class Matrix(VMobject):
                     left_bracket="(",
                     right_bracket=")")
                 m3 = Matrix([[2, 1], [-1, 3]],
-                    left_bracket=r"\langle",
-                    right_bracket=r"\rangle")
+                    left_bracket="\\\\langle",
+                    right_bracket="\\\\rangle")
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
                 m5 = Matrix([[2, 1], [-1, 3]],
