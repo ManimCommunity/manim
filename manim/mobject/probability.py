@@ -33,6 +33,7 @@ class SampleSpace(Rectangle):
     --------
     .. manim:: ExampleSampleSpace
         :save_last_frame:
+
         class ExampleSampleSpace(Scene):
             def construct(self):
                 poly1 = SampleSpace(stroke_width=15,fill_opacity=1).move_to([-1,0,0])
