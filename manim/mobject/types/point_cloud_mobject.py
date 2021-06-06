@@ -272,10 +272,10 @@ class PointCloudDot(Mobject1D):
 
 class Point(PMobject):
     """A point
-    
+
     Examples
     ---------
-    .. manim:: ExamplePMobject 
+    .. manim:: ExamplePMobject
     :save_last_frame:
 
     class ExamplePMobject(ThreeDScene):
@@ -288,8 +288,9 @@ class Point(PMobject):
                 point = Point(location=[0.37 * np.random.randint(-4, 4), 0.63 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
                 self.add(point)
             self.add(point)
-            
+
     """
+
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
         PMobject.__init__(self, color=color, **kwargs)
         self.add_points([location])
