@@ -288,7 +288,6 @@ class Point(PMobject):
                 point = Point(location=[0.37 * np.random.randint(-4, 4), 0.63 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
                 self.add(point)
             self.add(point)
-
     """
 
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
