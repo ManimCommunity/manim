@@ -8,8 +8,8 @@ Examples
 
     class MatrixExamples(Scene):
         def construct(self):
-            m0 = Matrix([[2, 0], [-1, 1]])
-            m1 = Matrix([[1, 0], [0, 1]],
+            m0 = Matrix([["\\pi", 0], [-1, 1]])
+            m1 = IntegerMatrix([[1.5, 0.], [12, -1.3]],
                 left_bracket="(",
                 right_bracket=")")
             m2 = DecimalMatrix(
@@ -17,7 +17,12 @@ Examples
                 element_to_mobject_config={"num_decimal_places": 2},
                 left_bracket="\\{",
                 right_bracket="\\}")
-            g = Group(m0, m1, m2).arrange(buff=1)
+            m3 = MobjectMatrix(
+                [[Circle().scale(0.3), Square().scale(0.3)], 
+                [MathTex("\\pi").scale(2), Star().scale(0.3)]],
+                left_bracket="\\langle",
+                right_bracket="\\rangle")
+            g = Group(m0, m1, m2, m3).arrange_in_grid(buff=2)
             self.add(g)
 """
 
@@ -67,6 +72,10 @@ class Matrix(VMobject):
 
     Examples
     --------
+    The first example shows a variety of uses of this module while the second example
+    exlpains the use of the options `add_background_rectangles_to_entries` and
+    `include_background_rectangle`.
+
     .. manim:: MatrixExamples
         :save_last_frame:
 
@@ -86,8 +95,8 @@ class Matrix(VMobject):
                     left_bracket="(",
                     right_bracket=")")
                 m3 = Matrix([[2, 1], [-1, 3]],
-                    left_bracket="<",
-                    right_bracket=">")
+                    left_bracket="\\langle",
+                    right_bracket="\\rangle")
                 m4 = Matrix([[2, 1], [-1, 3]],
                 ).set_column_colors(RED, GREEN)
                 m5 = Matrix([[2, 1], [-1, 3]],
@@ -186,6 +195,7 @@ class Matrix(VMobject):
             self.add_background_rectangle()
 
     def matrix_to_mob_matrix(self, matrix):
+        """Used internally."""
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -195,6 +205,7 @@ class Matrix(VMobject):
         ]
 
     def organize_mob_matrix(self, matrix):
+        """Used internally."""
         for i, row in enumerate(matrix):
             for j, _ in enumerate(row):
                 mob = matrix[i][j]
@@ -205,7 +216,7 @@ class Matrix(VMobject):
         return self
 
     def add_brackets(self, left="[", right="]"):
-        """Add the brackets to the Matrix mobject
+        """Used internally. Adds the brackets to the Matrix mobject.
 
         See Latex document for various bracket types.
 
@@ -233,7 +244,7 @@ class Matrix(VMobject):
         return self
 
     def get_columns(self):
-        """Return columns of the matrix as VGroups
+        """Return columns of the matrix as VGroups.
 
         Returns
         --------
@@ -261,7 +272,7 @@ class Matrix(VMobject):
         )
 
     def set_column_colors(self, *colors):
-        """Set individual colors for each columns of the matrix
+        """Set individual colors for each columns of the matrix.
 
         Parameters
         ----------
@@ -291,7 +302,7 @@ class Matrix(VMobject):
         return self
 
     def get_rows(self):
-        """Return rows of the matrix as VGroups
+        """Return rows of the matrix as VGroups.
 
         Returns
         --------
@@ -313,7 +324,7 @@ class Matrix(VMobject):
         return VGroup(*[VGroup(*row) for row in self.mob_matrix])
 
     def set_row_colors(self, *colors):
-        """Set individual colors for each row of the matrix
+        """Set individual colors for each row of the matrix.
 
         Parameters
         ----------
@@ -343,12 +354,20 @@ class Matrix(VMobject):
         return self
 
     def add_background_to_entries(self):
+        """Add a black background rectangle to the matrix,
+        see above for an example.
+
+        Returns
+        -------
+        :class:`Matrix`
+            The current matrix object (self).
+        """
         for mob in self.get_entries():
             mob.add_background_rectangle()
         return self
 
     def get_mob_matrix(self):
-        """Return the underlying mob matrix mobjects
+        """Return the underlying mob matrix mobjects.
 
         Returns
         --------
@@ -358,12 +377,12 @@ class Matrix(VMobject):
         return self.mob_matrix
 
     def get_entries(self):
-        """Return the individual entries of the matrix
+        """Return the individual entries of the matrix.
 
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing entries of the matrix
+            VGroup containing entries of the matrix.
 
         Examples
         --------
@@ -383,7 +402,7 @@ class Matrix(VMobject):
         return self.elements
 
     def get_brackets(self):
-        """Return the bracket mobjects
+        """Return the bracket mobjects.
 
         Returns
         --------
@@ -475,7 +494,7 @@ class IntegerMatrix(Matrix):
 
     def __init__(self, matrix, element_to_mobject=Integer, **kwargs):
         """
-        Note- Will round if there are decimal entries in the matrix.
+        Will round if there are decimal entries in the matrix.
 
         Parameters
         ----------
@@ -513,7 +532,7 @@ class MobjectMatrix(Matrix):
 def get_det_text(
     matrix, determinant=None, background_rect=False, initial_scale_factor=2
 ):
-    r"""Helper function to create determinant
+    r"""Helper function to create determinant.
 
     Parameters
     ----------
