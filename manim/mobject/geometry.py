@@ -263,7 +263,19 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
 
 class Arc(TipableVMobject):
-    """A circular arc."""
+    """A circular arc.
+
+    Examples
+    --------
+    A simple arc of angle Pi.
+
+    .. manim:: ArcExample
+        :save_last_frame:
+
+        class ArcExample(Scene):
+            def construct(self):
+                self.add(Arc(angle=PI))
+    """
 
     def __init__(
         self,
@@ -2826,8 +2838,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
                 dot_anchor = (
                     inter
-                    + (self.get_center() - inter)
-                    / np.linalg.norm(self.get_center() - inter)
+                    + (angle_mobject.get_center() - inter)
+                    / np.linalg.norm(angle_mobject.get_center() - inter)
                     * radius
                     * dot_distance
                 )
