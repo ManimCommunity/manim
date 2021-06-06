@@ -25,11 +25,11 @@ class SurroundingRectangle(Rectangle):
 
 class BackgroundRectangle(SurroundingRectangle):
     """A background rectangle
-    
+
     Examples
     --------
-    
-    .. manim:: ExampleBackgroundRectangle 
+
+    .. manim:: ExampleBackgroundRectangle
     :save_last_frame:
 
     class ExampleBackgroundRectangle(Scene):
@@ -45,8 +45,9 @@ class BackgroundRectangle(SurroundingRectangle):
             self.add(circle)
             self.add(triangle)
             self.play(Rotate(backgroundRectangle1, PI / 4))
-            self.play(Rotate(backgroundRectangle2, PI / 2))    
+            self.play(Rotate(backgroundRectangle2, PI / 2))
     """
+
     def __init__(
         self,
         mobject,
