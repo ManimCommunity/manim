@@ -275,17 +275,18 @@ class Point(PMobject):
 
     Examples
     --------
-    .. manim:: ExamplePoint
+    
+    .. manim:: ExamplePoint 
         :save_last_frame:
 
         class ExamplePoint(ThreeDScene):
             def construct(self):
                 colorList = [RED, GREEN, BLUE, YELLOW]
                 for i in range(200):
-                    point = Point(location=[0.63*np.random.randint(-4, 4), 0.37*np.random.randint(-4, 4),0], color=np.random.choice(colorList))
+                    point = Point(location=[0.63 * np.random.randint(-4, 4), 0.37 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
                     self.add(point)
                 for i in range(200):
-                    point = Point(location=[0.37*np.random.randint(-4, 4), 0.63*np.random.randint(-4, 4),0], color=np.random.choice(colorList))
+                    point = Point(location=[0.37 * np.random.randint(-4, 4), 0.63 * np.random.randint(-4, 4), 0], color=np.random.choice(colorList))
                     self.add(point)
                 self.add(point)
     """
