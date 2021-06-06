@@ -2838,8 +2838,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
                 dot_anchor = (
                     inter
-                    + (self.get_center() - inter)
-                    / np.linalg.norm(self.get_center() - inter)
+                    + (angle_mobject.get_center() - inter)
+                    / np.linalg.norm(angle_mobject.get_center() - inter)
                     * radius
                     * dot_distance
                 )
