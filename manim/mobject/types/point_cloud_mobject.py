@@ -279,7 +279,7 @@ class Point(PMobject):
     .. manim:: ExamplePoint
         :save_last_frame:
 
-        class ExamplePoint(ThreeDScene):
+        class ExamplePoint(Scene):
             def construct(self):
                 colorList = [RED, GREEN, BLUE, YELLOW]
                 for i in range(200):
