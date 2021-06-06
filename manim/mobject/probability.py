@@ -196,28 +196,28 @@ class BarChart(VGroup):
     --------
     .. manim:: BarChartExample
 
-    class BarChartExample(Scene):
-        def construct(self):
-            lg = [54, 23, 47, 48, 40, 64, 112, 87]
-            versions = [
-                "v0.1.0",
-                "v0.1.1",
-                "v0.2.0",
-                "v0.3.0",
-                "v0.4.0",
-                "v0.5.0",
-                "v0.6.0",
-                "v0.7.0",
-            ]
-            colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
-            bar = BarChart(
-                lg,
-                max_value=max(lg),
-                bar_colors=colors,
-                bar_names=versions,
-                bar_label_scale_val=0.3,
-            )
-            self.add(bar)
+        class BarChartExample(Scene):
+            def construct(self):
+                lg = [54, 23, 47, 48, 40, 64, 112, 87]
+                versions = [
+                    "v0.1.0",
+                    "v0.1.1",
+                    "v0.2.0",
+                    "v0.3.0",
+                    "v0.4.0",
+                    "v0.5.0",
+                    "v0.6.0",
+                    "v0.7.0",
+                ]
+                colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
+                bar = BarChart(
+                    lg,
+                    max_value=max(lg),
+                    bar_colors=colors,
+                    bar_names=versions,
+                    bar_label_scale_val=0.3,
+                )
+                self.add(bar)
     """
 
     def __init__(
