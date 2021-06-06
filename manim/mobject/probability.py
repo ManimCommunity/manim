@@ -165,37 +165,35 @@ class BarChart(VGroup):
 
     Parameters
     ----------
-
-    values : Iterable[float]
+    values
         The values for the bar chart.
-    height : int
+    height
         The height of the axes.
-    width : int
+    width
         The width of the axes.
-    n_ticks : int
+    n_ticks
         Number of ticks.
-    tick_width : float
+    tick_width
         Width of the ticks.
-    label_y_axis : bool
+    label_y_axis
         Y axis label
-    y_axis_label_height : float
+    y_axis_label_height
         Height of the label.
-    max_value : float
+    max_value
         Maximum value of the data.
-    bar_colors : List[Color]
+    bar_colors
         The colors of the bars.
-    bar_fill_opacity : float
+    bar_fill_opacity
         The opacity of the bars.
-    bar_stroke_width : float
+    bar_stroke_width
         The stroke width of the bars.
-    bar_names : List[str]
+    bar_names
         The names of each bar.
-    bar_label_scale_val : float
+    bar_label_scale_val
         The label size.
 
     Examples
     --------
-
     .. manim:: BarChartExample
 
     class BarChartExample(Scene):
