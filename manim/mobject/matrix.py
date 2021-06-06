@@ -18,7 +18,7 @@ Examples
                 left_bracket="\\{",
                 right_bracket="\\}")
             m3 = MobjectMatrix(
-                [[Circle().scale(0.3), Square().scale(0.3)], 
+                [[Circle().scale(0.3), Square().scale(0.3)],
                 [MathTex("\\pi").scale(2), Star().scale(0.3)]],
                 left_bracket="\\langle",
                 right_bracket="\\rangle")
@@ -519,7 +519,7 @@ class MobjectMatrix(Matrix):
             def construct(self):
                 a = Circle().scale(0.3)
                 b = Square().scale(0.3)
-                c = Triangle().scale(0.3)
+                c = MathTex("\\pi").scale(2)
                 d = Star().scale(0.3)
                 m0 = MobjectMatrix([[a, b], [c, d]])
                 self.add(m0)
