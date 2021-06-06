@@ -29,7 +29,7 @@ class BackgroundRectangle(SurroundingRectangle):
     Examples
     --------
 
-    .. manim:: ExampleBackgroundRectangle 
+    .. manim:: ExampleBackgroundRectangle
         :save_last_frame:
 
         class ExampleBackgroundRectangle(Scene):
