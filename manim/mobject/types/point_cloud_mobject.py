@@ -272,12 +272,12 @@ class PointCloudDot(Mobject1D):
 
 class Point(PMobject):
     """A point.
-    
+
     Examples
     --------
     .. manim:: ExamplePoint
         :save_last_frame:
-        
+
         class ExamplePoint(ThreeDScene):
             def construct(self):
                 colorList = [RED, GREEN, BLUE, YELLOW]
@@ -289,7 +289,6 @@ class Point(PMobject):
                     self.add(point)
                 self.add(point)
     """
-
 
     def __init__(self, location=ORIGIN, color=BLACK, **kwargs):
         PMobject.__init__(self, color=color, **kwargs)
