@@ -765,11 +765,11 @@ class AnnularSector(Arc):
 
 class Sector(AnnularSector):
     """
-    
+
     Examples
     --------
-    
-    .. manim:: ExampleSector 
+
+    .. manim:: ExampleSector
         :save_last_frame:
 
         class ExampleSector(Scene):
@@ -796,6 +796,7 @@ class Sector(AnnularSector):
                 self.play(Rotate(sector, 2 * PI))
                 self.play(Rotate(sector2, 6 * PI))
     """
+
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
         super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
