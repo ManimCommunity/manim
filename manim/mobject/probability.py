@@ -39,6 +39,7 @@ class SampleSpace(Rectangle):
                 poly1 = SampleSpace(stroke_width=15,fill_opacity=1).move_to([-1,0,0])
                 poly2 = SampleSpace(width = 5, height = 3, stroke_width=5,fill_opacity=0.5).move_to([4,0,0])
                 poly3 = SampleSpace(width = 2, height = 2, stroke_width=5,fill_opacity=0.1).move_to([-4.5,0,0])
+                poly3.divide_vertically( p_list= np.array([0.37,0.13,0.5]), colors=[BLACK, WHITE,GRAY], vect=RIGHT)
                 self.add(poly1)
                 self.add(poly2)
                 self.add(poly3)
