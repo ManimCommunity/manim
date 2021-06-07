@@ -783,18 +783,12 @@ class Sector(AnnularSector):
                 self.wait(1)
                 sector.set_color(BLUE)
                 sector2.set_color(GREEN)
-                self.play(Rotate(sector, PI / 2))
-                self.play(Rotate(sector2, PI / 3))
                 self.wait(1)
                 sector.set_color(GREEN)
                 sector2.set_color(WHITE)
-                self.play(Rotate(sector, PI))
-                self.play(Rotate(sector2, PI / 6))
                 self.wait(1)
                 sector.set_color(YELLOW)
                 sector2.set_color(RED)
-                self.play(Rotate(sector, 2 * PI))
-                self.play(Rotate(sector2, 6 * PI))
     """
 
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
