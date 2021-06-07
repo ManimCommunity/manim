@@ -1551,9 +1551,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(color=color, **kwargs)
 
         for vertices in vertex_groups:
-            # Allow any iterable to be passed
-            vertices = iter(vertices)
-            first_vertex = next(vertices)
+            first_vertex, *vertices = vertices
             first_vertex = np.array(first_vertex)
 
             self.start_new_path(first_vertex)
