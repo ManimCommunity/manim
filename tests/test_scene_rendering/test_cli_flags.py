@@ -224,3 +224,142 @@ def test_dash_as_filename(tmp_path):
         tmp_path / "images" / "-" / "Test.png"
     ).exists()
     assert exists, result.output
+
+
+@pytest.mark.slow
+def test_gif_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
+    """Test only gif created with manim version in file name when --format gif is set"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "gif",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    unexpected_mp4_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mp4"
+    )
+    assert not unexpected_mp4_path.exists(), "unexpected mp4 file found at " + str(
+        unexpected_mp4_path
+    )
+
+    expected_gif_path = (
+        tmp_path
+        / "videos"
+        / "simple_scenes"
+        / "480p15"
+        / add_version_before_extension("SquareToCircle.gif")
+    )
+    assert expected_gif_path.exists(), "gif file not found at " + str(expected_gif_path)
+
+
+@pytest.mark.slow
+def test_mp4_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
+    """Test only mp4 created without manim version in file name when --format mp4 is set"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "mp4",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    unexpected_gif_path = (
+        tmp_path
+        / "videos"
+        / "simple_scenes"
+        / "480p15"
+        / add_version_before_extension("SquareToCircle.gif")
+    )
+    assert not unexpected_gif_path.exists(), "unexpected gif file found at " + str(
+        unexpected_gif_path
+    )
+
+    expected_mp4_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mp4"
+    )
+    assert expected_mp4_path.exists(), "expected mp4 file not found at " + str(
+        expected_mp4_path
+    )
+
+
+@pytest.mark.slow
+def test_videos_not_created_when_png_format_set(
+    tmp_path, manim_cfg_file, simple_scenes_path
+):
+    """Test mp4 and gifs are not created when --format png is set"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "png",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    unexpected_gif_path = (
+        tmp_path
+        / "videos"
+        / "simple_scenes"
+        / "480p15"
+        / add_version_before_extension("SquareToCircle.gif")
+    )
+    assert not unexpected_gif_path.exists(), "unexpected gif file found at " + str(
+        unexpected_gif_path
+    )
+
+    unexpected_mp4_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mp4"
+    )
+    assert not unexpected_mp4_path.exists(), "expected mp4 file not found at " + str(
+        unexpected_mp4_path
+    )
+
+
+@pytest.mark.slow
+def test_images_are_created_when_png_format_set(
+    tmp_path, manim_cfg_file, simple_scenes_path
+):
+    """Test images are created in media directory when --format png is set"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "png",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
