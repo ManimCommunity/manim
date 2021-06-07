@@ -111,8 +111,10 @@ class Matrix(VMobject):
 
         class BackgroundRectanglesExample(Scene):
             def construct(self):
-                func = lambda pos: ((pos[0]*UR+pos[1]*LEFT) - pos)/3
-                self.add(StreamLines(func))
+                background = ImageMobject(
+                    np.uint8([[0, 100, 30, 200], [255, 0, 5, 33]])
+                ).scale_to_fit_height(8)
+                self.add(background)
                 m0 = Matrix([[12, -30], [-1, 15]],
                     add_background_rectangles_to_entries=True)
                 m1 = Matrix([[2, 0], [-1, 1]],
