@@ -40,8 +40,7 @@ class SampleSpace(Rectangle):
                 poly2 = SampleSpace(width = 5, height = 3, stroke_width=5,fill_opacity=0.5)
                 poly3 = SampleSpace(width = 2, height = 2, stroke_width=5,fill_opacity=0.1)
                 poly3.divide_vertically( p_list= np.array([0.37,0.13,0.5]), colors=[BLACK, WHITE,GRAY], vect=RIGHT)
-                poly_group = VGroup()
-                poly_group.add(*[poly1,poly2,poly3]).arrange()
+                poly_group = VGroup(poly1,poly2,poly3).arrange()
                 self.add(poly_group)
 
     """
