@@ -395,10 +395,10 @@ class Arc(TipableVMobject):
 class ArcBetweenPoints(Arc):
     """
     Inherits from Arc and additionally takes 2 points between which the arc is spanned.
-    
+
     Example
     --------------------
-    .. manim:: ArcBetweenPointsExample 
+    .. manim:: ArcBetweenPointsExample
 
     class ArcBetweenPointsExample(Scene):
         def construct(self):
