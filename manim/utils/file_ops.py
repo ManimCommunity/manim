@@ -6,8 +6,11 @@ __all__ = [
     "seek_full_path_from_defaults",
     "modify_atime",
     "open_file",
+    "is_mp4_format",
+    "is_gif_format",
+    "is_png_format",
+    "write_to_movie",
 ]
-
 
 import os
 import platform
@@ -19,6 +22,61 @@ from shutil import copyfile
 from manim import __version__, config, logger
 
 from .. import console
+
+
+def is_mp4_format() -> bool:
+    """
+    Determines if output format is .mp4
+
+    Returns
+    -------
+    class:`bool`
+        ``True`` if format is set as mp4
+
+    """
+    return config["format"] == "mp4"
+
+
+def is_gif_format() -> bool:
+    """
+    Determines if output format is .gif
+
+    Returns
+    -------
+    class:`bool`
+        ``True`` if format is set as gif
+
+    """
+    return config["format"] == "gif"
+
+
+def is_png_format() -> bool:
+    """
+    Determines if output format is .png
+
+    Returns
+    -------
+    class:`bool`
+        ``True`` if format is set as png
+
+    """
+    return config["format"] == "png"
+
+
+def write_to_movie() -> bool:
+    """
+    Determines from config if the output is a video format such as mp4 or gif, if the --format is set as 'png'
+    then it will take precedence event if the write_to_movie flag is set
+
+    Returns
+    -------
+    class:`bool`
+        ``True`` if the output should be written in a movie format
+
+    """
+    if is_png_format():
+        return False
+    return config["write_to_movie"] or is_mp4_format() or is_gif_format()
 
 
 def add_extension_if_not_present(file_name, extension):
@@ -87,9 +145,9 @@ def open_media_file(file_writer):
 
     if config["save_last_frame"]:
         file_paths.append(file_writer.image_file_path)
-    if config["write_to_movie"] and not config["format"] == "gif":
+    if write_to_movie() and not is_gif_format():
         file_paths.append(file_writer.movie_file_path)
-    if config["format"] == "gif":
+    if write_to_movie() and is_gif_format():
         file_paths.append(file_writer.gif_file_path)
 
     for file_path in file_paths:
@@ -98,7 +156,7 @@ def open_media_file(file_writer):
         if config["preview"]:
             open_file(file_path, False)
 
-            logger.info(f"Previewed File at: {file_path}")
+            logger.info(f"Previewed File at: '{file_path}'")
 
 
 def get_template_names():
