@@ -1359,7 +1359,7 @@ class NumberPlane(Axes):
     Examples
     --------
 
-    .. manim:: NumberPlaneExample 
+    .. manim:: NumberPlaneExample
         :save_last_frame:
 
         class NumberPlaneExample(Scene):
