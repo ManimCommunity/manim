@@ -11,8 +11,8 @@ If you want to render simple Text, you should use either :class:`~.Text` or
 :class:`~.MarkupText` or one of it's detrivaties like :class:`~.Paragraph`.
 See :ref:`using-text-objects` for more information.
 
-LaTeX should only be used when you need Mathematical Typesetting.
-
+LaTeX should only be used when you need Mathematical Typesetting. See 
+:ref:`rendering-with-latex` for more information.
 
 .. _using-text-objects:
 
@@ -273,7 +273,7 @@ Working with :class:`~.MarkupText`
 MarkupText is similar to :class:`~.Text`, the only difference between them is 
 that this accepts PangoMarkup(which are similar to html), instead of text.
 
-You can find the reference of PangoMarkup in :class:`MarkupText`.
+You can find the reference of PangoMarkup in :class:`~.MarkupText`.
 
 .. manim:: MarkupTest 
     :save_last_frame:
@@ -286,3 +286,55 @@ You can find the reference of PangoMarkup in :class:`MarkupText`.
             ).scale(0.7)
             self.add(text)
 
+.. _rendering-with-latex:
+
+Rendering Text with LaTeX
+*************************
+
+Just as you can use :class:`~.Text` to add text to your videos, you can
+use :class:`~.Tex` to insert LaTeX.
+
+For example,
+
+.. manim:: HelloLaTeX 
+    :save_last_frame:
+
+    class HelloLaTeX(Scene):
+        def construct(self):
+            tex = Tex(r"\LaTeX").scale(3)
+            self.add(tex)
+
+.. note::
+
+    Note that we are using a raw string (``r'...'``) instead of a regular string (`r'...'``)
+    This is because TeX code uses a lot of special characters - like ``\`` for example - that
+    have special meaning within a regular python string. An alternative would have been to
+    write \\ as in Tex('\\LaTeX').
+
+Working with :class:`~.MathTex`
+===============================
+
+Everything passed to :class:`~.MathTex` is LaTeX Math Mode by default ie) everything is enclosed
+with ``$`` when passed to LaTeX.
+
+For example,
+
+.. manim:: MathTeXDemo 
+    :save_last_frame:
+
+    class MathTeXDemo(Scene):
+        def construct(self):
+            rtarrow = MathTex(r"\xrightarrow{x^6y^8}").scale(2)
+            self.add(rtarrow)
+
+The same can be done using :class:`~.Tex` by adding ``$`` using
+``$\xrightarrow{x^6y^8}$``
+
+
+.. manim:: TeXToMathTex 
+    :save_last_frame:
+
+    class TeXToMathTex(Scene):
+        def construct(self):
+            rtarrow = Tex(r"$\xrightarrow{x^6y^8}$").scale(2)
+            self.add(rtarrow)
