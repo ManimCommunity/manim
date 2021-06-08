@@ -136,7 +136,7 @@ as explained in :ref:`iterating-text`.
   
   .. note:: Negative indices are also supported.
 
-* The keys contain words or character which should be coloured seperately
+* The keys contain words or character which should be coloured separately
   and the values should be the color from :class:`~.Color`.
 
 For example,
