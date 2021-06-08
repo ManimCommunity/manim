@@ -2,8 +2,6 @@
 
 __all__ = [
     "Code",
-    "hilite_me",
-    "insert_line_numbers_in_html",
 ]
 
 import html

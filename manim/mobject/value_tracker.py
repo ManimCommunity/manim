@@ -9,9 +9,10 @@ import numpy as np
 
 from ..mobject.mobject import Mobject
 from ..utils.paths import straight_path
+from .opengl_compatibility import ConvertToOpenGL
 
 
-class ValueTracker(Mobject):
+class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
     """A mobject that can be used for tracking (real-valued) parameters.
     Useful for animating parameter changes.
 
@@ -69,17 +70,17 @@ class ValueTracker(Mobject):
     """
 
     def __init__(self, value=0, **kwargs):
-        Mobject.__init__(self, **kwargs)
-        self.points = np.zeros((1, 3))
+        super().__init__(**kwargs)
+        self.set_points(np.zeros((1, 3)))
         self.set_value(value)
 
     def get_value(self) -> float:
         """Get the current value of this ValueTracker."""
-        return self.points[0, 0]
+        return self.get_points()[0, 0]
 
     def set_value(self, value: float):
         """Sets a new scalar value to the ValueTracker"""
-        self.points[0, 0] = value
+        self.get_points()[0, 0] = value
         return self
 
     def increment_value(self, d_value: float):
@@ -131,7 +132,7 @@ class ValueTracker(Mobject):
         Turns self into an interpolation between mobject1
         and mobject2.
         """
-        self.points = path_func(mobject1.points, mobject2.points, alpha)
+        self.set_points(path_func(mobject1.get_points(), mobject2.get_points(), alpha))
         return self
 
 
@@ -165,10 +166,10 @@ class ComplexValueTracker(ValueTracker):
 
         The value is internally stored as a points array [a, b, 0]. This can be accessed directly
         to represent the value geometrically, see the usage example."""
-        return complex(*self.points[0, :2])
+        return complex(*self.get_points()[0, :2])
 
     def set_value(self, z):
         """Sets a new complex value to the ComplexValueTracker"""
         z = complex(z)
-        self.points[0, :2] = (z.real, z.imag)
+        self.get_points()[0, :2] = (z.real, z.imag)
         return self

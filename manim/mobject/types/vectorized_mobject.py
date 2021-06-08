@@ -1468,7 +1468,7 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(VMobject):
+class VGroup(VMobject, metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -1520,7 +1520,7 @@ class VGroup(VMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*vmobjects)
 
     def __repr__(self):
@@ -1585,7 +1585,7 @@ class VGroup(VMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, VMobject) for m in vmobjects):
+        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         return super().add(*vmobjects)
 
@@ -1625,7 +1625,7 @@ class VGroup(VMobject):
             >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj
         """
-        if not all(isinstance(m, VMobject) for m in value):
+        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in value):
             raise TypeError("All submobjects must be of type VMobject")
         self.submobjects[key] = value
 
