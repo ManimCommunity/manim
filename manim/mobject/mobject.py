@@ -33,7 +33,6 @@ from colour import Color
 
 from .. import config
 from ..constants import *
-from ..container import Container
 from ..utils.color import (
     BLACK,
     WHITE,
@@ -63,7 +62,7 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
 
 
-class Mobject(Container):
+class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
@@ -121,8 +120,6 @@ class Mobject(Container):
         self.init_gl_data()
         self.init_gl_points()
         self.init_gl_colors()
-
-        Container.__init__(self, **kwargs)
 
     @classmethod
     def animation_override_for(

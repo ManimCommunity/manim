@@ -10,7 +10,6 @@ import platform
 import random
 import threading
 import types
-import warnings
 from queue import Queue
 
 import numpy as np
@@ -22,7 +21,6 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..container import Container
 from ..mobject.opengl_mobject import OpenGLPoint
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.shader import Mesh
@@ -32,7 +30,6 @@ from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
-from ..utils.space_ops import rotate_vector
 
 
 class RerunSceneHandler(FileSystemEventHandler):
@@ -46,7 +43,7 @@ class RerunSceneHandler(FileSystemEventHandler):
         self.queue.put(("rerun_file", [], {}))
 
 
-class Scene(Container):
+class Scene:
     """A Scene is the canvas of your animation.
 
     The primary role of :class:`Scene` is to provide the user with tools to manage
@@ -122,8 +119,6 @@ class Scene(Container):
         if self.random_seed is not None:
             random.seed(self.random_seed)
             np.random.seed(self.random_seed)
-
-        Container.__init__(self, **kwargs)
 
     @property
     def camera(self):
