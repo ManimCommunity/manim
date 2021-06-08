@@ -117,9 +117,8 @@ class TextTest(Scene):
         mob2.add_quadratic_bezier_curve_to(UP, RIGHT)
         mob2.shift(2 * RIGHT)
         self.add(mob2)
-        print(config["pixel_height"], config["pixel_width"])
 
-        # mob2.add_updater(lambda mob: mob.rotate(0.08, axis=UP))
+        # mob2.add_updater(lambda mob: mob.rotate(0.03, axis=OUT))
 
         # V shape
         # mob = OpenGLVMobject(stroke_width=16)
