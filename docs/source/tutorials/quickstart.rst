@@ -148,8 +148,7 @@ Our scene is a little basic, so let's add some bells and whistles.  Modify the
            circle.set_fill(PINK, opacity=0.5)  # set color and transparency
 
            square = Square()  # create a square
-           square.flip(RIGHT)  # flip horizontally
-           square.rotate(-3 * TAU / 8)  # rotate a certain amount
+           square.rotate(PI / 4)  # rotate a certain amount
 
            self.play(Create(square))  # animate the creation of the square
            self.play(Transform(square, circle))  # interpolate the square into the circle
@@ -168,16 +167,15 @@ The output should look as follows.
 
    class SquareToCircle2(Scene):
        def construct(self):
-           circle = Circle()                    # create a circle
-           circle.set_fill(PINK, opacity=0.5)   # set color and transparency
+           circle = Circle()  # create a circle
+           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
 
-           square = Square()                    # create a square
-           square.flip(RIGHT)                   # flip horizontally
-           square.rotate(-3 * TAU / 8)          # rotate a certain amount
+           square = Square()  # create a square
+           square.rotate(PI / 4)  # rotate a certain amount
 
-           self.play(Create(square))      # animate the creation of the square
-           self.play(Transform(square, circle)) # interpolate the square into the circle
-           self.play(FadeOut(square))           # fade out animation
+           self.play(Create(square))  # animate the creation of the square
+           self.play(Transform(square, circle))  # interpolate the square into the circle
+           self.play(FadeOut(square))  # fade out animation
 
 This example shows one of the most basic features of manim: the ability to
 implement complicated and mathematically intensive animations (such as cleanly

@@ -263,7 +263,19 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
 
 class Arc(TipableVMobject):
-    """A circular arc."""
+    """A circular arc.
+
+    Examples
+    --------
+    A simple arc of angle Pi.
+
+    .. manim:: ArcExample
+        :save_last_frame:
+
+        class ArcExample(Scene):
+            def construct(self):
+                self.add(Arc(angle=PI))
+    """
 
     def __init__(
         self,
@@ -757,10 +769,34 @@ class Sector(AnnularSector):
 
 
 class Annulus(Circle):
+    """Region between two concentric :class:`Circles <.Circle>`.
+
+    Parameters
+    ----------
+    inner_radius
+        The radius of the inner :class:`Circle`.
+    outer_radius
+        The radius of the outer :class:`Circle`.
+    kwargs : Any
+        Additional arguments to be passed to :class:`Annulus`
+
+    Examples
+    --------
+
+    .. manim:: AnnulusExample
+        :save_last_frame:
+
+        class AnnulusExample(Scene):
+            def construct(self):
+                annulus_1 = Annulus(inner_radius=0.5, outer_radius=1).shift(UP)
+                annulus_2 = Annulus(inner_radius=0.3, outer_radius=0.6, color=RED).next_to(annulus_1, DOWN)
+                self.add(annulus_1, annulus_2)
+    """
+
     def __init__(
         self,
-        inner_radius=1,
-        outer_radius=2,
+        inner_radius: Optional[float] = 1,
+        outer_radius: Optional[float] = 2,
         fill_opacity=1,
         stroke_width=0,
         color=WHITE,
@@ -1515,9 +1551,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         super().__init__(color=color, **kwargs)
 
         for vertices in vertex_groups:
-            # Allow any iterable to be passed
-            vertices = iter(vertices)
-            first_vertex = next(vertices)
+            first_vertex, *vertices = vertices
             first_vertex = np.array(first_vertex)
 
             self.start_new_path(first_vertex)
@@ -2802,8 +2836,8 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 right_dot = Dot(ORIGIN, radius=dot_radius, color=dot_color)
                 dot_anchor = (
                     inter
-                    + (self.get_center() - inter)
-                    / np.linalg.norm(self.get_center() - inter)
+                    + (angle_mobject.get_center() - inter)
+                    / np.linalg.norm(angle_mobject.get_center() - inter)
                     * radius
                     * dot_distance
                 )
