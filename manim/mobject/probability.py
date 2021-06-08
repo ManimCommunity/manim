@@ -31,8 +31,8 @@ class SampleSpace(Rectangle):
 
     Examples
     --------
-    
-    .. manim:: ExampleSampleSpace 
+
+    .. manim:: ExampleSampleSpace
         :save_last_frame:
 
         class ExampleSampleSpace(Scene):
