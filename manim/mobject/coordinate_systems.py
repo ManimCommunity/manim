@@ -1367,15 +1367,6 @@ class NumberPlane(Axes):
                 number_plane = NumberPlane(
                     x_range=[-10, 10, 1],
                     y_range=[-10, 10, 1],
-                    axis_config={
-                        "stroke_color": WHITE,
-                        "stroke_width": 2,
-                        "include_ticks": False,
-                        "include_tip": False,
-                        "line_to_number_buff": SMALL_BUFF,
-                        "label_direction": DR,
-                        "number_scale_value": 0.5,
-                    },
                     background_line_style={
                         "stroke_color": RED_D,
                         "stroke_width": 2,
@@ -1383,7 +1374,6 @@ class NumberPlane(Axes):
                     },
                 )
                 self.add(number_plane)
-
     """
 
     def __init__(
