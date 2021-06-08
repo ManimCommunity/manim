@@ -338,3 +338,45 @@ The same can be done using :class:`~.Tex` by adding ``$`` using
         def construct(self):
             rtarrow = Tex(r"$\xrightarrow{x^6y^8}$").scale(2)
             self.add(rtarrow)
+
+LaTeX commands and keyword arguments
+====================================
+
+We can use any standard LaTeX commands in the AMS maths packages. For
+example the ``mathtt`` math-text type, or the ``looparrowright`` arrow.
+
+.. manim:: AMSLaTeX
+    :save_last_frame:
+    class AMSLaTeX(Scene):
+        def construct(self):
+            tex = Tex(r'$\mathtt{H} \looparrowright$ \LaTeX').scale(3)
+            self.add(tex)
+
+On the manim side, the :class:`~.Tex` class also accepts attributes to 
+change the appearance of the output. This is very similar to the 
+:class:`~.Text` class. For example, the ``color`` keyword changes the
+color of the TeX mobject.
+
+.. manim:: LaTeXAttributes
+    :save_last_frame:
+    class LaTeXAttributes(Scene):
+        def construct(self):
+            tex = Tex(r'Hello \LaTeX', color=BLUE).scale(3)
+            self.add(tex)
+
+Extra LaTeX Packages
+====================
+
+Some commands require special packages to be loaded into the TeX template. 
+For example, to use the ``mathscr`` script, we need to add the ``mathrsfs``
+package. Since this package isn't loaded into manim's tex template by default,
+we add it manually.
+
+.. manim:: AddPackageLatex
+    :save_last_frame:
+    class AddPackageLatex(Scene):
+        def construct(self):
+            myTemplate = TexTemplate()
+            myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
+            tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate).scale(3)
+            self.add(tex)
