@@ -54,6 +54,7 @@ class DecimalNumber(VMobject):
         unit=None,  # Aligned to bottom unless it starts with "^"
         include_background_rectangle=False,
         edge_to_fix=LEFT,
+        font_size=24,
         **kwargs
     ):
         super().__init__(**kwargs)

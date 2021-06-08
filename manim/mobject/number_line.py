@@ -100,6 +100,8 @@ class NumberLine(Line):
         numbers_to_include=None,
         # temp, because DecimalNumber() needs to be updated
         number_scale_value=0.75,
+        num_decimal_places=0,
+        font_size=24,
         **kwargs
     ):
         # avoid mutable arguments in defaults
