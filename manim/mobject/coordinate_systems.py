@@ -1365,22 +1365,23 @@ class NumberPlane(Axes):
         class NumberPlaneExample(Scene):
             def construct(self):
                 number_plane = NumberPlane(
-                x_range = [-10,10,1],
-                y_range = [-10,10,1],
-                axis_config = {
-                    "stroke_color": WHITE,
-                    "stroke_width": 2,
-                    "include_ticks": False,
-                    "include_tip": False,
-                    "line_to_number_buff": SMALL_BUFF,
-                    "label_direction": DR,
-                    "number_scale_value": 0.5,
-                },
-                background_line_style={
-                    "stroke_color": RED_D,
-                    "stroke_width": 2,
-                    "stroke_opacity": .7,
-                })
+                    x_range=[-10, 10, 1],
+                    y_range=[-10, 10, 1],
+                    axis_config={
+                        "stroke_color": WHITE,
+                        "stroke_width": 2,
+                        "include_ticks": False,
+                        "include_tip": False,
+                        "line_to_number_buff": SMALL_BUFF,
+                        "label_direction": DR,
+                        "number_scale_value": 0.5,
+                    },
+                    background_line_style={
+                        "stroke_color": RED_D,
+                        "stroke_width": 2,
+                        "stroke_opacity": 0.7,
+                    },
+                )
                 self.add(number_plane)
 
     """
