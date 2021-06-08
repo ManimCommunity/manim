@@ -6,6 +6,7 @@ __all__ = [
     "Sphere",
     "Dot3D",
     "Cube",
+    "Cuboid",
     "Prism",
     "Cone",
     "Arrow3D",
@@ -227,6 +228,32 @@ class Cube(VGroup):
             face.apply_matrix(z_to_vector(vect))
 
             self.add(face)
+
+
+class Cuboid(VGroup):
+    """ Create a cuboid with given length, breadth and height.
+        Length, breadth and height are along the x, y and z axes respectively.
+
+        You can also choose to include only a few of the default six surfaces - 'IN', 'OUT' etc.
+    """
+    def __init__(
+        self,
+        length=2, breadth=2, height=2,
+        surfaces=set('IN', 'OUT', 'LEFT', 'RIGHT', 'UP', 'DOWN'),
+        fill_opacity=0.75,
+        fill_color=BLUE,
+        stroke_width=0,
+        **kwargs
+    ):
+        # using cuboid_height in order to avoid conflict with MObject's height attribute
+        self.length, self.breadth, self.cuboid_height = length, breadth, height
+        self.surfaces = surfaces
+        super().__init__(
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            **kwargs,
+        )
 
 
 class Prism(Cube):
