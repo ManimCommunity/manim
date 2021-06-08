@@ -36,6 +36,7 @@ from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
+from ..opengl_compatibility import ConvertToOpenGL
 from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
@@ -45,26 +46,6 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 #   if last point in close to first point
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
-
-
-class MetaVMobject(ABCMeta):
-    """Metaclass for initializing corresponding classes as either inheriting from
-    VMobject or OpenGLVMobject, depending on the value of ``config.renderer`` at
-    initialization time.
-
-    Note that with this implementation, changing the value of ``config.renderer``
-    after Manim has been imported won't have the desired effect and will lead to
-    spurious errors.
-    """
-
-    def __new__(cls, name, bases, namespace):
-        if len(bases) == 0:
-            if config.renderer == "opengl":
-                bases = (OpenGLVMobject,)
-            else:
-                bases = (VMobject,)
-
-        return super().__new__(cls, name, bases, namespace)
 
 
 class VMobject(Mobject):
@@ -1487,7 +1468,7 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(VMobject):
+class VGroup(VMobject, metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -1539,7 +1520,7 @@ class VGroup(VMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*vmobjects)
 
     def __repr__(self):
@@ -1604,7 +1585,7 @@ class VGroup(VMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, VMobject) for m in vmobjects):
+        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         return super().add(*vmobjects)
 
@@ -1644,7 +1625,7 @@ class VGroup(VMobject):
             >>> new_obj = VMobject()
             >>> vgroup[0] = new_obj
         """
-        if not all(isinstance(m, VMobject) for m in value):
+        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in value):
             raise TypeError("All submobjects must be of type VMobject")
         self.submobjects[key] = value
 
@@ -1975,7 +1956,7 @@ class VDict(VMobject):
         super().add(value)
 
 
-class VectorizedPoint(metaclass=MetaVMobject):
+class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         location=ORIGIN,
@@ -2040,7 +2021,7 @@ class CurvesAsSubmobjects(VGroup):
             self.add(part)
 
 
-class DashedVMobject(metaclass=MetaVMobject):
+class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):

@@ -71,6 +71,7 @@ from ..utils.color import (
     color_gradient,
     invert_color,
 )
+from ..utils.deprecation import deprecated
 from ..utils.space_ops import angle_of_vector
 
 # TODO, this should probably reimplemented entirely, especially so as to
@@ -79,6 +80,11 @@ from ..utils.space_ops import angle_of_vector
 # is way too messy to work with.
 
 
+@deprecated(
+    since="v0.7.0",
+    until="v0.9.0",
+    replacement="Axes",
+)
 class GraphScene(Scene):
     """A special scene intended for plotting functions.
 
