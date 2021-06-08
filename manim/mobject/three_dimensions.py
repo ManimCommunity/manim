@@ -138,7 +138,7 @@ class Sphere(ParametricSurface):
 
     Examples
     ---------
-    
+
     .. manim:: ExampleSphere
         :save_last_frame:
 
