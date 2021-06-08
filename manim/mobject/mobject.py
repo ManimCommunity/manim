@@ -52,6 +52,7 @@ from ..utils.space_ops import (
     rotation_matrix,
     rotation_matrix_transpose,
 )
+from .opengl_compatibility import ConvertToOpenGL
 
 # TODO: Explain array_attrs
 
@@ -2688,11 +2689,11 @@ class Mobject(Container):
         return self
 
 
-class Group(Mobject):
+class Group(Mobject, metaclass=ConvertToOpenGL):
     """Groups together multiple :class:`Mobjects <.Mobject>`."""
 
     def __init__(self, *mobjects, **kwargs):
-        Mobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*mobjects)
 
 
