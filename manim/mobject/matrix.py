@@ -111,9 +111,9 @@ class Matrix(VMobject):
 
         class BackgroundRectanglesExample(Scene):
             def construct(self):
-                background = ImageMobject(
-                    np.uint8([[0, 100, 30, 200], [255, 0, 5, 33]])
-                ).scale_to_fit_height(8)
+                background= Rectangle().scale(3.2)
+                background.set_fill(opacity=.5)
+                background.set_color([TEAL, RED, YELLOW])
                 self.add(background)
                 m0 = Matrix([[12, -30], [-1, 15]],
                     add_background_rectangles_to_entries=True)
