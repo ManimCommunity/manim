@@ -10,6 +10,9 @@ class CubeTest(ThreeDScene):
     def construct(self):
         self.add(Cube())
 
+class CuboidTest(ThreeDScene):
+    def construct(self):
+        self.add(Cuboid())
 
 class SphereTest(ThreeDScene):
     def construct(self):
