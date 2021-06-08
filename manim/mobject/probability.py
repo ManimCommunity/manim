@@ -195,10 +195,11 @@ class BarChart(VGroup):
     Examples
     --------
     .. manim:: BarChartExample
+        :save_last_frame:
 
         class BarChartExample(Scene):
             def construct(self):
-                lg = [54, 23, 47, 48, 40, 64, 112, 87]
+                pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
                 versions = [
                     "v0.1.0",
                     "v0.1.1",
@@ -211,8 +212,8 @@ class BarChart(VGroup):
                 ]
                 colors = ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"]
                 bar = BarChart(
-                    lg,
-                    max_value=max(lg),
+                    pull_req,
+                    max_value=max(pull_req),
                     bar_colors=colors,
                     bar_names=versions,
                     bar_label_scale_val=0.3,
@@ -223,8 +224,8 @@ class BarChart(VGroup):
     def __init__(
         self,
         values: Iterable[float],
-        height: int = 4,
-        width: int = 6,
+        height: float = 4,
+        width: float = 6,
         n_ticks: int = 4,
         tick_width: float = 0.2,
         label_y_axis: bool = True,
