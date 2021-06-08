@@ -217,7 +217,14 @@ def grouped(iterable, n):
 
 
 class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
-    def __init__(self, path_string, **kwargs):
+    def __init__(
+        self,
+        path_string,
+        should_subdivide_sharp_curves=False,
+        should_remove_null_curves=False,
+        long_lines=True,
+        **kwargs
+    ):
         self.path_string = path_string
         if config.renderer == "opengl":
             kwargs["long_lines"] = True

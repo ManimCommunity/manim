@@ -21,7 +21,7 @@ from ...utils.iterables import stretch_array_to_length
 
 
 class PMobject(Mobject):
-    def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, **kwargs):
+    def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, radius=2.0, **kwargs):
         self.stroke_width = stroke_width
         super().__init__(**kwargs)
 
