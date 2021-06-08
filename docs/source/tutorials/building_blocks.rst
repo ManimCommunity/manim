@@ -6,7 +6,7 @@ This document explains the building blocks of manim and will give you all the
 necessary tools to start producing your own videos.
 
 Essentially, manim puts at your disposal three different concepts that you can
-orchestrate together in order to produce mathematical animations: the
+orchestrate together to produce mathematical animations: the
 **mathematical object** (or **mobject** for short) the **animation**, and the
 **scene**.  As we will see in the following sections, each of these three
 concepts is implemented in manim as a separate class: the :class:`.Mobject`,
@@ -32,13 +32,13 @@ see an empty frame.  The reason is that the :class:`.Mobject` class is an
 abstract base class of all other mobjects, i.e. it does not have any
 pre-determined visual shape that can be displayed on the screen.  It is only the
 skeleton of a thing that *could* be displayed.  Therefore, you will rarely need
-to use plain instances of :class:`.Mobject`; instead you will most likely
+to use plain instances of :class:`.Mobject`; instead, you will most likely
 create instances of its derived classes.  One of these derived classes is
 :class:`.VMobject`.  The ``V`` stands for Vectorized Mobject.  In essence, a
 vmobject is a mobject that uses `vector graphics
 <https://en.wikipedia.org/wiki/Vector_graphics>`_ to be displayed.  Most of
 the time, you will be dealing with vmobjects, though we will continue to use
-the term "mobject" to refer to the class of shapes that can be displayed on
+the term "mobject" to refer to the class of shapes that can be displayed on the
 screen, as it is more general.
 
 .. note:: Any object that can be displayed on the screen is a ``mobject``, even if
@@ -175,7 +175,7 @@ This scene uses two of the main functions that change the visual style of a
 mobject: :meth:`.set_stroke` and :meth:`.set_fill`.  The former changes the
 visual style of the mobject's border while the latter changes the style of the
 interior.  By default, most mobjects have a fully transparent interior so you
-must specify the ``opacity`` parameter in order to display the color.  An
+must specify the ``opacity`` parameter to display the color.  An
 opacity of ``1.0`` means fully opaque, while ``0.0`` means fully transparent.
 
 Only instances of :class:`.VMobject` implement :meth:`.set_stroke` and
@@ -298,8 +298,9 @@ Using coordinates of a mobject
 ==============================
 
 Mobjects contain points that define their boundaries.
-These points can be used to add other mobjects respectively to each other, e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
-and :meth`~.Mobject.get_start`. Here is an example of some important coordinates:
+These points can be used to add other mobjects respectively to each other, 
+e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
+and :meth:`~.Mobject.get_start`. Here is an example of some important coordinates:
 
 .. manim:: MobjectExample
     :save_last_frame:
@@ -340,9 +341,13 @@ It is also possible to transform a mobject into another mobject like this:
             m2 = Rectangle().set_color(RED).rotate(0.2)
             self.play(Transform(m1,m2))
 
-The Transform function maps points of the previous mobject to the points of the next mobject.
-This might result in strange behaviour, e.g. when the dots of one mobject are arranged clockwise and the other points are arranged counterclockwise.
-Here it might help to use the `flip` function and reposition the points via the  `roll` function of numpy:
+The Transform function maps points of the previous mobject to the points of the 
+next mobject.
+This might result in strange behaviour, e.g. when the dots of one mobject are 
+arranged clockwise and the other points are arranged counterclockwise.
+Here it might help to use the `flip` function and reposition the points via the  
+`roll <https://numpy.org/doc/stable/reference/generated/numpy.roll.html>`_ 
+function of numpy:
 
 .. manim:: ExampleRotation
 
@@ -373,5 +378,5 @@ to be :meth:`added <.Scene.add>` to a scene to be displayed, or :meth:`removed
 animation occurs is determined by a call to :meth:`~.Scene.wait`.  All of the
 code of your video must be contained in the :meth:`~.Scene.construct` method of
 a class that derives from :class:`.Scene`.  Finally, a single file may contain
-multiple :class:`.Scene` subclasses in the event that multiple scenes are to be
+multiple :class:`.Scene` subclasses if multiple scenes are to be
 rendered at the same time.

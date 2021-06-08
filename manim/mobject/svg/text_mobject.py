@@ -1,5 +1,9 @@
 """Mobjects used for displaying (non-LaTeX) text.
 
+.. note::
+   Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
+
+
 The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text.
 With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`.
 
@@ -24,18 +28,14 @@ Examples
             self.add(title.to_edge(UP))
 
             t1 = Text("1. Measuring").set_color(WHITE)
-            t1.next_to(ORIGIN, direction=RIGHT, aligned_edge=UP)
 
             t2 = Text("2. Clustering").set_color(WHITE)
-            t2.next_to(t1, direction=DOWN, aligned_edge=LEFT)
 
             t3 = Text("3. Regression").set_color(WHITE)
-            t3.next_to(t2, direction=DOWN, aligned_edge=LEFT)
 
             t4 = Text("4. Prediction").set_color(WHITE)
-            t4.next_to(t3, direction=DOWN, aligned_edge=LEFT)
 
-            x = VGroup(t1, t2, t3, t4).scale_in_place(0.7)
+            x = VGroup(t1, t2, t3, t4).arrange(direction=DOWN, aligned_edge=LEFT).scale_in_place(0.7).next_to(ORIGIN,DR)
             x.set_opacity(0.5)
             x.submobjects[1].set_opacity(1)
             self.add(x)
@@ -722,7 +722,7 @@ class MarkupText(SVGMobject):
 
     You can find more information about Pango markup formatting at the
     corresponding documentation page:
-    `Pango Markup <https://developer.gnome.org/pango/stable/pango-Markup.html>`_.
+    `Pango Markup <https://developer.gnome.org/pango/1.46/pango-Markup.html>`_.
     Please be aware that not all features are supported by this class and that
     the ``<gradient>`` tag mentioned above is not supported by Pango.
 
@@ -931,13 +931,9 @@ class MarkupText(SVGMobject):
                 'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.'
             )
         gradientmap = self.extract_gradient_tags()
-
-        if not MarkupUtils.validate(self.text):
-            raise ValueError(
-                f"Pango cannot parse your markup in {self.text}. "
-                "Please check for typos, unmatched tags or unescaped "
-                "special chars like < and &."
-            )
+        validate_error = MarkupUtils.validate(self.text)
+        if validate_error:
+            raise ValueError(validate_error)
 
         if self.line_spacing == -1:
             self.line_spacing = self.size + self.size * 0.3

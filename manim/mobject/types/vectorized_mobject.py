@@ -36,6 +36,7 @@ from ...utils.color import BLACK, WHITE, color_to_rgba
 from ...utils.iterables import make_even, stretch_array_to_length, tuplify
 from ...utils.simple_functions import clip_in_place
 from ...utils.space_ops import rotate_vector, shoelace_direction
+from ..opengl_compatibility import ConvertToOpenGL
 from .opengl_vectorized_mobject import OpenGLVMobject
 
 # TODO
@@ -45,26 +46,6 @@ from .opengl_vectorized_mobject import OpenGLVMobject
 #   if last point in close to first point
 # - Think about length of self.points.  Always 0 or 1 mod 4?
 #   That's kind of weird.
-
-
-class MetaVMobject(ABCMeta):
-    """Metaclass for initializing corresponding classes as either inheriting from
-    VMobject or OpenGLVMobject, depending on the value of ``config.renderer`` at
-    initialization time.
-
-    Note that with this implementation, changing the value of ``config.renderer``
-    after Manim has been imported won't have the desired effect and will lead to
-    spurious errors.
-    """
-
-    def __new__(cls, name, bases, namespace):
-        if len(bases) == 0:
-            if config.renderer == "opengl":
-                bases = (OpenGLVMobject,)
-            else:
-                bases = (VMobject,)
-
-        return super().__new__(cls, name, bases, namespace)
 
 
 class VMobject(Mobject):
@@ -405,7 +386,26 @@ class VMobject(Mobject):
             return self.get_stroke_color()
         return self.get_fill_color()
 
-    def set_sheen_direction(self, direction, family=True):
+    def set_sheen_direction(self, direction: np.ndarray, family=True):
+        """Sets the direction of the applied sheen.
+
+        Parameters
+        ----------
+        direction : :class:`numpy.ndarray`, optional
+            Direction from where the gradient is applied.
+
+        Examples
+        --------
+        Normal usage::
+
+            Circle().set_sheen_direction(UP)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_sheen`
+        :meth:`~.VMobject.rotate_sheen_direction`
+        """
+
         direction = np.array(direction)
         if family:
             for submob in self.get_family():
@@ -414,7 +414,58 @@ class VMobject(Mobject):
             self.sheen_direction = direction
         return self
 
-    def set_sheen(self, factor, direction=None, family=True):
+    def rotate_sheen_direction(self, angle: np.ndarray, axis: float = OUT, family=True):
+        """Rotates the direction of the applied sheen.
+
+        Parameters
+        ----------
+        angle : :class:`float`
+            Angle by which the direction of sheen is rotated.
+        axis : :class:`numpy.ndarray`
+            Axis of rotation.
+
+        Examples
+        --------
+        Normal usage::
+
+            Circle().set_sheen_direction(UP).rotate_sheen_direction(PI)
+
+        See Also
+        --------
+        :meth:`~.VMobject.set_sheen_direction`
+        """
+        if family:
+            for submob in self.get_family():
+                submob.sheen_direction = rotate_vector(
+                    submob.sheen_direction, angle, axis
+                )
+        else:
+            self.sheen_direction = rotate_vector(self.sheen_direction, angle, axis)
+        return self
+
+    def set_sheen(self, factor, direction: np.ndarray = None, family=True):
+        """Applies a color gradient from a direction.
+
+        Parameters
+        ----------
+        factor : :class:`float`
+            The extent of lustre/gradient to apply. If negative, the gradient
+            starts from black, if positive the gradient starts from white and
+            changes to the current color.
+        direction : :class:`numpy.ndarray`, optional
+            Direction from where the gradient is applied.
+
+        Examples
+        --------
+        .. manim:: SetSheen
+            :save_last_frame:
+
+            class SetSheen(Scene):
+                def construct(self):
+                    circle = Circle(fill_opacity=1).set_sheen(-0.3, DR)
+                    self.add(circle)
+        """
+
         if family:
             for submob in self.submobjects:
                 submob.set_sheen(factor, direction, family)
@@ -485,7 +536,7 @@ class VMobject(Mobject):
     ) -> "VMobject":
         """Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject.
 
-        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded paramaters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
+        anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded parameters and this is a problem as it makes the number of points per cubic curve unchangeable from 4. (two anchors and two handles).
 
         Returns
         -------
@@ -528,7 +579,7 @@ class VMobject(Mobject):
     ) -> None:
         """Add cubic bezier curve to the path.
 
-        NOTE : the first anchor is not a paramater as by default the end of the last sub-path!
+        NOTE : the first anchor is not a parameter as by default the end of the last sub-path!
 
         Parameters
         ----------
@@ -734,6 +785,17 @@ class VMobject(Mobject):
             self.make_smooth()
         return self
 
+    def rotate(
+        self,
+        angle: float,
+        axis: np.ndarray = OUT,
+        about_point: Optional[Sequence[float]] = None,
+        **kwargs,
+    ):
+        self.rotate_sheen_direction(angle, axis)
+        super().rotate(angle, axis, about_point, **kwargs)
+        return self
+
     def scale_handle_to_anchor_distances(self, factor: float) -> "VMobject":
         """If the distance between a given handle point H and its associated
         anchor point A is d, then it changes H to be a distances factor*d
@@ -833,8 +895,8 @@ class VMobject(Mobject):
 
         The algorithm every bezier tuple (anchors and handles) in ``self.points`` (by regrouping each n elements, where
         n is the number of points per cubic curve)), and evaluate the relation between two anchors with filter_func.
-        NOTE : The filter_func takes an int n as paramater, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
-        the function takes two points as paramters.
+        NOTE : The filter_func takes an int n as parameter, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
+        the function takes two points as parameters.
 
         Parameters
         ----------
@@ -1406,7 +1468,7 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(VMobject):
+class VGroup(VMobject, metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -1458,7 +1520,7 @@ class VGroup(VMobject):
     """
 
     def __init__(self, *vmobjects, **kwargs):
-        VMobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*vmobjects)
 
     def __repr__(self):
@@ -1523,7 +1585,7 @@ class VGroup(VMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, VMobject) for m in vmobjects):
+        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in vmobjects):
             raise TypeError("All submobjects must be of type VMobject")
         return super().add(*vmobjects)
 
@@ -1540,6 +1602,32 @@ class VGroup(VMobject):
 
     def __isub__(self, vmobject):
         return self.remove(vmobject)
+
+    def __setitem__(self, key: int, value: Union[VMobject, typing.Sequence[VMobject]]):
+        """Override the [] operator for item assignment.
+
+        Parameters
+        ----------
+        key
+            The index of the submobject to be assigned
+        value
+            The vmobject value to assign to the key
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Normal usage::
+
+            >>> vgroup = VGroup(VMobject())
+            >>> new_obj = VMobject()
+            >>> vgroup[0] = new_obj
+        """
+        if not all(isinstance(m, (VMobject, OpenGLVMobject)) for m in value):
+            raise TypeError("All submobjects must be of type VMobject")
+        self.submobjects[key] = value
 
 
 class VDict(VMobject):
@@ -1868,7 +1956,7 @@ class VDict(VMobject):
         super().add(value)
 
 
-class VectorizedPoint(metaclass=MetaVMobject):
+class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         location=ORIGIN,
@@ -1933,7 +2021,7 @@ class CurvesAsSubmobjects(VGroup):
             self.add(part)
 
 
-class DashedVMobject(metaclass=MetaVMobject):
+class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):

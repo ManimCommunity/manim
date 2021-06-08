@@ -925,7 +925,7 @@ class Scene(Container):
             animation.begin()
 
     def is_current_animation_frozen_frame(self) -> bool:
-        """Returns wether the current animation produces a static frame (generally a Wait)."""
+        """Returns whether the current animation produces a static frame (generally a Wait)."""
         return (
             isinstance(self.animations[0], Wait)
             and len(self.animations) == 1
@@ -1092,7 +1092,7 @@ class Scene(Container):
         )
 
         # Use the locals of the caller as the local namespace
-        # once embeded, and add a few custom shortcuts.
+        # once embedded, and add a few custom shortcuts.
         local_ns = inspect.currentframe().f_back.f_locals
         # local_ns["touch"] = self.interact
         for method in (

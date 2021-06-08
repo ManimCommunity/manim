@@ -8,6 +8,8 @@
 
 import hashlib
 import os
+import re
+import unicodedata
 from pathlib import Path
 
 from .. import config, logger
@@ -136,6 +138,22 @@ def tex_compilation_command(tex_compiler, output_format, tex_file, tex_dir):
     return " ".join(commands)
 
 
+def insight_inputenc_error(match):
+    code_point = chr(int(match[1], 16))
+    name = unicodedata.name(code_point)
+    yield "TexTemplate does not support character '{}' (U+{})".format(name, match[1])
+    yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate"
+
+
+# used by compile_tex; maps regexp to function offering additional insights
+LATEX_ERROR_INSIGHTS = [
+    (
+        r"inputenc Error: Unicode character (?:.*) \(U\+([0-9a-fA-F]+)\)",
+        insight_inputenc_error,
+    ),
+]
+
+
 def compile_tex(tex_file, tex_compiler, output_format):
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
 
@@ -171,22 +189,45 @@ def compile_tex(tex_file, tex_compiler, output_format):
                 )
             with open(log_file, "r") as f:
                 log = f.readlines()
-                log_error_pos = [
-                    ind for (ind, line) in enumerate(log) if line.startswith("!")
+                error_pos = [
+                    index for index, line in enumerate(log) if line.startswith("!")
                 ]
-                if log_error_pos:
-                    logger.error(f"LaTeX compilation error! {tex_compiler} reports:")
-                    for lineno in log_error_pos:
-                        # search for a line starting with "l." in the next
-                        # few lines past the error; otherwise just print some lines.
-                        printed_lines = 1
-                        for _ in range(10):
-                            if log[lineno + printed_lines].startswith("l."):
-                                break
-                            printed_lines += 1
+                if error_pos:
+                    with open(tex_file, "r") as g:
+                        tex = g.readlines()
+                        logger.error("LaTeX compilation error: {log[error_pos][2:])}")
+                        for log_index in error_pos:
+                            index_line = log_index
+                            context = "Context for error:\n\n"
 
-                        for line in log[lineno : lineno + printed_lines + 1]:
-                            logger.error(line)
+                            # Find where the line of the error is indicated in the log file
+                            while not log[index_line].startswith("l."):
+                                index_line += 1
+
+                            # Find the index of the errored line in the tex file
+                            tex_index = (
+                                int(log[index_line].split(" ")[0].split(".")[1]) - 1
+                            )
+
+                            # Seek the environment scope that contains the error
+                            environment = tex_index
+                            while not tex[environment].startswith("\\begin"):
+                                environment -= 1
+
+                            # Print the entire environment including its end
+                            while not tex[environment - 1].startswith("\\end"):
+                                context += tex[environment]
+                                if environment == tex_index:
+                                    context += "^ this line\n"
+                                environment += 1
+                            logger.error(context)
+
+                        # add insight for errors
+                        for prog, get_insight in LATEX_ERROR_INSIGHTS:
+                            match = re.search(prog, "".join(log[log_index:index_line]))
+                            if match is not None:
+                                for insight in get_insight(match):
+                                    logger.info(insight)
 
             raise ValueError(
                 f"{tex_compiler} error converting to"

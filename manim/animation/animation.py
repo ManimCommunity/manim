@@ -152,9 +152,7 @@ class Animation:
     def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, Mobject) and not isinstance(
-            mobject, OpenGLMobject
-        ):
+        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -283,10 +281,6 @@ class Animation:
         alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(self.rate_func(alpha))
 
-    @deprecated(until="v0.6.0", replacement="interpolate")
-    def update(self, alpha: float) -> None:
-        self.interpolate(alpha)
-
     def interpolate_mobject(self, alpha: float) -> None:
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
@@ -297,7 +291,7 @@ class Animation:
         self,
         submobject: Mobject,
         starting_submobject: Mobject,
-        # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differes in Transform().
+        # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differs in Transform().
         alpha: float,
     ) -> "Animation":
         # Typically implemented by subclass
@@ -389,7 +383,7 @@ class Animation:
         Returns
         -------
         Callable[[float], float]
-            The rate fucntion of the animation.
+            The rate function of the animation.
         """
         return self.rate_func
 

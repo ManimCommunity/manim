@@ -14,7 +14,7 @@ The ManimConfig class
 
 The most direct way of configuring manim is via the global ``config`` object,
 which is an instance of :class:`.ManimConfig`.  Each property of this class is
-a config option that can be accessed either with standard attribute syntax, or
+a config option that can be accessed either with standard attribute syntax or
 with dict-like syntax:
 
 .. code-block:: pycon
@@ -123,7 +123,7 @@ open the file after it is rendered.
    manim -o myscene -i -n 0,10 -c WHITE <file.py> SceneName 
 
 .. tip:: There are many more command-line flags that manim accepts.  All the
-	 possible flags are shown by executing ``manim -h``.  A complete list
+	 possible flags are shown by executing ``manim render --help``.  A complete list
 	 of CLI flags is at the end of this document.
 
 
@@ -147,7 +147,7 @@ The config file must start with the section header ``[CLI]``.  The
 configuration options under this header have the same name as the CLI flags,
 and serve the same purpose.  Take for example the following config file.
 
-.. code-block::
+.. code-block:: ini
 
    [CLI]
    # my config file
@@ -172,7 +172,7 @@ is in the same directory as <file.py>,
    manim <file.py> SceneName
 
 .. tip:: The names of the configuration options admissible in config files are
-         exactly the same as the **long names** of the corresponding command
+         exactly the same as the **long names** of the corresponding command-
          line flags.  For example, the ``-c`` and ``--background_color`` flags
          are interchangeable, but the config file only accepts
          :code:`background_color` as an admissible option.
@@ -195,7 +195,7 @@ In this way, the user may keep different config files for different scenes or
 projects, and execute them with the right configuration from anywhere in the
 system.
 
-The file described here is called the **folder-wide** config file, because it
+The file described here is called the **folder-wide** config file because it
 affects all scene scripts found in the same folder.
 
 
@@ -239,7 +239,7 @@ incompatible, **the folder-wide file takes precedence**.
 
 For example, take the following user-wide config file
 
-.. code-block::
+.. code-block:: ini
 
    # user-wide
    [CLI]
@@ -249,7 +249,7 @@ For example, take the following user-wide config file
 
 and the following folder-wide file
 
-.. code-block::
+.. code-block:: ini
 
    # folder-wide
    [CLI]

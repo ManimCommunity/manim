@@ -6,7 +6,7 @@ repos:
     hooks:
       - id: mixed-line-ending
   - repo: https://github.com/psf/black
-    rev: 21.5b1
+    rev: 21.5b2
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs
@@ -29,3 +29,7 @@ repos:
     rev: 3.9.2
     hooks:
       - id: flake8
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.0.0
+    hooks:
+      - id: codespell
