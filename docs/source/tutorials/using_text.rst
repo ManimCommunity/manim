@@ -306,7 +306,7 @@ For example,
 
 .. note::
 
-    Note that we are using a raw string (``r'...'``) instead of a regular string (`r'...'``)
+    Note that we are using a raw string (``r'...'``) instead of a regular string (``r'...'``)
     This is because TeX code uses a lot of special characters - like ``\`` for example - that
     have special meaning within a regular python string. An alternative would have been to
     write \\ as in Tex('\\LaTeX').
