@@ -1371,7 +1371,7 @@ class NumberPlane(Axes):
                         "stroke_color": RED_D,
                         "stroke_width": 4,
                         "stroke_opacity": 0.6,
-                    },
+                    }
                 )
                 self.add(number_plane)
     """
