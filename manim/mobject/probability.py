@@ -2,6 +2,7 @@
 
 __all__ = ["SampleSpace", "BarChart"]
 
+import numpy as np
 
 from ..constants import *
 from ..mobject.geometry import Line, Rectangle

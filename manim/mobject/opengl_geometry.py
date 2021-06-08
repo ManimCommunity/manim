@@ -329,13 +329,6 @@ class OpenGLDot(OpenGLCircle):
         )
 
 
-@deprecated(until="v0.6.0", replacement="OpenGLDot")
-class OpenGLSmallDot(OpenGLDot):
-    def __init__(self, radius=DEFAULT_SMALL_DOT_RADIUS, **kwargs):
-
-        super().__init__(radius=radius, **kwargs)
-
-
 class OpenGLEllipse(OpenGLCircle):
     def __init__(self, width=2, height=1, **kwargs):
         super().__init__(**kwargs)
