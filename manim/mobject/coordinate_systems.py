@@ -1359,7 +1359,7 @@ class NumberPlane(Axes):
     Examples
     --------
 
-    .. manim:: NumberPlaneExample
+    .. manim:: NumberPlaneExample 
         :save_last_frame:
 
         class NumberPlaneExample(Scene):
@@ -1369,8 +1369,8 @@ class NumberPlane(Axes):
                     y_range=[-10, 10, 1],
                     background_line_style={
                         "stroke_color": RED_D,
-                        "stroke_width": 2,
-                        "stroke_opacity": 0.7,
+                        "stroke_width": 4,
+                        "stroke_opacity": 0.6,
                     },
                 )
                 self.add(number_plane)
