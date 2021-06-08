@@ -81,11 +81,12 @@ class Scene:
         camera_class=Camera,
         always_update_mobjects=False,
         random_seed=None,
-        **kwargs,
+        skip_animations=False,
     ):
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed
+        self.skip_animations = skip_animations
 
         self.animations = None
         self.stop_condition = None
@@ -107,7 +108,7 @@ class Scene:
         if renderer is None:
             self.renderer = CairoRenderer(
                 camera_class=self.camera_class,
-                skip_animations=kwargs.get("skip_animations", False),
+                skip_animations=self.skip_animations,
             )
         else:
             self.renderer = renderer
