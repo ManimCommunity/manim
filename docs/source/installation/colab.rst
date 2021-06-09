@@ -12,6 +12,12 @@ You can install Colab by running the following in a cell:
 
 After the execution has completed, you will be prompted to restart the runtime. Click the "restart runtime" button at the bottom of the cell output.
 
+In another cell, add a manim import.
+
+.. code-block::
+
+   from manim import *
+
 Try and run the following code in the next cell to confirm installation.
 
 .. code-block::
