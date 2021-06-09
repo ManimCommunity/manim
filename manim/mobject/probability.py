@@ -234,7 +234,7 @@ class BarChart(VGroup):
         label_y_axis: bool = True,
         y_axis_label_height: float = 0.25,
         max_value: float = 1,
-        bar_colors: List[Color] = [BLUE, YELLOW],
+        bar_colors: List["Color"] = [BLUE, YELLOW],
         bar_fill_opacity: float = 0.8,
         bar_stroke_width: float = 3,
         bar_names: List[str] = [],
