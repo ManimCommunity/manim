@@ -408,7 +408,7 @@ class SceneFileWriter(object):
 
         logger.info(
             f"Animation {self.renderer.num_plays} : Partial movie file written in %(path)s",
-            {"path": {self.partial_movie_file_path}},
+            {"path": f"'{self.partial_movie_file_path}'"},
         )
 
     def is_already_cached(self, hash_invocation):
@@ -590,4 +590,4 @@ class SceneFileWriter(object):
     def print_file_ready_message(self, file_path):
         """Prints the "File Ready" message to STDOUT."""
         config["output_file"] = file_path
-        logger.info("\nFile ready at %(file_path)s\n", {"file_path": file_path})
+        logger.info("\nFile ready at %(file_path)s\n", {"file_path": f"'{file_path}'"})
