@@ -236,7 +236,7 @@ class Cuboid(VGroup):
 
         You can choose to include only a few of the default six `faces` - 'IN', 'OUT' etc.
 
-        Or, you can remove any face(s) after initiating Cuboid, as these faces are accessible by their name propery, eg. 'IN', 'OUT'.
+        Or, you can remove any face(s) after initiating Cuboid, as these faces are accessible by their name property, eg. 'IN', 'OUT'.
     """
     def __init__(
         self,
