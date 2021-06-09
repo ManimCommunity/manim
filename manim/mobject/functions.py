@@ -45,19 +45,6 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 self.add(axes, curve1)
                 self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
                 self.wait()
-
-    .. manim:: ParaSurface
-        :save_last_frame:
-
-        class ParaSurface(ThreeDScene):
-            def func(self, u, v):
-                return np.array([np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), u])
-
-            def construct(self):
-                axes = ThreeDAxes()
-                surface = ParametricSurface(lambda u, v: self.func(u, v), u_min=-TAU, u_max=TAU / 2, v_min=0, v_max=2 * PI)
-                self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
-                self.add(axes, surface)
     """
 
     def __init__(
