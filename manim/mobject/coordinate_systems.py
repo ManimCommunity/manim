@@ -1368,7 +1368,7 @@ class NumberPlane(Axes):
                     x_range=[-10, 10, 1],
                     y_range=[-10, 10, 1],
                     background_line_style={
-                        "stroke_color": RED_D,
+                        "stroke_color": TEAL,
                         "stroke_width": 4,
                         "stroke_opacity": 0.6
                     }
