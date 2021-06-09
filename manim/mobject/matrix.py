@@ -141,7 +141,7 @@ class Matrix(VMobject):
             self.add_background_rectangle()
 
     def matrix_to_mob_matrix(self, matrix):
-        return np.vectorize(self.element_to_mobject)(
+        return np.vectorize(self.element_to_mobject, otypes = [object])(
             matrix, **self.element_to_mobject_config
         )
 
