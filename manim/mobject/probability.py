@@ -3,10 +3,12 @@
 __all__ = ["SampleSpace", "BarChart"]
 
 
-from typing import Iterable, List
+import typing
 
 import numpy as np
-from colour import Color
+
+if typing.TYPE_CHECKING:
+    from colour import Color
 
 from ..constants import *
 from ..mobject.geometry import Line, Rectangle
