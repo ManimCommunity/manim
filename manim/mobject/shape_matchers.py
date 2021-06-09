@@ -117,15 +117,13 @@ class Underline(Line):
     Examples
     --------
     .. manim:: UnderLine
+        :save_last_frame:
 
         class UnderLine(Scene):
             def construct(self):
-                m = Tex("M")  # Starting letter
                 man = Tex("M", "anim")  # Full Word
                 ul = Underline(man)  # Underlining the word
-                self.play(Write(m), run_time=1.5)
-                self.play(ReplacementTransform(m, man[0]), FadeIn(man[1]))  # Replaces the starting letter to word
-                self.play(Create(ul))  # Creates the underline
+                self.add(man, ul)
     """
 
     def __init__(self, mobject, buff=SMALL_BUFF, **kwargs):
