@@ -4,6 +4,7 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 import typing
+from typing import Iterable, List
 
 import numpy as np
 
