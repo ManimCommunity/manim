@@ -18,7 +18,7 @@ __all__ = [
 import numpy as np
 
 from ..constants import *
-from ..mobject.geometry import Circle, Square, Rectangle
+from ..mobject.geometry import Circle, Rectangle, Square
 from ..mobject.mobject import *
 from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
@@ -232,16 +232,19 @@ class Cube(VGroup):
 
 class Cuboid(VGroup):
     """A cuboid with a given `length`, `breadth` and `height`.
-        `Length`, `breadth` and `height` are along the x, y and z axes respectively.
+    `Length`, `breadth` and `height` are along the x, y and z axes respectively.
 
-        You can choose to include only a few of the default six `faces` - 'IN', 'OUT' etc.
+    You can choose to include only a few of the default six `faces` - 'IN', 'OUT' etc.
 
-        Or, you can remove any face(s) after initiating Cuboid, as these faces are accessible by their name property, eg. 'IN', 'OUT'.
+    Or, you can remove any face(s) after initiating Cuboid, as these faces are accessible by their name property, eg. 'IN', 'OUT'.
     """
+
     def __init__(
         self,
-        length:float=2.0, breadth:float=2.0, height:float=2.0,
-        faces=['IN','OUT','LEFT','RIGHT','UP','DOWN'],
+        length: float = 2.0,
+        breadth: float = 2.0,
+        height: float = 2.0,
+        faces=["IN", "OUT", "LEFT", "RIGHT", "UP", "DOWN"],
         fill_opacity=0.75,
         fill_color=BLUE,
         stroke_width=0,
@@ -260,9 +263,24 @@ class Cuboid(VGroup):
     def generate_points(self) -> None:
         for name in self.faces:
             vect = eval(name)
-            if vect is LEFT or vect is RIGHT: height, width, stretch = self.breadth, self.cuboid_height, self.length # for rectangles in yz plane
-            elif vect is UP or vect is DOWN:  height, width, stretch = self.length, self.cuboid_height, self.breadth # for rectangles in xz plane
-            elif vect is IN or vect is OUT:   height, width, stretch = self.breadth, self.length, self.cuboid_height # for rectangles in xy plane
+            if vect is LEFT or vect is RIGHT:
+                height, width, stretch = (
+                    self.breadth,
+                    self.cuboid_height,
+                    self.length,
+                )  # for rectangles in yz plane
+            elif vect is UP or vect is DOWN:
+                height, width, stretch = (
+                    self.length,
+                    self.cuboid_height,
+                    self.breadth,
+                )  # for rectangles in xz plane
+            elif vect is IN or vect is OUT:
+                height, width, stretch = (
+                    self.breadth,
+                    self.length,
+                    self.cuboid_height,
+                )  # for rectangles in xy plane
 
             face = Rectangle(height=height, width=width, shade_in_3d=True)
             face.name = name
@@ -272,6 +290,7 @@ class Cuboid(VGroup):
 
             self.add(face)
             super().generate_points
+
 
 class Prism(Cube):
     def __init__(self, dimensions=[3, 2, 1], **kwargs):

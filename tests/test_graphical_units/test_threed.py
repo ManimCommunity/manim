@@ -13,7 +13,7 @@ class CubeTest(ThreeDScene):
 
 class CuboidSelectedFacesTest(ThreeDScene):
     def construct(self):
-        self.add(Cuboid(length=3, breadth=4, height=5, faces=['IN', 'LEFT', 'UP']))
+        self.add(Cuboid(length=3, breadth=4, height=5, faces=["IN", "LEFT", "UP"]))
 
 
 class SphereTest(ThreeDScene):
