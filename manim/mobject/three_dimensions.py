@@ -231,17 +231,17 @@ class Cube(VGroup):
 
 
 class Cuboid(VGroup):
-    """A cuboid with a given length, breadth and height.
-        Length, breadth and height are along the x, y and z axes respectively.
+    """A cuboid with a given `length`, `breadth` and `height`.
+        `Length`, `breadth` and `height` are along the x, y and z axes respectively.
 
-        You can choose to include only a few of the default six faces - 'IN', 'OUT' etc.
+        You can choose to include only a few of the default six `faces` - 'IN', 'OUT' etc.
 
         Or, you can remove any face(s) after initiating Cuboid, as these faces are accessible by their name propery, eg. 'IN', 'OUT'.
     """
     def __init__(
         self,
-        length:float=2, breadth:float=2, height:float=2,
-        faces=['IN', 'OUT', 'LEFT', 'RIGHT', 'UP', 'DOWN'],
+        length:float=2.0, breadth:float=2.0, height:float=2.0,
+        faces=['IN','OUT','LEFT','RIGHT','UP','DOWN'],
         fill_opacity=0.75,
         fill_color=BLUE,
         stroke_width=0,
