@@ -52,7 +52,7 @@ render_options = option_group(
     ),
     option(
         "--format",
-        type=click.Choice(["png", "gif", "mp4"], case_sensitive=False),
+        type=click.Choice(["png", "gif", "mp4", "webm"], case_sensitive=False),
     ),
     option("-s", "--save_last_frame", is_flag=True),
     option(

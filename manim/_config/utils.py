@@ -846,7 +846,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def format(self):
-        """File format; "png", "gif", "mp4", or "mov"."""
+        """File format; "png", "gif", "mp4", "webm" or "mov"."""
         return self._d["format"]
 
     @format.setter
@@ -855,7 +855,7 @@ class ManimConfig(MutableMapping):
         self._set_from_list(
             "format",
             val,
-            [None, "png", "gif", "mp4", "mov"],
+            [None, "png", "gif", "mp4", "mov", "webm"],
         )
 
     ffmpeg_loglevel = property(
@@ -990,9 +990,9 @@ class ManimConfig(MutableMapping):
     movie_file_extension = property(
         lambda self: self._d["movie_file_extension"],
         lambda self, val: self._set_from_list(
-            "movie_file_extension", val, [".mp4", ".mov"]
+            "movie_file_extension", val, [".mp4", ".mov", ".webm"]
         ),
-        doc="Either .mp4 or .mov (no flag).",
+        doc="Either .mp4, .webm or .mov (no flag).",
     )
 
     background_opacity = property(
@@ -1038,12 +1038,11 @@ class ManimConfig(MutableMapping):
     def transparent(self, val: bool) -> None:
         if val:
             self.png_mode = "RGBA"
-            self.movie_file_extension = ".mov"
             self.background_opacity = 0.0
         else:
             self.png_mode = "RGB"
-            self.movie_file_extension = ".mp4"
             self.background_opacity = 1.0
+        self.resolve_movie_file_extension(val)
 
     @property
     def dry_run(self):
@@ -1128,6 +1127,14 @@ class ManimConfig(MutableMapping):
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
     )
+
+    def resolve_movie_file_extension(self, is_transparent):
+        if is_transparent:
+            self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
+        elif self.format == "webm":
+            self.movie_file_extension = ".webm"
+        else:
+            self.movie_file_extension = ".mp4"
 
     def get_dir(self, key: str, **kwargs: str) -> Path:
         """Resolve a config option that stores a directory.
