@@ -20,7 +20,9 @@ from ..utils.space_ops import normalize
 
 
 class NumberLine(Line):
-    """Creates a number line with tick marks.
+    """Creates a number line with tick marks. Number ranges that include both negative and
+    positive values will be generated from the 0 point, and may not include a tick at the min / max
+    values as the tick locations are dependent on the step size.
 
     Parameters
     ----------
