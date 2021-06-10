@@ -1399,10 +1399,6 @@ class NumberPlane(Axes):
         The width of the plane.
     y_length
         The height of the plane.
-    axis_config
-        Arguments to be passed to :class:`~.NumberLine` that influences both axes.
-    y_axis_config
-        Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
     background_line_style
         Arguments that influence the construction of the background lines of the plane.
     faded_line_style
@@ -1451,8 +1447,6 @@ class NumberPlane(Axes):
         ),
         x_length: Optional[float] = None,
         y_length: Optional[float] = None,
-        axis_config: Optional[dict] = None,
-        y_axis_config: Optional[dict] = None,
         background_line_style: Optional[dict] = None,
         faded_line_style: Optional[dict] = None,
         faded_line_ratio: Optional[float] = 1,
@@ -1479,7 +1473,11 @@ class NumberPlane(Axes):
 
         self.update_default_configs(
             (self.axis_config, self.y_axis_config, self.background_line_style),
-            (axis_config, y_axis_config, background_line_style),
+            (
+                kwargs.pop("axis_config", None),
+                kwargs.pop("y_axis_config", None),
+                background_line_style,
+            ),
         )
 
         # Defaults to a faded version of line_config
