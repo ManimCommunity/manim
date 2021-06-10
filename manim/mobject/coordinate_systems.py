@@ -1015,14 +1015,14 @@ class Axes(VGroup, CoordinateSystem):
                 update_dict_recursively(default_config, passed_config)
 
     def init_numbers(self, *axes):
+        """Generates the numbers to be added to each axis"""
         for axis in axes:
             if axis.config.get("include_numbers") or axis.config.get(
                 "numbers_to_include"
             ):
-                try:
-                    values = axis.config["numbers_to_include"]
-                except KeyError:
-                    values = None
+                # returns None if "numbers_to_include" is not defined,
+                # which is the same as setting default values
+                values = axis.config.get("numbers_to_include")
                 axis.add_numbers(values)
 
     def create_axis(
