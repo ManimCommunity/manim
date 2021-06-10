@@ -130,7 +130,9 @@ class CoordinateSystem:
             label_tex, self.get_x_axis(), edge, direction, **kwargs
         )
 
-    def get_y_axis_label(self, label_tex, edge=UR, direction=UP + RIGHT * 2, **kwargs):
+    def get_y_axis_label(
+        self, label_tex, edge=UR, direction=UP * 0.5 + RIGHT, **kwargs
+    ):
         return self.get_axis_label(
             label_tex, self.get_y_axis(), edge, direction, **kwargs
         )
