@@ -1004,27 +1004,26 @@ class Axes(VGroup, CoordinateSystem):
         # NumberPlane below
         self.axes = VGroup(self.x_axis, self.y_axis)
         self.add(*self.axes)
-        self.center()
 
-        self.init_numbers(*self.axes)
+        # finds the middle-point on each axis
+        lines_center_point = []
+        for axis in self.axes:
+            # checks if the range does not contain 0: [2, 4]
+            if np.sign(axis.x_max) == np.sign(axis.x_min):
+                axis_length = axis.x_max - axis.x_min
+            else:
+                axis_length = axis.x_max + axis.x_min
+            lines_center_point.append(axis_length / 2 * axis.unit_size)
+
+        lines_center_point.append(0)
+
+        self.shift(-np.array(lines_center_point, dtype=float))
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
-
-    def init_numbers(self, *axes):
-        """Generates the numbers to be added to each axis"""
-        for axis in axes:
-            if (
-                axis.config.get("include_numbers")
-                or axis.config.get("numbers_to_include") is not None
-            ):
-                # returns None if "numbers_to_include" is not defined,
-                # which is the same as setting default values
-                values = axis.config.get("numbers_to_include")
-                axis.add_numbers(values)
 
     def create_axis(
         self,
@@ -1049,11 +1048,7 @@ class Axes(VGroup, CoordinateSystem):
             Returns a number line with the provided x and y axis range.
         """
         axis_config["length"] = length
-        temp_config = axis_config.copy()
-        temp_config.pop("include_numbers", None)
-        temp_config.pop("numbers_to_include", None)
-
-        axis = NumberLine(range_terms, **temp_config)
+        axis = NumberLine(range_terms, **axis_config)
 
         # without the call to origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
