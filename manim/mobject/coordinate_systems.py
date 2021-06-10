@@ -125,14 +125,12 @@ class CoordinateSystem:
     def get_z_axis(self):
         return self.get_axis(2)
 
-    def get_x_axis_label(
-        self, label_tex, edge=RIGHT, direction=UP * 4 + RIGHT, **kwargs
-    ):
+    def get_x_axis_label(self, label_tex, edge=UR, direction=UR, **kwargs):
         return self.get_axis_label(
             label_tex, self.get_x_axis(), edge, direction, **kwargs
         )
 
-    def get_y_axis_label(self, label_tex, edge=UP, direction=UP + RIGHT * 2, **kwargs):
+    def get_y_axis_label(self, label_tex, edge=UR, direction=UP + RIGHT * 2, **kwargs):
         return self.get_axis_label(
             label_tex, self.get_y_axis(), edge, direction, **kwargs
         )
