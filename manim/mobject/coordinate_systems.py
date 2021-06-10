@@ -986,6 +986,14 @@ class Axes(VGroup, CoordinateSystem):
             (self.axis_config, self.x_axis_config, self.y_axis_config),
             (axis_config, x_axis_config, y_axis_config),
         )
+
+        self.x_axis_config = merge_dicts_recursively(
+            self.x_axis_config, self.axis_config
+        )
+        self.y_axis_config = merge_dicts_recursively(
+            self.y_axis_config, self.axis_config
+        )
+
         self.x_axis = self.create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self.create_axis(self.y_range, self.y_axis_config, self.y_length)
 
@@ -995,6 +1003,13 @@ class Axes(VGroup, CoordinateSystem):
         self.axes = VGroup(self.x_axis, self.y_axis)
         self.add(*self.axes)
         self.center()
+
+        for axis_config in (self.y_axis_config, self.x_axis_config):
+            if "include_numbers" in axis_config or "numbers_to_include" in axis_config:
+                try:
+                    self.add_coordinates(axis_config["numbers_to_include"])
+                except KeyError:
+                    self.add_coordinates()
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
@@ -1024,9 +1039,11 @@ class Axes(VGroup, CoordinateSystem):
         :class:`NumberLine`
             Returns a number line with the provided x and y axis range.
         """
-        new_config = merge_dicts_recursively(self.axis_config, axis_config)
-        new_config["length"] = length
-        axis = NumberLine(range_terms, **new_config)
+        axis_config["length"] = length
+        axis_config.pop("include_numbers", None)
+        axis_config.pop("numbers_to_include", None)
+
+        axis = NumberLine(range_terms, **axis_config)
 
         # without the call to origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
@@ -1287,6 +1304,9 @@ class ThreeDAxes(Axes):
 
         self.z_axis_config = {}
         self.update_default_configs((self.z_axis_config,), (z_axis_config,))
+        self.z_axis_config = merge_dicts_recursively(
+            self.z_axis_config, self.axis_config
+        )
 
         self.z_normal = z_normal
         self.num_axis_pieces = num_axis_pieces
@@ -1327,6 +1347,36 @@ class ThreeDAxes(Axes):
                 submob.get_gradient_start_and_end_points = make_func(axis)
                 submob.get_unit_normal = lambda a: np.ones(3)
                 submob.set_sheen(0.2)
+
+    def get_coordinate_labels(
+        self,
+        x_values: Optional[Iterable[float]] = None,
+        y_values: Optional[Iterable[float]] = None,
+        z_values: Optional[Iterable[float]] = None,
+        **kwargs,
+    ) -> VDict:
+        """Gets labels for the coordinates
+
+        Parameters
+        ----------
+        x_values
+            Iterable of values along the x-axis, by default None.
+        y_values
+            Iterable of values along the y-axis, by default None.
+        z_values
+            Iterable of values along the z-axis, by default None.
+
+        Returns
+        -------
+        VDict
+            Labels for the x and y values.
+        """
+        axes = self.get_axes()
+        self.coordinate_labels = VGroup()
+        for axis, values in zip(axes, [x_values, y_values, z_values]):
+            labels = axis.add_numbers(values, **kwargs)
+            self.coordinate_labels.add(labels)
+        return self.coordinate_labels
 
 
 class NumberPlane(Axes):
