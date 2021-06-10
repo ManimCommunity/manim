@@ -1017,8 +1017,9 @@ class Axes(VGroup, CoordinateSystem):
     def init_numbers(self, *axes):
         """Generates the numbers to be added to each axis"""
         for axis in axes:
-            if axis.config.get("include_numbers") or axis.config.get(
-                "numbers_to_include"
+            if (
+                axis.config.get("include_numbers")
+                or axis.config.get("numbers_to_include") is not None
             ):
                 # returns None if "numbers_to_include" is not defined,
                 # which is the same as setting default values
