@@ -988,14 +988,16 @@ class Axes(VGroup, CoordinateSystem):
         )
 
         self.x_axis_config = merge_dicts_recursively(
-            self.x_axis_config, self.axis_config
+            self.axis_config, self.x_axis_config
         )
         self.y_axis_config = merge_dicts_recursively(
-            self.y_axis_config, self.axis_config
+            self.axis_config, self.y_axis_config
         )
 
         self.x_axis = self.create_axis(self.x_range, self.x_axis_config, self.x_length)
+        self.x_axis.config = self.x_axis_config
         self.y_axis = self.create_axis(self.y_range, self.y_axis_config, self.y_length)
+        self.y_axis.config = self.y_axis_config
 
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
@@ -1004,18 +1006,24 @@ class Axes(VGroup, CoordinateSystem):
         self.add(*self.axes)
         self.center()
 
-        for axis_config in (self.y_axis_config, self.x_axis_config):
-            if "include_numbers" in axis_config or "numbers_to_include" in axis_config:
-                try:
-                    self.add_coordinates(axis_config["numbers_to_include"])
-                except KeyError:
-                    self.add_coordinates()
+        self.init_numbers(*self.axes)
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
         for default_config, passed_config in zip(default_configs, passed_configs):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
+
+    def init_numbers(self, *axes):
+        for axis in axes:
+            if axis.config.get("include_numbers") or axis.config.get(
+                "numbers_to_include"
+            ):
+                try:
+                    values = axis.config["numbers_to_include"]
+                except KeyError:
+                    values = None
+                axis.add_numbers(values)
 
     def create_axis(
         self,
@@ -1040,10 +1048,11 @@ class Axes(VGroup, CoordinateSystem):
             Returns a number line with the provided x and y axis range.
         """
         axis_config["length"] = length
-        axis_config.pop("include_numbers", None)
-        axis_config.pop("numbers_to_include", None)
+        temp_config = axis_config.copy()
+        temp_config.pop("include_numbers", None)
+        temp_config.pop("numbers_to_include", None)
 
-        axis = NumberLine(range_terms, **axis_config)
+        axis = NumberLine(range_terms, **temp_config)
 
         # without the call to origin_shift, graph does not exist when min > 0 or max < 0
         # shifts the axis so that 0 is centered
@@ -1305,7 +1314,7 @@ class ThreeDAxes(Axes):
         self.z_axis_config = {}
         self.update_default_configs((self.z_axis_config,), (z_axis_config,))
         self.z_axis_config = merge_dicts_recursively(
-            self.z_axis_config, self.axis_config
+            self.axis_config, self.z_axis_config
         )
 
         self.z_normal = z_normal
@@ -1316,6 +1325,8 @@ class ThreeDAxes(Axes):
         self.dimension = 3
 
         z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
+        z_axis.config = self.z_axis_config
+
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
         z_axis.shift(self.x_axis.number_to_point(self.origin_shift(x_range)))
@@ -1481,7 +1492,6 @@ class NumberPlane(Axes):
         self.make_smooth_after_applying_functions = make_smooth_after_applying_functions
 
         # init
-
         super().__init__(
             x_range=x_range,
             y_range=y_range,
