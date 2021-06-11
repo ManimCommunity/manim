@@ -89,56 +89,101 @@ class GuiTest(Scene):
         self.interactive_embed()
 
 
+class TextTest2(Scene):
+    def construct(self):
+        text = OpenGLText(
+            "i",
+            fill_color=GREEN,
+            fill_opacity=1,
+            stroke_width=8,
+            stroke_opacity=0.7,
+            stroke_color=WHITE,
+        ).scale(10)
+        self.add(text)
+        self.interactive_embed()
+
+
 class TextTest(Scene):
     def construct(self):
         # text = OpenGLText(
-        #     "i",
+        #     "s",
         #     fill_color=GREEN,
-        #     fill_opacity=0,
+        #     fill_opacity=1,
         #     stroke_width=8,
-        #     stroke_opacity=0.7,
+        #     stroke_opacity=1,
         #     stroke_color=WHITE,
-        # ).scale(10)
-        # self.add(text)
-        # self.play(Create(text), run_time=2, rate_func=lambda t: t)
+        #     stroke_shader_folder="vectorized_mobject_stroke",
+        # ).scale(7)
+        # # text[0].data["points"][-15:-12, :] += [2, 3, 0]
+        # # self.add(text)
+        # self.play(Create(text), run_time=5, rate_func=lambda t: t)
 
-        # Simple curve
-        mob = OpenGLVMobject(stroke_width=16)
-        mob.data["points"] = np.array([LEFT])
-        mob.add_quadratic_bezier_curve_to(UP, RIGHT)
-        mob.shift(2 * LEFT)
-        self.add(mob)
-
-        # Simple curve
-        mob2 = OpenGLVMobject(
-            stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
-        )
-        mob2.data["points"] = np.array([LEFT])
-        mob2.add_quadratic_bezier_curve_to(UP, RIGHT)
-        mob2.shift(2 * RIGHT)
-        self.add(mob2)
-
-        # mob2.add_updater(lambda mob: mob.rotate(0.03, axis=OUT))
-
-        # V shape
+        # # Simple curve
         # mob = OpenGLVMobject(stroke_width=16)
-        # mob.data["points"] = np.array([0.2 * LEFT + UP])
-        # mob.add_quadratic_bezier_curve_to(0.2 * LEFT + UP, ORIGIN)
-        # mob.add_quadratic_bezier_curve_to(0.2 * RIGHT + UP, 0.2 * RIGHT + UP)
+        # mob.data["points"] = np.array([LEFT])
+        # mob.add_quadratic_bezier_curve_to(UP, RIGHT)
+        # mob.shift(2 * LEFT)
+        # self.add(mob)
+
+        # # Simple curve
+        # mob2 = OpenGLVMobject(
+        #     stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
+        # )
+        # mob2.data["points"] = np.array([LEFT])
+        # mob2.add_quadratic_bezier_curve_to(UP, RIGHT)
+        # mob2.shift(2 * RIGHT)
+        # self.add(mob2)
+
+        # # # mob.rotate(PI * 3 / 4, axis=UP)
+        # # # mob2.rotate(PI * 3 / 4, axis=UP)
+        # mob.add_updater(lambda mob: mob.rotate(0.02, axis=UP))
+        # mob2.add_updater(lambda mob: mob.rotate(0.02, axis=UP))
+
+        # # V shape
+        # mob = OpenGLVMobject(stroke_width=16)
+        # mob.data["points"] = np.array(UP)
+        # mob.add_line_to(ORIGIN)
+        # mob.add_line_to(RIGHT)
         # mob.shift(2 * LEFT)
         # self.add(mob)
 
         # mob2 = OpenGLVMobject(
         #     stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
         # )
-        # mob2.data["points"] = np.array([0.2 * LEFT + UP])
-        # mob2.add_quadratic_bezier_curve_to(0.2 * LEFT + UP, ORIGIN)
-        # mob2.add_quadratic_bezier_curve_to(0.2 * RIGHT + UP, 0.2 * RIGHT + UP)
+        # mob2.data["points"] = np.array(UP)
+        # mob2.add_line_to(ORIGIN)
+        # mob2.add_line_to(RIGHT)
         # mob2.shift(2 * RIGHT)
         # self.add(mob2)
 
+        # # Texture indexing error.
+        # mob = OpenGLVMobject(
+        #     stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
+        # )
+        # mob.data["points"] = np.array(UP)
+        # mob.add_line_to(UP)
+        # self.add(mob)
+
+        # Divide by zero (white square).
+        mob = OpenGLVMobject(
+            fill_color=GREEN,
+            fill_opacity=1,
+            stroke_width=8,
+            stroke_opacity=1,
+            stroke_color=WHITE,
+            stroke_shader_folder="vectorized_mobject_stroke",
+        )
+        mob.data["points"] = np.array(
+            [
+                [-6.75390625e-01, -5.03125000e-01, 6.16150421e-17],
+                [-6.75390625e-01, -5.03125000e-01, 6.16150421e-17],
+                [-6.66774879e-01, -5.00489340e-01, 6.12922668e-17],
+            ]
+        )
+        self.add(mob)
+
+        # self.wait(4)
         self.interactive_embed()
-        # self.wait()
 
 
 class GuiTest2(Scene):

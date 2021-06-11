@@ -6,6 +6,7 @@ in vec2 v_point;
 in vec2[3] v_previous_curve;
 in vec2[3] v_current_curve;
 in vec2[3] v_next_curve;
+in float v_thickness;
 in vec4 v_color;
 
 out vec4 frag_color;
@@ -67,10 +68,9 @@ void main() {
         v_current_curve[2],
         v_point
     );
-    if (abs(signed_distance) < 0.02) {
-        frag_color = vec4(1.0, 1.0, 1.0, 1.0);
+    if (abs(signed_distance) < v_thickness) {
+        frag_color = v_color;
     } else {
-        // frag_color = vec4(1.0, 0.0, 0.0, 1.0);
         discard;
     }
 }

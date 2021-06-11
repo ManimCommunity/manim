@@ -228,11 +228,17 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
         renderer.scene.camera.projection_matrix,
     )
 
-    points = mobject.data["points"]
+    points = np.empty((0, 3))
+    for submob in mobject.family_members_with_points():
+        points = np.append(points, submob.data["points"], axis=0)
+
+    # points = mobject[0].data["points"][-15:-9]
+    # points = mobject[0].data["points"]
+    # points = mobject.data["points"]
     stroke_data = np.zeros(
         len(points),
         dtype=[
-            ("point", np.float32, (3,)),
+            # ("point", np.float32, (3,)),
             ("previous_curve", np.float32, (3, 3)),
             ("current_curve", np.float32, (3, 3)),
             ("next_curve", np.float32, (3, 3)),
@@ -240,7 +246,7 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
         ],
     )
 
-    stroke_data["point"] = points
+    # stroke_data["point"] = points
     curves = np.reshape(points, (-1, 3, 3))
     stroke_data["previous_curve"] = np.repeat(np.roll(curves, 1, axis=0), 3, axis=0)
     stroke_data["current_curve"] = np.repeat(curves, 3, axis=0)
@@ -272,10 +278,13 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
     # import ipdb
 
     # ipdb.set_trace(context=9)
+    # import time
+
+    # time.sleep(0.2)
 
     shader.set_uniform("color", tuple(mobject.data["stroke_rgba"][0]))
     shader.set_uniform("stroke_width", mobject.data["stroke_width"])
-    shader.set_uniform("unit_normal", tuple(-mobject.data["unit_normal"][0]))
+    shader.set_uniform("manim_unit_normal", tuple(-mobject.data["unit_normal"][0]))
 
     vbo = renderer.context.buffer(stroke_data.tobytes())
     vao = renderer.context.simple_vertex_array(
