@@ -107,6 +107,25 @@ class Cross(VGroup):
 
 
 class Underline(Line):
+    """Creates an underline.
+
+    Parameters
+    ----------
+    Line
+        The underline.
+
+    Examples
+    --------
+    .. manim:: UnderLine
+        :save_last_frame:
+
+        class UnderLine(Scene):
+            def construct(self):
+                man = Tex("Manim")  # Full Word
+                ul = Underline(man)  # Underlining the word
+                self.add(man, ul)
+    """
+
     def __init__(self, mobject, buff=SMALL_BUFF, **kwargs):
         super().__init__(LEFT, RIGHT, buff=buff, **kwargs)
         self.match_width(mobject)
