@@ -45,7 +45,7 @@ class ParametricSurface(VGroup):
 
             def construct(self):
                 axes = ThreeDAxes()
-                surface = ParametricSurface(lambda u, v: self.func(u, v), u_min=-TAU, u_max=TAU / 2, v_min=0, v_max=2 * PI)
+                surface = ParametricSurface(self.func, u_min=-TAU, u_max=TAU / 2, v_min=0, v_max=2 * PI)
                 self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
                 self.add(axes, surface)
     """
