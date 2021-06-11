@@ -32,6 +32,8 @@ from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_stroke,
 )
 
+count = 0
+
 
 class OpenGLCamera(OpenGLMobject):
     def __init__(
@@ -276,6 +278,12 @@ class OpenGLRenderer:
             and mobject.stroke_shader_folder == "vectorized_mobject_stroke"
         ):
             render_opengl_vectorized_mobject_stroke(self, mobject)
+            # import ipdb
+
+            # ipdb.set_trace(context=9)
+            # import time
+
+            # time.sleep(0.2)
             return
 
         shader_wrapper_list = mobject.get_shader_wrapper_list()

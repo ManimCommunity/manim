@@ -8,6 +8,7 @@ in vec2[3] v_current_curve;
 in vec2[3] v_next_curve;
 in float v_thickness;
 in vec4 v_color;
+in float v_degree;
 
 out vec4 frag_color;
 
@@ -61,16 +62,36 @@ float sdBezier(vec2 A, vec2 B, vec2 C, vec2 p)
     return dis * signBezier(A, B, C, p);
 }
 
+float dLine(vec2 p1, vec2 p2, vec2 x) {
+    vec4 colA = vec4(clamp (5.0 - length (x - p1), 0.0, 1.0));
+    vec4 colB = vec4(clamp (5.0 - length (x - p2), 0.0, 1.0));
+    
+    vec2 a_p1 = x - p1;
+    vec2 p2_p1 = p2 - p1;
+    float h = clamp (dot (a_p1, p2_p1) / dot (p2_p1, p2_p1), 0.0, 1.0);
+    return length (a_p1 - p2_p1 * h);
+}
+
 void main() {
-    float signed_distance = sdBezier(
-        v_current_curve[0],
-        v_current_curve[1],
-        v_current_curve[2],
-        v_point
-    );
-    if (abs(signed_distance) < v_thickness) {
+    float distance;
+    if (v_degree == 2.0) {
+        distance = sdBezier(
+            v_current_curve[0],
+            v_current_curve[1],
+            v_current_curve[2],
+            v_point
+        );
+    } else {
+        distance = dLine(
+            v_current_curve[0],
+            v_current_curve[2],
+            v_point
+        );
+    }
+    if (abs(distance) < v_thickness) {
         frag_color = v_color;
     } else {
+        // frag_color = vec4(1.0, 0.0, 0.0, 1.0);
         discard;
     }
 }

@@ -218,6 +218,9 @@ def textures_to_fill_vao(context, textures, mobject):
     return vao, vbo
 
 
+count = 0
+
+
 def render_opengl_vectorized_mobject_stroke(renderer, mobject):
     shader = Shader(renderer.context, "vectorized_mobject_stroke")
     shader.set_uniform("u_color", (0.0, 1.0, 0.0, 1.0))
@@ -278,9 +281,6 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
     # import ipdb
 
     # ipdb.set_trace(context=9)
-    # import time
-
-    # time.sleep(0.2)
 
     shader.set_uniform("color", tuple(mobject.data["stroke_rgba"][0]))
     shader.set_uniform("stroke_width", mobject.data["stroke_width"])
