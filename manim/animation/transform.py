@@ -160,7 +160,7 @@ class ReplacementTransform(Transform):
 
     .. manim:: ReplacementTransformOrTransform
         :quality: low
-        
+
         class ReplacementTransformOrTransform(Scene):
             def construct(self):
                 # set up the numbers
