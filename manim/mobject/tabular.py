@@ -3,7 +3,9 @@ r"""Mobjects representing tables."""
 __all__ = [
     "Tabular",
     "MathTabular",
-    "MobjectTabular"
+    "MobjectTabular",
+    "IntegerTabular",
+    "DecimalTabular"
 ]
 
 
@@ -166,14 +168,12 @@ class Tabular(VGroup):
 
 
 class MathTabular(Tabular):
-
     def __init__(
         self,
         table,
         element_to_mobject=MathTex,
         **kwargs,
     ):
-
         Tabular.__init__(
             self,
             table,
@@ -182,6 +182,25 @@ class MathTabular(Tabular):
         )
 
 class MobjectTabular(Tabular):
+    def __init__(self, table, element_to_mobject=lambda m: m, **kwargs):
+        Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
-    def __init__(self, matrix, element_to_mobject=lambda m: m, **kwargs):
-        Tabular.__init__(self, matrix, element_to_mobject=element_to_mobject, **kwargs)
+class IntegerTabular(Tabular):
+    def __init__(self, table, element_to_mobject=Integer, **kwargs):
+        Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+
+class DecimalTabular(Tabular):
+    def __init__(
+        self,
+        table,
+        element_to_mobject=DecimalNumber,
+        element_to_mobject_config={"num_decimal_places": 1},
+        **kwargs,
+    ):
+        Tabular.__init__(
+            self,
+            table,
+            element_to_mobject=element_to_mobject,
+            element_to_mobject_config=element_to_mobject_config,
+            **kwargs,
+        )
