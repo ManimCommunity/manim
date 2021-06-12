@@ -12,17 +12,16 @@ in vec3[3] next_curve;
 in vec3 point;
 in vec2 tile_coordinate;
 
-out vec2[3] v_previous_curve;
+out float v_degree;
+out float v_thickness;
+out vec2 uv_point;
+out vec2[3] uv_curve;
 out vec2[3] v_current_curve;
 out vec2[3] v_next_curve;
-out vec2 v_point;
+out vec2[3] v_previous_curve;
 out vec4 v_color;
-out float v_thickness;
-out float v_degree;
-out vec2[3] uv_curve;
-out vec2 uv_point;
 
-int get_reduced_control_points(in vec3 points[3], out vec3 normal) {
+int get_degree(in vec3 points[3], out vec3 normal) {
     float length_threshold = 1e-6;
     float angle_threshold = 5e-2;
 
@@ -50,16 +49,6 @@ int get_reduced_control_points(in vec3 points[3], out vec3 normal) {
     }
 }
 
-vec2 convert_to_uv(vec3 x_unit, vec3 y_unit, vec3 point) {
-    return vec2(dot(point, x_unit), dot(point, y_unit));
-}
-
-vec3 convert_from_uv(vec3 anchor, vec3 unit_normal, vec3 x_unit, vec3 y_unit, vec2 point) {
-    vec3 untranslated_point = point[0] * x_unit + point[1] * y_unit;
-    float translation_distance = dot(anchor, unit_normal);
-    return untranslated_point + unit_normal * translation_distance;
-}
-
 // https://iquilezles.org/www/articles/bezierbbox/bezierbbox.htm
 vec4 bboxBezier(in vec2 p0, in vec2 p1, in vec2 p2) {
     vec2 mi = min(p0, p2);
@@ -76,6 +65,15 @@ vec4 bboxBezier(in vec2 p0, in vec2 p1, in vec2 p2) {
     return vec4(mi, ma);
 }
 
+vec2 convert_to_uv(vec3 x_unit, vec3 y_unit, vec3 point) {
+    return vec2(dot(point, x_unit), dot(point, y_unit));
+}
+
+vec3 convert_from_uv(vec3 translation, vec3 x_unit, vec3 y_unit, vec2 point) {
+    vec3 untranslated_point = point[0] * x_unit + point[1] * y_unit;
+    return untranslated_point + translation;
+}
+
 void main() {
     int x = 0;
     if (point[0] > 0) { x += 1; }
@@ -87,21 +85,18 @@ void main() {
     float thickness_multiplier = 0.004;
     v_color = color;
 
-    vec3 v01_vec = current_curve[1] - current_curve[0];
-    vec3 v02_vec = current_curve[2] - current_curve[0];
-    vec3 unit_normal = manim_unit_normal;
-
     vec3 computed_normal;
-    v_degree = get_reduced_control_points(current_curve, computed_normal);
+    v_degree = get_degree(current_curve, computed_normal);
 
-    vec3 tile_y_vec;
+    vec3 tile_x_unit = normalize(current_curve[2] - current_curve[0]);
+    vec3 unit_normal;
     vec3 tile_y_unit;
-    vec3 tile_x_vec = v02_vec;
-    vec3 tile_x_unit = normalize(tile_x_vec);
     if (v_degree == 0) {
-        // Do nothing.
+        tile_y_unit = vec3(0.0, 0.0, 0.0);
     } else if (v_degree == 1) {
-        tile_y_vec = vec3(0.0, 0.0, 0.0);
+        // Since the curve forms a straight line there's no way to compute a normal.
+        unit_normal = manim_unit_normal;
+
         tile_y_unit = cross(unit_normal, tile_x_unit);
     } else {
         // Prefer to use a computed normal vector rather than the one from manim.
@@ -109,10 +104,9 @@ void main() {
 
         // Ensure tile_y_unit is pointing toward p1 from p0.
         tile_y_unit = cross(unit_normal, tile_x_unit);
-        if (dot(tile_y_unit, v01_vec) < 0) {
+        if (dot(tile_y_unit, current_curve[1] - current_curve[0]) < 0) {
             tile_y_unit *= -1;
         }
-        tile_y_vec = dot(v01_vec, tile_y_unit) * tile_y_unit;
     }
 
     // Project the curve onto the tile.
@@ -120,12 +114,17 @@ void main() {
         uv_curve[i] = convert_to_uv(tile_x_unit, tile_y_unit, current_curve[i]);
     }
 
-    vec4 bbox = bboxBezier(uv_curve[0], uv_curve[1], uv_curve[2]);
-    vec3 tile_origin = convert_from_uv(current_curve[0], unit_normal, tile_x_unit, tile_y_unit, bbox.xy);
-    tile_x_vec = tile_x_unit * dot(convert_from_uv(current_curve[0], unit_normal, tile_x_unit, tile_y_unit, bbox.zw) - convert_from_uv(current_curve[0], unit_normal, tile_x_unit, tile_y_unit, bbox.xy), tile_x_unit);
-    tile_y_vec = tile_y_unit * dot(convert_from_uv(current_curve[0], unit_normal, tile_x_unit, tile_y_unit, bbox.zw) - convert_from_uv(current_curve[0], unit_normal, tile_x_unit, tile_y_unit, bbox.xy), tile_y_unit);
+    // Compute the curve's bounding box.
+    vec4 uv_bounding_box = bboxBezier(uv_curve[0], uv_curve[1], uv_curve[2]);
+    vec3 tile_translation = unit_normal * dot(current_curve[0], unit_normal);
+    vec3 bounding_box_min = convert_from_uv(tile_translation, tile_x_unit, tile_y_unit, uv_bounding_box.xy);
+    vec3 bounding_box_max = convert_from_uv(tile_translation, tile_x_unit, tile_y_unit, uv_bounding_box.zw);
+    vec3 bounding_box_vec = bounding_box_max - bounding_box_min;
+    vec3 tile_origin = bounding_box_min;
+    vec3 tile_x_vec = tile_x_unit * dot(tile_x_unit, bounding_box_vec);
+    vec3 tile_y_vec = tile_y_unit * dot(tile_y_unit, bounding_box_vec);
 
-    // Expand the tile.
+    // Expand the tile according to the line's thickness.
     v_thickness = thickness_multiplier * stroke_width;
     tile_origin = current_curve[0] - v_thickness * (tile_x_unit + tile_y_unit);
     tile_x_vec += 2 * v_thickness * tile_x_unit;
