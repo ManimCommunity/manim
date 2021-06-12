@@ -1,9 +1,10 @@
 r"""Mobjects representing text rendered using LaTeX.
 
+.. note::
+   Just as you can use :class:`~.Text` (from the module :mod:`~.text_mobject`) to add text to your videos, you can use :class:`~.Tex` and :class:`~.MathTex` to insert LaTeX.
 
 The Tex mobject
 +++++++++++++++
-Just as you can use :class:`~.Text` to add text to your videos, you can use :class:`~.Tex` to insert LaTeX.
 
 .. manim:: HelloLaTeX
     :save_last_frame:
@@ -500,7 +501,9 @@ class MathTex(SingleStringMathTex):
                 tex_template=self.tex_template,
             )
             num_submobs = len(sub_tex_mob.submobjects)
-            new_index = curr_index + num_submobs
+            new_index = (
+                curr_index + num_submobs + len("".join(self.arg_separator.split()))
+            )
             if num_submobs == 0:
                 # For cases like empty tex_strings, we want the corresponding
                 # part of the whole MathTex to be a VectorizedPoint
@@ -595,6 +598,22 @@ class Tex(MathTex):
 
 
 class BulletedList(Tex):
+    """
+    Examples
+    --------
+
+    .. manim:: BulletedListExample
+        :save_last_frame:
+
+        class BulletedListExample(Scene):
+            def construct(self):
+                blist = BulletedList("Item 1", "Item 2", "Item 3", height=2, width=2)
+                blist.set_color_by_tex("Item 1", RED)
+                blist.set_color_by_tex("Item 2", GREEN)
+                blist.set_color_by_tex("Item 3", BLUE)
+                self.add(blist)
+    """
+
     def __init__(
         self,
         *items,

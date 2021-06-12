@@ -153,10 +153,10 @@ class InlineFullScreenQuad(Scene):
                 // and the Saturation to the radius
                 color = hsb2rgb(vec3((angle/TWO_PI)+0.5,radius,1.0));
 
-                gl_FragColor = vec4(color,1.0);
+                fragColor = vec4(color,1.0);
             }
             """,
-            output_color_variable="gl_FragColor",
+            output_color_variable="fragColor",
         )
         surface.shader.set_uniform("u_resolution", (854.0, 480.0))
         shader_time = 0
