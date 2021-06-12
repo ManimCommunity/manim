@@ -437,14 +437,14 @@ def average_color(*colors: Color) -> Color:
     return rgb_to_color(mean_rgb)
 
 
-def random_bright_color() -> Color:
+def random_bright_color(random_seed) -> Color:
     color = random_color()
     curr_rgb = color_to_rgb(color)
     new_rgb = interpolate(curr_rgb, np.ones(len(curr_rgb)), 0.5)
     return Color(rgb=new_rgb)
 
 
-def random_color() -> Color:
+def random_color(random_seed) -> Color:
     return random.choice([c.value for c in list(Colors)])
 
 
