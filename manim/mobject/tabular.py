@@ -48,7 +48,7 @@ __all__ = [
     "MathTabular",
     "MobjectTabular",
     "IntegerTabular",
-    "DecimalTabular"
+    "DecimalTabular",
 ]
 
 
@@ -58,7 +58,7 @@ from ..constants import *
 from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber, Integer
 from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.text_mobject import Text, Paragraph
+from ..mobject.svg.text_mobject import Paragraph, Text
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import WHITE
 
@@ -139,7 +139,7 @@ class Tabular(VGroup):
                 mob.add_background_rectangle()
         if self.include_background_rectangle:
             self.add_background_rectangle()
-    
+
     def table_to_mob_table(self, table):
         """Used internally."""
         return [
@@ -156,7 +156,12 @@ class Tabular(VGroup):
         for i, row in enumerate(table):
             for j, _ in enumerate(row):
                 help_table.add(table[i][j])
-        help_table.arrange_in_grid(rows=len(table), cols=len(table[0]), buff=(self.h_buff, self.v_buff), **self.arrange_in_grid_config)
+        help_table.arrange_in_grid(
+            rows=len(table),
+            cols=len(table[0]),
+            buff=(self.h_buff, self.v_buff),
+            **self.arrange_in_grid_config,
+        )
         return help_table
 
     def add_labels(self, mob_table):
@@ -168,12 +173,12 @@ class Tabular(VGroup):
             if self.row_labels is not None:
                 if self.top_left_entry is not None:
                     col_labels = [self.top_left_entry] + self.col_labels
-                    mob_table.insert(0,col_labels)
+                    mob_table.insert(0, col_labels)
                 else:
                     col_labels = [VMobject()] + self.col_labels
-                    mob_table.insert(0,col_labels)
+                    mob_table.insert(0, col_labels)
             else:
-                mob_table.insert(0,self.col_labels)
+                mob_table.insert(0, self.col_labels)
         return mob_table
 
     def add_horizontal_lines(self):
@@ -181,9 +186,13 @@ class Tabular(VGroup):
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
         line_group = VGroup()
-        for k in range(len(self.mob_table)-1):
-            anchor = self.get_rows()[k+1].get_top()[1] + 0.5 * ( self.get_rows()[k].get_bottom()[1] - self.get_rows()[k+1].get_top()[1] )
-            line = Line([anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config)
+        for k in range(len(self.mob_table) - 1):
+            anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
+                self.get_rows()[k].get_bottom()[1] - self.get_rows()[k + 1].get_top()[1]
+            )
+            line = Line(
+                [anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config
+            )
             line_group.add(line)
             self.add(line)
         self.horizontal_lines = line_group
@@ -194,9 +203,14 @@ class Tabular(VGroup):
         anchor_top = self.get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_bottom()[1] - 0.5 * self.v_buff
         line_group = VGroup()
-        for k in range(len(self.mob_table[0])-1):
-            anchor = self.get_columns()[k+1].get_left()[0] + 0.5 * ( self.get_columns()[k].get_right()[0] - self.get_columns()[k+1].get_left()[0] )
-            line = Line([anchor, anchor_bottom, 0], [anchor, anchor_top, 0], **self.line_config)
+        for k in range(len(self.mob_table[0]) - 1):
+            anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
+                self.get_columns()[k].get_right()[0]
+                - self.get_columns()[k + 1].get_left()[0]
+            )
+            line = Line(
+                [anchor, anchor_bottom, 0], [anchor, anchor_top, 0], **self.line_config
+            )
             line_group.add(line)
             self.add(line)
         self.vertical_lines = line_group
@@ -325,10 +339,10 @@ class Tabular(VGroup):
 
     def get_entries(self):
         return self.elements
-    
+
     def get_entries_without_labels(self):
         return self.elements_without_labels
-    
+
     def add_background_to_entries(self):
         for mob in self.get_entries():
             mob.add_background_rectangle()
@@ -349,13 +363,16 @@ class MathTabular(Tabular):
             **kwargs,
         )
 
+
 class MobjectTabular(Tabular):
     def __init__(self, table, element_to_mobject=lambda m: m, **kwargs):
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
+
 class IntegerTabular(Tabular):
     def __init__(self, table, element_to_mobject=Integer, **kwargs):
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+
 
 class DecimalTabular(Tabular):
     def __init__(
