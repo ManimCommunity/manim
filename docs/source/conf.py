@@ -110,7 +110,7 @@ html_theme_options = {
         "color-brand-primary": "#192bd0",
         "color-link": "#c93434",
         "color-link--hover": "#5b0000",
-        "color-inline-code-background": "transparent",
+        "color-inline-code-background": "#f6f6f6;",
         "color-foreground-secondary": "#000",
     },
     "dark_css_variables": {
@@ -122,7 +122,7 @@ html_theme_options = {
         "color-brand-primary": "#007fff",
         "color-link": "#51ba86",
         "color-link--hover": "#9cefc6",
-        "color-inline-code-background": "transparent",
+        "color-inline-code-background": "#262626",
         "color-foreground-secondary": "#ffffffd9",
     },
 }
