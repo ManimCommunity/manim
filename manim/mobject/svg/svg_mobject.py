@@ -74,7 +74,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         fill_opacity=1.0,
         should_subdivide_sharp_curves=False,
         should_remove_null_curves=False,
-        style=None,
         **kwargs,
     ):
         self.def_map = {}
