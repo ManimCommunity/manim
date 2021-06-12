@@ -114,9 +114,18 @@ class TextTest(Scene):
             stroke_color=WHITE,
             stroke_shader_folder="vectorized_mobject_stroke",
         )
-        # text[0].data["points"][-15:-12, :] += [2, 3, 0]
         self.play(Create(text), run_time=1, rate_func=lambda t: t)
-        # self.add(text)
+
+        text2 = OpenGLText(
+            "ABCDEFGHIJKLMNOPQRSTUVQXYZ",
+            fill_color=GREEN,
+            fill_opacity=1,
+            stroke_width=4,
+            stroke_opacity=1,
+            stroke_color=WHITE,
+            stroke_shader_folder="vectorized_mobject_stroke",
+        ).next_to(text, DOWN)
+        self.play(Create(text2), run_time=1, rate_func=lambda t: t)
 
         # # Simple curve
         # mob = OpenGLVMobject(stroke_width=16)
