@@ -158,8 +158,10 @@ class ReplacementTransform(Transform):
     Examples
     --------
 
-    .. manim:: ReplacementTransformVsTransform
-        class ReplacementTransformVsTransform(Scene):
+    .. manim:: ReplacementTransformOrTransform
+        :quality: low
+        
+        class ReplacementTransformOrTransform(Scene):
             def construct(self):
                 # set up the numbers
                 r_transform = VGroup(*[Integer(i) for i in range(1,4)])
