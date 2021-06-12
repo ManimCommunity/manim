@@ -974,7 +974,11 @@ class Axes(VGroup, CoordinateSystem):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
-        self.axis_config = {"include_tip": tips, "numbers_to_exclude": [0]}
+        self.axis_config = {
+            "include_tip": tips,
+            "numbers_to_exclude": [0],
+            "exclude_origin_tick": True,
+        }
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
@@ -1355,6 +1359,25 @@ class NumberPlane(Axes):
 
     .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
         on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+
+    Examples
+    --------
+
+    .. manim:: NumberPlaneExample
+        :save_last_frame:
+
+        class NumberPlaneExample(Scene):
+            def construct(self):
+                number_plane = NumberPlane(
+                    x_range=[-10, 10, 1],
+                    y_range=[-10, 10, 1],
+                    background_line_style={
+                        "stroke_color": TEAL,
+                        "stroke_width": 4,
+                        "stroke_opacity": 0.6
+                    }
+                )
+                self.add(number_plane)
     """
 
     def __init__(
