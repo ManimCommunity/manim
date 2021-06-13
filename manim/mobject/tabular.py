@@ -65,7 +65,45 @@ from ..utils.color import WHITE
 
 
 class Tabular(VGroup):
-    """A mobject that displays a table on the screen."""
+    """A mobject that displays a table on the screen.
+
+    Examples
+    --------
+
+    .. manim:: TabularExamples
+        :save_last_frame:
+
+        class TabularExamples(Scene):
+            def construct(self):
+                t0 = Tabular(
+                    [["This", "is a"],
+                    ["simple", "Table in \n Manim."]])
+                t1 = Tabular(
+                    [["This", "is a"],
+                    ["simple", "Table."]],
+                    row_labels=[Text("R1"), Text("R2")],
+                    col_labels=[Text("C1"), Text("C2")])
+                t2 = Tabular(
+                    [["This", "is a"],
+                    ["simple", "Table."]],
+                    row_labels=[Text("R1"), Text("R2")],
+                    col_labels=[Text("C1"), Text("C2")],
+                    top_left_entry=Star().scale(0.3),
+                    include_outer_lines=True,
+                    arrange_in_grid_config={"cell_alignment": RIGHT})
+                t3 = Tabular(
+                    [["This", "is a"],
+                    ["simple", "Table."]],
+                    row_labels=[Text("R1"), Text("R2")],
+                    col_labels=[Text("C1"), Text("C2")],
+                    top_left_entry=Star().scale(0.3),
+                    include_outer_lines=True,
+                    line_config={"stroke_width": 1, "color": YELLOW})
+                g = Group(
+                    t0,t1,t2,t3
+                ).scale(0.7).arrange_in_grid(buff=1)
+                self.add(g)
+    """
 
     def __init__(
         self,
@@ -497,7 +535,24 @@ class Tabular(VGroup):
 
 
 class MathTabular(Tabular):
-    """A mobject that displays a table with Latex entries on the screen."""
+    """A mobject that displays a table with Latex entries on the screen.
+
+    Examples
+    --------
+
+    .. manim:: MathTabularExample
+        :save_last_frame:
+
+        class MathTabularExample(Scene):
+            def construct(self):
+                t0 = MathTabular(
+                    [["+", 0, 5, 10],
+                    [0, 0, 5, 10],
+                    [2, 2, 7, 12],
+                    [4, 4, 9, 14]],
+                    include_outer_lines=True)
+                self.add(t0)
+    """
 
     def __init__(
         self,
@@ -505,6 +560,16 @@ class MathTabular(Tabular):
         element_to_mobject=MathTex,
         **kwargs,
     ):
+        """
+        Every entry is set in a Latex `align` environment. 
+
+        Parameters
+        ----------
+        table : :class:`typing.Iterable`
+            A  2d array or list of lists
+        element_to_mobject : :class:`~.Mobject`, optional
+            Mobject to use, by default MathTex
+        """
         Tabular.__init__(
             self,
             table,
