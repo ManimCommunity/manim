@@ -15,6 +15,7 @@ import copy
 import errno
 import logging
 import os
+import re
 import sys
 import typing
 from collections.abc import Mapping, MutableMapping
@@ -282,6 +283,8 @@ class ManimConfig(MutableMapping):
         "renderer",
         "use_opengl_renderer",
         "use_webgl_renderer",
+        "enable_gui",
+        "gui_location",
         "verbosity",
         "video_dir",
         "write_all",
@@ -407,6 +410,12 @@ class ManimConfig(MutableMapping):
         else:
             raise ValueError(f"{key} must be boolean")
 
+    def _set_tuple(self, key: str, val: tuple) -> None:
+        if isinstance(val, tuple):
+            self._d[key] = val
+        else:
+            raise ValueError(f"{key} must be tuple")
+
     def _set_str(self, key: str, val: typing.Any) -> None:
         """Set ``key`` to ``val`` if ``val`` is a string."""
         if isinstance(val, str):
@@ -509,6 +518,7 @@ class ManimConfig(MutableMapping):
             "custom_folders",
             "use_opengl_renderer",
             "use_webgl_renderer",
+            "enable_gui",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -553,6 +563,10 @@ class ManimConfig(MutableMapping):
             # "frame_height",
         ]:
             setattr(self, key, parser["CLI"].getfloat(key))
+
+        gui_location = tuple(map(int, re.split(";|,|-", parser["CLI"]["gui_location"])))
+        setattr(self, "gui_location", gui_location)
+
         # plugins
         self.plugins = parser["CLI"].get("plugins", fallback="", raw=True).split(",")
         # the next two must be set AFTER digesting pixel_width and pixel_height
@@ -638,6 +652,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "use_opengl_renderer",
             "use_webgl_renderer",
+            "enable_gui",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -715,6 +730,9 @@ class ManimConfig(MutableMapping):
                 # --write_to_movie was not passed on the command line, so don't generate video.
                 self["write_to_movie"] = False
 
+        # Handle --gui_location flag.
+        self.gui_location = args.gui_location
+
         return self
 
     def digest_file(self, filename: str) -> "ManimConfig":
@@ -760,7 +778,7 @@ class ManimConfig(MutableMapping):
 
     # config options are properties
     preview = property(
-        lambda self: self._d["preview"],
+        lambda self: self._d["preview"] or self._d["enable_gui"],
         lambda self, val: self._set_boolean("preview", val),
         doc="Whether to play the rendered movie (-p).",
     )
@@ -1127,6 +1145,18 @@ class ManimConfig(MutableMapping):
         lambda self: self._d["media_dir"],
         lambda self, val: self._set_dir("media_dir", val),
         doc="Main output directory.  See :meth:`ManimConfig.get_dir`.",
+    )
+
+    enable_gui = property(
+        lambda self: self._d["enable_gui"],
+        lambda self, val: self._set_boolean("enable_gui", val),
+        doc="Enable GUI interaction.",
+    )
+
+    gui_location = property(
+        lambda self: self._d["gui_location"],
+        lambda self, val: self._set_tuple("gui_location", val),
+        doc="Enable GUI interaction.",
     )
 
     def get_dir(self, key: str, **kwargs: str) -> Path:
