@@ -3,7 +3,7 @@ r"""Mobjects representing tables.
 Examples
 --------
 
-.. manim:: MatrixExamples
+.. manim:: TabularExamples
     :save_last_frame:
 
     class TabularExamples(Scene):
@@ -375,6 +375,25 @@ class IntegerTabular(Tabular):
 
 
 class DecimalTabular(Tabular):
+    """A mobject that displays a table with decimal entries on the screen.
+
+    Examples
+    --------
+
+    .. manim:: DecimalTabularExample
+        :save_last_frame:
+
+        class DecimalTabularExample(Scene):
+            def construct(self):
+                x_vals = [-2,-1,0,1,2]
+                y_vals = np.exp(x_vals)
+                t0 = DecimalTabular(
+                    [x_vals, y_vals],
+                    row_labels=[MathTex("x"), MathTex("f(x)=e^{x}")],
+                    h_buff=1,
+                    element_to_mobject_config={"num_decimal_places": 2})
+                self.add(t0)
+    """
     def __init__(
         self,
         table,
@@ -382,6 +401,18 @@ class DecimalTabular(Tabular):
         element_to_mobject_config={"num_decimal_places": 1},
         **kwargs,
     ):
+        """
+        Will round/truncate the decimal places as per the provided config.
+
+        Parameters
+        ----------
+        table : :class:`typing.Iterable`
+            A 2d array or list of lists
+        element_to_mobject : :class:`~.Mobject`, optional
+            Mobject to use, by default DecimalNumber
+        element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
+            Config for the desired mobject, by default {"num_decimal_places": 1}
+        """
         Tabular.__init__(
             self,
             table,
