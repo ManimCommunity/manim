@@ -45,6 +45,12 @@ def render_opengl_vectorized_mobject_fill(renderer, mobject):
         textures.append(texture)
         texture_fbos.append(texture_fbo)
 
+    renderer.context.blend_func = (
+        moderngl.SRC_ALPHA,
+        moderngl.ONE_MINUS_SRC_ALPHA,
+        moderngl.ONE,
+        moderngl.ONE,
+    )
     vao, vbo = textures_to_fill_vao(renderer.context, textures, mobject)
     renderer.frame_buffer_object.use()
     vao.render()
@@ -54,13 +60,6 @@ def render_opengl_vectorized_mobject_fill(renderer, mobject):
         texture.release()
     for texture_fbo in texture_fbos:
         texture_fbo.release()
-
-    renderer.context.blend_func = (
-        moderngl.SRC_ALPHA,
-        moderngl.ONE_MINUS_SRC_ALPHA,
-        moderngl.ONE,
-        moderngl.ONE,
-    )
 
 
 def find_non_overlapping_layers(curves_list):
