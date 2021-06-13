@@ -1,9 +1,9 @@
 """Utilities for using Manim with IPython (in particular: Jupyter notebooks)"""
 
-import hashlib
 import mimetypes
 import os
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 from manim import config, tempconfig
@@ -111,7 +111,7 @@ else:
                 tmpfile = (
                     Path(config["media_dir"])
                     / "jupyter"
-                    / f"{_video_hash(local_path)}{local_path.suffix}"
+                    / f"{_generate_file_name()}{local_path.suffix}"
                 )
 
                 if local_path in self.rendered_files:
@@ -137,12 +137,5 @@ else:
                 )
 
 
-def _video_hash(path):
-    sha1 = hashlib.sha1()
-    with open(path, "rb") as f:
-        while True:
-            data = f.read(65536)
-            if not data:
-                break
-            sha1.update(data)
-    return sha1.hexdigest()
+def _generate_file_name():
+    return config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
