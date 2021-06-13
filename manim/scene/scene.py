@@ -30,7 +30,6 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
-from ..container import Container
 from ..gui.gui import configure_pygui
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..mobject.opengl_mobject import OpenGLMobject, OpenGLPoint
