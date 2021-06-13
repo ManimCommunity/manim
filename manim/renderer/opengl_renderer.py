@@ -269,22 +269,12 @@ class OpenGLRenderer:
         }
 
     def render_mobject(self, mobject):
-        if config["use_projection_fill_shaders"]:
-            if isinstance(mobject, OpenGLVMobject) and mobject.fill_opacity > 0:
+        if isinstance(mobject, OpenGLVMobject):
+            if config["use_projection_fill_shaders"] and mobject.has_fill():
                 render_opengl_vectorized_mobject_fill(self, mobject)
 
-        if (
-            hasattr(mobject, "stroke_shader_folder")
-            and mobject.stroke_shader_folder == "vectorized_mobject_stroke"
-        ):
-            render_opengl_vectorized_mobject_stroke(self, mobject)
-            # import ipdb
-
-            # ipdb.set_trace(context=9)
-            # import time
-
-            # time.sleep(0.2)
-            return
+            if config["use_projection_stroke_shaders"] and mobject.has_stroke():
+                render_opengl_vectorized_mobject_stroke(self, mobject)
 
         shader_wrapper_list = mobject.get_shader_wrapper_list()
 

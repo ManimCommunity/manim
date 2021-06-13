@@ -86,7 +86,6 @@ class OpenGLVMobject(OpenGLMobject):
         flat_stroke=True,
         render_primitive=moderngl.TRIANGLES,
         triangulation_locked=False,
-        stroke_shader_folder="quadratic_bezier_stroke",
         **kwargs,
     ):
         self.fill_color = fill_color
@@ -121,7 +120,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = np.zeros(0, dtype="i4")
         super().__init__(**kwargs)
         self.refresh_unit_normal()
-        self.stroke_shader_folder = stroke_shader_folder
 
     def get_group_class(self):
         return OpenGLVGroup
@@ -1113,7 +1111,7 @@ class OpenGLVMobject(OpenGLMobject):
         for submob in self.family_members_with_points():
             if submob.has_fill() and not config["use_projection_fill_shaders"]:
                 fill_shader_wrappers.append(submob.get_fill_shader_wrapper())
-            if submob.has_stroke():
+            if submob.has_stroke() and not config["use_projection_stroke_shaders"]:
                 ssw = submob.get_stroke_shader_wrapper()
                 if submob.draw_stroke_behind_fill:
                     back_stroke_shader_wrappers.append(ssw)

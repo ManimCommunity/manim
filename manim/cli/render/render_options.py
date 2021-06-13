@@ -129,4 +129,9 @@ render_options = option_group(
         is_flag=True,
         help="Use shaders for OpenGLVMobject fill which are compatible with transformation matrices.",
     ),
+    option(
+        "--use_projection_stroke_shaders",
+        is_flag=True,
+        help="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
+    ),
 )
