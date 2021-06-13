@@ -71,7 +71,7 @@ class NumberLine(Line):
     Examples
     --------
     .. manim:: NumLineExample
-
+        :save_last_frame:
         class NumLineExample(Scene):
             def construct(self):
                 l0 = NumberLine(x_range=[-10, 10, 2], length=10, color=BLUE, include_numbers=True, label_direction=UP)
