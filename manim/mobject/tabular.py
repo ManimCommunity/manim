@@ -64,6 +64,7 @@ from ..utils.color import WHITE
 
 class Tabular(VGroup):
     """A mobject that displays a table on the screen."""
+
     def __init__(
         self,
         table,
@@ -366,12 +367,14 @@ class MathTabular(Tabular):
 
 class MobjectTabular(Tabular):
     """A mobject that displays a table with mobject entries on the screen."""
+
     def __init__(self, table, element_to_mobject=lambda m: m, **kwargs):
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
 
 class IntegerTabular(Tabular):
     """A mobject that displays a table with integer entries on the screen."""
+
     def __init__(self, table, element_to_mobject=Integer, **kwargs):
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
