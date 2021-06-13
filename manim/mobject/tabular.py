@@ -394,6 +394,7 @@ class DecimalTabular(Tabular):
                     element_to_mobject_config={"num_decimal_places": 2})
                 self.add(t0)
     """
+
     def __init__(
         self,
         table,
