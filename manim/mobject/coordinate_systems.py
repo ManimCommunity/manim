@@ -1006,18 +1006,9 @@ class Axes(VGroup, CoordinateSystem):
         self.add(*self.axes)
 
         # finds the middle-point on each axis
-        lines_center_point = []
-        for axis in self.axes:
-            # checks if the range does not contain 0: [2, 4]
-            if np.sign(axis.x_max) == np.sign(axis.x_min):
-                axis_length = axis.x_max - axis.x_min
-            else:
-                axis_length = axis.x_max + axis.x_min
-            lines_center_point.append(axis_length / 2 * axis.unit_size)
+        lines_center_point = [((axis.x_max + axis.x_min) / 2) for axis in self.axes]
 
-        lines_center_point.append(0)
-
-        self.shift(-np.array(lines_center_point, dtype=float))
+        self.shift(-self.coords_to_point(*lines_center_point))
 
     @staticmethod
     def update_default_configs(default_configs, passed_configs):
