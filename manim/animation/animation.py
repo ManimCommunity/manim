@@ -322,7 +322,6 @@ class Animation:
         value = alpha * full_length
         lower = index * lag_ratio
         return self.rate_func(value - lower)
-        # return min(max((value - lower), 0), 1)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> "Animation":
