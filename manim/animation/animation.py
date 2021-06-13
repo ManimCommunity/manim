@@ -275,7 +275,6 @@ class Animation:
             The relative time to set the aniamtion to, 0 meaning the start, 1 meaning
             the end.
         """
-        # alpha = min(max(alpha, 0), 1)
         self.interpolate_mobject(alpha)
 
     @deprecated(until="v0.6.0", replacement="interpolate")
