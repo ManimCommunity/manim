@@ -134,7 +134,7 @@ class ParametricSurface(VGroup):
 
 
 class Sphere(ParametricSurface):
-    """
+    """A mobject representing a three-dimensional sphere.
 
     Examples
     ---------
