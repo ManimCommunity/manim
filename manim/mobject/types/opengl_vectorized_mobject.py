@@ -86,6 +86,7 @@ class OpenGLVMobject(OpenGLMobject):
         flat_stroke=True,
         render_primitive=moderngl.TRIANGLES,
         triangulation_locked=False,
+        stroke_shader_folder="quadratic_bezier_stroke",
         **kwargs,
     ):
         self.fill_color = fill_color
@@ -120,6 +121,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = np.zeros(0, dtype="i4")
         super().__init__(**kwargs)
         self.refresh_unit_normal()
+        self.stroke_shader_folder = stroke_shader_folder
 
     def get_group_class(self):
         return OpenGLVGroup

@@ -27,7 +27,10 @@ from ..utils.space_ops import (
 )
 from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
-from .vectorized_mobject_rendering import render_opengl_vectorized_mobject_fill
+from .vectorized_mobject_rendering import (
+    render_opengl_vectorized_mobject_fill,
+    render_opengl_vectorized_mobject_stroke,
+)
 
 
 class OpenGLCamera(OpenGLMobject):
@@ -267,6 +270,13 @@ class OpenGLRenderer:
         if config["use_projection_fill_shaders"]:
             if isinstance(mobject, OpenGLVMobject) and mobject.fill_opacity > 0:
                 render_opengl_vectorized_mobject_fill(self, mobject)
+
+        if (
+            hasattr(mobject, "stroke_shader_folder")
+            and mobject.stroke_shader_folder == "vectorized_mobject_stroke"
+        ):
+            render_opengl_vectorized_mobject_stroke(self, mobject)
+            return
 
         shader_wrapper_list = mobject.get_shader_wrapper_list()
 

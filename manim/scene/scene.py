@@ -419,7 +419,6 @@ class Scene(Container):
             return self
 
     def add_mobjects_from_animations(self, animations):
-
         curr_mobjects = self.get_mobject_family_members()
         for animation in animations:
             # Anything animated that's not already in the

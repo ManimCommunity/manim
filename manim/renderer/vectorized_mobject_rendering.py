@@ -216,3 +216,75 @@ def textures_to_fill_vao(context, textures, mobject):
         *vertices.dtype.names,
     )
     return vao, vbo
+
+
+def render_opengl_vectorized_mobject_stroke(renderer, mobject):
+    shader = Shader(renderer.context, "vectorized_mobject_stroke")
+    shader.set_uniform("u_color", (0.0, 1.0, 0.0, 1.0))
+
+    shader.set_uniform("u_model_view_matrix", renderer.camera.get_view_matrix())
+    shader.set_uniform(
+        "u_projection_matrix",
+        renderer.scene.camera.projection_matrix,
+    )
+
+    points = mobject.data["points"]
+    stroke_data = np.zeros(
+        len(points),
+        dtype=[
+            ("point", np.float32, (3,)),
+            ("previous_curve", np.float32, (3, 3)),
+            ("current_curve", np.float32, (3, 3)),
+            ("next_curve", np.float32, (3, 3)),
+            ("tile_coordinate", np.float32, (2,)),
+        ],
+    )
+
+    stroke_data["point"] = points
+    curves = np.reshape(points, (-1, 3, 3))
+    stroke_data["previous_curve"] = np.repeat(np.roll(curves, 1, axis=0), 3, axis=0)
+    stroke_data["current_curve"] = np.repeat(curves, 3, axis=0)
+    stroke_data["next_curve"] = np.repeat(np.roll(curves, -1, axis=0), 3, axis=0)
+
+    # Repeat each vertex in order to make a tile.
+    stroke_data = np.tile(stroke_data, 2)
+    stroke_data["tile_coordinate"] = np.concatenate(
+        (
+            np.tile(
+                [
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [1.0, 1.0],
+                ],
+                (len(points) // 3, 1),
+            ),
+            np.tile(
+                [
+                    [0.0, 0.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                ],
+                (len(points) // 3, 1),
+            ),
+        ),
+        axis=0,
+    )
+    # import ipdb
+
+    # ipdb.set_trace(context=9)
+
+    shader.set_uniform("color", tuple(mobject.data["stroke_rgba"][0]))
+    shader.set_uniform("stroke_width", mobject.data["stroke_width"])
+    shader.set_uniform("unit_normal", tuple(-mobject.data["unit_normal"][0]))
+
+    vbo = renderer.context.buffer(stroke_data.tobytes())
+    vao = renderer.context.simple_vertex_array(
+        shader.shader_program,
+        vbo,
+        *stroke_data.dtype.names,
+    )
+
+    renderer.frame_buffer_object.use()
+    vao.render()
+    vao.release()
+    vbo.release()

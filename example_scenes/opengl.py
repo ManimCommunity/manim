@@ -89,6 +89,59 @@ class GuiTest(Scene):
         self.interactive_embed()
 
 
+class TextTest(Scene):
+    def construct(self):
+        # text = OpenGLText(
+        #     "i",
+        #     fill_color=GREEN,
+        #     fill_opacity=0,
+        #     stroke_width=8,
+        #     stroke_opacity=0.7,
+        #     stroke_color=WHITE,
+        # ).scale(10)
+        # self.add(text)
+        # self.play(Create(text), run_time=2, rate_func=lambda t: t)
+
+        # Simple curve
+        mob = OpenGLVMobject(stroke_width=16)
+        mob.data["points"] = np.array([LEFT])
+        mob.add_quadratic_bezier_curve_to(UP, RIGHT)
+        mob.shift(2 * LEFT)
+        self.add(mob)
+
+        # Simple curve
+        mob2 = OpenGLVMobject(
+            stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
+        )
+        mob2.data["points"] = np.array([LEFT])
+        mob2.add_quadratic_bezier_curve_to(UP, RIGHT)
+        mob2.shift(2 * RIGHT)
+        self.add(mob2)
+        print(config["pixel_height"], config["pixel_width"])
+
+        # mob2.add_updater(lambda mob: mob.rotate(0.08, axis=UP))
+
+        # V shape
+        # mob = OpenGLVMobject(stroke_width=16)
+        # mob.data["points"] = np.array([0.2 * LEFT + UP])
+        # mob.add_quadratic_bezier_curve_to(0.2 * LEFT + UP, ORIGIN)
+        # mob.add_quadratic_bezier_curve_to(0.2 * RIGHT + UP, 0.2 * RIGHT + UP)
+        # mob.shift(2 * LEFT)
+        # self.add(mob)
+
+        # mob2 = OpenGLVMobject(
+        #     stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
+        # )
+        # mob2.data["points"] = np.array([0.2 * LEFT + UP])
+        # mob2.add_quadratic_bezier_curve_to(0.2 * LEFT + UP, ORIGIN)
+        # mob2.add_quadratic_bezier_curve_to(0.2 * RIGHT + UP, 0.2 * RIGHT + UP)
+        # mob2.shift(2 * RIGHT)
+        # self.add(mob2)
+
+        self.interactive_embed()
+        # self.wait()
+
+
 class GuiTest2(Scene):
     def construct(self):
         mesh = get_plane_mesh(self.renderer.context)

@@ -90,4 +90,6 @@ void main() {
 
     frag_color = color;
     frag_color.a *= smoothstep(0.5, -0.5, signed_dist / uv_anti_alias_width);
+
+    // frag_color = vec4(1.0, 0.0, 0.0, 0.5);
 }
