@@ -18,14 +18,16 @@ Examples
                     [["+", 0, 5, 10],
                     [0, 0, 5, 10],
                     [2, 2, 7, 12],
-                    [4, 4, 9, 14]])
-                t1.get_horizontal_lines()[0].set_color(BLUE)
-                t1.get_vertical_lines()[0].set_color(BLUE)
-                t1.get_horizontal_lines()[0].set_z_index(1)
+                    [4, 4, 9, 14]],
+                    include_outer_lines=True)
+                t1.get_horizontal_lines()[:3].set_color(BLUE)
+                t1.get_vertical_lines()[:3].set_color(BLUE)
+                t1.get_horizontal_lines()[:3].set_z_index(1)
                 t2 = DecimalTabular(
                     [[-2,-1,0,1,2],
                     [3.333, 7.42, 5.0, 2.222, 3.141]],
-                    row_labels=[MathTex("x"), MathTex("f(x)")])
+                    row_labels=[MathTex("x"), MathTex("f(x)")],
+                    include_outer_lines=True)
                 cross = VGroup(
                     Line(UP + LEFT, DOWN + RIGHT),
                     Line(UP + RIGHT, DOWN + LEFT))
@@ -73,6 +75,7 @@ class Tabular(VGroup):
         top_left_entry=None,
         v_buff=0.8,
         h_buff=1.3,
+        include_outer_lines=False,
         add_background_rectangles_to_entries=False,
         include_background_rectangle=False,
         element_to_mobject=Paragraph,
@@ -98,6 +101,8 @@ class Tabular(VGroup):
             vertical buffer, by default 0.8
         h_buff : :class:`float`, optional
             horizontal buffer, by default 1.3
+        include_outer_lines : :class:`bool`, optional
+            `True` if should include outer lines, by default False
         add_background_rectangles_to_entries : :class:`bool`, optional
             `True` if should add backgraound rectangles to entries, by default False
         include_background_rectangle : :class:`bool`, optional
@@ -118,6 +123,7 @@ class Tabular(VGroup):
         self.top_left_entry = top_left_entry
         self.v_buff = v_buff
         self.h_buff = h_buff
+        self.include_outer_lines = include_outer_lines
         self.add_background_rectangles_to_entries = add_background_rectangles_to_entries
         self.include_background_rectangle = include_background_rectangle
         self.element_to_mobject = element_to_mobject
@@ -187,6 +193,19 @@ class Tabular(VGroup):
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
         line_group = VGroup()
+        if self.include_outer_lines:
+            anchor = self.get_rows()[0].get_top()[1] + 0.5 * self.v_buff
+            line = Line(
+                [anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config
+            )
+            line_group.add(line)
+            self.add(line)
+            anchor = self.get_rows()[-1].get_bottom()[1] - 0.5 * self.v_buff
+            line = Line(
+                [anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config
+            )
+            line_group.add(line)
+            self.add(line)
         for k in range(len(self.mob_table) - 1):
             anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
                 self.get_rows()[k].get_bottom()[1] - self.get_rows()[k + 1].get_top()[1]
@@ -201,9 +220,22 @@ class Tabular(VGroup):
 
     def add_vertical_lines(self):
         """Used internally."""
-        anchor_top = self.get_top()[1] + 0.5 * self.v_buff
-        anchor_bottom = self.get_bottom()[1] - 0.5 * self.v_buff
+        anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
+        anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff
         line_group = VGroup()
+        if self.include_outer_lines:
+            anchor = self.get_columns()[0].get_left()[0] - 0.5 * self.h_buff
+            line = Line(
+                [anchor, anchor_top, 0], [anchor, anchor_bottom, 0], **self.line_config
+            )
+            line_group.add(line)
+            self.add(line)
+            anchor = self.get_columns()[-1].get_right()[0] + 0.5 * self.h_buff
+            line = Line(
+                [anchor, anchor_top, 0], [anchor, anchor_bottom, 0], **self.line_config
+            )
+            line_group.add(line)
+            self.add(line)
         for k in range(len(self.mob_table[0]) - 1):
             anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
                 self.get_columns()[k].get_right()[0]
@@ -368,7 +400,32 @@ class MathTabular(Tabular):
 
 
 class MobjectTabular(Tabular):
-    """A mobject that displays a table with mobject entries on the screen."""
+    """A mobject that displays a table with mobject entries on the screen.
+
+    Examples
+    --------
+
+    .. manim:: MobjectTabularExample
+        :save_last_frame:
+
+        class MobjectTabularExample(Scene):
+            def construct(self):
+                cross = VGroup(
+                    Line(UP + LEFT, DOWN + RIGHT),
+                    Line(UP + RIGHT, DOWN + LEFT),
+                )
+                a = Circle().set_color(RED).scale(0.5)
+                b = cross.set_color(BLUE).scale(0.5)
+                t0 = MobjectTabular(
+                    [[a.copy(),b.copy(),a.copy()],
+                    [b.copy(),a.copy(),a.copy()],
+                    [a.copy(),b.copy(),b.copy()]]
+                )
+                line = Line(
+                    t0.get_corner(DL), t0.get_corner(UR)
+                ).set_color(RED)
+                self.add(t0, line)
+    """
 
     def __init__(self, table, element_to_mobject=lambda m: m, **kwargs):
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
@@ -389,11 +446,11 @@ class IntegerTabular(Tabular):
                     [[0,30,45,60,90],
                     [90,60,45,30,0]],
                     col_labels=[
-                        MathTex("\\frac{\\sqrt{0}}{2}"),
-                        MathTex("\\frac{\\sqrt{1}}{2}"),
-                        MathTex("\\frac{\\sqrt{2}}{2}"),
-                        MathTex("\\frac{\\sqrt{3}}{2}"),
-                        MathTex("\\frac{\\sqrt{4}}{2}")],
+                        MathTex("\\\\frac{\\sqrt{0}}{2}"),
+                        MathTex("\\\\frac{\\sqrt{1}}{2}"),
+                        MathTex("\\\\frac{\\sqrt{2}}{2}"),
+                        MathTex("\\\\frac{\\sqrt{3}}{2}"),
+                        MathTex("\\\\frac{\\sqrt{4}}{2}")],
                     row_labels=[MathTex("\\sin"), MathTex("\\cos")],
                     h_buff=1,
                     element_to_mobject_config={"unit": "^{\\circ}"})
