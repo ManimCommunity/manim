@@ -72,6 +72,49 @@ def get_plane_mesh(context):
     return Mesh(shader, attributes)
 
 
+class GuiTest(Scene):
+    def construct(self):
+        mesh = get_plane_mesh(self.renderer.context)
+        # mesh.attributes["in_vert"][:, 0]
+        self.add(mesh)
+
+        def update_mesh(mesh, dt):
+            mesh.model_matrix = np.matmul(
+                opengl.rotation_matrix(z=dt), mesh.model_matrix
+            )
+
+        mesh.add_updater(update_mesh)
+
+        self.interactive_embed()
+
+
+class GuiTest2(Scene):
+    def construct(self):
+        mesh = get_plane_mesh(self.renderer.context)
+        mesh.attributes["in_vert"][:, 0] -= 2
+        self.add(mesh)
+
+        mesh2 = get_plane_mesh(self.renderer.context)
+        mesh2.attributes["in_vert"][:, 0] += 2
+        self.add(mesh2)
+
+        def callback(sender, data):
+            mesh2.attributes["in_color"][:, 3] = dpg.get_value(sender)
+
+        self.widgets.append(
+            {
+                "name": "mesh2 opacity",
+                "widget": "slider_float",
+                "callback": callback,
+                "min_value": 0,
+                "max_value": 1,
+                "default_value": 1,
+            }
+        )
+
+        self.interactive_embed()
+
+
 class ThreeDMobjectTest(Scene):
     def construct(self):
         # config["background_color"] = "#333333"
@@ -98,7 +141,9 @@ class ThreeDMobjectTest(Scene):
 class NamedFullScreenQuad(Scene):
     def construct(self):
         surface = FullScreenQuad(self.renderer.context, fragment_shader_name="design_3")
-        surface.shader.set_uniform("u_resolution", (854.0, 480.0, 0.0))
+        surface.shader.set_uniform(
+            "u_resolution", (config["pixel_width"], config["pixel_height"], 0.0)
+        )
         surface.shader.set_uniform("u_time", 0)
         self.add(surface)
 
@@ -127,6 +172,7 @@ class InlineFullScreenQuad(Scene):
 
             uniform vec2 u_resolution;
             uniform float u_time;
+            out vec4 frag_color;
 
             //  Function from Iñigo Quiles
             //  https://www.shadertoy.com/view/MsS3Wc
@@ -153,12 +199,13 @@ class InlineFullScreenQuad(Scene):
                 // and the Saturation to the radius
                 color = hsb2rgb(vec3((angle/TWO_PI)+0.5,radius,1.0));
 
-                gl_FragColor = vec4(color,1.0);
+                frag_color = vec4(color,1.0);
             }
             """,
-            output_color_variable="gl_FragColor",
         )
-        surface.shader.set_uniform("u_resolution", (854.0, 480.0))
+        surface.shader.set_uniform(
+            "u_resolution", (config["pixel_width"], config["pixel_height"])
+        )
         shader_time = 0
 
         def update_surface(surface):
@@ -182,6 +229,7 @@ class SimpleInlineFullScreenQuad(Scene):
             uniform float v_red;
             uniform float v_green;
             uniform float v_blue;
+            out vec4 frag_color;
 
             void main() {
               frag_color = vec4(v_red, v_green, v_blue, 1);

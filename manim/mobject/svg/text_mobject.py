@@ -361,7 +361,7 @@ class Text(SVGMobject):
                 chin = Text(
                     "見 角 言 谷  辛 辰 辵 邑 酉 釆 里!", t2c={"見 角 言": BLUE}
                 )  # works same as ``Text``.
-                mess = Text("Multi-Language", style=BOLD)
+                mess = Text("Multi-Language", weight=BOLD)
                 russ = Text("Здравствуйте मस नम म ", font="sans-serif")
                 hin = Text("नमस्ते", font="sans-serif")
                 arb = Text(
@@ -871,7 +871,7 @@ class MarkupText(SVGMobject):
                 chin = MarkupText(
                     '見 角 言 谷  辛 <span fgcolor="blue">辰 辵 邑</span> 酉 釆 里!'
                 )  # works as in ``Text``.
-                mess = MarkupText("Multi-Language", style=BOLD)
+                mess = MarkupText("Multi-Language", weight=BOLD)
                 russ = MarkupText("Здравствуйте मस नम म ", font="sans-serif")
                 hin = MarkupText("नमस्ते", font="sans-serif")
                 japanese = MarkupText("臂猿「黛比」帶著孩子", font="sans-serif")
