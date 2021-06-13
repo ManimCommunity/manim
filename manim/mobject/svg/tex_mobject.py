@@ -210,7 +210,7 @@ from ...mobject.geometry import Line
 from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.svg.svg_path import SVGPathMobject
 from ...mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ...utils.color import BLACK
+from ...utils.color import BLACK, WHITE
 from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
@@ -247,6 +247,7 @@ class SingleStringMathTex(SVGMobject):
         organize_left_to_right=False,
         tex_environment="align*",
         tex_template=None,
+        color=WHITE,
         **kwargs,
     ):
         self.organize_left_to_right = organize_left_to_right
@@ -273,6 +274,7 @@ class SingleStringMathTex(SVGMobject):
             background_stroke_color=background_stroke_color,
             should_subdivide_sharp_curves=True,
             should_remove_null_curves=True,
+            color=color,
             **kwargs,
         )
         if height is None:

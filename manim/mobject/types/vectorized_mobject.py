@@ -189,6 +189,8 @@ class VMobject(Mobject):
         self.update_rgbas_array("fill_rgbas", color, opacity)
         if opacity is not None:
             self.fill_opacity = opacity
+        if color is not None:
+            self.fill_color = color
         return self
 
     def set_stroke(
