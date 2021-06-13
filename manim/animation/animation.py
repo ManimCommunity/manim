@@ -277,10 +277,6 @@ class Animation:
         """
         self.interpolate_mobject(alpha)
 
-    @deprecated(until="v0.6.0", replacement="interpolate")
-    def update(self, alpha: float) -> None:
-        self.interpolate(alpha)
-
     def interpolate_mobject(self, alpha: float) -> None:
         families = list(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
