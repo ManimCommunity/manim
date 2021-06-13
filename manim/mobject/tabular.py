@@ -77,7 +77,7 @@ class Tabular(VGroup):
             def construct(self):
                 t0 = Tabular(
                     [["This", "is a"],
-                    ["simple", "Table in \n Manim."]])
+                    ["simple", "Table in \\n Manim."]])
                 t1 = Tabular(
                     [["This", "is a"],
                     ["simple", "Table."]],
@@ -503,10 +503,10 @@ class Tabular(VGroup):
         Examples
         --------
 
-        .. manim:: GetEntriesExample
+        .. manim:: GetEntriesWithoutLabelsExample
             :save_last_frame:
 
-            class GetEntriesExample(Scene):
+            class GetEntriesWithoutLabelsExample(Scene):
                 def construct(self):
                     table = Tabular(
                         [["First", "Second"],
