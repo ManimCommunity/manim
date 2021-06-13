@@ -14,6 +14,13 @@ SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache = {}
 file_path_to_code_map = {}
 
+__all__ = [
+    "Object3D",
+    "Mesh",
+    "Shader",
+    "FullScreenQuad",
+]
+
 
 def get_shader_code_from_file(file_path):
     if file_path in file_path_to_code_map:
