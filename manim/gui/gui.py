@@ -40,6 +40,7 @@ def configure_pygui(renderer, widgets, update=True):
         width=1000,
         height=500,
     ):
+        dearpygui.core.set_main_window_size(width=1015, height=540)
         dearpygui.core.set_global_font_scale(2)
         dearpygui.core.add_button("Rerun", callback=rerun_callback)
         dearpygui.core.add_button("Continue", callback=continue_callback)

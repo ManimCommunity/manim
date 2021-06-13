@@ -58,7 +58,7 @@ global_options = option_group(
     ),
     option(
         "--gui_location",
-        default="40,800",
+        default="0,0",
         callback=validate_gui_location,
         help="Starting location for the GUI.",
     ),
