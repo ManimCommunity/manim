@@ -105,131 +105,75 @@ class TextTest2(Scene):
 
 class TextTest(Scene):
     def construct(self):
-        text = OpenGLText(
-            "abcdefghijklmnopqrstuvqxyz",
-            fill_color=GREEN,
-            fill_opacity=1,
-            stroke_width=4,
-            stroke_opacity=1,
-            stroke_color=WHITE,
-            stroke_shader_folder="vectorized_mobject_stroke",
-        )
-        self.play(Create(text), run_time=0.3, rate_func=lambda t: t)
+        # text = OpenGLText(
+        #     "abcdefghijklmnopqrstuvqxyz",
+        #     fill_color=GREEN,
+        #     fill_opacity=1,
+        #     stroke_width=4,
+        #     stroke_opacity=1,
+        #     stroke_color=WHITE,
+        #     stroke_shader_folder="vectorized_mobject_stroke",
+        # )
+        # self.play(Create(text), run_time=0.3, rate_func=lambda t: t)
 
-        text2 = OpenGLText(
-            "ABCDEFGHIJKLMNOPQRSTUVQXYZ",
-            fill_color=GREEN,
-            fill_opacity=1,
-            stroke_width=4,
-            stroke_opacity=1,
-            stroke_color=WHITE,
-            stroke_shader_folder="vectorized_mobject_stroke",
-        ).next_to(text, DOWN)
-        self.play(Create(text2), run_time=0.3, rate_func=lambda t: t)
+        # text2 = OpenGLText(
+        #     "ABCDEFGHIJKLMNOPQRSTUVQXYZ",
+        #     fill_color=GREEN,
+        #     fill_opacity=1,
+        #     stroke_width=4,
+        #     stroke_opacity=1,
+        #     stroke_color=WHITE,
+        #     stroke_shader_folder="vectorized_mobject_stroke",
+        # ).next_to(text, DOWN)
+        # self.play(Create(text2), run_time=0.3, rate_func=lambda t: t)
 
-        text = OpenGLText(
-            "i",
-            fill_color=GREEN,
-            fill_opacity=1,
-            stroke_width=12,
-            stroke_opacity=1,
-            stroke_color=WHITE,
-            stroke_shader_folder="vectorized_mobject_stroke",
-        ).scale(7)
-        self.play(Create(text), run_time=0.3, rate_func=lambda t: t)
+        # text = OpenGLText(
+        #     "i",
+        #     fill_color=GREEN,
+        #     fill_opacity=1,
+        #     stroke_width=12,
+        #     stroke_opacity=1,
+        #     stroke_color=WHITE,
+        #     stroke_shader_folder="vectorized_mobject_stroke",
+        # ).scale(7)
+        # self.play(Create(text), run_time=0.3, rate_func=lambda t: t)
 
-        # Simple curve
-        mob = OpenGLVMobject(stroke_width=16)
-        mob.data["points"] = np.array([LEFT])
-        mob.add_quadratic_bezier_curve_to(UP, 2 * DOWN + RIGHT)
-        mob.shift(2 * LEFT + UP)
-        self.add(mob)
+        # # Simple curve
+        # mob = OpenGLVMobject(stroke_width=16)
+        # mob.data["points"] = np.array([LEFT])
+        # mob.add_quadratic_bezier_curve_to(UP, 2 * DOWN + RIGHT)
+        # mob.shift(2 * LEFT + UP)
+        # self.add(mob)
 
-        # Simple curve
-        mob2 = OpenGLVMobject(
-            stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
-        )
-        mob2.data["points"] = np.array([LEFT])
-        mob2.add_quadratic_bezier_curve_to(UP, 2 * DOWN + RIGHT)
-        mob2.shift(2 * RIGHT + UP)
-        self.add(mob2)
-
-        # # mob.rotate(PI * 3 / 4, axis=UP)
-        # # mob2.rotate(PI * 3 / 4, axis=UP)
-        mob.add_updater(lambda mob: mob.rotate(0.02, axis=UP))
-        mob2.add_updater(lambda mob: mob.rotate(0.02, axis=UP))
-
-        # V shape
-        mob = OpenGLVMobject(stroke_width=16)
-        mob.data["points"] = np.array(UP)
-        mob.add_line_to(ORIGIN)
-        mob.add_line_to(RIGHT)
-        mob.shift(2 * LEFT + UP)
-        self.add(mob)
-
-        mob2 = OpenGLVMobject(
-            stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
-        )
-        mob2.data["points"] = np.array(UP)
-        mob2.add_line_to(ORIGIN)
-        mob2.add_line_to(RIGHT)
-        mob2.shift(2 * RIGHT + UP)
-        self.add(mob2)
-
-        # # Texture indexing error.
-        # mob = OpenGLVMobject(
+        # # Simple curve
+        # mob2 = OpenGLVMobject(
         #     stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
         # )
+        # mob2.data["points"] = np.array([LEFT])
+        # mob2.add_quadratic_bezier_curve_to(UP, 2 * DOWN + RIGHT)
+        # mob2.shift(2 * RIGHT + UP)
+        # self.add(mob2)
+
+        # # # mob.rotate(PI * 3 / 4, axis=UP)
+        # # # mob2.rotate(PI * 3 / 4, axis=UP)
+        # mob.add_updater(lambda mob: mob.rotate(0.02, axis=UP))
+        # mob2.add_updater(lambda mob: mob.rotate(0.02, axis=UP))
+
+        # # V shape
+        # mob = OpenGLVMobject(stroke_width=16)
         # mob.data["points"] = np.array(UP)
-        # mob.add_line_to(UP)
+        # mob.add_line_to(ORIGIN)
+        # mob.add_line_to(RIGHT)
+        # mob.shift(2 * LEFT + UP)
         # self.add(mob)
 
-        # mob = OpenGLVMobject(
-        #     stroke_width=4, stroke_shader_folder="vectorized_mobject_stroke"
-        # )
-        # mob.data["points"] = np.array(
-        #     [
-        #         [9.55321937e-02, -2.28662175e-01, 2.80030401e-17],
-        #         [9.55321937e-02, -2.28662175e-01, 2.80030401e-17],
-        #         [4.55334098e-03, -1.84373307e-01, 2.25792180e-17],
-        #         #
-        #         [-1.06640625e-01, -1.36718750e-01, 1.67432180e-17],
-        #         [-1.06640625e-01, -1.36718750e-01, 1.67432180e-17],
-        #         [-2.23299634e-01, -8.29542579e-02, 1.01589666e-17],
-        #         #
-        #         [-3.22998112e-01, -3.02490562e-02, 3.70444099e-18],
-        #         [-3.22998112e-01, -3.02490562e-02, 3.70444099e-18],
-        #         [-4.20533421e-01, 2.13125945e-02, -2.61004006e-18],
-        #         #
-        #         [-5.00390625e-01, 7.10937500e-02, -8.70647334e-18],
-        #         [-5.00390625e-01, 7.10937500e-02, -8.70647334e-18],
-        #         [-5.31053484e-01, 9.07179632e-02, -1.11097463e-17],
-        #         #
-        #         [-5.58869655e-01, 1.11705306e-01, -1.36799545e-17],
-        #         [-5.58869655e-01, 1.11705306e-01, -1.36799545e-17],
-        #         [-5.58869655e-01, 1.11705306e-01, -1.36799545e-17],
-        #     ]
-        # )
-
-        # self.add(text)
-        # self.wait(2)
-        # self.remove(text)
-        # self.add(mob)
-
-        # Error if projecting current_curve onto the tile.
         # mob2 = OpenGLVMobject(
-        #     stroke_width=4, stroke_shader_folder="vectorized_mobject_stroke"
+        #     stroke_width=16, stroke_shader_folder="vectorized_mobject_stroke"
         # )
-        # mob2.data["points"] = np.array(
-        #     [
-        #         ORIGIN,
-        #         ORIGIN + (UP + RIGHT) * 0.00010,
-        #         ORIGIN + (UP + RIGHT) * 0.00010
-        #         # [-6.08911100e-01, -4.82788119e-01, 5.91244924e-17],
-        #         # [-5.49609375e-01, -4.75781250e-01, 5.82663985e-17],
-        #         # [-5.49609375e-01, -4.75781250e-01, 5.82663985e-17],
-        #     ]
-        # )
+        # mob2.data["points"] = np.array(UP)
+        # mob2.add_line_to(ORIGIN)
+        # mob2.add_line_to(RIGHT)
+        # mob2.shift(2 * RIGHT + UP)
         # self.add(mob2)
 
         # self.wait(1)
