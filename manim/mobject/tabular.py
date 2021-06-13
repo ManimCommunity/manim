@@ -561,7 +561,7 @@ class MathTabular(Tabular):
         **kwargs,
     ):
         """
-        Every entry is set in a Latex `align` environment. 
+        Every entry is set in a Latex `align` environment.
 
         Parameters
         ----------
