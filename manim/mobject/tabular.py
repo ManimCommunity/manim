@@ -359,24 +359,138 @@ class Tabular(VGroup):
         return VGroup(*[VGroup(*row) for row in self.mob_table])
 
     def set_column_colors(self, *colors):
+        """Set individual colors for each column of the table.
+
+        Parameters
+        ----------
+        colors : :class:`str`
+            The list of colors; each color specified corresponds to a column.
+
+        Returns
+        -------
+        :class:`Tabular`
+            The current table object (self).
+
+        Examples
+        --------
+
+        .. manim:: SetColumnColorsExample
+            :save_last_frame:
+
+            class SetColumnColorsExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")]
+                    ).set_column_colors([RED,BLUE], GREEN)
+                    self.add(table)
+        """
         columns = self.get_columns()
         for color, column in zip(colors, columns):
             column.set_color(color)
         return self
 
     def set_row_colors(self, *colors):
+        """Set individual colors for each row of the table.
+
+        Parameters
+        ----------
+        colors : :class:`str`
+            The list of colors; each color specified corresponds to a row.
+
+        Returns
+        -------
+        :class:`Tabular`
+            The current table object (self).
+
+        Examples
+        --------
+
+        .. manim:: SetRowColorsExample
+            :save_last_frame:
+
+            class SetRowColorsExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")]
+                    ).set_row_colors([RED,BLUE], GREEN)
+                    self.add(table)
+        """
         rows = self.get_rows()
         for color, row in zip(colors, rows):
             row.set_color(color)
         return self
 
     def get_entries(self):
+        """Return the individual entries of the table (including labels).
+
+        Returns
+        --------
+        :class:`~.VGroup`
+            VGroup containing entries of the table.
+
+        Examples
+        --------
+
+        .. manim:: GetEntriesExample
+            :save_last_frame:
+
+            class GetEntriesExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    ent = table.get_entries()
+                    for item in ent:
+                        item.set_color(random_color())
+                    self.add(table)
+        """
         return self.elements
 
     def get_entries_without_labels(self):
+        """Return the individual entries of the table (without labels).
+
+        Returns
+        --------
+        :class:`~.VGroup`
+            VGroup containing entries of the table.
+
+        Examples
+        --------
+
+        .. manim:: GetEntriesExample
+            :save_last_frame:
+
+            class GetEntriesExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    ent = table.get_entries_without_labels()
+                    colors = [BLUE, GREEN, YELLOW, RED]
+                    for k in range(len(colors)):
+                        ent[k].set_color(colors[k])
+                    self.add(table)
+        """
         return self.elements_without_labels
 
     def add_background_to_entries(self):
+        """Add a black background rectangle to the table.
+
+        Returns
+        -------
+        :class:`Tabular`
+            The current tabular object (self).
+        """
         for mob in self.get_entries():
             mob.add_background_rectangle()
         return self
