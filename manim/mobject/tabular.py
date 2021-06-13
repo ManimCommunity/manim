@@ -351,6 +351,8 @@ class Tabular(VGroup):
 
 
 class MathTabular(Tabular):
+    """A mobject that displays a table with Latex entries on the screen."""
+
     def __init__(
         self,
         table,
@@ -373,9 +375,42 @@ class MobjectTabular(Tabular):
 
 
 class IntegerTabular(Tabular):
-    """A mobject that displays a table with integer entries on the screen."""
+    """A mobject that displays a table with integer entries on the screen.
+
+    Examples
+    --------
+
+    .. manim:: IntegerTabularExample
+        :save_last_frame:
+
+        class IntegerTabularExample(Scene):
+            def construct(self):
+                t0 = IntegerTabular(
+                    [[0,30,45,60,90],
+                    [90,60,45,30,0]],
+                    col_labels=[
+                        MathTex("\\frac{\\sqrt{0}}{2}"),
+                        MathTex("\\frac{\\sqrt{1}}{2}"),
+                        MathTex("\\frac{\\sqrt{2}}{2}"),
+                        MathTex("\\frac{\\sqrt{3}}{2}"),
+                        MathTex("\\frac{\\sqrt{4}}{2}")],
+                    row_labels=[MathTex("\\sin"), MathTex("\\cos")],
+                    h_buff=1,
+                    element_to_mobject_config={"unit": "^{\\circ}"})
+                self.add(t0)
+    """
 
     def __init__(self, table, element_to_mobject=Integer, **kwargs):
+        """
+        Will round if there are decimal entries in the table.
+
+        Parameters
+        ----------
+        table : :class:`typing.Iterable`
+            A  2d array or list of lists
+        element_to_mobject : :class:`~.Mobject`, optional
+            Mobject to use, by default Integer
+        """
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
 
