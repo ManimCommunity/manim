@@ -48,7 +48,7 @@ class TorusTest(ThreeDScene):
 
 class AxesTest(ThreeDScene):
     def construct(self):
-        self.add(ThreeDAxes())
+        self.add(ThreeDAxes(axis_config={"exclude_origin_tick": False}))
 
 
 class CameraMoveTest(ThreeDScene):
