@@ -71,7 +71,7 @@ class CoordinateSystem:
     ):
         self.dimension = dimension
 
-        default_step = 1.0
+        default_step = 1
         if x_range is None:
             x_range = [
                 round(-config["frame_x_radius"]),
@@ -974,7 +974,11 @@ class Axes(VGroup, CoordinateSystem):
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
-        self.axis_config = {"include_tip": tips, "numbers_to_exclude": [0]}
+        self.axis_config = {
+            "include_tip": tips,
+            "numbers_to_exclude": [0],
+            "exclude_origin_tick": True,
+        }
         self.x_axis_config = {}
         self.y_axis_config = {"rotation": 90 * DEGREES, "label_direction": LEFT}
 
@@ -1355,6 +1359,25 @@ class NumberPlane(Axes):
 
     .. note:: If :attr:`x_length` or :attr:`y_length` are not defined, the plane automatically adjusts its lengths based
         on the :attr:`x_range` and :attr:`y_range` values to set the unit_size to 1.
+
+    Examples
+    --------
+
+    .. manim:: NumberPlaneExample
+        :save_last_frame:
+
+        class NumberPlaneExample(Scene):
+            def construct(self):
+                number_plane = NumberPlane(
+                    x_range=[-10, 10, 1],
+                    y_range=[-10, 10, 1],
+                    background_line_style={
+                        "stroke_color": TEAL,
+                        "stroke_width": 4,
+                        "stroke_opacity": 0.6
+                    }
+                )
+                self.add(number_plane)
     """
 
     def __init__(
@@ -2048,6 +2071,31 @@ class PolarPlane(Axes):
 
 
 class ComplexPlane(NumberPlane):
+    """
+    Examples
+    --------
+
+    .. manim:: ComplexPlaneExample
+        :save_last_frame:
+        :ref_classes: Dot MathTex
+
+        class ComplexPlaneExample(Scene):
+            def construct(self):
+                plane = ComplexPlane().add_coordinates()
+                self.add(plane)
+                d1 = Dot(plane.n2p(2 + 1j), color=YELLOW)
+                d2 = Dot(plane.n2p(-3 - 2j), color=YELLOW)
+                label1 = MathTex("2+i").next_to(d1, UR, 0.1)
+                label2 = MathTex("-3-2i").next_to(d2, UR, 0.1)
+                self.add(
+                    d1,
+                    label1,
+                    d2,
+                    label2,
+                )
+
+    """
+
     def __init__(self, color=BLUE, **kwargs):
         super().__init__(
             color=color,

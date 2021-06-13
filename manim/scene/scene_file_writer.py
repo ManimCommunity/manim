@@ -2,7 +2,6 @@
 
 __all__ = ["SceneFileWriter"]
 
-
 import datetime
 import os
 import shutil
@@ -22,7 +21,10 @@ from ..utils.file_ops import (
     add_extension_if_not_present,
     add_version_before_extension,
     guarantee_existence,
+    is_gif_format,
+    is_png_format,
     modify_atime,
+    write_to_movie,
 )
 from ..utils.sounds import get_full_sound_file_path
 
@@ -86,7 +88,7 @@ class SceneFileWriter(object):
             image_dir, add_extension_if_not_present(default_name, ".png")
         )
 
-        if config["write_to_movie"]:
+        if write_to_movie():
             movie_dir = guarantee_existence(
                 config.get_dir("video_dir", module_name=module_name)
             )
@@ -97,7 +99,7 @@ class SceneFileWriter(object):
                     default_name, config["movie_file_extension"]
                 ),
             )
-            if config["format"] == "gif":
+            if is_gif_format():
                 self.gif_file_path = os.path.join(
                     movie_dir,
                     add_extension_if_not_present(default_name, GIF_FILE_EXTENSION),
@@ -119,7 +121,7 @@ class SceneFileWriter(object):
         hash_animation : str
             Hash of the animation.
         """
-        if not hasattr(self, "partial_movie_directory"):
+        if not hasattr(self, "partial_movie_directory") or not write_to_movie():
             return
 
         # None has to be added to partial_movie_files to keep the right index with scene.num_plays.
@@ -252,7 +254,7 @@ class SceneFileWriter(object):
         allow_write : bool, optional
             Whether or not to write to a video file.
         """
-        if config["write_to_movie"] and allow_write:
+        if write_to_movie() and allow_write:
             self.open_movie_pipe(file_path=file_path)
 
     def end_animation(self, allow_write=False):
@@ -265,7 +267,7 @@ class SceneFileWriter(object):
         allow_write : bool, optional
             Whether or not to write to a video file.
         """
-        if config["write_to_movie"] and allow_write:
+        if write_to_movie() and allow_write:
             self.close_movie_pipe()
 
     def write_frame(self, frame_or_renderer):
@@ -285,11 +287,13 @@ class SceneFileWriter(object):
             )
         else:
             frame = frame_or_renderer
-            if config["write_to_movie"]:
+            if write_to_movie():
                 self.writing_process.stdin.write(frame.tobytes())
-            if config["format"] == "png":
-                path, extension = os.path.splitext(self.image_file_path)
-                Image.fromarray(frame).save(f"{path}{self.frame_count}{extension}")
+            if is_png_format():
+                target_dir, extension = os.path.splitext(self.image_file_path)
+                Image.fromarray(frame).save(
+                    f"{target_dir}{self.frame_count}{extension}"
+                )
                 self.frame_count += 1
 
     def save_final_image(self, image):
@@ -329,13 +333,14 @@ class SceneFileWriter(object):
 
     def finish(self, partial_movie_files=None):
         """
-        Finishes writing to the FFMPEG buffer.
+        Finishes writing to the FFMPEG buffer or writing images
+        to output directory.
         Combines the partial movie files into the
         whole scene.
         If save_last_frame is True, saves the last
         frame in the default image directory.
         """
-        if config["write_to_movie"]:
+        if write_to_movie():
             if hasattr(self, "writing_process"):
                 self.writing_process.terminate()
             self.combine_movie_files(partial_movie_files=partial_movie_files)
@@ -343,6 +348,9 @@ class SceneFileWriter(object):
                 self.flush_cache_directory()
             else:
                 self.clean_cache()
+        elif is_png_format():
+            target_dir, _ = os.path.splitext(self.image_file_path)
+            logger.info("\n%i images ready at %s\n", self.frame_count, target_dir)
 
     def open_movie_pipe(self, file_path=None):
         """
@@ -400,7 +408,7 @@ class SceneFileWriter(object):
 
         logger.info(
             f"Animation {self.renderer.num_plays} : Partial movie file written in %(path)s",
-            {"path": {self.partial_movie_file_path}},
+            {"path": f"'{self.partial_movie_file_path}'"},
         )
 
     def is_already_cached(self, hash_invocation):
@@ -416,7 +424,7 @@ class SceneFileWriter(object):
         :class:`bool`
             Whether the file exists.
         """
-        if not hasattr(self, "partial_movie_directory"):
+        if not hasattr(self, "partial_movie_directory") or not write_to_movie():
             return False
         path = os.path.join(
             self.partial_movie_directory,
@@ -474,10 +482,10 @@ class SceneFileWriter(object):
             "-nostdin",
         ]
 
-        if config["write_to_movie"] and not config["format"] == "gif":
+        if write_to_movie() and not is_gif_format():
             commands += ["-c", "copy", movie_file_path]
 
-        if config["format"] == "gif":
+        if is_gif_format():
             if not config["output_file"]:
                 self.gif_file_path = str(
                     add_version_before_extension(self.gif_file_path)
@@ -535,9 +543,9 @@ class SceneFileWriter(object):
             os.remove(sound_file_path)
 
         self.print_file_ready_message(
-            self.gif_file_path if config["save_as_gif"] else movie_file_path
+            self.gif_file_path if is_gif_format() else movie_file_path
         )
-        if config["write_to_movie"]:
+        if write_to_movie():
             for file_path in partial_movie_files:
                 # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
                 modify_atime(file_path)
@@ -582,4 +590,4 @@ class SceneFileWriter(object):
     def print_file_ready_message(self, file_path):
         """Prints the "File Ready" message to STDOUT."""
         config["output_file"] = file_path
-        logger.info("\nFile ready at %(file_path)s\n", {"file_path": file_path})
+        logger.info("\nFile ready at %(file_path)s\n", {"file_path": f"'{file_path}'"})
