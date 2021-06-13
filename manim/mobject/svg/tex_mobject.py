@@ -204,6 +204,8 @@ import re
 from functools import reduce
 from textwrap import dedent
 
+from colour import Color
+
 from ... import config, logger
 from ...constants import *
 from ...mobject.geometry import Line
@@ -247,7 +249,7 @@ class SingleStringMathTex(SVGMobject):
         organize_left_to_right=False,
         tex_environment="align*",
         tex_template=None,
-        color=WHITE,
+        color=Color(WHITE),
         **kwargs,
     ):
         self.organize_left_to_right = organize_left_to_right
