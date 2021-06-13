@@ -67,10 +67,10 @@ class NumberLine(Line):
         The size scaling factor for the number mobjects.
     kwargs : Any
         Additional arguments to be passed to :class:`~.Line`.
-    
+
     Examples
     --------
-    .. manim:: NumLineExample 
+    .. manim:: NumLineExample
 
         class NumLineExample(Scene):
             def construct(self):
@@ -90,7 +90,7 @@ class NumberLine(Line):
                 l3.shift(2.75 * DOWN)
 
                 self.add(l0, l1, num6, l2, l3)
-    
+
     Returns
     -------
     NumberLine
