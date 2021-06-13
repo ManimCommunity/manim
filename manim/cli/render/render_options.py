@@ -26,10 +26,7 @@ def validate_resolution(ctx, param, value):
     if value:
         try:
             start, end = map(int, re.split(";|,|-", value))
-            return (
-                start,
-                end,
-            )
+            return (start, end)
         except Exception:
             logger.error("Resolution option is invalid.")
             exit()
