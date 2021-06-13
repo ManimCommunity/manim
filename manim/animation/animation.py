@@ -275,8 +275,12 @@ class Animation:
             The relative time to set the aniamtion to, 0 meaning the start, 1 meaning
             the end.
         """
-        alpha = min(max(alpha, 0), 1)
-        self.interpolate_mobject(self.rate_func(alpha))
+        # alpha = min(max(alpha, 0), 1)
+        self.interpolate_mobject(alpha)
+
+    @deprecated(until="v0.6.0", replacement="interpolate")
+    def update(self, alpha: float) -> None:
+        self.interpolate(alpha)
 
     def interpolate_mobject(self, alpha: float) -> None:
         families = list(self.get_all_families_zipped())
@@ -318,7 +322,8 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        return min(max((value - lower), 0), 1)
+        return self.rate_func(value - lower)
+        # return min(max((value - lower), 0), 1)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> "Animation":
