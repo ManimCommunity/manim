@@ -7,7 +7,7 @@ from manim.utils.ipython_magic import _generate_file_name
 def test_jupyter_file_naming():
     """Check the format of file names for jupyter"""
     scene_name = "SimpleScene"
-    expected_pattern = r"[0-9a-zA-Z@_-]+[@_-]\d\d\d\d-\d\d-\d\d[@_-]\d\d-\d\d-\d\d"
+    expected_pattern = r"[0-9a-zA-Z_]+[@_-]\d\d\d\d-\d\d-\d\d[@_-]\d\d-\d\d-\d\d"
     with tempconfig({"scene_names": [scene_name]}):
         file_name = _generate_file_name()
         match = re.match(expected_pattern, file_name)
