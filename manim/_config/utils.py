@@ -1166,7 +1166,6 @@ class ManimConfig(MutableMapping):
         doc="Enable GUI interaction.",
     )
 
-
     def get_dir(self, key: str, **kwargs: str) -> Path:
         """Resolve a config option that stores a directory.
 
