@@ -15,7 +15,7 @@ class SurroundingRectangle(Rectangle):
     Examples
     --------
 
-    .. manim:: SurroundingRectExample 
+    .. manim:: SurroundingRectExample
         :save_last_frame:
 
     class SurroundingRectExample(Scene):
@@ -24,8 +24,9 @@ class SurroundingRectangle(Rectangle):
             quote = Text("If I have seen further than others, \nit is by standing upon the shoulders of giants.", color=BLUE).scale(0.75)
             box = SurroundingRectangle(quote, color=YELLOW, buff=MED_LARGE_BUFF)
             self.add(title, box, quote)
-    
+
     """
+
     def __init__(self, mobject, color=YELLOW, buff=SMALL_BUFF, **kwargs):
         self.color = color
         self.buff = buff
