@@ -81,6 +81,7 @@ class NumberLine(Line):
                 l1 = NumberLine(x_range=[-10, 10, 2], unit_size=0.5, numbers_with_elongated_ticks=[-2, 4], include_numbers=True, number_scale_value=0.5)
                 l1.shift(UP)
                 num6 = l1.get_number_mobject(6).set_color(RED)
+                l1.add(num6)
 
                 l2 = NumberLine(
                     x_range=[-2.5, 2.5 + 0.5, 0.5], length=12, decimal_number_config={"num_decimal_places": 2}, unit_size=1.25, include_numbers=True
