@@ -21,7 +21,7 @@ from ...utils.iterables import stretch_array_to_length
 
 
 class PMobject(Mobject):
-    def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, radius=2.0, **kwargs):
+    def __init__(self, stroke_width=DEFAULT_STROKE_WIDTH, **kwargs):
         self.stroke_width = stroke_width
         super().__init__(**kwargs)
 
@@ -248,12 +248,7 @@ class PointCloudDot(Mobject1D):
     ):
         self.radius = radius
         Mobject1D.__init__(
-            self,
-            radius=radius,
-            stroke_width=stroke_width,
-            density=density,
-            color=color,
-            **kwargs
+            self, stroke_width=stroke_width, density=density, color=color, **kwargs
         )
         self.shift(center)
 
