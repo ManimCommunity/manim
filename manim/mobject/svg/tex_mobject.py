@@ -215,7 +215,9 @@ from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 
-TEX_MOB_SCALE_FACTOR = 0.05
+SCALE_FACTOR_PER_FONT_POINT = 0.001
+
+tex_string_to_mob_map = {}
 
 
 class TexSymbol(SVGPathMobject):
@@ -247,13 +249,16 @@ class SingleStringMathTex(SVGMobject):
         organize_left_to_right=False,
         tex_environment="align*",
         tex_template=None,
+        font_size=48,
         **kwargs,
     ):
+
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
             tex_template = config["tex_template"]
         self.tex_template = tex_template
+        self.font_size = font_size
 
         assert isinstance(tex_string, str)
         self.tex_string = tex_string
@@ -276,7 +281,7 @@ class SingleStringMathTex(SVGMobject):
             **kwargs,
         )
         if height is None:
-            self.scale(TEX_MOB_SCALE_FACTOR)
+            self.scale(SCALE_FACTOR_PER_FONT_POINT * self.font_size)
         if self.organize_left_to_right:
             self.organize_submobjects_left_to_right()
 

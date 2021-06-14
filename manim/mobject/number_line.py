@@ -63,8 +63,6 @@ class NumberLine(Line):
         Arguments that can be passed to :class:`~.numbers.DecimalNumber` to influence number mobjects.
     numbers_to_exclude : Union[:class:`list`, :class:`numpy.ndarray`]
         An explicit list of numbers to not be added to the line.
-    number_scale_value : :class:`float`
-        The size scaling factor for the number mobjects.
     kwargs : Any
         Additional arguments to be passed to :class:`~.Line`.
 
@@ -84,6 +82,7 @@ class NumberLine(Line):
         tick_size=0.1,
         numbers_with_elongated_ticks=None,
         longer_tick_multiple=2,
+        exclude_origin_tick=False,
         # visuals
         color=LIGHT_GREY,
         rotation=0,
@@ -99,9 +98,6 @@ class NumberLine(Line):
         decimal_number_config=None,
         numbers_to_exclude=None,
         numbers_to_include=None,
-        # temp, because DecimalNumber() needs to be updated
-        number_scale_value=0.75,
-        exclude_origin_tick=False,
         **kwargs
     ):
         # avoid mutable arguments in defaults
@@ -124,8 +120,8 @@ class NumberLine(Line):
         if decimal_number_config is None:
             decimal_number_config = {
                 "num_decimal_places": self.decimal_places_from_step(),
-                "font_size": 24,
-            }  # font_size does nothing
+                "font_size": 36,
+            }  # font_size does ~~nothing~~ something
 
         self.length = length
         self.unit_size = unit_size
@@ -150,7 +146,6 @@ class NumberLine(Line):
         self.decimal_number_config = decimal_number_config
         self.numbers_to_exclude = numbers_to_exclude
         self.numbers_to_include = numbers_to_include
-        self.number_scale_value = number_scale_value
 
         super().__init__(
             self.x_min * RIGHT,
@@ -177,7 +172,9 @@ class NumberLine(Line):
         self.rotate(self.rotation)
         if self.include_numbers or self.numbers_to_include is not None:
             self.add_numbers(
-                x_values=self.numbers_to_include, excluding=self.numbers_to_exclude
+                x_values=self.numbers_to_include,
+                excluding=self.numbers_to_exclude,
+                font_size=self.decimal_number_config["font_size"],
             )
 
     def rotate_about_zero(self, angle, axis=OUT, **kwargs):
@@ -268,7 +265,6 @@ class NumberLine(Line):
 
         num_mob = DecimalNumber(x, **number_config)
         # font_size does not exist yet in decimal number
-        num_mob.scale(self.number_scale_value)
 
         num_mob.next_to(self.number_to_point(x), direction=direction, buff=buff)
         if x < 0 and self.label_direction[0] == 0:
@@ -538,7 +534,6 @@ class NumberLineOld(Line):
         self,
         number,
         number_config=None,
-        scale_val=None,
         direction=None,
         buff=None,
     ):
@@ -546,13 +541,10 @@ class NumberLineOld(Line):
             self.decimal_number_config,
             number_config or {},
         )
-        if scale_val is None:
-            scale_val = self.number_scale_val
         if direction is None:
             direction = self.label_direction
         buff = buff or self.line_to_number_buff
         num_mob = DecimalNumber(number, **number_config)
-        num_mob.scale(scale_val)
         num_mob.next_to(self.number_to_point(number), direction=direction, buff=buff)
         return num_mob
 

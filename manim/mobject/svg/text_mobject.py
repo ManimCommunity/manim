@@ -65,7 +65,7 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors
 
-TEXT_MOB_SCALE_FACTOR = 0.05
+TEXT_MOB_SCALE_FACTOR = 0.001048
 
 
 def remove_invisible_chars(mobject):
@@ -399,6 +399,7 @@ class Text(SVGMobject):
         stroke_width: int = 0,
         color: str = WHITE,
         size: int = 1,
+        font_size=48,
         line_spacing: int = -1,
         font: str = "",
         slant: str = NORMAL,
@@ -419,6 +420,7 @@ class Text(SVGMobject):
         **kwargs,
     ):
         self.size = size
+        self.font_size = font_size
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
@@ -504,7 +506,7 @@ class Text(SVGMobject):
             self.set_color_by_t2g()
         # anti-aliasing
         if height is None and width is None:
-            self.scale(TEXT_MOB_SCALE_FACTOR)
+            self.scale(TEXT_MOB_SCALE_FACTOR * self.font_size)
 
     def __repr__(self):
         return f"Text({repr(self.original_text)})"
@@ -996,7 +998,7 @@ class MarkupText(SVGMobject):
             )
         # anti-aliasing
         if height is None and width is None:
-            self.scale(TEXT_MOB_SCALE_FACTOR)
+            self.scale(TEXT_MOB_SCALE_FACTOR * self.font_size)
 
     def text2hash(self):
         """Generates ``sha256`` hash for file name."""

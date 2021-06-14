@@ -1411,7 +1411,7 @@ class NumberPlane(Axes):
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DR,
-            "number_scale_value": 0.5,
+            "font_size": 24,
         }
         self.y_axis_config = {"label_direction": DR}
         self.background_line_style = {
@@ -1659,7 +1659,7 @@ class PolarPlane(Axes):
                     azimuth_units="PI radians",
                     size=6,
                     azimuth_label_scale=0.7,
-                    radius_config={"number_scale_value": 0.7},
+                    radius_config={"font_size": 25},
                 ).add_coordinates()
                 self.add(polarplane_pi)
     """
@@ -1705,7 +1705,7 @@ class PolarPlane(Axes):
             "include_tip": False,
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DL,
-            "number_scale_value": 0.5,
+            "font_size": 24,
         }
 
         self.background_line_style = {
