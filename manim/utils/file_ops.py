@@ -9,6 +9,8 @@ __all__ = [
     "is_mp4_format",
     "is_gif_format",
     "is_png_format",
+    "is_webm_format",
+    "is_mov_format",
     "write_to_movie",
 ]
 
@@ -63,6 +65,19 @@ def is_webm_format() -> bool:
     return config["format"] == "webm"
 
 
+def is_mov_format() -> bool:
+    """
+    Determines if output format is .mov
+
+    Returns
+    -------
+    class:`bool`
+        ``True`` if format is set as mov
+
+    """
+    return config["format"] == "mov"
+
+
 def is_png_format() -> bool:
     """
     Determines if output format is .png
@@ -94,6 +109,7 @@ def write_to_movie() -> bool:
         or is_mp4_format()
         or is_gif_format()
         or is_webm_format()
+        or is_mov_format()
     )
 
 

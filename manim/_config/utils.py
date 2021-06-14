@@ -1010,7 +1010,7 @@ class ManimConfig(MutableMapping):
         lambda self, val: self._set_from_list(
             "movie_file_extension", val, [".mp4", ".mov", ".webm"]
         ),
-        doc="Either .mp4, .webm or .mov (no flag).",
+        doc="Either .mp4, .webm or .mov.",
     )
 
     background_opacity = property(
@@ -1151,6 +1151,8 @@ class ManimConfig(MutableMapping):
             self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
         elif self.format == "webm":
             self.movie_file_extension = ".webm"
+        elif self.format == "mov":
+            self.movie_file_extension = ".mov"
         else:
             self.movie_file_extension = ".mp4"
 

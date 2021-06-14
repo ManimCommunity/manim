@@ -22,6 +22,7 @@ from ..utils.file_ops import (
     add_version_before_extension,
     guarantee_existence,
     is_gif_format,
+    is_mov_format,
     is_png_format,
     is_webm_format,
     modify_atime,
