@@ -875,6 +875,10 @@ class ManimConfig(MutableMapping):
             val,
             [None, "png", "gif", "mp4", "mov", "webm"],
         )
+        if self.format == "webm":
+            logging.getLogger("manim").warning(
+                "Output format set as webm, this can be slower than other formats"
+            )
 
     ffmpeg_loglevel = property(
         lambda self: self._d["ffmpeg_loglevel"],
