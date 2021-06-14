@@ -99,6 +99,7 @@ class Tabular(VGroup):
                     top_left_entry=Star().scale(0.3),
                     include_outer_lines=True,
                     line_config={"stroke_width": 1, "color": YELLOW})
+                t3.remove(*[line for line in t3.get_vertical_lines()])
                 g = Group(
                     t0,t1,t2,t3
                 ).scale(0.7).arrange_in_grid(buff=1)
@@ -174,6 +175,8 @@ class Tabular(VGroup):
         mob_table = self.add_labels(mob_table)
         self.organize_mob_table(mob_table)
         self.elements = VGroup(*it.chain(*mob_table))
+        if len(self.elements[0].get_all_points())==0:
+            self.elements.remove(self.elements[0])
         self.add(self.elements)
         self.center()
         self.mob_table = mob_table
@@ -220,7 +223,8 @@ class Tabular(VGroup):
                     col_labels = [self.top_left_entry] + self.col_labels
                     mob_table.insert(0, col_labels)
                 else:
-                    col_labels = [VMobject()] + self.col_labels
+                    dummy_mobject = VMobject()
+                    col_labels = [dummy_mobject] + self.col_labels
                     mob_table.insert(0, col_labels)
             else:
                 mob_table.insert(0, self.col_labels)
@@ -470,7 +474,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing entries of the table.
+            VGroup containing entries of the table (including labels).
 
         Examples
         --------
@@ -498,7 +502,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing entries of the table.
+            VGroup containing entries of the table ((without labels)).
 
         Examples
         --------
