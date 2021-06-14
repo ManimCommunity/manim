@@ -159,12 +159,12 @@ class ParametricSurface(VGroup):
         return self
 
     def set_fill_by_value(self, axes: "Mobject", colors: Union[Iterable[Color], Color]):
-        """Sets the color of each face of a parametric surface to a color relative to it's z-value
+        """Sets the color of each mobject of a parametric surface to a color relative to its z-value
 
         Parameters
         ----------
         axes :
-            The axes for the parametric surface.
+            The axes for the parametric surface, which will be used to map z-values to colors.
         colors :
             A list of colors, ordered from lower z-values to higher z-values. If a list of tuples is passed
             containing colors paired with numbers, then those numbers will be used as the pivots.
@@ -181,7 +181,7 @@ class ParametricSurface(VGroup):
 
             class Fill_by_valueExample(ThreeDScene):
                 def construct(self):
-                    resolution_fa = 84
+                    resolution_fa = 42
                     self.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
                     axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
                     def param_surface(u, v):
