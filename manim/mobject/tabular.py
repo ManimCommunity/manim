@@ -175,7 +175,7 @@ class Tabular(VGroup):
         mob_table = self.add_labels(mob_table)
         self.organize_mob_table(mob_table)
         self.elements = VGroup(*it.chain(*mob_table))
-        if len(self.elements[0].get_all_points())==0:
+        if len(self.elements[0].get_all_points()) == 0:
             self.elements.remove(self.elements[0])
         self.add(self.elements)
         self.center()
