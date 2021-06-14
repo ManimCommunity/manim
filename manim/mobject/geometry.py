@@ -738,7 +738,7 @@ class Ellipse(Circle):
 
 class AnnularSector(Arc):
     """
-    
+
     Parameters
     ----------
     inner_radius : :class:`float`, optional
@@ -755,10 +755,10 @@ class AnnularSector(Arc):
        The stroke width of the Annular Sector.
     color : optional
        The color filled into the Annular Sector.
-    
+
     Examples
     --------
-    .. manim:: AnnularSectorExample 
+    .. manim:: AnnularSectorExample
         :save_last_frame:
 
         class AnnularSectorExample(Scene):
@@ -779,9 +779,10 @@ class AnnularSector(Arc):
                 s4 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=-3 * PI / 2, color=GREEN).move_to(2 * DR)
 
                 self.add(s1, s2, s3, s4)
-    
-    
+
+
     """
+
     def __init__(
         self,
         inner_radius=1,
