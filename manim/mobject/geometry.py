@@ -1269,7 +1269,7 @@ class Arrow(Line):
                 self.add(Group(g1, g2, g3).arrange(buff=2))
 
 
-    .. manim:: ArrowExample 
+    .. manim:: ArrowExample
         :save_last_frame:
 
         class ArrowExample(Scene):
