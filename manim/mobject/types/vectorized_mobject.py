@@ -1727,7 +1727,7 @@ class VDict(VMobject):
                 self.play(Create(vdict_using_zip))
                 self.wait()
 
-    .. manim:: VDictExample 
+    .. manim:: VDictExample
         :save_last_frame:
 
         class VDictExample(Scene):
@@ -1763,7 +1763,7 @@ class VDict(VMobject):
                 grid[f"{0},{0}"].set_color(color=WHITE)
                 self.add(grid)
 
-    
+
     """
 
     def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
