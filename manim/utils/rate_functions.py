@@ -20,7 +20,7 @@ for the non-standard ones
                             plot = (
                                 ParametricFunction(
                                     lambda x: [x, rate_func(x), 0],
-                                    t_range=np.array([0,1,.01]),
+                                    t_range=[0, 1, .01],
                                     use_smoothing=False,
                                     color=YELLOW,
                                 )
