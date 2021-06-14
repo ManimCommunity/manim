@@ -741,17 +741,17 @@ class AnnularSector(Arc):
 
     Parameters
     ----------
-    inner_radius : :class:`float`, optional
+    inner_radius
        The inside radius of the Annular Sector.
-    outer_radius : :class:`float`, optional
+    outer_radius
        The outside radius of the Annular Sector.
-    angle : :class:`float`, optional
+    angle
        The clockwise angle of the Annular Sector.
-    start_angle : :class:`float`, optional
+    start_angle
        The starting clockwise angle of the Annular Sector.
-    fill_opacity : :class:`float`, optional
+    fill_opacity
        The opacity of the color filled in the Annular Sector.
-    stroke_width : :class:`float`, optional
+    stroke_width
        The stroke width of the Annular Sector.
     color : optional
        The color filled into the Annular Sector.
