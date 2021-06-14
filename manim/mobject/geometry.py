@@ -59,6 +59,10 @@ __all__ = [
     "Cutout",
     "Angle",
     "RightAngle",
+    "ArrowCircleFilledTip",
+    "ArrowCircleTip",
+    "ArrowSquareTip",
+    "ArrowSquareFilledTip",
 ]
 
 import math
@@ -1263,6 +1267,52 @@ class Arrow(Line):
                 g3 = Group(arrow_5, arrow_6)
 
                 self.add(Group(g1, g2, g3).arrange(buff=2))
+
+
+    .. manim:: ArrowExample 
+        :save_last_frame:
+
+        class ArrowExample(Scene):
+            def construct(self):
+                # LEFT Column: Varying Buff
+                v1 = VGroup()
+                # As buff increases, the size of the arrow decreases.
+                # The max buff is (1/2)*(Length of Arrow).
+                # In this case, the arrow is 4 units long.
+                for i in np.arange(0, 2.2, 0.45):
+                    v1 += Arrow(buff=i, start=2 * LEFT, end=2 * RIGHT)
+                # Required to arrange arrows.
+                v1.arrange_in_grid(cols=1)
+                v1.move_to(4 * LEFT)
+
+                # MIDDLE Column: Varying max_stroke_width_to_length_ratio
+                v2 = VGroup()
+                # As max_stroke_width_to_length_ratio gets bigger,
+                # the width of stroke increases.
+                for i in np.arange(0, 5, 0.5):
+                    v2 += Arrow(max_stroke_width_to_length_ratio=i)
+                v2.arrange_in_grid(cols=1)
+
+                # UPPER RIGHT Column: Varying max_tip_length_to_length_ratio
+                v3 = VGroup()
+                # As max_tip_length_to_length_ratio increases,
+                # the length of the tip increases.
+                for i in np.arange(0, 0.3, 0.1):
+                    v3 += Arrow(max_tip_length_to_length_ratio=i)
+                v3.arrange_in_grid(cols=1)
+                v3.move_to(4 * RIGHT + 2 * UP)
+
+                # LOWER RIGHT Column: Different types of ArrowTip and colors.
+                v4 = VGroup()
+                v4 += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareTip)
+                v4 += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareFilledTip)
+                v4 += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleTip)
+                v4 += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleFilledTip)
+                v4.arrange_in_grid(cols=1)
+                v4.move_to(4 * RIGHT + 2 * DOWN)
+
+                self.add(v1, v2, v3, v4)
+
 
     See Also
     --------
