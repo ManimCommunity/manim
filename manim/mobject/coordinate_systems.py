@@ -63,7 +63,7 @@ class CoordinateSystem:
     Examples
     --------
 
-    .. manim:: CoordSysExample 
+    .. manim:: CoordSysExample
         :save_last_frame:
 
         class CoordSysExample(Scene):
