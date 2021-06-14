@@ -10,6 +10,22 @@ from ..utils.color import BLACK, RED, YELLOW, Color
 
 
 class SurroundingRectangle(Rectangle):
+    """A rectangle surrounding a `mobject`
+
+    Examples
+    --------
+
+    .. manim:: SurroundingRectExample 
+        :save_last_frame:
+
+    class SurroundingRectExample(Scene):
+        def construct(self):
+            title = Title("A Quote from Newton")
+            quote = Text("If I have seen further than others, \nit is by standing upon the shoulders of giants.", color=BLUE).scale(0.75)
+            box = SurroundingRectangle(quote, color=YELLOW, buff=MED_LARGE_BUFF)
+            self.add(title, box, quote)
+    
+    """
     def __init__(self, mobject, color=YELLOW, buff=SMALL_BUFF, **kwargs):
         self.color = color
         self.buff = buff
