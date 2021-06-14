@@ -1726,6 +1726,44 @@ class VDict(VMobject):
                 vdict_using_zip.shift(1.5 * RIGHT)
                 self.play(Create(vdict_using_zip))
                 self.wait()
+
+    .. manim:: VDictExample 
+        :save_last_frame:
+
+        class VDictExample(Scene):
+            def construct(self):
+                n = 35  # Number of dots in the Grid is 35^2
+                grid = VDict()
+                boolDict = {}  # Standard Dictionary keeping track of which dots are white.
+                for r in np.arange(-(n - 1) / 2, (n + 1) / 2, 1):
+                    for c in np.arange(-(n - 1) / 2, (n + 1) / 2, 1):
+                        key = f"{int(r)},{int(c)}"
+                        val = Dot()
+                        grid.add_key_value_pair(key, val)
+                        boolDict[key] = True
+
+                grid.arrange_in_grid(rows=n, cols=n, buff=SMALL_BUFF)
+
+                Allcolor = ["#bc8f8f", "#ff0000", "#ffd700", "#0000cd", "#00ff00", "#1e90ff", "#ff1493"]
+
+                for i in np.arange(0, len(Allcolor), 1):
+                    dist = i
+                    r = grid[f"{0},{dist}"].get_x() - grid[f"{0},{0}"].get_x()  # Radius
+                    for t in np.arange(0, TAU, DEGREES):  # Loops through TAU radians by steps of PI/180
+                        x = round(r * np.cos(t) / SMALL_BUFF)
+                        y = round(r * np.sin(t) / SMALL_BUFF)
+                        grid[f"{x},{y}"].set_color(color=Allcolor[i])
+                        boolDict[f"{x},{y}"] = False
+                # Removing the dots that were not colored.
+                for x in np.arange(round(-(n - 1) / 2), round((n + 1) / 2), 1):
+                    for y in np.arange(round(-(n - 1) / 2), round((n + 1) / 2), 1):
+                        if boolDict[f"{x},{y}"]:
+                            grid.remove(f"{x},{y}")
+                # Drawing Center.
+                grid[f"{0},{0}"].set_color(color=WHITE)
+                self.add(grid)
+
+    
     """
 
     def __init__(self, mapping_or_iterable={}, show_keys=False, **kwargs):
