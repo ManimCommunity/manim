@@ -234,9 +234,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         VMobjectFromSVGPathstring
             A VMobject from the given path string, or d attribute.
         """
-        return SVGPathMobject(
-            path_string, **self.path_string_config, **parse_style(style)
-        )
+        if config.renderer == "opengl":
+            return SVGPathMobject(
+                path_string, **self.path_string_config, **parse_style(style)
+            )
+        return SVGPathMobject(path_string, **parse_style(style))
 
     def attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.

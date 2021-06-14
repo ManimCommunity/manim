@@ -367,7 +367,11 @@ class SingleStringMathTex(SVGMobject):
     def path_string_to_mobject(self, path_string, style):
         # Overwrite superclass default to use
         # specialized path_string mobject
-        return TexSymbol(path_string, **self.path_string_config, **parse_style(style))
+        if config.renderer == "opengl":
+            return TexSymbol(
+                path_string, **self.path_string_config, **parse_style(style)
+            )
+        return TexSymbol(path_string, **parse_style(style))
 
     def organize_submobjects_left_to_right(self):
         self.sort(lambda p: p[0])
