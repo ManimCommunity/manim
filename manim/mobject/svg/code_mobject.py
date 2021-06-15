@@ -311,6 +311,8 @@ class Code(VGroup):
             *list(line_numbers_array),
             line_spacing=self.line_spacing,
             alignment="right",
+            font=self.font,
+            disable_ligatures=True,
             stroke_width=self.stroke_width,
         ).scale(self.scale_factor)
         for i in line_numbers:
@@ -334,6 +336,9 @@ class Code(VGroup):
         code = Paragraph(
             *list(lines_text),
             line_spacing=self.line_spacing,
+            tab_width=self.tab_width,
+            font=self.font,
+            disable_ligatures=True,
             stroke_width=self.stroke_width,
         ).scale(self.scale_factor)
         for line_no in range(code.__len__()):
