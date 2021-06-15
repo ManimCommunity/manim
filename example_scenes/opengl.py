@@ -73,6 +73,22 @@ def get_plane_mesh(context):
     return Mesh(shader, attributes)
 
 
+class TextTest(Scene):
+    def construct(self):
+        import string
+
+        text = OpenGLText(
+            string.ascii_lowercase, stroke_width=4, stroke_color=BLUE
+        ).scale(2)
+        text2 = (
+            OpenGLText(string.ascii_uppercase, stroke_width=4, stroke_color=BLUE)
+            .scale(2)
+            .next_to(text, DOWN)
+        )
+        self.add(text, text2)
+        self.interactive_embed()
+
+
 class GuiTest(Scene):
     def construct(self):
         mesh = get_plane_mesh(self.renderer.context)

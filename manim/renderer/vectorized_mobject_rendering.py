@@ -235,25 +235,20 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
     for submob in mobject.family_members_with_points():
         points = np.append(points, submob.data["points"], axis=0)
 
-    # points = mobject[0].data["points"][-15:-9]
-    # points = mobject[0].data["points"]
-    # points = mobject.data["points"]
     stroke_data = np.zeros(
         len(points),
         dtype=[
-            # ("point", np.float32, (3,)),
-            ("previous_curve", np.float32, (3, 3)),
+            # ("previous_curve", np.float32, (3, 3)),
             ("current_curve", np.float32, (3, 3)),
-            ("next_curve", np.float32, (3, 3)),
+            # ("next_curve", np.float32, (3, 3)),
             ("tile_coordinate", np.float32, (2,)),
         ],
     )
 
-    # stroke_data["point"] = points
     curves = np.reshape(points, (-1, 3, 3))
-    stroke_data["previous_curve"] = np.repeat(np.roll(curves, 1, axis=0), 3, axis=0)
+    # stroke_data["previous_curve"] = np.repeat(np.roll(curves, 1, axis=0), 3, axis=0)
     stroke_data["current_curve"] = np.repeat(curves, 3, axis=0)
-    stroke_data["next_curve"] = np.repeat(np.roll(curves, -1, axis=0), 3, axis=0)
+    # stroke_data["next_curve"] = np.repeat(np.roll(curves, -1, axis=0), 3, axis=0)
 
     # Repeat each vertex in order to make a tile.
     stroke_data = np.tile(stroke_data, 2)
@@ -278,9 +273,6 @@ def render_opengl_vectorized_mobject_stroke(renderer, mobject):
         ),
         axis=0,
     )
-    # import ipdb
-
-    # ipdb.set_trace(context=9)
 
     shader.set_uniform("color", tuple(mobject.data["stroke_rgba"][0]))
     shader.set_uniform("stroke_width", mobject.data["stroke_width"])

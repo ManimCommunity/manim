@@ -6,19 +6,13 @@ uniform mat4 u_projection_matrix;
 uniform float stroke_width;
 uniform vec4 color;
 
-in vec3[3] previous_curve;
 in vec3[3] current_curve;
-in vec3[3] next_curve;
-in vec3 point;
 in vec2 tile_coordinate;
 
 out float v_degree;
 out float v_thickness;
 out vec2 uv_point;
 out vec2[3] uv_curve;
-out vec2[3] v_current_curve;
-out vec2[3] v_next_curve;
-out vec2[3] v_previous_curve;
 out vec4 v_color;
 
 int get_degree(in vec3 points[3], out vec3 normal) {
@@ -75,13 +69,6 @@ vec3 convert_from_uv(vec3 translation, vec3 x_unit, vec3 y_unit, vec2 point) {
 }
 
 void main() {
-    int x = 0;
-    if (point[0] > 0) { x += 1; }
-    if (manim_unit_normal[0] > 0) { x += 1; }
-    if (previous_curve[0][0] == 0.0) { x += 1; }
-    if (current_curve[0][0] == 0.0) { x += 1; }
-    if (next_curve[0][0] == 0.0) { x += 1; }
-    if (tile_coordinate[0] == 0.0) { x += 1; }
     float thickness_multiplier = 0.004;
     v_color = color;
 

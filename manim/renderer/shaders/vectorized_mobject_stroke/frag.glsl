@@ -1,7 +1,5 @@
 #version 330
 
-uniform vec4 u_color;
-
 in float v_degree;
 in float v_thickness;
 in vec2 uv_point;
@@ -82,7 +80,6 @@ void main() {
     if (abs(distance) < v_thickness) {
         frag_color = v_color;
     } else {
-        // frag_color = vec4(1.0, 0.0, 0.0, 1.0);
         discard;
     }
 }
