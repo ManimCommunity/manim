@@ -150,27 +150,29 @@ class ParametricSurface(VGroup):
 
         Examples
         --------
+        .. manim:: fill_by_valueExample
+            :save_last_frame:
 
-        class GradientTest(ThreeDScene):
-            def construct(self):
-                resolution_fa = 84
-                self.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
-                axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
-                def param_surface(u, v):
-                    x = u
-                    y = v
-                    z = np.sin(x) * np.cos(y)
-                    return z
-                surface_plane = ParametricSurface(
-                    lambda u, v: axes.c2p(u, v, param_surface(u, v)),
-                    resolution=(resolution_fa, resolution_fa),
-                    v_min=0,
-                    v_max=5,
-                    u_min=0,
-                    u_max=5)
-                surface_plane.set_style(fill_opacity=1)
-                surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
-                self.add(axes, surface_plane)
+            class GradientTest(ThreeDScene):
+                def construct(self):
+                    resolution_fa = 84
+                    self.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+                    axes = ThreeDAxes(x_range=(0, 5, 1), y_range=(0, 5, 1), z_range=(-1, 1, 0.5))
+                    def param_surface(u, v):
+                        x = u
+                        y = v
+                        z = np.sin(x) * np.cos(y)
+                        return z
+                    surface_plane = ParametricSurface(
+                        lambda u, v: axes.c2p(u, v, param_surface(u, v)),
+                        resolution=(resolution_fa, resolution_fa),
+                        v_min=0,
+                        v_max=5,
+                        u_min=0,
+                        u_max=5)
+                    surface_plane.set_style(fill_opacity=1)
+                    surface_plane.set_fill_by_value(axes=axes, colors=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)])
+                    self.add(axes, surface_plane)
         """
         if type(colors[0]) is tuple:
             new_colors, pivots = [[i for i, j in colors], [j for i, j in colors]]
