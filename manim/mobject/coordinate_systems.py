@@ -236,10 +236,13 @@ class CoordinateSystem:
         Examples
         --------
 
-            >>> ax = ThreeDAxes()
-            >>> x_labels = range(1, 11); z_labels = range(2, 12, 2)
-            >>> ax.add_coordinates(x_labels, None, z_labels) #x & z labels
-            >>> ax.add_coordinates(x_labels) # only x labels
+        .. code-block:: python
+
+            ax = ThreeDAxes()
+            x_labels = range(1, 11)
+            z_labels = range(2, 12, 2)
+            ax.add_coordinates(x_labels, None, z_labels)  # x & z labels
+            ax.add_coordinates(x_labels)  # only x labels
 
         Returns
         -------
