@@ -1727,7 +1727,7 @@ class VDict(VMobject):
                 self.play(Create(vdict_using_zip))
                 self.wait()
 
-    .. manim:: VDictExample 
+    .. manim:: VDictExample
         :save_last_frame:
 
         class VDictExample(Scene):
