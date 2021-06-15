@@ -225,6 +225,39 @@ class CoordinateSystem:
         )
         return self.axis_labels
 
+    def add_coordinates(
+        self, *axes_numbers: Optional[Iterable[float]], **kwargs
+    ) -> VGroup:
+        """Adds labels to the axes.
+
+        axes_numbers
+            The the numbers to be added to the axes. Use ``None`` to represent an axis without labels.
+
+        Examples
+        --------
+
+            >>> ax = ThreeDAxes()
+            >>> x_labels = range(1, 11); z_labels = range(2, 12, 2)
+            >>> ax.add_coordinates(x_labels, None, z_labels) #x & z labels
+            >>> ax.add_coordinates(x_labels) # only x labels
+
+        Returns
+        -------
+        VGroup
+            A :class:`VGroup` of the number mobjects.
+        """
+
+        self.coordinate_labels = VGroup()
+        # if nothing is passed to axes_numbers, produce axes with default labelling
+        if not axes_numbers:
+            axes_numbers = [None for x in self.axes]
+
+        for axis, values in zip(self.axes, axes_numbers):
+            labels = axis.add_numbers(values, **kwargs)
+            self.coordinate_labels.add(labels)
+
+        return self.coordinate_labels
+
     def get_line_from_axis_to_point(
         self,
         index: int,
@@ -1088,50 +1121,6 @@ class Axes(VGroup, CoordinateSystem):
         """
         return self.axes
 
-    def get_coordinate_labels(
-        self,
-        x_values: Optional[Iterable[float]] = None,
-        y_values: Optional[Iterable[float]] = None,
-        **kwargs,
-    ) -> VDict:
-        """Gets labels for the coordinates
-
-        Parameters
-        ----------
-        x_values
-            Iterable of values along the x-axis, by default None.
-        y_values
-            Iterable of values along the y-axis, by default None.
-
-        Returns
-        -------
-        VDict
-            Labels for the x and y values.
-        """
-        axes = self.get_axes()
-        self.coordinate_labels = VGroup()
-        for axis, values in zip(axes, [x_values, y_values]):
-            labels = axis.add_numbers(values, **kwargs)
-            self.coordinate_labels.add(labels)
-        return self.coordinate_labels
-
-    def add_coordinates(
-        self,
-        x_values: Optional[Iterable[float]] = None,
-        y_values: Optional[Iterable[float]] = None,
-    ):
-        """Adds the coordinates.
-
-        Parameters
-        ----------
-        x_values
-            Iterable of values along the x-axis, by default None.
-        y_values
-            Iterable of values along the y-axis, by default None.
-        """
-        self.add(self.get_coordinate_labels(x_values, y_values))
-        return self
-
     def get_line_graph(
         self,
         x_values: Iterable[float],
@@ -1345,36 +1334,6 @@ class ThreeDAxes(Axes):
                 submob.get_gradient_start_and_end_points = make_func(axis)
                 submob.get_unit_normal = lambda a: np.ones(3)
                 submob.set_sheen(0.2)
-
-    def get_coordinate_labels(
-        self,
-        x_values: Optional[Iterable[float]] = None,
-        y_values: Optional[Iterable[float]] = None,
-        z_values: Optional[Iterable[float]] = None,
-        **kwargs,
-    ) -> VDict:
-        """Gets labels for the coordinates
-
-        Parameters
-        ----------
-        x_values
-            Iterable of values along the x-axis, by default None.
-        y_values
-            Iterable of values along the y-axis, by default None.
-        z_values
-            Iterable of values along the z-axis, by default None.
-
-        Returns
-        -------
-        VDict
-            Labels for the x and y values.
-        """
-        axes = self.get_axes()
-        self.coordinate_labels = VGroup()
-        for axis, values in zip(axes, [x_values, y_values, z_values]):
-            labels = axis.add_numbers(values, **kwargs)
-            self.coordinate_labels.add(labels)
-        return self.coordinate_labels
 
 
 class NumberPlane(Axes):
