@@ -55,6 +55,8 @@ class NumberLine(Line):
     include_numbers : :class:`bool`
         Determines whether numbers are added to tick marks. The number of decimal places is determined
         by the step size, this default can be overridden by ``decimal_number_config``.
+    font size : :class:`float`
+        The size of the numbers. Defaults to 36.
     label_direction : Union[:class:`list`, :class:`numpy.ndarray`]
         The specific position to which number mobjects are added on the line.
     line_to_number_buff : :class:`float`
