@@ -540,7 +540,7 @@ class NumberLineOld(Line):
         self,
         number,
         number_config=None,
-        font_size=24,
+        font_size=36,
         direction=None,
         buff=None,
     ):
@@ -548,10 +548,11 @@ class NumberLineOld(Line):
             self.decimal_number_config,
             number_config or {},
         )
+        number_config["font_size"] = font_size
         if direction is None:
             direction = self.label_direction
         buff = buff or self.line_to_number_buff
-        num_mob = DecimalNumber(number, font_size, **number_config)
+        num_mob = DecimalNumber(number, **number_config)
         num_mob.next_to(self.number_to_point(number), direction=direction, buff=buff)
         return num_mob
 
