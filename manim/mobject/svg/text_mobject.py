@@ -65,7 +65,7 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors
 
-TEXT_MOB_SCALE_FACTOR = 0.001048
+TEXT_MOB_SCALE_FACTOR = 0.001088
 
 
 def remove_invisible_chars(mobject):
@@ -898,6 +898,7 @@ class MarkupText(SVGMobject):
         stroke_width: int = 0,
         color: str = WHITE,
         size: int = 1,
+        font_size: float = 48,
         line_spacing: int = -1,
         font: str = "",
         slant: str = NORMAL,
@@ -914,6 +915,7 @@ class MarkupText(SVGMobject):
         self.text = text
         self.color = color
         self.size = size
+        self.font_size = font_size
         self.line_spacing = line_spacing
         self.font = font
         self.slant = slant
