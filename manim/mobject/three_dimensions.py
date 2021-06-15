@@ -646,8 +646,8 @@ class Arrow3D(Line3D):
         start=LEFT,
         end=RIGHT,
         thickness=0.02,
-        height=0.25,
-        base_radius=0.06,
+        height=0.3,
+        base_radius=0.08,
         color=WHITE,
         **kwargs
     ):
