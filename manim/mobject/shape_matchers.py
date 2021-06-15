@@ -21,8 +21,8 @@ class SurroundingRectangle(Rectangle):
         class SurroundingRectExample(Scene):
             def construct(self):
                 title = Title("A Quote from Newton")
-                quote = Text("If I have seen further than others, \n" + 
-                             "it is by standing upon the shoulders of giants.", 
+                quote = Text("If I have seen further than others, \n" +
+                             "it is by standing upon the shoulders of giants.",
                              color=BLUE).scale(0.75)
                 box = SurroundingRectangle(quote, color=YELLOW, buff=MED_LARGE_BUFF)
                 self.add(title, box, quote)
