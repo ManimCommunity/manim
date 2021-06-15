@@ -102,7 +102,7 @@ else:
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
                 main(args, standalone_mode=False, prog_name="manim")
                 return
-            modified_args = ["--jupyter"] + args[:-1] + [""] + [args[-1]]
+            modified_args = self.add_additional_args(args)
             args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
@@ -135,6 +135,13 @@ else:
                         embed=video_embed,
                     )
                 )
+
+        def add_additional_args(self, args):
+            additional_args = ["--jupyter"]
+            # Use webm to support transparency
+            if "-t" in args and "--format" not in args:
+                additional_args += ["--format", "webm"]
+            return additional_args + args[:-1] + [""] + [args[-1]]
 
 
 def _generate_file_name():
