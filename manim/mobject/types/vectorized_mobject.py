@@ -1727,7 +1727,7 @@ class VDict(VMobject):
                 self.play(Create(vdict_using_zip))
                 self.wait()
 
-    .. manim:: VDictExample
+    .. manim:: VDictExample 
         :save_last_frame:
 
         class VDictExample(Scene):
@@ -1737,7 +1737,7 @@ class VDict(VMobject):
                 boolDict = {}  # Standard Dictionary keeping track of which dots are white.
                 for r in np.arange(-(n - 1) / 2, (n + 1) / 2, 1):
                     for c in np.arange(-(n - 1) / 2, (n + 1) / 2, 1):
-                        key = f"{int(r)},{int(c)}"
+                        key = (int(r), int(c))
                         val = Dot()
                         grid.add_key_value_pair(key, val)
                         boolDict[key] = True
@@ -1748,19 +1748,19 @@ class VDict(VMobject):
 
                 for i in np.arange(0, len(Allcolor), 1):
                     dist = i
-                    r = grid[f"{0},{dist}"].get_x() - grid[f"{0},{0}"].get_x()  # Radius
+                    r = grid[(0, dist)].get_x() - grid[(0, 0)].get_x()  # Radius
                     for t in np.arange(0, TAU, DEGREES):  # Loops through TAU radians by steps of PI/180
                         x = round(r * np.cos(t) / SMALL_BUFF)
                         y = round(r * np.sin(t) / SMALL_BUFF)
-                        grid[f"{x},{y}"].set_color(color=Allcolor[i])
-                        boolDict[f"{x},{y}"] = False
+                        grid[(x, y)].set_color(color=Allcolor[i])
+                        boolDict[(x, y)] = False
                 # Removing the dots that were not colored.
                 for x in np.arange(round(-(n - 1) / 2), round((n + 1) / 2), 1):
                     for y in np.arange(round(-(n - 1) / 2), round((n + 1) / 2), 1):
-                        if boolDict[f"{x},{y}"]:
-                            grid.remove(f"{x},{y}")
+                        if boolDict[(x, y)]:
+                            grid.remove((x, y))
                 # Drawing Center.
-                grid[f"{0},{0}"].set_color(color=WHITE)
+                grid[(0, 0)].set_color(color=WHITE)
                 self.add(grid)
 
 
