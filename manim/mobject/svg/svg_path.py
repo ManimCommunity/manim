@@ -217,7 +217,7 @@ def grouped(iterable, n):
 
 
 class SVGPathMobject(VMobject, metaclass=ConvertToOpenGL):
-    def __init__(self, path_string, long_lines=True, **kwargs):
+    def __init__(self, path_string, **kwargs):
         self.path_string = path_string
         if config.renderer == "opengl":
             kwargs["long_lines"] = True
