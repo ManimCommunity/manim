@@ -174,7 +174,6 @@ class NumberLine(Line):
             self.add_ticks()
 
         self.rotate(self.rotation)
-        print(self.decimal_number_config["font_size"])
         if self.include_numbers or self.numbers_to_include is not None:
             self.add_numbers(
                 x_values=self.numbers_to_include,
@@ -539,6 +538,7 @@ class NumberLineOld(Line):
         self,
         number,
         number_config=None,
+        font_size=24,
         direction=None,
         buff=None,
     ):
@@ -549,7 +549,7 @@ class NumberLineOld(Line):
         if direction is None:
             direction = self.label_direction
         buff = buff or self.line_to_number_buff
-        num_mob = DecimalNumber(number, **number_config)
+        num_mob = DecimalNumber(number, font_size, **number_config)
         num_mob.next_to(self.number_to_point(number), direction=direction, buff=buff)
         return num_mob
 
