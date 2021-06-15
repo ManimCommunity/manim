@@ -65,7 +65,7 @@ from ...mobject.svg.svg_mobject import SVGMobject
 from ...mobject.types.vectorized_mobject import VGroup
 from ...utils.color import WHITE, Colors
 
-TEXT_MOB_SCALE_FACTOR = 0.001088
+TEXT_MOB_SCALE_FACTOR = 1 / 960
 
 
 def remove_invisible_chars(mobject):

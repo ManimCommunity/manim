@@ -215,7 +215,7 @@ from ...utils.tex import TexTemplate
 from ...utils.tex_file_writing import tex_to_svg_file
 from .style_utils import parse_style
 
-SCALE_FACTOR_PER_FONT_POINT = 0.001
+SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 
 tex_string_to_mob_map = {}
 
