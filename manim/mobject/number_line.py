@@ -93,6 +93,7 @@ class NumberLine(Line):
         tip_height=0.25,
         # numbers
         include_numbers=False,
+        font_size=None,
         label_direction=DOWN,
         line_to_number_buff=MED_SMALL_BUFF,
         decimal_number_config=None,
@@ -116,12 +117,14 @@ class NumberLine(Line):
             # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
             x_range = [*x_range, 1]
 
+        font_size = 36 if font_size is None else font_size
+
         self.x_min, self.x_max, self.x_step = x_range
         if decimal_number_config is None:
             decimal_number_config = {
                 "num_decimal_places": self.decimal_places_from_step(),
-                "font_size": 36,
-            }  # font_size does ~~nothing~~ something
+                "font_size": font_size,
+            }
 
         self.length = length
         self.unit_size = unit_size
@@ -141,6 +144,7 @@ class NumberLine(Line):
         self.tip_height = tip_height
         # numbers
         self.include_numbers = include_numbers
+        self.font_size = font_size
         self.label_direction = label_direction
         self.line_to_number_buff = line_to_number_buff
         self.decimal_number_config = decimal_number_config
@@ -170,6 +174,7 @@ class NumberLine(Line):
             self.add_ticks()
 
         self.rotate(self.rotation)
+        print(self.decimal_number_config["font_size"])
         if self.include_numbers or self.numbers_to_include is not None:
             self.add_numbers(
                 x_values=self.numbers_to_include,
