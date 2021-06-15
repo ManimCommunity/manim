@@ -15,7 +15,7 @@ class SurroundingRectangle(Rectangle):
     Examples
     --------
 
-    .. manim:: SurroundingRectExample 
+    .. manim:: SurroundingRectExample
     :save_last_frame:
 
         class SurroundingRectExample(Scene):
