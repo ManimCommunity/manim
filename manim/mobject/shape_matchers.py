@@ -15,17 +15,13 @@ class SurroundingRectangle(Rectangle):
     Examples
     --------
 
-    .. manim:: SurroundingRectExample
+    .. manim:: SurroundingRectExample 
         :save_last_frame:
 
         class SurroundingRectExample(Scene):
             def construct(self):
                 title = Title("A Quote from Newton")
-                quote = Text(
-                    r"If I have seen further than others, \n"
-                    r"it is by standing upon the shoulders of giants.",
-                    color=BLUE
-                ).scale(0.75)
+                quote = Text("If I have seen further than others, \n" + "it is by standing upon the shoulders of giants.", color=BLUE).scale(0.75)
                 box = SurroundingRectangle(quote, color=YELLOW, buff=MED_LARGE_BUFF)
                 self.add(title, box, quote)
 
