@@ -95,6 +95,9 @@ class DecimalNumber(VMobject):
         self.init_colors()
 
     def set_submobjects_from_number(self, number):
+        self.number = number
+        self.set_submobjects([])
+
         num_string = self.get_num_string(number)
         self.add(*(map(self.string_to_mob, num_string)))
 
@@ -189,12 +192,20 @@ class DecimalNumber(VMobject):
         )
 
     def set_value(self, number):
+        old_family = self.get_family()
         move_to_point = self.get_edge_center(self.edge_to_fix)
         old_submobjects = self.submobjects
         self.set_submobjects_from_number(number)
         self.move_to(move_to_point, self.edge_to_fix)
         for sm1, sm2 in zip(self.submobjects, old_submobjects):
             sm1.match_style(sm2)
+
+        for mob in old_family:
+            # Dumb hack...due to how scene handles families
+            # of animated mobjects
+            # for compatibility with updaters to not leave first number in place while updating,
+            # not needed with opengl renderer
+            mob.points[:] = 0
         return self
 
     def scale(self, scale_factor, **kwargs):
