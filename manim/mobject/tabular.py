@@ -56,9 +56,9 @@ __all__ = [
 import itertools as it
 from typing import Callable, Optional, Sequence, Tuple, Type
 
-from ..constants import *
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
+from ..constants import *
 from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber, Integer
 from ..mobject.svg.tex_mobject import MathTex
@@ -544,7 +544,7 @@ class Tabular(VGroup):
         self,
         lag_ratio: Optional[float] = 1,
         run_time: Optional[Callable[[float], float]] = 1,
-        **kwargs
+        **kwargs,
     ) -> AnimationGroup:
         """Customized create function for tables.
 
@@ -580,8 +580,9 @@ class Tabular(VGroup):
             Create(
                 VGroup(self.vertical_lines, self.horizontal_lines),
                 run_time=run_time,
-                **kwargs),
-            Write(self.elements, run_time=run_time, **kwargs)
+                **kwargs,
+            ),
+            Write(self.elements, run_time=run_time, **kwargs),
         ]
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
@@ -665,14 +666,15 @@ class MobjectTabular(Tabular):
         self,
         lag_ratio: Optional[float] = 1,
         run_time: Optional[Callable[[float], float]] = 1,
-        **kwargs
+        **kwargs,
     ) -> AnimationGroup:
         animations = [
             Create(
-                VGroup(self.vertical_lines,self.horizontal_lines),
+                VGroup(self.vertical_lines, self.horizontal_lines),
                 run_time=run_time,
-                **kwargs),
-            Create(self.elements, run_time=run_time, **kwargs)
+                **kwargs,
+            ),
+            Create(self.elements, run_time=run_time, **kwargs),
         ]
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
