@@ -21,7 +21,7 @@ def test_mobject_add():
     obj.add(repeated)
     assert len(obj.submobjects) == 12
 
-    # check that Container.add() returns the Mobject (for chained calls)
+    # check that Mobject.add() returns the Mobject (for chained calls)
     assert obj.add(Mobject()) is obj
     obj = Mobject()
 
@@ -32,8 +32,6 @@ def test_mobject_add():
     # can only add Mobjects
     with pytest.raises(TypeError):
         obj.add("foo")
-
-    assert obj.add(Mobject()) is obj
 
 
 def test_mobject_remove():

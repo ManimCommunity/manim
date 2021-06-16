@@ -12,14 +12,14 @@ def test_scene_add_remove():
         scene.add(*(Mobject() for _ in range(10)))
         assert len(scene.mobjects) == 11
 
-        # check that adding a msceneect twice does not actually add it twice
+        # Check that adding a mobject twice does not actually add it twice
         repeated = Mobject()
         scene.add(repeated)
         assert len(scene.mobjects) == 12
         scene.add(repeated)
         assert len(scene.mobjects) == 12
 
-        # check that Container.add() returns the Msceneect (for chained calls)
+        # Check that Scene.add() returns the Scene (for chained calls)
         assert scene.add(Mobject()) is scene
         to_remove = Mobject()
         scene = Scene()
@@ -31,5 +31,5 @@ def test_scene_add_remove():
         scene.remove(to_remove)
         assert len(scene.mobjects) == 10
 
-        # check that Container.remove() returns the instance (for chained calls)
+        # Check that Scene.remove() returns the instance (for chained calls)
         assert scene.add(Mobject()) is scene

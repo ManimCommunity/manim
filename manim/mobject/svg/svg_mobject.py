@@ -81,10 +81,14 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.ensure_valid_file()
         self.should_center = should_center
         self.unpack_groups = unpack_groups
-        self.path_string_config = {
-            "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
-            "should_remove_null_curves": should_remove_null_curves,
-        }
+        self.path_string_config = (
+            {
+                "should_subdivide_sharp_curves": should_subdivide_sharp_curves,
+                "should_remove_null_curves": should_remove_null_curves,
+            }
+            if config.renderer == "opengl"
+            else {}
+        )
         super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
         self.move_into_position(width, height)
 
@@ -234,11 +238,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         VMobjectFromSVGPathstring
             A VMobject from the given path string, or d attribute.
         """
-        if config.renderer == "opengl":
-            return SVGPathMobject(
-                path_string, **self.path_string_config, **parse_style(style)
-            )
-        return SVGPathMobject(path_string, **parse_style(style))
+        return SVGPathMobject(
+            path_string, **self.path_string_config, **parse_style(style)
+        )
 
     def attribute_to_float(self, attr):
         """A helper method which converts the attribute to float.
