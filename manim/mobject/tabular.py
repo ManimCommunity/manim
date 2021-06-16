@@ -54,8 +54,11 @@ __all__ = [
 
 
 import itertools as it
+from typing import Callable, Optional, Sequence, Tuple, Type
 
 from ..constants import *
+from ..animation.composition import AnimationGroup
+from ..animation.creation import Create, Write
 from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber, Integer
 from ..mobject.svg.tex_mobject import MathTex
@@ -537,6 +540,51 @@ class Tabular(VGroup):
             mob.add_background_rectangle()
         return self
 
+    def create(
+        self,
+        lag_ratio: Optional[float] = 1,
+        run_time: Optional[Callable[[float], float]] = 1,
+        **kwargs
+    ) -> AnimationGroup:
+        """Customized create function for tables.
+
+        Parameters
+        ----------
+        run_time
+            The run time of the line creation and the writing of the elements.
+        lag_ratio
+            The lag ratio of the animation.
+
+        Returns
+        --------
+        :class:`~.AnimationGroup`
+            AnimationGroup containing :class:`~.Create` of the lines and
+            :class:`~.Write` of the elements.
+
+        Examples
+        --------
+
+        .. manim:: CreateTableExample
+
+            class CreateTableExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")],
+                        include_outer_lines=True)
+                    self.play(table.create())
+        """
+        animations = [
+            Create(
+                VGroup(self.vertical_lines, self.horizontal_lines),
+                run_time=run_time,
+                **kwargs),
+            Write(self.elements, run_time=run_time, **kwargs)
+        ]
+        return AnimationGroup(*animations, lag_ratio=lag_ratio)
+
 
 class MathTabular(Tabular):
     """A mobject that displays a table with Latex entries on the screen.
@@ -612,6 +660,21 @@ class MobjectTabular(Tabular):
 
     def __init__(self, table, element_to_mobject=lambda m: m, **kwargs):
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
+
+    def create(
+        self,
+        lag_ratio: Optional[float] = 1,
+        run_time: Optional[Callable[[float], float]] = 1,
+        **kwargs
+    ) -> AnimationGroup:
+        animations = [
+            Create(
+                VGroup(self.vertical_lines,self.horizontal_lines),
+                run_time=run_time,
+                **kwargs),
+            Create(self.elements, run_time=run_time, **kwargs)
+        ]
+        return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
 
 class IntegerTabular(Tabular):
