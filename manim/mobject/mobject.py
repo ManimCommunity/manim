@@ -1144,10 +1144,10 @@ class Mobject(Container):
         -------
         Mobject
             The scaled mobject.
-        
+
         Examples
         --------
-        .. manim:: MobjectScaleExample 
+        .. manim:: MobjectScaleExample
             :save_last_frame:
 
             class MobjectScaleExample(Scene):
