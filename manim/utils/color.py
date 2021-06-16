@@ -445,7 +445,7 @@ def random_bright_color(random_seed=None) -> Color:
 
 
 def random_color(random_seed=None) -> Color:
-    if random_seed != None:
+    if random_seed is not None:
         range = random.Random(random_seed)
         return list(Colors)[range.randint(0, len(list(Colors)))]
     return random.choice([c.value for c in list(Colors)])
