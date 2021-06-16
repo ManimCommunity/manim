@@ -2022,6 +2022,43 @@ class CurvesAsSubmobjects(VGroup):
 
 
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
+    """
+    
+    Examples
+    --------
+    .. manim:: DashedVMobjectExample 
+        :save_last_frame:
+
+        class DashedVMobjectExample(Scene):
+            def construct(self):
+                r = 0.5
+                pos = 2.5 * UP + 6 * LEFT  # Tracker for position on screen
+                # Top Row: Increases the number of dashes per iteration
+                for dashes in range(2, 12):  # [2 , ..., 11]
+                    circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes).move_to(pos)
+                    self.add(circ)
+                    pos += 1.25 * RIGHT
+
+                # Middle Row: Increasing Positive Space Ratio per iteration
+                pos = 0.5 * UP + 6 * LEFT  # Reset Position
+                for ratio in np.arange(1 / 11, 1, 1 / 11):  # [1/11 , ..., 10/11, 1]
+                    circ = DashedVMobject(Circle(radius=r, color=WHITE), positive_space_ratio=ratio).move_to(pos)
+                    self.add(circ)
+                    pos += 1.25 * RIGHT
+
+                # Bottom Row: Different Colors(Square and Pentagon)
+                # Square
+                pos = 1.5 * DOWN + 1.25 * LEFT  # Reset Position
+                sq = DashedVMobject(Square(1.5, color=RED)).move_to(pos)
+
+                # Pentagon
+                pos += 2.5 * RIGHT
+                penta = DashedVMobject(RegularPolygon(5, color=BLUE)).move_to(pos)
+
+                self.add(sq, penta)
+
+    """
+    
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):
