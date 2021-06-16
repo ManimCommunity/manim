@@ -202,8 +202,8 @@ class PGroup(PMobject):
     """
     Examples
     --------
-    
-    .. manim:: PgroupExample 
+
+    .. manim:: PgroupExample
         :save_last_frame:
 
         class PgroupExample(Scene):
@@ -219,6 +219,7 @@ class PGroup(PMobject):
                 self.add(pList)
 
     """
+
     def __init__(self, *pmobs, **kwargs):
         if not all([isinstance(m, PMobject) for m in pmobs]):
             raise ValueError("All submobjects must be of type PMobject")
