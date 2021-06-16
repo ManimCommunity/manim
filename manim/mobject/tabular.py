@@ -542,8 +542,8 @@ class Tabular(VGroup):
 
     def create(
         self,
-        lag_ratio: Optional[float] = 1,
         run_time: Optional[Callable[[float], float]] = 1,
+        lag_ratio: Optional[float] = 1,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create function for tables.
