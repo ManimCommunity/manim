@@ -1147,7 +1147,7 @@ class Mobject(Container):
 
         Examples
         --------
-        
+
         .. manim:: MobjectScaleExample
             :save_last_frame:
 
