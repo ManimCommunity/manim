@@ -445,10 +445,8 @@ def random_bright_color(random_seed=None) -> Color:
 
 
 def random_color(random_seed=None) -> Color:
-    if random_seed is not None:
-        range = random.Random(random_seed)
-        return list(Colors)[range.randint(0, len(list(Colors)))]
-    return random.choice([c.value for c in list(Colors)])
+    rng = random if random_seed is None else random.Random(random_seed)
+    return rng.choice([c.value for c in list(Colors)])
 
 
 def get_shaded_rgb(
