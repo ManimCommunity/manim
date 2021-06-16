@@ -16,7 +16,7 @@ class SurroundingRectangle(Rectangle):
     --------
 
     .. manim:: SurroundingRectExample
-    :save_last_frame:
+        :save_last_frame:
 
         class SurroundingRectExample(Scene):
             def construct(self):
