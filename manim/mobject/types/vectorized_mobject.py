@@ -2023,10 +2023,10 @@ class CurvesAsSubmobjects(VGroup):
 
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     """
-    
+
     Examples
     --------
-    .. manim:: DashedVMobjectExample 
+    .. manim:: DashedVMobjectExample
         :save_last_frame:
 
         class DashedVMobjectExample(Scene):
@@ -2058,7 +2058,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 self.add(sq, penta)
 
     """
-    
+
     def __init__(
         self, vmobject, num_dashes=15, positive_space_ratio=0.5, color=WHITE, **kwargs
     ):
