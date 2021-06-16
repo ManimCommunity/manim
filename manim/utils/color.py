@@ -438,7 +438,7 @@ def average_color(*colors: Color) -> Color:
 
 
 def random_bright_color(random_seed=None) -> Color:
-    color = random_color(random_seed)
+    color = random_color(random_seed=random_seed)
     curr_rgb = color_to_rgb(color)
     new_rgb = interpolate(curr_rgb, np.ones(len(curr_rgb)), 0.5)
     return Color(rgb=new_rgb)
