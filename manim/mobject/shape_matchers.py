@@ -10,7 +10,7 @@ from ..utils.color import BLACK, RED, YELLOW, Color
 
 
 class SurroundingRectangle(Rectangle):
-    """A rectangle surrounding a :class:`~.Mobject`
+    r"""A rectangle surrounding a :class:`~.Mobject`
 
     Examples
     --------
