@@ -55,6 +55,8 @@ __all__ = [
 
 import itertools as it
 
+from numpy import set_string_function
+
 from ..animation.composition import AnimationGroup
 from ..animation.creation import *
 from ..constants import *
@@ -162,6 +164,8 @@ class Tabular(VGroup):
         self.row_labels = row_labels
         self.col_labels = col_labels
         self.top_left_entry = top_left_entry
+        self.row_dim = len(table)
+        self.col_dim = len(table[0])
         self.v_buff = v_buff
         self.h_buff = h_buff
         self.include_outer_lines = include_outer_lines
@@ -470,13 +474,23 @@ class Tabular(VGroup):
             row.set_color(color)
         return self
 
-    def get_entries(self):
-        """Return the individual entries of the table (including labels).
+    def get_entries(self, pos=None):
+        """Return the individual entries of the table (including labels) or one specific single entry
+        is the position parameter is set.
+
+        Parameters
+        ----------
+        pos : Sequence[:class:`int`]
+            The desired position as an iterable tuple, with (1,1) being the top left entry
+            of the table without labels.
 
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing entries of the table (including labels).
+            VGroup containing entries of the table (including labels)
+        OR
+        :class:`~.Mobject`
+            Mobject at the given position (including labels)
 
         Examples
         --------
@@ -494,17 +508,36 @@ class Tabular(VGroup):
                     ent = table.get_entries()
                     for item in ent:
                         item.set_color(random_color())
+                    table.get_entries_without_labels((2,2)).rotate(PI)
                     self.add(table)
         """
-        return self.elements
+        if pos is not None:
+            if self.top_left_entry is not None:
+                index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 1
+                return self.elements[index]
+            else:
+                index = len(self.mob_table) * (pos[0] - 1) + pos[1] - 2
+                return self.elements[index]
+        else:
+            return self.elements
 
-    def get_entries_without_labels(self):
-        """Return the individual entries of the table (without labels).
+    def get_entries_without_labels(self, pos=None):
+        """Return the individual entries of the table (without labels) or one specific single entry
+        is the position parameter is set.
+
+        Parameters
+        ----------
+        pos : Sequence[:class:`int`]
+            The desired position as an iterable tuple, with (1,1) being the top left entry
+            of the table without labels.
 
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing entries of the table (without labels).
+            VGroup containing entries of the table (without labels) if no position is given
+        OR
+        :class:`~.Mobject`
+            Mobject at the given position
 
         Examples
         --------
@@ -523,9 +556,14 @@ class Tabular(VGroup):
                     colors = [BLUE, GREEN, YELLOW, RED]
                     for k in range(len(colors)):
                         ent[k].set_color(colors[k])
+                    table.get_entries_without_labels((2,2)).rotate(PI)
                     self.add(table)
         """
-        return self.elements_without_labels
+        if pos is not None:
+            index = self.row_dim * (pos[0] - 1) + pos[1] - 1
+            return self.elements_without_labels[index]
+        else:
+            return self.elements_without_labels
 
     def get_labels(self):
         """Returns the labels of the table.
@@ -583,7 +621,7 @@ class Tabular(VGroup):
         element_animation=Write,
         **kwargs,
     ):
-        """Customized create function for tables.
+        """Customized create-type function for tables.
 
         Parameters
         ----------
