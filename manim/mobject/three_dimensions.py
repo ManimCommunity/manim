@@ -234,7 +234,7 @@ class Prism(Cube):
 
     Examples
     --------
-    
+
     .. manim:: ExamplePrism
         :save_last_frame:
 
