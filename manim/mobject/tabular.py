@@ -54,7 +54,6 @@ __all__ = [
 
 
 import itertools as it
-from typing import Callable, Optional, Sequence, Tuple, Type
 
 from ..animation.composition import AnimationGroup
 from ..animation.creation import *
@@ -552,7 +551,7 @@ class Tabular(VGroup):
                     lab = table.get_labels()
                     colors = [BLUE, GREEN, YELLOW, RED]
                     for k in range(len(colors)):
-                        ent[k].set_color(colors[k])
+                        lab[k].set_color(colors[k])
                     self.add(table)
         """
         label_group = VGroup()
@@ -672,7 +671,7 @@ class MathTabular(Tabular):
         **kwargs,
     ):
         """
-        Every entry is set in a Latex `align` environment.
+        Every entry is set in :class:`~.MathTex`, a Latex `align` environment.
 
         Parameters
         ----------
@@ -749,6 +748,7 @@ class IntegerTabular(Tabular):
 
     def __init__(self, table, element_to_mobject=Integer, **kwargs):
         """
+        Every entry is set in :class:`~.Integer`.
         Will round if there are decimal entries in the table.
 
         Parameters
@@ -790,6 +790,7 @@ class DecimalTabular(Tabular):
         **kwargs,
     ):
         """
+        Every entry is set in :class:`~.DecimalNumber`.
         Will round/truncate the decimal places as per the provided config.
 
         Parameters
