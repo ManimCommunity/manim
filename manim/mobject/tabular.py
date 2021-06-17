@@ -57,7 +57,7 @@ import itertools as it
 from typing import Callable, Optional, Sequence, Tuple, Type
 
 from ..animation.composition import AnimationGroup
-from ..animation.creation import Create, Write
+from ..animation.creation import *
 from ..constants import *
 from ..mobject.geometry import Line
 from ..mobject.numbers import DecimalNumber, Integer
@@ -528,6 +528,15 @@ class Tabular(VGroup):
         """
         return self.elements_without_labels
 
+    def get_labels(self):
+        label_group = VGroup()
+        if self.top_left_entry is not None:
+            label_group.add(self.top_left_entry)
+        for label in [self.col_labels, self.row_labels]:
+            if label is not None:
+                label_group.add(*label)
+        return label_group
+
     def add_background_to_entries(self):
         """Add a black background rectangle to the table.
 
@@ -542,8 +551,11 @@ class Tabular(VGroup):
 
     def create(
         self,
-        run_time: Optional[Callable[[float], float]] = 1,
-        lag_ratio: Optional[float] = 1,
+        run_time=1,
+        lag_ratio=1,
+        line_animation=Create,
+        label_animation=Write,
+        element_animation=Write,
         **kwargs,
     ) -> AnimationGroup:
         """Customized create function for tables.
@@ -554,6 +566,12 @@ class Tabular(VGroup):
             The run time of the line creation and the writing of the elements.
         lag_ratio
             The lag ratio of the animation.
+        line_animation
+            The animation style of the table lines.
+        label_animation
+            The animation style of the table labels.
+        element_animation
+            The animation style of the table elements.
 
         Returns
         --------
@@ -576,14 +594,29 @@ class Tabular(VGroup):
                         include_outer_lines=True)
                     self.play(table.create())
         """
-        animations = [
-            Create(
-                VGroup(self.vertical_lines, self.horizontal_lines),
-                run_time=run_time,
-                **kwargs,
-            ),
-            Write(self.elements, run_time=run_time, **kwargs),
-        ]
+        if len(self.get_labels()) > 0:
+            animations = [
+                line_animation(
+                    VGroup(self.vertical_lines, self.horizontal_lines),
+                    run_time=run_time,
+                    **kwargs,
+                ),
+                label_animation(self.get_labels(), run_time=run_time, **kwargs),
+                element_animation(
+                    self.elements_without_labels, run_time=run_time, **kwargs
+                ),
+            ]
+        else:
+            animations = [
+                line_animation(
+                    VGroup(self.vertical_lines, self.horizontal_lines),
+                    run_time=run_time,
+                    **kwargs,
+                ),
+                element_animation(self.elements, run_time=run_time, **kwargs),
+            ]
+        # if len(self.get_labels()) > 0:
+        #     animations.insert(0, label_animation(self.get_labels(), run_time=run_time, **kwargs))
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
 
@@ -664,8 +697,8 @@ class MobjectTabular(Tabular):
 
     def create(
         self,
-        lag_ratio: Optional[float] = 1,
-        run_time: Optional[Callable[[float], float]] = 1,
+        lag_ratio=1,
+        run_time=1,
         **kwargs,
     ) -> AnimationGroup:
         animations = [
