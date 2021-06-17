@@ -592,11 +592,11 @@ class Tabular(VGroup):
             The run time of the line creation and the writing of the elements.
         lag_ratio : :class:`float`, optional
             The lag ratio of the animation.
-        line_animation : :py:mod:`~.creation`, optional
+        line_animation : :mod:`~.creation`, optional
             The animation style of the table lines.
-        label_animation : :py:mod:`~.creation`, optional
+        label_animation : :mod:`~.creation`, optional
             The animation style of the table labels.
-        element_animation : :py:mod:`~.creation`, optional
+        element_animation : :mod:`~.creation`, optional
             The animation style of the table elements.
 
         Returns
