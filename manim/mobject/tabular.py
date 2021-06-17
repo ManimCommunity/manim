@@ -175,6 +175,11 @@ class Tabular(VGroup):
         self.element_to_mobject_config = element_to_mobject_config
         self.arrange_in_grid_config = arrange_in_grid_config
         self.line_config = line_config
+        for row in table:
+            if len(row) == len(table[0]):
+                pass
+            else:
+                raise ValueError(f"Not all rows in table have the same length.")
         VGroup.__init__(self, **kwargs)
         mob_table = self.table_to_mob_table(table)
         self.elements_without_labels = VGroup(*it.chain(*mob_table))
@@ -476,7 +481,7 @@ class Tabular(VGroup):
 
     def get_entries(self, pos=None):
         """Return the individual entries of the table (including labels) or one specific single entry
-        is the position parameter is set.
+        if the position parameter is set.
 
         Parameters
         ----------
@@ -508,7 +513,7 @@ class Tabular(VGroup):
                     ent = table.get_entries()
                     for item in ent:
                         item.set_color(random_color())
-                    table.get_entries_without_labels((2,2)).rotate(PI)
+                    table.get_entries((2,2)).rotate(PI)
                     self.add(table)
         """
         if pos is not None:
@@ -523,7 +528,7 @@ class Tabular(VGroup):
 
     def get_entries_without_labels(self, pos=None):
         """Return the individual entries of the table (without labels) or one specific single entry
-        is the position parameter is set.
+        if the position parameter is set.
 
         Parameters
         ----------
@@ -564,6 +569,88 @@ class Tabular(VGroup):
             return self.elements_without_labels[index]
         else:
             return self.elements_without_labels
+
+    def get_row_labels(self, pos=None):
+        """Return the row labels of the table or one specific row label
+        if the position parameter is set.
+
+        Parameters
+        ----------
+        pos : :class:`int`
+            The desired position as an iterable tuple, with 1 being the top label.
+
+        Returns
+        --------
+        :class:`~.VGroup`
+            VGroup containing the row labels of the table
+        OR
+        :class:`~.Mobject`
+            Row label at the given position
+
+        Examples
+        --------
+
+        .. manim:: GetRowLabelsExample
+            :save_last_frame:
+
+            class GetRowLabelsExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    lab = table.get_row_labels()
+                    for item in lab:
+                        item.set_color(random_color())
+                    table.get_row_labels(2).rotate(PI)
+                    self.add(table)
+        """
+        if pos is not None:
+            return self.row_labels[pos+1]
+        else:
+            return VGroup(*self.row_labels)
+
+    def get_col_labels(self, pos=None):
+        """Return the column labels of the table or one specific column label
+        if the position parameter is set.
+
+        Parameters
+        ----------
+        pos : :class:`int`
+            The desired position as an iterable tuple, with 1 being the top label.
+
+        Returns
+        --------
+        :class:`~.VGroup`
+            VGroup containing the column labels of the table
+        OR
+        :class:`~.Mobject`
+            Column label at the given position
+
+        Examples
+        --------
+
+        .. manim:: GetColLabelsExample
+            :save_last_frame:
+
+            class GetColLabelsExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    lab = table.get_col_labels()
+                    for item in lab:
+                        item.set_color(random_color())
+                    table.get_col_labels(2).rotate(PI)
+                    self.add(table)
+        """
+        if pos is not None:
+            return self.col_labels[pos+1]
+        else:
+            return VGroup(*self.col_labels)
 
     def get_labels(self):
         """Returns the labels of the table.
