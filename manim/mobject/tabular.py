@@ -179,7 +179,7 @@ class Tabular(VGroup):
             if len(row) == len(table[0]):
                 pass
             else:
-                raise ValueError(f"Not all rows in table have the same length.")
+                raise ValueError('Not all rows in table have the same length.')
         VGroup.__init__(self, **kwargs)
         mob_table = self.table_to_mob_table(table)
         self.elements_without_labels = VGroup(*it.chain(*mob_table))
