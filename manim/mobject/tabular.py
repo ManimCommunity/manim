@@ -607,7 +607,7 @@ class Tabular(VGroup):
                     self.add(table)
         """
         if pos is not None:
-            return self.row_labels[pos + 1]
+            return self.row_labels[pos - 1]
         else:
             return VGroup(*self.row_labels)
 
@@ -648,7 +648,7 @@ class Tabular(VGroup):
                     self.add(table)
         """
         if pos is not None:
-            return self.col_labels[pos + 1]
+            return self.col_labels[pos - 1]
         else:
             return VGroup(*self.col_labels)
 
