@@ -505,7 +505,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing entries of the table ((without labels)).
+            VGroup containing entries of the table (without labels).
 
         Examples
         --------
@@ -529,6 +529,32 @@ class Tabular(VGroup):
         return self.elements_without_labels
 
     def get_labels(self):
+        """Returns the labels of the table.
+
+        Returns
+        --------
+        :class:`~.VGroup`
+            VGroup containing all labels of the table.
+
+        Examples
+        --------
+
+        .. manim:: GetLabelsExample
+            :save_last_frame:
+
+            class GetLabelsExample(Scene):
+                def construct(self):
+                    table = Tabular(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    lab = table.get_labels()
+                    colors = [BLUE, GREEN, YELLOW, RED]
+                    for k in range(len(colors)):
+                        ent[k].set_color(colors[k])
+                    self.add(table)
+        """
         label_group = VGroup()
         if self.top_left_entry is not None:
             label_group.add(self.top_left_entry)
@@ -562,15 +588,15 @@ class Tabular(VGroup):
 
         Parameters
         ----------
-        run_time :class:`float`, optional
+        run_time : :class:`float`, optional
             The run time of the line creation and the writing of the elements.
-        lag_ratio :class:`float`, optional
+        lag_ratio : :class:`float`, optional
             The lag ratio of the animation.
-        line_animation :module:`~.creation`, optional
+        line_animation : :py:mod:`~.creation`, optional
             The animation style of the table lines.
-        label_animation :module:`~.creation`, optional
+        label_animation : :py:mod:`~.creation`, optional
             The animation style of the table labels.
-        element_animation :module:`~.creation`, optional
+        element_animation : :py:mod:`~.creation`, optional
             The animation style of the table elements.
 
         Returns
@@ -693,22 +719,6 @@ class MobjectTabular(Tabular):
 
     def __init__(self, table, element_to_mobject=lambda m: m, **kwargs):
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
-
-    def create(
-        self,
-        lag_ratio=1,
-        run_time=1,
-        **kwargs,
-    ) -> AnimationGroup:
-        animations = [
-            Create(
-                VGroup(self.vertical_lines, self.horizontal_lines),
-                run_time=run_time,
-                **kwargs,
-            ),
-            Create(self.elements, run_time=run_time, **kwargs),
-        ]
-        return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
 
 class IntegerTabular(Tabular):
