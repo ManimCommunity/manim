@@ -112,12 +112,23 @@ class FunctionGraph(ParametricFunction):
 
         class ExampleFunctionGraph(Scene):
             def construct(self):
-                cos_func = lambda t: np.cos(t) + 0.5 * np.cos(7 * t) + (1 / 7) * np.cos(14 * t)
-                sin_func_1 = lambda t: np.sin(t) + 0.5 * np.sin(7 * t) + (1 / 7) * np.sin(14 * t)
-                sin_func_2 = lambda t: np.sin(t) + 0.5 * np.sin(7 * t) + (1 / 7) * np.sin(14 * t)
-                self.add(FunctionGraph(cos_func, color=RED))
-                self.add(FunctionGraph(sin_func_1, color=BLUE))
-                self.add(FunctionGraph(sin_func_2, x_range=np.array([-8, 8, 0.1]), color=GREEN).move_to([0, 1, 0]))
+                cos_func = FunctionGraph(
+                    lambda t: np.cos(t) + 0.5 * np.cos(7 * t) + (1 / 7) * np.cos(14 * t),
+                    color=RED,
+                )
+
+                sin_func_1 = FunctionGraph(
+                    lambda t: np.sin(t) + 0.5 * np.sin(7 * t) + (1 / 7) * np.sin(14 * t),
+                    color=BLUE,
+                )
+
+                sin_func_2 = FunctionGraph(
+                    lambda t: np.sin(t) + 0.5 * np.sin(7 * t) + (1 / 7) * np.sin(14 * t),
+                    x_range=[-4, 4],
+                    color=GREEN,
+                ).move_to([0, 1, 0])
+
+                self.add(cos_func, sin_func_1, sin_func_2)
     """
 
     def __init__(self, function, x_range=None, color=YELLOW, **kwargs):
