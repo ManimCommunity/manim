@@ -14,7 +14,7 @@ from typing import Any, Callable, Dict, Optional, Tuple
 import numpy as np
 
 from ..animation.animation import Animation
-from ..utils.rate_functions import linear, smooth
+from ..utils.rate_functions import linear
 
 if typing.TYPE_CHECKING:
     from ..mobject.mobject import Mobject
