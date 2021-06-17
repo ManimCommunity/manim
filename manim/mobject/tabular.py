@@ -557,27 +557,26 @@ class Tabular(VGroup):
         label_animation=Write,
         element_animation=Write,
         **kwargs,
-    ) -> AnimationGroup:
+    ):
         """Customized create function for tables.
 
         Parameters
         ----------
-        run_time
+        run_time :class:`float`, optional
             The run time of the line creation and the writing of the elements.
-        lag_ratio
+        lag_ratio :class:`float`, optional
             The lag ratio of the animation.
-        line_animation
+        line_animation :module:`~.creation`, optional
             The animation style of the table lines.
-        label_animation
+        label_animation :module:`~.creation`, optional
             The animation style of the table labels.
-        element_animation
+        element_animation :module:`~.creation`, optional
             The animation style of the table elements.
 
         Returns
         --------
         :class:`~.AnimationGroup`
-            AnimationGroup containing :class:`~.Create` of the lines and
-            :class:`~.Write` of the elements.
+            AnimationGroup containing creation of the lines and of the elements.
 
         Examples
         --------
