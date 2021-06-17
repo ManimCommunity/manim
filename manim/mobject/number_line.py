@@ -1,8 +1,6 @@
 """Mobject representing a number line."""
 
-
 __all__ = ["NumberLine", "UnitInterval", "NumberLineOld"]
-
 
 import operator as op
 
@@ -22,7 +20,9 @@ from ..utils.space_ops import normalize
 
 
 class NumberLine(Line):
-    """Creates a number line with tick marks.
+    """Creates a number line with tick marks. Number ranges that include both negative and
+    positive values will be generated from the 0 point, and may not include a tick at the min / max
+    values as the tick locations are dependent on the step size.
 
     Parameters
     ----------
@@ -53,7 +53,8 @@ class NumberLine(Line):
     tip_height : :class:`float`
         The height of the tip.
     include_numbers : :class:`bool`
-        Determines whether numbers are added to tick marks.
+        Determines whether numbers are added to tick marks. The number of decimal places is determined
+        by the step size, this default can be overridden by ``decimal_number_config``.
     label_direction : Union[:class:`list`, :class:`numpy.ndarray`]
         The specific position to which number mobjects are added on the line.
     line_to_number_buff : :class:`float`
@@ -100,14 +101,10 @@ class NumberLine(Line):
         numbers_to_include=None,
         # temp, because DecimalNumber() needs to be updated
         number_scale_value=0.75,
+        exclude_origin_tick=False,
         **kwargs
     ):
         # avoid mutable arguments in defaults
-        if decimal_number_config is None:
-            decimal_number_config = {
-                "num_decimal_places": 0,
-                "font_size": 24,
-            }  # font_size does nothing
         if numbers_to_exclude is None:
             numbers_to_exclude = []
         if numbers_with_elongated_ticks is None:
@@ -117,13 +114,19 @@ class NumberLine(Line):
             x_range = [
                 round(-config["frame_x_radius"]),
                 round(config["frame_x_radius"]),
-                1.0,
+                1,
             ]
         elif len(x_range) == 2:
             # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
             x_range = [*x_range, 1]
 
         self.x_min, self.x_max, self.x_step = x_range
+        if decimal_number_config is None:
+            decimal_number_config = {
+                "num_decimal_places": self.decimal_places_from_step(),
+                "font_size": 24,
+            }  # font_size does nothing
+
         self.length = length
         self.unit_size = unit_size
         # ticks
@@ -131,6 +134,7 @@ class NumberLine(Line):
         self.tick_size = tick_size
         self.numbers_with_elongated_ticks = numbers_with_elongated_ticks
         self.longer_tick_multiple = longer_tick_multiple
+        self.exclude_origin_tick = exclude_origin_tick
         # visuals
         self.stroke_width = stroke_width
         self.rotation = rotation
@@ -210,7 +214,21 @@ class NumberLine(Line):
             x_max = self.x_max
         else:
             x_max = self.x_max + 1e-6
-        return np.arange(self.x_min, x_max, self.x_step)
+
+        # Handle cases where min and max are both positive or both negative
+        if self.x_min < x_max < 0 or self.x_max > self.x_min > 0:
+            return np.arange(self.x_min, x_max, self.x_step)
+
+        start_point = 0
+        if self.exclude_origin_tick:
+            start_point += self.x_step
+
+        x_min_segment = (
+            np.arange(start_point, np.abs(self.x_min) + 1e-6, self.x_step) * -1
+        )
+        x_max_segment = np.arange(start_point, x_max, self.x_step)
+
+        return np.unique(np.concatenate((x_min_segment, x_max_segment)))
 
     def number_to_point(self, number):
         alpha = float(number - self.x_min) / (self.x_max - self.x_min)
@@ -283,6 +301,12 @@ class NumberLine(Line):
         self.add(numbers)
         self.numbers = numbers
         return numbers
+
+    def decimal_places_from_step(self):
+        step_as_str = str(self.x_step)
+        if "." not in step_as_str:
+            return 0
+        return len(step_as_str.split(".")[-1])
 
 
 class UnitInterval(NumberLine):

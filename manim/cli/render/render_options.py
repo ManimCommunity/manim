@@ -26,10 +26,7 @@ def validate_resolution(ctx, param, value):
     if value:
         try:
             start, end = map(int, re.split(";|,|-", value))
-            return (
-                start,
-                end,
-            )
+            return (start, end)
         except Exception:
             logger.error("Resolution option is invalid.")
             exit()
@@ -52,7 +49,7 @@ render_options = option_group(
     ),
     option(
         "--format",
-        type=click.Choice(["png", "gif", "mp4"], case_sensitive=False),
+        type=click.Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
     ),
     option("-s", "--save_last_frame", is_flag=True),
     option(
