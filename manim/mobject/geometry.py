@@ -779,6 +779,23 @@ class AnnularSector(Arc):
 
 
 class Sector(AnnularSector):
+    """
+
+    Examples
+    --------
+
+    .. manim:: ExampleSector
+        :save_last_frame:
+
+        class ExampleSector(Scene):
+            def construct(self):
+                sector = Sector(outer_radius=2, inner_radius=1)
+                sector2 = Sector(outer_radius=2.5, inner_radius=0.8).move_to([-3, 0, 0])
+                sector.set_color(RED)
+                sector2.set_color(PINK)
+                self.add(sector, sector2)
+    """
+
     def __init__(self, outer_radius=1, inner_radius=0, **kwargs):
         super().__init__(inner_radius=inner_radius, outer_radius=outer_radius, **kwargs)
 
