@@ -276,8 +276,8 @@ class Variable(VMobject):
 
 
     .. manim:: VariableExample
-    
-        class VariableExample(Scene): 
+
+        class VariableExample(Scene):
             def construct(self):
                 x = 2.0
                 x_sqr = x**2
