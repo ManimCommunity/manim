@@ -53,7 +53,8 @@ class NumberLine(Line):
     tip_height : :class:`float`
         The height of the tip.
     include_numbers : :class:`bool`
-        Determines whether numbers are added to tick marks.
+        Determines whether numbers are added to tick marks. The number of decimal places is determined
+        by the step size, this default can be overridden by ``decimal_number_config``.
     label_direction : Union[:class:`list`, :class:`numpy.ndarray`]
         The specific position to which number mobjects are added on the line.
     line_to_number_buff : :class:`float`
@@ -104,11 +105,6 @@ class NumberLine(Line):
         **kwargs
     ):
         # avoid mutable arguments in defaults
-        if decimal_number_config is None:
-            decimal_number_config = {
-                "num_decimal_places": 0,
-                "font_size": 24,
-            }  # font_size does nothing
         if numbers_to_exclude is None:
             numbers_to_exclude = []
         if numbers_with_elongated_ticks is None:
@@ -118,13 +114,19 @@ class NumberLine(Line):
             x_range = [
                 round(-config["frame_x_radius"]),
                 round(config["frame_x_radius"]),
-                1.0,
+                1,
             ]
         elif len(x_range) == 2:
             # adds x_step if not specified. not sure how to feel about this. a user can't know default without peeking at source code
             x_range = [*x_range, 1]
 
         self.x_min, self.x_max, self.x_step = x_range
+        if decimal_number_config is None:
+            decimal_number_config = {
+                "num_decimal_places": self.decimal_places_from_step(),
+                "font_size": 24,
+            }  # font_size does nothing
+
         self.length = length
         self.unit_size = unit_size
         # ticks
@@ -299,6 +301,12 @@ class NumberLine(Line):
         self.add(numbers)
         self.numbers = numbers
         return numbers
+
+    def decimal_places_from_step(self):
+        step_as_str = str(self.x_step)
+        if "." not in step_as_str:
+            return 0
+        return len(step_as_str.split(".")[-1])
 
 
 class UnitInterval(NumberLine):

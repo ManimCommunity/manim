@@ -97,7 +97,9 @@ class PhaseFlow(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         if hasattr(self, "last_alpha"):
-            dt = self.virtual_time * (alpha - self.last_alpha)
+            dt = self.virtual_time * (
+                self.rate_func(alpha) - self.rate_func(self.last_alpha)
+            )
             self.mobject.apply_function(lambda p: p + dt * self.function(p))
         self.last_alpha = alpha
 
@@ -131,5 +133,5 @@ class MoveAlongPath(Animation):
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
-        point = self.path.point_from_proportion(alpha)
+        point = self.path.point_from_proportion(self.rate_func(alpha))
         self.mobject.move_to(point)
