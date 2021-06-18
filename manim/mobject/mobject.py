@@ -52,6 +52,7 @@ from ..utils.space_ops import (
     rotation_matrix,
     rotation_matrix_transpose,
 )
+from .opengl_compatibility import ConvertToOpenGL
 
 # TODO: Explain array_attrs
 
@@ -1143,6 +1144,22 @@ class Mobject(Container):
         -------
         Mobject
             The scaled mobject.
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    f1 = Text("F")
+                    f2 = Text("F").scale(2)
+                    f3 = Text("F").scale(0.5)
+                    f4 = Text("F").scale(-1)
+
+                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
+                    self.add(vgroup)
 
         See also
         --------
@@ -2688,11 +2705,11 @@ class Mobject(Container):
         return self
 
 
-class Group(Mobject):
+class Group(Mobject, metaclass=ConvertToOpenGL):
     """Groups together multiple :class:`Mobjects <.Mobject>`."""
 
     def __init__(self, *mobjects, **kwargs):
-        Mobject.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.add(*mobjects)
 
 

@@ -1,9 +1,9 @@
 """Utilities for using Manim with IPython (in particular: Jupyter notebooks)"""
 
-import hashlib
 import mimetypes
 import os
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 from manim import config, tempconfig
@@ -102,7 +102,7 @@ else:
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
                 main(args, standalone_mode=False, prog_name="manim")
                 return
-            modified_args = ["--jupyter"] + args[:-1] + [""] + [args[-1]]
+            modified_args = self.add_additional_args(args)
             args = main(modified_args, standalone_mode=False, prog_name="manim")
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
@@ -111,7 +111,7 @@ else:
                 tmpfile = (
                     Path(config["media_dir"])
                     / "jupyter"
-                    / f"{_video_hash(local_path)}{local_path.suffix}"
+                    / f"{_generate_file_name()}{local_path.suffix}"
                 )
 
                 if local_path in self.rendered_files:
@@ -136,13 +136,13 @@ else:
                     )
                 )
 
+        def add_additional_args(self, args):
+            additional_args = ["--jupyter"]
+            # Use webm to support transparency
+            if "-t" in args and "--format" not in args:
+                additional_args += ["--format", "webm"]
+            return additional_args + args[:-1] + [""] + [args[-1]]
 
-def _video_hash(path):
-    sha1 = hashlib.sha1()
-    with open(path, "rb") as f:
-        while True:
-            data = f.read(65536)
-            if not data:
-                break
-            sha1.update(data)
-    return sha1.hexdigest()
+
+def _generate_file_name():
+    return config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
