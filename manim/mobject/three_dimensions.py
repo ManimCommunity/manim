@@ -44,7 +44,7 @@ class ParametricSurface(VGroup):
                 return np.array([np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), u])
 
             def construct(self):
-                axes = ThreeDAxes()
+                axes = ThreeDAxes(x_range=[-4,4], x_length=8)
                 surface = ParametricSurface(
                     lambda u, v: axes.c2p(*self.func(u, v)),
                     u_min=-PI,
