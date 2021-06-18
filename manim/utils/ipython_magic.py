@@ -3,8 +3,8 @@
 import mimetypes
 import os
 import shutil
-from datetime import datetime
 import webbrowser
+from datetime import datetime
 from pathlib import Path
 
 from manim import config, tempconfig
