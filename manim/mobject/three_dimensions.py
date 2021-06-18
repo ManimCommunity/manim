@@ -34,7 +34,7 @@ class ThreeDVMobject(VMobject):
 class ParametricSurface(VGroup):
     """Creates a Parametric Surface
 
-    Exanples
+    Examples
     --------
     .. manim:: ParaSurface
         :save_last_frame:
