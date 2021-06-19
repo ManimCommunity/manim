@@ -1297,8 +1297,7 @@ class Arrow(Line):
                 v3.arrange_in_grid(cols=1)
                 v3.move_to(4 * RIGHT + 2 * UP)
 
-                # LOWER RIGHT Column: Different types of ArrowTip and colors.
-                v4 = VGroup()
+                LR_group = VGroup()
                 v4 += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareTip)
                 v4 += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareFilledTip)
                 v4 += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleTip)
