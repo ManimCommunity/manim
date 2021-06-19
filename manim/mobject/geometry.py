@@ -1289,8 +1289,7 @@ class Arrow(Line):
                     v2 += Arrow(max_stroke_width_to_length_ratio=i)
                 v2.arrange(DOWN)
 
-                # UPPER RIGHT Column: Varying max_tip_length_to_length_ratio
-                v3 = VGroup()
+                UR_group = VGroup()
                 # As max_tip_length_to_length_ratio increases,
                 # the length of the tip increases.
                 for i in np.arange(0, 0.3, 0.1):
