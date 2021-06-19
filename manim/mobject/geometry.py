@@ -1282,8 +1282,7 @@ class Arrow(Line):
                 v1.arrange_in_grid(cols=1)
                 v1.move_to(4 * LEFT)
 
-                # MIDDLE Column: Varying max_stroke_width_to_length_ratio
-                v2 = VGroup()
+                middle_group = VGroup()
                 # As max_stroke_width_to_length_ratio gets bigger,
                 # the width of stroke increases.
                 for i in np.arange(0, 5, 0.5):
