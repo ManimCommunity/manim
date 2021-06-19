@@ -1277,35 +1277,35 @@ class Arrow(Line):
                 left_group = VGroup()
                 # As buff increases, the size of the arrow decreases.
                 for i in np.arange(0, 2.2, 0.45):
-                    v1 += Arrow(buff=i, start=2 * LEFT, end=2 * RIGHT)
+                    left_group += Arrow(buff=i, start=2 * LEFT, end=2 * RIGHT)
                 # Required to arrange arrows.
-                v1.arrange(DOWN)
-                v1.move_to(4 * LEFT)
-
+                left_group.arrange(DOWN)
+                left_group.move_to(4 * LEFT)
+                
                 middle_group = VGroup()
                 # As max_stroke_width_to_length_ratio gets bigger,
                 # the width of stroke increases.
                 for i in np.arange(0, 5, 0.5):
-                    v2 += Arrow(max_stroke_width_to_length_ratio=i)
-                v2.arrange(DOWN)
-
+                    middle_group += Arrow(max_stroke_width_to_length_ratio=i)
+                middle_group.arrange(DOWN)
+                
                 UR_group = VGroup()
                 # As max_tip_length_to_length_ratio increases,
                 # the length of the tip increases.
                 for i in np.arange(0, 0.3, 0.1):
-                    v3 += Arrow(max_tip_length_to_length_ratio=i)
-                v3.arrange(DOWN)
-                v3.move_to(4 * RIGHT + 2 * UP)
-
-                LR_group = VGroup()
-                v4 += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareTip)
-                v4 += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareFilledTip)
-                v4 += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleTip)
-                v4 += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleFilledTip)
-                v4.arrange_in_grid(cols=1)
-                v4.move_to(4 * RIGHT + 2 * DOWN)
-
-                self.add(v1, v2, v3, v4)
+                    UR_group += Arrow(max_tip_length_to_length_ratio=i)
+                UR_group.arrange(DOWN)
+                UR_group.move_to(4 * RIGHT + 2 * UP)
+                
+                DR_group = VGroup()
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareFilledTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleTip)
+                DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleFilledTip)
+                DR_group.arrange_in_grid(cols=1)
+                DR_group.move_to(4 * RIGHT + 2 * DOWN)
+                
+                self.add(left_group, middle_group, UR_group, DR_group)
 
 
     See Also
