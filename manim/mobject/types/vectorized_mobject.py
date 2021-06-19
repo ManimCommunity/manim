@@ -2034,7 +2034,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 r = 0.5
                 pos = 2.5 * UP + 6 * LEFT  # Tracker for position on screen
                 # Top Row: Increases the number of dashes per iteration
-                for dashes in range(2, 12): 
+                for dashes in range(2, 12):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes).move_to(pos)
                     self.add(circ)
                     pos += 1.25 * RIGHT
