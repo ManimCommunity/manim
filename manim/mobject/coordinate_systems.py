@@ -1031,9 +1031,7 @@ class Axes(VGroup, CoordinateSystem):
         )
 
         self.x_axis = self.create_axis(self.x_range, self.x_axis_config, self.x_length)
-        self.x_axis.config = self.x_axis_config
         self.y_axis = self.create_axis(self.y_range, self.y_axis_config, self.y_length)
-        self.y_axis.config = self.y_axis_config
 
         # Add as a separate group in case various other
         # mobjects are added to self, as for example in
@@ -1304,7 +1302,6 @@ class ThreeDAxes(Axes):
         self.dimension = 3
 
         z_axis = self.create_axis(self.z_range, self.z_axis_config, self.z_length)
-        z_axis.config = self.z_axis_config
 
         z_axis.rotate_about_zero(-PI / 2, UP)
         z_axis.rotate_about_zero(angle_of_vector(self.z_normal))
