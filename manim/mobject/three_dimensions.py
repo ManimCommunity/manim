@@ -268,10 +268,11 @@ class Prism(Cube):
     .. manim:: ExamplePrism
         :save_last_frame:
 
-        class ExamplePrism(Scene):
+        class ExamplePrism(ThreeDScene):
             def construct(self):
+                self.set_camera_orientation(phi=5 * DEGREES, theta=25 * DEGREES)
                 prismSmall = Prism(dimensions=[1,2,3]).rotate(PI/2)
-                prismLarge = Prism(dimensions=[2,4,6]).move_to([3,0,0])
+                prismLarge = Prism(dimensions=[1.5,3,4.5]).move_to([2,0,0])
                 self.add(prismSmall,prismLarge)
     """
 
