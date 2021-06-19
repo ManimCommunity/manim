@@ -231,7 +231,7 @@ class CoordinateSystem:
         """Adds labels to the axes.
 
         axes_numbers
-            The the numbers to be added to the axes. Use ``None`` to represent an axis without labels.
+            The numbers to be added to the axes. Use ``None`` to represent an axis with default labels.
 
         Examples
         --------
@@ -239,9 +239,9 @@ class CoordinateSystem:
         .. code-block:: python
 
             ax = ThreeDAxes()
-            x_labels = range(1, 11)
-            z_labels = range(2, 12, 2)
-            ax.add_coordinates(x_labels, None, z_labels)  # x & z labels
+            x_labels = range(-4, 5)
+            z_labels = range(-4, 4, 2)
+            ax.add_coordinates(x_labels, None, z_labels)  # default y labels, custom x & z labels
             ax.add_coordinates(x_labels)  # only x labels
 
         Returns
@@ -253,7 +253,7 @@ class CoordinateSystem:
         self.coordinate_labels = VGroup()
         # if nothing is passed to axes_numbers, produce axes with default labelling
         if not axes_numbers:
-            axes_numbers = [None for x in self.axes]
+            axes_numbers = [None for _ in range(self.dimension)]
 
         for axis, values in zip(self.axes, axes_numbers):
             labels = axis.add_numbers(values, **kwargs)
