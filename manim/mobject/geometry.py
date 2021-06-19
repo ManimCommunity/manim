@@ -1274,8 +1274,7 @@ class Arrow(Line):
 
         class ArrowExample(Scene):
             def construct(self):
-                # LEFT Column: Varying Buff
-                v1 = VGroup()
+                left_group = VGroup()
                 # As buff increases, the size of the arrow decreases.
                 for i in np.arange(0, 2.2, 0.45):
                     v1 += Arrow(buff=i, start=2 * LEFT, end=2 * RIGHT)
