@@ -29,6 +29,7 @@ from .opengl_renderer_window import Window
 from .shader import Mesh, Shader
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
+    render_opengl_vectorized_mobject_fill_2,
     render_opengl_vectorized_mobject_stroke,
 )
 
@@ -271,7 +272,8 @@ class OpenGLRenderer:
     def render_mobject(self, mobject):
         if isinstance(mobject, OpenGLVMobject):
             if config["use_projection_fill_shaders"] and mobject.has_fill():
-                render_opengl_vectorized_mobject_fill(self, mobject)
+                # render_opengl_vectorized_mobject_fill(self, mobject)
+                render_opengl_vectorized_mobject_fill_2(self, mobject)
 
             if config["use_projection_stroke_shaders"] and mobject.has_stroke():
                 render_opengl_vectorized_mobject_stroke(self, mobject)

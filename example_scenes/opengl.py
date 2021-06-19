@@ -73,6 +73,33 @@ def get_plane_mesh(context):
     return Mesh(shader, attributes)
 
 
+class FillTest(Scene):
+    def construct(self):
+        mob = OpenGLText("O", fill_opacity=1).scale(4)
+        mob[0].data["points"] = np.flip(mob[0].data["points"], axis=0)
+        self.add(mob)
+        print(mob[0].data["points"])
+
+        # mob = OpenGLVMobject(fill_opacity=1)
+        # mob.data["points"] = np.array(
+        #     [
+        #         [1, -1, 0],
+        #         [0, 0, 0],
+        #         [-1, 1, 0],
+        #         [-1, 1, 0],
+        #         [0, 1, 0],
+        #         [1, 1, 0],
+        #         [1, 1, 0],
+        #         [0, 0, 0],
+        #         [-1, -1, 0],
+        #     ]
+        # )
+        # self.add(mob)
+
+        # self.wait(0.5)
+        self.interactive_embed()
+
+
 class TextTest(Scene):
     def construct(self):
         import string

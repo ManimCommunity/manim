@@ -1,7 +1,139 @@
 import moderngl
 import numpy as np
+import OpenGL.GL as GL
+import OpenGL.GLU as GLU
 
+from ..constants import *
+from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
 from .shader import Shader
+
+val = 1
+
+
+def render_opengl_vectorized_mobject_fill_2(renderer, mobject):
+    # Mobject points.
+    # attributes["in_vert"] = mobject.data["points"]
+
+    # mob = OpenGLVMobject()
+    # mob.data["points"] = np.array([2 * LEFT + 2 * UP])
+    # mob.add_quadratic_bezier_curve_to(3 * UP, 2 * RIGHT + 2 * UP)
+    # mob.add_quadratic_bezier_curve_to(3 * RIGHT, 2 * RIGHT + 2 * DOWN)
+    # mob.add_quadratic_bezier_curve_to(3 * DOWN, 2 * LEFT + 2 * DOWN)
+    # mob.add_quadratic_bezier_curve_to(3 * LEFT, 2 * LEFT + 2 * UP)
+
+    # mob.start_new_path(LEFT + UP)
+    # mob.add_line_to(LEFT + DOWN)
+    # mob.add_line_to(RIGHT + DOWN)
+    # mob.add_line_to(RIGHT + UP)
+    # mob.add_line_to(LEFT + UP)
+    # mobject = OpenGLVMobject()
+    # mobject.add(mob)
+
+    # _, indices = triangulate_mobject(mobject[0])
+    vertices, indices = triangulate_mobject(mobject[0])
+
+    use_triangulation = True
+    if use_triangulation:
+        attribute_length = mobject[0].data["points"].shape[0]
+        attribute_data = mobject[0].data["points"]
+        ibo = renderer.context.buffer(indices.astype(np.int32).tobytes())
+        # print(attribute_data[indices])
+        # import ipdb
+
+        # ipdb.set_trace(context=9)
+    else:
+        attribute_length = vertices.shape[0]
+        attribute_data = vertices
+        ibo = None
+        # print(attribute_data)
+        # print()
+
+    attributes = np.zeros(
+        attribute_length,
+        dtype=[
+            ("in_vert", np.float32, (3,)),
+            ("in_color", np.float32, (4,)),
+        ],
+    )
+
+    attributes["in_vert"] = attribute_data
+    attributes["in_color"] = np.repeat(
+        [[1.0, 0.0, 1.0, 1.0]], attributes["in_vert"].shape[0], axis=0
+    )
+
+    fill_shader = Shader(renderer.context, name="vectorized_mobject_fill_2")
+    fill_shader.set_uniform("u_view_matrix", renderer.camera.get_view_matrix())
+    fill_shader.set_uniform(
+        "u_projection_matrix",
+        renderer.scene.camera.projection_matrix,
+    )
+
+    vbo = renderer.context.buffer(attributes.tobytes())
+    vao = renderer.context.simple_vertex_array(
+        fill_shader.shader_program,
+        vbo,
+        *attributes.dtype.names,
+        index_buffer=ibo,
+    )
+    vao.render()
+    vao.release()
+    vbo.release()
+    if ibo is not None:
+        ibo.release()
+
+
+def triangulate_mobject(mob):
+    vertices = np.empty((0, 3))
+    indices = np.empty(0, dtype=np.int32)
+
+    def edgeFlagCallback(param1, param2):
+        pass
+
+    def beginCallback(param=None):
+        nonlocal vertices, indices
+        vertices = np.empty((0, 3))
+        indices = np.empty(0, dtype=np.int32)
+
+    def vertexCallback(vertex, otherData=None):
+        nonlocal vertices, indices
+        vertices = np.append(vertices, np.array([vertex[0]]), axis=0)
+        indices = np.append(indices, vertex[1])
+
+    def combineCallback(vertex, neighbors, neighborWeights, out=None):
+        for neighbor in neighbors:
+            if np.allclose(vertex, neighbor[0]):
+                return neighbor
+        return neighbors[0]
+
+    def endCallback(data=None):
+        pass
+
+    tess = GLU.gluNewTess()
+    GLU.gluTessProperty(tess, GLU.GLU_TESS_WINDING_RULE, GLU.GLU_TESS_WINDING_ODD)
+    # Forces triangulation of polygons (i.e. GL_TRIANGLES) rather than returning triangle fans or strips.
+    GLU.gluTessCallback(tess, GLU.GLU_TESS_EDGE_FLAG_DATA, edgeFlagCallback)
+    GLU.gluTessCallback(tess, GLU.GLU_TESS_BEGIN, beginCallback)
+    GLU.gluTessCallback(tess, GLU.GLU_TESS_VERTEX_DATA, vertexCallback)
+    GLU.gluTessCallback(tess, GLU.GLU_TESS_COMBINE, combineCallback)
+    GLU.gluTessCallback(tess, GLU.GLU_TESS_END, endCallback)
+
+    GLU.gluTessBeginPolygon(tess, None)
+
+    subpaths = mob.get_subpaths()
+    idx = 0
+    for subpath in subpaths:
+        GLU.gluTessBeginContour(tess)
+
+        for point in subpath:
+            v = (point, np.int32(idx))
+            GLU.gluTessVertex(tess, point, v)
+            idx += 1
+
+        GLU.gluTessEndContour(tess)
+
+    GLU.gluTessEndPolygon(tess)
+    GLU.gluDeleteTess(tess)
+    return vertices, indices
 
 
 def render_opengl_vectorized_mobject_fill(renderer, mobject):
