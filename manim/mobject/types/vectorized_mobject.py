@@ -1747,8 +1747,7 @@ class VDict(VMobject):
                 Allcolor = ["#bc8f8f", "#ff0000", "#ffd700", "#0000cd", "#00ff00", "#1e90ff", "#ff1493"]
 
                 for i in np.arange(0, len(Allcolor), 1):
-                    dist = i
-                    r = grid[(0, dist)].get_x() - grid[(0, 0)].get_x()  # Radius
+                    r = grid[(0, i)].get_x() - grid[(0, 0)].get_x()  # Radius
                     for t in np.arange(0, TAU, DEGREES):  # Loops through TAU radians by steps of PI/180
                         x = round(r * np.cos(t) / SMALL_BUFF)
                         y = round(r * np.sin(t) / SMALL_BUFF)
