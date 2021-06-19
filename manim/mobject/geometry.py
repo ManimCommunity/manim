@@ -1294,7 +1294,7 @@ class Arrow(Line):
                 # the length of the tip increases.
                 for i in np.arange(0, 0.3, 0.1):
                     v3 += Arrow(max_tip_length_to_length_ratio=i)
-                v3.arrange_in_grid(cols=1)
+                v3.arrange(DOWN)
                 v3.move_to(4 * RIGHT + 2 * UP)
 
                 LR_group = VGroup()
