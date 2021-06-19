@@ -989,7 +989,7 @@ class Axes(VGroup, CoordinateSystem):
         Arguments to be passed to :class:`~.NumberLine` that influence the x-axis.
     y_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the y-axis.
-    include_tips
+    tips
         Whether or not to include the tips on both axes.
     kwargs : Any
         Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`.
