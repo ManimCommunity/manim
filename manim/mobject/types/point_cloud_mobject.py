@@ -39,7 +39,7 @@ class PMobject(Mobject):
                 for sf in range(1, 9 + 1):
                     p = PointCloudDot(density=20, radius=1).thin_out(sf)
                     # PointCloudDot is a type of PMobject
-                    # So, it can be added to a PGroup
+                    # and can therefore be added to a PGroup
                     pG.add(p)
 
                 # This organizes all the shapes in a grid.
