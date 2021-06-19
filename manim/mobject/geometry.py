@@ -1281,14 +1281,14 @@ class Arrow(Line):
                 # Required to arrange arrows.
                 left_group.arrange(DOWN)
                 left_group.move_to(4 * LEFT)
-                
+
                 middle_group = VGroup()
                 # As max_stroke_width_to_length_ratio gets bigger,
                 # the width of stroke increases.
                 for i in np.arange(0, 5, 0.5):
                     middle_group += Arrow(max_stroke_width_to_length_ratio=i)
                 middle_group.arrange(DOWN)
-                
+
                 UR_group = VGroup()
                 # As max_tip_length_to_length_ratio increases,
                 # the length of the tip increases.
@@ -1296,7 +1296,7 @@ class Arrow(Line):
                     UR_group += Arrow(max_tip_length_to_length_ratio=i)
                 UR_group.arrange(DOWN)
                 UR_group.move_to(4 * RIGHT + 2 * UP)
-                
+
                 DR_group = VGroup()
                 DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareTip)
                 DR_group += Arrow(start=LEFT, end=RIGHT, color=BLUE, tip_shape=ArrowSquareFilledTip)
@@ -1304,7 +1304,7 @@ class Arrow(Line):
                 DR_group += Arrow(start=LEFT, end=RIGHT, color=YELLOW, tip_shape=ArrowCircleFilledTip)
                 DR_group.arrange_in_grid(cols=1)
                 DR_group.move_to(4 * RIGHT + 2 * DOWN)
-                
+
                 self.add(left_group, middle_group, UR_group, DR_group)
 
 
