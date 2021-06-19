@@ -2047,11 +2047,9 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                     pos += 1.25 * RIGHT
 
                 # Bottom Row: Different Colors(Square and Pentagon)
-                # Square
                 pos = 1.5 * DOWN + 1.25 * LEFT  # Reset Position
                 sq = DashedVMobject(Square(1.5, color=RED)).move_to(pos)
 
-                # Pentagon
                 pos += 2.5 * RIGHT
                 penta = DashedVMobject(RegularPolygon(5, color=BLUE)).move_to(pos)
 
