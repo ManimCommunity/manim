@@ -1287,7 +1287,7 @@ class Arrow(Line):
                 # the width of stroke increases.
                 for i in np.arange(0, 5, 0.5):
                     v2 += Arrow(max_stroke_width_to_length_ratio=i)
-                v2.arrange_in_grid(cols=1)
+                v2.arrange(DOWN)
 
                 # UPPER RIGHT Column: Varying max_tip_length_to_length_ratio
                 v3 = VGroup()
