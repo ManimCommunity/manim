@@ -347,6 +347,7 @@ example the ``mathtt`` math-text type, or the ``looparrowright`` arrow.
 
 .. manim:: AMSLaTeX
     :save_last_frame:
+
     class AMSLaTeX(Scene):
         def construct(self):
             tex = Tex(r'$\mathtt{H} \looparrowright$ \LaTeX').scale(3)
@@ -359,6 +360,7 @@ color of the TeX mobject.
 
 .. manim:: LaTeXAttributes
     :save_last_frame:
+
     class LaTeXAttributes(Scene):
         def construct(self):
             tex = Tex(r'Hello \LaTeX', color=BLUE).scale(3)
@@ -374,9 +376,62 @@ we add it manually.
 
 .. manim:: AddPackageLatex
     :save_last_frame:
+
     class AddPackageLatex(Scene):
         def construct(self):
             myTemplate = TexTemplate()
             myTemplate.add_to_preamble(r"\usepackage{mathrsfs}")
             tex = Tex(r'$\mathscr{H} \rightarrow \mathbb{H}$}', tex_template=myTemplate).scale(3)
             self.add(tex)
+
+Substrings and parts
+====================
+
+The TeX mobject can accept multiple strings as arguments. Afterwards you can
+refer to the individual parts either by their index (like ``tex[1]``), or you
+can look them up by (parts of) the tex code like in this example where we set 
+the color of the ``\bigstar`` using :func:`~.set_color_by_tex`:
+
+.. manim:: LaTeXSubstrings
+    :save_last_frame:
+
+    class LaTeXSubstrings(Scene):
+        def construct(self):
+            tex = Tex('Hello', r'$\bigstar$', r'\LaTeX').scale(3)
+            tex.set_color_by_tex('igsta', RED)
+            self.add(tex)
+
+Note that :func:`~.set_color_by_tex` colors the entire substring containing
+the Tex searched for, not just the specific symbol or Tex expression searched
+for. Consider the following example:
+
+.. manim:: IncorrectLaTeXSubstringColoring
+    :save_last_frame:
+
+    class IncorrectLaTeXSubstringColoring(Scene):
+        def construct(self):
+            equation = MathTex(
+                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots"
+            )
+            equation.set_color_by_tex("x", YELLOW)
+            self.add(equation)
+
+As you can see, this colors the entire equation yellow, contrary to what 
+may be expected. To color only ``x`` yellow, we have to do the following:
+
+.. manim:: CorrectLaTeXSubstringColoring
+    :save_last_frame:
+
+    class CorrectLaTeXSubstringColoring(Scene):
+        def construct(self):
+            equation = MathTex(
+                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots",
+                substrings_to_isolate="x"
+            )
+            equation.set_color_by_tex("x", YELLOW)
+            self.add(equation)
+
+By setting ``substring_to_isolate`` to ``x``, we split up the
+:class:`~.MathTex` into substrings automatically and isolate ``x`` components 
+into individual substrings. Only then can :meth:`~.set_color_by_tex` be used 
+to achieve the desired result
