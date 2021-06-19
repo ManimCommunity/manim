@@ -1277,8 +1277,6 @@ class Arrow(Line):
                 # LEFT Column: Varying Buff
                 v1 = VGroup()
                 # As buff increases, the size of the arrow decreases.
-                # The max buff is (1/2)*(Length of Arrow).
-                # In this case, the arrow is 4 units long.
                 for i in np.arange(0, 2.2, 0.45):
                     v1 += Arrow(buff=i, start=2 * LEFT, end=2 * RIGHT)
                 # Required to arrange arrows.
