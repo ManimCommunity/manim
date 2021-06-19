@@ -2,53 +2,12 @@ r"""Mobjects representing text rendered using LaTeX.
 
 .. important::
 
-   Have a look at corresponding tutorial :ref:`rendering-with-latex`
+   See corresponding tutorial :ref:`rendering-with-latex`
 
 .. note::
+
    Just as you can use :class:`~.Text` (from the module :mod:`~.text_mobject`) to add text to your videos, you can use :class:`~.Tex` and :class:`~.MathTex` to insert LaTeX.
 
-
-LaTeX Maths Fonts - The Template Library
-++++++++++++++++++++++++++++++++++++++++
-Changing fonts in LaTeX when typesetting mathematical formulae is a little bit more tricky than
-with regular text. It requires changing the template that is used to compile the tex code.
-Manim comes with a collection of :class:`~.TexFontTemplates` ready for you to use. These templates will all work
-in maths mode:
-
-.. manim:: LaTeXMathFonts
-    :save_last_frame:
-
-    class LaTeXMathFonts(Scene):
-        def construct(self):
-            tex = Tex(r'$x^2 + y^2 = z^2$', tex_template=TexFontTemplates.french_cursive).scale(3)
-            self.add(tex)
-
-Manim also has a :class:`~.TexTemplateLibrary` containing the TeX templates used by 3Blue1Brown. One example
-is the ctex template, used for typesetting Chinese. For this to work, the ctex LaTeX package
-must be installed on your system. Furthermore, if you are only typesetting Text, you probably do not
-need :class:`~.Tex` at all, and should use :class:`~.Text` or :class:`~.PangoText` instead.
-
-.. manim:: LaTeXTemplateLibrary
-    :save_last_frame:
-
-    class LaTeXTemplateLibrary(Scene):
-        def construct(self):
-            tex = Tex('Hello 你好 \\LaTeX', tex_template=TexTemplateLibrary.ctex).scale(3)
-            self.add(tex)
-
-
-Aligning formulae
-+++++++++++++++++
-A :class:`~.MathTex` mobject is typeset in the LaTeX  ``align*`` environment. This means you can use the ``&`` alignment
-character when typesetting multiline formulae:
-
-.. manim:: LaTeXAlignEnvironment
-    :save_last_frame:
-
-    class LaTeXAlignEnvironment(Scene):
-        def construct(self):
-            tex = MathTex(r'f(x) &= 3 + 2 + 1\\ &= 5 + 1 \\ &= 6').scale(2)
-            self.add(tex)
 """
 
 __all__ = [
