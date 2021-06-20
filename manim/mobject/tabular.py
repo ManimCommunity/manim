@@ -134,7 +134,7 @@ class Tabular(VGroup):
                     [["This", "is a"],
                     ["simple", "Table."]],
                     include_background_rectangle=True)
-                g = Group(t0, t1).arrange(buff=0.5)
+                g = Group(t0, t1).scale(0.7).arrange(buff=0.5)
                 self.add(g)
     """
 
@@ -162,32 +162,33 @@ class Tabular(VGroup):
         ----------
         table
             A 2d array or list of lists. Content of the table has to be a valid input
-            for function set in `element_to_mobject`.
+            for the callable set in `element_to_mobject`.
         row_labels
-            List of Mobjects representing labels of every row
+            List of :class:`~.VMobject` representing labels of every row.
         col_labels
-            List of Mobjects representing labels of every column
+            List of :class:`~.VMobject` representing labels of every column.
         top_left_entry
             Top-left entry of the table, only possible if row and
-            column labels are given
+            column labels are given.
         v_buff
-            vertical buffer, by default 0.8
+            Vertical buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 0.8.
         h_buff
-            horizontal buffer, by default 1.3
+            Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
         include_outer_lines
-            `True` if should include outer lines, by default False
+            `True` if should include outer lines, by default False.
         add_background_rectangles_to_entries
-            `True` if should add backgraound rectangles to entries, by default False
+            `True` if should add backgraound rectangles to entries, by default False.
         include_background_rectangle
-            `True` if should include background rectangle, by default False
+            `True` if should include background rectangle, by default False.
         element_to_mobject
-            element to mobject, by default Paragraph
+            Element to mobject, by default :class:`~.Paragraph`. For common choices, see :mod:`~.text_mobject`
+            and :mod:`~.tex_mobject`.
         element_to_mobject_config
-            element to mobject config, by default {}
+            Element to mobject config, by default {}.
         arrange_in_grid_config
-            dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table
+            Dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table.
         line_config
-            dict passed to :class:`~.Line`, customizes the lines of the table
+            Dict passed to :class:`~.Line`, customizes the lines of the table.
         kwargs : Any
             Additional arguments to be passed to :class:`~.VGroup`.
         """
@@ -339,7 +340,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing all horizontal lines
+            VGroup containing all horizontal lines.
 
         Examples
         --------
@@ -365,7 +366,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing all vertical lines
+            VGroup containing all vertical lines.
 
         Examples
         --------
@@ -517,16 +518,14 @@ class Tabular(VGroup):
         Parameters
         ----------
         pos
-            The desired position as an iterable tuple, with (1,1) being the top left entry
-            of the table without labels.
+            The desired position as an iterable tuple, (1,1) being the top left entry
+            of the table.
 
         Returns
         --------
-        :class:`~.VGroup`
-            VGroup containing entries of the table (including labels)
-        OR
-        :class:`~.Mobject`
-            Mobject at the given position (including labels)
+        :class:`~.VMobject`
+            VGroup containing all entries of the table (including labels) or
+            the VMobject at the given postion if `pos` is set.
 
         Examples
         --------
@@ -566,16 +565,14 @@ class Tabular(VGroup):
         Parameters
         ----------
         pos
-            The desired position as an iterable tuple, with (1,1) being the top left entry
-            of the table without labels.
+            The desired position as an iterable tuple, (1,1) being the top left entry
+            of the table (without labels).
 
         Returns
         --------
-        :class:`~.VGroup`
-            VGroup containing entries of the table (without labels) if no position is given
-        OR
-        :class:`~.Mobject`
-            Mobject at the given position
+        :class:`~.VMobject`
+            VGroup containing all entries of the table (without labels) or
+            the VMobject at the given postion if `pos` is set.
 
         Examples
         --------
@@ -609,7 +606,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing the row labels of the table
+            VGroup containing the row labels of the table.
 
         Examples
         --------
@@ -638,7 +635,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VGroup`
-            VGroup containing the column labels of the table
+            VGroup containing the column labels of the table.
 
         Examples
         --------
@@ -713,9 +710,9 @@ class Tabular(VGroup):
         self,
         run_time: float = 1,
         lag_ratio: float = 1,
-        line_animation: Type[Create] = Create,
-        label_animation: Type[Write] = Write,
-        element_animation: Type[Write] = Write,
+        line_animation: Callable[["VGroup"], None] = Create,
+        label_animation: Callable[["VGroup"], None] = Write,
+        element_animation: Callable[["VGroup"], None] = Write,
         **kwargs,
     ) -> "AnimationGroup":
         """Customized create-type function for tables.
@@ -814,10 +811,10 @@ class MathTabular(Tabular):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table has to be a valid input
-            for :class:`~.MathTex`
+            A 2d array or list of lists. Content of the table have to be valid input
+            for :class:`~.MathTex`.
         element_to_mobject
-            element to mobject, here set as :class:`~.MathTex`
+            Element to mobject, here set as :class:`~.MathTex`.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
@@ -870,9 +867,9 @@ class MobjectTabular(Tabular):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table has to be of type :class:`~.Mobject`
+            A 2d array or list of lists. Content of the table have to be of type :class:`~.Mobject`.
         element_to_mobject
-            element to mobject, here set as identity `lambda m: m`
+            Element to mobject, here set as identity `lambda m: m`.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
@@ -918,10 +915,10 @@ class IntegerTabular(Tabular):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table has to be a valid input
-            for :class:`~.Integer`
+            A 2d array or list of lists. Content of the table has to be valid input
+            for :class:`~.Integer`.
         element_to_mobject
-            element to mobject, here set as :class:`~.Integer`
+            Element to mobject, here set as :class:`~.Integer`.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
@@ -951,7 +948,7 @@ class DecimalTabular(Tabular):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[int, float, str]]],
+        table: Iterable[Iterable[Union[float, str]]],
         element_to_mobject: Callable[[Union[float, str]], "VMobject"] = DecimalNumber,
         element_to_mobject_config: Optional[dict] = {"num_decimal_places": 1},
         **kwargs,
@@ -964,12 +961,12 @@ class DecimalTabular(Tabular):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table has to be a valid input
-            for :class:`~.DecimalNumber`
+            A 2d array or list of lists. Content of the table has to be valid input
+            for :class:`~.DecimalNumber`.
         element_to_mobject
-            element to mobject, here set as :class:`~.DecimalNumber`
+            Element to mobject, here set as :class:`~.DecimalNumber`.
         element_to_mobject_config
-            element to mobject config, here set as {"num_decimal_places": 1}
+            Element to mobject config, here set as {"num_decimal_places": 1}.
         kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
