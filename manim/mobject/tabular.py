@@ -140,16 +140,16 @@ class Tabular(VGroup):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str, VMobject]]],
-        row_labels: Optional[Iterable[VMobject]] = None,
-        col_labels: Optional[Iterable[VMobject]] = None,
-        top_left_entry: Optional[VMobject] = None,
+        table: Iterable[Iterable[Union[float, str, "VMobject"]]],
+        row_labels: Optional[Iterable["VMobject"]] = None,
+        col_labels: Optional[Iterable["VMobject"]] = None,
+        top_left_entry: Optional["VMobject"] = None,
         v_buff: float = 0.8,
         h_buff: float = 1.3,
         include_outer_lines: Optional[bool] = False,
         add_background_rectangles_to_entries: Optional[bool] = False,
         include_background_rectangle: Optional[bool] = False,
-        element_to_mobject: Type[Paragraph] = Paragraph,
+        element_to_mobject: Callable[[Union[float, str, "VMobject"]], "VMobject"] = Paragraph,
         element_to_mobject_config: Optional[dict] = {},
         arrange_in_grid_config: Optional[dict] = {},
         line_config: Optional[dict] = {},
@@ -331,7 +331,7 @@ class Tabular(VGroup):
         self.vertical_lines = line_group
         return self
 
-    def get_horizontal_lines(self) -> VGroup:
+    def get_horizontal_lines(self) -> "VGroup":
         """Return the horizontal lines.
 
         Returns
@@ -357,7 +357,7 @@ class Tabular(VGroup):
         """
         return self.horizontal_lines
 
-    def get_vertical_lines(self) -> VGroup:
+    def get_vertical_lines(self) -> "VGroup":
         """Return the vertical lines.
 
         Returns
@@ -383,7 +383,7 @@ class Tabular(VGroup):
         """
         return self.vertical_lines
 
-    def get_columns(self) -> List[VGroup]:
+    def get_columns(self) -> List["VGroup"]:
         """Return columns of the table as VGroups.
 
         Returns
@@ -414,7 +414,7 @@ class Tabular(VGroup):
             ]
         )
 
-    def get_rows(self) -> List[VGroup]:
+    def get_rows(self) -> List["VGroup"]:
         """Return rows of the table as VGroups.
 
         Returns
@@ -440,7 +440,7 @@ class Tabular(VGroup):
         """
         return VGroup(*[VGroup(*row) for row in self.mob_table])
 
-    def set_column_colors(self, *colors: List[Color]):
+    def set_column_colors(self, *colors: List[Color]) -> "Tabular":
         """Set individual colors for each column of the table.
 
         Parameters
@@ -474,7 +474,7 @@ class Tabular(VGroup):
             column.set_color(color)
         return self
 
-    def set_row_colors(self, *colors: List[Color]):
+    def set_row_colors(self, *colors: List[Color]) -> "Tabular":
         """Set individual colors for each row of the table.
 
         Parameters
@@ -508,7 +508,7 @@ class Tabular(VGroup):
             row.set_color(color)
         return self
 
-    def get_entries(self, pos: Optional[Tuple[int, int]] = None) -> VMobject:
+    def get_entries(self, pos: Optional[Tuple[int, int]] = None) -> "VMobject":
         """Return the individual entries of the table (including labels) or one specific single entry
         if the position parameter is set.
 
@@ -557,7 +557,7 @@ class Tabular(VGroup):
 
     def get_entries_without_labels(
         self, pos: Optional[Tuple[int, int]] = None
-    ) -> VMobject:
+    ) -> "VMobject":
         """Return the individual entries of the table (without labels) or one specific single entry
         if the position parameter is set.
 
@@ -601,7 +601,7 @@ class Tabular(VGroup):
         else:
             return self.elements_without_labels
 
-    def get_row_labels(self) -> VGroup:
+    def get_row_labels(self) -> "VGroup":
         """Return the row labels of the table.
 
         Returns
@@ -630,7 +630,7 @@ class Tabular(VGroup):
 
         return VGroup(*self.row_labels)
 
-    def get_col_labels(self) -> VGroup:
+    def get_col_labels(self) -> "VGroup":
         """Return the column labels of the table.
 
         Returns
@@ -659,7 +659,7 @@ class Tabular(VGroup):
 
         return VGroup(*self.col_labels)
 
-    def get_labels(self) -> VGroup:
+    def get_labels(self) -> "VGroup":
         """Returns the labels of the table.
 
         Returns
@@ -694,7 +694,7 @@ class Tabular(VGroup):
                 label_group.add(*label)
         return label_group
 
-    def add_background_to_entries(self):
+    def add_background_to_entries(self) -> "Tabular":
         """Add a black background rectangle to the table, see above for an
         example and comparison with `include_background_rectangle`.
 
@@ -715,7 +715,7 @@ class Tabular(VGroup):
         label_animation: Type[Write] = Write,
         element_animation: Type[Write] = Write,
         **kwargs,
-    ) -> AnimationGroup:
+    ) -> "AnimationGroup":
         """Customized create-type function for tables.
 
         Parameters
@@ -730,6 +730,8 @@ class Tabular(VGroup):
             The animation style of the table labels, see :mod:`~.creation` for examples.
         element_animation
             The animation style of the table elements, see :mod:`~.creation` for examples.
+        kwargs : Any
+            Further arguments passed to the creation animations.
 
         Returns
         --------
@@ -799,9 +801,9 @@ class MathTabular(Tabular):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[int, float, str]]],
-        element_to_mobject: Type[MathTex] = MathTex,
-        **kwargs: Any,
+        table: Iterable[Iterable[Union[float, str]]],
+        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = MathTex,
+        **kwargs,
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.MathTex`.
@@ -814,7 +816,7 @@ class MathTabular(Tabular):
             for :class:`~.MathTex`
         element_to_mobject
             element to mobject, here set as :class:`~.MathTex`
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
         Tabular.__init__(
@@ -855,9 +857,9 @@ class MobjectTabular(Tabular):
 
     def __init__(
         self,
-        table: Iterable[Iterable[VMobject]],
-        element_to_mobject=lambda m: m,
-        **kwargs: Any,
+        table: Iterable[Iterable["VMobject"]],
+        element_to_mobject: Callable[["VMobject"], "VMobject"] = lambda m: m,
+        **kwargs,
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to an identity function.
@@ -869,7 +871,7 @@ class MobjectTabular(Tabular):
             A 2d array or list of lists. Content of the table has to be of type :class:`~.Mobject`
         element_to_mobject
             element to mobject, here set as identity `lambda m: m`
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
@@ -903,9 +905,9 @@ class IntegerTabular(Tabular):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[int, float, str]]],
-        element_to_mobject: Type[Integer] = Integer,
-        **kwargs: Any,
+        table: Iterable[Iterable[Union[float, str]]],
+        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = Integer,
+        **kwargs,
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.Integer`.
@@ -918,7 +920,7 @@ class IntegerTabular(Tabular):
             for :class:`~.Integer`
         element_to_mobject
             element to mobject, here set as :class:`~.Integer`
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
@@ -948,9 +950,9 @@ class DecimalTabular(Tabular):
     def __init__(
         self,
         table: Iterable[Iterable[Union[int, float, str]]],
-        element_to_mobject: Type[DecimalNumber] = DecimalNumber,
+        element_to_mobject: Callable[[Union[float, str]], "VMobject"] = DecimalNumber,
         element_to_mobject_config: Optional[dict] = {"num_decimal_places": 1},
-        **kwargs: Any,
+        **kwargs,
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.DecimalNumber`.
@@ -966,7 +968,7 @@ class DecimalTabular(Tabular):
             element to mobject, here set as :class:`~.DecimalNumber`
         element_to_mobject_config
             element to mobject config, here set as {"num_decimal_places": 1}
-        kwargs
+        kwargs : Any
             Additional arguments to be passed to :class:`~.Tabular`.
         """
         Tabular.__init__(
