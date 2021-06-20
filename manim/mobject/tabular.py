@@ -149,7 +149,9 @@ class Tabular(VGroup):
         include_outer_lines: Optional[bool] = False,
         add_background_rectangles_to_entries: Optional[bool] = False,
         include_background_rectangle: Optional[bool] = False,
-        element_to_mobject: Callable[[Union[float, str, "VMobject"]], "VMobject"] = Paragraph,
+        element_to_mobject: Callable[
+            [Union[float, str, "VMobject"]], "VMobject"
+        ] = Paragraph,
         element_to_mobject_config: Optional[dict] = {},
         arrange_in_grid_config: Optional[dict] = {},
         line_config: Optional[dict] = {},
