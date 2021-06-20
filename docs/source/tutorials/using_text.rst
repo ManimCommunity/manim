@@ -288,8 +288,8 @@ You can find the reference of PangoMarkup in :class:`~.MarkupText`.
 
 .. _rendering-with-latex:
 
-Text with LaTeX
-***************
+Text (LaTeX)
+************
 
 Just as you can use :class:`~.Text` to add text to your videos, you can
 use :class:`~.Tex` to insert LaTeX.
