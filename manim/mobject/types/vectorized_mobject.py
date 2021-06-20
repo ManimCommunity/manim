@@ -52,7 +52,7 @@ class VMobject(Mobject):
     def __init__(
         self,
         fill_color=None,
-        fill_opacity=0.0,
+        fill_opacity=None,
         stroke_color=None,
         stroke_opacity=1.0,
         stroke_width=DEFAULT_STROKE_WIDTH,
@@ -83,7 +83,10 @@ class VMobject(Mobject):
         **kwargs,
     ):
         self.fill_color = fill_color
-        self.fill_opacity = fill_opacity
+        if fill_opacity is not None:
+            self.fill_opacity = fill_opacity
+        else:
+            self.fill_opacity = 1.0 if fill_color and not fill_opacity else 0.0
         self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity
         self.stroke_width = stroke_width

@@ -204,3 +204,24 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
     vgroup = VGroup(VMobject())
     with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
         vgroup[0] = "invalid object"
+
+
+def test_correct_fill_opacity_default_when_fill_set():
+    """Test opacity defaults to 1 when fill_color is set and opacity is not set"""
+    vmobject = VMobject(fill_color="#FF0000")
+    expected_opacity = 1.0
+    assert vmobject.fill_opacity == expected_opacity
+
+
+def test_correct_fill_opacity_default_when_fill_not_set():
+    """Test opacity defaults to 0 when fill_color is not set and opacity is not set"""
+    vmobject = VMobject()
+    expected_opacity = 0.0
+    assert vmobject.fill_opacity == expected_opacity
+
+
+def test_fill_opacity_does_not_default_when_set():
+    """Test opacity defaults to 1 when fill_color is set and opacity is not set"""
+    expected_opacity = 0.3
+    vmobject = VMobject(fill_color="#FF0000", fill_opacity=expected_opacity)
+    assert vmobject.fill_opacity == expected_opacity
