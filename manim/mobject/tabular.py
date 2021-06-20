@@ -61,7 +61,7 @@ __all__ = [
 
 
 import itertools as it
-from typing import Callable, Iterable, List, Optional, Sequence, Tuple, Type, Union
+from typing import Any, Callable, Iterable, List, Optional, Sequence, Tuple, Type, Union
 
 from colour import Color
 
@@ -136,7 +136,6 @@ class Tabular(VGroup):
         **kwargs,
     ) -> VGroup:
         """
-
         Parameters
         ----------
         table
@@ -169,7 +168,6 @@ class Tabular(VGroup):
             dict passed to :class:`~.Line`, customizes the lines of the table
         kwargs : Any
             Additional arguments to be passed to :class:`~.VGroup`.
-
         """
 
         self.row_labels = row_labels
@@ -780,13 +778,23 @@ class MathTabular(Tabular):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        table: Iterable[Iterable[Union[int, float, str]]],
         element_to_mobject: Type[MathTex] = MathTex,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.MathTex`.
         Every entry in `table` is set in a Latex `align` environment.
+
+        Parameters
+        ----------
+        table
+            A 2d array or list of lists. Content of the table has to be a valid input
+            for :class:`~.MathTex`
+        element_to_mobject
+            element to mobject, here set as :class:`~.MathTex`
+        kwargs
+            Additional arguments to be passed to :class:`~.Tabular`.
         """
         Tabular.__init__(
             self,
@@ -826,13 +834,22 @@ class MobjectTabular(Tabular):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        table: Iterable[Iterable[VMobject]],
         element_to_mobject=lambda m: m,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to an identity function.
         Here, every item in `table` has to be of type :class:`~.Mobject` already.
+
+        Parameters
+        ----------
+        table
+            A 2d array or list of lists. Content of the table has to be of type :class:`~.Mobject`
+        element_to_mobject
+            element to mobject, here set as identity `lambda m: m`
+        kwargs
+            Additional arguments to be passed to :class:`~.Tabular`.
         """
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
@@ -865,13 +882,23 @@ class IntegerTabular(Tabular):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        table: Iterable[Iterable[Union[int, float, str]]],
         element_to_mobject: Type[Integer] = Integer,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.Integer`.
         Will round if there are decimal entries in the table.
+
+        Parameters
+        ----------
+        table
+            A 2d array or list of lists. Content of the table has to be a valid input
+            for :class:`~.Integer`
+        element_to_mobject
+            element to mobject, here set as :class:`~.Integer`
+        kwargs
+            Additional arguments to be passed to :class:`~.Tabular`.
         """
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
@@ -899,15 +926,27 @@ class DecimalTabular(Tabular):
 
     def __init__(
         self,
-        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        table: Iterable[Iterable[Union[int, float, str]]],
         element_to_mobject: Type[DecimalNumber] = DecimalNumber,
         element_to_mobject_config: Optional[dict] = {"num_decimal_places": 1},
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.DecimalNumber`.
         By default, `num_decimal_places` is set to 1.
         Will round/truncate the decimal places as per the provided config.
+
+        Parameters
+        ----------
+        table
+            A 2d array or list of lists. Content of the table has to be a valid input
+            for :class:`~.DecimalNumber`
+        element_to_mobject
+            element to mobject, here set as :class:`~.DecimalNumber`
+        element_to_mobject_config
+            element to mobject config, here set as {"num_decimal_places": 1}
+        kwargs
+            Additional arguments to be passed to :class:`~.Tabular`.
         """
         Tabular.__init__(
             self,
