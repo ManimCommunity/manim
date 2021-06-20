@@ -8,6 +8,7 @@ uniform vec4 color;
 
 in vec3[3] current_curve;
 in vec2 tile_coordinate;
+in vec4 in_color;
 
 out float v_degree;
 out float v_thickness;
@@ -70,7 +71,7 @@ vec3 convert_from_uv(vec3 translation, vec3 x_unit, vec3 y_unit, vec2 point) {
 
 void main() {
     float thickness_multiplier = 0.004;
-    v_color = color;
+    v_color = in_color;
 
     vec3 computed_normal;
     v_degree = get_degree(current_curve, computed_normal);
