@@ -140,7 +140,8 @@ class Tabular(VGroup):
         Parameters
         ----------
         table
-            A 2d array or list of lists
+            A 2d array or list of lists. Content of the table has to be a valid input
+            for function set in `element_to_mobject`.
         row_labels
             List of Mobjects representing labels of every row
         col_labels
@@ -779,19 +780,13 @@ class MathTabular(Tabular):
 
     def __init__(
         self,
-        table,
-        element_to_mobject=MathTex,
+        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        element_to_mobject: Type[MathTex] = MathTex,
         **kwargs,
     ):
         """
-        Every entry is set in :class:`~.MathTex`, a Latex `align` environment.
-
-        Parameters
-        ----------
-        table : :class:`typing.Iterable`
-            A  2d array or list of lists
-        element_to_mobject : :class:`~.Mobject`, optional
-            Mobject to use, by default MathTex
+        Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.MathTex`.
+        Every entry in `table` is set in a Latex `align` environment.
         """
         Tabular.__init__(
             self,
@@ -829,7 +824,16 @@ class MobjectTabular(Tabular):
                 self.add(t0, line)
     """
 
-    def __init__(self, table, element_to_mobject=lambda m: m, **kwargs):
+    def __init__(
+        self,
+        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        element_to_mobject=lambda m: m,
+        **kwargs,
+    ):
+        """
+        Special case of :class:`~.Tabular` with `element_to_mobject` set to an identity function.
+        Here, every item in `table` has to be of type :class:`~.Mobject` already.
+        """
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
 
@@ -859,17 +863,15 @@ class IntegerTabular(Tabular):
                 self.add(t0)
     """
 
-    def __init__(self, table, element_to_mobject=Integer, **kwargs):
+    def __init__(
+        self,
+        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        element_to_mobject: Type[Integer] = Integer,
+        **kwargs,
+    ):
         """
-        Every entry is set in :class:`~.Integer`.
+        Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.Integer`.
         Will round if there are decimal entries in the table.
-
-        Parameters
-        ----------
-        table : :class:`typing.Iterable`
-            A  2d array or list of lists
-        element_to_mobject : :class:`~.Mobject`, optional
-            Mobject to use, by default Integer
         """
         Tabular.__init__(self, table, element_to_mobject=element_to_mobject, **kwargs)
 
@@ -897,23 +899,15 @@ class DecimalTabular(Tabular):
 
     def __init__(
         self,
-        table,
-        element_to_mobject=DecimalNumber,
-        element_to_mobject_config={"num_decimal_places": 1},
+        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        element_to_mobject: Type[DecimalNumber] = DecimalNumber,
+        element_to_mobject_config: Optional[dict] = {"num_decimal_places": 1},
         **kwargs,
     ):
         """
-        Every entry is set in :class:`~.DecimalNumber`.
+        Special case of :class:`~.Tabular` with `element_to_mobject` set to :class:`~.DecimalNumber`.
+        By default, `num_decimal_places` is set to 1.
         Will round/truncate the decimal places as per the provided config.
-
-        Parameters
-        ----------
-        table : :class:`typing.Iterable`
-            A 2d array or list of lists
-        element_to_mobject : :class:`~.Mobject`, optional
-            Mobject to use, by default DecimalNumber
-        element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
-            Config for the desired mobject, by default {"num_decimal_places": 1}
         """
         Tabular.__init__(
             self,
