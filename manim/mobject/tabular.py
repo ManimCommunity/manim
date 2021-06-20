@@ -524,7 +524,8 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VMobject`
-            VGroup containing all entries of the table (including labels) or the VMobject at the given postion if `pos` is set.
+            VGroup containing all entries of the table (including labels)
+            or the VMobject at the given position if `pos` is set.
 
         Examples
         --------
@@ -570,7 +571,8 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.VMobject`
-            VGroup containing all entries of the table (without labels) or the VMobject at the given postion if `pos` is set.
+            VGroup containing all entries of the table (without labels)
+            or the VMobject at the given position if `pos` is set.
 
         Examples
         --------
