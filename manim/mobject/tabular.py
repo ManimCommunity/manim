@@ -139,32 +139,32 @@ class Tabular(VGroup):
 
         Parameters
         ----------
-        table : :class:`typing.Iterable`
+        table
             A 2d array or list of lists
-        row_labels : List[:class:`~.Mobject`], optional
+        row_labels
             List of Mobjects representing labels of every row
-        col_labels : List[:class:`~.Mobject`], optional
+        col_labels
             List of Mobjects representing labels of every column
-        top_left_entry : :class:`~.Mobject`, optional
+        top_left_entry
             Top-left entry of the table, only possible if row and
             column labels are given
-        v_buff : :class:`float`, optional
+        v_buff
             vertical buffer, by default 0.8
-        h_buff : :class:`float`, optional
+        h_buff
             horizontal buffer, by default 1.3
-        include_outer_lines : :class:`bool`, optional
+        include_outer_lines
             `True` if should include outer lines, by default False
-        add_background_rectangles_to_entries : :class:`bool`, optional
+        add_background_rectangles_to_entries
             `True` if should add backgraound rectangles to entries, by default False
-        include_background_rectangle : :class:`bool`, optional
+        include_background_rectangle
             `True` if should include background rectangle, by default False
-        element_to_mobject : :class:`~.Mobject`, optional
+        element_to_mobject
             element to mobject, by default Paragraph
-        element_to_mobject_config : Dict[:class:`str`, :class:`~.Mobject`], optional
+        element_to_mobject_config
             element to mobject config, by default {}
-        arrange_in_grid_config : Dict[:class:`str`, :class:`~.Mobject`], optional
+        arrange_in_grid_config
             dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table
-        line_config : Dict[:class:`str`, :class:`~.Mobject`], optional
+        line_config
             dict passed to :class:`~.Line`, customizes the lines of the table
         kwargs : Any
             Additional arguments to be passed to :class:`~.VGroup`.
@@ -426,7 +426,7 @@ class Tabular(VGroup):
 
         Parameters
         ----------
-        colors : :class:`str`
+        colors
             The list of colors; each color specified corresponds to a column.
 
         Returns
@@ -460,7 +460,7 @@ class Tabular(VGroup):
 
         Parameters
         ----------
-        colors : :class:`str`
+        colors
             The list of colors; each color specified corresponds to a row.
 
         Returns
@@ -495,7 +495,7 @@ class Tabular(VGroup):
 
         Parameters
         ----------
-        pos : Sequence[:class:`int`]
+        pos
             The desired position as an iterable tuple, with (1,1) being the top left entry
             of the table without labels.
 
@@ -544,7 +544,7 @@ class Tabular(VGroup):
 
         Parameters
         ----------
-        pos : Sequence[:class:`int`]
+        pos
             The desired position as an iterable tuple, with (1,1) being the top left entry
             of the table without labels.
 
@@ -700,16 +700,16 @@ class Tabular(VGroup):
 
         Parameters
         ----------
-        run_time : :class:`float`, optional
+        run_time
             The run time of the line creation and the writing of the elements.
-        lag_ratio : :class:`float`, optional
+        lag_ratio
             The lag ratio of the animation.
-        line_animation : :mod:`~.creation`, optional
-            The animation style of the table lines.
-        label_animation : :mod:`~.creation`, optional
-            The animation style of the table labels.
-        element_animation : :mod:`~.creation`, optional
-            The animation style of the table elements.
+        line_animation
+            The animation style of the table lines, see :mod:`~.creation` for examples.
+        label_animation
+            The animation style of the table labels, see :mod:`~.creation` for examples.
+        element_animation
+            The animation style of the table elements, see :mod:`~.creation` for examples.
 
         Returns
         --------
