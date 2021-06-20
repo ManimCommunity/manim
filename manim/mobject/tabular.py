@@ -116,6 +116,26 @@ class Tabular(VGroup):
                     t0,t1,t2,t3
                 ).scale(0.7).arrange_in_grid(buff=1)
                 self.add(g)
+
+    .. manim:: BackgroundRectanglesExample
+        :save_last_frame:
+
+        class BackgroundRectanglesExample(Scene):
+            def construct(self):
+                background = Rectangle().scale(3.2)
+                background.set_fill(opacity=.5)
+                background.set_color([TEAL, RED, YELLOW])
+                self.add(background)
+                t0 = Tabular(
+                    [["This", "is a"],
+                    ["simple", "Table."]],
+                    add_background_rectangles_to_entries=True)
+                t1 = Tabular(
+                    [["This", "is a"],
+                    ["simple", "Table."]],
+                    include_background_rectangle=True)
+                g = Group(t0, t1).arrange(buff=0.5)
+                self.add(g)
     """
 
     def __init__(
@@ -675,7 +695,8 @@ class Tabular(VGroup):
         return label_group
 
     def add_background_to_entries(self):
-        """Add a black background rectangle to the table.
+        """Add a black background rectangle to the table, see above for an
+        example and comparison with `include_background_rectangle`.
 
         Returns
         -------
