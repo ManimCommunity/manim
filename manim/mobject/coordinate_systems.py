@@ -71,7 +71,7 @@ class CoordinateSystem:
     ):
         self.dimension = dimension
 
-        default_step = 1.0
+        default_step = 1
         if x_range is None:
             x_range = [
                 round(-config["frame_x_radius"]),
