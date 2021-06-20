@@ -6,7 +6,7 @@ Examples
 .. manim:: TabularExamples
     :save_last_frame:
 
-    class TabularExamples101(Scene):
+    class TabularExamples(Scene):
         def construct(self):
             t0 = Tabular(
                 [["First", "Second"],
@@ -64,7 +64,6 @@ import itertools as it
 from typing import Callable, Iterable, List, Optional, Sequence, Tuple, Type, Union
 
 from colour import Color
-from numpy import set_string_function
 
 from ..animation.composition import AnimationGroup
 from ..animation.creation import *
