@@ -96,13 +96,13 @@ class CoordinateSystem:
         self.y_length = y_length
         self.num_sampled_graph_points_per_tick = 10
 
-    def coords_to_point(self, *coords):
+    def coords_to_point(self, *coords: Union[float, int, Sequence[float]]):
         raise NotImplementedError()
 
     def point_to_coords(self, point):
         raise NotImplementedError()
 
-    def c2p(self, *coords):
+    def c2p(self, *coords: Union[float, int, Sequence[float]]):
         """Abbreviation for coords_to_point"""
         return self.coords_to_point(*coords)
 
@@ -1080,7 +1080,9 @@ class Axes(VGroup, CoordinateSystem):
         axis.shift(-axis.number_to_point(self.origin_shift(range_terms)))
         return axis
 
-    def coords_to_point(self, *coords: Sequence[float]) -> np.ndarray:
+    def coords_to_point(
+        self, *coords: Union[float, int, Sequence[float]]
+    ) -> np.ndarray:
         """Transforms the vector formed from ``coords`` formed by the :class:`Axes`
         into the corresponding vector with respect to the default basis.
 
@@ -1090,6 +1092,7 @@ class Axes(VGroup, CoordinateSystem):
             A point that results from a change of basis from the coordinate system
             defined by the :class:`Axes` to that of ``manim``'s default coordinate system
         """
+        coords = np.array(coords).flatten()
         origin = self.x_axis.number_to_point(self.origin_shift(self.x_range))
         result = np.array(origin)
         for axis, coord in zip(self.get_axes(), coords):

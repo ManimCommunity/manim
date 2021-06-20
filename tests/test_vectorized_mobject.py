@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from manim import Circle, Line, Mobject, Square, VDict, VGroup, VMobject
+from manim import Circle, Dot, Line, Mobject, Square, VDict, VGroup, VMobject
 
 
 def test_vmobject_point_from_propotion():
@@ -204,3 +204,11 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
     vgroup = VGroup(VMobject())
     with pytest.raises(TypeError, match="All submobjects must be of type VMobject"):
         vgroup[0] = "invalid object"
+
+
+def test_dot_allows_position_omission():
+    dot = Dot([1])
+    assert len(dot.arc_center()) == 3
+
+    dot = Dot([1, 2])
+    assert len(dot.arc_center()) == 3

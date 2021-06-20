@@ -76,6 +76,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import adjacent_n_tuples, adjacent_pairs
+from ..utils.position import Position
 from ..utils.simple_functions import fdiv
 from ..utils.space_ops import (
     angle_between_vectors,
@@ -283,7 +284,7 @@ class Arc(TipableVMobject):
         start_angle=0,
         angle=TAU / 4,
         num_components=9,
-        arc_center=ORIGIN,
+        arc_center=Position(),
         **kwargs,
     ):
         if radius is None:  # apparently None is passed by ArcBetweenPoints
@@ -614,13 +615,14 @@ class Dot(Circle):
 
     def __init__(
         self,
-        point=ORIGIN,
+        point=Position(ORIGIN),
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width=0,
         fill_opacity=1.0,
         color=WHITE,
         **kwargs,
     ):
+        point = Position(point)
         super().__init__(
             arc_center=point,
             radius=radius,

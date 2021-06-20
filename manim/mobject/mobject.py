@@ -45,6 +45,7 @@ from ..utils.color import (
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import list_update, remove_list_redundancies
 from ..utils.paths import straight_path
+from ..utils.position import Position
 from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import (
     angle_between_vectors,
@@ -1092,7 +1093,7 @@ class Mobject(Container):
         for mob in self.family_members_with_points():
             func(mob)
 
-    def shift(self, *vectors: np.ndarray) -> "Mobject":
+    def shift(self, *vectors: Position) -> "Mobject":
         """Shift by the given vectors.
 
         Parameters
@@ -1109,7 +1110,9 @@ class Mobject(Container):
         --------
         :meth:`move_to`
         """
-
+        vectors = [
+            Position(pos) for pos in vectors
+        ]  # todo remove - only temp for testing
         if config.renderer == "opengl":
             self.apply_points_function(
                 lambda points: points + vectors[0],
@@ -1121,7 +1124,7 @@ class Mobject(Container):
             total_vector = reduce(op.add, vectors)
             for mob in self.family_members_with_points():
                 mob.points = mob.points.astype("float")
-                mob.points += total_vector
+                mob.points += total_vector()
                 if hasattr(mob, "data") and "points" in mob.data:
                     mob.data["points"] += total_vector
             return self

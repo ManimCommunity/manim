@@ -101,6 +101,7 @@ from .utils.file_ops import *
 from .utils.images import *
 from .utils.iterables import *
 from .utils.paths import *
+from .utils.position import *
 from .utils.rate_functions import *
 from .utils.simple_functions import *
 from .utils.sounds import *
