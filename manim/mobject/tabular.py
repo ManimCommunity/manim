@@ -6,42 +6,49 @@ Examples
 .. manim:: TabularExamples
     :save_last_frame:
 
-    class TabularExamples(Scene):
-            def construct(self):
-                t0 = Tabular(
-                    [["First", "Second"],
-                    ["Third","Fourth"]],
-                    row_labels=[Text("R1"), Text("R2")],
-                    col_labels=[Text("C1"), Text("C2")],
-                    top_left_entry=Text("TOP"))
-                t1 = MathTabular(
-                    [["+", 0, 5, 10],
-                    [0, 0, 5, 10],
-                    [2, 2, 7, 12],
-                    [4, 4, 9, 14]],
-                    include_outer_lines=True)
-                t1.get_horizontal_lines()[:3].set_color(BLUE)
-                t1.get_vertical_lines()[:3].set_color(BLUE)
-                t1.get_horizontal_lines()[:3].set_z_index(1)
-                t2 = DecimalTabular(
-                    [[-2,-1,0,1,2],
-                    [3.333, 7.42, 5.0, 2.222, 3.141]],
-                    row_labels=[MathTex("x"), MathTex("f(x)")],
-                    include_outer_lines=True)
-                cross = VGroup(
-                    Line(UP + LEFT, DOWN + RIGHT),
-                    Line(UP + RIGHT, DOWN + LEFT))
-                a = Circle().set_color(RED).scale(0.5)
-                b = cross.set_color(BLUE).scale(0.5)
-                t3 = MobjectTabular(
-                    [[a.copy(),b.copy(),a.copy()],
-                    [b.copy(),a.copy(),a.copy()],
-                    [a.copy(),b.copy(),b.copy()]])
-                t3.add(Line(
-                    t3.get_corner(DL), t3.get_corner(UR)
-                ).set_color(RED))
-                g = Group(t0, t1, t2, t3).scale(0.5).arrange_in_grid(buff=1.5)
-                self.add(g)
+    class TabularExamples101(Scene):
+        def construct(self):
+            t0 = Tabular(
+                [["First", "Second"],
+                ["Third","Fourth"]],
+                row_labels=[Text("R1"), Text("R2")],
+                col_labels=[Text("C1"), Text("C2")],
+                top_left_entry=Text("TOP"))
+            x_vals = np.linspace(-2,2,5)
+            y_vals = np.exp(x_vals)
+            t1 = DecimalTabular(
+                [x_vals, y_vals],
+                row_labels=[MathTex("x"), MathTex("f(x)")],
+                include_outer_lines=True)
+            t2 = MathTabular(
+                [["+", 0, 5, 10],
+                [0, 0, 5, 10],
+                [2, 2, 7, 12],
+                [4, 4, 9, 14]],
+                include_outer_lines=True)
+            t2.get_horizontal_lines()[:3].set_color(BLUE)
+            t2.get_vertical_lines()[:3].set_color(BLUE)
+            t2.get_horizontal_lines()[:3].set_z_index(1)
+            cross = VGroup(
+                Line(UP + LEFT, DOWN + RIGHT),
+                Line(UP + RIGHT, DOWN + LEFT))
+            a = Circle().set_color(RED).scale(0.5)
+            b = cross.set_color(BLUE).scale(0.5)
+            t3 = MobjectTabular(
+                [[a.copy(),b.copy(),a.copy()],
+                [b.copy(),a.copy(),a.copy()],
+                [a.copy(),b.copy(),b.copy()]])
+            t3.add(Line(
+                t3.get_corner(DL), t3.get_corner(UR)
+            ).set_color(RED))
+            vals = np.arange(1,21).reshape(5,4)
+            t4 = IntegerTabular(
+                vals,
+                include_outer_lines=True
+            )
+            g1 = Group(t0, t1).scale(0.5).arrange(buff=1).to_edge(UP, buff=1)
+            g2 = Group(t2, t3, t4).scale(0.5).arrange(buff=1).to_edge(DOWN, buff=1)
+            self.add(g1, g2)
 """
 
 __all__ = [
@@ -54,7 +61,9 @@ __all__ = [
 
 
 import itertools as it
+from typing import Callable, Iterable, List, Optional, Sequence, Tuple, Type, Union
 
+from colour import Color
 from numpy import set_string_function
 
 from ..animation.composition import AnimationGroup
@@ -81,7 +90,7 @@ class Tabular(VGroup):
             def construct(self):
                 t0 = Tabular(
                     [["This", "is a"],
-                    ["simple", r"Table in \n Manim."]])
+                    ["simple", "Table in \\n Manim."]])
                 t1 = Tabular(
                     [["This", "is a"],
                     ["simple", "Table."]],
@@ -112,21 +121,21 @@ class Tabular(VGroup):
 
     def __init__(
         self,
-        table,
-        row_labels=None,
-        col_labels=None,
-        top_left_entry=None,
-        v_buff=0.8,
-        h_buff=1.3,
-        include_outer_lines=False,
-        add_background_rectangles_to_entries=False,
-        include_background_rectangle=False,
-        element_to_mobject=Paragraph,
-        element_to_mobject_config={},
-        arrange_in_grid_config={},
-        line_config={},
+        table: Iterable[Iterable[Union[float, str, VMobject]]],
+        row_labels: Optional[Iterable[VMobject]] = None,
+        col_labels: Optional[Iterable[VMobject]] = None,
+        top_left_entry: Optional[VMobject] = None,
+        v_buff: float = 0.8,
+        h_buff: float = 1.3,
+        include_outer_lines: Optional[bool] = False,
+        add_background_rectangles_to_entries: Optional[bool] = False,
+        include_background_rectangle: Optional[bool] = False,
+        element_to_mobject: Type[Paragraph] = Paragraph,
+        element_to_mobject_config: Optional[dict] = {},
+        arrange_in_grid_config: Optional[dict] = {},
+        line_config: Optional[dict] = {},
         **kwargs,
-    ):
+    ) -> VGroup:
         """
 
         Parameters
@@ -158,6 +167,8 @@ class Tabular(VGroup):
             dict passed to :meth:`~.Mobject.arrange_in_grid`, customizes the arrangement of the table
         line_config : Dict[:class:`str`, :class:`~.Mobject`], optional
             dict passed to :class:`~.Line`, customizes the lines of the table
+        kwargs : Any
+            Additional arguments to be passed to :class:`~.VGroup`.
 
         """
 
@@ -302,7 +313,7 @@ class Tabular(VGroup):
         self.vertical_lines = line_group
         return self
 
-    def get_horizontal_lines(self):
+    def get_horizontal_lines(self) -> VGroup:
         """Return the horizontal lines.
 
         Returns
@@ -328,7 +339,7 @@ class Tabular(VGroup):
         """
         return self.horizontal_lines
 
-    def get_vertical_lines(self):
+    def get_vertical_lines(self) -> VGroup:
         """Return the vertical lines.
 
         Returns
@@ -354,7 +365,7 @@ class Tabular(VGroup):
         """
         return self.vertical_lines
 
-    def get_columns(self):
+    def get_columns(self) -> List[VGroup]:
         """Return columns of the table as VGroups.
 
         Returns
@@ -385,7 +396,7 @@ class Tabular(VGroup):
             ]
         )
 
-    def get_rows(self):
+    def get_rows(self) -> List[VGroup]:
         """Return rows of the table as VGroups.
 
         Returns
@@ -411,7 +422,7 @@ class Tabular(VGroup):
         """
         return VGroup(*[VGroup(*row) for row in self.mob_table])
 
-    def set_column_colors(self, *colors):
+    def set_column_colors(self, *colors: List[Color]):
         """Set individual colors for each column of the table.
 
         Parameters
@@ -445,7 +456,7 @@ class Tabular(VGroup):
             column.set_color(color)
         return self
 
-    def set_row_colors(self, *colors):
+    def set_row_colors(self, *colors: List[Color]):
         """Set individual colors for each row of the table.
 
         Parameters
@@ -479,7 +490,7 @@ class Tabular(VGroup):
             row.set_color(color)
         return self
 
-    def get_entries(self, pos=None):
+    def get_entries(self, pos: Optional[Tuple[int, int]] = None) -> VMobject:
         """Return the individual entries of the table (including labels) or one specific single entry
         if the position parameter is set.
 
@@ -526,7 +537,9 @@ class Tabular(VGroup):
         else:
             return self.elements
 
-    def get_entries_without_labels(self, pos=None):
+    def get_entries_without_labels(
+        self, pos: Optional[Tuple[int, int]] = None
+    ) -> VMobject:
         """Return the individual entries of the table (without labels) or one specific single entry
         if the position parameter is set.
 
@@ -570,7 +583,7 @@ class Tabular(VGroup):
         else:
             return self.elements_without_labels
 
-    def get_row_labels(self):
+    def get_row_labels(self) -> VGroup:
         """Return the row labels of the table.
 
         Returns
@@ -599,7 +612,7 @@ class Tabular(VGroup):
 
         return VGroup(*self.row_labels)
 
-    def get_col_labels(self):
+    def get_col_labels(self) -> VGroup:
         """Return the column labels of the table.
 
         Returns
@@ -628,7 +641,7 @@ class Tabular(VGroup):
 
         return VGroup(*self.col_labels)
 
-    def get_labels(self):
+    def get_labels(self) -> VGroup:
         """Returns the labels of the table.
 
         Returns
@@ -677,13 +690,13 @@ class Tabular(VGroup):
 
     def create(
         self,
-        run_time=1,
-        lag_ratio=1,
-        line_animation=Create,
-        label_animation=Write,
-        element_animation=Write,
+        run_time: float = 1,
+        lag_ratio: float = 1,
+        line_animation: Type[Create] = Create,
+        label_animation: Type[Write] = Write,
+        element_animation: Type[Write] = Write,
         **kwargs,
-    ):
+    ) -> AnimationGroup:
         """Customized create-type function for tables.
 
         Parameters
