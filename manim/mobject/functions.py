@@ -103,7 +103,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
 
 
 class FunctionGraph(ParametricFunction):
-    """
+    """A :class:`ParametricFunction` that spans the length of the scene by default.
 
     Examples
     --------
