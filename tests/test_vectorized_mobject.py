@@ -214,7 +214,7 @@ def test_correct_fill_opacity_default_when_fill_set():
 
 
 def test_correct_fill_opacity_default_when_fill_not_set():
-    """Test opacity defaults to 0 when fill_color is not set and opacity is not set"""
+    """Test that opacity defaults to 0 when ``fill_color`` is not set and opacity is not set."""
     vmobject = VMobject()
     expected_opacity = 0.0
     assert vmobject.fill_opacity == expected_opacity
