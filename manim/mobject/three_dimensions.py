@@ -284,7 +284,7 @@ class Cube(VGroup):
 
 
 class Prism(Cube):
-    """A Prism.
+    """A cuboid.
 
     Examples
     --------
