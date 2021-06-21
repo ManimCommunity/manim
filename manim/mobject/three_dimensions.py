@@ -284,6 +284,22 @@ class Cube(VGroup):
 
 
 class Prism(Cube):
+    """A cuboid.
+
+    Examples
+    --------
+
+    .. manim:: ExamplePrism
+        :save_last_frame:
+
+        class ExamplePrism(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=60 * DEGREES, theta=150 * DEGREES)
+                prismSmall = Prism(dimensions=[1, 2, 3]).rotate(PI / 2)
+                prismLarge = Prism(dimensions=[1.5, 3, 4.5]).move_to([2, 0, 0])
+                self.add(prismSmall, prismLarge)
+    """
+
     def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
         Cube.__init__(self, **kwargs)
