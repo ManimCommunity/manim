@@ -2022,7 +2022,7 @@ class CurvesAsSubmobjects(VGroup):
 
 
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
-    """
+    """A :class:`VMobject` composed of dashes instead of lines.
 
     Examples
     --------
