@@ -2032,23 +2032,23 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         class DashedVMobjectExample(Scene):
             def construct(self):
                 r = 0.5
-                
+
                 top_row = VGroup()  # Increasing num_dashes
                 for dashes in range(2, 12):
                     circ = DashedVMobject(Circle(radius=r, color=WHITE), num_dashes=dashes)
                     top_row.add(circ)
-                    
+
                 middle_row = VGroup()  # Increasing positive_space_ratio
                 for ratio in np.arange(1 / 11, 1, 1 / 11):
                     circ = DashedVMobject(
                         Circle(radius=r, color=WHITE), positive_space_ratio=ratio
                     )
                     middle_row.add(circ)
-                    
+
                 sq = DashedVMobject(Square(1.5, color=RED))
                 penta = DashedVMobject(RegularPolygon(5, color=BLUE))
                 bottom_row = VGroup(sq, penta)
-                
+
                 top_row.arrange(buff=0.4)
                 middle_row.arrange()
                 bottom_row.arrange(buff=1)
