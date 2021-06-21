@@ -207,7 +207,7 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
 
 
 def test_correct_fill_opacity_default_when_fill_set():
-    """Test opacity defaults to 1 when fill_color is set and opacity is not set"""
+    """Test that opacity defaults to 1 when ``fill_color`` is set and opacity is not set."""
     vmobject = VMobject(fill_color="#FF0000")
     expected_opacity = 1.0
     assert vmobject.fill_opacity == expected_opacity
