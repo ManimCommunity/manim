@@ -725,7 +725,7 @@ class Tabular(VGroup):
         Returns
         --------
         :class:`~.Polygon`
-            Polygon mimicing one specific cell of the tabular.
+            Polygon mimicking one specific cell of the tabular.
 
         Examples
         --------
