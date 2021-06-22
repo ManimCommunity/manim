@@ -149,9 +149,7 @@ class Animation:
     def _typecheck_input(self, mobject: Union[Mobject, None]) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, Mobject) and not isinstance(
-            mobject, OpenGLMobject
-        ):
+        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -277,12 +275,7 @@ class Animation:
             The relative time to set the aniamtion to, 0 meaning the start, 1 meaning
             the end.
         """
-        alpha = min(max(alpha, 0), 1)
-        self.interpolate_mobject(self.rate_func(alpha))
-
-    @deprecated(until="v0.6.0", replacement="interpolate")
-    def update(self, alpha: float) -> None:
-        self.interpolate(alpha)
+        self.interpolate_mobject(alpha)
 
     def interpolate_mobject(self, alpha: float) -> None:
         families = list(self.get_all_families_zipped())
@@ -324,7 +317,7 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
-        return min(max((value - lower), 0), 1)
+        return self.rate_func(value - lower)
 
     # Getters and setters
     def set_run_time(self, run_time: float) -> "Animation":

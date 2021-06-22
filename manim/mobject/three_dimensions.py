@@ -19,6 +19,7 @@ import numpy as np
 from ..constants import *
 from ..mobject.geometry import Circle, Square
 from ..mobject.mobject import *
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import *
 from ..utils.iterables import tuplify
@@ -31,6 +32,30 @@ class ThreeDVMobject(VMobject):
 
 
 class ParametricSurface(VGroup):
+    """Creates a Parametric Surface
+
+    Examples
+    --------
+    .. manim:: ParaSurface
+        :save_last_frame:
+
+        class ParaSurface(ThreeDScene):
+            def func(self, u, v):
+                return np.array([np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), u])
+
+            def construct(self):
+                axes = ThreeDAxes(x_range=[-4,4], x_length=8)
+                surface = ParametricSurface(
+                    lambda u, v: axes.c2p(*self.func(u, v)),
+                    u_min=-PI,
+                    u_max=PI,
+                    v_min=0,
+                    v_max=TAU,
+                )
+                self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
+                self.add(axes, surface)
+    """
+
     def __init__(
         self,
         func,
@@ -133,6 +158,36 @@ class ParametricSurface(VGroup):
 
 
 class Sphere(ParametricSurface):
+    """A mobject representing a three-dimensional sphere.
+
+    Examples
+    ---------
+
+    .. manim:: ExampleSphere
+        :save_last_frame:
+
+        class ExampleSphere(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=PI / 6, theta=PI / 6)
+                sphere1 = Sphere(
+                    center=(3, 0, 0),
+                    radius=1,
+                    resolution=(20, 20),
+                    u_min=0.001,
+                    u_max=PI - 0.001,
+                    v_min=0,
+                    v_max=TAU,
+                )
+                sphere1.set_color(RED)
+                self.add(sphere1)
+                sphere2 = Sphere(center=(-1, -3, 0), radius=2, resolution=(18, 18))
+                sphere2.set_color(GREEN)
+                self.add(sphere2)
+                sphere3 = Sphere(center=(-1, 2, 0), radius=2, resolution=(16, 16))
+                sphere3.set_color(BLUE)
+                self.add(sphere3)
+    """
+
     def __init__(
         self,
         center=ORIGIN,
@@ -229,6 +284,22 @@ class Cube(VGroup):
 
 
 class Prism(Cube):
+    """A cuboid.
+
+    Examples
+    --------
+
+    .. manim:: ExamplePrism
+        :save_last_frame:
+
+        class ExamplePrism(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(phi=60 * DEGREES, theta=150 * DEGREES)
+                prismSmall = Prism(dimensions=[1, 2, 3]).rotate(PI / 2)
+                prismLarge = Prism(dimensions=[1.5, 3, 4.5]).move_to([2, 0, 0])
+                self.add(prismSmall, prismLarge)
+    """
+
     def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
         Cube.__init__(self, **kwargs)
@@ -566,7 +637,7 @@ class Line3D(Cylinder):
         self.shift((self.start + self.end) / 2)
 
     def pointify(self, mob_or_point, direction=None):
-        if isinstance(mob_or_point, Mobject):
+        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()
@@ -615,8 +686,8 @@ class Arrow3D(Line3D):
         start=LEFT,
         end=RIGHT,
         thickness=0.02,
-        height=0.5,
-        base_radius=0.25,
+        height=0.3,
+        base_radius=0.08,
         color=WHITE,
         **kwargs
     ):

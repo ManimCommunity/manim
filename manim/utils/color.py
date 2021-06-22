@@ -198,6 +198,7 @@ class Colors(Enum):
     blue_e = "#236B8E"
     pure_blue = "#0000FF"
     blue = blue_c
+    dark_blue = blue_e
 
     teal_a = "#ACEAD7"
     teal_b = "#76DDC0"
@@ -307,6 +308,7 @@ __all__ += [  # noqa: F822 # used to stop flake8 from complaining about undefine
     "BLUE_E",
     "PURE_BLUE",
     "BLUE",
+    "DARK_BLUE",
     "TEAL_A",
     "TEAL_B",
     "TEAL_C",

@@ -3,7 +3,12 @@
 __all__ = ["VectorScene", "LinearTransformationScene"]
 
 
+from typing import Optional
+
 import numpy as np
+from colour import Color
+
+from manim.utils.config_ops import update_dict_recursively
 
 from .. import config
 from ..animation.animation import Animation
@@ -16,6 +21,7 @@ from ..mobject.coordinate_systems import Axes, NumberPlane
 from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
 from ..mobject.matrix import Matrix
 from ..mobject.mobject import Mobject
+from ..mobject.opengl_mobject import OpenGLMobject
 from ..mobject.svg.tex_mobject import MathTex, Tex
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
@@ -499,14 +505,76 @@ class VectorScene(Scene):
 class LinearTransformationScene(VectorScene):
     """
     This scene contains special methods that make it
-    especially suitable for showing Linear Transformations.
+    especially suitable for showing linear transformations.
+
+    Parameters
+    ----------
+    include_background_plane
+        Whether or not to include the background plane in the scene.
+    include_foreground_plane
+        Whether or not to include the foreground plane in the scene.
+    background_plane_kwargs
+        Parameters to be passed to :class:`NumberPlane` to adjust the background plane.
+    foreground_plane_kwargs
+        Parameters to be passed to :class:`NumberPlane` to adjust the foreground plane.
+    show_coordinates
+        Whether or not to include the coordinates for the background plane.
+    show_basis_vectors
+        Whether to show the basis x_axis -> ``i_hat`` and y_axis -> ``j_hat`` vectors.
+    basis_vector_stroke_width
+        The ``stroke_width`` of the basis vectors.
+    i_hat_color
+        The color of the ``i_hat`` vector.
+    j_hat_color
+        The color of the ``j_hat`` vector.
+    leave_ghost_vectors
+        Indicates the previous position of the basis vectors following a transformation.
+
+    Examples
+    -------
+
+    .. manim:: LinearTransformationSceneExample
+
+        class LinearTransformationSceneExample(LinearTransformationScene):
+            def __init__(self):
+                LinearTransformationScene.__init__(
+                    self,
+                    show_coordinates=True,
+                    leave_ghost_vectors=True,
+                )
+
+            def construct(self):
+                matrix = [[1, 1], [0, 1]]
+                self.apply_matrix(matrix)
+                self.wait()
     """
 
     def __init__(
         self,
-        include_background_plane=True,
-        include_foreground_plane=True,
-        background_plane_kwargs={
+        include_background_plane: bool = True,
+        include_foreground_plane: bool = True,
+        background_plane_kwargs: Optional[dict] = None,
+        foreground_plane_kwargs: Optional[dict] = None,
+        show_coordinates: bool = False,
+        show_basis_vectors: bool = True,
+        basis_vector_stroke_width: float = 6,
+        i_hat_color: Color = X_COLOR,
+        j_hat_color: Color = Y_COLOR,
+        leave_ghost_vectors: bool = False,
+        **kwargs
+    ):
+
+        VectorScene.__init__(self, **kwargs)
+
+        self.include_background_plane = include_background_plane
+        self.include_foreground_plane = include_foreground_plane
+        self.show_coordinates = show_coordinates
+        self.show_basis_vectors = show_basis_vectors
+        self.basis_vector_stroke_width = basis_vector_stroke_width
+        self.i_hat_color = i_hat_color
+        self.j_hat_color = j_hat_color
+        self.leave_ghost_vectors = leave_ghost_vectors
+        self.background_plane_kwargs = {
             "color": GREY,
             "axis_config": {
                 "color": GREY,
@@ -515,36 +583,24 @@ class LinearTransformationScene(VectorScene):
                 "stroke_color": GREY,
                 "stroke_width": 1,
             },
-        },
-        show_coordinates=False,
-        show_basis_vectors=True,
-        basis_vector_stroke_width=6,
-        i_hat_color=X_COLOR,
-        j_hat_color=Y_COLOR,
-        leave_ghost_vectors=False,
-        t_matrix=[[3, 0], [1, 2]],
-        **kwargs
-    ):
-        VectorScene.__init__(self, **kwargs)
-
-        self.include_background_plane = include_background_plane
-        self.include_foreground_plane = include_foreground_plane
-        self.background_plane_kwargs = background_plane_kwargs
-        self.show_coordinates = show_coordinates
-        self.show_basis_vectors = show_basis_vectors
-        self.basis_vector_stroke_width = basis_vector_stroke_width
-        self.i_hat_color = i_hat_color
-        self.j_hat_color = j_hat_color
-        self.leave_ghost_vectors = leave_ghost_vectors
-        self.t_matrix = t_matrix
+        }
 
         self.foreground_plane_kwargs = {
-            "x_max": config["frame_width"] / 2,
-            "x_min": -config["frame_width"] / 2,
-            "y_max": config["frame_width"] / 2,
-            "y_min": -config["frame_width"] / 2,
+            "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
+            "y_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
             "faded_line_ratio": 1,
         }
+
+        self.update_default_configs(
+            (self.foreground_plane_kwargs, self.background_plane_kwargs),
+            (foreground_plane_kwargs, background_plane_kwargs),
+        )
+
+    @staticmethod
+    def update_default_configs(default_configs, passed_configs):
+        for default_config, passed_config in zip(default_configs, passed_configs):
+            if passed_config is not None:
+                update_dict_recursively(default_config, passed_config)
 
     def setup(self):
         # The has_already_setup attr is to not break all the old Scenes
@@ -558,7 +614,6 @@ class LinearTransformationScene(VectorScene):
         self.transformable_labels = []
         self.moving_mobjects = []
 
-        self.t_matrix = np.array(self.t_matrix)
         self.background_plane = NumberPlane(**self.background_plane_kwargs)
 
         if self.show_coordinates:
@@ -830,7 +885,7 @@ class LinearTransformationScene(VectorScene):
         LinearTransformationScene
             The scene with the title added to it.
         """
-        if not isinstance(title, Mobject):
+        if not isinstance(title, (Mobject, OpenGLMobject)):
             title = Tex(title).scale(scale_factor)
         title.to_edge(UP)
         title.add_background_rectangle()
