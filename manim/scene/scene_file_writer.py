@@ -23,6 +23,7 @@ from ..utils.file_ops import (
     guarantee_existence,
     is_gif_format,
     is_png_format,
+    is_webm_format,
     modify_atime,
     write_to_movie,
 )
@@ -392,7 +393,10 @@ class SceneFileWriter(object):
         ]
         if config.renderer == "opengl":
             command += ["-vf", "vflip"]
-        if config["transparent"]:
+        if is_webm_format():
+            command += ["-vcodec", "libvpx-vp9", "-auto-alt-ref", "0"]
+        # .mov format
+        elif config["transparent"]:
             command += ["-vcodec", "qtrle"]
         else:
             command += ["-vcodec", "libx264", "-pix_fmt", "yuv420p"]
