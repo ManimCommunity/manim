@@ -1,7 +1,4 @@
-import moderngl
 import numpy as np
-import OpenGL.GL as GL
-import OpenGL.GLU as GLU
 
 from ..constants import *
 from ..mobject.types.opengl_vectorized_mobject import OpenGLVMobject
