@@ -363,3 +363,106 @@ def test_images_are_created_when_png_format_set(
 
     expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
+
+
+@pytest.mark.slow
+def test_webm_format_output(tmp_path, manim_cfg_file, simple_scenes_path):
+    """Test only webm created when --format webm is set"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "webm",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    unexpected_mp4_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mp4"
+    )
+    assert not unexpected_mp4_path.exists(), "unexpected mp4 file found at " + str(
+        unexpected_mp4_path
+    )
+
+    expected_webm_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.webm"
+    )
+    assert expected_webm_path.exists(), "expected webm file not found at " + str(
+        expected_webm_path
+    )
+
+
+@pytest.mark.slow
+def test_default_format_output_for_transparent_flag(
+    tmp_path, manim_cfg_file, simple_scenes_path
+):
+    """Test .mov is created by default when transparent flag is set"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "-t",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    unexpected_webm_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.webm"
+    )
+    assert not unexpected_webm_path.exists(), "unexpected webm file found at " + str(
+        unexpected_webm_path
+    )
+
+    expected_mov_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mov"
+    )
+    assert expected_mov_path.exists(), "expected .mov file not found at " + str(
+        expected_mov_path
+    )
+
+
+@pytest.mark.slow
+def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes_path):
+    """Test .mov is created by when set using --format mov arg"""
+    scene_name = "SquareToCircle"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--format",
+        "mov",
+        simple_scenes_path,
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    unexpected_webm_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.webm"
+    )
+    assert not unexpected_webm_path.exists(), "unexpected webm file found at " + str(
+        unexpected_webm_path
+    )
+
+    expected_mov_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SquareToCircle.mov"
+    )
+    assert expected_mov_path.exists(), "expected .mov file not found at " + str(
+        expected_mov_path
+    )
