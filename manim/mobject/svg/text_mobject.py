@@ -749,7 +749,7 @@ class MarkupText(SVGMobject):
     does not depend on ligatures, consider setting ``disable_ligatures``
     to ``True``. If you must use ligatures, the ``gradient`` tag supports an optional
     attribute ``offset`` which can be used to compensate for that error.
-    
+
     For example:
 
     - ``<gradient from="RED" to="YELLOW" offset="1">example</gradient>`` to *start* the gradient one letter earlier
