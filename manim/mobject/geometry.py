@@ -1276,8 +1276,8 @@ class Arrow(Line):
             def construct(self):
                 left_group = VGroup()
                 # As buff increases, the size of the arrow decreases.
-                for i in np.arange(0, 2.2, 0.45):
-                    left_group += Arrow(buff=i, start=2 * LEFT, end=2 * RIGHT)
+                for buff in np.arange(0, 2.2, 0.45):
+                    left_group += Arrow(buff=buff, start=2 * LEFT, end=2 * RIGHT)
                 # Required to arrange arrows.
                 left_group.arrange(DOWN)
                 left_group.move_to(4 * LEFT)
