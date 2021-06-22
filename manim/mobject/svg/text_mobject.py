@@ -681,7 +681,7 @@ class MarkupText(SVGMobject):
     **What is PangoMarkup?**
 
     PangoMarkup is a small markup language like html and it helps you avoid using
-    "range of characters" while colouring or styling a piece a Text. You can use
+    "range of characters" while coloring or styling a piece a Text. You can use
     this language with :class:`~.MarkupText`.
 
     A simple example of a marked-up string might be::
@@ -698,7 +698,7 @@ class MarkupText(SVGMobject):
                 text = MarkupText('<span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!"')
                 self.add(text)
 
-    A more elaborate example would be
+    A more elaborate example would be:
 
     .. manim:: MarkupElaborateExample
         :save_last_frame:
@@ -733,8 +733,8 @@ class MarkupText(SVGMobject):
     For ``<span>`` markup, colors can be specified either as
     hex triples like ``#aabbcc`` or as named CSS colors like
     ``AliceBlue``.
-    The ``<gradient>`` tag being handled by Manim rather than
-    Pango, supports hex triplets or Manim constants like
+    The ``<gradient>`` tag is handled by Manim rather than
+    Pango, and supports hex triplets or Manim constants like
     ``RED`` or ``RED_A``.
     If you want to use Manim constants like ``RED_A`` together
     with ``<span>``, you will need to use Python's f-String
@@ -744,13 +744,13 @@ class MarkupText(SVGMobject):
 
     If your text contains ligatures, the :class:`MarkupText` class may
     incorrectly determine the first and last letter when creating the
-    gradient. This is due to the fact that e.g. ``fl`` are two characters,
-    but might be set as one single glyph, a ligature. If your language
+    gradient. This is due to the fact that ``fl`` are two separate characters,
+    but might be set as one single glyph - a ligature. If your language
     does not depend on ligatures, consider setting ``disable_ligatures``
-    to ``True`` of :class:`~.MarkupText`. If you cannot or do not want
-    to do without ligatures, the ``gradient`` tag supports an optional
+    to ``True``. If you must use ligatures, the ``gradient`` tag supports an optional
     attribute ``offset`` which can be used to compensate for that error.
-    Usage is as follows:
+    
+    For example:
 
     - ``<gradient from="RED" to="YELLOW" offset="1">example</gradient>`` to *start* the gradient one letter earlier
     - ``<gradient from="RED" to="YELLOW" offset=",1">example</gradient>`` to *end* the gradient one letter earlier
@@ -762,8 +762,8 @@ class MarkupText(SVGMobject):
 
     When using ``underline``, ``overline`` or ``strikethrough`` together with
     ``<gradient>`` tags, you will also need to use the offset, because
-    underlines are additional paths in the final :class:`SVGMobject`,
-    check out the corresponding example.
+    underlines are additional paths in the final :class:`SVGMobject`.
+    Check out the following example.
 
     Escaping of special characters: ``>`` **should** be written as ``&gt;``
     whereas ``<`` and ``&`` *must* be written as ``&lt;`` and
