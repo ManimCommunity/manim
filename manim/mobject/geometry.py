@@ -753,7 +753,7 @@ class AnnularSector(Arc):
        The opacity of the color filled in the Annular Sector.
     stroke_width
        The stroke width of the Annular Sector.
-    color : optional
+    color
        The color filled into the Annular Sector.
 
     Examples
